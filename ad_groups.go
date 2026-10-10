@@ -7,6 +7,7 @@ import (
 	fmt "fmt"
 	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
+	time "time"
 )
 
 var (
@@ -10413,6 +10414,1247 @@ func (l *ListAdGroupsResponsePageInfo) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	postAdGroupUpdatedPayloadFieldAccountID          = big.NewInt(1 << 0)
+	postAdGroupUpdatedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
+	postAdGroupUpdatedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
+	postAdGroupUpdatedPayloadFieldData               = big.NewInt(1 << 3)
+	postAdGroupUpdatedPayloadFieldID                 = big.NewInt(1 << 4)
+	postAdGroupUpdatedPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
+	postAdGroupUpdatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
+	postAdGroupUpdatedPayloadFieldType               = big.NewInt(1 << 7)
+)
+
+// postAdGroupUpdatedPayloadNullableFields maps the wire names of PostAdGroupUpdatedPayload's nullable fields (required or optional) to their field bits.
+var postAdGroupUpdatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postAdGroupUpdatedPayloadFieldAccountID,
+	"api_version_date": postAdGroupUpdatedPayloadFieldAPIVersionDate,
+}
+
+type PostAdGroupUpdatedPayload struct {
+	// The account ID that this webhook event is associated with
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// The API version for this webhook
+	APIVersion PostAdGroupUpdatedPayloadAPIVersion `json:"api_version" url:"api_version"`
+	// The dated API version (Api-Version-Date) the payload is serialized to
+	APIVersionDate *string                        `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *PostAdGroupUpdatedPayloadData `json:"data" url:"data"`
+	// A unique ID for every single webhook request
+	ID string `json:"id" url:"id"`
+	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
+	PreviousAttributes map[string]any `json:"previous_attributes,omitempty" url:"previous_attributes,omitempty"`
+	// The timestamp in ISO 8601 format that the webhook was sent at on the server
+	Timestamp time.Time `json:"timestamp" url:"timestamp"`
+	// The webhook event type
+	Type PostAdGroupUpdatedPayloadType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostAdGroupUpdatedPayload) GetAccountID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AccountID
+}
+
+func (p *PostAdGroupUpdatedPayload) GetAPIVersion() PostAdGroupUpdatedPayloadAPIVersion {
+	if p == nil {
+		return ""
+	}
+	return p.APIVersion
+}
+
+func (p *PostAdGroupUpdatedPayload) GetAPIVersionDate() *string {
+	if p == nil {
+		return nil
+	}
+	return p.APIVersionDate
+}
+
+func (p *PostAdGroupUpdatedPayload) GetData() *PostAdGroupUpdatedPayloadData {
+	if p == nil {
+		return nil
+	}
+	return p.Data
+}
+
+func (p *PostAdGroupUpdatedPayload) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostAdGroupUpdatedPayload) GetPreviousAttributes() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.PreviousAttributes
+}
+
+func (p *PostAdGroupUpdatedPayload) GetTimestamp() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.Timestamp
+}
+
+func (p *PostAdGroupUpdatedPayload) GetType() PostAdGroupUpdatedPayloadType {
+	if p == nil {
+		return ""
+	}
+	return p.Type
+}
+
+func (p *PostAdGroupUpdatedPayload) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostAdGroupUpdatedPayload) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayload) SetAccountID(accountID *string) {
+	p.AccountID = accountID
+	p.require(postAdGroupUpdatedPayloadFieldAccountID)
+}
+
+// SetAPIVersion sets the APIVersion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayload) SetAPIVersion(apiVersion PostAdGroupUpdatedPayloadAPIVersion) {
+	p.APIVersion = apiVersion
+	p.require(postAdGroupUpdatedPayloadFieldAPIVersion)
+}
+
+// SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayload) SetAPIVersionDate(apiVersionDate *string) {
+	p.APIVersionDate = apiVersionDate
+	p.require(postAdGroupUpdatedPayloadFieldAPIVersionDate)
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayload) SetData(data *PostAdGroupUpdatedPayloadData) {
+	p.Data = data
+	p.require(postAdGroupUpdatedPayloadFieldData)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayload) SetID(id string) {
+	p.ID = id
+	p.require(postAdGroupUpdatedPayloadFieldID)
+}
+
+// SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayload) SetPreviousAttributes(previousAttributes map[string]any) {
+	p.PreviousAttributes = previousAttributes
+	p.require(postAdGroupUpdatedPayloadFieldPreviousAttributes)
+}
+
+// SetTimestamp sets the Timestamp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayload) SetTimestamp(timestamp time.Time) {
+	p.Timestamp = timestamp
+	p.require(postAdGroupUpdatedPayloadFieldTimestamp)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayload) SetType(type_ PostAdGroupUpdatedPayloadType) {
+	p.Type = type_
+	p.require(postAdGroupUpdatedPayloadFieldType)
+}
+
+func (p *PostAdGroupUpdatedPayload) UnmarshalJSON(data []byte) error {
+	type embed PostAdGroupUpdatedPayload
+	var unmarshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*p = PostAdGroupUpdatedPayload(unmarshaler.embed)
+	p.Timestamp = unmarshaler.Timestamp.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postAdGroupUpdatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostAdGroupUpdatedPayload) MarshalJSON() ([]byte, error) {
+	type embed PostAdGroupUpdatedPayload
+	var marshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed:     embed(*p),
+		Timestamp: internal.NewDateTime(p.Timestamp),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostAdGroupUpdatedPayload) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The API version for this webhook
+type PostAdGroupUpdatedPayloadAPIVersion string
+
+const (
+	PostAdGroupUpdatedPayloadAPIVersionV1 PostAdGroupUpdatedPayloadAPIVersion = "v1"
+)
+
+func NewPostAdGroupUpdatedPayloadAPIVersionFromString(s string) (PostAdGroupUpdatedPayloadAPIVersion, error) {
+	switch s {
+	case "v1":
+		return PostAdGroupUpdatedPayloadAPIVersionV1, nil
+	}
+	var t PostAdGroupUpdatedPayloadAPIVersion
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdGroupUpdatedPayloadAPIVersion) Ptr() *PostAdGroupUpdatedPayloadAPIVersion {
+	return &p
+}
+
+var (
+	postAdGroupUpdatedPayloadDataFieldAdCampaign           = big.NewInt(1 << 0)
+	postAdGroupUpdatedPayloadDataFieldAudiences            = big.NewInt(1 << 1)
+	postAdGroupUpdatedPayloadDataFieldBidType              = big.NewInt(1 << 2)
+	postAdGroupUpdatedPayloadDataFieldBudgetAmount         = big.NewInt(1 << 3)
+	postAdGroupUpdatedPayloadDataFieldBudgetAmountLocal    = big.NewInt(1 << 4)
+	postAdGroupUpdatedPayloadDataFieldBudgetCurrency       = big.NewInt(1 << 5)
+	postAdGroupUpdatedPayloadDataFieldBudgetType           = big.NewInt(1 << 6)
+	postAdGroupUpdatedPayloadDataFieldConversionEvent      = big.NewInt(1 << 7)
+	postAdGroupUpdatedPayloadDataFieldConversionLocation   = big.NewInt(1 << 8)
+	postAdGroupUpdatedPayloadDataFieldCreatedAt            = big.NewInt(1 << 9)
+	postAdGroupUpdatedPayloadDataFieldDeliverySchedule     = big.NewInt(1 << 10)
+	postAdGroupUpdatedPayloadDataFieldDeliveryStatus       = big.NewInt(1 << 11)
+	postAdGroupUpdatedPayloadDataFieldDemographics         = big.NewInt(1 << 12)
+	postAdGroupUpdatedPayloadDataFieldDesiredCostPerResult = big.NewInt(1 << 13)
+	postAdGroupUpdatedPayloadDataFieldDetailedTargeting    = big.NewInt(1 << 14)
+	postAdGroupUpdatedPayloadDataFieldDevices              = big.NewInt(1 << 15)
+	postAdGroupUpdatedPayloadDataFieldDynamicCreative      = big.NewInt(1 << 16)
+	postAdGroupUpdatedPayloadDataFieldEndsAt               = big.NewInt(1 << 17)
+	postAdGroupUpdatedPayloadDataFieldFrequencyCap         = big.NewInt(1 << 18)
+	postAdGroupUpdatedPayloadDataFieldID                   = big.NewInt(1 << 19)
+	postAdGroupUpdatedPayloadDataFieldIssues               = big.NewInt(1 << 20)
+	postAdGroupUpdatedPayloadDataFieldKeywords             = big.NewInt(1 << 21)
+	postAdGroupUpdatedPayloadDataFieldLanguages            = big.NewInt(1 << 22)
+	postAdGroupUpdatedPayloadDataFieldLearningProgress     = big.NewInt(1 << 23)
+	postAdGroupUpdatedPayloadDataFieldMessageApps          = big.NewInt(1 << 24)
+	postAdGroupUpdatedPayloadDataFieldMinimumDailySpend    = big.NewInt(1 << 25)
+	postAdGroupUpdatedPayloadDataFieldOptimizationGoal     = big.NewInt(1 << 26)
+	postAdGroupUpdatedPayloadDataFieldPlacements           = big.NewInt(1 << 27)
+	postAdGroupUpdatedPayloadDataFieldPlatform             = big.NewInt(1 << 28)
+	postAdGroupUpdatedPayloadDataFieldRegions              = big.NewInt(1 << 29)
+	postAdGroupUpdatedPayloadDataFieldStartsAt             = big.NewInt(1 << 30)
+	postAdGroupUpdatedPayloadDataFieldStatus               = big.NewInt(1 << 31)
+	postAdGroupUpdatedPayloadDataFieldTitle                = big.NewInt(1 << 32)
+	postAdGroupUpdatedPayloadDataFieldUpdatedAt            = big.NewInt(1 << 33)
+)
+
+// postAdGroupUpdatedPayloadDataNullableFields maps the wire names of PostAdGroupUpdatedPayloadData's nullable fields (required or optional) to their field bits.
+var postAdGroupUpdatedPayloadDataNullableFields = map[string]*big.Int{
+	"bid_type":                postAdGroupUpdatedPayloadDataFieldBidType,
+	"budget_amount":           postAdGroupUpdatedPayloadDataFieldBudgetAmount,
+	"budget_amount_local":     postAdGroupUpdatedPayloadDataFieldBudgetAmountLocal,
+	"budget_type":             postAdGroupUpdatedPayloadDataFieldBudgetType,
+	"conversion_event":        postAdGroupUpdatedPayloadDataFieldConversionEvent,
+	"conversion_location":     postAdGroupUpdatedPayloadDataFieldConversionLocation,
+	"delivery_schedule":       postAdGroupUpdatedPayloadDataFieldDeliverySchedule,
+	"desired_cost_per_result": postAdGroupUpdatedPayloadDataFieldDesiredCostPerResult,
+	"ends_at":                 postAdGroupUpdatedPayloadDataFieldEndsAt,
+	"frequency_cap":           postAdGroupUpdatedPayloadDataFieldFrequencyCap,
+	"learning_progress":       postAdGroupUpdatedPayloadDataFieldLearningProgress,
+	"minimum_daily_spend":     postAdGroupUpdatedPayloadDataFieldMinimumDailySpend,
+	"optimization_goal":       postAdGroupUpdatedPayloadDataFieldOptimizationGoal,
+	"starts_at":               postAdGroupUpdatedPayloadDataFieldStartsAt,
+	"title":                   postAdGroupUpdatedPayloadDataFieldTitle,
+}
+
+type PostAdGroupUpdatedPayloadData struct {
+	// The ad campaign this ad group belongs to.
+	AdCampaign *AdEntityReference `json:"ad_campaign" url:"ad_campaign"`
+	// Saved audiences this ad group delivers to or excludes.
+	Audiences *AdGroupAudiences `json:"audiences" url:"audiences"`
+	// How delivery bids are set in the ad auction. Target-based strategies use `desired_cost_per_result`.
+	BidType *PostAdGroupUpdatedPayloadDataBidType `json:"bid_type,omitempty" url:"bid_type,omitempty"`
+	// This ad group's budget in USD, which is what it is stored and billed in. `null` when the budget is set on the campaign instead.
+	BudgetAmount *float64 `json:"budget_amount,omitempty" url:"budget_amount,omitempty"`
+	// The same budget stated in `budget_currency` at today's exchange rate, for display in the account's ads reporting currency. `null` when `budget_amount` is.
+	BudgetAmountLocal *float64 `json:"budget_amount_local,omitempty" url:"budget_amount_local,omitempty"`
+	// The ISO 4217 code `budget_amount_local` is in: the account's `ads_reporting_currency` preference. `usd` unless the account changed it.
+	BudgetCurrency string `json:"budget_currency" url:"budget_currency"`
+	// Whether `budget_amount` is spent per day (`daily`) or over the ad group's full run (`lifetime`). A `lifetime` ad group also needs `ends_at`, at least 24 hours after it starts.
+	BudgetType      *PostAdGroupUpdatedPayloadDataBudgetType `json:"budget_type,omitempty" url:"budget_type,omitempty"`
+	ConversionEvent *ConversionEvent                         `json:"conversion_event,omitempty" url:"conversion_event,omitempty"`
+	// Where the outcome being optimized for occurs, such as a website visit, social-profile visit, messaging conversation, ad interaction, or lead-form submission.
+	ConversionLocation *PostAdGroupUpdatedPayloadDataConversionLocation `json:"conversion_location,omitempty" url:"conversion_location,omitempty"`
+	// When the ad group was created, as an ISO 8601 timestamp.
+	CreatedAt string `json:"created_at" url:"created_at"`
+	// Hours the ad group delivers in each week, keyed by day. Days it doesn't deliver are omitted. `null` when it delivers at every hour. Some platforms need a lifetime `budget_type` for a schedule, on the ad group or on its campaign when the campaign holds the budget.
+	DeliverySchedule *AdGroupDeliverySchedule `json:"delivery_schedule,omitempty" url:"delivery_schedule,omitempty"`
+	// Whether ads in this ad group are delivering right now, and if not, why. When several states apply at once, the highest-precedence one is returned.
+	DeliveryStatus PostAdGroupUpdatedPayloadDataDeliveryStatus `json:"delivery_status" url:"delivery_status"`
+	// Age, gender, and automatic-audience targeting.
+	Demographics *AdGroupDemographics `json:"demographics" url:"demographics"`
+	// Cost per result to aim for (`average_target`) or never exceed (`maximum_target`). `null` for `minimum_cost` bidding.
+	DesiredCostPerResult *float64 `json:"desired_cost_per_result,omitempty" url:"desired_cost_per_result,omitempty"`
+	// Interest, behavior, and demographic targeting, using categories from the ad platform's targeting taxonomy. Entries across interests, behaviors, and demographics are OR'd together (anyone matching any entry is reached), matching Ads Manager's detailed-targeting box. Can't be combined with automatic audience targeting. Special ad category campaigns are limited to approved interests.
+	DetailedTargeting *AdGroupDetailedTargeting `json:"detailed_targeting" url:"detailed_targeting"`
+	// Device platforms and operating systems targeted.
+	Devices *AdGroupDevices `json:"devices" url:"devices"`
+	// Whether the ad platform automatically mixes and matches this ad group's creatives and copy to find the best-performing combinations.
+	DynamicCreative *bool `json:"dynamic_creative,omitempty" url:"dynamic_creative,omitempty"`
+	// When the ad group stops delivering, as an ISO 8601 timestamp. `null` when it runs until paused.
+	EndsAt *string `json:"ends_at,omitempty" url:"ends_at,omitempty"`
+	// Cap on how often one person sees ads from this ad group, or from the whole campaign under a campaign budget, where every ad group shares it. Only available when the ad group optimizes for reach or ThruPlay; `null` when uncapped.
+	FrequencyCap *AdGroupFrequencyCap `json:"frequency_cap,omitempty" url:"frequency_cap,omitempty"`
+	// Unique identifier for the ad group, prefixed `adgrp_`.
+	ID        string             `json:"id" url:"id"`
+	Issues    []*AdPlatformIssue `json:"issues" url:"issues"`
+	Keywords  []*AdGroupKeyword  `json:"keywords,omitempty" url:"keywords,omitempty"`
+	Languages []string           `json:"languages" url:"languages"`
+	// Progress toward the ad platform's learning conversion threshold for this ad group. Null unless it is learning or learning limited and the platform reports valid counts. Reaching the threshold does not determine delivery status.
+	LearningProgress *AdGroupLearningProgress                       `json:"learning_progress,omitempty" url:"learning_progress,omitempty"`
+	MessageApps      []PostAdGroupUpdatedPayloadDataMessageAppsItem `json:"message_apps,omitempty" url:"message_apps,omitempty"`
+	// Minimum the ad group tries to spend each day. `null` when no floor is set.
+	MinimumDailySpend *float64 `json:"minimum_daily_spend,omitempty" url:"minimum_daily_spend,omitempty"`
+	// The result the ad group's delivery is optimized to get the most of.
+	OptimizationGoal *PostAdGroupUpdatedPayloadDataOptimizationGoal `json:"optimization_goal,omitempty" url:"optimization_goal,omitempty"`
+	Placements       []*AdGroupPlacement                            `json:"placements" url:"placements"`
+	// The ad platform this ad group runs on.
+	Platform PostAdGroupUpdatedPayloadDataPlatform `json:"platform" url:"platform"`
+	// Locations targeted and excluded.
+	Regions *AdGroupRegions `json:"regions" url:"regions"`
+	// When the ad group starts delivering, as an ISO 8601 timestamp. `null` when it starts as soon as it's active.
+	StartsAt *string `json:"starts_at,omitempty" url:"starts_at,omitempty"`
+	// Whether the ad group is enabled. `active` and `paused` are set by you; `rejected` means it failed ad review; `duplicating` is a copy still being filled in.
+	Status PostAdGroupUpdatedPayloadDataStatus `json:"status" url:"status"`
+	// Display name of the ad group.
+	Title *string `json:"title,omitempty" url:"title,omitempty"`
+	// When the ad group was last updated, as an ISO 8601 timestamp.
+	UpdatedAt string `json:"updated_at" url:"updated_at"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetAdCampaign() *AdEntityReference {
+	if p == nil {
+		return nil
+	}
+	return p.AdCampaign
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetAudiences() *AdGroupAudiences {
+	if p == nil {
+		return nil
+	}
+	return p.Audiences
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetBidType() *PostAdGroupUpdatedPayloadDataBidType {
+	if p == nil {
+		return nil
+	}
+	return p.BidType
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetBudgetAmount() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.BudgetAmount
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetBudgetAmountLocal() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.BudgetAmountLocal
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetBudgetCurrency() string {
+	if p == nil {
+		return ""
+	}
+	return p.BudgetCurrency
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetBudgetType() *PostAdGroupUpdatedPayloadDataBudgetType {
+	if p == nil {
+		return nil
+	}
+	return p.BudgetType
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetConversionEvent() *ConversionEvent {
+	if p == nil {
+		return nil
+	}
+	return p.ConversionEvent
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetConversionLocation() *PostAdGroupUpdatedPayloadDataConversionLocation {
+	if p == nil {
+		return nil
+	}
+	return p.ConversionLocation
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetCreatedAt() string {
+	if p == nil {
+		return ""
+	}
+	return p.CreatedAt
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetDeliverySchedule() *AdGroupDeliverySchedule {
+	if p == nil {
+		return nil
+	}
+	return p.DeliverySchedule
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetDeliveryStatus() PostAdGroupUpdatedPayloadDataDeliveryStatus {
+	if p == nil {
+		return ""
+	}
+	return p.DeliveryStatus
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetDemographics() *AdGroupDemographics {
+	if p == nil {
+		return nil
+	}
+	return p.Demographics
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetDesiredCostPerResult() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.DesiredCostPerResult
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetDetailedTargeting() *AdGroupDetailedTargeting {
+	if p == nil {
+		return nil
+	}
+	return p.DetailedTargeting
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetDevices() *AdGroupDevices {
+	if p == nil {
+		return nil
+	}
+	return p.Devices
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetDynamicCreative() *bool {
+	if p == nil {
+		return nil
+	}
+	return p.DynamicCreative
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetEndsAt() *string {
+	if p == nil {
+		return nil
+	}
+	return p.EndsAt
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetFrequencyCap() *AdGroupFrequencyCap {
+	if p == nil {
+		return nil
+	}
+	return p.FrequencyCap
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetIssues() []*AdPlatformIssue {
+	if p == nil {
+		return nil
+	}
+	return p.Issues
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetKeywords() []*AdGroupKeyword {
+	if p == nil {
+		return nil
+	}
+	return p.Keywords
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetLanguages() []string {
+	if p == nil {
+		return nil
+	}
+	return p.Languages
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetLearningProgress() *AdGroupLearningProgress {
+	if p == nil {
+		return nil
+	}
+	return p.LearningProgress
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetMessageApps() []PostAdGroupUpdatedPayloadDataMessageAppsItem {
+	if p == nil {
+		return nil
+	}
+	return p.MessageApps
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetMinimumDailySpend() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.MinimumDailySpend
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetOptimizationGoal() *PostAdGroupUpdatedPayloadDataOptimizationGoal {
+	if p == nil {
+		return nil
+	}
+	return p.OptimizationGoal
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetPlacements() []*AdGroupPlacement {
+	if p == nil {
+		return nil
+	}
+	return p.Placements
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetPlatform() PostAdGroupUpdatedPayloadDataPlatform {
+	if p == nil {
+		return ""
+	}
+	return p.Platform
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetRegions() *AdGroupRegions {
+	if p == nil {
+		return nil
+	}
+	return p.Regions
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetStartsAt() *string {
+	if p == nil {
+		return nil
+	}
+	return p.StartsAt
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetStatus() PostAdGroupUpdatedPayloadDataStatus {
+	if p == nil {
+		return ""
+	}
+	return p.Status
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetTitle() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Title
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetUpdatedAt() string {
+	if p == nil {
+		return ""
+	}
+	return p.UpdatedAt
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostAdGroupUpdatedPayloadData) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetAdCampaign sets the AdCampaign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetAdCampaign(adCampaign *AdEntityReference) {
+	p.AdCampaign = adCampaign
+	p.require(postAdGroupUpdatedPayloadDataFieldAdCampaign)
+}
+
+// SetAudiences sets the Audiences field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetAudiences(audiences *AdGroupAudiences) {
+	p.Audiences = audiences
+	p.require(postAdGroupUpdatedPayloadDataFieldAudiences)
+}
+
+// SetBidType sets the BidType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetBidType(bidType *PostAdGroupUpdatedPayloadDataBidType) {
+	p.BidType = bidType
+	p.require(postAdGroupUpdatedPayloadDataFieldBidType)
+}
+
+// SetBudgetAmount sets the BudgetAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetBudgetAmount(budgetAmount *float64) {
+	p.BudgetAmount = budgetAmount
+	p.require(postAdGroupUpdatedPayloadDataFieldBudgetAmount)
+}
+
+// SetBudgetAmountLocal sets the BudgetAmountLocal field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetBudgetAmountLocal(budgetAmountLocal *float64) {
+	p.BudgetAmountLocal = budgetAmountLocal
+	p.require(postAdGroupUpdatedPayloadDataFieldBudgetAmountLocal)
+}
+
+// SetBudgetCurrency sets the BudgetCurrency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetBudgetCurrency(budgetCurrency string) {
+	p.BudgetCurrency = budgetCurrency
+	p.require(postAdGroupUpdatedPayloadDataFieldBudgetCurrency)
+}
+
+// SetBudgetType sets the BudgetType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetBudgetType(budgetType *PostAdGroupUpdatedPayloadDataBudgetType) {
+	p.BudgetType = budgetType
+	p.require(postAdGroupUpdatedPayloadDataFieldBudgetType)
+}
+
+// SetConversionEvent sets the ConversionEvent field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetConversionEvent(conversionEvent *ConversionEvent) {
+	p.ConversionEvent = conversionEvent
+	p.require(postAdGroupUpdatedPayloadDataFieldConversionEvent)
+}
+
+// SetConversionLocation sets the ConversionLocation field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetConversionLocation(conversionLocation *PostAdGroupUpdatedPayloadDataConversionLocation) {
+	p.ConversionLocation = conversionLocation
+	p.require(postAdGroupUpdatedPayloadDataFieldConversionLocation)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetCreatedAt(createdAt string) {
+	p.CreatedAt = createdAt
+	p.require(postAdGroupUpdatedPayloadDataFieldCreatedAt)
+}
+
+// SetDeliverySchedule sets the DeliverySchedule field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetDeliverySchedule(deliverySchedule *AdGroupDeliverySchedule) {
+	p.DeliverySchedule = deliverySchedule
+	p.require(postAdGroupUpdatedPayloadDataFieldDeliverySchedule)
+}
+
+// SetDeliveryStatus sets the DeliveryStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetDeliveryStatus(deliveryStatus PostAdGroupUpdatedPayloadDataDeliveryStatus) {
+	p.DeliveryStatus = deliveryStatus
+	p.require(postAdGroupUpdatedPayloadDataFieldDeliveryStatus)
+}
+
+// SetDemographics sets the Demographics field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetDemographics(demographics *AdGroupDemographics) {
+	p.Demographics = demographics
+	p.require(postAdGroupUpdatedPayloadDataFieldDemographics)
+}
+
+// SetDesiredCostPerResult sets the DesiredCostPerResult field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetDesiredCostPerResult(desiredCostPerResult *float64) {
+	p.DesiredCostPerResult = desiredCostPerResult
+	p.require(postAdGroupUpdatedPayloadDataFieldDesiredCostPerResult)
+}
+
+// SetDetailedTargeting sets the DetailedTargeting field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetDetailedTargeting(detailedTargeting *AdGroupDetailedTargeting) {
+	p.DetailedTargeting = detailedTargeting
+	p.require(postAdGroupUpdatedPayloadDataFieldDetailedTargeting)
+}
+
+// SetDevices sets the Devices field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetDevices(devices *AdGroupDevices) {
+	p.Devices = devices
+	p.require(postAdGroupUpdatedPayloadDataFieldDevices)
+}
+
+// SetDynamicCreative sets the DynamicCreative field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetDynamicCreative(dynamicCreative *bool) {
+	p.DynamicCreative = dynamicCreative
+	p.require(postAdGroupUpdatedPayloadDataFieldDynamicCreative)
+}
+
+// SetEndsAt sets the EndsAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetEndsAt(endsAt *string) {
+	p.EndsAt = endsAt
+	p.require(postAdGroupUpdatedPayloadDataFieldEndsAt)
+}
+
+// SetFrequencyCap sets the FrequencyCap field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetFrequencyCap(frequencyCap *AdGroupFrequencyCap) {
+	p.FrequencyCap = frequencyCap
+	p.require(postAdGroupUpdatedPayloadDataFieldFrequencyCap)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetID(id string) {
+	p.ID = id
+	p.require(postAdGroupUpdatedPayloadDataFieldID)
+}
+
+// SetIssues sets the Issues field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetIssues(issues []*AdPlatformIssue) {
+	p.Issues = issues
+	p.require(postAdGroupUpdatedPayloadDataFieldIssues)
+}
+
+// SetKeywords sets the Keywords field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetKeywords(keywords []*AdGroupKeyword) {
+	p.Keywords = keywords
+	p.require(postAdGroupUpdatedPayloadDataFieldKeywords)
+}
+
+// SetLanguages sets the Languages field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetLanguages(languages []string) {
+	p.Languages = languages
+	p.require(postAdGroupUpdatedPayloadDataFieldLanguages)
+}
+
+// SetLearningProgress sets the LearningProgress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetLearningProgress(learningProgress *AdGroupLearningProgress) {
+	p.LearningProgress = learningProgress
+	p.require(postAdGroupUpdatedPayloadDataFieldLearningProgress)
+}
+
+// SetMessageApps sets the MessageApps field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetMessageApps(messageApps []PostAdGroupUpdatedPayloadDataMessageAppsItem) {
+	p.MessageApps = messageApps
+	p.require(postAdGroupUpdatedPayloadDataFieldMessageApps)
+}
+
+// SetMinimumDailySpend sets the MinimumDailySpend field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetMinimumDailySpend(minimumDailySpend *float64) {
+	p.MinimumDailySpend = minimumDailySpend
+	p.require(postAdGroupUpdatedPayloadDataFieldMinimumDailySpend)
+}
+
+// SetOptimizationGoal sets the OptimizationGoal field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetOptimizationGoal(optimizationGoal *PostAdGroupUpdatedPayloadDataOptimizationGoal) {
+	p.OptimizationGoal = optimizationGoal
+	p.require(postAdGroupUpdatedPayloadDataFieldOptimizationGoal)
+}
+
+// SetPlacements sets the Placements field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetPlacements(placements []*AdGroupPlacement) {
+	p.Placements = placements
+	p.require(postAdGroupUpdatedPayloadDataFieldPlacements)
+}
+
+// SetPlatform sets the Platform field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetPlatform(platform PostAdGroupUpdatedPayloadDataPlatform) {
+	p.Platform = platform
+	p.require(postAdGroupUpdatedPayloadDataFieldPlatform)
+}
+
+// SetRegions sets the Regions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetRegions(regions *AdGroupRegions) {
+	p.Regions = regions
+	p.require(postAdGroupUpdatedPayloadDataFieldRegions)
+}
+
+// SetStartsAt sets the StartsAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetStartsAt(startsAt *string) {
+	p.StartsAt = startsAt
+	p.require(postAdGroupUpdatedPayloadDataFieldStartsAt)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetStatus(status PostAdGroupUpdatedPayloadDataStatus) {
+	p.Status = status
+	p.require(postAdGroupUpdatedPayloadDataFieldStatus)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetTitle(title *string) {
+	p.Title = title
+	p.require(postAdGroupUpdatedPayloadDataFieldTitle)
+}
+
+// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetUpdatedAt(updatedAt string) {
+	p.UpdatedAt = updatedAt
+	p.require(postAdGroupUpdatedPayloadDataFieldUpdatedAt)
+}
+
+func (p *PostAdGroupUpdatedPayloadData) UnmarshalJSON(data []byte) error {
+	type unmarshaler PostAdGroupUpdatedPayloadData
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PostAdGroupUpdatedPayloadData(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postAdGroupUpdatedPayloadDataNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostAdGroupUpdatedPayloadData) MarshalJSON() ([]byte, error) {
+	type embed PostAdGroupUpdatedPayloadData
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostAdGroupUpdatedPayloadData) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// How delivery bids are set in the ad auction. Target-based strategies use `desired_cost_per_result`.
+type PostAdGroupUpdatedPayloadDataBidType string
+
+const (
+	PostAdGroupUpdatedPayloadDataBidTypeMinimumCost   PostAdGroupUpdatedPayloadDataBidType = "minimum_cost"
+	PostAdGroupUpdatedPayloadDataBidTypeAverageTarget PostAdGroupUpdatedPayloadDataBidType = "average_target"
+	PostAdGroupUpdatedPayloadDataBidTypeMaximumTarget PostAdGroupUpdatedPayloadDataBidType = "maximum_target"
+)
+
+func NewPostAdGroupUpdatedPayloadDataBidTypeFromString(s string) (PostAdGroupUpdatedPayloadDataBidType, error) {
+	switch s {
+	case "minimum_cost":
+		return PostAdGroupUpdatedPayloadDataBidTypeMinimumCost, nil
+	case "average_target":
+		return PostAdGroupUpdatedPayloadDataBidTypeAverageTarget, nil
+	case "maximum_target":
+		return PostAdGroupUpdatedPayloadDataBidTypeMaximumTarget, nil
+	}
+	var t PostAdGroupUpdatedPayloadDataBidType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdGroupUpdatedPayloadDataBidType) Ptr() *PostAdGroupUpdatedPayloadDataBidType {
+	return &p
+}
+
+// Whether `budget_amount` is spent per day (`daily`) or over the ad group's full run (`lifetime`). A `lifetime` ad group also needs `ends_at`, at least 24 hours after it starts.
+type PostAdGroupUpdatedPayloadDataBudgetType string
+
+const (
+	PostAdGroupUpdatedPayloadDataBudgetTypeDaily    PostAdGroupUpdatedPayloadDataBudgetType = "daily"
+	PostAdGroupUpdatedPayloadDataBudgetTypeLifetime PostAdGroupUpdatedPayloadDataBudgetType = "lifetime"
+)
+
+func NewPostAdGroupUpdatedPayloadDataBudgetTypeFromString(s string) (PostAdGroupUpdatedPayloadDataBudgetType, error) {
+	switch s {
+	case "daily":
+		return PostAdGroupUpdatedPayloadDataBudgetTypeDaily, nil
+	case "lifetime":
+		return PostAdGroupUpdatedPayloadDataBudgetTypeLifetime, nil
+	}
+	var t PostAdGroupUpdatedPayloadDataBudgetType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdGroupUpdatedPayloadDataBudgetType) Ptr() *PostAdGroupUpdatedPayloadDataBudgetType {
+	return &p
+}
+
+// Where the outcome being optimized for occurs, such as a website visit, social-profile visit, messaging conversation, ad interaction, or lead-form submission.
+type PostAdGroupUpdatedPayloadDataConversionLocation string
+
+const (
+	PostAdGroupUpdatedPayloadDataConversionLocationWebsite                  PostAdGroupUpdatedPayloadDataConversionLocation = "website"
+	PostAdGroupUpdatedPayloadDataConversionLocationProfile                  PostAdGroupUpdatedPayloadDataConversionLocation = "profile"
+	PostAdGroupUpdatedPayloadDataConversionLocationInstagramAndFacebook     PostAdGroupUpdatedPayloadDataConversionLocation = "instagram_and_facebook"
+	PostAdGroupUpdatedPayloadDataConversionLocationInstagramProfile         PostAdGroupUpdatedPayloadDataConversionLocation = "instagram_profile"
+	PostAdGroupUpdatedPayloadDataConversionLocationMessaging                PostAdGroupUpdatedPayloadDataConversionLocation = "messaging"
+	PostAdGroupUpdatedPayloadDataConversionLocationOnAd                     PostAdGroupUpdatedPayloadDataConversionLocation = "on_ad"
+	PostAdGroupUpdatedPayloadDataConversionLocationInstantForms             PostAdGroupUpdatedPayloadDataConversionLocation = "instant_forms"
+	PostAdGroupUpdatedPayloadDataConversionLocationInstantFormsAndMessenger PostAdGroupUpdatedPayloadDataConversionLocation = "instant_forms_and_messenger"
+	PostAdGroupUpdatedPayloadDataConversionLocationWebsiteAndInstantForms   PostAdGroupUpdatedPayloadDataConversionLocation = "website_and_instant_forms"
+)
+
+func NewPostAdGroupUpdatedPayloadDataConversionLocationFromString(s string) (PostAdGroupUpdatedPayloadDataConversionLocation, error) {
+	switch s {
+	case "website":
+		return PostAdGroupUpdatedPayloadDataConversionLocationWebsite, nil
+	case "profile":
+		return PostAdGroupUpdatedPayloadDataConversionLocationProfile, nil
+	case "instagram_and_facebook":
+		return PostAdGroupUpdatedPayloadDataConversionLocationInstagramAndFacebook, nil
+	case "instagram_profile":
+		return PostAdGroupUpdatedPayloadDataConversionLocationInstagramProfile, nil
+	case "messaging":
+		return PostAdGroupUpdatedPayloadDataConversionLocationMessaging, nil
+	case "on_ad":
+		return PostAdGroupUpdatedPayloadDataConversionLocationOnAd, nil
+	case "instant_forms":
+		return PostAdGroupUpdatedPayloadDataConversionLocationInstantForms, nil
+	case "instant_forms_and_messenger":
+		return PostAdGroupUpdatedPayloadDataConversionLocationInstantFormsAndMessenger, nil
+	case "website_and_instant_forms":
+		return PostAdGroupUpdatedPayloadDataConversionLocationWebsiteAndInstantForms, nil
+	}
+	var t PostAdGroupUpdatedPayloadDataConversionLocation
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdGroupUpdatedPayloadDataConversionLocation) Ptr() *PostAdGroupUpdatedPayloadDataConversionLocation {
+	return &p
+}
+
+// Whether ads in this ad group are delivering right now, and if not, why. When several states apply at once, the highest-precedence one is returned.
+type PostAdGroupUpdatedPayloadDataDeliveryStatus string
+
+const (
+	PostAdGroupUpdatedPayloadDataDeliveryStatusInAppeal        PostAdGroupUpdatedPayloadDataDeliveryStatus = "in_appeal"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusAllAdsRejected  PostAdGroupUpdatedPayloadDataDeliveryStatus = "all_ads_rejected"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusRejected        PostAdGroupUpdatedPayloadDataDeliveryStatus = "rejected"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusDraft           PostAdGroupUpdatedPayloadDataDeliveryStatus = "draft"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusNoAds           PostAdGroupUpdatedPayloadDataDeliveryStatus = "no_ads"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusCampaignPaused  PostAdGroupUpdatedPayloadDataDeliveryStatus = "campaign_paused"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusPaused          PostAdGroupUpdatedPayloadDataDeliveryStatus = "paused"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusProcessing      PostAdGroupUpdatedPayloadDataDeliveryStatus = "processing"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusIssues          PostAdGroupUpdatedPayloadDataDeliveryStatus = "issues"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusScheduled       PostAdGroupUpdatedPayloadDataDeliveryStatus = "scheduled"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusCompleted       PostAdGroupUpdatedPayloadDataDeliveryStatus = "completed"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusAdsOff          PostAdGroupUpdatedPayloadDataDeliveryStatus = "ads_off"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusLearningLimited PostAdGroupUpdatedPayloadDataDeliveryStatus = "learning_limited"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusLearning        PostAdGroupUpdatedPayloadDataDeliveryStatus = "learning"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusActive          PostAdGroupUpdatedPayloadDataDeliveryStatus = "active"
+)
+
+func NewPostAdGroupUpdatedPayloadDataDeliveryStatusFromString(s string) (PostAdGroupUpdatedPayloadDataDeliveryStatus, error) {
+	switch s {
+	case "in_appeal":
+		return PostAdGroupUpdatedPayloadDataDeliveryStatusInAppeal, nil
+	case "all_ads_rejected":
+		return PostAdGroupUpdatedPayloadDataDeliveryStatusAllAdsRejected, nil
+	case "rejected":
+		return PostAdGroupUpdatedPayloadDataDeliveryStatusRejected, nil
+	case "draft":
+		return PostAdGroupUpdatedPayloadDataDeliveryStatusDraft, nil
+	case "no_ads":
+		return PostAdGroupUpdatedPayloadDataDeliveryStatusNoAds, nil
+	case "campaign_paused":
+		return PostAdGroupUpdatedPayloadDataDeliveryStatusCampaignPaused, nil
+	case "paused":
+		return PostAdGroupUpdatedPayloadDataDeliveryStatusPaused, nil
+	case "processing":
+		return PostAdGroupUpdatedPayloadDataDeliveryStatusProcessing, nil
+	case "issues":
+		return PostAdGroupUpdatedPayloadDataDeliveryStatusIssues, nil
+	case "scheduled":
+		return PostAdGroupUpdatedPayloadDataDeliveryStatusScheduled, nil
+	case "completed":
+		return PostAdGroupUpdatedPayloadDataDeliveryStatusCompleted, nil
+	case "ads_off":
+		return PostAdGroupUpdatedPayloadDataDeliveryStatusAdsOff, nil
+	case "learning_limited":
+		return PostAdGroupUpdatedPayloadDataDeliveryStatusLearningLimited, nil
+	case "learning":
+		return PostAdGroupUpdatedPayloadDataDeliveryStatusLearning, nil
+	case "active":
+		return PostAdGroupUpdatedPayloadDataDeliveryStatusActive, nil
+	}
+	var t PostAdGroupUpdatedPayloadDataDeliveryStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdGroupUpdatedPayloadDataDeliveryStatus) Ptr() *PostAdGroupUpdatedPayloadDataDeliveryStatus {
+	return &p
+}
+
+// Apps the conversation opens in when `conversion_location` is `messaging`. Empty for other conversion locations.
+type PostAdGroupUpdatedPayloadDataMessageAppsItem string
+
+const (
+	PostAdGroupUpdatedPayloadDataMessageAppsItemMessenger PostAdGroupUpdatedPayloadDataMessageAppsItem = "messenger"
+	PostAdGroupUpdatedPayloadDataMessageAppsItemInstagram PostAdGroupUpdatedPayloadDataMessageAppsItem = "instagram"
+	PostAdGroupUpdatedPayloadDataMessageAppsItemWhatsapp  PostAdGroupUpdatedPayloadDataMessageAppsItem = "whatsapp"
+)
+
+func NewPostAdGroupUpdatedPayloadDataMessageAppsItemFromString(s string) (PostAdGroupUpdatedPayloadDataMessageAppsItem, error) {
+	switch s {
+	case "messenger":
+		return PostAdGroupUpdatedPayloadDataMessageAppsItemMessenger, nil
+	case "instagram":
+		return PostAdGroupUpdatedPayloadDataMessageAppsItemInstagram, nil
+	case "whatsapp":
+		return PostAdGroupUpdatedPayloadDataMessageAppsItemWhatsapp, nil
+	}
+	var t PostAdGroupUpdatedPayloadDataMessageAppsItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdGroupUpdatedPayloadDataMessageAppsItem) Ptr() *PostAdGroupUpdatedPayloadDataMessageAppsItem {
+	return &p
+}
+
+// The result the ad group's delivery is optimized to get the most of.
+type PostAdGroupUpdatedPayloadDataOptimizationGoal string
+
+const (
+	PostAdGroupUpdatedPayloadDataOptimizationGoalConversions              PostAdGroupUpdatedPayloadDataOptimizationGoal = "conversions"
+	PostAdGroupUpdatedPayloadDataOptimizationGoalLinkClicks               PostAdGroupUpdatedPayloadDataOptimizationGoal = "link_clicks"
+	PostAdGroupUpdatedPayloadDataOptimizationGoalLandingPageViews         PostAdGroupUpdatedPayloadDataOptimizationGoal = "landing_page_views"
+	PostAdGroupUpdatedPayloadDataOptimizationGoalReach                    PostAdGroupUpdatedPayloadDataOptimizationGoal = "reach"
+	PostAdGroupUpdatedPayloadDataOptimizationGoalImpressions              PostAdGroupUpdatedPayloadDataOptimizationGoal = "impressions"
+	PostAdGroupUpdatedPayloadDataOptimizationGoalEngagement               PostAdGroupUpdatedPayloadDataOptimizationGoal = "engagement"
+	PostAdGroupUpdatedPayloadDataOptimizationGoalConversations            PostAdGroupUpdatedPayloadDataOptimizationGoal = "conversations"
+	PostAdGroupUpdatedPayloadDataOptimizationGoalVideoViews               PostAdGroupUpdatedPayloadDataOptimizationGoal = "video_views"
+	PostAdGroupUpdatedPayloadDataOptimizationGoalTwoSecondViews           PostAdGroupUpdatedPayloadDataOptimizationGoal = "two_second_views"
+	PostAdGroupUpdatedPayloadDataOptimizationGoalPageLikes                PostAdGroupUpdatedPayloadDataOptimizationGoal = "page_likes"
+	PostAdGroupUpdatedPayloadDataOptimizationGoalSocialProfile            PostAdGroupUpdatedPayloadDataOptimizationGoal = "social_profile"
+	PostAdGroupUpdatedPayloadDataOptimizationGoalAdRecallLift             PostAdGroupUpdatedPayloadDataOptimizationGoal = "ad_recall_lift"
+	PostAdGroupUpdatedPayloadDataOptimizationGoalEventResponses           PostAdGroupUpdatedPayloadDataOptimizationGoal = "event_responses"
+	PostAdGroupUpdatedPayloadDataOptimizationGoalRemindersSet             PostAdGroupUpdatedPayloadDataOptimizationGoal = "reminders_set"
+	PostAdGroupUpdatedPayloadDataOptimizationGoalLeadGeneration           PostAdGroupUpdatedPayloadDataOptimizationGoal = "lead_generation"
+	PostAdGroupUpdatedPayloadDataOptimizationGoalQualityLead              PostAdGroupUpdatedPayloadDataOptimizationGoal = "quality_lead"
+	PostAdGroupUpdatedPayloadDataOptimizationGoalValue                    PostAdGroupUpdatedPayloadDataOptimizationGoal = "value"
+	PostAdGroupUpdatedPayloadDataOptimizationGoalProfileAndPageEngagement PostAdGroupUpdatedPayloadDataOptimizationGoal = "profile_and_page_engagement"
+)
+
+func NewPostAdGroupUpdatedPayloadDataOptimizationGoalFromString(s string) (PostAdGroupUpdatedPayloadDataOptimizationGoal, error) {
+	switch s {
+	case "conversions":
+		return PostAdGroupUpdatedPayloadDataOptimizationGoalConversions, nil
+	case "link_clicks":
+		return PostAdGroupUpdatedPayloadDataOptimizationGoalLinkClicks, nil
+	case "landing_page_views":
+		return PostAdGroupUpdatedPayloadDataOptimizationGoalLandingPageViews, nil
+	case "reach":
+		return PostAdGroupUpdatedPayloadDataOptimizationGoalReach, nil
+	case "impressions":
+		return PostAdGroupUpdatedPayloadDataOptimizationGoalImpressions, nil
+	case "engagement":
+		return PostAdGroupUpdatedPayloadDataOptimizationGoalEngagement, nil
+	case "conversations":
+		return PostAdGroupUpdatedPayloadDataOptimizationGoalConversations, nil
+	case "video_views":
+		return PostAdGroupUpdatedPayloadDataOptimizationGoalVideoViews, nil
+	case "two_second_views":
+		return PostAdGroupUpdatedPayloadDataOptimizationGoalTwoSecondViews, nil
+	case "page_likes":
+		return PostAdGroupUpdatedPayloadDataOptimizationGoalPageLikes, nil
+	case "social_profile":
+		return PostAdGroupUpdatedPayloadDataOptimizationGoalSocialProfile, nil
+	case "ad_recall_lift":
+		return PostAdGroupUpdatedPayloadDataOptimizationGoalAdRecallLift, nil
+	case "event_responses":
+		return PostAdGroupUpdatedPayloadDataOptimizationGoalEventResponses, nil
+	case "reminders_set":
+		return PostAdGroupUpdatedPayloadDataOptimizationGoalRemindersSet, nil
+	case "lead_generation":
+		return PostAdGroupUpdatedPayloadDataOptimizationGoalLeadGeneration, nil
+	case "quality_lead":
+		return PostAdGroupUpdatedPayloadDataOptimizationGoalQualityLead, nil
+	case "value":
+		return PostAdGroupUpdatedPayloadDataOptimizationGoalValue, nil
+	case "profile_and_page_engagement":
+		return PostAdGroupUpdatedPayloadDataOptimizationGoalProfileAndPageEngagement, nil
+	}
+	var t PostAdGroupUpdatedPayloadDataOptimizationGoal
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdGroupUpdatedPayloadDataOptimizationGoal) Ptr() *PostAdGroupUpdatedPayloadDataOptimizationGoal {
+	return &p
+}
+
+// The ad platform this ad group runs on.
+type PostAdGroupUpdatedPayloadDataPlatform string
+
+const (
+	PostAdGroupUpdatedPayloadDataPlatformMeta   PostAdGroupUpdatedPayloadDataPlatform = "meta"
+	PostAdGroupUpdatedPayloadDataPlatformTiktok PostAdGroupUpdatedPayloadDataPlatform = "tiktok"
+	PostAdGroupUpdatedPayloadDataPlatformGoogle PostAdGroupUpdatedPayloadDataPlatform = "google"
+)
+
+func NewPostAdGroupUpdatedPayloadDataPlatformFromString(s string) (PostAdGroupUpdatedPayloadDataPlatform, error) {
+	switch s {
+	case "meta":
+		return PostAdGroupUpdatedPayloadDataPlatformMeta, nil
+	case "tiktok":
+		return PostAdGroupUpdatedPayloadDataPlatformTiktok, nil
+	case "google":
+		return PostAdGroupUpdatedPayloadDataPlatformGoogle, nil
+	}
+	var t PostAdGroupUpdatedPayloadDataPlatform
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdGroupUpdatedPayloadDataPlatform) Ptr() *PostAdGroupUpdatedPayloadDataPlatform {
+	return &p
+}
+
+// Whether the ad group is enabled. `active` and `paused` are set by you; `rejected` means it failed ad review; `duplicating` is a copy still being filled in.
+type PostAdGroupUpdatedPayloadDataStatus string
+
+const (
+	PostAdGroupUpdatedPayloadDataStatusActive      PostAdGroupUpdatedPayloadDataStatus = "active"
+	PostAdGroupUpdatedPayloadDataStatusPaused      PostAdGroupUpdatedPayloadDataStatus = "paused"
+	PostAdGroupUpdatedPayloadDataStatusRejected    PostAdGroupUpdatedPayloadDataStatus = "rejected"
+	PostAdGroupUpdatedPayloadDataStatusDuplicating PostAdGroupUpdatedPayloadDataStatus = "duplicating"
+)
+
+func NewPostAdGroupUpdatedPayloadDataStatusFromString(s string) (PostAdGroupUpdatedPayloadDataStatus, error) {
+	switch s {
+	case "active":
+		return PostAdGroupUpdatedPayloadDataStatusActive, nil
+	case "paused":
+		return PostAdGroupUpdatedPayloadDataStatusPaused, nil
+	case "rejected":
+		return PostAdGroupUpdatedPayloadDataStatusRejected, nil
+	case "duplicating":
+		return PostAdGroupUpdatedPayloadDataStatusDuplicating, nil
+	}
+	var t PostAdGroupUpdatedPayloadDataStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdGroupUpdatedPayloadDataStatus) Ptr() *PostAdGroupUpdatedPayloadDataStatus {
+	return &p
+}
+
+// The webhook event type
+type PostAdGroupUpdatedPayloadType string
+
+const (
+	PostAdGroupUpdatedPayloadTypeAdGroupUpdated PostAdGroupUpdatedPayloadType = "ad_group.updated"
+)
+
+func NewPostAdGroupUpdatedPayloadTypeFromString(s string) (PostAdGroupUpdatedPayloadType, error) {
+	switch s {
+	case "ad_group.updated":
+		return PostAdGroupUpdatedPayloadTypeAdGroupUpdated, nil
+	}
+	var t PostAdGroupUpdatedPayloadType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdGroupUpdatedPayloadType) Ptr() *PostAdGroupUpdatedPayloadType {
+	return &p
 }
 
 type RetrieveAdGroupsRequestAttributionModel string
