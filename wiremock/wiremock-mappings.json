@@ -14375,6 +14375,9 @@
           },
           "ip_address": {
             "equalTo": "203.0.113.7"
+          },
+          "presentment_country": {
+            "equalTo": "JP"
           }
         }
       },
@@ -14451,6 +14454,9 @@
           },
           "ip_address": {
             "equalTo": "203.0.113.7"
+          },
+          "presentment_country": {
+            "equalTo": "JP"
           }
         }
       },

@@ -438,10 +438,11 @@ var (
 	listVariantsRequestFieldCreatedAfter        = big.NewInt(1 << 8)
 	listVariantsRequestFieldPresentmentCurrency = big.NewInt(1 << 9)
 	listVariantsRequestFieldIPAddress           = big.NewInt(1 << 10)
-	listVariantsRequestFieldFirst               = big.NewInt(1 << 11)
-	listVariantsRequestFieldAfter               = big.NewInt(1 << 12)
-	listVariantsRequestFieldLast                = big.NewInt(1 << 13)
-	listVariantsRequestFieldBefore              = big.NewInt(1 << 14)
+	listVariantsRequestFieldPresentmentCountry  = big.NewInt(1 << 11)
+	listVariantsRequestFieldFirst               = big.NewInt(1 << 12)
+	listVariantsRequestFieldAfter               = big.NewInt(1 << 13)
+	listVariantsRequestFieldLast                = big.NewInt(1 << 14)
+	listVariantsRequestFieldBefore              = big.NewInt(1 << 15)
 )
 
 type ListVariantsRequest struct {
@@ -463,10 +464,12 @@ type ListVariantsRequest struct {
 	CreatedBefore *string `json:"-" url:"created_before,omitempty"`
 	// Only return variants created after this timestamp.
 	CreatedAfter *string `json:"-" url:"created_after,omitempty"`
-	// The currency to state each variant's prices in. Omit it, or send null, for each variant's own currency. `auto` states them in the currency of the country Whop places the buyer in: by `ip_address` when your server sends one, and by the request's own IP address otherwise. A three-letter ISO 4217 code, such as `eur`, states them in that currency. A variant converts only where a payment quote for it would be priced in that currency, and stays in its own currency otherwise: a renewing variant, one with adaptive pricing off, a currency no payment method can collect, or `auto` for a buyer Whop cannot place in a country. Converted prices are an estimate at the current exchange rate. Nothing is held: the payment quote the buyer pays from fixes the rate.
+	// The currency to state each variant's prices in. Omit it, or send null, for each variant's own currency. `auto` states them in the currency of the country Whop places the buyer in: by `ip_address` when your server sends one, and by the request's own IP address otherwise. To choose that country instead, send `presentment_country` in place of this. A three-letter ISO 4217 code, such as `eur`, states them in that currency. A variant converts only where a payment quote for it would be priced in that currency, and stays in its own currency otherwise: a renewing variant, one with adaptive pricing off, a currency no payment method can collect, or `auto` for a buyer Whop cannot place in a country. Converted prices are an estimate at the current exchange rate. Nothing is held: the payment quote the buyer pays from fixes the rate.
 	PresentmentCurrency *string `json:"-" url:"presentment_currency,omitempty"`
-	// The buyer's IP address, when your server reads on their behalf. Needs an API key; any other caller is placed by its own request. Where `presentment_currency` `auto` finds the buyer's local currency.
+	// The buyer's IP address, when your server reads on their behalf. Needs an API key; any other caller is placed by its own request. Where `presentment_currency` `auto` finds the buyer's local currency, and where a payment method must be able to collect it.
 	IPAddress *string `json:"-" url:"ip_address,omitempty"`
+	// The country to state each variant's prices for, as an ISO 3166-1 alpha-2 code such as `JP`, when the buyer chose one: a store's country picker. States them in the currency `auto` would for a buyer in that country, so send it instead of `presentment_currency`, never with it. Whether a payment method can collect that currency is still judged where the buyer is: by `ip_address`, else by the request's own IP address. A country Whop has no currency for is ignored, and the prices are stated as `auto` would state them.
+	PresentmentCountry *string `json:"-" url:"presentment_country,omitempty"`
 	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
 	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
@@ -566,6 +569,13 @@ func (l *ListVariantsRequest) SetIPAddress(ipAddress *string) {
 	l.require(listVariantsRequestFieldIPAddress)
 }
 
+// SetPresentmentCountry sets the PresentmentCountry field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVariantsRequest) SetPresentmentCountry(presentmentCountry *string) {
+	l.PresentmentCountry = presentmentCountry
+	l.require(listVariantsRequestFieldPresentmentCountry)
+}
+
 // SetFirst sets the First field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListVariantsRequest) SetFirst(first *int) {
@@ -598,15 +608,18 @@ var (
 	retrieveVariantsRequestFieldID                  = big.NewInt(1 << 0)
 	retrieveVariantsRequestFieldPresentmentCurrency = big.NewInt(1 << 1)
 	retrieveVariantsRequestFieldIPAddress           = big.NewInt(1 << 2)
+	retrieveVariantsRequestFieldPresentmentCountry  = big.NewInt(1 << 3)
 )
 
 type RetrieveVariantsRequest struct {
 	// Variant ID, prefixed `plan_`.
 	ID string `json:"-" url:"-"`
-	// The currency to state each variant's prices in. Omit it, or send null, for each variant's own currency. `auto` states them in the currency of the country Whop places the buyer in: by `ip_address` when your server sends one, and by the request's own IP address otherwise. A three-letter ISO 4217 code, such as `eur`, states them in that currency. A variant converts only where a payment quote for it would be priced in that currency, and stays in its own currency otherwise: a renewing variant, one with adaptive pricing off, a currency no payment method can collect, or `auto` for a buyer Whop cannot place in a country. Converted prices are an estimate at the current exchange rate. Nothing is held: the payment quote the buyer pays from fixes the rate.
+	// The currency to state each variant's prices in. Omit it, or send null, for each variant's own currency. `auto` states them in the currency of the country Whop places the buyer in: by `ip_address` when your server sends one, and by the request's own IP address otherwise. To choose that country instead, send `presentment_country` in place of this. A three-letter ISO 4217 code, such as `eur`, states them in that currency. A variant converts only where a payment quote for it would be priced in that currency, and stays in its own currency otherwise: a renewing variant, one with adaptive pricing off, a currency no payment method can collect, or `auto` for a buyer Whop cannot place in a country. Converted prices are an estimate at the current exchange rate. Nothing is held: the payment quote the buyer pays from fixes the rate.
 	PresentmentCurrency *string `json:"-" url:"presentment_currency,omitempty"`
-	// The buyer's IP address, when your server reads on their behalf. Needs an API key; any other caller is placed by its own request. Where `presentment_currency` `auto` finds the buyer's local currency.
+	// The buyer's IP address, when your server reads on their behalf. Needs an API key; any other caller is placed by its own request. Where `presentment_currency` `auto` finds the buyer's local currency, and where a payment method must be able to collect it.
 	IPAddress *string `json:"-" url:"ip_address,omitempty"`
+	// The country to state each variant's prices for, as an ISO 3166-1 alpha-2 code such as `JP`, when the buyer chose one: a store's country picker. States them in the currency `auto` would for a buyer in that country, so send it instead of `presentment_currency`, never with it. Whether a payment method can collect that currency is still judged where the buyer is: by `ip_address`, else by the request's own IP address. A country Whop has no currency for is ignored, and the prices are stated as `auto` would state them.
+	PresentmentCountry *string `json:"-" url:"presentment_country,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -640,6 +653,13 @@ func (r *RetrieveVariantsRequest) SetPresentmentCurrency(presentmentCurrency *st
 func (r *RetrieveVariantsRequest) SetIPAddress(ipAddress *string) {
 	r.IPAddress = ipAddress
 	r.require(retrieveVariantsRequestFieldIPAddress)
+}
+
+// SetPresentmentCountry sets the PresentmentCountry field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVariantsRequest) SetPresentmentCountry(presentmentCountry *string) {
+	r.PresentmentCountry = presentmentCountry
+	r.require(retrieveVariantsRequestFieldPresentmentCountry)
 }
 
 var (

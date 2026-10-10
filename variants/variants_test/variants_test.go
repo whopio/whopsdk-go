@@ -115,6 +115,9 @@ func TestVariantsListWithWireMock(
 		IPAddress: whopsdk.String(
 			"203.0.113.7",
 		),
+		PresentmentCountry: whopsdk.String(
+			"JP",
+		),
 	}
 	_, invocationErr := client.Variants.List(
 		context.TODO(),
@@ -125,7 +128,7 @@ func TestVariantsListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestVariantsListWithWireMock", "GET", "/variants", map[string]interface{}{"release_methods": "buy_now", "visibilities": "visible", "plan_types": "renewal", "product_ids": "prod_xxxxxxxxxxxxxx", "presentment_currency": "auto", "ip_address": "203.0.113.7"}, 1)
+	VerifyRequestCount(t, "TestVariantsListWithWireMock", "GET", "/variants", map[string]interface{}{"release_methods": "buy_now", "visibilities": "visible", "plan_types": "renewal", "product_ids": "prod_xxxxxxxxxxxxxx", "presentment_currency": "auto", "ip_address": "203.0.113.7", "presentment_country": "JP"}, 1)
 }
 
 func TestVariantsCreateWithWireMock(
@@ -171,6 +174,9 @@ func TestVariantsRetrieveWithWireMock(
 		IPAddress: whopsdk.String(
 			"203.0.113.7",
 		),
+		PresentmentCountry: whopsdk.String(
+			"JP",
+		),
 	}
 	_, invocationErr := client.Variants.Retrieve(
 		context.TODO(),
@@ -181,7 +187,7 @@ func TestVariantsRetrieveWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestVariantsRetrieveWithWireMock", "GET", "/variants/id", map[string]interface{}{"presentment_currency": "auto", "ip_address": "203.0.113.7"}, 1)
+	VerifyRequestCount(t, "TestVariantsRetrieveWithWireMock", "GET", "/variants/id", map[string]interface{}{"presentment_currency": "auto", "ip_address": "203.0.113.7", "presentment_country": "JP"}, 1)
 }
 
 func TestVariantsDeleteWithWireMock(
