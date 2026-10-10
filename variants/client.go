@@ -70,6 +70,9 @@ func NewClient(options *core.RequestOptions) *Client {
 //	    IPAddress: whopsdk.String(
 //	        "203.0.113.7",
 //	    ),
+//	    PresentmentCountry: whopsdk.String(
+//	        "JP",
+//	    ),
 //	}
 //	client.Variants.List(
 //	    context.TODO(),
@@ -182,6 +185,9 @@ func (c *Client) Create(
 //	    ),
 //	    IPAddress: whopsdk.String(
 //	        "203.0.113.7",
+//	    ),
+//	    PresentmentCountry: whopsdk.String(
+//	        "JP",
 //	    ),
 //	}
 //	client.Variants.Retrieve(

@@ -12,9 +12,10 @@ import (
 var (
 	createPaymentQuotesRequestFieldAddress             = big.NewInt(1 << 0)
 	createPaymentQuotesRequestFieldIPAddress           = big.NewInt(1 << 1)
-	createPaymentQuotesRequestFieldPresentmentCurrency = big.NewInt(1 << 2)
-	createPaymentQuotesRequestFieldShippingAddress     = big.NewInt(1 << 3)
-	createPaymentQuotesRequestFieldTaxIDs              = big.NewInt(1 << 4)
+	createPaymentQuotesRequestFieldPresentmentCountry  = big.NewInt(1 << 2)
+	createPaymentQuotesRequestFieldPresentmentCurrency = big.NewInt(1 << 3)
+	createPaymentQuotesRequestFieldShippingAddress     = big.NewInt(1 << 4)
+	createPaymentQuotesRequestFieldTaxIDs              = big.NewInt(1 << 5)
 )
 
 type CreatePaymentQuotesRequest struct {
@@ -30,11 +31,13 @@ type CreatePaymentQuotesRequest struct {
 	PromoCode *string `json:"promo_code,omitempty" url:"-"`
 	// An active promo code to apply, prefixed `promo_`. It must belong to the account and be valid for the variant. Send it or `promo_code`, not both. A code this purchase cannot use is refused with the error code `promo_invalid`, and the error's message says why.
 	PromoCodeID *string `json:"promo_code_id,omitempty" url:"-"`
-	// The buyer's billing address. Where tax is calculated when no shipping address is given, and the address a tax registration belongs to. A seller that collects tax on this purchase needs the buyer located by a `country` here, on `shipping_address`, or an `ip_address`; without one the quote is refused with `quote_location_required`. Only the keys you supply are kept. The payment that consumes the quote must put the buyer in the same place, by country, state and postal code, through its own `shipping_address` or its confirmation token's billing address, or it is refused with `quote_mismatch`.
+	// The buyer's billing address. Where tax is calculated when no shipping address is given, and the address a tax registration belongs to. A seller that collects tax on this purchase needs the buyer located by a `country` here, on `shipping_address`, a `presentment_country`, or an `ip_address`; without one the quote is refused with `quote_location_required`. Only the keys you supply are kept. The payment that consumes the quote must put the buyer in the same place, by country, state and postal code, through its own `shipping_address` or its confirmation token's billing address, or it is refused with `quote_mismatch`.
 	Address *CreatePaymentQuotesRequestAddress `json:"address,omitempty" url:"-"`
-	// The buyer's IP address, when your server makes the call on their behalf. Locates the buyer when neither address carries a country. A quote located this way (`located_by` is `ip_address`) is a preview: a payment refuses it with `quote_preview_only`, so quote again with the buyer's address before paying. Also where `presentment_currency` `auto` and `recommended_currencies` find the buyer's local currency.
+	// The buyer's IP address, when your server makes the call on their behalf. Locates the buyer when neither address carries a country and no `presentment_country` is sent. A quote located this way (`located_by` is `ip_address`) is a preview: a payment refuses it with `quote_preview_only`, so quote again with the buyer's address before paying. Also where `presentment_currency` `auto` and `recommended_currencies` find the buyer's local currency, and where a payment method must be able to collect it.
 	IPAddress *string `json:"ip_address,omitempty" url:"-"`
-	// The currency to price and charge the purchase in. Omit it, or send null, to price in the variants' own currency. `auto` prices in the currency of the country Whop places the buyer's `ip_address` in when the purchase can be converted into it and a payment method can collect it, and in the variants' own currency otherwise, including when no `ip_address` is sent or Whop cannot place it in a country. A three-letter ISO 4217 code, such as `eur`, prices in that currency or is refused: with `presentment_currency_unsupported` when the purchase cannot be converted into it (adaptive pricing is off for the variant, the variant is not a one-time purchase, or `plan` describes a variant that does not exist yet), and with `presentment_currency_not_payable` when no payment method can collect it. A converted quote states every amount in this currency at an `exchange_rate` fixed until `expires_at`, and the payment that consumes it is charged in this currency at that rate.
+	// The country to price the purchase for, as an ISO 3166-1 alpha-2 code such as `JP`, when the buyer chose one: a store's country picker. Prices in the currency `auto` would pick for a buyer in that country, so send it instead of `presentment_currency`, never with it. Whether a payment method can collect that currency is still judged where the buyer is: by `ip_address`, and by this country only without one. With no address that carries a country, tax is estimated for this country (`located_by` is `presentment_country`) at the country level, and a quote located this way is a preview a payment refuses with `quote_preview_only`. Send it only once the buyer has chosen a country: without it, an `ip_address` estimates more precisely, such as for a US state. For a country Whop has no currency for, the quote is priced as `auto` for the buyer's `ip_address`, and tax is still estimated for the country.
+	PresentmentCountry *string `json:"presentment_country,omitempty" url:"-"`
+	// The currency to price and charge the purchase in. Omit it, or send null, to price in the variants' own currency. `auto` prices in the currency of the country Whop places the buyer's `ip_address` in when the purchase can be converted into it and a payment method can collect it, and in the variants' own currency otherwise, including when no `ip_address` is sent or Whop cannot place it in a country. To choose that country instead, send `presentment_country` in place of this. A three-letter ISO 4217 code, such as `eur`, prices in that currency or is refused: with `presentment_currency_unsupported` when the purchase cannot be converted into it (adaptive pricing is off for the variant, the variant is not a one-time purchase, or `plan` describes a variant that does not exist yet), and with `presentment_currency_not_payable` when no payment method can collect it. A converted quote states every amount in this currency at an `exchange_rate` fixed until `expires_at`, and the payment that consumes it is charged in this currency at that rate.
 	PresentmentCurrency *string `json:"presentment_currency,omitempty" url:"-"`
 	// Where physical goods ship. When present it is where tax is calculated; omit it for digital goods. Only the keys you supply are kept. The payment that consumes the quote must ship to the same place, by country, state and postal code, or it is refused with `quote_mismatch`.
 	ShippingAddress *CreatePaymentQuotesRequestShippingAddress `json:"shipping_address,omitempty" url:"-"`
@@ -66,6 +69,13 @@ func (c *CreatePaymentQuotesRequest) SetAddress(address *CreatePaymentQuotesRequ
 func (c *CreatePaymentQuotesRequest) SetIPAddress(ipAddress *string) {
 	c.IPAddress = ipAddress
 	c.require(createPaymentQuotesRequestFieldIPAddress)
+}
+
+// SetPresentmentCountry sets the PresentmentCountry field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentQuotesRequest) SetPresentmentCountry(presentmentCountry *string) {
+	c.PresentmentCountry = presentmentCountry
+	c.require(createPaymentQuotesRequestFieldPresentmentCountry)
 }
 
 // SetPresentmentCurrency sets the PresentmentCurrency field and marks it as non-optional;
@@ -196,7 +206,7 @@ type PaymentQuote struct {
 	// Payment quote ID, prefixed `pq_`.
 	ID        string                  `json:"id" url:"id"`
 	LineItems []*PaymentQuoteLineItem `json:"line_items" url:"line_items"`
-	// Which location tax was calculated for: `shipping_address` when it carries a country, else the billing `address` when it does, else the buyer's `ip_address`. A quote located by `ip_address` is a preview: a payment cannot use it, so quote again with the buyer's address to pay. Null when nothing in the request located the buyer, which only a seller that collects no tax on this purchase is quoted without; `tax_status` is then `not_applicable`.
+	// Which location tax was calculated for: `shipping_address` when it carries a country, else the billing `address` when it does, else the `presentment_country` sent, else the buyer's `ip_address`. A quote located by `presentment_country` or `ip_address` is a preview that estimates tax: a payment cannot use it, so quote again with the buyer's address to pay. Null when nothing in the request located the buyer, which only a seller that collects no tax on this purchase is quoted without; `tax_status` is then `not_applicable`.
 	LocatedBy *PaymentQuoteLocatedBy `json:"located_by,omitempty" url:"located_by,omitempty"`
 	// The payment holding this quote, prefixed `pay_`, or null while it is unspent. A declined payment keeps its quote and can be retried; check that payment's `status`.
 	PaymentID *string `json:"payment_id,omitempty" url:"payment_id,omitempty"`
@@ -781,13 +791,14 @@ func (p *PaymentQuoteLineItem) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// Which location tax was calculated for: `shipping_address` when it carries a country, else the billing `address` when it does, else the buyer's `ip_address`. A quote located by `ip_address` is a preview: a payment cannot use it, so quote again with the buyer's address to pay. Null when nothing in the request located the buyer, which only a seller that collects no tax on this purchase is quoted without; `tax_status` is then `not_applicable`.
+// Which location tax was calculated for: `shipping_address` when it carries a country, else the billing `address` when it does, else the `presentment_country` sent, else the buyer's `ip_address`. A quote located by `presentment_country` or `ip_address` is a preview that estimates tax: a payment cannot use it, so quote again with the buyer's address to pay. Null when nothing in the request located the buyer, which only a seller that collects no tax on this purchase is quoted without; `tax_status` is then `not_applicable`.
 type PaymentQuoteLocatedBy string
 
 const (
-	PaymentQuoteLocatedByShippingAddress PaymentQuoteLocatedBy = "shipping_address"
-	PaymentQuoteLocatedByAddress         PaymentQuoteLocatedBy = "address"
-	PaymentQuoteLocatedByIPAddress       PaymentQuoteLocatedBy = "ip_address"
+	PaymentQuoteLocatedByShippingAddress    PaymentQuoteLocatedBy = "shipping_address"
+	PaymentQuoteLocatedByAddress            PaymentQuoteLocatedBy = "address"
+	PaymentQuoteLocatedByPresentmentCountry PaymentQuoteLocatedBy = "presentment_country"
+	PaymentQuoteLocatedByIPAddress          PaymentQuoteLocatedBy = "ip_address"
 )
 
 func NewPaymentQuoteLocatedByFromString(s string) (PaymentQuoteLocatedBy, error) {
@@ -796,6 +807,8 @@ func NewPaymentQuoteLocatedByFromString(s string) (PaymentQuoteLocatedBy, error)
 		return PaymentQuoteLocatedByShippingAddress, nil
 	case "address":
 		return PaymentQuoteLocatedByAddress, nil
+	case "presentment_country":
+		return PaymentQuoteLocatedByPresentmentCountry, nil
 	case "ip_address":
 		return PaymentQuoteLocatedByIPAddress, nil
 	}
@@ -1337,7 +1350,7 @@ var createPaymentQuotesRequestAddressNullableFields = map[string]*big.Int{
 	"state":       createPaymentQuotesRequestAddressFieldState,
 }
 
-// The buyer's billing address. Where tax is calculated when no shipping address is given, and the address a tax registration belongs to. A seller that collects tax on this purchase needs the buyer located by a `country` here, on `shipping_address`, or an `ip_address`; without one the quote is refused with `quote_location_required`. Only the keys you supply are kept. The payment that consumes the quote must put the buyer in the same place, by country, state and postal code, through its own `shipping_address` or its confirmation token's billing address, or it is refused with `quote_mismatch`.
+// The buyer's billing address. Where tax is calculated when no shipping address is given, and the address a tax registration belongs to. A seller that collects tax on this purchase needs the buyer located by a `country` here, on `shipping_address`, a `presentment_country`, or an `ip_address`; without one the quote is refused with `quote_location_required`. Only the keys you supply are kept. The payment that consumes the quote must put the buyer in the same place, by country, state and postal code, through its own `shipping_address` or its confirmation token's billing address, or it is refused with `quote_mismatch`.
 type CreatePaymentQuotesRequestAddress struct {
 	// City name.
 	City *string `json:"city,omitempty" url:"city,omitempty"`
