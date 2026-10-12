@@ -361,13 +361,12 @@ var (
 	userFieldID                                = big.NewInt(1 << 8)
 	userFieldName                              = big.NewInt(1 << 9)
 	userFieldProfilePicture                    = big.NewInt(1 << 10)
-	userFieldStaff                             = big.NewInt(1 << 11)
-	userFieldTrading                           = big.NewInt(1 << 12)
-	userFieldUsername                          = big.NewInt(1 << 13)
-	userFieldVerification                      = big.NewInt(1 << 14)
-	userFieldWhopPartnerEnabledAt              = big.NewInt(1 << 15)
-	userFieldWhopPartnerOnboardedAccountsCount = big.NewInt(1 << 16)
-	userFieldWhopPartnerVerifiedAt             = big.NewInt(1 << 17)
+	userFieldTrading                           = big.NewInt(1 << 11)
+	userFieldUsername                          = big.NewInt(1 << 12)
+	userFieldVerification                      = big.NewInt(1 << 13)
+	userFieldWhopPartnerEnabledAt              = big.NewInt(1 << 14)
+	userFieldWhopPartnerOnboardedAccountsCount = big.NewInt(1 << 15)
+	userFieldWhopPartnerVerifiedAt             = big.NewInt(1 << 16)
 )
 
 // userNullableFields maps the wire names of User's nullable fields (required or optional) to their field bits.
@@ -380,7 +379,6 @@ var userNullableFields = map[string]*big.Int{
 	"earnings_usd":                          userFieldEarningsUsd,
 	"email":                                 userFieldEmail,
 	"name":                                  userFieldName,
-	"staff":                                 userFieldStaff,
 	"trading":                               userFieldTrading,
 	"whop_partner_enabled_at":               userFieldWhopPartnerEnabledAt,
 	"whop_partner_onboarded_accounts_count": userFieldWhopPartnerOnboardedAccountsCount,
@@ -410,8 +408,6 @@ type User struct {
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
 	// Avatar wrapper; its `url` is always present, using a generated placeholder when the user set no picture.
 	ProfilePicture *UserProfilePicture `json:"profile_picture" url:"profile_picture"`
-	// Whop staff access flags. Populated only on the self view (retrieved with the reserved id `me`) for callers with staff-read scope; `null` there for every user who is not Whop staff, and always `null` elsewhere.
-	Staff *UserStaffAccess `json:"staff,omitempty" url:"staff,omitempty"`
 	// The trading account address and its WebSocket subscriptions. Opt in with `include_trading=true` when retrieving `me`. `null` otherwise, without trading permission, or without an Ethereum wallet.
 	Trading *TradingAccount `json:"trading,omitempty" url:"trading,omitempty"`
 	// The user's unique username
@@ -507,13 +503,6 @@ func (u *User) GetProfilePicture() *UserProfilePicture {
 		return nil
 	}
 	return u.ProfilePicture
-}
-
-func (u *User) GetStaff() *UserStaffAccess {
-	if u == nil {
-		return nil
-	}
-	return u.Staff
 }
 
 func (u *User) GetTrading() *TradingAccount {
@@ -649,13 +638,6 @@ func (u *User) SetName(name *string) {
 func (u *User) SetProfilePicture(profilePicture *UserProfilePicture) {
 	u.ProfilePicture = profilePicture
 	u.require(userFieldProfilePicture)
-}
-
-// SetStaff sets the Staff field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *User) SetStaff(staff *UserStaffAccess) {
-	u.Staff = staff
-	u.require(userFieldStaff)
 }
 
 // SetTrading sets the Trading field and marks it as non-optional;
@@ -2567,144 +2549,6 @@ func NewUserRecommendedActionStatusFromString(s string) (UserRecommendedActionSt
 
 func (u UserRecommendedActionStatus) Ptr() *UserRecommendedActionStatus {
 	return &u
-}
-
-var (
-	userStaffAccessFieldAdmin               = big.NewInt(1 << 0)
-	userStaffAccessFieldInvestigationAccess = big.NewInt(1 << 1)
-	userStaffAccessFieldManager             = big.NewInt(1 << 2)
-	userStaffAccessFieldSupport             = big.NewInt(1 << 3)
-)
-
-type UserStaffAccess struct {
-	// Whether the user holds the admin staff role with a valid second factor.
-	Admin bool `json:"admin" url:"admin"`
-	// Whether the user can open Whop-internal investigation tooling right now: a qualifying staff role plus their investigation toggle switched on.
-	InvestigationAccess bool `json:"investigation_access" url:"investigation_access"`
-	// Whether the user holds the manager staff role with a valid second factor.
-	Manager bool `json:"manager" url:"manager"`
-	// Whether the user holds the support staff role with a valid second factor.
-	Support bool `json:"support" url:"support"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (u *UserStaffAccess) GetAdmin() bool {
-	if u == nil {
-		return false
-	}
-	return u.Admin
-}
-
-func (u *UserStaffAccess) GetInvestigationAccess() bool {
-	if u == nil {
-		return false
-	}
-	return u.InvestigationAccess
-}
-
-func (u *UserStaffAccess) GetManager() bool {
-	if u == nil {
-		return false
-	}
-	return u.Manager
-}
-
-func (u *UserStaffAccess) GetSupport() bool {
-	if u == nil {
-		return false
-	}
-	return u.Support
-}
-
-func (u *UserStaffAccess) GetExtraProperties() map[string]interface{} {
-	if u == nil {
-		return nil
-	}
-	return u.extraProperties
-}
-
-func (u *UserStaffAccess) require(field *big.Int) {
-	next := new(big.Int)
-	if u.explicitFields != nil {
-		next.Set(u.explicitFields)
-	}
-	next.Or(next, field)
-	u.explicitFields = next
-}
-
-// SetAdmin sets the Admin field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UserStaffAccess) SetAdmin(admin bool) {
-	u.Admin = admin
-	u.require(userStaffAccessFieldAdmin)
-}
-
-// SetInvestigationAccess sets the InvestigationAccess field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UserStaffAccess) SetInvestigationAccess(investigationAccess bool) {
-	u.InvestigationAccess = investigationAccess
-	u.require(userStaffAccessFieldInvestigationAccess)
-}
-
-// SetManager sets the Manager field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UserStaffAccess) SetManager(manager bool) {
-	u.Manager = manager
-	u.require(userStaffAccessFieldManager)
-}
-
-// SetSupport sets the Support field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UserStaffAccess) SetSupport(support bool) {
-	u.Support = support
-	u.require(userStaffAccessFieldSupport)
-}
-
-func (u *UserStaffAccess) UnmarshalJSON(data []byte) error {
-	type unmarshaler UserStaffAccess
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*u = UserStaffAccess(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *u)
-	if err != nil {
-		return err
-	}
-	u.extraProperties = extraProperties
-	u.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (u *UserStaffAccess) MarshalJSON() ([]byte, error) {
-	type embed UserStaffAccess
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*u),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (u *UserStaffAccess) String() string {
-	if u == nil {
-		return "<nil>"
-	}
-	if len(u.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(u); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", u)
 }
 
 var (
