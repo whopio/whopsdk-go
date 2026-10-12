@@ -9685,7 +9685,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"hostname\": \"checkout.shinetime.example\",\n      \"id\": \"pmd_xxxxxxxxxxxxxx\",\n      \"provider\": \"apple\",\n      \"status\": \"pending\",\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"hostname\": \"checkout.shinetime.com\",\n      \"id\": \"pmd_xxxxxxxxxxxxxx\",\n      \"provider\": \"apple\",\n      \"status\": \"pending\",\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -9717,7 +9717,7 @@
       },
       "response": {
         "status": 201,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"hostname\": \"checkout.shinetime.example\",\n  \"id\": \"pmd_xxxxxxxxxxxxxx\",\n  \"provider\": \"apple\",\n  \"status\": \"pending\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"hostname\": \"checkout.shinetime.com\",\n  \"id\": \"pmd_xxxxxxxxxxxxxx\",\n  \"provider\": \"apple\",\n  \"status\": \"pending\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -9753,7 +9753,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"hostname\": \"checkout.shinetime.example\",\n  \"id\": \"pmd_xxxxxxxxxxxxxx\",\n  \"provider\": \"apple\",\n  \"status\": \"pending\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"hostname\": \"checkout.shinetime.com\",\n  \"id\": \"pmd_xxxxxxxxxxxxxx\",\n  \"provider\": \"apple\",\n  \"status\": \"pending\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -9825,7 +9825,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"hostname\": \"checkout.shinetime.example\",\n  \"id\": \"pmd_xxxxxxxxxxxxxx\",\n  \"provider\": \"apple\",\n  \"status\": \"pending\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"hostname\": \"checkout.shinetime.com\",\n  \"id\": \"pmd_xxxxxxxxxxxxxx\",\n  \"provider\": \"apple\",\n  \"status\": \"pending\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }

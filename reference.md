@@ -26097,7 +26097,7 @@ Registers a hostname with the wallet provider and attempts verification inline. 
 
 ```go
 request := &whopsdk.CreatePaymentMethodDomainsRequest{
-    Hostname: "pending.shinetime.example",
+    Hostname: "pending.shinetime.com",
 }
 client.PaymentMethodDomains.Create(
     context.TODO(),
@@ -26125,7 +26125,7 @@ client.PaymentMethodDomains.Create(
 <dl>
 <dd>
 
-**hostname:** `string` — Hostname to register (e.g. `checkout.shinetime.example`).
+**hostname:** `string` — Hostname to register (e.g. `checkout.shinetime.com`).
     
 </dd>
 </dl>
