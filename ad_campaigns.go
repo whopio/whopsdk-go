@@ -1893,6 +1893,7 @@ const (
 	AdCampaignDeliveryStatusNoAdGroups     AdCampaignDeliveryStatus = "no_ad_groups"
 	AdCampaignDeliveryStatusNoAds          AdCampaignDeliveryStatus = "no_ads"
 	AdCampaignDeliveryStatusPaused         AdCampaignDeliveryStatus = "paused"
+	AdCampaignDeliveryStatusLearning       AdCampaignDeliveryStatus = "learning"
 	AdCampaignDeliveryStatusProcessing     AdCampaignDeliveryStatus = "processing"
 	AdCampaignDeliveryStatusIssues         AdCampaignDeliveryStatus = "issues"
 	AdCampaignDeliveryStatusScheduled      AdCampaignDeliveryStatus = "scheduled"
@@ -1917,6 +1918,8 @@ func NewAdCampaignDeliveryStatusFromString(s string) (AdCampaignDeliveryStatus, 
 		return AdCampaignDeliveryStatusNoAds, nil
 	case "paused":
 		return AdCampaignDeliveryStatusPaused, nil
+	case "learning":
+		return AdCampaignDeliveryStatusLearning, nil
 	case "processing":
 		return AdCampaignDeliveryStatusProcessing, nil
 	case "issues":
@@ -3692,6 +3695,7 @@ const (
 	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusNoAdGroups     PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "no_ad_groups"
 	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusNoAds          PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "no_ads"
 	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusPaused         PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "paused"
+	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusLearning       PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "learning"
 	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusProcessing     PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "processing"
 	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusIssues         PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "issues"
 	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusScheduled      PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "scheduled"
@@ -3716,6 +3720,8 @@ func NewPostAdCampaignPaymentFailedPayloadDataDeliveryStatusFromString(s string)
 		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusNoAds, nil
 	case "paused":
 		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusPaused, nil
+	case "learning":
+		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusLearning, nil
 	case "processing":
 		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusProcessing, nil
 	case "issues":
@@ -4695,6 +4701,7 @@ const (
 	PostAdCampaignUpdatedPayloadDataDeliveryStatusNoAdGroups     PostAdCampaignUpdatedPayloadDataDeliveryStatus = "no_ad_groups"
 	PostAdCampaignUpdatedPayloadDataDeliveryStatusNoAds          PostAdCampaignUpdatedPayloadDataDeliveryStatus = "no_ads"
 	PostAdCampaignUpdatedPayloadDataDeliveryStatusPaused         PostAdCampaignUpdatedPayloadDataDeliveryStatus = "paused"
+	PostAdCampaignUpdatedPayloadDataDeliveryStatusLearning       PostAdCampaignUpdatedPayloadDataDeliveryStatus = "learning"
 	PostAdCampaignUpdatedPayloadDataDeliveryStatusProcessing     PostAdCampaignUpdatedPayloadDataDeliveryStatus = "processing"
 	PostAdCampaignUpdatedPayloadDataDeliveryStatusIssues         PostAdCampaignUpdatedPayloadDataDeliveryStatus = "issues"
 	PostAdCampaignUpdatedPayloadDataDeliveryStatusScheduled      PostAdCampaignUpdatedPayloadDataDeliveryStatus = "scheduled"
@@ -4719,6 +4726,8 @@ func NewPostAdCampaignUpdatedPayloadDataDeliveryStatusFromString(s string) (Post
 		return PostAdCampaignUpdatedPayloadDataDeliveryStatusNoAds, nil
 	case "paused":
 		return PostAdCampaignUpdatedPayloadDataDeliveryStatusPaused, nil
+	case "learning":
+		return PostAdCampaignUpdatedPayloadDataDeliveryStatusLearning, nil
 	case "processing":
 		return PostAdCampaignUpdatedPayloadDataDeliveryStatusProcessing, nil
 	case "issues":
