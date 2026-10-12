@@ -224,7 +224,7 @@ func (c *Client) Update(
 	return response.Body, nil
 }
 
-// Deprecated compatibility endpoint. Preview variant tax with `POST /variants/{id}/calculate_tax` instead.
+// Deprecated compatibility endpoint. Quote tax with `POST /payment_quotes` instead.
 //
 // Example:
 //
