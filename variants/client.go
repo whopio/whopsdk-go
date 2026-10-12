@@ -264,7 +264,7 @@ func (c *Client) Update(
 	return response.Body, nil
 }
 
-// Previews tax for a variant before checkout, based on the buyer's location.
+// Deprecated. Quote tax with `POST /payment_quotes` instead. Previews tax for a variant before checkout, based on the buyer's location.
 //
 // Example:
 //
