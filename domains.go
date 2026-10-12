@@ -1235,10 +1235,8 @@ const (
 	DomainIssueCodeCheckFailed             DomainIssueCode = "check_failed"
 	DomainIssueCodePurchaseExpired         DomainIssueCode = "purchase_expired"
 	DomainIssueCodeDomainUnavailable       DomainIssueCode = "domain_unavailable"
-	DomainIssueCodePremiumNotSupported     DomainIssueCode = "premium_not_supported"
 	DomainIssueCodeUnsupportedTld          DomainIssueCode = "unsupported_tld"
 	DomainIssueCodeRegistrationUnavailable DomainIssueCode = "registration_unavailable"
-	DomainIssueCodeRegistrationPremium     DomainIssueCode = "registration_premium"
 	DomainIssueCodeRegistrationFailed      DomainIssueCode = "registration_failed"
 	DomainIssueCodeRenewalFailed           DomainIssueCode = "renewal_failed"
 	DomainIssueCodePaymentActionRequired   DomainIssueCode = "payment_action_required"
@@ -1270,14 +1268,10 @@ func NewDomainIssueCodeFromString(s string) (DomainIssueCode, error) {
 		return DomainIssueCodePurchaseExpired, nil
 	case "domain_unavailable":
 		return DomainIssueCodeDomainUnavailable, nil
-	case "premium_not_supported":
-		return DomainIssueCodePremiumNotSupported, nil
 	case "unsupported_tld":
 		return DomainIssueCodeUnsupportedTld, nil
 	case "registration_unavailable":
 		return DomainIssueCodeRegistrationUnavailable, nil
-	case "registration_premium":
-		return DomainIssueCodeRegistrationPremium, nil
 	case "registration_failed":
 		return DomainIssueCodeRegistrationFailed, nil
 	case "renewal_failed":

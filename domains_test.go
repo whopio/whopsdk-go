@@ -9237,13 +9237,6 @@ func TestEnumDomainIssueCode(t *testing.T) {
 		assert.Equal(t, DomainIssueCode("domain_unavailable"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_premium_not_supported", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewDomainIssueCodeFromString("premium_not_supported")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, DomainIssueCode("premium_not_supported"), val, "enum value should match expected wire value")
-	})
-
 	t.Run("NewFromString_unsupported_tld", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewDomainIssueCodeFromString("unsupported_tld")
@@ -9256,13 +9249,6 @@ func TestEnumDomainIssueCode(t *testing.T) {
 		val, err := NewDomainIssueCodeFromString("registration_unavailable")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, DomainIssueCode("registration_unavailable"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_registration_premium", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewDomainIssueCodeFromString("registration_premium")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, DomainIssueCode("registration_premium"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_registration_failed", func(t *testing.T) {
