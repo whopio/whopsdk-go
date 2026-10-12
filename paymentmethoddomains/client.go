@@ -124,7 +124,7 @@ func (c *Client) List(
 // Example:
 //
 //	request := &whopsdk.CreatePaymentMethodDomainsRequest{
-//	    Hostname: "pending.shinetime.example",
+//	    Hostname: "pending.shinetime.com",
 //	}
 //	client.PaymentMethodDomains.Create(
 //	    context.TODO(),

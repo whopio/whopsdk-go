@@ -113,7 +113,7 @@ func TestPaymentMethodDomainsCreateWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.CreatePaymentMethodDomainsRequest{
-		Hostname: "pending.shinetime.example",
+		Hostname: "pending.shinetime.com",
 	}
 	_, invocationErr := client.PaymentMethodDomains.Create(
 		context.TODO(),

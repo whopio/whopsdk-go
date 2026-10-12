@@ -18,7 +18,7 @@ var (
 type CreatePaymentMethodDomainsRequest struct {
 	// Account to register the domain for (`biz_` tag). Required when authenticating as a user; an account API key supplies its own account.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
-	// Hostname to register (e.g. `checkout.shinetime.example`).
+	// Hostname to register (e.g. `checkout.shinetime.com`).
 	Hostname string `json:"hostname" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
