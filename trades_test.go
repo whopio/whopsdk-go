@@ -3440,13 +3440,6 @@ func TestEnumCreateTradesRequestSide(t *testing.T) {
 }
 
 func TestEnumCreateTradesRequestType(t *testing.T) {
-	t.Run("NewFromString_buy", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateTradesRequestTypeFromString("buy")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateTradesRequestType("buy"), val, "enum value should match expected wire value")
-	})
-
 	t.Run("NewFromString_close", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewCreateTradesRequestTypeFromString("close")
@@ -3481,7 +3474,7 @@ func TestEnumCreateTradesRequestType(t *testing.T) {
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewCreateTradesRequestTypeFromString("buy")
+		val, err := NewCreateTradesRequestTypeFromString("close")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -3598,13 +3591,6 @@ func TestEnumListTradesRequestStatus(t *testing.T) {
 }
 
 func TestEnumListTradesRequestType(t *testing.T) {
-	t.Run("NewFromString_buy", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewListTradesRequestTypeFromString("buy")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListTradesRequestType("buy"), val, "enum value should match expected wire value")
-	})
-
 	t.Run("NewFromString_close", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewListTradesRequestTypeFromString("close")
@@ -3639,7 +3625,7 @@ func TestEnumListTradesRequestType(t *testing.T) {
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewListTradesRequestTypeFromString("buy")
+		val, err := NewListTradesRequestTypeFromString("close")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -3934,27 +3920,6 @@ func TestEnumTradeStatusDetail(t *testing.T) {
 		assert.Equal(t, TradeStatusDetail("partial_fill"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_no_position", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewTradeStatusDetailFromString("no_position")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, TradeStatusDetail("no_position"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_partial_close", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewTradeStatusDetailFromString("partial_close")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, TradeStatusDetail("partial_close"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_nothing_to_return", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewTradeStatusDetailFromString("nothing_to_return")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, TradeStatusDetail("nothing_to_return"), val, "enum value should match expected wire value")
-	})
-
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewTradeStatusDetailFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -3970,13 +3935,6 @@ func TestEnumTradeStatusDetail(t *testing.T) {
 }
 
 func TestEnumTradeType(t *testing.T) {
-	t.Run("NewFromString_buy", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewTradeTypeFromString("buy")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, TradeType("buy"), val, "enum value should match expected wire value")
-	})
-
 	t.Run("NewFromString_close", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewTradeTypeFromString("close")
@@ -4011,7 +3969,7 @@ func TestEnumTradeType(t *testing.T) {
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewTradeTypeFromString("buy")
+		val, err := NewTradeTypeFromString("close")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
