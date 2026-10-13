@@ -23545,6 +23545,190 @@ func (m MemberMostRecentActions) Ptr() *MemberMostRecentActions {
 	return &m
 }
 
+var (
+	memberNoteFieldAuthor    = big.NewInt(1 << 0)
+	memberNoteFieldContent   = big.NewInt(1 << 1)
+	memberNoteFieldCreatedAt = big.NewInt(1 << 2)
+	memberNoteFieldID        = big.NewInt(1 << 3)
+	memberNoteFieldMemberID  = big.NewInt(1 << 4)
+	memberNoteFieldUserID    = big.NewInt(1 << 5)
+)
+
+// memberNoteNullableFields maps the wire names of MemberNote's nullable fields (required or optional) to their field bits.
+var memberNoteNullableFields = map[string]*big.Int{
+	"author": memberNoteFieldAuthor,
+}
+
+type MemberNote struct {
+	// The user who wrote the note, or `null` when it was added by an API key or automatically by Whop.
+	Author *UserSummary `json:"author,omitempty" url:"author,omitempty"`
+	// The note text.
+	Content string `json:"content" url:"content"`
+	// When the note was added, as an ISO 8601 timestamp.
+	CreatedAt string `json:"created_at" url:"created_at"`
+	// Member note ID, prefixed `note_`.
+	ID string `json:"id" url:"id"`
+	// The member the note is about, prefixed `mber_`.
+	MemberID string `json:"member_id" url:"member_id"`
+	// The customer the note is about, prefixed `user_`.
+	UserID string `json:"user_id" url:"user_id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MemberNote) GetAuthor() *UserSummary {
+	if m == nil {
+		return nil
+	}
+	return m.Author
+}
+
+func (m *MemberNote) GetContent() string {
+	if m == nil {
+		return ""
+	}
+	return m.Content
+}
+
+func (m *MemberNote) GetCreatedAt() string {
+	if m == nil {
+		return ""
+	}
+	return m.CreatedAt
+}
+
+func (m *MemberNote) GetID() string {
+	if m == nil {
+		return ""
+	}
+	return m.ID
+}
+
+func (m *MemberNote) GetMemberID() string {
+	if m == nil {
+		return ""
+	}
+	return m.MemberID
+}
+
+func (m *MemberNote) GetUserID() string {
+	if m == nil {
+		return ""
+	}
+	return m.UserID
+}
+
+func (m *MemberNote) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MemberNote) require(field *big.Int) {
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
+	}
+	next.Or(next, field)
+	m.explicitFields = next
+}
+
+// SetAuthor sets the Author field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MemberNote) SetAuthor(author *UserSummary) {
+	m.Author = author
+	m.require(memberNoteFieldAuthor)
+}
+
+// SetContent sets the Content field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MemberNote) SetContent(content string) {
+	m.Content = content
+	m.require(memberNoteFieldContent)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MemberNote) SetCreatedAt(createdAt string) {
+	m.CreatedAt = createdAt
+	m.require(memberNoteFieldCreatedAt)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MemberNote) SetID(id string) {
+	m.ID = id
+	m.require(memberNoteFieldID)
+}
+
+// SetMemberID sets the MemberID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MemberNote) SetMemberID(memberID string) {
+	m.MemberID = memberID
+	m.require(memberNoteFieldMemberID)
+}
+
+// SetUserID sets the UserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MemberNote) SetUserID(userID string) {
+	m.UserID = userID
+	m.require(memberNoteFieldUserID)
+}
+
+func (m *MemberNote) UnmarshalJSON(data []byte) error {
+	type unmarshaler MemberNote
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MemberNote(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, memberNoteNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		m.require(presentFields)
+	}
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MemberNote) MarshalJSON() ([]byte, error) {
+	type embed MemberNote
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MemberNote) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
 // The different statuses a Member can have.
 type MemberStatuses string
 

@@ -43,6 +43,46 @@ func TestSettersListMembersRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetMostRecentActions", func(t *testing.T) {
+		obj := &ListMembersRequest{}
+		var fernTestValueMostRecentActions []*ListMembersRequestMostRecentActionsItem
+		obj.SetMostRecentActions(fernTestValueMostRecentActions)
+		assert.Equal(t, fernTestValueMostRecentActions, obj.MostRecentActions)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetMembershipStatus", func(t *testing.T) {
+		obj := &ListMembersRequest{}
+		var fernTestValueMembershipStatus *ListMembersRequestMembershipStatus
+		obj.SetMembershipStatus(fernTestValueMembershipStatus)
+		assert.Equal(t, fernTestValueMembershipStatus, obj.MembershipStatus)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetProductIDs", func(t *testing.T) {
+		obj := &ListMembersRequest{}
+		var fernTestValueProductIDs []*string
+		obj.SetProductIDs(fernTestValueProductIDs)
+		assert.Equal(t, fernTestValueProductIDs, obj.ProductIDs)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetPlanIDs", func(t *testing.T) {
+		obj := &ListMembersRequest{}
+		var fernTestValuePlanIDs []*string
+		obj.SetPlanIDs(fernTestValuePlanIDs)
+		assert.Equal(t, fernTestValuePlanIDs, obj.PlanIDs)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetPromoCodeIDs", func(t *testing.T) {
+		obj := &ListMembersRequest{}
+		var fernTestValuePromoCodeIDs []*string
+		obj.SetPromoCodeIDs(fernTestValuePromoCodeIDs)
+		assert.Equal(t, fernTestValuePromoCodeIDs, obj.PromoCodeIDs)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetQuery", func(t *testing.T) {
 		obj := &ListMembersRequest{}
 		var fernTestValueQuery *string
@@ -219,6 +259,161 @@ func TestSettersMarkExplicitListMembersRequest(t *testing.T) {
 
 		// Act
 		obj.SetUserIDs(fernTestValueUserIDs)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetMostRecentActions_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListMembersRequest{}
+		var fernTestValueMostRecentActions []*ListMembersRequestMostRecentActionsItem
+
+		// Act
+		obj.SetMostRecentActions(fernTestValueMostRecentActions)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetMembershipStatus_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListMembersRequest{}
+		var fernTestValueMembershipStatus *ListMembersRequestMembershipStatus
+
+		// Act
+		obj.SetMembershipStatus(fernTestValueMembershipStatus)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetProductIDs_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListMembersRequest{}
+		var fernTestValueProductIDs []*string
+
+		// Act
+		obj.SetProductIDs(fernTestValueProductIDs)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPlanIDs_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListMembersRequest{}
+		var fernTestValuePlanIDs []*string
+
+		// Act
+		obj.SetPlanIDs(fernTestValuePlanIDs)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPromoCodeIDs_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListMembersRequest{}
+		var fernTestValuePromoCodeIDs []*string
+
+		// Act
+		obj.SetPromoCodeIDs(fernTestValuePromoCodeIDs)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -593,6 +788,22 @@ func TestSettersMember(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetDisplayName", func(t *testing.T) {
+		obj := &Member{}
+		var fernTestValueDisplayName string
+		obj.SetDisplayName(fernTestValueDisplayName)
+		assert.Equal(t, fernTestValueDisplayName, obj.DisplayName)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetEmail", func(t *testing.T) {
+		obj := &Member{}
+		var fernTestValueEmail *string
+		obj.SetEmail(fernTestValueEmail)
+		assert.Equal(t, fernTestValueEmail, obj.Email)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetID", func(t *testing.T) {
 		obj := &Member{}
 		var fernTestValueID string
@@ -617,6 +828,22 @@ func TestSettersMember(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetMostRecentAction", func(t *testing.T) {
+		obj := &Member{}
+		var fernTestValueMostRecentAction *MemberMostRecentAction
+		obj.SetMostRecentAction(fernTestValueMostRecentAction)
+		assert.Equal(t, fernTestValueMostRecentAction, obj.MostRecentAction)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetMostRecentActionAt", func(t *testing.T) {
+		obj := &Member{}
+		var fernTestValueMostRecentActionAt *string
+		obj.SetMostRecentActionAt(fernTestValueMostRecentActionAt)
+		assert.Equal(t, fernTestValueMostRecentActionAt, obj.MostRecentActionAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetPhoneNumber", func(t *testing.T) {
 		obj := &Member{}
 		var fernTestValuePhoneNumber *string
@@ -638,6 +865,14 @@ func TestSettersMember(t *testing.T) {
 		var fernTestValueTokenBalance float64
 		obj.SetTokenBalance(fernTestValueTokenBalance)
 		assert.Equal(t, fernTestValueTokenBalance, obj.TokenBalance)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetUsdTotalSpent", func(t *testing.T) {
+		obj := &Member{}
+		var fernTestValueUsdTotalSpent *Money
+		obj.SetUsdTotalSpent(fernTestValueUsdTotalSpent)
+		assert.Equal(t, fernTestValueUsdTotalSpent, obj.UsdTotalSpent)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -721,6 +956,62 @@ func TestGettersMember(t *testing.T) {
 		_ = obj.GetCreatedAt() // Should return zero value
 	})
 
+	t.Run("GetDisplayName", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Member{}
+		var expected string
+		obj.DisplayName = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDisplayName(), "getter should return the property value")
+	})
+
+	t.Run("GetDisplayName_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Member
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDisplayName() // Should return zero value
+	})
+
+	t.Run("GetEmail", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Member{}
+		var expected *string
+		obj.Email = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEmail(), "getter should return the property value")
+	})
+
+	t.Run("GetEmail_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Member{}
+		obj.Email = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetEmail(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetEmail_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Member
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEmail() // Should return zero value
+	})
+
 	t.Run("GetID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -800,6 +1091,72 @@ func TestGettersMember(t *testing.T) {
 		_ = obj.GetLastAccessedAt() // Should return zero value
 	})
 
+	t.Run("GetMostRecentAction", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Member{}
+		var expected *MemberMostRecentAction
+		obj.MostRecentAction = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetMostRecentAction(), "getter should return the property value")
+	})
+
+	t.Run("GetMostRecentAction_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Member{}
+		obj.MostRecentAction = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetMostRecentAction(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetMostRecentAction_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Member
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetMostRecentAction() // Should return zero value
+	})
+
+	t.Run("GetMostRecentActionAt", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Member{}
+		var expected *string
+		obj.MostRecentActionAt = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetMostRecentActionAt(), "getter should return the property value")
+	})
+
+	t.Run("GetMostRecentActionAt_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Member{}
+		obj.MostRecentActionAt = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetMostRecentActionAt(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetMostRecentActionAt_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Member
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetMostRecentActionAt() // Should return zero value
+	})
+
 	t.Run("GetPhoneNumber", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -877,6 +1234,39 @@ func TestGettersMember(t *testing.T) {
 			}
 		}()
 		_ = obj.GetTokenBalance() // Should return zero value
+	})
+
+	t.Run("GetUsdTotalSpent", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Member{}
+		var expected *Money
+		obj.UsdTotalSpent = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetUsdTotalSpent(), "getter should return the property value")
+	})
+
+	t.Run("GetUsdTotalSpent_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Member{}
+		obj.UsdTotalSpent = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetUsdTotalSpent(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetUsdTotalSpent_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Member
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetUsdTotalSpent() // Should return zero value
 	})
 
 	t.Run("GetUser", func(t *testing.T) {
@@ -1008,6 +1398,68 @@ func TestSettersMarkExplicitMember(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetDisplayName_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Member{}
+		var fernTestValueDisplayName string
+
+		// Act
+		obj.SetDisplayName(fernTestValueDisplayName)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetEmail_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Member{}
+		var fernTestValueEmail *string
+
+		// Act
+		obj.SetEmail(fernTestValueEmail)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -1101,6 +1553,68 @@ func TestSettersMarkExplicitMember(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetMostRecentAction_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Member{}
+		var fernTestValueMostRecentAction *MemberMostRecentAction
+
+		// Act
+		obj.SetMostRecentAction(fernTestValueMostRecentAction)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetMostRecentActionAt_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Member{}
+		var fernTestValueMostRecentActionAt *string
+
+		// Act
+		obj.SetMostRecentActionAt(fernTestValueMostRecentActionAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetPhoneNumber_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -1171,6 +1685,37 @@ func TestSettersMarkExplicitMember(t *testing.T) {
 
 		// Act
 		obj.SetTokenBalance(fernTestValueTokenBalance)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetUsdTotalSpent_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Member{}
+		var fernTestValueUsdTotalSpent *Money
+
+		// Act
+		obj.SetUsdTotalSpent(fernTestValueUsdTotalSpent)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -2958,7 +3503,10 @@ func TestRequiredNullableRoundTripListMembersResponsePageInfo(t *testing.T) {
 
 func TestRequiredNullableRoundTripMember(t *testing.T) {
 	requiredNullableKeys := []string{
+		"email",
 		"last_accessed_at",
+		"most_recent_action",
+		"most_recent_action_at",
 		"phone_number",
 		"user",
 	}
@@ -2973,7 +3521,7 @@ func TestRequiredNullableRoundTripMember(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Member
-		require.NoError(t, json.Unmarshal([]byte(`{"last_accessed_at":null,"phone_number":null,"user":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"email":null,"last_accessed_at":null,"most_recent_action":null,"most_recent_action_at":null,"phone_number":null,"user":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -3318,6 +3866,141 @@ func TestEnumListMembersRequestDirection(t *testing.T) {
 	})
 }
 
+func TestEnumListMembersRequestMembershipStatus(t *testing.T) {
+	t.Run("NewFromString_active", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMembersRequestMembershipStatusFromString("active")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMembersRequestMembershipStatus("active"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_inactive", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMembersRequestMembershipStatusFromString("inactive")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMembersRequestMembershipStatus("inactive"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewListMembersRequestMembershipStatusFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewListMembersRequestMembershipStatusFromString("active")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumListMembersRequestMostRecentActionsItem(t *testing.T) {
+	t.Run("NewFromString_canceling", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMembersRequestMostRecentActionsItemFromString("canceling")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMembersRequestMostRecentActionsItem("canceling"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_churned", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMembersRequestMostRecentActionsItemFromString("churned")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMembersRequestMostRecentActionsItem("churned"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_finished_split_pay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMembersRequestMostRecentActionsItemFromString("finished_split_pay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMembersRequestMostRecentActionsItem("finished_split_pay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_paused", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMembersRequestMostRecentActionsItemFromString("paused")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMembersRequestMostRecentActionsItem("paused"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_paid_subscriber", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMembersRequestMostRecentActionsItemFromString("paid_subscriber")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMembersRequestMostRecentActionsItem("paid_subscriber"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_paid_once", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMembersRequestMostRecentActionsItemFromString("paid_once")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMembersRequestMostRecentActionsItem("paid_once"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_expiring", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMembersRequestMostRecentActionsItemFromString("expiring")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMembersRequestMostRecentActionsItem("expiring"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_joined", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMembersRequestMostRecentActionsItemFromString("joined")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMembersRequestMostRecentActionsItem("joined"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_left", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMembersRequestMostRecentActionsItemFromString("left")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMembersRequestMostRecentActionsItem("left"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_trialing", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMembersRequestMostRecentActionsItemFromString("trialing")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMembersRequestMostRecentActionsItem("trialing"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pending_entry", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMembersRequestMostRecentActionsItemFromString("pending_entry")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMembersRequestMostRecentActionsItem("pending_entry"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_renewing", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMembersRequestMostRecentActionsItemFromString("renewing")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMembersRequestMostRecentActionsItem("renewing"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_past_due", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMembersRequestMostRecentActionsItemFromString("past_due")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMembersRequestMostRecentActionsItem("past_due"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewListMembersRequestMostRecentActionsItemFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewListMembersRequestMostRecentActionsItemFromString("canceling")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumListMembersRequestOrder(t *testing.T) {
 	t.Run("NewFromString_created_at", func(t *testing.T) {
 		t.Parallel()
@@ -3338,6 +4021,13 @@ func TestEnumListMembersRequestOrder(t *testing.T) {
 		val, err := NewListMembersRequestOrderFromString("last_accessed_at")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListMembersRequestOrder("last_accessed_at"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_most_recent_action_at", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMembersRequestOrderFromString("most_recent_action_at")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMembersRequestOrder("most_recent_action_at"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_usd_total_spent", func(t *testing.T) {
@@ -3419,6 +4109,112 @@ func TestEnumMemberAccessLevel(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewMemberAccessLevelFromString("no_access")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumMemberMostRecentAction(t *testing.T) {
+	t.Run("NewFromString_canceling", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewMemberMostRecentActionFromString("canceling")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, MemberMostRecentAction("canceling"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_churned", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewMemberMostRecentActionFromString("churned")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, MemberMostRecentAction("churned"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_finished_split_pay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewMemberMostRecentActionFromString("finished_split_pay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, MemberMostRecentAction("finished_split_pay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_paused", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewMemberMostRecentActionFromString("paused")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, MemberMostRecentAction("paused"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_paid_subscriber", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewMemberMostRecentActionFromString("paid_subscriber")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, MemberMostRecentAction("paid_subscriber"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_paid_once", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewMemberMostRecentActionFromString("paid_once")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, MemberMostRecentAction("paid_once"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_expiring", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewMemberMostRecentActionFromString("expiring")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, MemberMostRecentAction("expiring"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_joined", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewMemberMostRecentActionFromString("joined")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, MemberMostRecentAction("joined"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_left", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewMemberMostRecentActionFromString("left")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, MemberMostRecentAction("left"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_trialing", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewMemberMostRecentActionFromString("trialing")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, MemberMostRecentAction("trialing"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pending_entry", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewMemberMostRecentActionFromString("pending_entry")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, MemberMostRecentAction("pending_entry"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_renewing", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewMemberMostRecentActionFromString("renewing")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, MemberMostRecentAction("renewing"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_past_due", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewMemberMostRecentActionFromString("past_due")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, MemberMostRecentAction("past_due"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewMemberMostRecentActionFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewMemberMostRecentActionFromString("canceling")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

@@ -23165,6 +23165,21 @@ request := &whopsdk.ListMembersRequest{
             "user_xxxxxxxxxxxxxx",
         ),
     },
+    ProductIDs: []*string{
+        whopsdk.String(
+            "prod_xxxxxxxxxxxxx",
+        ),
+    },
+    PlanIDs: []*string{
+        whopsdk.String(
+            "plan_xxxxxxxxxxxxx",
+        ),
+    },
+    PromoCodeIDs: []*string{
+        whopsdk.String(
+            "promo_xxxxxxxxxxxx",
+        ),
+    },
 }
 client.Members.List(
     context.TODO(),
@@ -23216,6 +23231,46 @@ client.Members.List(
 <dl>
 <dd>
 
+**mostRecentActions:** `*whopsdk.ListMembersRequestMostRecentActionsItem` — Only return members whose `most_recent_action` is one of these values.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**membershipStatus:** `*whopsdk.ListMembersRequestMembershipStatus` — `active` returns members holding at least one membership that currently grants access; `inactive` returns members holding at least one membership that does not. Combined with `product_ids`, `plan_ids`, or `promo_code_ids`, one membership must match all of them.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**productIDs:** `*string` — Only return members holding a membership to one of these products, prefixed `prod_`. Unknown IDs match nothing.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**planIDs:** `*string` — Only return members holding a membership on one of these plans, prefixed `plan_`. Unknown IDs match nothing.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**promoCodeIDs:** `*string` — Only return members holding a membership bought with one of these promo codes, prefixed `promo_`. Unknown IDs match nothing.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **query:** `*string` — Search members by name or username. An exact email address also matches when the credential holds the member:email:read scope.
     
 </dd>
@@ -23240,7 +23295,7 @@ client.Members.List(
 <dl>
 <dd>
 
-**order:** `*whopsdk.ListMembersRequestOrder` — Sort field.
+**order:** `*whopsdk.ListMembersRequestOrder` — Sort field. `most_recent_action_at` places members without one first when ascending and last when descending.
     
 </dd>
 </dl>
@@ -23380,7 +23435,23 @@ Lists every membership the caller can read: an account API key its account's; a 
 <dd>
 
 ```go
-request := &whopsdk.ListMembershipsRequest{}
+request := &whopsdk.ListMembershipsRequest{
+    ProductIDs: []*string{
+        whopsdk.String(
+            "prod_xxxxxxxxxxxxx",
+        ),
+    },
+    PlanIDs: []*string{
+        whopsdk.String(
+            "plan_xxxxxxxxxxxxx",
+        ),
+    },
+    PromoCodeIDs: []*string{
+        whopsdk.String(
+            "promo_xxxxxxxxxxxxxx",
+        ),
+    },
+}
 client.Memberships.List(
     context.TODO(),
     request,
@@ -23415,7 +23486,7 @@ client.Memberships.List(
 <dl>
 <dd>
 
-**status:** `*whopsdk.ListMembershipsRequestStatus` — Filter by billing state. `canceling` matches active memberships set to cancel at period end; `paused` matches memberships with payment collection paused.
+**memberID:** `*string` — Narrow to one member's memberships (`mber_` tag), including memberships bought by another business. A member outside the caller's visible set returns an empty list.
     
 </dd>
 </dl>
@@ -23423,7 +23494,7 @@ client.Memberships.List(
 <dl>
 <dd>
 
-**productID:** `*string` — Filter to memberships of this product (`prod_` tag). Repeat as product_ids[] for several.
+**status:** `*whopsdk.ListMembershipsRequestStatus` — Filter by billing state. `trialing`, `active`, `past_due`, `completed`, `canceled`, and `expired` match the membership's `status`; `active`, `trialing`, and `past_due` exclude memberships set to cancel at period end. The other values are derived buckets that never appear as a `status`: `canceling` matches memberships set to cancel at period end; `paused` matches memberships with payment collection paused; `expiring` matches one-time purchases that have not yet expired; `one_time` matches one-time purchases that never expire; `unclaimed` matches memberships with no buyer user, including memberships bought by another business; `banned` matches memberships whose buyer is banned from the account.
     
 </dd>
 </dl>
@@ -23431,7 +23502,47 @@ client.Memberships.List(
 <dl>
 <dd>
 
-**planID:** `*string` — Filter to memberships of this variant (`plan_` tag). Repeat as plan_ids[] for several.
+**statuses:** `*whopsdk.ListMembershipsRequestStatusesItem` — Filter to memberships matching any of these billing states, with the same meanings as `status`. Repeat the parameter to pass several. Combined with `status` when both are sent.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**productID:** `*string` — Filter to memberships of this product (`prod_` tag).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**productIDs:** `*string` — Filter to memberships of any of these products, each prefixed `prod_`. Repeat the parameter to pass several.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**planID:** `*string` — Filter to memberships of this variant (`plan_` tag).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**planIDs:** `*string` — Filter to memberships of any of these variants, each prefixed `plan_`. Repeat the parameter to pass several.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**promoCodeIDs:** `*string` — Filter to memberships discounted by any of these promo codes, each prefixed `promo_`. Repeat the parameter to pass several.
     
 </dd>
 </dl>
@@ -36521,6 +36632,38 @@ client.SupportChannels.List(
 <dl>
 <dd>
 
+**customerUserID:** `*string` — Only return support channels opened by this customer.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**participated:** `*bool` — Set to true to only return channels the authenticated user has joined as a participant. Requires a user.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeLastMessage:** `*bool` — Set to true to return `last_message` and `unread` on each channel. Both are `null` otherwise, which keeps large lists fast.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeParticipated:** `*bool` — Set to true to return `participated` on each channel. It is `null` otherwise, which keeps large lists fast.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **direction:** `*whopsdk.Direction` 
     
 </dd>
@@ -43858,6 +44001,168 @@ client.Members.Logs.List(
 <dd>
 
 **before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Members Notes
+<details><summary><code>client.Members.Notes.List(MemberID) -> *members.ListNotesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists a member's notes, newest first. Notes are visible to the account's team.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &members.ListNotesRequest{
+    MemberID: "member_id",
+}
+client.Members.Notes.List(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**memberID:** `string` — The member the notes are about, prefixed `mber_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `*int` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `*int` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Members.Notes.Create(MemberID, request) -> *whopsdk.MemberNote</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Adds a note to a member. Notes are visible to the account's team.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &members.CreateNotesRequest{
+    MemberID: "member_id",
+    Content: "Wants a call next week.",
+}
+client.Members.Notes.Create(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**memberID:** `string` — The member the notes are about, prefixed `mber_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**content:** `string` — The note text.
     
 </dd>
 </dl>
