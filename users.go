@@ -361,12 +361,13 @@ var (
 	userFieldID                                = big.NewInt(1 << 8)
 	userFieldName                              = big.NewInt(1 << 9)
 	userFieldProfilePicture                    = big.NewInt(1 << 10)
-	userFieldTrading                           = big.NewInt(1 << 11)
-	userFieldUsername                          = big.NewInt(1 << 12)
-	userFieldVerification                      = big.NewInt(1 << 13)
-	userFieldWhopPartnerEnabledAt              = big.NewInt(1 << 14)
-	userFieldWhopPartnerOnboardedAccountsCount = big.NewInt(1 << 15)
-	userFieldWhopPartnerVerifiedAt             = big.NewInt(1 << 16)
+	userFieldSocialLinks                       = big.NewInt(1 << 11)
+	userFieldTrading                           = big.NewInt(1 << 12)
+	userFieldUsername                          = big.NewInt(1 << 13)
+	userFieldVerification                      = big.NewInt(1 << 14)
+	userFieldWhopPartnerEnabledAt              = big.NewInt(1 << 15)
+	userFieldWhopPartnerOnboardedAccountsCount = big.NewInt(1 << 16)
+	userFieldWhopPartnerVerifiedAt             = big.NewInt(1 << 17)
 )
 
 // userNullableFields maps the wire names of User's nullable fields (required or optional) to their field bits.
@@ -408,6 +409,7 @@ type User struct {
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
 	// Avatar wrapper; its `url` is always present, using a generated placeholder when the user set no picture.
 	ProfilePicture *UserProfilePicture `json:"profile_picture" url:"profile_picture"`
+	SocialLinks    []*UserSocialLink   `json:"social_links" url:"social_links"`
 	// The trading account address and its WebSocket subscriptions. Opt in with `include_trading=true` when retrieving `me`. `null` otherwise, without trading permission, or without an Ethereum wallet.
 	Trading *TradingAccount `json:"trading,omitempty" url:"trading,omitempty"`
 	// The user's unique username
@@ -503,6 +505,13 @@ func (u *User) GetProfilePicture() *UserProfilePicture {
 		return nil
 	}
 	return u.ProfilePicture
+}
+
+func (u *User) GetSocialLinks() []*UserSocialLink {
+	if u == nil {
+		return nil
+	}
+	return u.SocialLinks
 }
 
 func (u *User) GetTrading() *TradingAccount {
@@ -638,6 +647,13 @@ func (u *User) SetName(name *string) {
 func (u *User) SetProfilePicture(profilePicture *UserProfilePicture) {
 	u.ProfilePicture = profilePicture
 	u.require(userFieldProfilePicture)
+}
+
+// SetSocialLinks sets the SocialLinks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *User) SetSocialLinks(socialLinks []*UserSocialLink) {
+	u.SocialLinks = socialLinks
+	u.require(userFieldSocialLinks)
 }
 
 // SetTrading sets the Trading field and marks it as non-optional;
@@ -2548,6 +2564,197 @@ func NewUserRecommendedActionStatusFromString(s string) (UserRecommendedActionSt
 }
 
 func (u UserRecommendedActionStatus) Ptr() *UserRecommendedActionStatus {
+	return &u
+}
+
+var (
+	userSocialLinkFieldURL      = big.NewInt(1 << 0)
+	userSocialLinkFieldUsername = big.NewInt(1 << 1)
+	userSocialLinkFieldVerified = big.NewInt(1 << 2)
+	userSocialLinkFieldWebsite  = big.NewInt(1 << 3)
+)
+
+// userSocialLinkNullableFields maps the wire names of UserSocialLink's nullable fields (required or optional) to their field bits.
+var userSocialLinkNullableFields = map[string]*big.Int{
+	"username": userSocialLinkFieldUsername,
+}
+
+type UserSocialLink struct {
+	// The link's URL.
+	URL string `json:"url" url:"url"`
+	// The user's handle on the platform, as entered or as reported by the connected account. `null` for links without a handle, such as a personal site.
+	Username *string `json:"username,omitempty" url:"username,omitempty"`
+	// Whether Whop verified that the user owns the account.
+	Verified bool `json:"verified" url:"verified"`
+	// The platform the link points to. `website` is a personal site rather than a social platform.
+	Website UserSocialLinkWebsite `json:"website" url:"website"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UserSocialLink) GetURL() string {
+	if u == nil {
+		return ""
+	}
+	return u.URL
+}
+
+func (u *UserSocialLink) GetUsername() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Username
+}
+
+func (u *UserSocialLink) GetVerified() bool {
+	if u == nil {
+		return false
+	}
+	return u.Verified
+}
+
+func (u *UserSocialLink) GetWebsite() UserSocialLinkWebsite {
+	if u == nil {
+		return ""
+	}
+	return u.Website
+}
+
+func (u *UserSocialLink) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UserSocialLink) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UserSocialLink) SetURL(url string) {
+	u.URL = url
+	u.require(userSocialLinkFieldURL)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UserSocialLink) SetUsername(username *string) {
+	u.Username = username
+	u.require(userSocialLinkFieldUsername)
+}
+
+// SetVerified sets the Verified field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UserSocialLink) SetVerified(verified bool) {
+	u.Verified = verified
+	u.require(userSocialLinkFieldVerified)
+}
+
+// SetWebsite sets the Website field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UserSocialLink) SetWebsite(website UserSocialLinkWebsite) {
+	u.Website = website
+	u.require(userSocialLinkFieldWebsite)
+}
+
+func (u *UserSocialLink) UnmarshalJSON(data []byte) error {
+	type unmarshaler UserSocialLink
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UserSocialLink(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, userSocialLinkNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UserSocialLink) MarshalJSON() ([]byte, error) {
+	type embed UserSocialLink
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UserSocialLink) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// The platform the link points to. `website` is a personal site rather than a social platform.
+type UserSocialLinkWebsite string
+
+const (
+	UserSocialLinkWebsiteX         UserSocialLinkWebsite = "x"
+	UserSocialLinkWebsiteInstagram UserSocialLinkWebsite = "instagram"
+	UserSocialLinkWebsiteFacebook  UserSocialLinkWebsite = "facebook"
+	UserSocialLinkWebsiteTiktok    UserSocialLinkWebsite = "tiktok"
+	UserSocialLinkWebsiteYoutube   UserSocialLinkWebsite = "youtube"
+	UserSocialLinkWebsiteLinkedin  UserSocialLinkWebsite = "linkedin"
+	UserSocialLinkWebsiteTwitch    UserSocialLinkWebsite = "twitch"
+	UserSocialLinkWebsiteWebsite   UserSocialLinkWebsite = "website"
+)
+
+func NewUserSocialLinkWebsiteFromString(s string) (UserSocialLinkWebsite, error) {
+	switch s {
+	case "x":
+		return UserSocialLinkWebsiteX, nil
+	case "instagram":
+		return UserSocialLinkWebsiteInstagram, nil
+	case "facebook":
+		return UserSocialLinkWebsiteFacebook, nil
+	case "tiktok":
+		return UserSocialLinkWebsiteTiktok, nil
+	case "youtube":
+		return UserSocialLinkWebsiteYoutube, nil
+	case "linkedin":
+		return UserSocialLinkWebsiteLinkedin, nil
+	case "twitch":
+		return UserSocialLinkWebsiteTwitch, nil
+	case "website":
+		return UserSocialLinkWebsiteWebsite, nil
+	}
+	var t UserSocialLinkWebsite
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UserSocialLinkWebsite) Ptr() *UserSocialLinkWebsite {
 	return &u
 }
 

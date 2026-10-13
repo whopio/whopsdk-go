@@ -299,17 +299,22 @@ func (e *ExtendMembershipsRequest) MarshalJSON() ([]byte, error) {
 var (
 	listMembershipsRequestFieldAccountID     = big.NewInt(1 << 0)
 	listMembershipsRequestFieldUserID        = big.NewInt(1 << 1)
-	listMembershipsRequestFieldStatus        = big.NewInt(1 << 2)
-	listMembershipsRequestFieldProductID     = big.NewInt(1 << 3)
-	listMembershipsRequestFieldPlanID        = big.NewInt(1 << 4)
-	listMembershipsRequestFieldCreatedAfter  = big.NewInt(1 << 5)
-	listMembershipsRequestFieldCreatedBefore = big.NewInt(1 << 6)
-	listMembershipsRequestFieldOrder         = big.NewInt(1 << 7)
-	listMembershipsRequestFieldDirection     = big.NewInt(1 << 8)
-	listMembershipsRequestFieldFirst         = big.NewInt(1 << 9)
-	listMembershipsRequestFieldAfter         = big.NewInt(1 << 10)
-	listMembershipsRequestFieldLast          = big.NewInt(1 << 11)
-	listMembershipsRequestFieldBefore        = big.NewInt(1 << 12)
+	listMembershipsRequestFieldMemberID      = big.NewInt(1 << 2)
+	listMembershipsRequestFieldStatus        = big.NewInt(1 << 3)
+	listMembershipsRequestFieldStatuses      = big.NewInt(1 << 4)
+	listMembershipsRequestFieldProductID     = big.NewInt(1 << 5)
+	listMembershipsRequestFieldProductIDs    = big.NewInt(1 << 6)
+	listMembershipsRequestFieldPlanID        = big.NewInt(1 << 7)
+	listMembershipsRequestFieldPlanIDs       = big.NewInt(1 << 8)
+	listMembershipsRequestFieldPromoCodeIDs  = big.NewInt(1 << 9)
+	listMembershipsRequestFieldCreatedAfter  = big.NewInt(1 << 10)
+	listMembershipsRequestFieldCreatedBefore = big.NewInt(1 << 11)
+	listMembershipsRequestFieldOrder         = big.NewInt(1 << 12)
+	listMembershipsRequestFieldDirection     = big.NewInt(1 << 13)
+	listMembershipsRequestFieldFirst         = big.NewInt(1 << 14)
+	listMembershipsRequestFieldAfter         = big.NewInt(1 << 15)
+	listMembershipsRequestFieldLast          = big.NewInt(1 << 16)
+	listMembershipsRequestFieldBefore        = big.NewInt(1 << 17)
 )
 
 type ListMembershipsRequest struct {
@@ -317,12 +322,22 @@ type ListMembershipsRequest struct {
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// Narrow to one user's memberships (`user_` tag, or `me` for the caller). A user outside the caller's visible set returns an empty list.
 	UserID *string `json:"-" url:"user_id,omitempty"`
-	// Filter by billing state. `canceling` matches active memberships set to cancel at period end; `paused` matches memberships with payment collection paused.
+	// Narrow to one member's memberships (`mber_` tag), including memberships bought by another business. A member outside the caller's visible set returns an empty list.
+	MemberID *string `json:"-" url:"member_id,omitempty"`
+	// Filter by billing state. `trialing`, `active`, `past_due`, `completed`, `canceled`, and `expired` match the membership's `status`; `active`, `trialing`, and `past_due` exclude memberships set to cancel at period end. The other values are derived buckets that never appear as a `status`: `canceling` matches memberships set to cancel at period end; `paused` matches memberships with payment collection paused; `expiring` matches one-time purchases that have not yet expired; `one_time` matches one-time purchases that never expire; `unclaimed` matches memberships with no buyer user, including memberships bought by another business; `banned` matches memberships whose buyer is banned from the account.
 	Status *ListMembershipsRequestStatus `json:"-" url:"status,omitempty"`
-	// Filter to memberships of this product (`prod_` tag). Repeat as product_ids[] for several.
+	// Filter to memberships matching any of these billing states, with the same meanings as `status`. Repeat the parameter to pass several. Combined with `status` when both are sent.
+	Statuses []*ListMembershipsRequestStatusesItem `json:"-" url:"statuses,omitempty"`
+	// Filter to memberships of this product (`prod_` tag).
 	ProductID *string `json:"-" url:"product_id,omitempty"`
-	// Filter to memberships of this variant (`plan_` tag). Repeat as plan_ids[] for several.
+	// Filter to memberships of any of these products, each prefixed `prod_`. Repeat the parameter to pass several.
+	ProductIDs []*string `json:"-" url:"product_ids,omitempty"`
+	// Filter to memberships of this variant (`plan_` tag).
 	PlanID *string `json:"-" url:"plan_id,omitempty"`
+	// Filter to memberships of any of these variants, each prefixed `plan_`. Repeat the parameter to pass several.
+	PlanIDs []*string `json:"-" url:"plan_ids,omitempty"`
+	// Filter to memberships discounted by any of these promo codes, each prefixed `promo_`. Repeat the parameter to pass several.
+	PromoCodeIDs []*string `json:"-" url:"promo_code_ids,omitempty"`
 	// Only memberships created after this ISO 8601 timestamp.
 	CreatedAfter *string `json:"-" url:"created_after,omitempty"`
 	// Only memberships created before this ISO 8601 timestamp.
@@ -367,11 +382,25 @@ func (l *ListMembershipsRequest) SetUserID(userID *string) {
 	l.require(listMembershipsRequestFieldUserID)
 }
 
+// SetMemberID sets the MemberID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMembershipsRequest) SetMemberID(memberID *string) {
+	l.MemberID = memberID
+	l.require(listMembershipsRequestFieldMemberID)
+}
+
 // SetStatus sets the Status field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListMembershipsRequest) SetStatus(status *ListMembershipsRequestStatus) {
 	l.Status = status
 	l.require(listMembershipsRequestFieldStatus)
+}
+
+// SetStatuses sets the Statuses field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMembershipsRequest) SetStatuses(statuses []*ListMembershipsRequestStatusesItem) {
+	l.Statuses = statuses
+	l.require(listMembershipsRequestFieldStatuses)
 }
 
 // SetProductID sets the ProductID field and marks it as non-optional;
@@ -381,11 +410,32 @@ func (l *ListMembershipsRequest) SetProductID(productID *string) {
 	l.require(listMembershipsRequestFieldProductID)
 }
 
+// SetProductIDs sets the ProductIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMembershipsRequest) SetProductIDs(productIDs []*string) {
+	l.ProductIDs = productIDs
+	l.require(listMembershipsRequestFieldProductIDs)
+}
+
 // SetPlanID sets the PlanID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListMembershipsRequest) SetPlanID(planID *string) {
 	l.PlanID = planID
 	l.require(listMembershipsRequestFieldPlanID)
+}
+
+// SetPlanIDs sets the PlanIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMembershipsRequest) SetPlanIDs(planIDs []*string) {
+	l.PlanIDs = planIDs
+	l.require(listMembershipsRequestFieldPlanIDs)
+}
+
+// SetPromoCodeIDs sets the PromoCodeIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMembershipsRequest) SetPromoCodeIDs(promoCodeIDs []*string) {
+	l.PromoCodeIDs = promoCodeIDs
+	l.require(listMembershipsRequestFieldPromoCodeIDs)
 }
 
 // SetCreatedAfter sets the CreatedAfter field and marks it as non-optional;
@@ -675,43 +725,61 @@ func (t *TransferMembershipsRequest) SetID(id string) {
 }
 
 var (
-	membershipFieldAccount            = big.NewInt(1 << 0)
-	membershipFieldAffiliate          = big.NewInt(1 << 1)
-	membershipFieldBillingPeriodDays  = big.NewInt(1 << 2)
-	membershipFieldCancelAtPeriodEnd  = big.NewInt(1 << 3)
-	membershipFieldCanceledAt         = big.NewInt(1 << 4)
-	membershipFieldCancellationReason = big.NewInt(1 << 5)
-	membershipFieldCreatedAt          = big.NewInt(1 << 6)
-	membershipFieldCurrentPeriodEnd   = big.NewInt(1 << 7)
-	membershipFieldCurrentPeriodStart = big.NewInt(1 << 8)
-	membershipFieldID                 = big.NewInt(1 << 9)
-	membershipFieldLicenseKey         = big.NewInt(1 << 10)
-	membershipFieldManageURL          = big.NewInt(1 << 11)
-	membershipFieldMember             = big.NewInt(1 << 12)
-	membershipFieldMetadata           = big.NewInt(1 << 13)
-	membershipFieldPhoneNumber        = big.NewInt(1 << 14)
-	membershipFieldPlanID             = big.NewInt(1 << 15)
-	membershipFieldProductID          = big.NewInt(1 << 16)
-	membershipFieldPromoCodeID        = big.NewInt(1 << 17)
-	membershipFieldStatus             = big.NewInt(1 << 18)
-	membershipFieldUpdatedAt          = big.NewInt(1 << 19)
-	membershipFieldUserID             = big.NewInt(1 << 20)
+	membershipFieldAccount                  = big.NewInt(1 << 0)
+	membershipFieldAffiliate                = big.NewInt(1 << 1)
+	membershipFieldBillingPeriodDays        = big.NewInt(1 << 2)
+	membershipFieldCancelAtPeriodEnd        = big.NewInt(1 << 3)
+	membershipFieldCanceledAt               = big.NewInt(1 << 4)
+	membershipFieldCancellationReason       = big.NewInt(1 << 5)
+	membershipFieldCollectionMethod         = big.NewInt(1 << 6)
+	membershipFieldCreatedAt                = big.NewInt(1 << 7)
+	membershipFieldCurrentPeriodEnd         = big.NewInt(1 << 8)
+	membershipFieldCurrentPeriodStart       = big.NewInt(1 << 9)
+	membershipFieldExpiresAt                = big.NewInt(1 << 10)
+	membershipFieldID                       = big.NewInt(1 << 11)
+	membershipFieldInitialPrice             = big.NewInt(1 << 12)
+	membershipFieldLicenseKey               = big.NewInt(1 << 13)
+	membershipFieldManageURL                = big.NewInt(1 << 14)
+	membershipFieldMember                   = big.NewInt(1 << 15)
+	membershipFieldMemberID                 = big.NewInt(1 << 16)
+	membershipFieldMetadata                 = big.NewInt(1 << 17)
+	membershipFieldMostRecentAction         = big.NewInt(1 << 18)
+	membershipFieldMostRecentActionAt       = big.NewInt(1 << 19)
+	membershipFieldPhoneNumber              = big.NewInt(1 << 20)
+	membershipFieldPlanID                   = big.NewInt(1 << 21)
+	membershipFieldProduct                  = big.NewInt(1 << 22)
+	membershipFieldProductID                = big.NewInt(1 << 23)
+	membershipFieldPromoCodeID              = big.NewInt(1 << 24)
+	membershipFieldRenewalPrice             = big.NewInt(1 << 25)
+	membershipFieldSplitPayCurrentPayments  = big.NewInt(1 << 26)
+	membershipFieldSplitPayRequiredPayments = big.NewInt(1 << 27)
+	membershipFieldStatus                   = big.NewInt(1 << 28)
+	membershipFieldUpdatedAt                = big.NewInt(1 << 29)
+	membershipFieldUserID                   = big.NewInt(1 << 30)
 )
 
 // membershipNullableFields maps the wire names of Membership's nullable fields (required or optional) to their field bits.
 var membershipNullableFields = map[string]*big.Int{
-	"affiliate":            membershipFieldAffiliate,
-	"billing_period_days":  membershipFieldBillingPeriodDays,
-	"canceled_at":          membershipFieldCanceledAt,
-	"cancellation_reason":  membershipFieldCancellationReason,
-	"current_period_end":   membershipFieldCurrentPeriodEnd,
-	"current_period_start": membershipFieldCurrentPeriodStart,
-	"license_key":          membershipFieldLicenseKey,
-	"manage_url":           membershipFieldManageURL,
-	"member":               membershipFieldMember,
-	"phone_number":         membershipFieldPhoneNumber,
-	"promo_code_id":        membershipFieldPromoCodeID,
-	"user_id":              membershipFieldUserID,
+	"affiliate":                   membershipFieldAffiliate,
+	"billing_period_days":         membershipFieldBillingPeriodDays,
+	"canceled_at":                 membershipFieldCanceledAt,
+	"cancellation_reason":         membershipFieldCancellationReason,
+	"collection_method":           membershipFieldCollectionMethod,
+	"current_period_end":          membershipFieldCurrentPeriodEnd,
+	"current_period_start":        membershipFieldCurrentPeriodStart,
+	"expires_at":                  membershipFieldExpiresAt,
+	"license_key":                 membershipFieldLicenseKey,
+	"manage_url":                  membershipFieldManageURL,
+	"member":                      membershipFieldMember,
+	"member_id":                   membershipFieldMemberID,
+	"most_recent_action":          membershipFieldMostRecentAction,
+	"most_recent_action_at":       membershipFieldMostRecentActionAt,
+	"phone_number":                membershipFieldPhoneNumber,
+	"promo_code_id":               membershipFieldPromoCodeID,
+	"renewal_price":               membershipFieldRenewalPrice,
+	"split_pay_current_payments":  membershipFieldSplitPayCurrentPayments,
+	"split_pay_required_payments": membershipFieldSplitPayRequiredPayments,
+	"user_id":                     membershipFieldUserID,
 }
 
 type Membership struct {
@@ -727,30 +795,50 @@ type Membership struct {
 	CanceledAt *string `json:"canceled_at,omitempty" url:"canceled_at,omitempty"`
 	// Free-text explanation provided when canceling. `null` when no reason was provided.
 	CancellationReason *string `json:"cancellation_reason,omitempty" url:"cancellation_reason,omitempty"`
+	// How renewals are collected. `charge_automatically` charges the saved payment method each period; `send_invoice` emails the buyer an invoice each period. `null` when not set.
+	CollectionMethod *MembershipCollectionMethod `json:"collection_method,omitempty" url:"collection_method,omitempty"`
 	// When the membership was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// When the current billing period renews, or when a non-renewing membership expires, as an ISO 8601 timestamp. `null` for one-time purchases with no expiration.
 	CurrentPeriodEnd *string `json:"current_period_end,omitempty" url:"current_period_end,omitempty"`
 	// When the current billing period started, as an ISO 8601 timestamp. `null` when no billing period is recorded.
 	CurrentPeriodStart *string `json:"current_period_start,omitempty" url:"current_period_start,omitempty"`
+	// When access ends for a membership with a fixed expiration, as an ISO 8601 timestamp. `null` when the membership has no expiration, such as a renewing membership.
+	ExpiresAt *string `json:"expires_at,omitempty" url:"expires_at,omitempty"`
 	// Membership ID, prefixed `mem_`.
 	ID string `json:"id" url:"id"`
+	// The variant's current up-front price, in the variant's currency. A list price, not necessarily what the buyer paid. `amount` is `"0.00"` when the first charge is free.
+	InitialPrice *Money `json:"initial_price" url:"initial_price"`
 	// The software license key for this membership. Only present when the product includes a software licensing experience.
 	LicenseKey *string `json:"license_key,omitempty" url:"license_key,omitempty"`
 	// URL where the buyer can sign in to manage billing. `null` without a member record or unless the caller is the buyer or has `member:manage` on the account.
 	ManageURL *string `json:"manage_url,omitempty" url:"manage_url,omitempty"`
 	// The caller's member row on the account. Present only when the membership belongs to the caller; `null` on seller-side reads.
 	Member *MembershipMember `json:"member,omitempty" url:"member,omitempty"`
+	// The buyer's member record on the account, prefixed `mber_`. `null` when the membership has no member record, such as an unclaimed membership.
+	MemberID *string `json:"member_id,omitempty" url:"member_id,omitempty"`
 	// Custom key-value pairs stored on the membership, commonly used for software licensing.
 	Metadata map[string]any `json:"metadata" url:"metadata"`
+	// The membership's latest lifecycle event, such as `renewing_on` or `canceled_on`. Pair it with `most_recent_action_at`. `null` when none is recorded.
+	MostRecentAction *MembershipMostRecentAction `json:"most_recent_action,omitempty" url:"most_recent_action,omitempty"`
+	// When `most_recent_action` happened or is scheduled to happen, as an ISO 8601 timestamp. A future time for upcoming events such as `renewing_on`. `null` when no action is recorded.
+	MostRecentActionAt *string `json:"most_recent_action_at,omitempty" url:"most_recent_action_at,omitempty"`
 	// The buyer's phone number recorded for this membership, or `null`. The number collected (or verified) at checkout when the seller's phone collection is on; falls back to the buyer's account number when they have shared one with this seller.
 	PhoneNumber *string `json:"phone_number,omitempty" url:"phone_number,omitempty"`
 	// The variant the buyer purchased, prefixed `plan_`.
 	PlanID string `json:"plan_id" url:"plan_id"`
+	// The product this membership grants access to.
+	Product *MembershipProduct `json:"product" url:"product"`
 	// The product this membership grants access to, prefixed `prod_`.
 	ProductID string `json:"product_id" url:"product_id"`
 	// The promo code discounting this membership, prefixed `promo_`. `null` when none is applied. Set at checkout or by Apply Promo Code to Membership.
 	PromoCodeID *string `json:"promo_code_id,omitempty" url:"promo_code_id,omitempty"`
+	// What the next renewal charges, after any promo code that still applies. `null` for non-renewing memberships.
+	RenewalPrice *Money `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
+	// Paid installments counted so far on a split pay membership. `null` when the membership is not on split pay, or before its first installment is counted.
+	SplitPayCurrentPayments *int `json:"split_pay_current_payments,omitempty" url:"split_pay_current_payments,omitempty"`
+	// Installment payments required before the membership stops billing. `null` when the membership is not on split pay.
+	SplitPayRequiredPayments *int `json:"split_pay_required_payments,omitempty" url:"split_pay_required_payments,omitempty"`
 	// Billing state of the membership. `active`/`trialing` memberships grant access; `past_due` is the grace period after a failed payment; `completed` one-time purchases keep access; `canceled`/`expired` do not.
 	Status MembershipStatus `json:"status" url:"status"`
 	// When the membership was last changed, as an ISO 8601 timestamp. Reflects the most recent change to the membership itself, so you can reconcile against webhook retries, replays, and backfills.
@@ -807,6 +895,13 @@ func (m *Membership) GetCancellationReason() *string {
 	return m.CancellationReason
 }
 
+func (m *Membership) GetCollectionMethod() *MembershipCollectionMethod {
+	if m == nil {
+		return nil
+	}
+	return m.CollectionMethod
+}
+
 func (m *Membership) GetCreatedAt() string {
 	if m == nil {
 		return ""
@@ -828,11 +923,25 @@ func (m *Membership) GetCurrentPeriodStart() *string {
 	return m.CurrentPeriodStart
 }
 
+func (m *Membership) GetExpiresAt() *string {
+	if m == nil {
+		return nil
+	}
+	return m.ExpiresAt
+}
+
 func (m *Membership) GetID() string {
 	if m == nil {
 		return ""
 	}
 	return m.ID
+}
+
+func (m *Membership) GetInitialPrice() *Money {
+	if m == nil {
+		return nil
+	}
+	return m.InitialPrice
 }
 
 func (m *Membership) GetLicenseKey() *string {
@@ -856,11 +965,32 @@ func (m *Membership) GetMember() *MembershipMember {
 	return m.Member
 }
 
+func (m *Membership) GetMemberID() *string {
+	if m == nil {
+		return nil
+	}
+	return m.MemberID
+}
+
 func (m *Membership) GetMetadata() map[string]any {
 	if m == nil {
 		return nil
 	}
 	return m.Metadata
+}
+
+func (m *Membership) GetMostRecentAction() *MembershipMostRecentAction {
+	if m == nil {
+		return nil
+	}
+	return m.MostRecentAction
+}
+
+func (m *Membership) GetMostRecentActionAt() *string {
+	if m == nil {
+		return nil
+	}
+	return m.MostRecentActionAt
 }
 
 func (m *Membership) GetPhoneNumber() *string {
@@ -877,6 +1007,13 @@ func (m *Membership) GetPlanID() string {
 	return m.PlanID
 }
 
+func (m *Membership) GetProduct() *MembershipProduct {
+	if m == nil {
+		return nil
+	}
+	return m.Product
+}
+
 func (m *Membership) GetProductID() string {
 	if m == nil {
 		return ""
@@ -889,6 +1026,27 @@ func (m *Membership) GetPromoCodeID() *string {
 		return nil
 	}
 	return m.PromoCodeID
+}
+
+func (m *Membership) GetRenewalPrice() *Money {
+	if m == nil {
+		return nil
+	}
+	return m.RenewalPrice
+}
+
+func (m *Membership) GetSplitPayCurrentPayments() *int {
+	if m == nil {
+		return nil
+	}
+	return m.SplitPayCurrentPayments
+}
+
+func (m *Membership) GetSplitPayRequiredPayments() *int {
+	if m == nil {
+		return nil
+	}
+	return m.SplitPayRequiredPayments
 }
 
 func (m *Membership) GetStatus() MembershipStatus {
@@ -970,6 +1128,13 @@ func (m *Membership) SetCancellationReason(cancellationReason *string) {
 	m.require(membershipFieldCancellationReason)
 }
 
+// SetCollectionMethod sets the CollectionMethod field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetCollectionMethod(collectionMethod *MembershipCollectionMethod) {
+	m.CollectionMethod = collectionMethod
+	m.require(membershipFieldCollectionMethod)
+}
+
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (m *Membership) SetCreatedAt(createdAt string) {
@@ -991,11 +1156,25 @@ func (m *Membership) SetCurrentPeriodStart(currentPeriodStart *string) {
 	m.require(membershipFieldCurrentPeriodStart)
 }
 
+// SetExpiresAt sets the ExpiresAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetExpiresAt(expiresAt *string) {
+	m.ExpiresAt = expiresAt
+	m.require(membershipFieldExpiresAt)
+}
+
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (m *Membership) SetID(id string) {
 	m.ID = id
 	m.require(membershipFieldID)
+}
+
+// SetInitialPrice sets the InitialPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetInitialPrice(initialPrice *Money) {
+	m.InitialPrice = initialPrice
+	m.require(membershipFieldInitialPrice)
 }
 
 // SetLicenseKey sets the LicenseKey field and marks it as non-optional;
@@ -1019,11 +1198,32 @@ func (m *Membership) SetMember(member *MembershipMember) {
 	m.require(membershipFieldMember)
 }
 
+// SetMemberID sets the MemberID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetMemberID(memberID *string) {
+	m.MemberID = memberID
+	m.require(membershipFieldMemberID)
+}
+
 // SetMetadata sets the Metadata field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (m *Membership) SetMetadata(metadata map[string]any) {
 	m.Metadata = metadata
 	m.require(membershipFieldMetadata)
+}
+
+// SetMostRecentAction sets the MostRecentAction field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetMostRecentAction(mostRecentAction *MembershipMostRecentAction) {
+	m.MostRecentAction = mostRecentAction
+	m.require(membershipFieldMostRecentAction)
+}
+
+// SetMostRecentActionAt sets the MostRecentActionAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetMostRecentActionAt(mostRecentActionAt *string) {
+	m.MostRecentActionAt = mostRecentActionAt
+	m.require(membershipFieldMostRecentActionAt)
 }
 
 // SetPhoneNumber sets the PhoneNumber field and marks it as non-optional;
@@ -1040,6 +1240,13 @@ func (m *Membership) SetPlanID(planID string) {
 	m.require(membershipFieldPlanID)
 }
 
+// SetProduct sets the Product field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetProduct(product *MembershipProduct) {
+	m.Product = product
+	m.require(membershipFieldProduct)
+}
+
 // SetProductID sets the ProductID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (m *Membership) SetProductID(productID string) {
@@ -1052,6 +1259,27 @@ func (m *Membership) SetProductID(productID string) {
 func (m *Membership) SetPromoCodeID(promoCodeID *string) {
 	m.PromoCodeID = promoCodeID
 	m.require(membershipFieldPromoCodeID)
+}
+
+// SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetRenewalPrice(renewalPrice *Money) {
+	m.RenewalPrice = renewalPrice
+	m.require(membershipFieldRenewalPrice)
+}
+
+// SetSplitPayCurrentPayments sets the SplitPayCurrentPayments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetSplitPayCurrentPayments(splitPayCurrentPayments *int) {
+	m.SplitPayCurrentPayments = splitPayCurrentPayments
+	m.require(membershipFieldSplitPayCurrentPayments)
+}
+
+// SetSplitPayRequiredPayments sets the SplitPayRequiredPayments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetSplitPayRequiredPayments(splitPayRequiredPayments *int) {
+	m.SplitPayRequiredPayments = splitPayRequiredPayments
+	m.require(membershipFieldSplitPayRequiredPayments)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -1372,6 +1600,29 @@ func (m MembershipAffiliateCommissionType) Ptr() *MembershipAffiliateCommissionT
 	return &m
 }
 
+// How renewals are collected. `charge_automatically` charges the saved payment method each period; `send_invoice` emails the buyer an invoice each period. `null` when not set.
+type MembershipCollectionMethod string
+
+const (
+	MembershipCollectionMethodChargeAutomatically MembershipCollectionMethod = "charge_automatically"
+	MembershipCollectionMethodSendInvoice         MembershipCollectionMethod = "send_invoice"
+)
+
+func NewMembershipCollectionMethodFromString(s string) (MembershipCollectionMethod, error) {
+	switch s {
+	case "charge_automatically":
+		return MembershipCollectionMethodChargeAutomatically, nil
+	case "send_invoice":
+		return MembershipCollectionMethodSendInvoice, nil
+	}
+	var t MembershipCollectionMethod
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (m MembershipCollectionMethod) Ptr() *MembershipCollectionMethod {
+	return &m
+}
+
 var (
 	membershipMemberFieldAccessLevel    = big.NewInt(1 << 0)
 	membershipMemberFieldLastAccessedAt = big.NewInt(1 << 1)
@@ -1530,6 +1781,189 @@ func NewMembershipMemberAccessLevelFromString(s string) (MembershipMemberAccessL
 
 func (m MembershipMemberAccessLevel) Ptr() *MembershipMemberAccessLevel {
 	return &m
+}
+
+// The membership's latest lifecycle event, such as `renewing_on` or `canceled_on`. Pair it with `most_recent_action_at`. `null` when none is recorded.
+type MembershipMostRecentAction string
+
+const (
+	MembershipMostRecentActionCanceledOn         MembershipMostRecentAction = "canceled_on"
+	MembershipMostRecentActionFinishedSplitPayAt MembershipMostRecentAction = "finished_split_pay_at"
+	MembershipMostRecentActionCancelingOn        MembershipMostRecentAction = "canceling_on"
+	MembershipMostRecentActionEndingOn           MembershipMostRecentAction = "ending_on"
+	MembershipMostRecentActionRenewingOn         MembershipMostRecentAction = "renewing_on"
+	MembershipMostRecentActionPastDue            MembershipMostRecentAction = "past_due"
+	MembershipMostRecentActionNextPaymentAttempt MembershipMostRecentAction = "next_payment_attempt"
+	MembershipMostRecentActionPausedAt           MembershipMostRecentAction = "paused_at"
+	MembershipMostRecentActionTrialEndsAt        MembershipMostRecentAction = "trial_ends_at"
+	MembershipMostRecentActionUnresolvedAt       MembershipMostRecentAction = "unresolved_at"
+	MembershipMostRecentActionTrialCancelingOn   MembershipMostRecentAction = "trial_canceling_on"
+)
+
+func NewMembershipMostRecentActionFromString(s string) (MembershipMostRecentAction, error) {
+	switch s {
+	case "canceled_on":
+		return MembershipMostRecentActionCanceledOn, nil
+	case "finished_split_pay_at":
+		return MembershipMostRecentActionFinishedSplitPayAt, nil
+	case "canceling_on":
+		return MembershipMostRecentActionCancelingOn, nil
+	case "ending_on":
+		return MembershipMostRecentActionEndingOn, nil
+	case "renewing_on":
+		return MembershipMostRecentActionRenewingOn, nil
+	case "past_due":
+		return MembershipMostRecentActionPastDue, nil
+	case "next_payment_attempt":
+		return MembershipMostRecentActionNextPaymentAttempt, nil
+	case "paused_at":
+		return MembershipMostRecentActionPausedAt, nil
+	case "trial_ends_at":
+		return MembershipMostRecentActionTrialEndsAt, nil
+	case "unresolved_at":
+		return MembershipMostRecentActionUnresolvedAt, nil
+	case "trial_canceling_on":
+		return MembershipMostRecentActionTrialCancelingOn, nil
+	}
+	var t MembershipMostRecentAction
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (m MembershipMostRecentAction) Ptr() *MembershipMostRecentAction {
+	return &m
+}
+
+var (
+	membershipProductFieldID      = big.NewInt(1 << 0)
+	membershipProductFieldLogoURL = big.NewInt(1 << 1)
+	membershipProductFieldTitle   = big.NewInt(1 << 2)
+)
+
+// membershipProductNullableFields maps the wire names of MembershipProduct's nullable fields (required or optional) to their field bits.
+var membershipProductNullableFields = map[string]*big.Int{
+	"logo_url": membershipProductFieldLogoURL,
+}
+
+type MembershipProduct struct {
+	// Product ID, prefixed `prod_`.
+	ID string `json:"id" url:"id"`
+	// Product logo image URL. `null` when the product has no logo.
+	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
+	// Product display name.
+	Title string `json:"title" url:"title"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MembershipProduct) GetID() string {
+	if m == nil {
+		return ""
+	}
+	return m.ID
+}
+
+func (m *MembershipProduct) GetLogoURL() *string {
+	if m == nil {
+		return nil
+	}
+	return m.LogoURL
+}
+
+func (m *MembershipProduct) GetTitle() string {
+	if m == nil {
+		return ""
+	}
+	return m.Title
+}
+
+func (m *MembershipProduct) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MembershipProduct) require(field *big.Int) {
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
+	}
+	next.Or(next, field)
+	m.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipProduct) SetID(id string) {
+	m.ID = id
+	m.require(membershipProductFieldID)
+}
+
+// SetLogoURL sets the LogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipProduct) SetLogoURL(logoURL *string) {
+	m.LogoURL = logoURL
+	m.require(membershipProductFieldLogoURL)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipProduct) SetTitle(title string) {
+	m.Title = title
+	m.require(membershipProductFieldTitle)
+}
+
+func (m *MembershipProduct) UnmarshalJSON(data []byte) error {
+	type unmarshaler MembershipProduct
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MembershipProduct(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, membershipProductNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		m.require(presentFields)
+	}
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MembershipProduct) MarshalJSON() ([]byte, error) {
+	type embed MembershipProduct
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MembershipProduct) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
 }
 
 // The status of a membership
@@ -2039,6 +2473,10 @@ const (
 	ListMembershipsRequestStatusExpired   ListMembershipsRequestStatus = "expired"
 	ListMembershipsRequestStatusCanceling ListMembershipsRequestStatus = "canceling"
 	ListMembershipsRequestStatusPaused    ListMembershipsRequestStatus = "paused"
+	ListMembershipsRequestStatusExpiring  ListMembershipsRequestStatus = "expiring"
+	ListMembershipsRequestStatusOneTime   ListMembershipsRequestStatus = "one_time"
+	ListMembershipsRequestStatusUnclaimed ListMembershipsRequestStatus = "unclaimed"
+	ListMembershipsRequestStatusBanned    ListMembershipsRequestStatus = "banned"
 )
 
 func NewListMembershipsRequestStatusFromString(s string) (ListMembershipsRequestStatus, error) {
@@ -2059,12 +2497,72 @@ func NewListMembershipsRequestStatusFromString(s string) (ListMembershipsRequest
 		return ListMembershipsRequestStatusCanceling, nil
 	case "paused":
 		return ListMembershipsRequestStatusPaused, nil
+	case "expiring":
+		return ListMembershipsRequestStatusExpiring, nil
+	case "one_time":
+		return ListMembershipsRequestStatusOneTime, nil
+	case "unclaimed":
+		return ListMembershipsRequestStatusUnclaimed, nil
+	case "banned":
+		return ListMembershipsRequestStatusBanned, nil
 	}
 	var t ListMembershipsRequestStatus
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
 func (l ListMembershipsRequestStatus) Ptr() *ListMembershipsRequestStatus {
+	return &l
+}
+
+type ListMembershipsRequestStatusesItem string
+
+const (
+	ListMembershipsRequestStatusesItemActive    ListMembershipsRequestStatusesItem = "active"
+	ListMembershipsRequestStatusesItemTrialing  ListMembershipsRequestStatusesItem = "trialing"
+	ListMembershipsRequestStatusesItemPastDue   ListMembershipsRequestStatusesItem = "past_due"
+	ListMembershipsRequestStatusesItemCompleted ListMembershipsRequestStatusesItem = "completed"
+	ListMembershipsRequestStatusesItemCanceled  ListMembershipsRequestStatusesItem = "canceled"
+	ListMembershipsRequestStatusesItemExpired   ListMembershipsRequestStatusesItem = "expired"
+	ListMembershipsRequestStatusesItemCanceling ListMembershipsRequestStatusesItem = "canceling"
+	ListMembershipsRequestStatusesItemPaused    ListMembershipsRequestStatusesItem = "paused"
+	ListMembershipsRequestStatusesItemExpiring  ListMembershipsRequestStatusesItem = "expiring"
+	ListMembershipsRequestStatusesItemOneTime   ListMembershipsRequestStatusesItem = "one_time"
+	ListMembershipsRequestStatusesItemUnclaimed ListMembershipsRequestStatusesItem = "unclaimed"
+	ListMembershipsRequestStatusesItemBanned    ListMembershipsRequestStatusesItem = "banned"
+)
+
+func NewListMembershipsRequestStatusesItemFromString(s string) (ListMembershipsRequestStatusesItem, error) {
+	switch s {
+	case "active":
+		return ListMembershipsRequestStatusesItemActive, nil
+	case "trialing":
+		return ListMembershipsRequestStatusesItemTrialing, nil
+	case "past_due":
+		return ListMembershipsRequestStatusesItemPastDue, nil
+	case "completed":
+		return ListMembershipsRequestStatusesItemCompleted, nil
+	case "canceled":
+		return ListMembershipsRequestStatusesItemCanceled, nil
+	case "expired":
+		return ListMembershipsRequestStatusesItemExpired, nil
+	case "canceling":
+		return ListMembershipsRequestStatusesItemCanceling, nil
+	case "paused":
+		return ListMembershipsRequestStatusesItemPaused, nil
+	case "expiring":
+		return ListMembershipsRequestStatusesItemExpiring, nil
+	case "one_time":
+		return ListMembershipsRequestStatusesItemOneTime, nil
+	case "unclaimed":
+		return ListMembershipsRequestStatusesItemUnclaimed, nil
+	case "banned":
+		return ListMembershipsRequestStatusesItemBanned, nil
+	}
+	var t ListMembershipsRequestStatusesItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListMembershipsRequestStatusesItem) Ptr() *ListMembershipsRequestStatusesItem {
 	return &l
 }
 

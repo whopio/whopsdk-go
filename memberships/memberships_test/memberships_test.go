@@ -88,7 +88,23 @@ func TestMembershipsListWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &whopsdk.ListMembershipsRequest{}
+	request := &whopsdk.ListMembershipsRequest{
+		ProductIDs: []*string{
+			whopsdk.String(
+				"prod_xxxxxxxxxxxxx",
+			),
+		},
+		PlanIDs: []*string{
+			whopsdk.String(
+				"plan_xxxxxxxxxxxxx",
+			),
+		},
+		PromoCodeIDs: []*string{
+			whopsdk.String(
+				"promo_xxxxxxxxxxxxxx",
+			),
+		},
+	}
 	_, invocationErr := client.Memberships.List(
 		context.TODO(),
 		request,
@@ -98,7 +114,7 @@ func TestMembershipsListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestMembershipsListWithWireMock", "GET", "/memberships", nil, 1)
+	VerifyRequestCount(t, "TestMembershipsListWithWireMock", "GET", "/memberships", map[string]interface{}{"product_ids": "prod_xxxxxxxxxxxxx", "plan_ids": "plan_xxxxxxxxxxxxx", "promo_code_ids": "promo_xxxxxxxxxxxxxx"}, 1)
 }
 
 func TestMembershipsInviteWithWireMock(

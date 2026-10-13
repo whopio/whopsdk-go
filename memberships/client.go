@@ -43,7 +43,23 @@ func NewClient(options *core.RequestOptions) *Client {
 //
 // Example:
 //
-//	request := &whopsdk.ListMembershipsRequest{}
+//	request := &whopsdk.ListMembershipsRequest{
+//	    ProductIDs: []*string{
+//	        whopsdk.String(
+//	            "prod_xxxxxxxxxxxxx",
+//	        ),
+//	    },
+//	    PlanIDs: []*string{
+//	        whopsdk.String(
+//	            "plan_xxxxxxxxxxxxx",
+//	        ),
+//	    },
+//	    PromoCodeIDs: []*string{
+//	        whopsdk.String(
+//	            "promo_xxxxxxxxxxxxxx",
+//	        ),
+//	    },
+//	}
 //	client.Memberships.List(
 //	    context.TODO(),
 //	    request,

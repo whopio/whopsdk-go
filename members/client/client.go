@@ -10,12 +10,14 @@ import (
 	core "github.com/whopio/whopsdk-go/v2/core"
 	internal "github.com/whopio/whopsdk-go/v2/internal"
 	logs "github.com/whopio/whopsdk-go/v2/members/logs"
+	notes "github.com/whopio/whopsdk-go/v2/members/notes"
 	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 type Client struct {
 	WithRawResponse *RawClient
 	Logs            *logs.Client
+	Notes           *notes.Client
 
 	options *core.RequestOptions
 	baseURL string
@@ -29,6 +31,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 	return &Client{
 		Logs:            logs.NewClient(options),
+		Notes:           notes.NewClient(options),
 		WithRawResponse: NewRawClient(options),
 		options:         options,
 		baseURL:         options.BaseURL,
@@ -50,6 +53,21 @@ func NewClient(options *core.RequestOptions) *Client {
 //	    UserIDs: []*string{
 //	        whopsdk.String(
 //	            "user_xxxxxxxxxxxxxx",
+//	        ),
+//	    },
+//	    ProductIDs: []*string{
+//	        whopsdk.String(
+//	            "prod_xxxxxxxxxxxxx",
+//	        ),
+//	    },
+//	    PlanIDs: []*string{
+//	        whopsdk.String(
+//	            "plan_xxxxxxxxxxxxx",
+//	        ),
+//	    },
+//	    PromoCodeIDs: []*string{
+//	        whopsdk.String(
+//	            "promo_xxxxxxxxxxxx",
 //	        ),
 //	    },
 //	}
