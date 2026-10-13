@@ -54,9 +54,10 @@ var (
 	retrievePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 13)
 	retrievePreferencesResponseFieldEconomicIntelligenceOffers              = big.NewInt(1 << 14)
 	retrievePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 15)
-	retrievePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 16)
-	retrievePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 17)
-	retrievePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 18)
+	retrievePreferencesResponseFieldFeedbackOptions                         = big.NewInt(1 << 16)
+	retrievePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 17)
+	retrievePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 18)
+	retrievePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 19)
 )
 
 // retrievePreferencesResponseNullableFields maps the wire names of RetrievePreferencesResponse's nullable fields (required or optional) to their field bits.
@@ -103,6 +104,8 @@ type RetrievePreferencesResponse struct {
 	EconomicIntelligenceOffers []*RetrievePreferencesResponseEconomicIntelligenceOffersItem `json:"economic_intelligence_offers" url:"economic_intelligence_offers"`
 	// The account's last Economic Intelligence period, once it has ended. `null` while Economic Intelligence is on, or when it has never been on.
 	EconomicIntelligencePreviousPeriod *RetrievePreferencesResponseEconomicIntelligencePreviousPeriod `json:"economic_intelligence_previous_period,omitempty" url:"economic_intelligence_previous_period,omitempty"`
+	// The account's own cancel reasons, in the order members see them when they cancel. Each is filed under a standard category, saved as the membership's `cancel_option`, so reports keep grouping cancellations. Empty when the account uses Whop's default reasons.
+	FeedbackOptions []*RetrievePreferencesResponseFeedbackOptionsItem `json:"feedback_options" url:"feedback_options"`
 	// Lowercase ISO currency code every new sale settles into, regardless of the plan's currency or what the buyer paid in. Sales converted this way carry an additional 0.5% FX fee. `null` when the account settles each sale in its plan's currency.
 	PreferredSettlementCurrency *RetrievePreferencesResponsePreferredSettlementCurrency `json:"preferred_settlement_currency,omitempty" url:"preferred_settlement_currency,omitempty"`
 	// When `preferred_settlement_currency` may next be changed or turned off, as an ISO 8601 timestamp. It can change at most once every 7 days. `null` when it may change now.
@@ -227,6 +230,13 @@ func (r *RetrievePreferencesResponse) GetEconomicIntelligencePreviousPeriod() *R
 		return nil
 	}
 	return r.EconomicIntelligencePreviousPeriod
+}
+
+func (r *RetrievePreferencesResponse) GetFeedbackOptions() []*RetrievePreferencesResponseFeedbackOptionsItem {
+	if r == nil {
+		return nil
+	}
+	return r.FeedbackOptions
 }
 
 func (r *RetrievePreferencesResponse) GetPreferredSettlementCurrency() *RetrievePreferencesResponsePreferredSettlementCurrency {
@@ -376,6 +386,13 @@ func (r *RetrievePreferencesResponse) SetEconomicIntelligenceOffers(economicInte
 func (r *RetrievePreferencesResponse) SetEconomicIntelligencePreviousPeriod(economicIntelligencePreviousPeriod *RetrievePreferencesResponseEconomicIntelligencePreviousPeriod) {
 	r.EconomicIntelligencePreviousPeriod = economicIntelligencePreviousPeriod
 	r.require(retrievePreferencesResponseFieldEconomicIntelligencePreviousPeriod)
+}
+
+// SetFeedbackOptions sets the FeedbackOptions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponse) SetFeedbackOptions(feedbackOptions []*RetrievePreferencesResponseFeedbackOptionsItem) {
+	r.FeedbackOptions = feedbackOptions
+	r.require(retrievePreferencesResponseFieldFeedbackOptions)
 }
 
 // SetPreferredSettlementCurrency sets the PreferredSettlementCurrency field and marks it as non-optional;
@@ -2042,6 +2059,165 @@ func (r *RetrievePreferencesResponseEconomicIntelligencePreviousPeriod) String()
 	return fmt.Sprintf("%#v", r)
 }
 
+var (
+	retrievePreferencesResponseFeedbackOptionsItemFieldCategory = big.NewInt(1 << 0)
+	retrievePreferencesResponseFeedbackOptionsItemFieldID       = big.NewInt(1 << 1)
+	retrievePreferencesResponseFeedbackOptionsItemFieldLabel    = big.NewInt(1 << 2)
+)
+
+type RetrievePreferencesResponseFeedbackOptionsItem struct {
+	// The category saved as the membership's `cancel_option` when a member picks this option.
+	Category RetrievePreferencesResponseFeedbackOptionsItemCategory `json:"category" url:"category"`
+	// Feedback option ID, prefixed `fo_`. Pass it as `feedback_option_id` when canceling a membership, or back in `feedback_options` to keep the option when changing the list.
+	ID string `json:"id" url:"id"`
+	// The cancel reason as members see it. Up to 100 characters.
+	Label string `json:"label" url:"label"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *RetrievePreferencesResponseFeedbackOptionsItem) GetCategory() RetrievePreferencesResponseFeedbackOptionsItemCategory {
+	if r == nil {
+		return ""
+	}
+	return r.Category
+}
+
+func (r *RetrievePreferencesResponseFeedbackOptionsItem) GetID() string {
+	if r == nil {
+		return ""
+	}
+	return r.ID
+}
+
+func (r *RetrievePreferencesResponseFeedbackOptionsItem) GetLabel() string {
+	if r == nil {
+		return ""
+	}
+	return r.Label
+}
+
+func (r *RetrievePreferencesResponseFeedbackOptionsItem) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *RetrievePreferencesResponseFeedbackOptionsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetCategory sets the Category field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseFeedbackOptionsItem) SetCategory(category RetrievePreferencesResponseFeedbackOptionsItemCategory) {
+	r.Category = category
+	r.require(retrievePreferencesResponseFeedbackOptionsItemFieldCategory)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseFeedbackOptionsItem) SetID(id string) {
+	r.ID = id
+	r.require(retrievePreferencesResponseFeedbackOptionsItemFieldID)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseFeedbackOptionsItem) SetLabel(label string) {
+	r.Label = label
+	r.require(retrievePreferencesResponseFeedbackOptionsItemFieldLabel)
+}
+
+func (r *RetrievePreferencesResponseFeedbackOptionsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler RetrievePreferencesResponseFeedbackOptionsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RetrievePreferencesResponseFeedbackOptionsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RetrievePreferencesResponseFeedbackOptionsItem) MarshalJSON() ([]byte, error) {
+	type embed RetrievePreferencesResponseFeedbackOptionsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *RetrievePreferencesResponseFeedbackOptionsItem) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+// The category saved as the membership's `cancel_option` when a member picks this option.
+type RetrievePreferencesResponseFeedbackOptionsItemCategory string
+
+const (
+	RetrievePreferencesResponseFeedbackOptionsItemCategoryTooExpensive    RetrievePreferencesResponseFeedbackOptionsItemCategory = "too_expensive"
+	RetrievePreferencesResponseFeedbackOptionsItemCategorySwitching       RetrievePreferencesResponseFeedbackOptionsItemCategory = "switching"
+	RetrievePreferencesResponseFeedbackOptionsItemCategoryMissingFeatures RetrievePreferencesResponseFeedbackOptionsItemCategory = "missing_features"
+	RetrievePreferencesResponseFeedbackOptionsItemCategoryTechnicalIssues RetrievePreferencesResponseFeedbackOptionsItemCategory = "technical_issues"
+	RetrievePreferencesResponseFeedbackOptionsItemCategoryBadExperience   RetrievePreferencesResponseFeedbackOptionsItemCategory = "bad_experience"
+	RetrievePreferencesResponseFeedbackOptionsItemCategoryUnused          RetrievePreferencesResponseFeedbackOptionsItemCategory = "unused"
+	RetrievePreferencesResponseFeedbackOptionsItemCategoryOther           RetrievePreferencesResponseFeedbackOptionsItemCategory = "other"
+)
+
+func NewRetrievePreferencesResponseFeedbackOptionsItemCategoryFromString(s string) (RetrievePreferencesResponseFeedbackOptionsItemCategory, error) {
+	switch s {
+	case "too_expensive":
+		return RetrievePreferencesResponseFeedbackOptionsItemCategoryTooExpensive, nil
+	case "switching":
+		return RetrievePreferencesResponseFeedbackOptionsItemCategorySwitching, nil
+	case "missing_features":
+		return RetrievePreferencesResponseFeedbackOptionsItemCategoryMissingFeatures, nil
+	case "technical_issues":
+		return RetrievePreferencesResponseFeedbackOptionsItemCategoryTechnicalIssues, nil
+	case "bad_experience":
+		return RetrievePreferencesResponseFeedbackOptionsItemCategoryBadExperience, nil
+	case "unused":
+		return RetrievePreferencesResponseFeedbackOptionsItemCategoryUnused, nil
+	case "other":
+		return RetrievePreferencesResponseFeedbackOptionsItemCategoryOther, nil
+	}
+	var t RetrievePreferencesResponseFeedbackOptionsItemCategory
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrievePreferencesResponseFeedbackOptionsItemCategory) Ptr() *RetrievePreferencesResponseFeedbackOptionsItemCategory {
+	return &r
+}
+
 // Lowercase ISO currency code every new sale settles into, regardless of the plan's currency or what the buyer paid in. Sales converted this way carry an additional 0.5% FX fee. `null` when the account settles each sale in its plan's currency.
 type RetrievePreferencesResponsePreferredSettlementCurrency string
 
@@ -2709,6 +2885,165 @@ func (u UpdatePreferencesRequestEconomicIntelligenceDurationKey) Ptr() *UpdatePr
 	return &u
 }
 
+var (
+	updatePreferencesRequestFeedbackOptionsItemFieldCategory = big.NewInt(1 << 0)
+	updatePreferencesRequestFeedbackOptionsItemFieldID       = big.NewInt(1 << 1)
+	updatePreferencesRequestFeedbackOptionsItemFieldLabel    = big.NewInt(1 << 2)
+)
+
+type UpdatePreferencesRequestFeedbackOptionsItem struct {
+	// The category saved as the membership's `cancel_option` when a member picks this option, so reports keep grouping cancellations.
+	Category UpdatePreferencesRequestFeedbackOptionsItemCategory `json:"category" url:"category"`
+	// The ID of an option to keep. Omit it to add a new option.
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+	// The cancel reason as members see it.
+	Label string `json:"label" url:"label"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdatePreferencesRequestFeedbackOptionsItem) GetCategory() UpdatePreferencesRequestFeedbackOptionsItemCategory {
+	if u == nil {
+		return ""
+	}
+	return u.Category
+}
+
+func (u *UpdatePreferencesRequestFeedbackOptionsItem) GetID() *string {
+	if u == nil {
+		return nil
+	}
+	return u.ID
+}
+
+func (u *UpdatePreferencesRequestFeedbackOptionsItem) GetLabel() string {
+	if u == nil {
+		return ""
+	}
+	return u.Label
+}
+
+func (u *UpdatePreferencesRequestFeedbackOptionsItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdatePreferencesRequestFeedbackOptionsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetCategory sets the Category field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestFeedbackOptionsItem) SetCategory(category UpdatePreferencesRequestFeedbackOptionsItemCategory) {
+	u.Category = category
+	u.require(updatePreferencesRequestFeedbackOptionsItemFieldCategory)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestFeedbackOptionsItem) SetID(id *string) {
+	u.ID = id
+	u.require(updatePreferencesRequestFeedbackOptionsItemFieldID)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestFeedbackOptionsItem) SetLabel(label string) {
+	u.Label = label
+	u.require(updatePreferencesRequestFeedbackOptionsItemFieldLabel)
+}
+
+func (u *UpdatePreferencesRequestFeedbackOptionsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdatePreferencesRequestFeedbackOptionsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdatePreferencesRequestFeedbackOptionsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdatePreferencesRequestFeedbackOptionsItem) MarshalJSON() ([]byte, error) {
+	type embed UpdatePreferencesRequestFeedbackOptionsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdatePreferencesRequestFeedbackOptionsItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// The category saved as the membership's `cancel_option` when a member picks this option, so reports keep grouping cancellations.
+type UpdatePreferencesRequestFeedbackOptionsItemCategory string
+
+const (
+	UpdatePreferencesRequestFeedbackOptionsItemCategoryTooExpensive    UpdatePreferencesRequestFeedbackOptionsItemCategory = "too_expensive"
+	UpdatePreferencesRequestFeedbackOptionsItemCategorySwitching       UpdatePreferencesRequestFeedbackOptionsItemCategory = "switching"
+	UpdatePreferencesRequestFeedbackOptionsItemCategoryMissingFeatures UpdatePreferencesRequestFeedbackOptionsItemCategory = "missing_features"
+	UpdatePreferencesRequestFeedbackOptionsItemCategoryTechnicalIssues UpdatePreferencesRequestFeedbackOptionsItemCategory = "technical_issues"
+	UpdatePreferencesRequestFeedbackOptionsItemCategoryBadExperience   UpdatePreferencesRequestFeedbackOptionsItemCategory = "bad_experience"
+	UpdatePreferencesRequestFeedbackOptionsItemCategoryUnused          UpdatePreferencesRequestFeedbackOptionsItemCategory = "unused"
+	UpdatePreferencesRequestFeedbackOptionsItemCategoryOther           UpdatePreferencesRequestFeedbackOptionsItemCategory = "other"
+)
+
+func NewUpdatePreferencesRequestFeedbackOptionsItemCategoryFromString(s string) (UpdatePreferencesRequestFeedbackOptionsItemCategory, error) {
+	switch s {
+	case "too_expensive":
+		return UpdatePreferencesRequestFeedbackOptionsItemCategoryTooExpensive, nil
+	case "switching":
+		return UpdatePreferencesRequestFeedbackOptionsItemCategorySwitching, nil
+	case "missing_features":
+		return UpdatePreferencesRequestFeedbackOptionsItemCategoryMissingFeatures, nil
+	case "technical_issues":
+		return UpdatePreferencesRequestFeedbackOptionsItemCategoryTechnicalIssues, nil
+	case "bad_experience":
+		return UpdatePreferencesRequestFeedbackOptionsItemCategoryBadExperience, nil
+	case "unused":
+		return UpdatePreferencesRequestFeedbackOptionsItemCategoryUnused, nil
+	case "other":
+		return UpdatePreferencesRequestFeedbackOptionsItemCategoryOther, nil
+	}
+	var t UpdatePreferencesRequestFeedbackOptionsItemCategory
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdatePreferencesRequestFeedbackOptionsItemCategory) Ptr() *UpdatePreferencesRequestFeedbackOptionsItemCategory {
+	return &u
+}
+
 // Settle every new sale into this currency, regardless of the plan's currency or what the buyer paid in; sales converted this way carry an additional 0.5% FX fee. Pass `null` to go back to settling each sale in its plan's currency. Changing it never converts money already in your balances, and it can change at most once every 7 days (see `preferred_settlement_currency_changeable_at`). Requires the `payout:account:update` scope on your API key.
 type UpdatePreferencesRequestPreferredSettlementCurrency string
 
@@ -2781,9 +3116,10 @@ var (
 	updatePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 13)
 	updatePreferencesResponseFieldEconomicIntelligenceOffers              = big.NewInt(1 << 14)
 	updatePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 15)
-	updatePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 16)
-	updatePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 17)
-	updatePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 18)
+	updatePreferencesResponseFieldFeedbackOptions                         = big.NewInt(1 << 16)
+	updatePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 17)
+	updatePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 18)
+	updatePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 19)
 )
 
 // updatePreferencesResponseNullableFields maps the wire names of UpdatePreferencesResponse's nullable fields (required or optional) to their field bits.
@@ -2830,6 +3166,8 @@ type UpdatePreferencesResponse struct {
 	EconomicIntelligenceOffers []*UpdatePreferencesResponseEconomicIntelligenceOffersItem `json:"economic_intelligence_offers" url:"economic_intelligence_offers"`
 	// The account's last Economic Intelligence period, once it has ended. `null` while Economic Intelligence is on, or when it has never been on.
 	EconomicIntelligencePreviousPeriod *UpdatePreferencesResponseEconomicIntelligencePreviousPeriod `json:"economic_intelligence_previous_period,omitempty" url:"economic_intelligence_previous_period,omitempty"`
+	// The account's own cancel reasons, in the order members see them when they cancel. Each is filed under a standard category, saved as the membership's `cancel_option`, so reports keep grouping cancellations. Empty when the account uses Whop's default reasons.
+	FeedbackOptions []*UpdatePreferencesResponseFeedbackOptionsItem `json:"feedback_options" url:"feedback_options"`
 	// Lowercase ISO currency code every new sale settles into, regardless of the plan's currency or what the buyer paid in. Sales converted this way carry an additional 0.5% FX fee. `null` when the account settles each sale in its plan's currency.
 	PreferredSettlementCurrency *UpdatePreferencesResponsePreferredSettlementCurrency `json:"preferred_settlement_currency,omitempty" url:"preferred_settlement_currency,omitempty"`
 	// When `preferred_settlement_currency` may next be changed or turned off, as an ISO 8601 timestamp. It can change at most once every 7 days. `null` when it may change now.
@@ -2954,6 +3292,13 @@ func (u *UpdatePreferencesResponse) GetEconomicIntelligencePreviousPeriod() *Upd
 		return nil
 	}
 	return u.EconomicIntelligencePreviousPeriod
+}
+
+func (u *UpdatePreferencesResponse) GetFeedbackOptions() []*UpdatePreferencesResponseFeedbackOptionsItem {
+	if u == nil {
+		return nil
+	}
+	return u.FeedbackOptions
 }
 
 func (u *UpdatePreferencesResponse) GetPreferredSettlementCurrency() *UpdatePreferencesResponsePreferredSettlementCurrency {
@@ -3103,6 +3448,13 @@ func (u *UpdatePreferencesResponse) SetEconomicIntelligenceOffers(economicIntell
 func (u *UpdatePreferencesResponse) SetEconomicIntelligencePreviousPeriod(economicIntelligencePreviousPeriod *UpdatePreferencesResponseEconomicIntelligencePreviousPeriod) {
 	u.EconomicIntelligencePreviousPeriod = economicIntelligencePreviousPeriod
 	u.require(updatePreferencesResponseFieldEconomicIntelligencePreviousPeriod)
+}
+
+// SetFeedbackOptions sets the FeedbackOptions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponse) SetFeedbackOptions(feedbackOptions []*UpdatePreferencesResponseFeedbackOptionsItem) {
+	u.FeedbackOptions = feedbackOptions
+	u.require(updatePreferencesResponseFieldFeedbackOptions)
 }
 
 // SetPreferredSettlementCurrency sets the PreferredSettlementCurrency field and marks it as non-optional;
@@ -4769,6 +5121,165 @@ func (u *UpdatePreferencesResponseEconomicIntelligencePreviousPeriod) String() s
 	return fmt.Sprintf("%#v", u)
 }
 
+var (
+	updatePreferencesResponseFeedbackOptionsItemFieldCategory = big.NewInt(1 << 0)
+	updatePreferencesResponseFeedbackOptionsItemFieldID       = big.NewInt(1 << 1)
+	updatePreferencesResponseFeedbackOptionsItemFieldLabel    = big.NewInt(1 << 2)
+)
+
+type UpdatePreferencesResponseFeedbackOptionsItem struct {
+	// The category saved as the membership's `cancel_option` when a member picks this option.
+	Category UpdatePreferencesResponseFeedbackOptionsItemCategory `json:"category" url:"category"`
+	// Feedback option ID, prefixed `fo_`. Pass it as `feedback_option_id` when canceling a membership, or back in `feedback_options` to keep the option when changing the list.
+	ID string `json:"id" url:"id"`
+	// The cancel reason as members see it. Up to 100 characters.
+	Label string `json:"label" url:"label"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdatePreferencesResponseFeedbackOptionsItem) GetCategory() UpdatePreferencesResponseFeedbackOptionsItemCategory {
+	if u == nil {
+		return ""
+	}
+	return u.Category
+}
+
+func (u *UpdatePreferencesResponseFeedbackOptionsItem) GetID() string {
+	if u == nil {
+		return ""
+	}
+	return u.ID
+}
+
+func (u *UpdatePreferencesResponseFeedbackOptionsItem) GetLabel() string {
+	if u == nil {
+		return ""
+	}
+	return u.Label
+}
+
+func (u *UpdatePreferencesResponseFeedbackOptionsItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdatePreferencesResponseFeedbackOptionsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetCategory sets the Category field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseFeedbackOptionsItem) SetCategory(category UpdatePreferencesResponseFeedbackOptionsItemCategory) {
+	u.Category = category
+	u.require(updatePreferencesResponseFeedbackOptionsItemFieldCategory)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseFeedbackOptionsItem) SetID(id string) {
+	u.ID = id
+	u.require(updatePreferencesResponseFeedbackOptionsItemFieldID)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseFeedbackOptionsItem) SetLabel(label string) {
+	u.Label = label
+	u.require(updatePreferencesResponseFeedbackOptionsItemFieldLabel)
+}
+
+func (u *UpdatePreferencesResponseFeedbackOptionsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdatePreferencesResponseFeedbackOptionsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdatePreferencesResponseFeedbackOptionsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdatePreferencesResponseFeedbackOptionsItem) MarshalJSON() ([]byte, error) {
+	type embed UpdatePreferencesResponseFeedbackOptionsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdatePreferencesResponseFeedbackOptionsItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// The category saved as the membership's `cancel_option` when a member picks this option.
+type UpdatePreferencesResponseFeedbackOptionsItemCategory string
+
+const (
+	UpdatePreferencesResponseFeedbackOptionsItemCategoryTooExpensive    UpdatePreferencesResponseFeedbackOptionsItemCategory = "too_expensive"
+	UpdatePreferencesResponseFeedbackOptionsItemCategorySwitching       UpdatePreferencesResponseFeedbackOptionsItemCategory = "switching"
+	UpdatePreferencesResponseFeedbackOptionsItemCategoryMissingFeatures UpdatePreferencesResponseFeedbackOptionsItemCategory = "missing_features"
+	UpdatePreferencesResponseFeedbackOptionsItemCategoryTechnicalIssues UpdatePreferencesResponseFeedbackOptionsItemCategory = "technical_issues"
+	UpdatePreferencesResponseFeedbackOptionsItemCategoryBadExperience   UpdatePreferencesResponseFeedbackOptionsItemCategory = "bad_experience"
+	UpdatePreferencesResponseFeedbackOptionsItemCategoryUnused          UpdatePreferencesResponseFeedbackOptionsItemCategory = "unused"
+	UpdatePreferencesResponseFeedbackOptionsItemCategoryOther           UpdatePreferencesResponseFeedbackOptionsItemCategory = "other"
+)
+
+func NewUpdatePreferencesResponseFeedbackOptionsItemCategoryFromString(s string) (UpdatePreferencesResponseFeedbackOptionsItemCategory, error) {
+	switch s {
+	case "too_expensive":
+		return UpdatePreferencesResponseFeedbackOptionsItemCategoryTooExpensive, nil
+	case "switching":
+		return UpdatePreferencesResponseFeedbackOptionsItemCategorySwitching, nil
+	case "missing_features":
+		return UpdatePreferencesResponseFeedbackOptionsItemCategoryMissingFeatures, nil
+	case "technical_issues":
+		return UpdatePreferencesResponseFeedbackOptionsItemCategoryTechnicalIssues, nil
+	case "bad_experience":
+		return UpdatePreferencesResponseFeedbackOptionsItemCategoryBadExperience, nil
+	case "unused":
+		return UpdatePreferencesResponseFeedbackOptionsItemCategoryUnused, nil
+	case "other":
+		return UpdatePreferencesResponseFeedbackOptionsItemCategoryOther, nil
+	}
+	var t UpdatePreferencesResponseFeedbackOptionsItemCategory
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdatePreferencesResponseFeedbackOptionsItemCategory) Ptr() *UpdatePreferencesResponseFeedbackOptionsItemCategory {
+	return &u
+}
+
 // Lowercase ISO currency code every new sale settles into, regardless of the plan's currency or what the buyer paid in. Sales converted this way carry an additional 0.5% FX fee. `null` when the account settles each sale in its plan's currency.
 type UpdatePreferencesResponsePreferredSettlementCurrency string
 
@@ -4836,8 +5347,9 @@ var (
 	updatePreferencesRequestFieldDisputeFighterEnabled           = big.NewInt(1 << 8)
 	updatePreferencesRequestFieldEconomicIntelligenceAutoRenew   = big.NewInt(1 << 9)
 	updatePreferencesRequestFieldEconomicIntelligenceDurationKey = big.NewInt(1 << 10)
-	updatePreferencesRequestFieldPreferredSettlementCurrency     = big.NewInt(1 << 11)
-	updatePreferencesRequestFieldSubscriptionFailureBehavior     = big.NewInt(1 << 12)
+	updatePreferencesRequestFieldFeedbackOptions                 = big.NewInt(1 << 11)
+	updatePreferencesRequestFieldPreferredSettlementCurrency     = big.NewInt(1 << 12)
+	updatePreferencesRequestFieldSubscriptionFailureBehavior     = big.NewInt(1 << 13)
 )
 
 type UpdatePreferencesRequest struct {
@@ -4863,6 +5375,8 @@ type UpdatePreferencesRequest struct {
 	EconomicIntelligenceAutoRenew *bool `json:"economic_intelligence_auto_renew,omitempty" url:"-"`
 	// Turns on Economic Intelligence with the offer that has this `key` in `economic_intelligence_offers`, at that offer's fee. A committed duration can't be changed or turned off until `economic_intelligence_ends_at`, except to upgrade to `weekly`, which switches to auto-renew right away. Requires the `company:update` scope on your API key.
 	EconomicIntelligenceDurationKey *UpdatePreferencesRequestEconomicIntelligenceDurationKey `json:"economic_intelligence_duration_key,omitempty" url:"-"`
+	// Replaces the account's own cancel reasons, shown to members in this order when they cancel. Pass an option's `id` to keep it, for example when renaming it; options without an `id` are added, and options left out are removed. Pass an empty array to go back to Whop's default reasons. Members who already picked an option keep the label they saw. Requires the `company:manage_checkout` scope on your API key.
+	FeedbackOptions []*UpdatePreferencesRequestFeedbackOptionsItem `json:"feedback_options,omitempty" url:"-"`
 	// Settle every new sale into this currency, regardless of the plan's currency or what the buyer paid in; sales converted this way carry an additional 0.5% FX fee. Pass `null` to go back to settling each sale in its plan's currency. Changing it never converts money already in your balances, and it can change at most once every 7 days (see `preferred_settlement_currency_changeable_at`). Requires the `payout:account:update` scope on your API key.
 	PreferredSettlementCurrency *UpdatePreferencesRequestPreferredSettlementCurrency `json:"preferred_settlement_currency,omitempty" url:"-"`
 	// What happens to a subscription once every retry of a renewal payment has failed. `cancel` (the default) cancels it. `none` leaves it past due and keeps billing it each period; access follows the account's past-due access setting. Requires company:manage_checkout permission.
@@ -4956,6 +5470,13 @@ func (u *UpdatePreferencesRequest) SetEconomicIntelligenceAutoRenew(economicInte
 func (u *UpdatePreferencesRequest) SetEconomicIntelligenceDurationKey(economicIntelligenceDurationKey *UpdatePreferencesRequestEconomicIntelligenceDurationKey) {
 	u.EconomicIntelligenceDurationKey = economicIntelligenceDurationKey
 	u.require(updatePreferencesRequestFieldEconomicIntelligenceDurationKey)
+}
+
+// SetFeedbackOptions sets the FeedbackOptions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequest) SetFeedbackOptions(feedbackOptions []*UpdatePreferencesRequestFeedbackOptionsItem) {
+	u.FeedbackOptions = feedbackOptions
+	u.require(updatePreferencesRequestFieldFeedbackOptions)
 }
 
 // SetPreferredSettlementCurrency sets the PreferredSettlementCurrency field and marks it as non-optional;

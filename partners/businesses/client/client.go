@@ -149,3 +149,67 @@ func (c *Client) Retrieve(
 	}
 	return response.Body, nil
 }
+
+// Save annual projections for a business referred by the authenticated partner. Projections cannot be changed after saving; repeating the same values is allowed. Public API access requires a partner OAuth token; business API keys are not supported.
+//
+// Example:
+//
+//	request := &partners.UpdateBusinessesRequest{
+//	    ID: "id",
+//	    AnnualAdsUsd: "120000",
+//	    AnnualProcessingUsd: "1200000",
+//	}
+//	client.Partners.Businesses.Update(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Update(
+	ctx context.Context,
+	request *partners.UpdateBusinessesRequest,
+	opts ...option.RequestOption,
+) (*partners.UpdateBusinessesResponse, error) {
+	response, err := c.WithRawResponse.Update(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Accept the authenticated partner's CPA offer with the reviewed terms and signed offer token. Public API access requires a partner OAuth token; business API keys are not supported.
+//
+// Example:
+//
+//	request := &partners.AcceptCommissionAdvanceBusinessesRequest{
+//	    ID: "id",
+//	    Acknowledgments: []partners.AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItem{
+//	        partners.AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItemCommissionReplacement,
+//	        partners.AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItemClawback,
+//	        partners.AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItemTerm,
+//	    },
+//	    ExpectedAmountUsd: "1439.99",
+//	    OfferToken: "eyJfcmFpbHMiOnsiZGF0YSI6MSwicHVyIjoiYmxvYl9pZCJ9fQ==--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+//	    TermsVersion: "2026-01-01",
+//	}
+//	client.Partners.Businesses.AcceptCommissionAdvance(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) AcceptCommissionAdvance(
+	ctx context.Context,
+	request *partners.AcceptCommissionAdvanceBusinessesRequest,
+	opts ...option.RequestOption,
+) (*partners.AcceptCommissionAdvanceBusinessesResponse, error) {
+	response, err := c.WithRawResponse.AcceptCommissionAdvance(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}

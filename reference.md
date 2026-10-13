@@ -24031,6 +24031,14 @@ client.Memberships.Cancel(
 <dl>
 <dd>
 
+**feedbackOptionID:** `*string` — The ID of the feedback option the customer picked as their reason for canceling, from the account's `feedback_options` preference. The membership records the option's label as the customer saw it and its category as `cancel_option`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **reason:** `*string` — Free-form note recording why the membership was canceled.
     
 </dd>
@@ -42586,6 +42594,7 @@ Required scopes depend on the preferences being updated:
 | `cards_auto_top_up`, `cards_notifications` | `payout:account:update` |
 | `dispute_fighter_enabled` | `payment:dispute` |
 | `economic_intelligence_duration_key`, `economic_intelligence_auto_renew` | `company:update` |
+| `feedback_options` | `company:manage_checkout` |
 
 When updating preferences from multiple rows, all corresponding scopes are required for the account.
 </dd>
@@ -42704,6 +42713,14 @@ client.Accounts.Preferences.Update(
 <dd>
 
 **economicIntelligenceDurationKey:** `*accounts.UpdatePreferencesRequestEconomicIntelligenceDurationKey` — Turns on Economic Intelligence with the offer that has this `key` in `economic_intelligence_offers`, at that offer's fee. A committed duration can't be changed or turned off until `economic_intelligence_ends_at`, except to upgrade to `weekly`, which switches to auto-renew right away. Requires the `company:update` scope on your API key.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**feedbackOptions:** `[]*accounts.UpdatePreferencesRequestFeedbackOptionsItem` — Replaces the account's own cancel reasons, shown to members in this order when they cancel. Pass an option's `id` to keep it, for example when renaming it; options without an `id` are added, and options left out are removed. Pass an empty array to go back to Whop's default reasons. Members who already picked an option keep the label they saw. Requires the `company:manage_checkout` scope on your API key.
     
 </dd>
 </dl>
@@ -44344,6 +44361,14 @@ client.Partners.Businesses.List(
 <dl>
 <dd>
 
+**advanceStatus:** `*partners.ListBusinessesRequestAdvanceStatus` — Filter the authenticated partner's CPA offers by status. Use offered for every state after qualification.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **status:** `*partners.ListBusinessesRequestStatus` — Filter by referral status.
     
 </dd>
@@ -44509,6 +44534,184 @@ client.Partners.Businesses.Retrieve(
 <dd>
 
 **id:** `string` — The partner business ID (a coma_ identifier).
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Partners.Businesses.Update(ID, request) -> *partners.UpdateBusinessesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Save annual projections for a business referred by the authenticated partner. Projections cannot be changed after saving; repeating the same values is allowed. Public API access requires a partner OAuth token; business API keys are not supported.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &partners.UpdateBusinessesRequest{
+    ID: "id",
+    AnnualAdsUsd: "120000",
+    AnnualProcessingUsd: "1200000",
+}
+client.Partners.Businesses.Update(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The partner business ID (a coma_ identifier).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**annualAdsUsd:** `string` — Annual projected Whop Ads spend in USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**annualProcessingUsd:** `string` — Annual projected processing on Whop in USD.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Partners.Businesses.AcceptCommissionAdvance(ID, request) -> *partners.AcceptCommissionAdvanceBusinessesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Accept the authenticated partner's CPA offer with the reviewed terms and signed offer token. Public API access requires a partner OAuth token; business API keys are not supported.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &partners.AcceptCommissionAdvanceBusinessesRequest{
+    ID: "id",
+    Acknowledgments: []partners.AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItem{
+        partners.AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItemCommissionReplacement,
+        partners.AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItemClawback,
+        partners.AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItemTerm,
+    },
+    ExpectedAmountUsd: "1439.99",
+    OfferToken: "eyJfcmFpbHMiOnsiZGF0YSI6MSwicHVyIjoiYmxvYl9pZCJ9fQ==--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    TermsVersion: "2026-01-01",
+}
+client.Partners.Businesses.AcceptCommissionAdvance(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The referred business relationship ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**acknowledgments:** `[]partners.AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItem` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**expectedAmountUsd:** `string` — Reviewed payment amount in USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**offerToken:** `string` — Signed offer token returned by the partner business response. Requires partner:commission_advance:accept permission to retrieve.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**termsVersion:** `string` — Reviewed CPA terms version.
     
 </dd>
 </dl>

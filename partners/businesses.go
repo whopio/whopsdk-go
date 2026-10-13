@@ -12,26 +12,117 @@ import (
 )
 
 var (
+	acceptCommissionAdvanceBusinessesRequestFieldID                = big.NewInt(1 << 0)
+	acceptCommissionAdvanceBusinessesRequestFieldAcknowledgments   = big.NewInt(1 << 1)
+	acceptCommissionAdvanceBusinessesRequestFieldExpectedAmountUsd = big.NewInt(1 << 2)
+	acceptCommissionAdvanceBusinessesRequestFieldOfferToken        = big.NewInt(1 << 3)
+	acceptCommissionAdvanceBusinessesRequestFieldTermsVersion      = big.NewInt(1 << 4)
+)
+
+type AcceptCommissionAdvanceBusinessesRequest struct {
+	// The referred business relationship ID.
+	ID              string                                                        `json:"-" url:"-"`
+	Acknowledgments []AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItem `json:"acknowledgments" url:"-"`
+	// Reviewed payment amount in USD.
+	ExpectedAmountUsd string `json:"expected_amount_usd" url:"-"`
+	// Signed offer token returned by the partner business response. Requires partner:commission_advance:accept permission to retrieve.
+	OfferToken string `json:"offer_token" url:"-"`
+	// Reviewed CPA terms version.
+	TermsVersion string `json:"terms_version" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (a *AcceptCommissionAdvanceBusinessesRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AcceptCommissionAdvanceBusinessesRequest) SetID(id string) {
+	a.ID = id
+	a.require(acceptCommissionAdvanceBusinessesRequestFieldID)
+}
+
+// SetAcknowledgments sets the Acknowledgments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AcceptCommissionAdvanceBusinessesRequest) SetAcknowledgments(acknowledgments []AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItem) {
+	a.Acknowledgments = acknowledgments
+	a.require(acceptCommissionAdvanceBusinessesRequestFieldAcknowledgments)
+}
+
+// SetExpectedAmountUsd sets the ExpectedAmountUsd field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AcceptCommissionAdvanceBusinessesRequest) SetExpectedAmountUsd(expectedAmountUsd string) {
+	a.ExpectedAmountUsd = expectedAmountUsd
+	a.require(acceptCommissionAdvanceBusinessesRequestFieldExpectedAmountUsd)
+}
+
+// SetOfferToken sets the OfferToken field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AcceptCommissionAdvanceBusinessesRequest) SetOfferToken(offerToken string) {
+	a.OfferToken = offerToken
+	a.require(acceptCommissionAdvanceBusinessesRequestFieldOfferToken)
+}
+
+// SetTermsVersion sets the TermsVersion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AcceptCommissionAdvanceBusinessesRequest) SetTermsVersion(termsVersion string) {
+	a.TermsVersion = termsVersion
+	a.require(acceptCommissionAdvanceBusinessesRequestFieldTermsVersion)
+}
+
+func (a *AcceptCommissionAdvanceBusinessesRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler AcceptCommissionAdvanceBusinessesRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*a = AcceptCommissionAdvanceBusinessesRequest(body)
+	return nil
+}
+
+func (a *AcceptCommissionAdvanceBusinessesRequest) MarshalJSON() ([]byte, error) {
+	type embed AcceptCommissionAdvanceBusinessesRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	listBusinessesRequestFieldReferringAccountID  = big.NewInt(1 << 0)
-	listBusinessesRequestFieldStatus              = big.NewInt(1 << 1)
-	listBusinessesRequestFieldHasEarnings         = big.NewInt(1 << 2)
-	listBusinessesRequestFieldFirst               = big.NewInt(1 << 3)
-	listBusinessesRequestFieldAfter               = big.NewInt(1 << 4)
-	listBusinessesRequestFieldLast                = big.NewInt(1 << 5)
-	listBusinessesRequestFieldBefore              = big.NewInt(1 << 6)
-	listBusinessesRequestFieldOrder               = big.NewInt(1 << 7)
-	listBusinessesRequestFieldDirection           = big.NewInt(1 << 8)
-	listBusinessesRequestFieldCreatedBefore       = big.NewInt(1 << 9)
-	listBusinessesRequestFieldCreatedAfter        = big.NewInt(1 << 10)
-	listBusinessesRequestFieldReferredUserID      = big.NewInt(1 << 11)
-	listBusinessesRequestFieldReferredUsername    = big.NewInt(1 << 12)
-	listBusinessesRequestFieldTier                = big.NewInt(1 << 13)
-	listBusinessesRequestFieldBusinessPrefixQuery = big.NewInt(1 << 14)
+	listBusinessesRequestFieldAdvanceStatus       = big.NewInt(1 << 1)
+	listBusinessesRequestFieldStatus              = big.NewInt(1 << 2)
+	listBusinessesRequestFieldHasEarnings         = big.NewInt(1 << 3)
+	listBusinessesRequestFieldFirst               = big.NewInt(1 << 4)
+	listBusinessesRequestFieldAfter               = big.NewInt(1 << 5)
+	listBusinessesRequestFieldLast                = big.NewInt(1 << 6)
+	listBusinessesRequestFieldBefore              = big.NewInt(1 << 7)
+	listBusinessesRequestFieldOrder               = big.NewInt(1 << 8)
+	listBusinessesRequestFieldDirection           = big.NewInt(1 << 9)
+	listBusinessesRequestFieldCreatedBefore       = big.NewInt(1 << 10)
+	listBusinessesRequestFieldCreatedAfter        = big.NewInt(1 << 11)
+	listBusinessesRequestFieldReferredUserID      = big.NewInt(1 << 12)
+	listBusinessesRequestFieldReferredUsername    = big.NewInt(1 << 13)
+	listBusinessesRequestFieldTier                = big.NewInt(1 << 14)
+	listBusinessesRequestFieldBusinessPrefixQuery = big.NewInt(1 << 15)
 )
 
 type ListBusinessesRequest struct {
 	// List the referrals this business's team members made, past members included, instead of the authenticated user's own. Requires company:basic:read on that business, which every team member holds, and cannot be combined with user_id.
 	ReferringAccountID *string `json:"-" url:"referring_account_id,omitempty"`
+	// Filter the authenticated partner's CPA offers by status. Use offered for every state after qualification.
+	AdvanceStatus *ListBusinessesRequestAdvanceStatus `json:"-" url:"advance_status,omitempty"`
 	// Filter by referral status.
 	Status *ListBusinessesRequestStatus `json:"-" url:"status,omitempty"`
 	// When true, only businesses with pending or completed earnings paid to the caller.
@@ -79,6 +170,13 @@ func (l *ListBusinessesRequest) require(field *big.Int) {
 func (l *ListBusinessesRequest) SetReferringAccountID(referringAccountID *string) {
 	l.ReferringAccountID = referringAccountID
 	l.require(listBusinessesRequestFieldReferringAccountID)
+}
+
+// SetAdvanceStatus sets the AdvanceStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListBusinessesRequest) SetAdvanceStatus(advanceStatus *ListBusinessesRequestAdvanceStatus) {
+	l.AdvanceStatus = advanceStatus
+	l.require(listBusinessesRequestFieldAdvanceStatus)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -205,6 +303,174 @@ func (r *RetrieveBusinessesRequest) require(field *big.Int) {
 func (r *RetrieveBusinessesRequest) SetID(id string) {
 	r.ID = id
 	r.require(retrieveBusinessesRequestFieldID)
+}
+
+type AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItem string
+
+const (
+	AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItemCommissionReplacement AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItem = "commission_replacement"
+	AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItemClawback              AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItem = "clawback"
+	AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItemTerm                  AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItem = "term"
+)
+
+func NewAcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItemFromString(s string) (AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItem, error) {
+	switch s {
+	case "commission_replacement":
+		return AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItemCommissionReplacement, nil
+	case "clawback":
+		return AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItemClawback, nil
+	case "term":
+		return AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItemTerm, nil
+	}
+	var t AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItem) Ptr() *AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItem {
+	return &a
+}
+
+var (
+	acceptCommissionAdvanceBusinessesResponseFieldCommissionAdvance = big.NewInt(1 << 0)
+	acceptCommissionAdvanceBusinessesResponseFieldID                = big.NewInt(1 << 1)
+)
+
+type AcceptCommissionAdvanceBusinessesResponse struct {
+	CommissionAdvance *v2.PartnerAdvance `json:"commission_advance" url:"commission_advance"`
+	// The referred business relationship ID.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AcceptCommissionAdvanceBusinessesResponse) GetCommissionAdvance() *v2.PartnerAdvance {
+	if a == nil {
+		return nil
+	}
+	return a.CommissionAdvance
+}
+
+func (a *AcceptCommissionAdvanceBusinessesResponse) GetID() string {
+	if a == nil {
+		return ""
+	}
+	return a.ID
+}
+
+func (a *AcceptCommissionAdvanceBusinessesResponse) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AcceptCommissionAdvanceBusinessesResponse) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetCommissionAdvance sets the CommissionAdvance field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AcceptCommissionAdvanceBusinessesResponse) SetCommissionAdvance(commissionAdvance *v2.PartnerAdvance) {
+	a.CommissionAdvance = commissionAdvance
+	a.require(acceptCommissionAdvanceBusinessesResponseFieldCommissionAdvance)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AcceptCommissionAdvanceBusinessesResponse) SetID(id string) {
+	a.ID = id
+	a.require(acceptCommissionAdvanceBusinessesResponseFieldID)
+}
+
+func (a *AcceptCommissionAdvanceBusinessesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler AcceptCommissionAdvanceBusinessesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AcceptCommissionAdvanceBusinessesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AcceptCommissionAdvanceBusinessesResponse) MarshalJSON() ([]byte, error) {
+	type embed AcceptCommissionAdvanceBusinessesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AcceptCommissionAdvanceBusinessesResponse) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+type ListBusinessesRequestAdvanceStatus string
+
+const (
+	ListBusinessesRequestAdvanceStatusProjected  ListBusinessesRequestAdvanceStatus = "projected"
+	ListBusinessesRequestAdvanceStatusAvailable  ListBusinessesRequestAdvanceStatus = "available"
+	ListBusinessesRequestAdvanceStatusAccepted   ListBusinessesRequestAdvanceStatus = "accepted"
+	ListBusinessesRequestAdvanceStatusFunded     ListBusinessesRequestAdvanceStatus = "funded"
+	ListBusinessesRequestAdvanceStatusClawedBack ListBusinessesRequestAdvanceStatus = "clawed_back"
+	ListBusinessesRequestAdvanceStatusCompleted  ListBusinessesRequestAdvanceStatus = "completed"
+	ListBusinessesRequestAdvanceStatusExpired    ListBusinessesRequestAdvanceStatus = "expired"
+	ListBusinessesRequestAdvanceStatusOffered    ListBusinessesRequestAdvanceStatus = "offered"
+)
+
+func NewListBusinessesRequestAdvanceStatusFromString(s string) (ListBusinessesRequestAdvanceStatus, error) {
+	switch s {
+	case "projected":
+		return ListBusinessesRequestAdvanceStatusProjected, nil
+	case "available":
+		return ListBusinessesRequestAdvanceStatusAvailable, nil
+	case "accepted":
+		return ListBusinessesRequestAdvanceStatusAccepted, nil
+	case "funded":
+		return ListBusinessesRequestAdvanceStatusFunded, nil
+	case "clawed_back":
+		return ListBusinessesRequestAdvanceStatusClawedBack, nil
+	case "completed":
+		return ListBusinessesRequestAdvanceStatusCompleted, nil
+	case "expired":
+		return ListBusinessesRequestAdvanceStatusExpired, nil
+	case "offered":
+		return ListBusinessesRequestAdvanceStatusOffered, nil
+	}
+	var t ListBusinessesRequestAdvanceStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListBusinessesRequestAdvanceStatus) Ptr() *ListBusinessesRequestAdvanceStatus {
+	return &l
 }
 
 type ListBusinessesRequestDirection string
@@ -418,25 +684,27 @@ func (l *ListBusinessesResponse) String() string {
 var (
 	listBusinessesResponseDataItemFieldAccount           = big.NewInt(1 << 0)
 	listBusinessesResponseDataItemFieldBlueprintPartner  = big.NewInt(1 << 1)
-	listBusinessesResponseDataItemFieldCreatedAt         = big.NewInt(1 << 2)
-	listBusinessesResponseDataItemFieldEarningsUsd       = big.NewInt(1 << 3)
-	listBusinessesResponseDataItemFieldFirstTierPartner  = big.NewInt(1 << 4)
-	listBusinessesResponseDataItemFieldID                = big.NewInt(1 << 5)
-	listBusinessesResponseDataItemFieldMyPartnerTier     = big.NewInt(1 << 6)
-	listBusinessesResponseDataItemFieldObject            = big.NewInt(1 << 7)
-	listBusinessesResponseDataItemFieldOwner             = big.NewInt(1 << 8)
-	listBusinessesResponseDataItemFieldPayoutPercentages = big.NewInt(1 << 9)
-	listBusinessesResponseDataItemFieldReferralExpiresAt = big.NewInt(1 << 10)
-	listBusinessesResponseDataItemFieldReferralStartedAt = big.NewInt(1 << 11)
-	listBusinessesResponseDataItemFieldSecondTierPartner = big.NewInt(1 << 12)
-	listBusinessesResponseDataItemFieldStatus            = big.NewInt(1 << 13)
-	listBusinessesResponseDataItemFieldVolumeUsd         = big.NewInt(1 << 14)
+	listBusinessesResponseDataItemFieldCommissionAdvance = big.NewInt(1 << 2)
+	listBusinessesResponseDataItemFieldCreatedAt         = big.NewInt(1 << 3)
+	listBusinessesResponseDataItemFieldEarningsUsd       = big.NewInt(1 << 4)
+	listBusinessesResponseDataItemFieldFirstTierPartner  = big.NewInt(1 << 5)
+	listBusinessesResponseDataItemFieldID                = big.NewInt(1 << 6)
+	listBusinessesResponseDataItemFieldMyPartnerTier     = big.NewInt(1 << 7)
+	listBusinessesResponseDataItemFieldObject            = big.NewInt(1 << 8)
+	listBusinessesResponseDataItemFieldOwner             = big.NewInt(1 << 9)
+	listBusinessesResponseDataItemFieldPayoutPercentages = big.NewInt(1 << 10)
+	listBusinessesResponseDataItemFieldReferralExpiresAt = big.NewInt(1 << 11)
+	listBusinessesResponseDataItemFieldReferralStartedAt = big.NewInt(1 << 12)
+	listBusinessesResponseDataItemFieldSecondTierPartner = big.NewInt(1 << 13)
+	listBusinessesResponseDataItemFieldStatus            = big.NewInt(1 << 14)
+	listBusinessesResponseDataItemFieldVolumeUsd         = big.NewInt(1 << 15)
 )
 
 // listBusinessesResponseDataItemNullableFields maps the wire names of ListBusinessesResponseDataItem's nullable fields (required or optional) to their field bits.
 var listBusinessesResponseDataItemNullableFields = map[string]*big.Int{
 	"account":             listBusinessesResponseDataItemFieldAccount,
 	"blueprint_partner":   listBusinessesResponseDataItemFieldBlueprintPartner,
+	"commission_advance":  listBusinessesResponseDataItemFieldCommissionAdvance,
 	"first_tier_partner":  listBusinessesResponseDataItemFieldFirstTierPartner,
 	"owner":               listBusinessesResponseDataItemFieldOwner,
 	"referral_expires_at": listBusinessesResponseDataItemFieldReferralExpiresAt,
@@ -449,6 +717,8 @@ type ListBusinessesResponseDataItem struct {
 	Account *ListBusinessesResponseDataItemAccount `json:"account,omitempty" url:"account,omitempty"`
 	// The partner whose blueprint the business deployed. Null unless this is a blueprint referral.
 	BlueprintPartner *ListBusinessesResponseDataItemBlueprintPartner `json:"blueprint_partner,omitempty" url:"blueprint_partner,omitempty"`
+	// CPA terms for the referring partner. Omitted for other callers. An offer token requires partner:commission_advance:accept permission.
+	CommissionAdvance *v2.PartnerAdvance `json:"commission_advance,omitempty" url:"commission_advance,omitempty"`
 	// When the partner business was created.
 	CreatedAt   time.Time                                  `json:"created_at" url:"created_at"`
 	EarningsUsd *ListBusinessesResponseDataItemEarningsUsd `json:"earnings_usd" url:"earnings_usd"`
@@ -492,6 +762,13 @@ func (l *ListBusinessesResponseDataItem) GetBlueprintPartner() *ListBusinessesRe
 		return nil
 	}
 	return l.BlueprintPartner
+}
+
+func (l *ListBusinessesResponseDataItem) GetCommissionAdvance() *v2.PartnerAdvance {
+	if l == nil {
+		return nil
+	}
+	return l.CommissionAdvance
 }
 
 func (l *ListBusinessesResponseDataItem) GetCreatedAt() time.Time {
@@ -613,6 +890,13 @@ func (l *ListBusinessesResponseDataItem) SetAccount(account *ListBusinessesRespo
 func (l *ListBusinessesResponseDataItem) SetBlueprintPartner(blueprintPartner *ListBusinessesResponseDataItemBlueprintPartner) {
 	l.BlueprintPartner = blueprintPartner
 	l.require(listBusinessesResponseDataItemFieldBlueprintPartner)
+}
+
+// SetCommissionAdvance sets the CommissionAdvance field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListBusinessesResponseDataItem) SetCommissionAdvance(commissionAdvance *v2.PartnerAdvance) {
+	l.CommissionAdvance = commissionAdvance
+	l.require(listBusinessesResponseDataItemFieldCommissionAdvance)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -2544,25 +2828,27 @@ func (l *ListBusinessesResponsePageInfo) String() string {
 var (
 	retrieveBusinessesResponseFieldAccount           = big.NewInt(1 << 0)
 	retrieveBusinessesResponseFieldBlueprintPartner  = big.NewInt(1 << 1)
-	retrieveBusinessesResponseFieldCreatedAt         = big.NewInt(1 << 2)
-	retrieveBusinessesResponseFieldEarningsUsd       = big.NewInt(1 << 3)
-	retrieveBusinessesResponseFieldFirstTierPartner  = big.NewInt(1 << 4)
-	retrieveBusinessesResponseFieldID                = big.NewInt(1 << 5)
-	retrieveBusinessesResponseFieldMyPartnerTier     = big.NewInt(1 << 6)
-	retrieveBusinessesResponseFieldObject            = big.NewInt(1 << 7)
-	retrieveBusinessesResponseFieldOwner             = big.NewInt(1 << 8)
-	retrieveBusinessesResponseFieldPayoutPercentages = big.NewInt(1 << 9)
-	retrieveBusinessesResponseFieldReferralExpiresAt = big.NewInt(1 << 10)
-	retrieveBusinessesResponseFieldReferralStartedAt = big.NewInt(1 << 11)
-	retrieveBusinessesResponseFieldSecondTierPartner = big.NewInt(1 << 12)
-	retrieveBusinessesResponseFieldStatus            = big.NewInt(1 << 13)
-	retrieveBusinessesResponseFieldVolumeUsd         = big.NewInt(1 << 14)
+	retrieveBusinessesResponseFieldCommissionAdvance = big.NewInt(1 << 2)
+	retrieveBusinessesResponseFieldCreatedAt         = big.NewInt(1 << 3)
+	retrieveBusinessesResponseFieldEarningsUsd       = big.NewInt(1 << 4)
+	retrieveBusinessesResponseFieldFirstTierPartner  = big.NewInt(1 << 5)
+	retrieveBusinessesResponseFieldID                = big.NewInt(1 << 6)
+	retrieveBusinessesResponseFieldMyPartnerTier     = big.NewInt(1 << 7)
+	retrieveBusinessesResponseFieldObject            = big.NewInt(1 << 8)
+	retrieveBusinessesResponseFieldOwner             = big.NewInt(1 << 9)
+	retrieveBusinessesResponseFieldPayoutPercentages = big.NewInt(1 << 10)
+	retrieveBusinessesResponseFieldReferralExpiresAt = big.NewInt(1 << 11)
+	retrieveBusinessesResponseFieldReferralStartedAt = big.NewInt(1 << 12)
+	retrieveBusinessesResponseFieldSecondTierPartner = big.NewInt(1 << 13)
+	retrieveBusinessesResponseFieldStatus            = big.NewInt(1 << 14)
+	retrieveBusinessesResponseFieldVolumeUsd         = big.NewInt(1 << 15)
 )
 
 // retrieveBusinessesResponseNullableFields maps the wire names of RetrieveBusinessesResponse's nullable fields (required or optional) to their field bits.
 var retrieveBusinessesResponseNullableFields = map[string]*big.Int{
 	"account":             retrieveBusinessesResponseFieldAccount,
 	"blueprint_partner":   retrieveBusinessesResponseFieldBlueprintPartner,
+	"commission_advance":  retrieveBusinessesResponseFieldCommissionAdvance,
 	"first_tier_partner":  retrieveBusinessesResponseFieldFirstTierPartner,
 	"owner":               retrieveBusinessesResponseFieldOwner,
 	"referral_expires_at": retrieveBusinessesResponseFieldReferralExpiresAt,
@@ -2575,6 +2861,8 @@ type RetrieveBusinessesResponse struct {
 	Account *RetrieveBusinessesResponseAccount `json:"account,omitempty" url:"account,omitempty"`
 	// The partner whose blueprint the business deployed. Null unless this is a blueprint referral.
 	BlueprintPartner *RetrieveBusinessesResponseBlueprintPartner `json:"blueprint_partner,omitempty" url:"blueprint_partner,omitempty"`
+	// CPA terms for the referring partner. Omitted for other callers. An offer token requires partner:commission_advance:accept permission.
+	CommissionAdvance *v2.PartnerAdvance `json:"commission_advance,omitempty" url:"commission_advance,omitempty"`
 	// When the partner business was created.
 	CreatedAt   time.Time                              `json:"created_at" url:"created_at"`
 	EarningsUsd *RetrieveBusinessesResponseEarningsUsd `json:"earnings_usd" url:"earnings_usd"`
@@ -2618,6 +2906,13 @@ func (r *RetrieveBusinessesResponse) GetBlueprintPartner() *RetrieveBusinessesRe
 		return nil
 	}
 	return r.BlueprintPartner
+}
+
+func (r *RetrieveBusinessesResponse) GetCommissionAdvance() *v2.PartnerAdvance {
+	if r == nil {
+		return nil
+	}
+	return r.CommissionAdvance
 }
 
 func (r *RetrieveBusinessesResponse) GetCreatedAt() time.Time {
@@ -2739,6 +3034,13 @@ func (r *RetrieveBusinessesResponse) SetAccount(account *RetrieveBusinessesRespo
 func (r *RetrieveBusinessesResponse) SetBlueprintPartner(blueprintPartner *RetrieveBusinessesResponseBlueprintPartner) {
 	r.BlueprintPartner = blueprintPartner
 	r.require(retrieveBusinessesResponseFieldBlueprintPartner)
+}
+
+// SetCommissionAdvance sets the CommissionAdvance field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBusinessesResponse) SetCommissionAdvance(commissionAdvance *v2.PartnerAdvance) {
+	r.CommissionAdvance = commissionAdvance
+	r.require(retrieveBusinessesResponseFieldCommissionAdvance)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -4570,4 +4872,176 @@ func (r *RetrieveBusinessesResponseVolumeUsd) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", r)
+}
+
+var (
+	updateBusinessesResponseFieldCommissionAdvance = big.NewInt(1 << 0)
+	updateBusinessesResponseFieldID                = big.NewInt(1 << 1)
+)
+
+type UpdateBusinessesResponse struct {
+	CommissionAdvance *v2.PartnerAdvance `json:"commission_advance" url:"commission_advance"`
+	// The referred business relationship ID.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateBusinessesResponse) GetCommissionAdvance() *v2.PartnerAdvance {
+	if u == nil {
+		return nil
+	}
+	return u.CommissionAdvance
+}
+
+func (u *UpdateBusinessesResponse) GetID() string {
+	if u == nil {
+		return ""
+	}
+	return u.ID
+}
+
+func (u *UpdateBusinessesResponse) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateBusinessesResponse) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetCommissionAdvance sets the CommissionAdvance field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateBusinessesResponse) SetCommissionAdvance(commissionAdvance *v2.PartnerAdvance) {
+	u.CommissionAdvance = commissionAdvance
+	u.require(updateBusinessesResponseFieldCommissionAdvance)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateBusinessesResponse) SetID(id string) {
+	u.ID = id
+	u.require(updateBusinessesResponseFieldID)
+}
+
+func (u *UpdateBusinessesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateBusinessesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateBusinessesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateBusinessesResponse) MarshalJSON() ([]byte, error) {
+	type embed UpdateBusinessesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateBusinessesResponse) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateBusinessesRequestFieldID                  = big.NewInt(1 << 0)
+	updateBusinessesRequestFieldAnnualAdsUsd        = big.NewInt(1 << 1)
+	updateBusinessesRequestFieldAnnualProcessingUsd = big.NewInt(1 << 2)
+)
+
+type UpdateBusinessesRequest struct {
+	// The partner business ID (a coma_ identifier).
+	ID string `json:"-" url:"-"`
+	// Annual projected Whop Ads spend in USD.
+	AnnualAdsUsd string `json:"annual_ads_usd" url:"-"`
+	// Annual projected processing on Whop in USD.
+	AnnualProcessingUsd string `json:"annual_processing_usd" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (u *UpdateBusinessesRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateBusinessesRequest) SetID(id string) {
+	u.ID = id
+	u.require(updateBusinessesRequestFieldID)
+}
+
+// SetAnnualAdsUsd sets the AnnualAdsUsd field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateBusinessesRequest) SetAnnualAdsUsd(annualAdsUsd string) {
+	u.AnnualAdsUsd = annualAdsUsd
+	u.require(updateBusinessesRequestFieldAnnualAdsUsd)
+}
+
+// SetAnnualProcessingUsd sets the AnnualProcessingUsd field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateBusinessesRequest) SetAnnualProcessingUsd(annualProcessingUsd string) {
+	u.AnnualProcessingUsd = annualProcessingUsd
+	u.require(updateBusinessesRequestFieldAnnualProcessingUsd)
+}
+
+func (u *UpdateBusinessesRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateBusinessesRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*u = UpdateBusinessesRequest(body)
+	return nil
+}
+
+func (u *UpdateBusinessesRequest) MarshalJSON() ([]byte, error) {
+	type embed UpdateBusinessesRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
 }
