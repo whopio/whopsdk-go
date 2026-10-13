@@ -254,7 +254,6 @@ func TestAccountsFormCompanyWithWireMock(
 		BusinessPhone: whopsdk.String(
 			"+15125550142",
 		),
-		BusinessType: "brick_and_mortar",
 		BusinessWebsite: whopsdk.String(
 			"https://shinetime.example",
 		),
@@ -295,8 +294,6 @@ func TestAccountsFormCompanyWithWireMock(
 				),
 			},
 		},
-		IndustryGroup: "automotive",
-		IndustryType:  "car_wash_and_detailing_shop",
 		ShareStructure: &whopsdk.FormCompanyAccountsRequestShareStructure{
 			NumberOfShares: 123,
 			Value:          123,

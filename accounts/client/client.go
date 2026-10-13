@@ -30,7 +30,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-10-09-2"
+		apiVersionDateDefault := "2026-10-13"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -282,7 +282,6 @@ func (c *Client) Update(
 //	    BusinessPhone: whopsdk.String(
 //	        "+15125550142",
 //	    ),
-//	    BusinessType: "brick_and_mortar",
 //	    BusinessWebsite: whopsdk.String(
 //	        "https://shinetime.example",
 //	    ),
@@ -323,8 +322,6 @@ func (c *Client) Update(
 //	            ),
 //	        },
 //	    },
-//	    IndustryGroup: "automotive",
-//	    IndustryType: "car_wash_and_detailing_shop",
 //	    ShareStructure: &whopsdk.FormCompanyAccountsRequestShareStructure{
 //	        NumberOfShares: 123,
 //	        Value: 123,
