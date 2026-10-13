@@ -1424,44 +1424,61 @@ func (d *DisputeEvidence) String() string {
 }
 
 var (
-	disputeEvidenceDocumentFieldContentType         = big.NewInt(1 << 0)
-	disputeEvidenceDocumentFieldCreatedAt           = big.NewInt(1 << 1)
-	disputeEvidenceDocumentFieldDocumentType        = big.NewInt(1 << 2)
-	disputeEvidenceDocumentFieldFilename            = big.NewInt(1 << 3)
-	disputeEvidenceDocumentFieldID                  = big.NewInt(1 << 4)
-	disputeEvidenceDocumentFieldMultipartChunkSize  = big.NewInt(1 << 5)
-	disputeEvidenceDocumentFieldMultipartUploadID   = big.NewInt(1 << 6)
-	disputeEvidenceDocumentFieldMultipartUploadURLs = big.NewInt(1 << 7)
-	disputeEvidenceDocumentFieldObject              = big.NewInt(1 << 8)
-	disputeEvidenceDocumentFieldSize                = big.NewInt(1 << 9)
-	disputeEvidenceDocumentFieldUploadHeaders       = big.NewInt(1 << 10)
-	disputeEvidenceDocumentFieldUploadStatus        = big.NewInt(1 << 11)
-	disputeEvidenceDocumentFieldUploadURL           = big.NewInt(1 << 12)
-	disputeEvidenceDocumentFieldURL                 = big.NewInt(1 << 13)
-	disputeEvidenceDocumentFieldVisibility          = big.NewInt(1 << 14)
+	disputeEvidenceDocumentFieldBlurhash            = big.NewInt(1 << 0)
+	disputeEvidenceDocumentFieldContentType         = big.NewInt(1 << 1)
+	disputeEvidenceDocumentFieldCreatedAt           = big.NewInt(1 << 2)
+	disputeEvidenceDocumentFieldDocumentType        = big.NewInt(1 << 3)
+	disputeEvidenceDocumentFieldDurationSeconds     = big.NewInt(1 << 4)
+	disputeEvidenceDocumentFieldFilename            = big.NewInt(1 << 5)
+	disputeEvidenceDocumentFieldHeight              = big.NewInt(1 << 6)
+	disputeEvidenceDocumentFieldID                  = big.NewInt(1 << 7)
+	disputeEvidenceDocumentFieldMultipartChunkSize  = big.NewInt(1 << 8)
+	disputeEvidenceDocumentFieldMultipartUploadID   = big.NewInt(1 << 9)
+	disputeEvidenceDocumentFieldMultipartUploadURLs = big.NewInt(1 << 10)
+	disputeEvidenceDocumentFieldObject              = big.NewInt(1 << 11)
+	disputeEvidenceDocumentFieldRemovedByModeration = big.NewInt(1 << 12)
+	disputeEvidenceDocumentFieldSize                = big.NewInt(1 << 13)
+	disputeEvidenceDocumentFieldUploadHeaders       = big.NewInt(1 << 14)
+	disputeEvidenceDocumentFieldUploadStatus        = big.NewInt(1 << 15)
+	disputeEvidenceDocumentFieldUploadURL           = big.NewInt(1 << 16)
+	disputeEvidenceDocumentFieldURL                 = big.NewInt(1 << 17)
+	disputeEvidenceDocumentFieldVisibility          = big.NewInt(1 << 18)
+	disputeEvidenceDocumentFieldWaveformURL         = big.NewInt(1 << 19)
+	disputeEvidenceDocumentFieldWidth               = big.NewInt(1 << 20)
 )
 
 // disputeEvidenceDocumentNullableFields maps the wire names of DisputeEvidenceDocument's nullable fields (required or optional) to their field bits.
 var disputeEvidenceDocumentNullableFields = map[string]*big.Int{
+	"blurhash":              disputeEvidenceDocumentFieldBlurhash,
 	"content_type":          disputeEvidenceDocumentFieldContentType,
+	"duration_seconds":      disputeEvidenceDocumentFieldDurationSeconds,
 	"filename":              disputeEvidenceDocumentFieldFilename,
+	"height":                disputeEvidenceDocumentFieldHeight,
 	"multipart_chunk_size":  disputeEvidenceDocumentFieldMultipartChunkSize,
 	"multipart_upload_id":   disputeEvidenceDocumentFieldMultipartUploadID,
 	"multipart_upload_urls": disputeEvidenceDocumentFieldMultipartUploadURLs,
 	"size":                  disputeEvidenceDocumentFieldSize,
 	"upload_url":            disputeEvidenceDocumentFieldUploadURL,
 	"url":                   disputeEvidenceDocumentFieldURL,
+	"waveform_url":          disputeEvidenceDocumentFieldWaveformURL,
+	"width":                 disputeEvidenceDocumentFieldWidth,
 }
 
 type DisputeEvidenceDocument struct {
+	// BlurHash placeholder for an image or video. Null when unavailable or removed by moderation.
+	Blurhash *string `json:"blurhash,omitempty" url:"blurhash,omitempty"`
 	// The uploaded file's MIME type. Uploads are restricted to the types the processor accepts, and rejected without one — never null.
 	ContentType *DisputeEvidenceDocumentContentType `json:"content_type,omitempty" url:"content_type,omitempty"`
 	// When the file was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// What this document proves, in the processor's own evidence vocabulary. `return_policy`, `cancellation_policy`, and `terms_of_service` are the seller's policy documents — uploading one overrides the account's copy for this dispute (`return_policy`, `cancellation_policy`, and `customer_communication` also override the matching fixed evidence slot). `shipping_policy` is the seller's shipping terms. `customer_communication` is correspondence with the buyer — a support thread or chat log. `product_image` is a photo of the product or service the buyer received. `physical_fulfillment` is proof a physical order shipped and arrived; `digital_fulfillment` is proof the buyer accessed a digital product. `customer_order_history` is the buyer's past orders with this seller; `prior_transactions` is their broader payment history across the platform, for a fraud defense. `customer_session` is checkout forensics — IP, device fingerprint, AVS/CVV, 3D Secure result. `subscription` is membership lifecycle evidence — renewals, cancellation, reminders sent.
 	DocumentType DisputeEvidenceDocumentDocumentType `json:"document_type" url:"document_type"`
+	// Audio or video duration in seconds. Null when unavailable or removed by moderation.
+	DurationSeconds *float64 `json:"duration_seconds,omitempty" url:"duration_seconds,omitempty"`
 	// The original filename, including its extension.
 	Filename *string `json:"filename,omitempty" url:"filename,omitempty"`
+	// Image or video height in pixels. Null when unavailable or removed by moderation.
+	Height *int `json:"height,omitempty" url:"height,omitempty"`
 	// The file's ID, prefixed `file_`.
 	ID string `json:"id" url:"id"`
 	// The byte size each part (except the last) must be. Present only on create, and only for multipart uploads.
@@ -1471,6 +1488,8 @@ type DisputeEvidenceDocument struct {
 	MultipartUploadURLs []*FileMultipartURL `json:"multipart_upload_urls,omitempty" url:"multipart_upload_urls,omitempty"`
 	// The type of this object, always `file`.
 	Object string `json:"object" url:"object"`
+	// Whether moderation removed the file. When true, `url` serves a replacement image; filename, size, and content type still describe the original file.
+	RemovedByModeration bool `json:"removed_by_moderation" url:"removed_by_moderation"`
 	// The file size in bytes. `null` until the upload has finished.
 	Size *int `json:"size,omitempty" url:"size,omitempty"`
 	// Headers to send with the upload PUT. Present only on create.
@@ -1479,16 +1498,27 @@ type DisputeEvidenceDocument struct {
 	UploadStatus DisputeEvidenceDocumentUploadStatus `json:"upload_status" url:"upload_status"`
 	// Presigned URL to PUT the file's bytes to. Present only on create, and only for single-part uploads.
 	UploadURL *string `json:"upload_url,omitempty" url:"upload_url,omitempty"`
-	// A URL to download the file: a permanent CDN URL for public files, a signed expiring URL for private ones. `null` until the upload has finished.
+	// A URL to download the file: a permanent CDN URL for public files, a signed expiring URL for private ones. Null until the upload has finished; a replacement image URL when removed by moderation.
 	URL *string `json:"url,omitempty" url:"url,omitempty"`
 	// `public` files are served via an unsigned CDN URL; `private` files via a signed, expiring URL.
 	Visibility DisputeEvidenceDocumentVisibility `json:"visibility" url:"visibility"`
+	// Audio waveform URL. Null when unavailable or removed by moderation.
+	WaveformURL *string `json:"waveform_url,omitempty" url:"waveform_url,omitempty"`
+	// Image or video width in pixels. Null when unavailable or removed by moderation.
+	Width *int `json:"width,omitempty" url:"width,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (d *DisputeEvidenceDocument) GetBlurhash() *string {
+	if d == nil {
+		return nil
+	}
+	return d.Blurhash
 }
 
 func (d *DisputeEvidenceDocument) GetContentType() *DisputeEvidenceDocumentContentType {
@@ -1512,11 +1542,25 @@ func (d *DisputeEvidenceDocument) GetDocumentType() DisputeEvidenceDocumentDocum
 	return d.DocumentType
 }
 
+func (d *DisputeEvidenceDocument) GetDurationSeconds() *float64 {
+	if d == nil {
+		return nil
+	}
+	return d.DurationSeconds
+}
+
 func (d *DisputeEvidenceDocument) GetFilename() *string {
 	if d == nil {
 		return nil
 	}
 	return d.Filename
+}
+
+func (d *DisputeEvidenceDocument) GetHeight() *int {
+	if d == nil {
+		return nil
+	}
+	return d.Height
 }
 
 func (d *DisputeEvidenceDocument) GetID() string {
@@ -1552,6 +1596,13 @@ func (d *DisputeEvidenceDocument) GetObject() string {
 		return ""
 	}
 	return d.Object
+}
+
+func (d *DisputeEvidenceDocument) GetRemovedByModeration() bool {
+	if d == nil {
+		return false
+	}
+	return d.RemovedByModeration
 }
 
 func (d *DisputeEvidenceDocument) GetSize() *int {
@@ -1596,6 +1647,20 @@ func (d *DisputeEvidenceDocument) GetVisibility() DisputeEvidenceDocumentVisibil
 	return d.Visibility
 }
 
+func (d *DisputeEvidenceDocument) GetWaveformURL() *string {
+	if d == nil {
+		return nil
+	}
+	return d.WaveformURL
+}
+
+func (d *DisputeEvidenceDocument) GetWidth() *int {
+	if d == nil {
+		return nil
+	}
+	return d.Width
+}
+
 func (d *DisputeEvidenceDocument) GetExtraProperties() map[string]interface{} {
 	if d == nil {
 		return nil
@@ -1610,6 +1675,13 @@ func (d *DisputeEvidenceDocument) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	d.explicitFields = next
+}
+
+// SetBlurhash sets the Blurhash field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetBlurhash(blurhash *string) {
+	d.Blurhash = blurhash
+	d.require(disputeEvidenceDocumentFieldBlurhash)
 }
 
 // SetContentType sets the ContentType field and marks it as non-optional;
@@ -1633,11 +1705,25 @@ func (d *DisputeEvidenceDocument) SetDocumentType(documentType DisputeEvidenceDo
 	d.require(disputeEvidenceDocumentFieldDocumentType)
 }
 
+// SetDurationSeconds sets the DurationSeconds field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetDurationSeconds(durationSeconds *float64) {
+	d.DurationSeconds = durationSeconds
+	d.require(disputeEvidenceDocumentFieldDurationSeconds)
+}
+
 // SetFilename sets the Filename field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (d *DisputeEvidenceDocument) SetFilename(filename *string) {
 	d.Filename = filename
 	d.require(disputeEvidenceDocumentFieldFilename)
+}
+
+// SetHeight sets the Height field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetHeight(height *int) {
+	d.Height = height
+	d.require(disputeEvidenceDocumentFieldHeight)
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1673,6 +1759,13 @@ func (d *DisputeEvidenceDocument) SetMultipartUploadURLs(multipartUploadURLs []*
 func (d *DisputeEvidenceDocument) SetObject(object string) {
 	d.Object = object
 	d.require(disputeEvidenceDocumentFieldObject)
+}
+
+// SetRemovedByModeration sets the RemovedByModeration field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetRemovedByModeration(removedByModeration bool) {
+	d.RemovedByModeration = removedByModeration
+	d.require(disputeEvidenceDocumentFieldRemovedByModeration)
 }
 
 // SetSize sets the Size field and marks it as non-optional;
@@ -1715,6 +1808,20 @@ func (d *DisputeEvidenceDocument) SetURL(url *string) {
 func (d *DisputeEvidenceDocument) SetVisibility(visibility DisputeEvidenceDocumentVisibility) {
 	d.Visibility = visibility
 	d.require(disputeEvidenceDocumentFieldVisibility)
+}
+
+// SetWaveformURL sets the WaveformURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetWaveformURL(waveformURL *string) {
+	d.WaveformURL = waveformURL
+	d.require(disputeEvidenceDocumentFieldWaveformURL)
+}
+
+// SetWidth sets the Width field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetWidth(width *int) {
+	d.Width = width
+	d.require(disputeEvidenceDocumentFieldWidth)
 }
 
 func (d *DisputeEvidenceDocument) UnmarshalJSON(data []byte) error {
