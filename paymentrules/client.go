@@ -131,7 +131,7 @@ func (c *Client) List(
 //	                Field: whopsdk.CreatePaymentRulesRequestConditionsAllItemFieldRiskScore,
 //	                Operator: whopsdk.CreatePaymentRulesRequestConditionsAllItemOperatorGte,
 //	                Value: &whopsdk.PaymentRuleConditionValue{
-//	                    Integer: 70,
+//	                    Double: 70,
 //	                },
 //	            },
 //	        },
@@ -327,7 +327,7 @@ func (c *Client) Deactivate(
 //	                Field: whopsdk.ReplacePaymentRulesRequestConditionsAllItemFieldRiskScore,
 //	                Operator: whopsdk.ReplacePaymentRulesRequestConditionsAllItemOperatorGte,
 //	                Value: &whopsdk.PaymentRuleConditionValue{
-//	                    Integer: 70,
+//	                    Double: 70,
 //	                },
 //	            },
 //	        },

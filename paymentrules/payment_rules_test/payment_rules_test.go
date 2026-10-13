@@ -120,7 +120,7 @@ func TestPaymentRulesCreateWithWireMock(
 					Field:    whopsdk.CreatePaymentRulesRequestConditionsAllItemFieldRiskScore,
 					Operator: whopsdk.CreatePaymentRulesRequestConditionsAllItemOperatorGte,
 					Value: &whopsdk.PaymentRuleConditionValue{
-						Integer: 70,
+						Double: 70,
 					},
 				},
 			},
@@ -311,7 +311,7 @@ func TestPaymentRulesReplaceWithWireMock(
 					Field:    whopsdk.ReplacePaymentRulesRequestConditionsAllItemFieldRiskScore,
 					Operator: whopsdk.ReplacePaymentRulesRequestConditionsAllItemOperatorGte,
 					Value: &whopsdk.PaymentRuleConditionValue{
-						Integer: 70,
+						Double: 70,
 					},
 				},
 			},

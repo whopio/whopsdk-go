@@ -877,20 +877,20 @@ func (p PaymentRuleConditionOperator) Ptr() *PaymentRuleConditionOperator {
 	return &p
 }
 
-// The value to compare against. A number for `risk_score`, a string for the other fields, and an array of strings for the `in` and `not_in` operators.
+// The value to compare against. A whole number from 0 to 100 for `risk_score`, a number of at least 0 for `amount_in_usd`, a string for the other fields, and an array of strings for the `in` and `not_in` operators.
 type PaymentRuleConditionValue struct {
-	Integer    int
+	Double     float64
 	String     string
 	StringList []string
 
 	typ string
 }
 
-func (p *PaymentRuleConditionValue) GetInteger() int {
+func (p *PaymentRuleConditionValue) GetDouble() float64 {
 	if p == nil {
 		return 0
 	}
-	return p.Integer
+	return p.Double
 }
 
 func (p *PaymentRuleConditionValue) GetString() string {
@@ -908,10 +908,10 @@ func (p *PaymentRuleConditionValue) GetStringList() []string {
 }
 
 func (p *PaymentRuleConditionValue) UnmarshalJSON(data []byte) error {
-	var valueInteger int
-	if err := json.Unmarshal(data, &valueInteger); err == nil {
-		p.typ = "Integer"
-		p.Integer = valueInteger
+	var valueDouble float64
+	if err := json.Unmarshal(data, &valueDouble); err == nil {
+		p.typ = "Double"
+		p.Double = valueDouble
 		return nil
 	}
 	var valueString string
@@ -930,8 +930,8 @@ func (p *PaymentRuleConditionValue) UnmarshalJSON(data []byte) error {
 }
 
 func (p PaymentRuleConditionValue) MarshalJSON() ([]byte, error) {
-	if p.typ == "Integer" || p.Integer != 0 {
-		return json.Marshal(p.Integer)
+	if p.typ == "Double" || p.Double != 0 {
+		return json.Marshal(p.Double)
 	}
 	if p.typ == "String" || p.String != "" {
 		return json.Marshal(p.String)
@@ -943,14 +943,14 @@ func (p PaymentRuleConditionValue) MarshalJSON() ([]byte, error) {
 }
 
 type PaymentRuleConditionValueVisitor interface {
-	VisitInteger(int) error
+	VisitDouble(float64) error
 	VisitString(string) error
 	VisitStringList([]string) error
 }
 
 func (p *PaymentRuleConditionValue) Accept(visitor PaymentRuleConditionValueVisitor) error {
-	if p.typ == "Integer" || p.Integer != 0 {
-		return visitor.VisitInteger(p.Integer)
+	if p.typ == "Double" || p.Double != 0 {
+		return visitor.VisitDouble(p.Double)
 	}
 	if p.typ == "String" || p.String != "" {
 		return visitor.VisitString(p.String)
