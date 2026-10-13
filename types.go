@@ -47103,6 +47103,9 @@ const (
 	PaymentMethodTypesPaypalExpress          PaymentMethodTypes = "paypal_express"
 	PaymentMethodTypesPaypay                 PaymentMethodTypes = "paypay"
 	PaymentMethodTypesPayto                  PaymentMethodTypes = "payto"
+	PaymentMethodTypesPaytoEmail             PaymentMethodTypes = "payto_email"
+	PaymentMethodTypesPaytoPhone             PaymentMethodTypes = "payto_phone"
+	PaymentMethodTypesPaytoBankAccount       PaymentMethodTypes = "payto_bank_account"
 	PaymentMethodTypesPix                    PaymentMethodTypes = "pix"
 	PaymentMethodTypesPlatformBalance        PaymentMethodTypes = "platform_balance"
 	PaymentMethodTypesPromptpay              PaymentMethodTypes = "promptpay"
@@ -47333,6 +47336,12 @@ func NewPaymentMethodTypesFromString(s string) (PaymentMethodTypes, error) {
 		return PaymentMethodTypesPaypay, nil
 	case "payto":
 		return PaymentMethodTypesPayto, nil
+	case "payto_email":
+		return PaymentMethodTypesPaytoEmail, nil
+	case "payto_phone":
+		return PaymentMethodTypesPaytoPhone, nil
+	case "payto_bank_account":
+		return PaymentMethodTypesPaytoBankAccount, nil
 	case "pix":
 		return PaymentMethodTypesPix, nil
 	case "platform_balance":
