@@ -74,7 +74,7 @@ var (
 )
 
 type DeletePaymentMethodDomainsRequest struct {
-	// The unique identifier of the payment method domain, prefixed `pmd_`.
+	// The unique identifier of the payment method domain, prefixed `pmd_` or `dom_`.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -240,7 +240,7 @@ var (
 )
 
 type RetrievePaymentMethodDomainsRequest struct {
-	// The unique identifier of the payment method domain, prefixed `pmd_`.
+	// The unique identifier of the payment method domain, prefixed `pmd_` or `dom_`.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -285,7 +285,7 @@ type PaymentMethodDomain struct {
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Hostname the checkout is served from (e.g. `checkout.example.com`).
 	Hostname string `json:"hostname" url:"hostname"`
-	// Payment method domain ID, prefixed `pmd_`.
+	// Payment method domain ID, prefixed `pmd_`. A hostname that was already one of the account's domains can have that domain's ID, prefixed `dom_`, instead.
 	ID string `json:"id" url:"id"`
 	// Wallet provider the domain is registered with.
 	Provider PaymentMethodDomainProvider `json:"provider" url:"provider"`
@@ -945,7 +945,7 @@ var (
 )
 
 type VerifyPaymentMethodDomainsRequest struct {
-	// The unique identifier of the payment method domain, prefixed `pmd_`.
+	// The unique identifier of the payment method domain, prefixed `pmd_` or `dom_`.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
