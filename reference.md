@@ -26293,7 +26293,7 @@ client.PaymentMethodDomains.Retrieve(
 <dl>
 <dd>
 
-**id:** `string` — The unique identifier of the payment method domain, prefixed `pmd_`.
+**id:** `string` — The unique identifier of the payment method domain, prefixed `pmd_` or `dom_`.
     
 </dd>
 </dl>
@@ -26353,7 +26353,7 @@ client.PaymentMethodDomains.Delete(
 <dl>
 <dd>
 
-**id:** `string` — The unique identifier of the payment method domain, prefixed `pmd_`.
+**id:** `string` — The unique identifier of the payment method domain, prefixed `pmd_` or `dom_`.
     
 </dd>
 </dl>
@@ -26413,7 +26413,7 @@ client.PaymentMethodDomains.Verify(
 <dl>
 <dd>
 
-**id:** `string` — The unique identifier of the payment method domain, prefixed `pmd_`.
+**id:** `string` — The unique identifier of the payment method domain, prefixed `pmd_` or `dom_`.
     
 </dd>
 </dl>
