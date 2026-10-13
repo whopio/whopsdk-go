@@ -385,7 +385,7 @@ var tradeNullableFields = map[string]*big.Int{
 type Trade struct {
 	// The account that owns the trading wallet, prefixed `biz_`. `null` when a user owns it.
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
-	// The USDT0 that a deposit, or an order short of trading balance, sends from the wallet, or the USDC that a withdraw sends back, in native units, as a decimal string. `null` otherwise, and for a withdraw of `all`.
+	// The USDT0 that a deposit, or an order short of trading balance, sends from the wallet, or the USDC that a withdraw sends back, in native units, as a decimal string. A withdraw of `all` shows what it sent once it finishes. `null` otherwise.
 	Amount *string `json:"amount,omitempty" url:"amount,omitempty"`
 	// The average fill price of the order, in USD, as a decimal string. `null` when it is not known.
 	AveragePrice *string `json:"average_price,omitempty" url:"average_price,omitempty"`
