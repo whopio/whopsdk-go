@@ -572,11 +572,14 @@ func (r *RefundPaymentsRequest) MarshalJSON() ([]byte, error) {
 
 var (
 	resumePaymentsRequestFieldPaymentID = big.NewInt(1 << 0)
+	resumePaymentsRequestFieldReturnURL = big.NewInt(1 << 1)
 )
 
 type ResumePaymentsRequest struct {
 	// The unique identifier of the payment.
 	PaymentID string `json:"-" url:"-"`
+	// Where the buyer continues after completing an off-site step. Must be an absolute https URL without credentials (http is allowed for localhost), at most 2,048 characters. Defaults to Whop's hosted verification page. Ignored when the payment is not waiting on authentication.
+	ReturnURL *string `json:"return_url,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -596,6 +599,34 @@ func (r *ResumePaymentsRequest) require(field *big.Int) {
 func (r *ResumePaymentsRequest) SetPaymentID(paymentID string) {
 	r.PaymentID = paymentID
 	r.require(resumePaymentsRequestFieldPaymentID)
+}
+
+// SetReturnURL sets the ReturnURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResumePaymentsRequest) SetReturnURL(returnURL *string) {
+	r.ReturnURL = returnURL
+	r.require(resumePaymentsRequestFieldReturnURL)
+}
+
+func (r *ResumePaymentsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler ResumePaymentsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*r = ResumePaymentsRequest(body)
+	return nil
+}
+
+func (r *ResumePaymentsRequest) MarshalJSON() ([]byte, error) {
+	type embed ResumePaymentsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
 }
 
 var (
