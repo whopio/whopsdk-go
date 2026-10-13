@@ -1201,6 +1201,7 @@ const (
 	WebhookEventsItemAccountUpdated                        WebhookEventsItem = "account.updated"
 	WebhookEventsItemAccountFinancingApproved              WebhookEventsItem = "account.financing_approved"
 	WebhookEventsItemAccountFinancingDenied                WebhookEventsItem = "account.financing_denied"
+	WebhookEventsItemAccountFinancingDisabled              WebhookEventsItem = "account.financing_disabled"
 	WebhookEventsItemInvoiceCreated                        WebhookEventsItem = "invoice.created"
 	WebhookEventsItemInvoiceMarkedUncollectible            WebhookEventsItem = "invoice.marked_uncollectible"
 	WebhookEventsItemInvoicePaid                           WebhookEventsItem = "invoice.paid"
@@ -1314,6 +1315,8 @@ func NewWebhookEventsItemFromString(s string) (WebhookEventsItem, error) {
 		return WebhookEventsItemAccountFinancingApproved, nil
 	case "account.financing_denied":
 		return WebhookEventsItemAccountFinancingDenied, nil
+	case "account.financing_disabled":
+		return WebhookEventsItemAccountFinancingDisabled, nil
 	case "invoice.created":
 		return WebhookEventsItemInvoiceCreated, nil
 	case "invoice.marked_uncollectible":
@@ -1923,6 +1926,7 @@ const (
 	WebhookListItemEventsItemAccountUpdated                        WebhookListItemEventsItem = "account.updated"
 	WebhookListItemEventsItemAccountFinancingApproved              WebhookListItemEventsItem = "account.financing_approved"
 	WebhookListItemEventsItemAccountFinancingDenied                WebhookListItemEventsItem = "account.financing_denied"
+	WebhookListItemEventsItemAccountFinancingDisabled              WebhookListItemEventsItem = "account.financing_disabled"
 	WebhookListItemEventsItemInvoiceCreated                        WebhookListItemEventsItem = "invoice.created"
 	WebhookListItemEventsItemInvoiceMarkedUncollectible            WebhookListItemEventsItem = "invoice.marked_uncollectible"
 	WebhookListItemEventsItemInvoicePaid                           WebhookListItemEventsItem = "invoice.paid"
@@ -2036,6 +2040,8 @@ func NewWebhookListItemEventsItemFromString(s string) (WebhookListItemEventsItem
 		return WebhookListItemEventsItemAccountFinancingApproved, nil
 	case "account.financing_denied":
 		return WebhookListItemEventsItemAccountFinancingDenied, nil
+	case "account.financing_disabled":
+		return WebhookListItemEventsItemAccountFinancingDisabled, nil
 	case "invoice.created":
 		return WebhookListItemEventsItemInvoiceCreated, nil
 	case "invoice.marked_uncollectible":
@@ -2258,6 +2264,7 @@ const (
 	WebhookTestableEventsItemAccountUpdated                        WebhookTestableEventsItem = "account.updated"
 	WebhookTestableEventsItemAccountFinancingApproved              WebhookTestableEventsItem = "account.financing_approved"
 	WebhookTestableEventsItemAccountFinancingDenied                WebhookTestableEventsItem = "account.financing_denied"
+	WebhookTestableEventsItemAccountFinancingDisabled              WebhookTestableEventsItem = "account.financing_disabled"
 	WebhookTestableEventsItemInvoiceCreated                        WebhookTestableEventsItem = "invoice.created"
 	WebhookTestableEventsItemInvoiceMarkedUncollectible            WebhookTestableEventsItem = "invoice.marked_uncollectible"
 	WebhookTestableEventsItemInvoicePaid                           WebhookTestableEventsItem = "invoice.paid"
@@ -2371,6 +2378,8 @@ func NewWebhookTestableEventsItemFromString(s string) (WebhookTestableEventsItem
 		return WebhookTestableEventsItemAccountFinancingApproved, nil
 	case "account.financing_denied":
 		return WebhookTestableEventsItemAccountFinancingDenied, nil
+	case "account.financing_disabled":
+		return WebhookTestableEventsItemAccountFinancingDisabled, nil
 	case "invoice.created":
 		return WebhookTestableEventsItemInvoiceCreated, nil
 	case "invoice.marked_uncollectible":
@@ -2592,6 +2601,7 @@ const (
 	CreateWebhooksRequestEventsItemAccountUpdated                     CreateWebhooksRequestEventsItem = "account.updated"
 	CreateWebhooksRequestEventsItemAccountFinancingApproved           CreateWebhooksRequestEventsItem = "account.financing_approved"
 	CreateWebhooksRequestEventsItemAccountFinancingDenied             CreateWebhooksRequestEventsItem = "account.financing_denied"
+	CreateWebhooksRequestEventsItemAccountFinancingDisabled           CreateWebhooksRequestEventsItem = "account.financing_disabled"
 	CreateWebhooksRequestEventsItemInvoiceCreated                     CreateWebhooksRequestEventsItem = "invoice.created"
 	CreateWebhooksRequestEventsItemInvoiceMarkedUncollectible         CreateWebhooksRequestEventsItem = "invoice.marked_uncollectible"
 	CreateWebhooksRequestEventsItemInvoicePaid                        CreateWebhooksRequestEventsItem = "invoice.paid"
@@ -2686,6 +2696,8 @@ func NewCreateWebhooksRequestEventsItemFromString(s string) (CreateWebhooksReque
 		return CreateWebhooksRequestEventsItemAccountFinancingApproved, nil
 	case "account.financing_denied":
 		return CreateWebhooksRequestEventsItemAccountFinancingDenied, nil
+	case "account.financing_disabled":
+		return CreateWebhooksRequestEventsItemAccountFinancingDisabled, nil
 	case "invoice.created":
 		return CreateWebhooksRequestEventsItemInvoiceCreated, nil
 	case "invoice.marked_uncollectible":
@@ -3799,6 +3811,7 @@ const (
 	UpdateWebhooksRequestEventsItemAccountUpdated                     UpdateWebhooksRequestEventsItem = "account.updated"
 	UpdateWebhooksRequestEventsItemAccountFinancingApproved           UpdateWebhooksRequestEventsItem = "account.financing_approved"
 	UpdateWebhooksRequestEventsItemAccountFinancingDenied             UpdateWebhooksRequestEventsItem = "account.financing_denied"
+	UpdateWebhooksRequestEventsItemAccountFinancingDisabled           UpdateWebhooksRequestEventsItem = "account.financing_disabled"
 	UpdateWebhooksRequestEventsItemInvoiceCreated                     UpdateWebhooksRequestEventsItem = "invoice.created"
 	UpdateWebhooksRequestEventsItemInvoiceMarkedUncollectible         UpdateWebhooksRequestEventsItem = "invoice.marked_uncollectible"
 	UpdateWebhooksRequestEventsItemInvoicePaid                        UpdateWebhooksRequestEventsItem = "invoice.paid"
@@ -3893,6 +3906,8 @@ func NewUpdateWebhooksRequestEventsItemFromString(s string) (UpdateWebhooksReque
 		return UpdateWebhooksRequestEventsItemAccountFinancingApproved, nil
 	case "account.financing_denied":
 		return UpdateWebhooksRequestEventsItemAccountFinancingDenied, nil
+	case "account.financing_disabled":
+		return UpdateWebhooksRequestEventsItemAccountFinancingDisabled, nil
 	case "invoice.created":
 		return UpdateWebhooksRequestEventsItemInvoiceCreated, nil
 	case "invoice.marked_uncollectible":

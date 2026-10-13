@@ -7631,6 +7631,272 @@ func (p PostAccountFinancingDeniedPayloadType) Ptr() *PostAccountFinancingDenied
 }
 
 var (
+	postAccountFinancingDisabledPayloadFieldAccountID          = big.NewInt(1 << 0)
+	postAccountFinancingDisabledPayloadFieldAPIVersion         = big.NewInt(1 << 1)
+	postAccountFinancingDisabledPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
+	postAccountFinancingDisabledPayloadFieldData               = big.NewInt(1 << 3)
+	postAccountFinancingDisabledPayloadFieldID                 = big.NewInt(1 << 4)
+	postAccountFinancingDisabledPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
+	postAccountFinancingDisabledPayloadFieldTimestamp          = big.NewInt(1 << 6)
+	postAccountFinancingDisabledPayloadFieldType               = big.NewInt(1 << 7)
+)
+
+// postAccountFinancingDisabledPayloadNullableFields maps the wire names of PostAccountFinancingDisabledPayload's nullable fields (required or optional) to their field bits.
+var postAccountFinancingDisabledPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postAccountFinancingDisabledPayloadFieldAccountID,
+	"api_version_date": postAccountFinancingDisabledPayloadFieldAPIVersionDate,
+}
+
+type PostAccountFinancingDisabledPayload struct {
+	// The account ID that this webhook event is associated with
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// The API version for this webhook
+	APIVersion PostAccountFinancingDisabledPayloadAPIVersion `json:"api_version" url:"api_version"`
+	// The dated API version (Api-Version-Date) the payload is serialized to
+	APIVersionDate *string                `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *FinancingAccessChange `json:"data" url:"data"`
+	// A unique ID for every single webhook request
+	ID string `json:"id" url:"id"`
+	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
+	PreviousAttributes map[string]any `json:"previous_attributes,omitempty" url:"previous_attributes,omitempty"`
+	// The timestamp in ISO 8601 format that the webhook was sent at on the server
+	Timestamp time.Time `json:"timestamp" url:"timestamp"`
+	// The webhook event type
+	Type PostAccountFinancingDisabledPayloadType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostAccountFinancingDisabledPayload) GetAccountID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AccountID
+}
+
+func (p *PostAccountFinancingDisabledPayload) GetAPIVersion() PostAccountFinancingDisabledPayloadAPIVersion {
+	if p == nil {
+		return ""
+	}
+	return p.APIVersion
+}
+
+func (p *PostAccountFinancingDisabledPayload) GetAPIVersionDate() *string {
+	if p == nil {
+		return nil
+	}
+	return p.APIVersionDate
+}
+
+func (p *PostAccountFinancingDisabledPayload) GetData() *FinancingAccessChange {
+	if p == nil {
+		return nil
+	}
+	return p.Data
+}
+
+func (p *PostAccountFinancingDisabledPayload) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostAccountFinancingDisabledPayload) GetPreviousAttributes() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.PreviousAttributes
+}
+
+func (p *PostAccountFinancingDisabledPayload) GetTimestamp() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.Timestamp
+}
+
+func (p *PostAccountFinancingDisabledPayload) GetType() PostAccountFinancingDisabledPayloadType {
+	if p == nil {
+		return ""
+	}
+	return p.Type
+}
+
+func (p *PostAccountFinancingDisabledPayload) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostAccountFinancingDisabledPayload) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAccountFinancingDisabledPayload) SetAccountID(accountID *string) {
+	p.AccountID = accountID
+	p.require(postAccountFinancingDisabledPayloadFieldAccountID)
+}
+
+// SetAPIVersion sets the APIVersion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAccountFinancingDisabledPayload) SetAPIVersion(apiVersion PostAccountFinancingDisabledPayloadAPIVersion) {
+	p.APIVersion = apiVersion
+	p.require(postAccountFinancingDisabledPayloadFieldAPIVersion)
+}
+
+// SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAccountFinancingDisabledPayload) SetAPIVersionDate(apiVersionDate *string) {
+	p.APIVersionDate = apiVersionDate
+	p.require(postAccountFinancingDisabledPayloadFieldAPIVersionDate)
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAccountFinancingDisabledPayload) SetData(data *FinancingAccessChange) {
+	p.Data = data
+	p.require(postAccountFinancingDisabledPayloadFieldData)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAccountFinancingDisabledPayload) SetID(id string) {
+	p.ID = id
+	p.require(postAccountFinancingDisabledPayloadFieldID)
+}
+
+// SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAccountFinancingDisabledPayload) SetPreviousAttributes(previousAttributes map[string]any) {
+	p.PreviousAttributes = previousAttributes
+	p.require(postAccountFinancingDisabledPayloadFieldPreviousAttributes)
+}
+
+// SetTimestamp sets the Timestamp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAccountFinancingDisabledPayload) SetTimestamp(timestamp time.Time) {
+	p.Timestamp = timestamp
+	p.require(postAccountFinancingDisabledPayloadFieldTimestamp)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAccountFinancingDisabledPayload) SetType(type_ PostAccountFinancingDisabledPayloadType) {
+	p.Type = type_
+	p.require(postAccountFinancingDisabledPayloadFieldType)
+}
+
+func (p *PostAccountFinancingDisabledPayload) UnmarshalJSON(data []byte) error {
+	type embed PostAccountFinancingDisabledPayload
+	var unmarshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*p = PostAccountFinancingDisabledPayload(unmarshaler.embed)
+	p.Timestamp = unmarshaler.Timestamp.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postAccountFinancingDisabledPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostAccountFinancingDisabledPayload) MarshalJSON() ([]byte, error) {
+	type embed PostAccountFinancingDisabledPayload
+	var marshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed:     embed(*p),
+		Timestamp: internal.NewDateTime(p.Timestamp),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostAccountFinancingDisabledPayload) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The API version for this webhook
+type PostAccountFinancingDisabledPayloadAPIVersion string
+
+const (
+	PostAccountFinancingDisabledPayloadAPIVersionV1 PostAccountFinancingDisabledPayloadAPIVersion = "v1"
+)
+
+func NewPostAccountFinancingDisabledPayloadAPIVersionFromString(s string) (PostAccountFinancingDisabledPayloadAPIVersion, error) {
+	switch s {
+	case "v1":
+		return PostAccountFinancingDisabledPayloadAPIVersionV1, nil
+	}
+	var t PostAccountFinancingDisabledPayloadAPIVersion
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAccountFinancingDisabledPayloadAPIVersion) Ptr() *PostAccountFinancingDisabledPayloadAPIVersion {
+	return &p
+}
+
+// The webhook event type
+type PostAccountFinancingDisabledPayloadType string
+
+const (
+	PostAccountFinancingDisabledPayloadTypeAccountFinancingDisabled PostAccountFinancingDisabledPayloadType = "account.financing_disabled"
+)
+
+func NewPostAccountFinancingDisabledPayloadTypeFromString(s string) (PostAccountFinancingDisabledPayloadType, error) {
+	switch s {
+	case "account.financing_disabled":
+		return PostAccountFinancingDisabledPayloadTypeAccountFinancingDisabled, nil
+	}
+	var t PostAccountFinancingDisabledPayloadType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAccountFinancingDisabledPayloadType) Ptr() *PostAccountFinancingDisabledPayloadType {
+	return &p
+}
+
+var (
 	postAccountUpdatedPayloadFieldAccountID          = big.NewInt(1 << 0)
 	postAccountUpdatedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
 	postAccountUpdatedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)

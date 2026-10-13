@@ -19877,6 +19877,335 @@ func (f FileVisibility) Ptr() *FileVisibility {
 }
 
 var (
+	financingAccessChangeFieldAccountID              = big.NewInt(1 << 0)
+	financingAccessChangeFieldDisabledAt             = big.NewInt(1 << 1)
+	financingAccessChangeFieldDisabledPaymentMethods = big.NewInt(1 << 2)
+	financingAccessChangeFieldObject                 = big.NewInt(1 << 3)
+	financingAccessChangeFieldProvider               = big.NewInt(1 << 4)
+	financingAccessChangeFieldReason                 = big.NewInt(1 << 5)
+)
+
+type FinancingAccessChange struct {
+	// The merchant account whose financing access changed, prefixed biz_.
+	AccountID string `json:"account_id" url:"account_id"`
+	// When the payment methods were disabled, as an ISO 8601 timestamp.
+	DisabledAt             string                                            `json:"disabled_at" url:"disabled_at"`
+	DisabledPaymentMethods []FinancingAccessChangeDisabledPaymentMethodsItem `json:"disabled_payment_methods" url:"disabled_payment_methods"`
+	// The type of this object.
+	Object FinancingAccessChangeObject `json:"object" url:"object"`
+	// The BNPL provider whose dispute rate triggered enforcement. Other payment methods may also lose access.
+	Provider FinancingAccessChangeProvider `json:"provider" url:"provider"`
+	// Why financing access was removed.
+	Reason FinancingAccessChangeReason `json:"reason" url:"reason"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *FinancingAccessChange) GetAccountID() string {
+	if f == nil {
+		return ""
+	}
+	return f.AccountID
+}
+
+func (f *FinancingAccessChange) GetDisabledAt() string {
+	if f == nil {
+		return ""
+	}
+	return f.DisabledAt
+}
+
+func (f *FinancingAccessChange) GetDisabledPaymentMethods() []FinancingAccessChangeDisabledPaymentMethodsItem {
+	if f == nil {
+		return nil
+	}
+	return f.DisabledPaymentMethods
+}
+
+func (f *FinancingAccessChange) GetObject() FinancingAccessChangeObject {
+	if f == nil {
+		return ""
+	}
+	return f.Object
+}
+
+func (f *FinancingAccessChange) GetProvider() FinancingAccessChangeProvider {
+	if f == nil {
+		return ""
+	}
+	return f.Provider
+}
+
+func (f *FinancingAccessChange) GetReason() FinancingAccessChangeReason {
+	if f == nil {
+		return ""
+	}
+	return f.Reason
+}
+
+func (f *FinancingAccessChange) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *FinancingAccessChange) require(field *big.Int) {
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
+	}
+	next.Or(next, field)
+	f.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingAccessChange) SetAccountID(accountID string) {
+	f.AccountID = accountID
+	f.require(financingAccessChangeFieldAccountID)
+}
+
+// SetDisabledAt sets the DisabledAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingAccessChange) SetDisabledAt(disabledAt string) {
+	f.DisabledAt = disabledAt
+	f.require(financingAccessChangeFieldDisabledAt)
+}
+
+// SetDisabledPaymentMethods sets the DisabledPaymentMethods field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingAccessChange) SetDisabledPaymentMethods(disabledPaymentMethods []FinancingAccessChangeDisabledPaymentMethodsItem) {
+	f.DisabledPaymentMethods = disabledPaymentMethods
+	f.require(financingAccessChangeFieldDisabledPaymentMethods)
+}
+
+// SetObject sets the Object field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingAccessChange) SetObject(object FinancingAccessChangeObject) {
+	f.Object = object
+	f.require(financingAccessChangeFieldObject)
+}
+
+// SetProvider sets the Provider field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingAccessChange) SetProvider(provider FinancingAccessChangeProvider) {
+	f.Provider = provider
+	f.require(financingAccessChangeFieldProvider)
+}
+
+// SetReason sets the Reason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingAccessChange) SetReason(reason FinancingAccessChangeReason) {
+	f.Reason = reason
+	f.require(financingAccessChangeFieldReason)
+}
+
+func (f *FinancingAccessChange) UnmarshalJSON(data []byte) error {
+	type unmarshaler FinancingAccessChange
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FinancingAccessChange(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FinancingAccessChange) MarshalJSON() ([]byte, error) {
+	type embed FinancingAccessChange
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *FinancingAccessChange) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+// BNPL payment methods disabled on this account.
+type FinancingAccessChangeDisabledPaymentMethodsItem string
+
+const (
+	FinancingAccessChangeDisabledPaymentMethodsItemAddi             FinancingAccessChangeDisabledPaymentMethodsItem = "addi"
+	FinancingAccessChangeDisabledPaymentMethodsItemAffirm           FinancingAccessChangeDisabledPaymentMethodsItem = "affirm"
+	FinancingAccessChangeDisabledPaymentMethodsItemAfterpayClearpay FinancingAccessChangeDisabledPaymentMethodsItem = "afterpay_clearpay"
+	FinancingAccessChangeDisabledPaymentMethodsItemAlma             FinancingAccessChangeDisabledPaymentMethodsItem = "alma"
+	FinancingAccessChangeDisabledPaymentMethodsItemBillie           FinancingAccessChangeDisabledPaymentMethodsItem = "billie"
+	FinancingAccessChangeDisabledPaymentMethodsItemCapchasePay      FinancingAccessChangeDisabledPaymentMethodsItem = "capchase_pay"
+	FinancingAccessChangeDisabledPaymentMethodsItemClaritypay       FinancingAccessChangeDisabledPaymentMethodsItem = "claritypay"
+	FinancingAccessChangeDisabledPaymentMethodsItemFlexPay          FinancingAccessChangeDisabledPaymentMethodsItem = "flex_pay"
+	FinancingAccessChangeDisabledPaymentMethodsItemKlarna           FinancingAccessChangeDisabledPaymentMethodsItem = "klarna"
+	FinancingAccessChangeDisabledPaymentMethodsItemKriya            FinancingAccessChangeDisabledPaymentMethodsItem = "kriya"
+	FinancingAccessChangeDisabledPaymentMethodsItemKueski           FinancingAccessChangeDisabledPaymentMethodsItem = "kueski"
+	FinancingAccessChangeDisabledPaymentMethodsItemMondu            FinancingAccessChangeDisabledPaymentMethodsItem = "mondu"
+	FinancingAccessChangeDisabledPaymentMethodsItemOney             FinancingAccessChangeDisabledPaymentMethodsItem = "oney"
+	FinancingAccessChangeDisabledPaymentMethodsItemOney3X           FinancingAccessChangeDisabledPaymentMethodsItem = "oney_3x"
+	FinancingAccessChangeDisabledPaymentMethodsItemOney4X           FinancingAccessChangeDisabledPaymentMethodsItem = "oney_4x"
+	FinancingAccessChangeDisabledPaymentMethodsItemScalapay         FinancingAccessChangeDisabledPaymentMethodsItem = "scalapay"
+	FinancingAccessChangeDisabledPaymentMethodsItemSequra           FinancingAccessChangeDisabledPaymentMethodsItem = "sequra"
+	FinancingAccessChangeDisabledPaymentMethodsItemSezzle           FinancingAccessChangeDisabledPaymentMethodsItem = "sezzle"
+	FinancingAccessChangeDisabledPaymentMethodsItemSplitit          FinancingAccessChangeDisabledPaymentMethodsItem = "splitit"
+	FinancingAccessChangeDisabledPaymentMethodsItemSunbit           FinancingAccessChangeDisabledPaymentMethodsItem = "sunbit"
+	FinancingAccessChangeDisabledPaymentMethodsItemTabby            FinancingAccessChangeDisabledPaymentMethodsItem = "tabby"
+	FinancingAccessChangeDisabledPaymentMethodsItemTamara           FinancingAccessChangeDisabledPaymentMethodsItem = "tamara"
+	FinancingAccessChangeDisabledPaymentMethodsItemZip              FinancingAccessChangeDisabledPaymentMethodsItem = "zip"
+)
+
+func NewFinancingAccessChangeDisabledPaymentMethodsItemFromString(s string) (FinancingAccessChangeDisabledPaymentMethodsItem, error) {
+	switch s {
+	case "addi":
+		return FinancingAccessChangeDisabledPaymentMethodsItemAddi, nil
+	case "affirm":
+		return FinancingAccessChangeDisabledPaymentMethodsItemAffirm, nil
+	case "afterpay_clearpay":
+		return FinancingAccessChangeDisabledPaymentMethodsItemAfterpayClearpay, nil
+	case "alma":
+		return FinancingAccessChangeDisabledPaymentMethodsItemAlma, nil
+	case "billie":
+		return FinancingAccessChangeDisabledPaymentMethodsItemBillie, nil
+	case "capchase_pay":
+		return FinancingAccessChangeDisabledPaymentMethodsItemCapchasePay, nil
+	case "claritypay":
+		return FinancingAccessChangeDisabledPaymentMethodsItemClaritypay, nil
+	case "flex_pay":
+		return FinancingAccessChangeDisabledPaymentMethodsItemFlexPay, nil
+	case "klarna":
+		return FinancingAccessChangeDisabledPaymentMethodsItemKlarna, nil
+	case "kriya":
+		return FinancingAccessChangeDisabledPaymentMethodsItemKriya, nil
+	case "kueski":
+		return FinancingAccessChangeDisabledPaymentMethodsItemKueski, nil
+	case "mondu":
+		return FinancingAccessChangeDisabledPaymentMethodsItemMondu, nil
+	case "oney":
+		return FinancingAccessChangeDisabledPaymentMethodsItemOney, nil
+	case "oney_3x":
+		return FinancingAccessChangeDisabledPaymentMethodsItemOney3X, nil
+	case "oney_4x":
+		return FinancingAccessChangeDisabledPaymentMethodsItemOney4X, nil
+	case "scalapay":
+		return FinancingAccessChangeDisabledPaymentMethodsItemScalapay, nil
+	case "sequra":
+		return FinancingAccessChangeDisabledPaymentMethodsItemSequra, nil
+	case "sezzle":
+		return FinancingAccessChangeDisabledPaymentMethodsItemSezzle, nil
+	case "splitit":
+		return FinancingAccessChangeDisabledPaymentMethodsItemSplitit, nil
+	case "sunbit":
+		return FinancingAccessChangeDisabledPaymentMethodsItemSunbit, nil
+	case "tabby":
+		return FinancingAccessChangeDisabledPaymentMethodsItemTabby, nil
+	case "tamara":
+		return FinancingAccessChangeDisabledPaymentMethodsItemTamara, nil
+	case "zip":
+		return FinancingAccessChangeDisabledPaymentMethodsItemZip, nil
+	}
+	var t FinancingAccessChangeDisabledPaymentMethodsItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FinancingAccessChangeDisabledPaymentMethodsItem) Ptr() *FinancingAccessChangeDisabledPaymentMethodsItem {
+	return &f
+}
+
+// The type of this object.
+type FinancingAccessChangeObject string
+
+const (
+	FinancingAccessChangeObjectFinancingAccessChange FinancingAccessChangeObject = "financing_access_change"
+)
+
+func NewFinancingAccessChangeObjectFromString(s string) (FinancingAccessChangeObject, error) {
+	switch s {
+	case "financing_access_change":
+		return FinancingAccessChangeObjectFinancingAccessChange, nil
+	}
+	var t FinancingAccessChangeObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FinancingAccessChangeObject) Ptr() *FinancingAccessChangeObject {
+	return &f
+}
+
+// The BNPL provider whose dispute rate triggered enforcement. Other payment methods may also lose access.
+type FinancingAccessChangeProvider string
+
+const (
+	FinancingAccessChangeProviderKlarna           FinancingAccessChangeProvider = "klarna"
+	FinancingAccessChangeProviderSplitit          FinancingAccessChangeProvider = "splitit"
+	FinancingAccessChangeProviderAfterpayClearpay FinancingAccessChangeProvider = "afterpay_clearpay"
+	FinancingAccessChangeProviderZip              FinancingAccessChangeProvider = "zip"
+	FinancingAccessChangeProviderSezzle           FinancingAccessChangeProvider = "sezzle"
+)
+
+func NewFinancingAccessChangeProviderFromString(s string) (FinancingAccessChangeProvider, error) {
+	switch s {
+	case "klarna":
+		return FinancingAccessChangeProviderKlarna, nil
+	case "splitit":
+		return FinancingAccessChangeProviderSplitit, nil
+	case "afterpay_clearpay":
+		return FinancingAccessChangeProviderAfterpayClearpay, nil
+	case "zip":
+		return FinancingAccessChangeProviderZip, nil
+	case "sezzle":
+		return FinancingAccessChangeProviderSezzle, nil
+	}
+	var t FinancingAccessChangeProvider
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FinancingAccessChangeProvider) Ptr() *FinancingAccessChangeProvider {
+	return &f
+}
+
+// Why financing access was removed.
+type FinancingAccessChangeReason string
+
+const (
+	FinancingAccessChangeReasonHighDisputeRate FinancingAccessChangeReason = "high_dispute_rate"
+)
+
+func NewFinancingAccessChangeReasonFromString(s string) (FinancingAccessChangeReason, error) {
+	switch s {
+	case "high_dispute_rate":
+		return FinancingAccessChangeReasonHighDisputeRate, nil
+	}
+	var t FinancingAccessChangeReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FinancingAccessChangeReason) Ptr() *FinancingAccessChangeReason {
+	return &f
+}
+
+var (
 	financingApplicationFieldAccountID    = big.NewInt(1 << 0)
 	financingApplicationFieldCreatedAt    = big.NewInt(1 << 1)
 	financingApplicationFieldFeedback     = big.NewInt(1 << 2)
@@ -59921,6 +60250,7 @@ const (
 	WebhookEventAccountUpdated                     WebhookEvent = "account.updated"
 	WebhookEventAccountFinancingApproved           WebhookEvent = "account.financing_approved"
 	WebhookEventAccountFinancingDenied             WebhookEvent = "account.financing_denied"
+	WebhookEventAccountFinancingDisabled           WebhookEvent = "account.financing_disabled"
 	WebhookEventInvoiceCreated                     WebhookEvent = "invoice.created"
 	WebhookEventInvoiceMarkedUncollectible         WebhookEvent = "invoice.marked_uncollectible"
 	WebhookEventInvoicePaid                        WebhookEvent = "invoice.paid"
@@ -60018,6 +60348,8 @@ func NewWebhookEventFromString(s string) (WebhookEvent, error) {
 		return WebhookEventAccountFinancingApproved, nil
 	case "account.financing_denied":
 		return WebhookEventAccountFinancingDenied, nil
+	case "account.financing_disabled":
+		return WebhookEventAccountFinancingDisabled, nil
 	case "invoice.created":
 		return WebhookEventInvoiceCreated, nil
 	case "invoice.marked_uncollectible":
