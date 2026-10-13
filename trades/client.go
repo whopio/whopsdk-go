@@ -119,13 +119,12 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Opens or closes a perpetual position from the Whop-managed wallet of an account or user. Answers `201` with the trade in `pending`; it runs in the background, so read it with `GET /trades/:id` until its `status` is `completed`, `failed` or `in_review`. One trade runs at a time for each wallet, and a retry with the same `Idempotency-Key` returns the same trade.
+// Places an order, or buys or closes a perpetual position, from the Whop-managed wallet of an account or user. Answers `201` with the trade in `pending`; it runs in the background, so read it with `GET /trades/:id` until its `status` is `completed`, `failed` or `in_review`. A buy or close waits for the wallet's other trades; orders run alongside each other, except a second order on one market at a different leverage, which answers `409`. A retry with the same `Idempotency-Key` returns the same trade.
 //
 // Example:
 //
 //	request := &whopsdk.CreateTradesRequest{
 //	    AccountID: "biz_xxxxxxxxxxxxxx",
-//	    Market: "BTC",
 //	    Type: whopsdk.CreateTradesRequestTypeBuy,
 //	}
 //	client.Trades.Create(

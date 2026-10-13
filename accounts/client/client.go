@@ -324,7 +324,7 @@ func (c *Client) Update(
 //	        },
 //	    },
 //	    IndustryGroup: "automotive",
-//	    IndustryType: "car_wash",
+//	    IndustryType: "car_wash_and_detailing_shop",
 //	    ShareStructure: &whopsdk.FormCompanyAccountsRequestShareStructure{
 //	        NumberOfShares: 123,
 //	        Value: 123,

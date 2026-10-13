@@ -10,11 +10,21 @@ import (
 )
 
 var (
-	createTradesRequestFieldAccountID = big.NewInt(1 << 0)
-	createTradesRequestFieldAmount    = big.NewInt(1 << 1)
-	createTradesRequestFieldLeverage  = big.NewInt(1 << 2)
-	createTradesRequestFieldMarket    = big.NewInt(1 << 3)
-	createTradesRequestFieldType      = big.NewInt(1 << 4)
+	createTradesRequestFieldAccountID      = big.NewInt(1 << 0)
+	createTradesRequestFieldAmount         = big.NewInt(1 << 1)
+	createTradesRequestFieldClientOrderID  = big.NewInt(1 << 2)
+	createTradesRequestFieldInstrumentType = big.NewInt(1 << 3)
+	createTradesRequestFieldLeverage       = big.NewInt(1 << 4)
+	createTradesRequestFieldMarket         = big.NewInt(1 << 5)
+	createTradesRequestFieldMetadata       = big.NewInt(1 << 6)
+	createTradesRequestFieldNotional       = big.NewInt(1 << 7)
+	createTradesRequestFieldOrderType      = big.NewInt(1 << 8)
+	createTradesRequestFieldPrice          = big.NewInt(1 << 9)
+	createTradesRequestFieldReduceOnly     = big.NewInt(1 << 10)
+	createTradesRequestFieldSide           = big.NewInt(1 << 11)
+	createTradesRequestFieldSize           = big.NewInt(1 << 12)
+	createTradesRequestFieldSlippageBps    = big.NewInt(1 << 13)
+	createTradesRequestFieldType           = big.NewInt(1 << 14)
 )
 
 type CreateTradesRequest struct {
@@ -22,11 +32,31 @@ type CreateTradesRequest struct {
 	AccountID string `json:"account_id" url:"-"`
 	// The USDT0 to send from the wallet for a buy, with at most 6 decimals. Required for a buy.
 	Amount *string `json:"amount,omitempty" url:"-"`
-	// The cross leverage for a buy, from 1 to the market's maximum. Required for a buy.
+	// Only for an order. Your own ID for the trade, 1 to 128 characters, unique for the account. Sending it again with the same order returns the same trade; with a different order it answers `409`.
+	ClientOrderID *string `json:"client_order_id,omitempty" url:"-"`
+	// The kind of market. Required for an order.
+	InstrumentType *CreateTradesRequestInstrumentType `json:"instrument_type,omitempty" url:"-"`
+	// The cross leverage, from 1 to the market's maximum. Required for a buy and for an order that is not `reduce_only`; not accepted on a reduce-only order.
 	Leverage *int `json:"leverage,omitempty" url:"-"`
-	// The perpetual market, for example `BTC`.
-	Market string `json:"market" url:"-"`
-	// `buy` bridges `amount` USDT0 to the trading account, sets cross `leverage` on `market`, and places one market buy; if it does not fill, its money goes back to the wallet. `close` closes the position in `market`, if one is open, and sends all withdrawable USDC back to the wallet.
+	// The perpetual market, for example `BTC`. Required for a buy, close or order.
+	Market *string `json:"market,omitempty" url:"-"`
+	// Only for an order. Free-form string-to-string annotations: up to 50 keys of at most 40 characters, values up to 500 characters.
+	Metadata map[string]string `json:"metadata,omitempty" url:"-"`
+	// Only for an order. The order value in USD, as a decimal string; the size is rounded down to the market's decimals. Send exactly one of `size` or `notional`.
+	Notional *string `json:"notional,omitempty" url:"-"`
+	// `market` fills now within `slippage_bps` of the mid price; `limit` fills now at `price` or better. Anything unfilled is canceled. Required for an order.
+	OrderType *CreateTradesRequestOrderType `json:"order_type,omitempty" url:"-"`
+	// Only for an order. The limit price in USD, as a decimal string Hyperliquid accepts without rounding. Required for a limit order; not accepted for a market order.
+	Price *string `json:"price,omitempty" url:"-"`
+	// Only for an order. Only reduce an open position; defaults to `false`. A reduce-only order takes no `leverage`.
+	ReduceOnly *bool `json:"reduce_only,omitempty" url:"-"`
+	// `buy` or `sell`. Required for an order.
+	Side *CreateTradesRequestSide `json:"side,omitempty" url:"-"`
+	// Only for an order. The size in units of the market, as a decimal string, with at most the market's size decimals. Send exactly one of `size` or `notional`. The order must be worth at least 10 USD, unless reduce-only, and at most 5000 USD.
+	Size *string `json:"size,omitempty" url:"-"`
+	// Only for a market order. The worst price as basis points from the mid price, from 1 to 1000; defaults to 100.
+	SlippageBps *int `json:"slippage_bps,omitempty" url:"-"`
+	// `order` places one order from the trading balance and sets cross `leverage` first. `buy` bridges `amount` USDT0 to the trading account, sets cross `leverage` on `market`, and places one market buy; if it does not fill, its money goes back to the wallet. `close` closes the position in `market`, if one is open, and sends all withdrawable USDC back to the wallet.
 	Type CreateTradesRequestType `json:"type" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -56,6 +86,20 @@ func (c *CreateTradesRequest) SetAmount(amount *string) {
 	c.require(createTradesRequestFieldAmount)
 }
 
+// SetClientOrderID sets the ClientOrderID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTradesRequest) SetClientOrderID(clientOrderID *string) {
+	c.ClientOrderID = clientOrderID
+	c.require(createTradesRequestFieldClientOrderID)
+}
+
+// SetInstrumentType sets the InstrumentType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTradesRequest) SetInstrumentType(instrumentType *CreateTradesRequestInstrumentType) {
+	c.InstrumentType = instrumentType
+	c.require(createTradesRequestFieldInstrumentType)
+}
+
 // SetLeverage sets the Leverage field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateTradesRequest) SetLeverage(leverage *int) {
@@ -65,9 +109,65 @@ func (c *CreateTradesRequest) SetLeverage(leverage *int) {
 
 // SetMarket sets the Market field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTradesRequest) SetMarket(market string) {
+func (c *CreateTradesRequest) SetMarket(market *string) {
 	c.Market = market
 	c.require(createTradesRequestFieldMarket)
+}
+
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTradesRequest) SetMetadata(metadata map[string]string) {
+	c.Metadata = metadata
+	c.require(createTradesRequestFieldMetadata)
+}
+
+// SetNotional sets the Notional field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTradesRequest) SetNotional(notional *string) {
+	c.Notional = notional
+	c.require(createTradesRequestFieldNotional)
+}
+
+// SetOrderType sets the OrderType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTradesRequest) SetOrderType(orderType *CreateTradesRequestOrderType) {
+	c.OrderType = orderType
+	c.require(createTradesRequestFieldOrderType)
+}
+
+// SetPrice sets the Price field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTradesRequest) SetPrice(price *string) {
+	c.Price = price
+	c.require(createTradesRequestFieldPrice)
+}
+
+// SetReduceOnly sets the ReduceOnly field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTradesRequest) SetReduceOnly(reduceOnly *bool) {
+	c.ReduceOnly = reduceOnly
+	c.require(createTradesRequestFieldReduceOnly)
+}
+
+// SetSide sets the Side field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTradesRequest) SetSide(side *CreateTradesRequestSide) {
+	c.Side = side
+	c.require(createTradesRequestFieldSide)
+}
+
+// SetSize sets the Size field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTradesRequest) SetSize(size *string) {
+	c.Size = size
+	c.require(createTradesRequestFieldSize)
+}
+
+// SetSlippageBps sets the SlippageBps field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTradesRequest) SetSlippageBps(slippageBps *int) {
+	c.SlippageBps = slippageBps
+	c.require(createTradesRequestFieldSlippageBps)
 }
 
 // SetType sets the Type field and marks it as non-optional;
@@ -238,65 +338,92 @@ var (
 	tradeFieldAccountID     = big.NewInt(1 << 0)
 	tradeFieldAmount        = big.NewInt(1 << 1)
 	tradeFieldAveragePrice  = big.NewInt(1 << 2)
-	tradeFieldCompletedAt   = big.NewInt(1 << 3)
-	tradeFieldCreatedAt     = big.NewInt(1 << 4)
-	tradeFieldFailureCode   = big.NewInt(1 << 5)
-	tradeFieldFilledSize    = big.NewInt(1 << 6)
-	tradeFieldFundsLocation = big.NewInt(1 << 7)
-	tradeFieldID            = big.NewInt(1 << 8)
-	tradeFieldLeverage      = big.NewInt(1 << 9)
-	tradeFieldMarket        = big.NewInt(1 << 10)
-	tradeFieldObject        = big.NewInt(1 << 11)
-	tradeFieldStatus        = big.NewInt(1 << 12)
-	tradeFieldStatusDetail  = big.NewInt(1 << 13)
-	tradeFieldType          = big.NewInt(1 << 14)
-	tradeFieldUpdatedAt     = big.NewInt(1 << 15)
-	tradeFieldUserID        = big.NewInt(1 << 16)
+	tradeFieldClientOrderID = big.NewInt(1 << 3)
+	tradeFieldCompletedAt   = big.NewInt(1 << 4)
+	tradeFieldCreatedAt     = big.NewInt(1 << 5)
+	tradeFieldFailureCode   = big.NewInt(1 << 6)
+	tradeFieldFilledSize    = big.NewInt(1 << 7)
+	tradeFieldFundsLocation = big.NewInt(1 << 8)
+	tradeFieldID            = big.NewInt(1 << 9)
+	tradeFieldLeverage      = big.NewInt(1 << 10)
+	tradeFieldMarket        = big.NewInt(1 << 11)
+	tradeFieldMetadata      = big.NewInt(1 << 12)
+	tradeFieldObject        = big.NewInt(1 << 13)
+	tradeFieldOrderType     = big.NewInt(1 << 14)
+	tradeFieldPrice         = big.NewInt(1 << 15)
+	tradeFieldReduceOnly    = big.NewInt(1 << 16)
+	tradeFieldSide          = big.NewInt(1 << 17)
+	tradeFieldSize          = big.NewInt(1 << 18)
+	tradeFieldStatus        = big.NewInt(1 << 19)
+	tradeFieldStatusDetail  = big.NewInt(1 << 20)
+	tradeFieldType          = big.NewInt(1 << 21)
+	tradeFieldUpdatedAt     = big.NewInt(1 << 22)
+	tradeFieldUserID        = big.NewInt(1 << 23)
 )
 
 // tradeNullableFields maps the wire names of Trade's nullable fields (required or optional) to their field bits.
 var tradeNullableFields = map[string]*big.Int{
-	"account_id":     tradeFieldAccountID,
-	"amount":         tradeFieldAmount,
-	"average_price":  tradeFieldAveragePrice,
-	"completed_at":   tradeFieldCompletedAt,
-	"failure_code":   tradeFieldFailureCode,
-	"filled_size":    tradeFieldFilledSize,
-	"funds_location": tradeFieldFundsLocation,
-	"leverage":       tradeFieldLeverage,
-	"status_detail":  tradeFieldStatusDetail,
-	"user_id":        tradeFieldUserID,
+	"account_id":      tradeFieldAccountID,
+	"amount":          tradeFieldAmount,
+	"average_price":   tradeFieldAveragePrice,
+	"client_order_id": tradeFieldClientOrderID,
+	"completed_at":    tradeFieldCompletedAt,
+	"failure_code":    tradeFieldFailureCode,
+	"filled_size":     tradeFieldFilledSize,
+	"funds_location":  tradeFieldFundsLocation,
+	"leverage":        tradeFieldLeverage,
+	"order_type":      tradeFieldOrderType,
+	"price":           tradeFieldPrice,
+	"reduce_only":     tradeFieldReduceOnly,
+	"side":            tradeFieldSide,
+	"size":            tradeFieldSize,
+	"status_detail":   tradeFieldStatusDetail,
+	"user_id":         tradeFieldUserID,
 }
 
 type Trade struct {
 	// The account that owns the trading wallet, prefixed `biz_`. `null` when a user owns it.
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
-	// The USDT0 that a buy sends from the wallet, in native units, as a decimal string. `null` for a close.
+	// The USDT0 that a buy sends from the wallet, in native units, as a decimal string. `null` for other types.
 	Amount *string `json:"amount,omitempty" url:"amount,omitempty"`
-	// The average fill price of the buy, in USD. `null` when it is not known.
+	// The average fill price of the buy or order, in USD, as a decimal string. `null` when it is not known.
 	AveragePrice *string `json:"average_price,omitempty" url:"average_price,omitempty"`
+	// The caller's own ID for the trade, unique for the account. `null` when none was sent.
+	ClientOrderID *string `json:"client_order_id,omitempty" url:"client_order_id,omitempty"`
 	// When the trade ended as completed or failed, as an ISO 8601 timestamp. `null` before that.
 	CompletedAt *string `json:"completed_at,omitempty" url:"completed_at,omitempty"`
 	// When the trade was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Why the trade failed, or `null`.
 	FailureCode *TradeFailureCode `json:"failure_code,omitempty" url:"failure_code,omitempty"`
-	// The size that the buy order filled, in units of the market. `null` until the order fills.
+	// The size the buy or order filled, in units of the market, as a decimal string. `null` until it fills.
 	FilledSize *string `json:"filled_size,omitempty" url:"filled_size,omitempty"`
 	// Where the money is when the trade did not complete as asked, or after a close: `wallet`, `trading_account`, or `unknown` while a person checks it. `null` otherwise.
 	FundsLocation *TradeFundsLocation `json:"funds_location,omitempty" url:"funds_location,omitempty"`
 	// Trade ID, prefixed `tint_`.
 	ID string `json:"id" url:"id"`
-	// The cross leverage of a buy. `null` for a close.
+	// The cross leverage set before a buy or an opening order. `null` for a close or a reduce-only order.
 	Leverage *int `json:"leverage,omitempty" url:"leverage,omitempty"`
 	// The perpetual market, for example `BTC`.
-	Market string      `json:"market" url:"market"`
-	Object TradeObject `json:"object" url:"object"`
+	Market string `json:"market" url:"market"`
+	// Free-form string-to-string annotations stored on the trade.
+	Metadata map[string]any `json:"metadata" url:"metadata"`
+	Object   TradeObject    `json:"object" url:"object"`
+	// `market` or `limit` for an order. `null` otherwise.
+	OrderType *TradeOrderType `json:"order_type,omitempty" url:"order_type,omitempty"`
+	// The limit price of the order in USD. A market order's price is the mid price moved by `slippage_bps`. `null` for other types.
+	Price *Money `json:"price,omitempty" url:"price,omitempty"`
+	// Whether the order can only reduce a position. `null` for other types.
+	ReduceOnly *bool `json:"reduce_only,omitempty" url:"reduce_only,omitempty"`
+	// `buy` or `sell` for an order. `null` otherwise.
+	Side *TradeSide `json:"side,omitempty" url:"side,omitempty"`
+	// The order size in units of the market, as a decimal string. `null` for other types.
+	Size *string `json:"size,omitempty" url:"size,omitempty"`
 	// `pending` until the trade starts. `processing` while it runs, also while a failed buy sends its money back. `completed` when it did what was asked. `failed` when it did not; `funds_location` says where the money is. `in_review` when the outcome is unknown and a person checks it.
 	Status TradeStatus `json:"status" url:"status"`
 	// More about the outcome: `partial_fill` (the buy filled only part of its size), `no_position` (the close found no position), `partial_close` (part of the position is still open), or `nothing_to_return` (the close had less than 1 USDC to send back). `null` otherwise.
 	StatusDetail *TradeStatusDetail `json:"status_detail,omitempty" url:"status_detail,omitempty"`
-	// `buy` bridges USDT0 to the trading account, sets the leverage and places one market buy. `close` closes the position in one market, if one is open, and sends all withdrawable USDC back to the wallet.
+	// `order` places one order from the trading balance. `buy` bridges USDT0 to the trading account, sets the leverage and places one market buy. `close` closes the position in one market, if one is open, and sends all withdrawable USDC back to the wallet.
 	Type TradeType `json:"type" url:"type"`
 	// When the trade last changed, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
@@ -329,6 +456,13 @@ func (t *Trade) GetAveragePrice() *string {
 		return nil
 	}
 	return t.AveragePrice
+}
+
+func (t *Trade) GetClientOrderID() *string {
+	if t == nil {
+		return nil
+	}
+	return t.ClientOrderID
 }
 
 func (t *Trade) GetCompletedAt() *string {
@@ -387,11 +521,53 @@ func (t *Trade) GetMarket() string {
 	return t.Market
 }
 
+func (t *Trade) GetMetadata() map[string]any {
+	if t == nil {
+		return nil
+	}
+	return t.Metadata
+}
+
 func (t *Trade) GetObject() TradeObject {
 	if t == nil {
 		return ""
 	}
 	return t.Object
+}
+
+func (t *Trade) GetOrderType() *TradeOrderType {
+	if t == nil {
+		return nil
+	}
+	return t.OrderType
+}
+
+func (t *Trade) GetPrice() *Money {
+	if t == nil {
+		return nil
+	}
+	return t.Price
+}
+
+func (t *Trade) GetReduceOnly() *bool {
+	if t == nil {
+		return nil
+	}
+	return t.ReduceOnly
+}
+
+func (t *Trade) GetSide() *TradeSide {
+	if t == nil {
+		return nil
+	}
+	return t.Side
+}
+
+func (t *Trade) GetSize() *string {
+	if t == nil {
+		return nil
+	}
+	return t.Size
 }
 
 func (t *Trade) GetStatus() TradeStatus {
@@ -466,6 +642,13 @@ func (t *Trade) SetAveragePrice(averagePrice *string) {
 	t.require(tradeFieldAveragePrice)
 }
 
+// SetClientOrderID sets the ClientOrderID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *Trade) SetClientOrderID(clientOrderID *string) {
+	t.ClientOrderID = clientOrderID
+	t.require(tradeFieldClientOrderID)
+}
+
 // SetCompletedAt sets the CompletedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (t *Trade) SetCompletedAt(completedAt *string) {
@@ -522,11 +705,53 @@ func (t *Trade) SetMarket(market string) {
 	t.require(tradeFieldMarket)
 }
 
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *Trade) SetMetadata(metadata map[string]any) {
+	t.Metadata = metadata
+	t.require(tradeFieldMetadata)
+}
+
 // SetObject sets the Object field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (t *Trade) SetObject(object TradeObject) {
 	t.Object = object
 	t.require(tradeFieldObject)
+}
+
+// SetOrderType sets the OrderType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *Trade) SetOrderType(orderType *TradeOrderType) {
+	t.OrderType = orderType
+	t.require(tradeFieldOrderType)
+}
+
+// SetPrice sets the Price field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *Trade) SetPrice(price *Money) {
+	t.Price = price
+	t.require(tradeFieldPrice)
+}
+
+// SetReduceOnly sets the ReduceOnly field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *Trade) SetReduceOnly(reduceOnly *bool) {
+	t.ReduceOnly = reduceOnly
+	t.require(tradeFieldReduceOnly)
+}
+
+// SetSide sets the Side field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *Trade) SetSide(side *TradeSide) {
+	t.Side = side
+	t.require(tradeFieldSide)
+}
+
+// SetSize sets the Size field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *Trade) SetSize(size *string) {
+	t.Size = size
+	t.require(tradeFieldSize)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -714,6 +939,52 @@ func (t TradeObject) Ptr() *TradeObject {
 	return &t
 }
 
+// `market` or `limit` for an order. `null` otherwise.
+type TradeOrderType string
+
+const (
+	TradeOrderTypeMarket TradeOrderType = "market"
+	TradeOrderTypeLimit  TradeOrderType = "limit"
+)
+
+func NewTradeOrderTypeFromString(s string) (TradeOrderType, error) {
+	switch s {
+	case "market":
+		return TradeOrderTypeMarket, nil
+	case "limit":
+		return TradeOrderTypeLimit, nil
+	}
+	var t TradeOrderType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (t TradeOrderType) Ptr() *TradeOrderType {
+	return &t
+}
+
+// `buy` or `sell` for an order. `null` otherwise.
+type TradeSide string
+
+const (
+	TradeSideBuy  TradeSide = "buy"
+	TradeSideSell TradeSide = "sell"
+)
+
+func NewTradeSideFromString(s string) (TradeSide, error) {
+	switch s {
+	case "buy":
+		return TradeSideBuy, nil
+	case "sell":
+		return TradeSideSell, nil
+	}
+	var t TradeSide
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (t TradeSide) Ptr() *TradeSide {
+	return &t
+}
+
 // `pending` until the trade starts. `processing` while it runs, also while a failed buy sends its money back. `completed` when it did what was asked. `failed` when it did not; `funds_location` says where the money is. `in_review` when the outcome is unknown and a person checks it.
 type TradeStatus string
 
@@ -775,12 +1046,13 @@ func (t TradeStatusDetail) Ptr() *TradeStatusDetail {
 	return &t
 }
 
-// `buy` bridges USDT0 to the trading account, sets the leverage and places one market buy. `close` closes the position in one market, if one is open, and sends all withdrawable USDC back to the wallet.
+// `order` places one order from the trading balance. `buy` bridges USDT0 to the trading account, sets the leverage and places one market buy. `close` closes the position in one market, if one is open, and sends all withdrawable USDC back to the wallet.
 type TradeType string
 
 const (
 	TradeTypeBuy   TradeType = "buy"
 	TradeTypeClose TradeType = "close"
+	TradeTypeOrder TradeType = "order"
 )
 
 func NewTradeTypeFromString(s string) (TradeType, error) {
@@ -789,6 +1061,8 @@ func NewTradeTypeFromString(s string) (TradeType, error) {
 		return TradeTypeBuy, nil
 	case "close":
 		return TradeTypeClose, nil
+	case "order":
+		return TradeTypeOrder, nil
 	}
 	var t TradeType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -798,12 +1072,79 @@ func (t TradeType) Ptr() *TradeType {
 	return &t
 }
 
-// `buy` bridges `amount` USDT0 to the trading account, sets cross `leverage` on `market`, and places one market buy; if it does not fill, its money goes back to the wallet. `close` closes the position in `market`, if one is open, and sends all withdrawable USDC back to the wallet.
+// The kind of market. Required for an order.
+type CreateTradesRequestInstrumentType string
+
+const (
+	CreateTradesRequestInstrumentTypePerpetual CreateTradesRequestInstrumentType = "perpetual"
+)
+
+func NewCreateTradesRequestInstrumentTypeFromString(s string) (CreateTradesRequestInstrumentType, error) {
+	switch s {
+	case "perpetual":
+		return CreateTradesRequestInstrumentTypePerpetual, nil
+	}
+	var t CreateTradesRequestInstrumentType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateTradesRequestInstrumentType) Ptr() *CreateTradesRequestInstrumentType {
+	return &c
+}
+
+// `market` fills now within `slippage_bps` of the mid price; `limit` fills now at `price` or better. Anything unfilled is canceled. Required for an order.
+type CreateTradesRequestOrderType string
+
+const (
+	CreateTradesRequestOrderTypeMarket CreateTradesRequestOrderType = "market"
+	CreateTradesRequestOrderTypeLimit  CreateTradesRequestOrderType = "limit"
+)
+
+func NewCreateTradesRequestOrderTypeFromString(s string) (CreateTradesRequestOrderType, error) {
+	switch s {
+	case "market":
+		return CreateTradesRequestOrderTypeMarket, nil
+	case "limit":
+		return CreateTradesRequestOrderTypeLimit, nil
+	}
+	var t CreateTradesRequestOrderType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateTradesRequestOrderType) Ptr() *CreateTradesRequestOrderType {
+	return &c
+}
+
+// `buy` or `sell`. Required for an order.
+type CreateTradesRequestSide string
+
+const (
+	CreateTradesRequestSideBuy  CreateTradesRequestSide = "buy"
+	CreateTradesRequestSideSell CreateTradesRequestSide = "sell"
+)
+
+func NewCreateTradesRequestSideFromString(s string) (CreateTradesRequestSide, error) {
+	switch s {
+	case "buy":
+		return CreateTradesRequestSideBuy, nil
+	case "sell":
+		return CreateTradesRequestSideSell, nil
+	}
+	var t CreateTradesRequestSide
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateTradesRequestSide) Ptr() *CreateTradesRequestSide {
+	return &c
+}
+
+// `order` places one order from the trading balance and sets cross `leverage` first. `buy` bridges `amount` USDT0 to the trading account, sets cross `leverage` on `market`, and places one market buy; if it does not fill, its money goes back to the wallet. `close` closes the position in `market`, if one is open, and sends all withdrawable USDC back to the wallet.
 type CreateTradesRequestType string
 
 const (
 	CreateTradesRequestTypeBuy   CreateTradesRequestType = "buy"
 	CreateTradesRequestTypeClose CreateTradesRequestType = "close"
+	CreateTradesRequestTypeOrder CreateTradesRequestType = "order"
 )
 
 func NewCreateTradesRequestTypeFromString(s string) (CreateTradesRequestType, error) {
@@ -812,6 +1153,8 @@ func NewCreateTradesRequestTypeFromString(s string) (CreateTradesRequestType, er
 		return CreateTradesRequestTypeBuy, nil
 	case "close":
 		return CreateTradesRequestTypeClose, nil
+	case "order":
+		return CreateTradesRequestTypeOrder, nil
 	}
 	var t CreateTradesRequestType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -901,6 +1244,7 @@ type ListTradesRequestType string
 const (
 	ListTradesRequestTypeBuy   ListTradesRequestType = "buy"
 	ListTradesRequestTypeClose ListTradesRequestType = "close"
+	ListTradesRequestTypeOrder ListTradesRequestType = "order"
 )
 
 func NewListTradesRequestTypeFromString(s string) (ListTradesRequestType, error) {
@@ -909,6 +1253,8 @@ func NewListTradesRequestTypeFromString(s string) (ListTradesRequestType, error)
 		return ListTradesRequestTypeBuy, nil
 	case "close":
 		return ListTradesRequestTypeClose, nil
+	case "order":
+		return ListTradesRequestTypeOrder, nil
 	}
 	var t ListTradesRequestType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
