@@ -37483,7 +37483,7 @@ client.TeamMembers.Create(
 <dl>
 <dd>
 
-**role:** `whopsdk.CreateTeamMembersRequestRole` — The system role to grant. Custom roles cannot be granted through the API. The Partner role can only be granted to the account's attached, verified partner.
+**role:** `whopsdk.CreateTeamMembersRequestRole` — The system role to grant. Custom roles cannot be granted through the API. The Partner role provides view-only access.
     
 </dd>
 </dl>
@@ -37679,7 +37679,7 @@ client.TeamMembers.Update(
 <dl>
 <dd>
 
-**role:** `*whopsdk.UpdateTeamMembersRequestRole` — The system role to grant. Custom roles cannot be granted through the API. The Partner role can only be granted to the account's attached, verified partner.
+**role:** `*whopsdk.UpdateTeamMembersRequestRole` — The system role to grant. Custom roles cannot be granted through the API. The Partner role provides view-only access.
     
 </dd>
 </dl>

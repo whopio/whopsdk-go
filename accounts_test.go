@@ -24192,6 +24192,279 @@ func TestEnumAccountPaymentControlsRestrictedPaymentMethodsItem(t *testing.T) {
 		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("card_discover_global_network"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_addi", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("addi")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("addi"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_affirm", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("affirm")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("affirm"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_afterpay_clearpay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("afterpay_clearpay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("afterpay_clearpay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_alma", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("alma")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("alma"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_billie", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("billie")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("billie"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_capchase_pay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("capchase_pay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("capchase_pay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_claritypay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("claritypay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("claritypay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_flex_pay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("flex_pay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("flex_pay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_klarna", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("klarna")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("klarna"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_kriya", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("kriya")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("kriya"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_kueski", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("kueski")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("kueski"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mondu", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("mondu")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("mondu"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_oney", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("oney")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("oney"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_scalapay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("scalapay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("scalapay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_sequra", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("sequra")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("sequra"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_sezzle", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("sezzle")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("sezzle"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_splitit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("splitit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("splitit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_sunbit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("sunbit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("sunbit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_tabby", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("tabby")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("tabby"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_tamara", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("tamara")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("tamara"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_zip", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("zip")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("zip"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_card_installments_three", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("card_installments_three")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("card_installments_three"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_card_installments_six", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("card_installments_six")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("card_installments_six"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_card_installments_twelve", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("card_installments_twelve")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("card_installments_twelve"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_oney_3x", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("oney_3x")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("oney_3x"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_oney_4x", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("oney_4x")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("oney_4x"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_klarna_pay_now", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("klarna_pay_now")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("klarna_pay_now"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_us_bank_account", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("us_bank_account")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("us_bank_account"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_sepa_debit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("sepa_debit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("sepa_debit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_bacs_debit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("bacs_debit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("bacs_debit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_au_becs_debit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("au_becs_debit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("au_becs_debit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_acss_debit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("acss_debit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("acss_debit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pay_by_bank", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("pay_by_bank")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("pay_by_bank"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payto", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("payto")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("payto"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_paypal", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("paypal")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("paypal"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_cashapp", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("cashapp")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("cashapp"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_venmo", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("venmo")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("venmo"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_amazon_pay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("amazon_pay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("amazon_pay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_link", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("link")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsRestrictedPaymentMethodsItem("link"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
