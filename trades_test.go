@@ -1083,6 +1083,14 @@ func TestSettersTrade(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetInstrumentType", func(t *testing.T) {
+		obj := &Trade{}
+		var fernTestValueInstrumentType *TradeInstrumentType
+		obj.SetInstrumentType(fernTestValueInstrumentType)
+		assert.Equal(t, fernTestValueInstrumentType, obj.InstrumentType)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetLeverage", func(t *testing.T) {
 		obj := &Trade{}
 		var fernTestValueLeverage *int
@@ -1506,6 +1514,39 @@ func TestGettersTrade(t *testing.T) {
 			}
 		}()
 		_ = obj.GetID() // Should return zero value
+	})
+
+	t.Run("GetInstrumentType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Trade{}
+		var expected *TradeInstrumentType
+		obj.InstrumentType = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetInstrumentType(), "getter should return the property value")
+	})
+
+	t.Run("GetInstrumentType_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Trade{}
+		obj.InstrumentType = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetInstrumentType(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetInstrumentType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Trade
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetInstrumentType() // Should return zero value
 	})
 
 	t.Run("GetLeverage", func(t *testing.T) {
@@ -2220,6 +2261,37 @@ func TestSettersMarkExplicitTrade(t *testing.T) {
 
 		// Act
 		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetInstrumentType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Trade{}
+		var fernTestValueInstrumentType *TradeInstrumentType
+
+		// Act
+		obj.SetInstrumentType(fernTestValueInstrumentType)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3262,6 +3334,7 @@ func TestRequiredNullableRoundTripTrade(t *testing.T) {
 		"failure_code",
 		"filled_size",
 		"funds_location",
+		"instrument_type",
 		"leverage",
 		"market",
 		"order_type",
@@ -3283,7 +3356,7 @@ func TestRequiredNullableRoundTripTrade(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Trade
-		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"amount":null,"average_price":null,"client_order_id":null,"completed_at":null,"failure_code":null,"filled_size":null,"funds_location":null,"leverage":null,"market":null,"order_type":null,"price":null,"reduce_only":null,"side":null,"size":null,"status_detail":null,"user_id":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"amount":null,"average_price":null,"client_order_id":null,"completed_at":null,"failure_code":null,"filled_size":null,"funds_location":null,"instrument_type":null,"leverage":null,"market":null,"order_type":null,"price":null,"reduce_only":null,"side":null,"size":null,"status_detail":null,"user_id":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -3365,6 +3438,13 @@ func TestEnumCreateTradesRequestInstrumentType(t *testing.T) {
 		val, err := NewCreateTradesRequestInstrumentTypeFromString("perpetual")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, CreateTradesRequestInstrumentType("perpetual"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_spot", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateTradesRequestInstrumentTypeFromString("spot")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateTradesRequestInstrumentType("spot"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -3775,6 +3855,35 @@ func TestEnumTradeFundsLocation(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewTradeFundsLocationFromString("wallet")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumTradeInstrumentType(t *testing.T) {
+	t.Run("NewFromString_perpetual", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTradeInstrumentTypeFromString("perpetual")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TradeInstrumentType("perpetual"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_spot", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTradeInstrumentTypeFromString("spot")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TradeInstrumentType("spot"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewTradeInstrumentTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewTradeInstrumentTypeFromString("perpetual")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
