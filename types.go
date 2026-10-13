@@ -31360,6 +31360,127 @@ func (o *OauthGrant) String() string {
 }
 
 var (
+	ownerLevelPointsFieldAds     = big.NewInt(1 << 0)
+	ownerLevelPointsFieldCards   = big.NewInt(1 << 1)
+	ownerLevelPointsFieldTrading = big.NewInt(1 << 2)
+)
+
+type OwnerLevelPoints struct {
+	// Points from charged Whop Ads spend: 10 for every whole dollar.
+	Ads int `json:"ads" url:"ads"`
+	// Points from Whop Card spend: 10 for every whole dollar.
+	Cards int `json:"cards" url:"cards"`
+	// Points from perpetual trading volume: 1 for every whole dollar traded.
+	Trading int `json:"trading" url:"trading"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (o *OwnerLevelPoints) GetAds() int {
+	if o == nil {
+		return 0
+	}
+	return o.Ads
+}
+
+func (o *OwnerLevelPoints) GetCards() int {
+	if o == nil {
+		return 0
+	}
+	return o.Cards
+}
+
+func (o *OwnerLevelPoints) GetTrading() int {
+	if o == nil {
+		return 0
+	}
+	return o.Trading
+}
+
+func (o *OwnerLevelPoints) GetExtraProperties() map[string]interface{} {
+	if o == nil {
+		return nil
+	}
+	return o.extraProperties
+}
+
+func (o *OwnerLevelPoints) require(field *big.Int) {
+	next := new(big.Int)
+	if o.explicitFields != nil {
+		next.Set(o.explicitFields)
+	}
+	next.Or(next, field)
+	o.explicitFields = next
+}
+
+// SetAds sets the Ads field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OwnerLevelPoints) SetAds(ads int) {
+	o.Ads = ads
+	o.require(ownerLevelPointsFieldAds)
+}
+
+// SetCards sets the Cards field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OwnerLevelPoints) SetCards(cards int) {
+	o.Cards = cards
+	o.require(ownerLevelPointsFieldCards)
+}
+
+// SetTrading sets the Trading field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OwnerLevelPoints) SetTrading(trading int) {
+	o.Trading = trading
+	o.require(ownerLevelPointsFieldTrading)
+}
+
+func (o *OwnerLevelPoints) UnmarshalJSON(data []byte) error {
+	type unmarshaler OwnerLevelPoints
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*o = OwnerLevelPoints(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *o)
+	if err != nil {
+		return err
+	}
+	o.extraProperties = extraProperties
+	o.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (o *OwnerLevelPoints) MarshalJSON() ([]byte, error) {
+	type embed OwnerLevelPoints
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*o),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, o.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (o *OwnerLevelPoints) String() string {
+	if o == nil {
+		return "<nil>"
+	}
+	if len(o.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(o.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(o); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", o)
+}
+
+var (
 	pageInfoFieldEndCursor       = big.NewInt(1 << 0)
 	pageInfoFieldHasNextPage     = big.NewInt(1 << 1)
 	pageInfoFieldHasPreviousPage = big.NewInt(1 << 2)
