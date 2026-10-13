@@ -3303,18 +3303,18 @@ func (d DomainVerificationState) Ptr() *DomainVerificationState {
 }
 
 var (
-	domainWebsiteFieldAppID = big.NewInt(1 << 0)
+	domainWebsiteFieldApp   = big.NewInt(1 << 0)
 	domainWebsiteFieldState = big.NewInt(1 << 1)
 )
 
 // domainWebsiteNullableFields maps the wire names of DomainWebsite's nullable fields (required or optional) to their field bits.
 var domainWebsiteNullableFields = map[string]*big.Int{
-	"app_id": domainWebsiteFieldAppID,
+	"app": domainWebsiteFieldApp,
 }
 
 type DomainWebsite struct {
-	// ID of the app the domain serves, prefixed `app_`. `null` until you choose one; the domain shows a placeholder page meanwhile.
-	AppID *string `json:"app_id,omitempty" url:"app_id,omitempty"`
+	// The app the domain serves. `null` until you choose one; the domain shows a placeholder page meanwhile.
+	App *DomainWebsiteApp `json:"app,omitempty" url:"app,omitempty"`
 	// How far serving the website has got.
 	State DomainWebsiteState `json:"state" url:"state"`
 
@@ -3325,11 +3325,11 @@ type DomainWebsite struct {
 	rawJSON         json.RawMessage
 }
 
-func (d *DomainWebsite) GetAppID() *string {
+func (d *DomainWebsite) GetApp() *DomainWebsiteApp {
 	if d == nil {
 		return nil
 	}
-	return d.AppID
+	return d.App
 }
 
 func (d *DomainWebsite) GetState() DomainWebsiteState {
@@ -3355,11 +3355,11 @@ func (d *DomainWebsite) require(field *big.Int) {
 	d.explicitFields = next
 }
 
-// SetAppID sets the AppID field and marks it as non-optional;
+// SetApp sets the App field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DomainWebsite) SetAppID(appID *string) {
-	d.AppID = appID
-	d.require(domainWebsiteFieldAppID)
+func (d *DomainWebsite) SetApp(app *DomainWebsiteApp) {
+	d.App = app
+	d.require(domainWebsiteFieldApp)
 }
 
 // SetState sets the State field and marks it as non-optional;
@@ -3404,6 +3404,122 @@ func (d *DomainWebsite) MarshalJSON() ([]byte, error) {
 }
 
 func (d *DomainWebsite) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+var (
+	domainWebsiteAppFieldBaseURL = big.NewInt(1 << 0)
+	domainWebsiteAppFieldID      = big.NewInt(1 << 1)
+)
+
+// domainWebsiteAppNullableFields maps the wire names of DomainWebsiteApp's nullable fields (required or optional) to their field bits.
+var domainWebsiteAppNullableFields = map[string]*big.Int{
+	"base_url": domainWebsiteAppFieldBaseURL,
+}
+
+type DomainWebsiteApp struct {
+	// The production base URL where the app is hosted. `null` if no base URL is configured or the domain isn't yours.
+	BaseURL *string `json:"base_url,omitempty" url:"base_url,omitempty"`
+	// App ID, prefixed `app_`.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DomainWebsiteApp) GetBaseURL() *string {
+	if d == nil {
+		return nil
+	}
+	return d.BaseURL
+}
+
+func (d *DomainWebsiteApp) GetID() string {
+	if d == nil {
+		return ""
+	}
+	return d.ID
+}
+
+func (d *DomainWebsiteApp) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DomainWebsiteApp) require(field *big.Int) {
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
+	}
+	next.Or(next, field)
+	d.explicitFields = next
+}
+
+// SetBaseURL sets the BaseURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainWebsiteApp) SetBaseURL(baseURL *string) {
+	d.BaseURL = baseURL
+	d.require(domainWebsiteAppFieldBaseURL)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainWebsiteApp) SetID(id string) {
+	d.ID = id
+	d.require(domainWebsiteAppFieldID)
+}
+
+func (d *DomainWebsiteApp) UnmarshalJSON(data []byte) error {
+	type unmarshaler DomainWebsiteApp
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DomainWebsiteApp(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, domainWebsiteAppNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		d.require(presentFields)
+	}
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DomainWebsiteApp) MarshalJSON() ([]byte, error) {
+	type embed DomainWebsiteApp
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DomainWebsiteApp) String() string {
 	if d == nil {
 		return "<nil>"
 	}
