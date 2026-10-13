@@ -720,53 +720,54 @@ var (
 	accountFieldID                                  = big.NewInt(1 << 21)
 	accountFieldIndustryType                        = big.NewInt(1 << 22)
 	accountFieldInvoicePrefix                       = big.NewInt(1 << 23)
-	accountFieldLogoURL                             = big.NewInt(1 << 24)
-	accountFieldMetadata                            = big.NewInt(1 << 25)
-	accountFieldOnboardingType                      = big.NewInt(1 << 26)
-	accountFieldOpengraphImageURL                   = big.NewInt(1 << 27)
-	accountFieldOpengraphImageVariant               = big.NewInt(1 << 28)
-	accountFieldOrchestrationEnabled                = big.NewInt(1 << 29)
-	accountFieldOtherBusinessDescription            = big.NewInt(1 << 30)
-	accountFieldOtherIndustryDescription            = big.NewInt(1 << 31)
-	accountFieldOwner                               = big.NewInt(1 << 32)
-	accountFieldParentAccount                       = big.NewInt(1 << 33)
-	accountFieldPartner                             = big.NewInt(1 << 34)
-	accountFieldPaymentControls                     = big.NewInt(1 << 35)
-	accountFieldPlatformCredits                     = big.NewInt(1 << 36)
-	accountFieldPrivacyPolicy                       = big.NewInt(1 << 37)
-	accountFieldProductTaxCode                      = big.NewInt(1 << 38)
-	accountFieldRecommendedActions                  = big.NewInt(1 << 39)
-	accountFieldRequire2Fa                          = big.NewInt(1 << 40)
-	accountFieldRequiredActions                     = big.NewInt(1 << 41)
-	accountFieldReturnPolicy                        = big.NewInt(1 << 42)
-	accountFieldRewards                             = big.NewInt(1 << 43)
-	accountFieldRoute                               = big.NewInt(1 << 44)
-	accountFieldSendCustomerEmails                  = big.NewInt(1 << 45)
-	accountFieldShippingPolicy                      = big.NewInt(1 << 46)
-	accountFieldShowJoinedWhops                     = big.NewInt(1 << 47)
-	accountFieldShowReviewsDtc                      = big.NewInt(1 << 48)
-	accountFieldShowUserDirectory                   = big.NewInt(1 << 49)
-	accountFieldSocialLinks                         = big.NewInt(1 << 50)
-	accountFieldStablecoinRails                     = big.NewInt(1 << 51)
-	accountFieldStatus                              = big.NewInt(1 << 52)
-	accountFieldStatusReason                        = big.NewInt(1 << 53)
-	accountFieldStorePageConfig                     = big.NewInt(1 << 54)
-	accountFieldTargetAudience                      = big.NewInt(1 << 55)
-	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 56)
-	accountFieldTaxIdentifiers                      = big.NewInt(1 << 57)
-	accountFieldTaxRemittedBy                       = big.NewInt(1 << 58)
-	accountFieldTaxType                             = big.NewInt(1 << 59)
-	accountFieldTermsOfService                      = big.NewInt(1 << 60)
-	accountFieldThreeDsLevel                        = big.NewInt(1 << 61)
-	accountFieldTitle                               = big.NewInt(1 << 62)
-	accountFieldTotalEarnedUsd                      = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	accountFieldTotalUsd                            = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	accountFieldTrading                             = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	accountFieldVerification                        = big.NewInt(0).Lsh(big.NewInt(1), 67)
-	accountFieldVolumeUsd                           = big.NewInt(0).Lsh(big.NewInt(1), 68)
-	accountFieldWallet                              = big.NewInt(0).Lsh(big.NewInt(1), 69)
-	accountFieldWebsite                             = big.NewInt(0).Lsh(big.NewInt(1), 70)
+	accountFieldLevel                               = big.NewInt(1 << 24)
+	accountFieldLogoURL                             = big.NewInt(1 << 25)
+	accountFieldMetadata                            = big.NewInt(1 << 26)
+	accountFieldOnboardingType                      = big.NewInt(1 << 27)
+	accountFieldOpengraphImageURL                   = big.NewInt(1 << 28)
+	accountFieldOpengraphImageVariant               = big.NewInt(1 << 29)
+	accountFieldOrchestrationEnabled                = big.NewInt(1 << 30)
+	accountFieldOtherBusinessDescription            = big.NewInt(1 << 31)
+	accountFieldOtherIndustryDescription            = big.NewInt(1 << 32)
+	accountFieldOwner                               = big.NewInt(1 << 33)
+	accountFieldParentAccount                       = big.NewInt(1 << 34)
+	accountFieldPartner                             = big.NewInt(1 << 35)
+	accountFieldPaymentControls                     = big.NewInt(1 << 36)
+	accountFieldPlatformCredits                     = big.NewInt(1 << 37)
+	accountFieldPrivacyPolicy                       = big.NewInt(1 << 38)
+	accountFieldProductTaxCode                      = big.NewInt(1 << 39)
+	accountFieldRecommendedActions                  = big.NewInt(1 << 40)
+	accountFieldRequire2Fa                          = big.NewInt(1 << 41)
+	accountFieldRequiredActions                     = big.NewInt(1 << 42)
+	accountFieldReturnPolicy                        = big.NewInt(1 << 43)
+	accountFieldRewards                             = big.NewInt(1 << 44)
+	accountFieldRoute                               = big.NewInt(1 << 45)
+	accountFieldSendCustomerEmails                  = big.NewInt(1 << 46)
+	accountFieldShippingPolicy                      = big.NewInt(1 << 47)
+	accountFieldShowJoinedWhops                     = big.NewInt(1 << 48)
+	accountFieldShowReviewsDtc                      = big.NewInt(1 << 49)
+	accountFieldShowUserDirectory                   = big.NewInt(1 << 50)
+	accountFieldSocialLinks                         = big.NewInt(1 << 51)
+	accountFieldStablecoinRails                     = big.NewInt(1 << 52)
+	accountFieldStatus                              = big.NewInt(1 << 53)
+	accountFieldStatusReason                        = big.NewInt(1 << 54)
+	accountFieldStorePageConfig                     = big.NewInt(1 << 55)
+	accountFieldTargetAudience                      = big.NewInt(1 << 56)
+	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 57)
+	accountFieldTaxIdentifiers                      = big.NewInt(1 << 58)
+	accountFieldTaxRemittedBy                       = big.NewInt(1 << 59)
+	accountFieldTaxType                             = big.NewInt(1 << 60)
+	accountFieldTermsOfService                      = big.NewInt(1 << 61)
+	accountFieldThreeDsLevel                        = big.NewInt(1 << 62)
+	accountFieldTitle                               = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	accountFieldTotalEarnedUsd                      = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	accountFieldTotalUsd                            = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	accountFieldTrading                             = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	accountFieldVerification                        = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	accountFieldVolumeUsd                           = big.NewInt(0).Lsh(big.NewInt(1), 69)
+	accountFieldWallet                              = big.NewInt(0).Lsh(big.NewInt(1), 70)
+	accountFieldWebsite                             = big.NewInt(0).Lsh(big.NewInt(1), 71)
 )
 
 // accountNullableFields maps the wire names of Account's nullable fields (required or optional) to their field bits.
@@ -786,6 +787,7 @@ var accountNullableFields = map[string]*big.Int{
 	"financing":                  accountFieldFinancing,
 	"industry_type":              accountFieldIndustryType,
 	"invoice_prefix":             accountFieldInvoicePrefix,
+	"level":                      accountFieldLevel,
 	"logo_url":                   accountFieldLogoURL,
 	"onboarding_type":            accountFieldOnboardingType,
 	"opengraph_image_url":        accountFieldOpengraphImageURL,
@@ -863,6 +865,8 @@ type Account struct {
 	IndustryType *string `json:"industry_type,omitempty" url:"industry_type,omitempty"`
 	// Prefix used for account invoices.
 	InvoicePrefix *string `json:"invoice_prefix,omitempty" url:"invoice_prefix,omitempty"`
+	// The Whop Levels progress of the account's `owner`, counted across every account they own, so all of them show the same level. Computed only on `retrieve` and `me` for callers with `company:basic:read` scope; `null` otherwise, and when the account is not in Whop Levels.
+	Level *AccountLevel `json:"level,omitempty" url:"level,omitempty"`
 	// Account logo image URL.
 	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
 	// Arbitrary key/value metadata supplied at account creation.
@@ -1125,6 +1129,13 @@ func (a *Account) GetInvoicePrefix() *string {
 		return nil
 	}
 	return a.InvoicePrefix
+}
+
+func (a *Account) GetLevel() *AccountLevel {
+	if a == nil {
+		return nil
+	}
+	return a.Level
 }
 
 func (a *Account) GetLogoURL() *string {
@@ -1638,6 +1649,13 @@ func (a *Account) SetIndustryType(industryType *string) {
 func (a *Account) SetInvoicePrefix(invoicePrefix *string) {
 	a.InvoicePrefix = invoicePrefix
 	a.require(accountFieldInvoicePrefix)
+}
+
+// SetLevel sets the Level field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetLevel(level *AccountLevel) {
+	a.Level = level
+	a.require(accountFieldLevel)
 }
 
 // SetLogoURL sets the LogoURL field and marks it as non-optional;
@@ -3103,6 +3121,190 @@ func NewAccountHomePreferencesItemFromString(s string) (AccountHomePreferencesIt
 
 func (a AccountHomePreferencesItem) Ptr() *AccountHomePreferencesItem {
 	return &a
+}
+
+var (
+	accountLevelFieldBoosted        = big.NewInt(1 << 0)
+	accountLevelFieldCurrent        = big.NewInt(1 << 1)
+	accountLevelFieldPoints         = big.NewInt(1 << 2)
+	accountLevelFieldPointsBySource = big.NewInt(1 << 3)
+	accountLevelFieldPointsToNext   = big.NewInt(1 << 4)
+	accountLevelFieldResetsAt       = big.NewInt(1 << 5)
+)
+
+// accountLevelNullableFields maps the wire names of AccountLevel's nullable fields (required or optional) to their field bits.
+var accountLevelNullableFields = map[string]*big.Int{
+	"points_to_next": accountLevelFieldPointsToNext,
+}
+
+type AccountLevel struct {
+	// `true` when this account's own points this month fall short of `current`, so the owner's other accounts lift it to this level.
+	Boosted bool `json:"boosted" url:"boosted"`
+	// Current level, from `0` before the first threshold up to `10`.
+	Current int `json:"current" url:"current"`
+	// Points earned this month across every account the owner owns.
+	Points int `json:"points" url:"points"`
+	// This month's points, split by where they were earned.
+	PointsBySource *OwnerLevelPoints `json:"points_by_source" url:"points_by_source"`
+	// Points still needed this month to reach the next level, or `null` at level `10`.
+	PointsToNext *int `json:"points_to_next,omitempty" url:"points_to_next,omitempty"`
+	// When this month's points reset to zero, as an ISO 8601 timestamp.
+	ResetsAt string `json:"resets_at" url:"resets_at"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AccountLevel) GetBoosted() bool {
+	if a == nil {
+		return false
+	}
+	return a.Boosted
+}
+
+func (a *AccountLevel) GetCurrent() int {
+	if a == nil {
+		return 0
+	}
+	return a.Current
+}
+
+func (a *AccountLevel) GetPoints() int {
+	if a == nil {
+		return 0
+	}
+	return a.Points
+}
+
+func (a *AccountLevel) GetPointsBySource() *OwnerLevelPoints {
+	if a == nil {
+		return nil
+	}
+	return a.PointsBySource
+}
+
+func (a *AccountLevel) GetPointsToNext() *int {
+	if a == nil {
+		return nil
+	}
+	return a.PointsToNext
+}
+
+func (a *AccountLevel) GetResetsAt() string {
+	if a == nil {
+		return ""
+	}
+	return a.ResetsAt
+}
+
+func (a *AccountLevel) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AccountLevel) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetBoosted sets the Boosted field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountLevel) SetBoosted(boosted bool) {
+	a.Boosted = boosted
+	a.require(accountLevelFieldBoosted)
+}
+
+// SetCurrent sets the Current field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountLevel) SetCurrent(current int) {
+	a.Current = current
+	a.require(accountLevelFieldCurrent)
+}
+
+// SetPoints sets the Points field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountLevel) SetPoints(points int) {
+	a.Points = points
+	a.require(accountLevelFieldPoints)
+}
+
+// SetPointsBySource sets the PointsBySource field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountLevel) SetPointsBySource(pointsBySource *OwnerLevelPoints) {
+	a.PointsBySource = pointsBySource
+	a.require(accountLevelFieldPointsBySource)
+}
+
+// SetPointsToNext sets the PointsToNext field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountLevel) SetPointsToNext(pointsToNext *int) {
+	a.PointsToNext = pointsToNext
+	a.require(accountLevelFieldPointsToNext)
+}
+
+// SetResetsAt sets the ResetsAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountLevel) SetResetsAt(resetsAt string) {
+	a.ResetsAt = resetsAt
+	a.require(accountLevelFieldResetsAt)
+}
+
+func (a *AccountLevel) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccountLevel
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccountLevel(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, accountLevelNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccountLevel) MarshalJSON() ([]byte, error) {
+	type embed AccountLevel
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AccountLevel) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
 }
 
 // Type of onboarding the account has completed.

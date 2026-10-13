@@ -350,6 +350,173 @@ func (r *RetrieveUsersRequest) SetTimeZone(timeZone *string) {
 }
 
 var (
+	ownerLevelFieldCurrent        = big.NewInt(1 << 0)
+	ownerLevelFieldPoints         = big.NewInt(1 << 1)
+	ownerLevelFieldPointsBySource = big.NewInt(1 << 2)
+	ownerLevelFieldPointsToNext   = big.NewInt(1 << 3)
+	ownerLevelFieldResetsAt       = big.NewInt(1 << 4)
+)
+
+// ownerLevelNullableFields maps the wire names of OwnerLevel's nullable fields (required or optional) to their field bits.
+var ownerLevelNullableFields = map[string]*big.Int{
+	"points_to_next": ownerLevelFieldPointsToNext,
+}
+
+type OwnerLevel struct {
+	// Current level, from `0` before the first threshold up to `10`.
+	Current int `json:"current" url:"current"`
+	// Points earned this month across every account the owner owns.
+	Points int `json:"points" url:"points"`
+	// This month's points, split by where they were earned.
+	PointsBySource *OwnerLevelPoints `json:"points_by_source" url:"points_by_source"`
+	// Points still needed this month to reach the next level, or `null` at level `10`.
+	PointsToNext *int `json:"points_to_next,omitempty" url:"points_to_next,omitempty"`
+	// When this month's points reset to zero, as an ISO 8601 timestamp.
+	ResetsAt string `json:"resets_at" url:"resets_at"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (o *OwnerLevel) GetCurrent() int {
+	if o == nil {
+		return 0
+	}
+	return o.Current
+}
+
+func (o *OwnerLevel) GetPoints() int {
+	if o == nil {
+		return 0
+	}
+	return o.Points
+}
+
+func (o *OwnerLevel) GetPointsBySource() *OwnerLevelPoints {
+	if o == nil {
+		return nil
+	}
+	return o.PointsBySource
+}
+
+func (o *OwnerLevel) GetPointsToNext() *int {
+	if o == nil {
+		return nil
+	}
+	return o.PointsToNext
+}
+
+func (o *OwnerLevel) GetResetsAt() string {
+	if o == nil {
+		return ""
+	}
+	return o.ResetsAt
+}
+
+func (o *OwnerLevel) GetExtraProperties() map[string]interface{} {
+	if o == nil {
+		return nil
+	}
+	return o.extraProperties
+}
+
+func (o *OwnerLevel) require(field *big.Int) {
+	next := new(big.Int)
+	if o.explicitFields != nil {
+		next.Set(o.explicitFields)
+	}
+	next.Or(next, field)
+	o.explicitFields = next
+}
+
+// SetCurrent sets the Current field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OwnerLevel) SetCurrent(current int) {
+	o.Current = current
+	o.require(ownerLevelFieldCurrent)
+}
+
+// SetPoints sets the Points field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OwnerLevel) SetPoints(points int) {
+	o.Points = points
+	o.require(ownerLevelFieldPoints)
+}
+
+// SetPointsBySource sets the PointsBySource field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OwnerLevel) SetPointsBySource(pointsBySource *OwnerLevelPoints) {
+	o.PointsBySource = pointsBySource
+	o.require(ownerLevelFieldPointsBySource)
+}
+
+// SetPointsToNext sets the PointsToNext field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OwnerLevel) SetPointsToNext(pointsToNext *int) {
+	o.PointsToNext = pointsToNext
+	o.require(ownerLevelFieldPointsToNext)
+}
+
+// SetResetsAt sets the ResetsAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OwnerLevel) SetResetsAt(resetsAt string) {
+	o.ResetsAt = resetsAt
+	o.require(ownerLevelFieldResetsAt)
+}
+
+func (o *OwnerLevel) UnmarshalJSON(data []byte) error {
+	type unmarshaler OwnerLevel
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*o = OwnerLevel(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *o)
+	if err != nil {
+		return err
+	}
+	o.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ownerLevelNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		o.require(presentFields)
+	}
+	o.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (o *OwnerLevel) MarshalJSON() ([]byte, error) {
+	type embed OwnerLevel
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*o),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, o.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (o *OwnerLevel) String() string {
+	if o == nil {
+		return "<nil>"
+	}
+	if len(o.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(o.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(o); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", o)
+}
+
+var (
 	userFieldBalance                           = big.NewInt(1 << 0)
 	userFieldBalanceHistory                    = big.NewInt(1 << 1)
 	userFieldBanner                            = big.NewInt(1 << 2)
@@ -359,15 +526,16 @@ var (
 	userFieldEarningsUsd                       = big.NewInt(1 << 6)
 	userFieldEmail                             = big.NewInt(1 << 7)
 	userFieldID                                = big.NewInt(1 << 8)
-	userFieldName                              = big.NewInt(1 << 9)
-	userFieldProfilePicture                    = big.NewInt(1 << 10)
-	userFieldSocialLinks                       = big.NewInt(1 << 11)
-	userFieldTrading                           = big.NewInt(1 << 12)
-	userFieldUsername                          = big.NewInt(1 << 13)
-	userFieldVerification                      = big.NewInt(1 << 14)
-	userFieldWhopPartnerEnabledAt              = big.NewInt(1 << 15)
-	userFieldWhopPartnerOnboardedAccountsCount = big.NewInt(1 << 16)
-	userFieldWhopPartnerVerifiedAt             = big.NewInt(1 << 17)
+	userFieldLevel                             = big.NewInt(1 << 9)
+	userFieldName                              = big.NewInt(1 << 10)
+	userFieldProfilePicture                    = big.NewInt(1 << 11)
+	userFieldSocialLinks                       = big.NewInt(1 << 12)
+	userFieldTrading                           = big.NewInt(1 << 13)
+	userFieldUsername                          = big.NewInt(1 << 14)
+	userFieldVerification                      = big.NewInt(1 << 15)
+	userFieldWhopPartnerEnabledAt              = big.NewInt(1 << 16)
+	userFieldWhopPartnerOnboardedAccountsCount = big.NewInt(1 << 17)
+	userFieldWhopPartnerVerifiedAt             = big.NewInt(1 << 18)
 )
 
 // userNullableFields maps the wire names of User's nullable fields (required or optional) to their field bits.
@@ -379,6 +547,7 @@ var userNullableFields = map[string]*big.Int{
 	"cards":                                 userFieldCards,
 	"earnings_usd":                          userFieldEarningsUsd,
 	"email":                                 userFieldEmail,
+	"level":                                 userFieldLevel,
 	"name":                                  userFieldName,
 	"trading":                               userFieldTrading,
 	"whop_partner_enabled_at":               userFieldWhopPartnerEnabledAt,
@@ -405,6 +574,8 @@ type User struct {
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
 	// User ID, prefixed `user_`.
 	ID string `json:"id" url:"id"`
+	// The user's Whop Levels progress, counted across every account they own. Populated only on the self view (retrieved with the reserved id `me`) for callers with balance-read scope; `null` otherwise, and when none of their accounts are in Whop Levels.
+	Level *OwnerLevel `json:"level,omitempty" url:"level,omitempty"`
 	// The user's display name
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
 	// Avatar wrapper; its `url` is always present, using a generated placeholder when the user set no picture.
@@ -491,6 +662,13 @@ func (u *User) GetID() string {
 		return ""
 	}
 	return u.ID
+}
+
+func (u *User) GetLevel() *OwnerLevel {
+	if u == nil {
+		return nil
+	}
+	return u.Level
 }
 
 func (u *User) GetName() *string {
@@ -633,6 +811,13 @@ func (u *User) SetEmail(email *string) {
 func (u *User) SetID(id string) {
 	u.ID = id
 	u.require(userFieldID)
+}
+
+// SetLevel sets the Level field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *User) SetLevel(level *OwnerLevel) {
+	u.Level = level
+	u.require(userFieldLevel)
 }
 
 // SetName sets the Name field and marks it as non-optional;
