@@ -37951,6 +37951,397 @@ func TestSettersMarkExplicitFileMultipartURL(t *testing.T) {
 
 }
 
+func TestSettersFinancingAccessChange(t *testing.T) {
+	t.Run("SetAccountID", func(t *testing.T) {
+		obj := &FinancingAccessChange{}
+		var fernTestValueAccountID string
+		obj.SetAccountID(fernTestValueAccountID)
+		assert.Equal(t, fernTestValueAccountID, obj.AccountID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetDisabledAt", func(t *testing.T) {
+		obj := &FinancingAccessChange{}
+		var fernTestValueDisabledAt string
+		obj.SetDisabledAt(fernTestValueDisabledAt)
+		assert.Equal(t, fernTestValueDisabledAt, obj.DisabledAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetDisabledPaymentMethods", func(t *testing.T) {
+		obj := &FinancingAccessChange{}
+		var fernTestValueDisabledPaymentMethods []FinancingAccessChangeDisabledPaymentMethodsItem
+		obj.SetDisabledPaymentMethods(fernTestValueDisabledPaymentMethods)
+		assert.Equal(t, fernTestValueDisabledPaymentMethods, obj.DisabledPaymentMethods)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetObject", func(t *testing.T) {
+		obj := &FinancingAccessChange{}
+		var fernTestValueObject FinancingAccessChangeObject
+		obj.SetObject(fernTestValueObject)
+		assert.Equal(t, fernTestValueObject, obj.Object)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetProvider", func(t *testing.T) {
+		obj := &FinancingAccessChange{}
+		var fernTestValueProvider FinancingAccessChangeProvider
+		obj.SetProvider(fernTestValueProvider)
+		assert.Equal(t, fernTestValueProvider, obj.Provider)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetReason", func(t *testing.T) {
+		obj := &FinancingAccessChange{}
+		var fernTestValueReason FinancingAccessChangeReason
+		obj.SetReason(fernTestValueReason)
+		assert.Equal(t, fernTestValueReason, obj.Reason)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersFinancingAccessChange(t *testing.T) {
+	t.Run("GetAccountID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingAccessChange{}
+		var expected string
+		obj.AccountID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAccountID(), "getter should return the property value")
+	})
+
+	t.Run("GetAccountID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *FinancingAccessChange
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAccountID() // Should return zero value
+	})
+
+	t.Run("GetDisabledAt", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingAccessChange{}
+		var expected string
+		obj.DisabledAt = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDisabledAt(), "getter should return the property value")
+	})
+
+	t.Run("GetDisabledAt_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *FinancingAccessChange
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDisabledAt() // Should return zero value
+	})
+
+	t.Run("GetDisabledPaymentMethods", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingAccessChange{}
+		var expected []FinancingAccessChangeDisabledPaymentMethodsItem
+		obj.DisabledPaymentMethods = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDisabledPaymentMethods(), "getter should return the property value")
+	})
+
+	t.Run("GetDisabledPaymentMethods_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingAccessChange{}
+		obj.DisabledPaymentMethods = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDisabledPaymentMethods(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDisabledPaymentMethods_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *FinancingAccessChange
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDisabledPaymentMethods() // Should return zero value
+	})
+
+	t.Run("GetObject", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingAccessChange{}
+		var expected FinancingAccessChangeObject
+		obj.Object = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetObject(), "getter should return the property value")
+	})
+
+	t.Run("GetObject_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *FinancingAccessChange
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetObject() // Should return zero value
+	})
+
+	t.Run("GetProvider", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingAccessChange{}
+		var expected FinancingAccessChangeProvider
+		obj.Provider = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetProvider(), "getter should return the property value")
+	})
+
+	t.Run("GetProvider_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *FinancingAccessChange
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetProvider() // Should return zero value
+	})
+
+	t.Run("GetReason", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingAccessChange{}
+		var expected FinancingAccessChangeReason
+		obj.Reason = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetReason(), "getter should return the property value")
+	})
+
+	t.Run("GetReason_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *FinancingAccessChange
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetReason() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitFinancingAccessChange(t *testing.T) {
+	t.Run("SetAccountID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingAccessChange{}
+		var fernTestValueAccountID string
+
+		// Act
+		obj.SetAccountID(fernTestValueAccountID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDisabledAt_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingAccessChange{}
+		var fernTestValueDisabledAt string
+
+		// Act
+		obj.SetDisabledAt(fernTestValueDisabledAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDisabledPaymentMethods_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingAccessChange{}
+		var fernTestValueDisabledPaymentMethods []FinancingAccessChangeDisabledPaymentMethodsItem
+
+		// Act
+		obj.SetDisabledPaymentMethods(fernTestValueDisabledPaymentMethods)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetObject_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingAccessChange{}
+		var fernTestValueObject FinancingAccessChangeObject
+
+		// Act
+		obj.SetObject(fernTestValueObject)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetProvider_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingAccessChange{}
+		var fernTestValueProvider FinancingAccessChangeProvider
+
+		// Act
+		obj.SetProvider(fernTestValueProvider)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetReason_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingAccessChange{}
+		var fernTestValueReason FinancingAccessChangeReason
+
+		// Act
+		obj.SetReason(fernTestValueReason)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersFinancingApplication(t *testing.T) {
 	t.Run("SetAccountID", func(t *testing.T) {
 		obj := &FinancingApplication{}
@@ -123504,6 +123895,39 @@ func TestJSONMarshalingFileMultipartURL(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingFinancingAccessChange(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingAccessChange{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled FinancingAccessChange
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj FinancingAccessChange
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj FinancingAccessChange
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingFinancingApplication(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -139612,6 +140036,22 @@ func TestStringFileMultipartURL(t *testing.T) {
 	})
 }
 
+func TestStringFinancingAccessChange(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &FinancingAccessChange{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *FinancingAccessChange
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
 func TestStringFinancingApplication(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -147946,6 +148386,276 @@ func TestEnumFileVisibility(t *testing.T) {
 	})
 }
 
+func TestEnumFinancingAccessChangeDisabledPaymentMethodsItem(t *testing.T) {
+	t.Run("NewFromString_addi", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingAccessChangeDisabledPaymentMethodsItemFromString("addi")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingAccessChangeDisabledPaymentMethodsItem("addi"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_affirm", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingAccessChangeDisabledPaymentMethodsItemFromString("affirm")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingAccessChangeDisabledPaymentMethodsItem("affirm"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_afterpay_clearpay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingAccessChangeDisabledPaymentMethodsItemFromString("afterpay_clearpay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingAccessChangeDisabledPaymentMethodsItem("afterpay_clearpay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_alma", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingAccessChangeDisabledPaymentMethodsItemFromString("alma")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingAccessChangeDisabledPaymentMethodsItem("alma"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_billie", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingAccessChangeDisabledPaymentMethodsItemFromString("billie")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingAccessChangeDisabledPaymentMethodsItem("billie"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_capchase_pay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingAccessChangeDisabledPaymentMethodsItemFromString("capchase_pay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingAccessChangeDisabledPaymentMethodsItem("capchase_pay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_claritypay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingAccessChangeDisabledPaymentMethodsItemFromString("claritypay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingAccessChangeDisabledPaymentMethodsItem("claritypay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_flex_pay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingAccessChangeDisabledPaymentMethodsItemFromString("flex_pay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingAccessChangeDisabledPaymentMethodsItem("flex_pay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_klarna", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingAccessChangeDisabledPaymentMethodsItemFromString("klarna")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingAccessChangeDisabledPaymentMethodsItem("klarna"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_kriya", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingAccessChangeDisabledPaymentMethodsItemFromString("kriya")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingAccessChangeDisabledPaymentMethodsItem("kriya"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_kueski", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingAccessChangeDisabledPaymentMethodsItemFromString("kueski")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingAccessChangeDisabledPaymentMethodsItem("kueski"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mondu", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingAccessChangeDisabledPaymentMethodsItemFromString("mondu")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingAccessChangeDisabledPaymentMethodsItem("mondu"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_oney", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingAccessChangeDisabledPaymentMethodsItemFromString("oney")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingAccessChangeDisabledPaymentMethodsItem("oney"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_oney_3x", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingAccessChangeDisabledPaymentMethodsItemFromString("oney_3x")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingAccessChangeDisabledPaymentMethodsItem("oney_3x"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_oney_4x", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingAccessChangeDisabledPaymentMethodsItemFromString("oney_4x")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingAccessChangeDisabledPaymentMethodsItem("oney_4x"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_scalapay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingAccessChangeDisabledPaymentMethodsItemFromString("scalapay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingAccessChangeDisabledPaymentMethodsItem("scalapay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_sequra", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingAccessChangeDisabledPaymentMethodsItemFromString("sequra")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingAccessChangeDisabledPaymentMethodsItem("sequra"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_sezzle", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingAccessChangeDisabledPaymentMethodsItemFromString("sezzle")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingAccessChangeDisabledPaymentMethodsItem("sezzle"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_splitit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingAccessChangeDisabledPaymentMethodsItemFromString("splitit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingAccessChangeDisabledPaymentMethodsItem("splitit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_sunbit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingAccessChangeDisabledPaymentMethodsItemFromString("sunbit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingAccessChangeDisabledPaymentMethodsItem("sunbit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_tabby", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingAccessChangeDisabledPaymentMethodsItemFromString("tabby")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingAccessChangeDisabledPaymentMethodsItem("tabby"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_tamara", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingAccessChangeDisabledPaymentMethodsItemFromString("tamara")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingAccessChangeDisabledPaymentMethodsItem("tamara"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_zip", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingAccessChangeDisabledPaymentMethodsItemFromString("zip")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingAccessChangeDisabledPaymentMethodsItem("zip"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewFinancingAccessChangeDisabledPaymentMethodsItemFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewFinancingAccessChangeDisabledPaymentMethodsItemFromString("addi")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumFinancingAccessChangeObject(t *testing.T) {
+	t.Run("NewFromString_financing_access_change", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingAccessChangeObjectFromString("financing_access_change")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingAccessChangeObject("financing_access_change"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewFinancingAccessChangeObjectFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewFinancingAccessChangeObjectFromString("financing_access_change")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumFinancingAccessChangeProvider(t *testing.T) {
+	t.Run("NewFromString_klarna", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingAccessChangeProviderFromString("klarna")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingAccessChangeProvider("klarna"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_splitit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingAccessChangeProviderFromString("splitit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingAccessChangeProvider("splitit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_afterpay_clearpay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingAccessChangeProviderFromString("afterpay_clearpay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingAccessChangeProvider("afterpay_clearpay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_zip", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingAccessChangeProviderFromString("zip")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingAccessChangeProvider("zip"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_sezzle", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingAccessChangeProviderFromString("sezzle")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingAccessChangeProvider("sezzle"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewFinancingAccessChangeProviderFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewFinancingAccessChangeProviderFromString("klarna")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumFinancingAccessChangeReason(t *testing.T) {
+	t.Run("NewFromString_high_dispute_rate", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingAccessChangeReasonFromString("high_dispute_rate")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingAccessChangeReason("high_dispute_rate"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewFinancingAccessChangeReasonFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewFinancingAccessChangeReasonFromString("high_dispute_rate")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumFinancingApplicationStatus(t *testing.T) {
 	t.Run("NewFromString_requires_collection", func(t *testing.T) {
 		t.Parallel()
@@ -154514,6 +155224,13 @@ func TestEnumWebhookEvent(t *testing.T) {
 		assert.Equal(t, WebhookEvent("account.financing_denied"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_account_financing_disabled", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewWebhookEventFromString("account.financing_disabled")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, WebhookEvent("account.financing_disabled"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_invoice_created", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewWebhookEventFromString("invoice.created")
@@ -157271,6 +157988,29 @@ func TestExtraPropertiesFileMultipartURL(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *FileMultipartURL
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesFinancingAccessChange(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &FinancingAccessChange{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *FinancingAccessChange
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
