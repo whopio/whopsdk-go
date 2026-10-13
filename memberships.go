@@ -171,7 +171,8 @@ func (a *AssignAffiliateMembershipsRequest) MarshalJSON() ([]byte, error) {
 var (
 	cancelMembershipsRequestFieldID                = big.NewInt(1 << 0)
 	cancelMembershipsRequestFieldCancelAtPeriodEnd = big.NewInt(1 << 1)
-	cancelMembershipsRequestFieldReason            = big.NewInt(1 << 2)
+	cancelMembershipsRequestFieldFeedbackOptionID  = big.NewInt(1 << 2)
+	cancelMembershipsRequestFieldReason            = big.NewInt(1 << 3)
 )
 
 type CancelMembershipsRequest struct {
@@ -179,6 +180,8 @@ type CancelMembershipsRequest struct {
 	ID string `json:"-" url:"-"`
 	// `true` stops auto-renewal and keeps access until the current billing period ends. Omit or `false` revokes access immediately.
 	CancelAtPeriodEnd *bool `json:"cancel_at_period_end,omitempty" url:"-"`
+	// The ID of the feedback option the customer picked as their reason for canceling, from the account's `feedback_options` preference. The membership records the option's label as the customer saw it and its category as `cancel_option`.
+	FeedbackOptionID *string `json:"feedback_option_id,omitempty" url:"-"`
 	// Free-form note recording why the membership was canceled.
 	Reason *string `json:"reason,omitempty" url:"-"`
 
@@ -207,6 +210,13 @@ func (c *CancelMembershipsRequest) SetID(id string) {
 func (c *CancelMembershipsRequest) SetCancelAtPeriodEnd(cancelAtPeriodEnd *bool) {
 	c.CancelAtPeriodEnd = cancelAtPeriodEnd
 	c.require(cancelMembershipsRequestFieldCancelAtPeriodEnd)
+}
+
+// SetFeedbackOptionID sets the FeedbackOptionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelMembershipsRequest) SetFeedbackOptionID(feedbackOptionID *string) {
+	c.FeedbackOptionID = feedbackOptionID
+	c.require(cancelMembershipsRequestFieldFeedbackOptionID)
 }
 
 // SetReason sets the Reason field and marks it as non-optional;
@@ -737,26 +747,27 @@ var (
 	membershipFieldCurrentPeriodEnd         = big.NewInt(1 << 9)
 	membershipFieldCurrentPeriodStart       = big.NewInt(1 << 10)
 	membershipFieldExpiresAt                = big.NewInt(1 << 11)
-	membershipFieldID                       = big.NewInt(1 << 12)
-	membershipFieldInitialPrice             = big.NewInt(1 << 13)
-	membershipFieldLicenseKey               = big.NewInt(1 << 14)
-	membershipFieldManageURL                = big.NewInt(1 << 15)
-	membershipFieldMember                   = big.NewInt(1 << 16)
-	membershipFieldMemberID                 = big.NewInt(1 << 17)
-	membershipFieldMetadata                 = big.NewInt(1 << 18)
-	membershipFieldMostRecentAction         = big.NewInt(1 << 19)
-	membershipFieldMostRecentActionAt       = big.NewInt(1 << 20)
-	membershipFieldPhoneNumber              = big.NewInt(1 << 21)
-	membershipFieldPlanID                   = big.NewInt(1 << 22)
-	membershipFieldProduct                  = big.NewInt(1 << 23)
-	membershipFieldProductID                = big.NewInt(1 << 24)
-	membershipFieldPromoCodeID              = big.NewInt(1 << 25)
-	membershipFieldRenewalPrice             = big.NewInt(1 << 26)
-	membershipFieldSplitPayCurrentPayments  = big.NewInt(1 << 27)
-	membershipFieldSplitPayRequiredPayments = big.NewInt(1 << 28)
-	membershipFieldStatus                   = big.NewInt(1 << 29)
-	membershipFieldUpdatedAt                = big.NewInt(1 << 30)
-	membershipFieldUserID                   = big.NewInt(1 << 31)
+	membershipFieldFeedbackOption           = big.NewInt(1 << 12)
+	membershipFieldID                       = big.NewInt(1 << 13)
+	membershipFieldInitialPrice             = big.NewInt(1 << 14)
+	membershipFieldLicenseKey               = big.NewInt(1 << 15)
+	membershipFieldManageURL                = big.NewInt(1 << 16)
+	membershipFieldMember                   = big.NewInt(1 << 17)
+	membershipFieldMemberID                 = big.NewInt(1 << 18)
+	membershipFieldMetadata                 = big.NewInt(1 << 19)
+	membershipFieldMostRecentAction         = big.NewInt(1 << 20)
+	membershipFieldMostRecentActionAt       = big.NewInt(1 << 21)
+	membershipFieldPhoneNumber              = big.NewInt(1 << 22)
+	membershipFieldPlanID                   = big.NewInt(1 << 23)
+	membershipFieldProduct                  = big.NewInt(1 << 24)
+	membershipFieldProductID                = big.NewInt(1 << 25)
+	membershipFieldPromoCodeID              = big.NewInt(1 << 26)
+	membershipFieldRenewalPrice             = big.NewInt(1 << 27)
+	membershipFieldSplitPayCurrentPayments  = big.NewInt(1 << 28)
+	membershipFieldSplitPayRequiredPayments = big.NewInt(1 << 29)
+	membershipFieldStatus                   = big.NewInt(1 << 30)
+	membershipFieldUpdatedAt                = big.NewInt(1 << 31)
+	membershipFieldUserID                   = big.NewInt(1 << 32)
 )
 
 // membershipNullableFields maps the wire names of Membership's nullable fields (required or optional) to their field bits.
@@ -770,6 +781,7 @@ var membershipNullableFields = map[string]*big.Int{
 	"current_period_end":          membershipFieldCurrentPeriodEnd,
 	"current_period_start":        membershipFieldCurrentPeriodStart,
 	"expires_at":                  membershipFieldExpiresAt,
+	"feedback_option":             membershipFieldFeedbackOption,
 	"license_key":                 membershipFieldLicenseKey,
 	"manage_url":                  membershipFieldManageURL,
 	"member":                      membershipFieldMember,
@@ -809,6 +821,8 @@ type Membership struct {
 	CurrentPeriodStart *string `json:"current_period_start,omitempty" url:"current_period_start,omitempty"`
 	// When access ends for a membership with a fixed expiration, as an ISO 8601 timestamp. `null` when the membership has no expiration, such as a renewing membership.
 	ExpiresAt *string `json:"expires_at,omitempty" url:"expires_at,omitempty"`
+	// The account's own cancel reason the member picked, as they saw it. `null` when the member picked a default category or gave no reason.
+	FeedbackOption *MembershipFeedbackOption `json:"feedback_option,omitempty" url:"feedback_option,omitempty"`
 	// Membership ID, prefixed `mem_`.
 	ID string `json:"id" url:"id"`
 	// The variant's current up-front price, in the variant's currency. A list price, not necessarily what the buyer paid. `amount` is `"0.00"` when the first charge is free.
@@ -939,6 +953,13 @@ func (m *Membership) GetExpiresAt() *string {
 		return nil
 	}
 	return m.ExpiresAt
+}
+
+func (m *Membership) GetFeedbackOption() *MembershipFeedbackOption {
+	if m == nil {
+		return nil
+	}
+	return m.FeedbackOption
 }
 
 func (m *Membership) GetID() string {
@@ -1179,6 +1200,13 @@ func (m *Membership) SetCurrentPeriodStart(currentPeriodStart *string) {
 func (m *Membership) SetExpiresAt(expiresAt *string) {
 	m.ExpiresAt = expiresAt
 	m.require(membershipFieldExpiresAt)
+}
+
+// SetFeedbackOption sets the FeedbackOption field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetFeedbackOption(feedbackOption *MembershipFeedbackOption) {
+	m.FeedbackOption = feedbackOption
+	m.require(membershipFieldFeedbackOption)
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1627,6 +1655,7 @@ const (
 	MembershipCancelOptionMissingFeatures MembershipCancelOption = "missing_features"
 	MembershipCancelOptionTechnicalIssues MembershipCancelOption = "technical_issues"
 	MembershipCancelOptionBadExperience   MembershipCancelOption = "bad_experience"
+	MembershipCancelOptionUnused          MembershipCancelOption = "unused"
 	MembershipCancelOptionOther           MembershipCancelOption = "other"
 	MembershipCancelOptionTesting         MembershipCancelOption = "testing"
 )
@@ -1643,6 +1672,8 @@ func NewMembershipCancelOptionFromString(s string) (MembershipCancelOption, erro
 		return MembershipCancelOptionTechnicalIssues, nil
 	case "bad_experience":
 		return MembershipCancelOptionBadExperience, nil
+	case "unused":
+		return MembershipCancelOptionUnused, nil
 	case "other":
 		return MembershipCancelOptionOther, nil
 	case "testing":
@@ -1677,6 +1708,93 @@ func NewMembershipCollectionMethodFromString(s string) (MembershipCollectionMeth
 
 func (m MembershipCollectionMethod) Ptr() *MembershipCollectionMethod {
 	return &m
+}
+
+var (
+	membershipFeedbackOptionFieldLabel = big.NewInt(1 << 0)
+)
+
+type MembershipFeedbackOption struct {
+	// The option's label when the member picked it. Renaming the option later does not change it.
+	Label string `json:"label" url:"label"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MembershipFeedbackOption) GetLabel() string {
+	if m == nil {
+		return ""
+	}
+	return m.Label
+}
+
+func (m *MembershipFeedbackOption) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MembershipFeedbackOption) require(field *big.Int) {
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
+	}
+	next.Or(next, field)
+	m.explicitFields = next
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipFeedbackOption) SetLabel(label string) {
+	m.Label = label
+	m.require(membershipFeedbackOptionFieldLabel)
+}
+
+func (m *MembershipFeedbackOption) UnmarshalJSON(data []byte) error {
+	type unmarshaler MembershipFeedbackOption
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MembershipFeedbackOption(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MembershipFeedbackOption) MarshalJSON() ([]byte, error) {
+	type embed MembershipFeedbackOption
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MembershipFeedbackOption) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
 }
 
 var (

@@ -126,3 +126,65 @@ func TestPartnersBusinessesRetrieveWithWireMock(
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestPartnersBusinessesRetrieveWithWireMock", "GET", "/partners/businesses/id", nil, 1)
 }
+
+func TestPartnersBusinessesUpdateWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &partners.UpdateBusinessesRequest{
+		ID:                  "id",
+		AnnualAdsUsd:        "120000",
+		AnnualProcessingUsd: "1200000",
+	}
+	_, invocationErr := client.Partners.Businesses.Update(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestPartnersBusinessesUpdateWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestPartnersBusinessesUpdateWithWireMock", "PATCH", "/partners/businesses/id", nil, 1)
+}
+
+func TestPartnersBusinessesAcceptCommissionAdvanceWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &partners.AcceptCommissionAdvanceBusinessesRequest{
+		ID: "id",
+		Acknowledgments: []partners.AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItem{
+			partners.AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItemCommissionReplacement,
+			partners.AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItemClawback,
+			partners.AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItemTerm,
+		},
+		ExpectedAmountUsd: "1439.99",
+		OfferToken:        "eyJfcmFpbHMiOnsiZGF0YSI6MSwicHVyIjoiYmxvYl9pZCJ9fQ==--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+		TermsVersion:      "2026-01-01",
+	}
+	_, invocationErr := client.Partners.Businesses.AcceptCommissionAdvance(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestPartnersBusinessesAcceptCommissionAdvanceWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestPartnersBusinessesAcceptCommissionAdvanceWithWireMock", "POST", "/partners/businesses/id/accept_commission_advance", nil, 1)
+}

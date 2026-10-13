@@ -172,6 +172,7 @@ const (
 	ListEarningsRequestIncomeSourceItemOnboardingReward               ListEarningsRequestIncomeSourceItem = "onboarding_reward"
 	ListEarningsRequestIncomeSourceItemPartnerReward                  ListEarningsRequestIncomeSourceItem = "partner_reward"
 	ListEarningsRequestIncomeSourceItemVerifiedPartnerReferralPayback ListEarningsRequestIncomeSourceItem = "verified_partner_referral_payback"
+	ListEarningsRequestIncomeSourceItemCommissionAdvance              ListEarningsRequestIncomeSourceItem = "commission_advance"
 )
 
 func NewListEarningsRequestIncomeSourceItemFromString(s string) (ListEarningsRequestIncomeSourceItem, error) {
@@ -192,6 +193,8 @@ func NewListEarningsRequestIncomeSourceItemFromString(s string) (ListEarningsReq
 		return ListEarningsRequestIncomeSourceItemPartnerReward, nil
 	case "verified_partner_referral_payback":
 		return ListEarningsRequestIncomeSourceItemVerifiedPartnerReferralPayback, nil
+	case "commission_advance":
+		return ListEarningsRequestIncomeSourceItemCommissionAdvance, nil
 	}
 	var t ListEarningsRequestIncomeSourceItem
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1110,6 +1113,7 @@ const (
 	ListEarningsResponseDataItemIncomeSourceOnboardingReward               ListEarningsResponseDataItemIncomeSource = "onboarding_reward"
 	ListEarningsResponseDataItemIncomeSourcePartnerReward                  ListEarningsResponseDataItemIncomeSource = "partner_reward"
 	ListEarningsResponseDataItemIncomeSourceVerifiedPartnerReferralPayback ListEarningsResponseDataItemIncomeSource = "verified_partner_referral_payback"
+	ListEarningsResponseDataItemIncomeSourceCommissionAdvance              ListEarningsResponseDataItemIncomeSource = "commission_advance"
 )
 
 func NewListEarningsResponseDataItemIncomeSourceFromString(s string) (ListEarningsResponseDataItemIncomeSource, error) {
@@ -1130,6 +1134,8 @@ func NewListEarningsResponseDataItemIncomeSourceFromString(s string) (ListEarnin
 		return ListEarningsResponseDataItemIncomeSourcePartnerReward, nil
 	case "verified_partner_referral_payback":
 		return ListEarningsResponseDataItemIncomeSourceVerifiedPartnerReferralPayback, nil
+	case "commission_advance":
+		return ListEarningsResponseDataItemIncomeSourceCommissionAdvance, nil
 	}
 	var t ListEarningsResponseDataItemIncomeSource
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

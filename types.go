@@ -3741,9 +3741,10 @@ var (
 	accountPreferencesFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 13)
 	accountPreferencesFieldEconomicIntelligenceOffers              = big.NewInt(1 << 14)
 	accountPreferencesFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 15)
-	accountPreferencesFieldPreferredSettlementCurrency             = big.NewInt(1 << 16)
-	accountPreferencesFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 17)
-	accountPreferencesFieldSubscriptionFailureBehavior             = big.NewInt(1 << 18)
+	accountPreferencesFieldFeedbackOptions                         = big.NewInt(1 << 16)
+	accountPreferencesFieldPreferredSettlementCurrency             = big.NewInt(1 << 17)
+	accountPreferencesFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 18)
+	accountPreferencesFieldSubscriptionFailureBehavior             = big.NewInt(1 << 19)
 )
 
 // accountPreferencesNullableFields maps the wire names of AccountPreferences's nullable fields (required or optional) to their field bits.
@@ -3788,6 +3789,7 @@ type AccountPreferences struct {
 	EconomicIntelligenceOffers         []*AccountEconomicIntelligenceOffer `json:"economic_intelligence_offers" url:"economic_intelligence_offers"`
 	// The account's last Economic Intelligence period, once it has ended. `null` while Economic Intelligence is on, or when it has never been on.
 	EconomicIntelligencePreviousPeriod *AccountEconomicIntelligencePreviousPeriod `json:"economic_intelligence_previous_period,omitempty" url:"economic_intelligence_previous_period,omitempty"`
+	FeedbackOptions                    []*FeedbackOption                          `json:"feedback_options" url:"feedback_options"`
 	// Lowercase ISO currency code every new sale settles into, regardless of the plan's currency or what the buyer paid in. Sales converted this way carry an additional 0.5% FX fee. `null` when the account settles each sale in its plan's currency.
 	PreferredSettlementCurrency *AccountPreferencesPreferredSettlementCurrency `json:"preferred_settlement_currency,omitempty" url:"preferred_settlement_currency,omitempty"`
 	// When `preferred_settlement_currency` may next be changed or turned off, as an ISO 8601 timestamp. It can change at most once every 7 days. `null` when it may change now.
@@ -3912,6 +3914,13 @@ func (a *AccountPreferences) GetEconomicIntelligencePreviousPeriod() *AccountEco
 		return nil
 	}
 	return a.EconomicIntelligencePreviousPeriod
+}
+
+func (a *AccountPreferences) GetFeedbackOptions() []*FeedbackOption {
+	if a == nil {
+		return nil
+	}
+	return a.FeedbackOptions
 }
 
 func (a *AccountPreferences) GetPreferredSettlementCurrency() *AccountPreferencesPreferredSettlementCurrency {
@@ -4061,6 +4070,13 @@ func (a *AccountPreferences) SetEconomicIntelligenceOffers(economicIntelligenceO
 func (a *AccountPreferences) SetEconomicIntelligencePreviousPeriod(economicIntelligencePreviousPeriod *AccountEconomicIntelligencePreviousPeriod) {
 	a.EconomicIntelligencePreviousPeriod = economicIntelligencePreviousPeriod
 	a.require(accountPreferencesFieldEconomicIntelligencePreviousPeriod)
+}
+
+// SetFeedbackOptions sets the FeedbackOptions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPreferences) SetFeedbackOptions(feedbackOptions []*FeedbackOption) {
+	a.FeedbackOptions = feedbackOptions
+	a.require(accountPreferencesFieldFeedbackOptions)
 }
 
 // SetPreferredSettlementCurrency sets the PreferredSettlementCurrency field and marks it as non-optional;
@@ -8275,6 +8291,7 @@ const (
 	CancelOptionsMissingFeatures CancelOptions = "missing_features"
 	CancelOptionsTechnicalIssues CancelOptions = "technical_issues"
 	CancelOptionsBadExperience   CancelOptions = "bad_experience"
+	CancelOptionsUnused          CancelOptions = "unused"
 	CancelOptionsOther           CancelOptions = "other"
 	CancelOptionsTesting         CancelOptions = "testing"
 )
@@ -8291,6 +8308,8 @@ func NewCancelOptionsFromString(s string) (CancelOptions, error) {
 		return CancelOptionsTechnicalIssues, nil
 	case "bad_experience":
 		return CancelOptionsBadExperience, nil
+	case "unused":
+		return CancelOptionsUnused, nil
 	case "other":
 		return CancelOptionsOther, nil
 	case "testing":
@@ -22106,6 +22125,165 @@ func (e ExternalAccountPostRestrictionsItem) Ptr() *ExternalAccountPostRestricti
 }
 
 var (
+	feedbackOptionFieldCategory = big.NewInt(1 << 0)
+	feedbackOptionFieldID       = big.NewInt(1 << 1)
+	feedbackOptionFieldLabel    = big.NewInt(1 << 2)
+)
+
+type FeedbackOption struct {
+	// The category saved as the membership's `cancel_option` when a member picks this option.
+	Category FeedbackOptionCategory `json:"category" url:"category"`
+	// Feedback option ID, prefixed `fo_`. Pass it as `feedback_option_id` when canceling a membership, or back in `feedback_options` to keep the option when changing the list.
+	ID string `json:"id" url:"id"`
+	// The cancel reason as members see it. Up to 100 characters.
+	Label string `json:"label" url:"label"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *FeedbackOption) GetCategory() FeedbackOptionCategory {
+	if f == nil {
+		return ""
+	}
+	return f.Category
+}
+
+func (f *FeedbackOption) GetID() string {
+	if f == nil {
+		return ""
+	}
+	return f.ID
+}
+
+func (f *FeedbackOption) GetLabel() string {
+	if f == nil {
+		return ""
+	}
+	return f.Label
+}
+
+func (f *FeedbackOption) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *FeedbackOption) require(field *big.Int) {
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
+	}
+	next.Or(next, field)
+	f.explicitFields = next
+}
+
+// SetCategory sets the Category field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FeedbackOption) SetCategory(category FeedbackOptionCategory) {
+	f.Category = category
+	f.require(feedbackOptionFieldCategory)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FeedbackOption) SetID(id string) {
+	f.ID = id
+	f.require(feedbackOptionFieldID)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FeedbackOption) SetLabel(label string) {
+	f.Label = label
+	f.require(feedbackOptionFieldLabel)
+}
+
+func (f *FeedbackOption) UnmarshalJSON(data []byte) error {
+	type unmarshaler FeedbackOption
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FeedbackOption(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FeedbackOption) MarshalJSON() ([]byte, error) {
+	type embed FeedbackOption
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *FeedbackOption) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+// The category saved as the membership's `cancel_option` when a member picks this option.
+type FeedbackOptionCategory string
+
+const (
+	FeedbackOptionCategoryTooExpensive    FeedbackOptionCategory = "too_expensive"
+	FeedbackOptionCategorySwitching       FeedbackOptionCategory = "switching"
+	FeedbackOptionCategoryMissingFeatures FeedbackOptionCategory = "missing_features"
+	FeedbackOptionCategoryTechnicalIssues FeedbackOptionCategory = "technical_issues"
+	FeedbackOptionCategoryBadExperience   FeedbackOptionCategory = "bad_experience"
+	FeedbackOptionCategoryUnused          FeedbackOptionCategory = "unused"
+	FeedbackOptionCategoryOther           FeedbackOptionCategory = "other"
+)
+
+func NewFeedbackOptionCategoryFromString(s string) (FeedbackOptionCategory, error) {
+	switch s {
+	case "too_expensive":
+		return FeedbackOptionCategoryTooExpensive, nil
+	case "switching":
+		return FeedbackOptionCategorySwitching, nil
+	case "missing_features":
+		return FeedbackOptionCategoryMissingFeatures, nil
+	case "technical_issues":
+		return FeedbackOptionCategoryTechnicalIssues, nil
+	case "bad_experience":
+		return FeedbackOptionCategoryBadExperience, nil
+	case "unused":
+		return FeedbackOptionCategoryUnused, nil
+	case "other":
+		return FeedbackOptionCategoryOther, nil
+	}
+	var t FeedbackOptionCategory
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FeedbackOptionCategory) Ptr() *FeedbackOptionCategory {
+	return &f
+}
+
+var (
 	fileFieldBlurhash            = big.NewInt(1 << 0)
 	fileFieldContentType         = big.NewInt(1 << 1)
 	fileFieldCreatedAt           = big.NewInt(1 << 2)
@@ -26821,23 +26999,24 @@ var (
 	membershipLegacyFieldCreatedAt               = big.NewInt(1 << 7)
 	membershipLegacyFieldCurrency                = big.NewInt(1 << 8)
 	membershipLegacyFieldCustomFieldResponses    = big.NewInt(1 << 9)
-	membershipLegacyFieldFormattedRenewalPrice   = big.NewInt(1 << 10)
-	membershipLegacyFieldID                      = big.NewInt(1 << 11)
-	membershipLegacyFieldInitialPricePaid        = big.NewInt(1 << 12)
-	membershipLegacyFieldJoinedAt                = big.NewInt(1 << 13)
-	membershipLegacyFieldLicenseKey              = big.NewInt(1 << 14)
-	membershipLegacyFieldManageURL               = big.NewInt(1 << 15)
-	membershipLegacyFieldMember                  = big.NewInt(1 << 16)
-	membershipLegacyFieldMetadata                = big.NewInt(1 << 17)
-	membershipLegacyFieldPaymentCollectionPaused = big.NewInt(1 << 18)
-	membershipLegacyFieldPlan                    = big.NewInt(1 << 19)
-	membershipLegacyFieldProduct                 = big.NewInt(1 << 20)
-	membershipLegacyFieldPromoCode               = big.NewInt(1 << 21)
-	membershipLegacyFieldRenewalPeriodEnd        = big.NewInt(1 << 22)
-	membershipLegacyFieldRenewalPeriodStart      = big.NewInt(1 << 23)
-	membershipLegacyFieldStatus                  = big.NewInt(1 << 24)
-	membershipLegacyFieldUpdatedAt               = big.NewInt(1 << 25)
-	membershipLegacyFieldUser                    = big.NewInt(1 << 26)
+	membershipLegacyFieldFeedbackOption          = big.NewInt(1 << 10)
+	membershipLegacyFieldFormattedRenewalPrice   = big.NewInt(1 << 11)
+	membershipLegacyFieldID                      = big.NewInt(1 << 12)
+	membershipLegacyFieldInitialPricePaid        = big.NewInt(1 << 13)
+	membershipLegacyFieldJoinedAt                = big.NewInt(1 << 14)
+	membershipLegacyFieldLicenseKey              = big.NewInt(1 << 15)
+	membershipLegacyFieldManageURL               = big.NewInt(1 << 16)
+	membershipLegacyFieldMember                  = big.NewInt(1 << 17)
+	membershipLegacyFieldMetadata                = big.NewInt(1 << 18)
+	membershipLegacyFieldPaymentCollectionPaused = big.NewInt(1 << 19)
+	membershipLegacyFieldPlan                    = big.NewInt(1 << 20)
+	membershipLegacyFieldProduct                 = big.NewInt(1 << 21)
+	membershipLegacyFieldPromoCode               = big.NewInt(1 << 22)
+	membershipLegacyFieldRenewalPeriodEnd        = big.NewInt(1 << 23)
+	membershipLegacyFieldRenewalPeriodStart      = big.NewInt(1 << 24)
+	membershipLegacyFieldStatus                  = big.NewInt(1 << 25)
+	membershipLegacyFieldUpdatedAt               = big.NewInt(1 << 26)
+	membershipLegacyFieldUser                    = big.NewInt(1 << 27)
 )
 
 // membershipLegacyNullableFields maps the wire names of MembershipLegacy's nullable fields (required or optional) to their field bits.
@@ -26848,6 +27027,7 @@ var membershipLegacyNullableFields = map[string]*big.Int{
 	"cancellation_reason":       membershipLegacyFieldCancellationReason,
 	"checkout_configuration_id": membershipLegacyFieldCheckoutConfigurationID,
 	"currency":                  membershipLegacyFieldCurrency,
+	"feedback_option":           membershipLegacyFieldFeedbackOption,
 	"formatted_renewal_price":   membershipLegacyFieldFormattedRenewalPrice,
 	"joined_at":                 membershipLegacyFieldJoinedAt,
 	"license_key":               membershipLegacyFieldLicenseKey,
@@ -26882,6 +27062,8 @@ type MembershipLegacy struct {
 	Currency *Currencies `json:"currency,omitempty" url:"currency,omitempty"`
 	// The customer's responses to custom checkout questions configured on the product at the time of purchase.
 	CustomFieldResponses []*MembershipLegacyCustomFieldResponsesItem `json:"custom_field_responses" url:"custom_field_responses"`
+	// The account's own cancel reason the member picked, as they saw it. `null` when the member picked a default category or gave no reason.
+	FeedbackOption *MembershipLegacyFeedbackOption `json:"feedback_option,omitempty" url:"feedback_option,omitempty"`
 	// The recurring renewal price for this membership, formatted with currency symbol and billing interval. Null if the membership is not recurring.
 	FormattedRenewalPrice *string `json:"formatted_renewal_price,omitempty" url:"formatted_renewal_price,omitempty"`
 	// The unique identifier for the membership.
@@ -26992,6 +27174,13 @@ func (m *MembershipLegacy) GetCustomFieldResponses() []*MembershipLegacyCustomFi
 		return nil
 	}
 	return m.CustomFieldResponses
+}
+
+func (m *MembershipLegacy) GetFeedbackOption() *MembershipLegacyFeedbackOption {
+	if m == nil {
+		return nil
+	}
+	return m.FeedbackOption
 }
 
 func (m *MembershipLegacy) GetFormattedRenewalPrice() *string {
@@ -27197,6 +27386,13 @@ func (m *MembershipLegacy) SetCurrency(currency *Currencies) {
 func (m *MembershipLegacy) SetCustomFieldResponses(customFieldResponses []*MembershipLegacyCustomFieldResponsesItem) {
 	m.CustomFieldResponses = customFieldResponses
 	m.require(membershipLegacyFieldCustomFieldResponses)
+}
+
+// SetFeedbackOption sets the FeedbackOption field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetFeedbackOption(feedbackOption *MembershipLegacyFeedbackOption) {
+	m.FeedbackOption = feedbackOption
+	m.require(membershipLegacyFieldFeedbackOption)
 }
 
 // SetFormattedRenewalPrice sets the FormattedRenewalPrice field and marks it as non-optional;
@@ -27608,6 +27804,94 @@ func (m *MembershipLegacyCustomFieldResponsesItem) MarshalJSON() ([]byte, error)
 }
 
 func (m *MembershipLegacyCustomFieldResponsesItem) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
+var (
+	membershipLegacyFeedbackOptionFieldLabel = big.NewInt(1 << 0)
+)
+
+// The account's own cancel reason the member picked, as they saw it. `null` when the member picked a default category or gave no reason.
+type MembershipLegacyFeedbackOption struct {
+	// The option's label when the member picked it. Renaming the option later does not change it.
+	Label string `json:"label" url:"label"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MembershipLegacyFeedbackOption) GetLabel() string {
+	if m == nil {
+		return ""
+	}
+	return m.Label
+}
+
+func (m *MembershipLegacyFeedbackOption) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MembershipLegacyFeedbackOption) require(field *big.Int) {
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
+	}
+	next.Or(next, field)
+	m.explicitFields = next
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyFeedbackOption) SetLabel(label string) {
+	m.Label = label
+	m.require(membershipLegacyFeedbackOptionFieldLabel)
+}
+
+func (m *MembershipLegacyFeedbackOption) UnmarshalJSON(data []byte) error {
+	type unmarshaler MembershipLegacyFeedbackOption
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MembershipLegacyFeedbackOption(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MembershipLegacyFeedbackOption) MarshalJSON() ([]byte, error) {
+	type embed MembershipLegacyFeedbackOption
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MembershipLegacyFeedbackOption) String() string {
 	if m == nil {
 		return "<nil>"
 	}
@@ -28228,23 +28512,24 @@ var (
 	membershipListItemFieldCompany                 = big.NewInt(1 << 6)
 	membershipListItemFieldCreatedAt               = big.NewInt(1 << 7)
 	membershipListItemFieldCurrency                = big.NewInt(1 << 8)
-	membershipListItemFieldFormattedRenewalPrice   = big.NewInt(1 << 9)
-	membershipListItemFieldID                      = big.NewInt(1 << 10)
-	membershipListItemFieldInitialPricePaid        = big.NewInt(1 << 11)
-	membershipListItemFieldJoinedAt                = big.NewInt(1 << 12)
-	membershipListItemFieldLicenseKey              = big.NewInt(1 << 13)
-	membershipListItemFieldManageURL               = big.NewInt(1 << 14)
-	membershipListItemFieldMember                  = big.NewInt(1 << 15)
-	membershipListItemFieldMetadata                = big.NewInt(1 << 16)
-	membershipListItemFieldPaymentCollectionPaused = big.NewInt(1 << 17)
-	membershipListItemFieldPlan                    = big.NewInt(1 << 18)
-	membershipListItemFieldProduct                 = big.NewInt(1 << 19)
-	membershipListItemFieldPromoCode               = big.NewInt(1 << 20)
-	membershipListItemFieldRenewalPeriodEnd        = big.NewInt(1 << 21)
-	membershipListItemFieldRenewalPeriodStart      = big.NewInt(1 << 22)
-	membershipListItemFieldStatus                  = big.NewInt(1 << 23)
-	membershipListItemFieldUpdatedAt               = big.NewInt(1 << 24)
-	membershipListItemFieldUser                    = big.NewInt(1 << 25)
+	membershipListItemFieldFeedbackOption          = big.NewInt(1 << 9)
+	membershipListItemFieldFormattedRenewalPrice   = big.NewInt(1 << 10)
+	membershipListItemFieldID                      = big.NewInt(1 << 11)
+	membershipListItemFieldInitialPricePaid        = big.NewInt(1 << 12)
+	membershipListItemFieldJoinedAt                = big.NewInt(1 << 13)
+	membershipListItemFieldLicenseKey              = big.NewInt(1 << 14)
+	membershipListItemFieldManageURL               = big.NewInt(1 << 15)
+	membershipListItemFieldMember                  = big.NewInt(1 << 16)
+	membershipListItemFieldMetadata                = big.NewInt(1 << 17)
+	membershipListItemFieldPaymentCollectionPaused = big.NewInt(1 << 18)
+	membershipListItemFieldPlan                    = big.NewInt(1 << 19)
+	membershipListItemFieldProduct                 = big.NewInt(1 << 20)
+	membershipListItemFieldPromoCode               = big.NewInt(1 << 21)
+	membershipListItemFieldRenewalPeriodEnd        = big.NewInt(1 << 22)
+	membershipListItemFieldRenewalPeriodStart      = big.NewInt(1 << 23)
+	membershipListItemFieldStatus                  = big.NewInt(1 << 24)
+	membershipListItemFieldUpdatedAt               = big.NewInt(1 << 25)
+	membershipListItemFieldUser                    = big.NewInt(1 << 26)
 )
 
 // membershipListItemNullableFields maps the wire names of MembershipListItem's nullable fields (required or optional) to their field bits.
@@ -28255,6 +28540,7 @@ var membershipListItemNullableFields = map[string]*big.Int{
 	"cancellation_reason":       membershipListItemFieldCancellationReason,
 	"checkout_configuration_id": membershipListItemFieldCheckoutConfigurationID,
 	"currency":                  membershipListItemFieldCurrency,
+	"feedback_option":           membershipListItemFieldFeedbackOption,
 	"formatted_renewal_price":   membershipListItemFieldFormattedRenewalPrice,
 	"joined_at":                 membershipListItemFieldJoinedAt,
 	"license_key":               membershipListItemFieldLicenseKey,
@@ -28287,6 +28573,8 @@ type MembershipListItem struct {
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
 	// The three-letter ISO currency code for this membership's billing. Null if the membership is free.
 	Currency *Currencies `json:"currency,omitempty" url:"currency,omitempty"`
+	// The account's own cancel reason the member picked, as they saw it. `null` when the member picked a default category or gave no reason.
+	FeedbackOption *MembershipListItemFeedbackOption `json:"feedback_option,omitempty" url:"feedback_option,omitempty"`
 	// The recurring renewal price for this membership, formatted with currency symbol and billing interval. Null if the membership is not recurring.
 	FormattedRenewalPrice *string `json:"formatted_renewal_price,omitempty" url:"formatted_renewal_price,omitempty"`
 	// The unique identifier for the membership.
@@ -28390,6 +28678,13 @@ func (m *MembershipListItem) GetCurrency() *Currencies {
 		return nil
 	}
 	return m.Currency
+}
+
+func (m *MembershipListItem) GetFeedbackOption() *MembershipListItemFeedbackOption {
+	if m == nil {
+		return nil
+	}
+	return m.FeedbackOption
 }
 
 func (m *MembershipListItem) GetFormattedRenewalPrice() *string {
@@ -28588,6 +28883,13 @@ func (m *MembershipListItem) SetCreatedAt(createdAt time.Time) {
 func (m *MembershipListItem) SetCurrency(currency *Currencies) {
 	m.Currency = currency
 	m.require(membershipListItemFieldCurrency)
+}
+
+// SetFeedbackOption sets the FeedbackOption field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipListItem) SetFeedbackOption(feedbackOption *MembershipListItemFeedbackOption) {
+	m.FeedbackOption = feedbackOption
+	m.require(membershipListItemFieldFeedbackOption)
 }
 
 // SetFormattedRenewalPrice sets the FormattedRenewalPrice field and marks it as non-optional;
@@ -28877,6 +29179,94 @@ func (m *MembershipListItemCompany) MarshalJSON() ([]byte, error) {
 }
 
 func (m *MembershipListItemCompany) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
+var (
+	membershipListItemFeedbackOptionFieldLabel = big.NewInt(1 << 0)
+)
+
+// The account's own cancel reason the member picked, as they saw it. `null` when the member picked a default category or gave no reason.
+type MembershipListItemFeedbackOption struct {
+	// The option's label when the member picked it. Renaming the option later does not change it.
+	Label string `json:"label" url:"label"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MembershipListItemFeedbackOption) GetLabel() string {
+	if m == nil {
+		return ""
+	}
+	return m.Label
+}
+
+func (m *MembershipListItemFeedbackOption) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MembershipListItemFeedbackOption) require(field *big.Int) {
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
+	}
+	next.Or(next, field)
+	m.explicitFields = next
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipListItemFeedbackOption) SetLabel(label string) {
+	m.Label = label
+	m.require(membershipListItemFeedbackOptionFieldLabel)
+}
+
+func (m *MembershipListItemFeedbackOption) UnmarshalJSON(data []byte) error {
+	type unmarshaler MembershipListItemFeedbackOption
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MembershipListItemFeedbackOption(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MembershipListItemFeedbackOption) MarshalJSON() ([]byte, error) {
+	type embed MembershipListItemFeedbackOption
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MembershipListItemFeedbackOption) String() string {
 	if m == nil {
 		return "<nil>"
 	}
@@ -31798,6 +32188,427 @@ func (p *Pagination) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	partnerAdvanceFieldActivity60Day                  = big.NewInt(1 << 0)
+	partnerAdvanceFieldAmount                         = big.NewInt(1 << 1)
+	partnerAdvanceFieldAnnualAds                      = big.NewInt(1 << 2)
+	partnerAdvanceFieldAnnualProcessing               = big.NewInt(1 << 3)
+	partnerAdvanceFieldClawedBackAt                   = big.NewInt(1 << 4)
+	partnerAdvanceFieldDeadlineAt                     = big.NewInt(1 << 5)
+	partnerAdvanceFieldFundedAt                       = big.NewInt(1 << 6)
+	partnerAdvanceFieldOfferToken                     = big.NewInt(1 << 7)
+	partnerAdvanceFieldProcessingTarget               = big.NewInt(1 << 8)
+	partnerAdvanceFieldProjected60DayActivity         = big.NewInt(1 << 9)
+	partnerAdvanceFieldProjectedAdsCommissions        = big.NewInt(1 << 10)
+	partnerAdvanceFieldProjectedCommissions           = big.NewInt(1 << 11)
+	partnerAdvanceFieldProjectedProcessingCommissions = big.NewInt(1 << 12)
+	partnerAdvanceFieldQualifiedAt                    = big.NewInt(1 << 13)
+	partnerAdvanceFieldRecoveryThreshold              = big.NewInt(1 << 14)
+	partnerAdvanceFieldStatus                         = big.NewInt(1 << 15)
+	partnerAdvanceFieldTermsVersion                   = big.NewInt(1 << 16)
+)
+
+// partnerAdvanceNullableFields maps the wire names of PartnerAdvance's nullable fields (required or optional) to their field bits.
+var partnerAdvanceNullableFields = map[string]*big.Int{
+	"activity_60_day":                  partnerAdvanceFieldActivity60Day,
+	"amount":                           partnerAdvanceFieldAmount,
+	"clawed_back_at":                   partnerAdvanceFieldClawedBackAt,
+	"deadline_at":                      partnerAdvanceFieldDeadlineAt,
+	"funded_at":                        partnerAdvanceFieldFundedAt,
+	"offer_token":                      partnerAdvanceFieldOfferToken,
+	"projected_60_day_activity":        partnerAdvanceFieldProjected60DayActivity,
+	"projected_ads_commissions":        partnerAdvanceFieldProjectedAdsCommissions,
+	"projected_commissions":            partnerAdvanceFieldProjectedCommissions,
+	"projected_processing_commissions": partnerAdvanceFieldProjectedProcessingCommissions,
+	"qualified_at":                     partnerAdvanceFieldQualifiedAt,
+	"recovery_threshold":               partnerAdvanceFieldRecoveryThreshold,
+	"terms_version":                    partnerAdvanceFieldTermsVersion,
+}
+
+type PartnerAdvance struct {
+	// Actual processing plus ads spend in the preceding 60 days, in USD. Null when unavailable.
+	Activity60Day *Money `json:"activity_60_day,omitempty" url:"activity_60_day,omitempty"`
+	// The offered or accepted upfront CPA payment in USD.
+	Amount *Money `json:"amount,omitempty" url:"amount,omitempty"`
+	// Annual projected Whop Ads spend in USD.
+	AnnualAds *Money `json:"annual_ads" url:"annual_ads"`
+	// Annual projected processing in USD.
+	AnnualProcessing *Money `json:"annual_processing" url:"annual_processing"`
+	// When low activity triggered reversal and normal partner terms resumed. No prior commissions are paid retroactively.
+	ClawedBackAt *string `json:"clawed_back_at,omitempty" url:"clawed_back_at,omitempty"`
+	// End of the nine-month CPA term. Normal commissions resume prospectively without backfill.
+	DeadlineAt *string `json:"deadline_at,omitempty" url:"deadline_at,omitempty"`
+	// When the CPA payment was funded.
+	FundedAt *string `json:"funded_at,omitempty" url:"funded_at,omitempty"`
+	// Signed offer valid for 15 minutes. Submit unchanged when accepting. Null unless the caller may accept this offer.
+	OfferToken *string `json:"offer_token,omitempty" url:"offer_token,omitempty"`
+	// Processing required in a rolling 30-day period to qualify, in USD.
+	ProcessingTarget *Money `json:"processing_target" url:"processing_target"`
+	// Projected processing plus ads spend over 60 days, in USD.
+	Projected60DayActivity *Money `json:"projected_60_day_activity,omitempty" url:"projected_60_day_activity,omitempty"`
+	// Ads commissions projected for the remaining CPA term, in USD.
+	ProjectedAdsCommissions *Money `json:"projected_ads_commissions,omitempty" url:"projected_ads_commissions,omitempty"`
+	// Projected commissions over the remaining CPA term.
+	ProjectedCommissions *Money `json:"projected_commissions,omitempty" url:"projected_commissions,omitempty"`
+	// Processing commissions projected for the remaining CPA term, in USD.
+	ProjectedProcessingCommissions *Money `json:"projected_processing_commissions,omitempty" url:"projected_processing_commissions,omitempty"`
+	// First qualification timestamp.
+	QualifiedAt *string `json:"qualified_at,omitempty" url:"qualified_at,omitempty"`
+	// 20% of projected 60-day processing plus ads spend. Performance checks begin 60 days after funding.
+	RecoveryThreshold *Money `json:"recovery_threshold,omitempty" url:"recovery_threshold,omitempty"`
+	// The CPA payment lifecycle state.
+	Status PartnerAdvanceStatus `json:"status" url:"status"`
+	// Terms version required for acceptance.
+	TermsVersion *string `json:"terms_version,omitempty" url:"terms_version,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PartnerAdvance) GetActivity60Day() *Money {
+	if p == nil {
+		return nil
+	}
+	return p.Activity60Day
+}
+
+func (p *PartnerAdvance) GetAmount() *Money {
+	if p == nil {
+		return nil
+	}
+	return p.Amount
+}
+
+func (p *PartnerAdvance) GetAnnualAds() *Money {
+	if p == nil {
+		return nil
+	}
+	return p.AnnualAds
+}
+
+func (p *PartnerAdvance) GetAnnualProcessing() *Money {
+	if p == nil {
+		return nil
+	}
+	return p.AnnualProcessing
+}
+
+func (p *PartnerAdvance) GetClawedBackAt() *string {
+	if p == nil {
+		return nil
+	}
+	return p.ClawedBackAt
+}
+
+func (p *PartnerAdvance) GetDeadlineAt() *string {
+	if p == nil {
+		return nil
+	}
+	return p.DeadlineAt
+}
+
+func (p *PartnerAdvance) GetFundedAt() *string {
+	if p == nil {
+		return nil
+	}
+	return p.FundedAt
+}
+
+func (p *PartnerAdvance) GetOfferToken() *string {
+	if p == nil {
+		return nil
+	}
+	return p.OfferToken
+}
+
+func (p *PartnerAdvance) GetProcessingTarget() *Money {
+	if p == nil {
+		return nil
+	}
+	return p.ProcessingTarget
+}
+
+func (p *PartnerAdvance) GetProjected60DayActivity() *Money {
+	if p == nil {
+		return nil
+	}
+	return p.Projected60DayActivity
+}
+
+func (p *PartnerAdvance) GetProjectedAdsCommissions() *Money {
+	if p == nil {
+		return nil
+	}
+	return p.ProjectedAdsCommissions
+}
+
+func (p *PartnerAdvance) GetProjectedCommissions() *Money {
+	if p == nil {
+		return nil
+	}
+	return p.ProjectedCommissions
+}
+
+func (p *PartnerAdvance) GetProjectedProcessingCommissions() *Money {
+	if p == nil {
+		return nil
+	}
+	return p.ProjectedProcessingCommissions
+}
+
+func (p *PartnerAdvance) GetQualifiedAt() *string {
+	if p == nil {
+		return nil
+	}
+	return p.QualifiedAt
+}
+
+func (p *PartnerAdvance) GetRecoveryThreshold() *Money {
+	if p == nil {
+		return nil
+	}
+	return p.RecoveryThreshold
+}
+
+func (p *PartnerAdvance) GetStatus() PartnerAdvanceStatus {
+	if p == nil {
+		return ""
+	}
+	return p.Status
+}
+
+func (p *PartnerAdvance) GetTermsVersion() *string {
+	if p == nil {
+		return nil
+	}
+	return p.TermsVersion
+}
+
+func (p *PartnerAdvance) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PartnerAdvance) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetActivity60Day sets the Activity60Day field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerAdvance) SetActivity60Day(activity60Day *Money) {
+	p.Activity60Day = activity60Day
+	p.require(partnerAdvanceFieldActivity60Day)
+}
+
+// SetAmount sets the Amount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerAdvance) SetAmount(amount *Money) {
+	p.Amount = amount
+	p.require(partnerAdvanceFieldAmount)
+}
+
+// SetAnnualAds sets the AnnualAds field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerAdvance) SetAnnualAds(annualAds *Money) {
+	p.AnnualAds = annualAds
+	p.require(partnerAdvanceFieldAnnualAds)
+}
+
+// SetAnnualProcessing sets the AnnualProcessing field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerAdvance) SetAnnualProcessing(annualProcessing *Money) {
+	p.AnnualProcessing = annualProcessing
+	p.require(partnerAdvanceFieldAnnualProcessing)
+}
+
+// SetClawedBackAt sets the ClawedBackAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerAdvance) SetClawedBackAt(clawedBackAt *string) {
+	p.ClawedBackAt = clawedBackAt
+	p.require(partnerAdvanceFieldClawedBackAt)
+}
+
+// SetDeadlineAt sets the DeadlineAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerAdvance) SetDeadlineAt(deadlineAt *string) {
+	p.DeadlineAt = deadlineAt
+	p.require(partnerAdvanceFieldDeadlineAt)
+}
+
+// SetFundedAt sets the FundedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerAdvance) SetFundedAt(fundedAt *string) {
+	p.FundedAt = fundedAt
+	p.require(partnerAdvanceFieldFundedAt)
+}
+
+// SetOfferToken sets the OfferToken field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerAdvance) SetOfferToken(offerToken *string) {
+	p.OfferToken = offerToken
+	p.require(partnerAdvanceFieldOfferToken)
+}
+
+// SetProcessingTarget sets the ProcessingTarget field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerAdvance) SetProcessingTarget(processingTarget *Money) {
+	p.ProcessingTarget = processingTarget
+	p.require(partnerAdvanceFieldProcessingTarget)
+}
+
+// SetProjected60DayActivity sets the Projected60DayActivity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerAdvance) SetProjected60DayActivity(projected60DayActivity *Money) {
+	p.Projected60DayActivity = projected60DayActivity
+	p.require(partnerAdvanceFieldProjected60DayActivity)
+}
+
+// SetProjectedAdsCommissions sets the ProjectedAdsCommissions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerAdvance) SetProjectedAdsCommissions(projectedAdsCommissions *Money) {
+	p.ProjectedAdsCommissions = projectedAdsCommissions
+	p.require(partnerAdvanceFieldProjectedAdsCommissions)
+}
+
+// SetProjectedCommissions sets the ProjectedCommissions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerAdvance) SetProjectedCommissions(projectedCommissions *Money) {
+	p.ProjectedCommissions = projectedCommissions
+	p.require(partnerAdvanceFieldProjectedCommissions)
+}
+
+// SetProjectedProcessingCommissions sets the ProjectedProcessingCommissions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerAdvance) SetProjectedProcessingCommissions(projectedProcessingCommissions *Money) {
+	p.ProjectedProcessingCommissions = projectedProcessingCommissions
+	p.require(partnerAdvanceFieldProjectedProcessingCommissions)
+}
+
+// SetQualifiedAt sets the QualifiedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerAdvance) SetQualifiedAt(qualifiedAt *string) {
+	p.QualifiedAt = qualifiedAt
+	p.require(partnerAdvanceFieldQualifiedAt)
+}
+
+// SetRecoveryThreshold sets the RecoveryThreshold field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerAdvance) SetRecoveryThreshold(recoveryThreshold *Money) {
+	p.RecoveryThreshold = recoveryThreshold
+	p.require(partnerAdvanceFieldRecoveryThreshold)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerAdvance) SetStatus(status PartnerAdvanceStatus) {
+	p.Status = status
+	p.require(partnerAdvanceFieldStatus)
+}
+
+// SetTermsVersion sets the TermsVersion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerAdvance) SetTermsVersion(termsVersion *string) {
+	p.TermsVersion = termsVersion
+	p.require(partnerAdvanceFieldTermsVersion)
+}
+
+func (p *PartnerAdvance) UnmarshalJSON(data []byte) error {
+	type unmarshaler PartnerAdvance
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PartnerAdvance(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, partnerAdvanceNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PartnerAdvance) MarshalJSON() ([]byte, error) {
+	type embed PartnerAdvance
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PartnerAdvance) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The CPA payment lifecycle state.
+type PartnerAdvanceStatus string
+
+const (
+	PartnerAdvanceStatusProjected  PartnerAdvanceStatus = "projected"
+	PartnerAdvanceStatusAvailable  PartnerAdvanceStatus = "available"
+	PartnerAdvanceStatusAccepted   PartnerAdvanceStatus = "accepted"
+	PartnerAdvanceStatusFunded     PartnerAdvanceStatus = "funded"
+	PartnerAdvanceStatusClawedBack PartnerAdvanceStatus = "clawed_back"
+	PartnerAdvanceStatusCompleted  PartnerAdvanceStatus = "completed"
+	PartnerAdvanceStatusExpired    PartnerAdvanceStatus = "expired"
+)
+
+func NewPartnerAdvanceStatusFromString(s string) (PartnerAdvanceStatus, error) {
+	switch s {
+	case "projected":
+		return PartnerAdvanceStatusProjected, nil
+	case "available":
+		return PartnerAdvanceStatusAvailable, nil
+	case "accepted":
+		return PartnerAdvanceStatusAccepted, nil
+	case "funded":
+		return PartnerAdvanceStatusFunded, nil
+	case "clawed_back":
+		return PartnerAdvanceStatusClawedBack, nil
+	case "completed":
+		return PartnerAdvanceStatusCompleted, nil
+	case "expired":
+		return PartnerAdvanceStatusExpired, nil
+	}
+	var t PartnerAdvanceStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PartnerAdvanceStatus) Ptr() *PartnerAdvanceStatus {
+	return &p
 }
 
 var (
