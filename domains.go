@@ -41,9 +41,10 @@ var (
 	createDomainsRequestFieldAccountID    = big.NewInt(1 << 0)
 	createDomainsRequestFieldDomain       = big.NewInt(1 << 1)
 	createDomainsRequestFieldMetadata     = big.NewInt(1 << 2)
-	createDomainsRequestFieldRegistration = big.NewInt(1 << 3)
-	createDomainsRequestFieldVerification = big.NewInt(1 << 4)
-	createDomainsRequestFieldWebsite      = big.NewInt(1 << 5)
+	createDomainsRequestFieldPixel        = big.NewInt(1 << 3)
+	createDomainsRequestFieldRegistration = big.NewInt(1 << 4)
+	createDomainsRequestFieldVerification = big.NewInt(1 << 5)
+	createDomainsRequestFieldWebsite      = big.NewInt(1 << 6)
 )
 
 type CreateDomainsRequest struct {
@@ -53,6 +54,8 @@ type CreateDomainsRequest struct {
 	Domain string `json:"domain" url:"-"`
 	// Custom string keys and values.
 	Metadata map[string]string `json:"metadata,omitempty" url:"-"`
+	// Track page views on the domain with the Whop pixel. It needs no other capability: it stays `pending` until the pixel records a page view, and turns `action_required` if it goes 7 days without one. Pass `null` to stop tracking.
+	Pixel *CreateDomainsRequestPixel `json:"pixel,omitempty" url:"-"`
 	// Buy the domain through Whop, renew it every year, and let Whop run its DNS. Pass `null` to release an unpaid or failed purchase.
 	Registration *CreateDomainsRequestRegistration `json:"registration,omitempty" url:"-"`
 	// Prove you control the domain's DNS: Whop returns a TXT record to publish in `issues`, and whoever publishes it owns the domain on Whop. Pass `null` to release it. Can't be combined with `registration`.
@@ -92,6 +95,13 @@ func (c *CreateDomainsRequest) SetDomain(domain string) {
 func (c *CreateDomainsRequest) SetMetadata(metadata map[string]string) {
 	c.Metadata = metadata
 	c.require(createDomainsRequestFieldMetadata)
+}
+
+// SetPixel sets the Pixel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDomainsRequest) SetPixel(pixel *CreateDomainsRequestPixel) {
+	c.Pixel = pixel
+	c.require(createDomainsRequestFieldPixel)
 }
 
 // SetRegistration sets the Registration field and marks it as non-optional;
@@ -182,6 +192,7 @@ var (
 	listDomainsRequestFieldPlatform     = big.NewInt(1 << 14)
 	listDomainsRequestFieldWebsite      = big.NewInt(1 << 15)
 	listDomainsRequestFieldApplePay     = big.NewInt(1 << 16)
+	listDomainsRequestFieldPixel        = big.NewInt(1 << 17)
 )
 
 type ListDomainsRequest struct {
@@ -219,6 +230,8 @@ type ListDomainsRequest struct {
 	Website *ListDomainsRequestWebsite `json:"-" url:"website,omitempty"`
 	// Only domains with apple_pay in this state, such as `ready`, or `any` for every domain that has apple_pay.
 	ApplePay *ListDomainsRequestApplePay `json:"-" url:"apple_pay,omitempty"`
+	// Only domains with pixel in this state, such as `ready`, or `any` for every domain that has pixel.
+	Pixel *ListDomainsRequestPixel `json:"-" url:"pixel,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -352,6 +365,13 @@ func (l *ListDomainsRequest) SetApplePay(applePay *ListDomainsRequestApplePay) {
 	l.require(listDomainsRequestFieldApplePay)
 }
 
+// SetPixel sets the Pixel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListDomainsRequest) SetPixel(pixel *ListDomainsRequestPixel) {
+	l.Pixel = pixel
+	l.require(listDomainsRequestFieldPixel)
+}
+
 var (
 	retrieveDomainsRequestFieldID = big.NewInt(1 << 0)
 )
@@ -390,13 +410,14 @@ var (
 	domainFieldIssues       = big.NewInt(1 << 6)
 	domainFieldMetadata     = big.NewInt(1 << 7)
 	domainFieldOwnedBy      = big.NewInt(1 << 8)
-	domainFieldPlatform     = big.NewInt(1 << 9)
-	domainFieldPublicRecord = big.NewInt(1 << 10)
-	domainFieldRegistration = big.NewInt(1 << 11)
-	domainFieldStatus       = big.NewInt(1 << 12)
-	domainFieldUpdatedAt    = big.NewInt(1 << 13)
-	domainFieldVerification = big.NewInt(1 << 14)
-	domainFieldWebsite      = big.NewInt(1 << 15)
+	domainFieldPixel        = big.NewInt(1 << 9)
+	domainFieldPlatform     = big.NewInt(1 << 10)
+	domainFieldPublicRecord = big.NewInt(1 << 11)
+	domainFieldRegistration = big.NewInt(1 << 12)
+	domainFieldStatus       = big.NewInt(1 << 13)
+	domainFieldUpdatedAt    = big.NewInt(1 << 14)
+	domainFieldVerification = big.NewInt(1 << 15)
+	domainFieldWebsite      = big.NewInt(1 << 16)
 )
 
 // domainNullableFields maps the wire names of Domain's nullable fields (required or optional) to their field bits.
@@ -407,6 +428,7 @@ var domainNullableFields = map[string]*big.Int{
 	"created_at":    domainFieldCreatedAt,
 	"id":            domainFieldID,
 	"owned_by":      domainFieldOwnedBy,
+	"pixel":         domainFieldPixel,
 	"platform":      domainFieldPlatform,
 	"public_record": domainFieldPublicRecord,
 	"registration":  domainFieldRegistration,
@@ -434,6 +456,8 @@ type Domain struct {
 	Metadata map[string]string `json:"metadata" url:"metadata"`
 	// The other account that has proven it owns this hostname. `null` when no other account does.
 	OwnedBy *DomainOwner `json:"owned_by,omitempty" url:"owned_by,omitempty"`
+	// Tracking page views on the domain with the Whop pixel. `null` when not tracked or not visible to you.
+	Pixel *DomainPixel `json:"pixel,omitempty" url:"pixel,omitempty"`
 	// An address on a zone Whop runs, such as example.whop.site, that follows its app's route. `null` for other domains or when not visible to you.
 	Platform *DomainPlatform `json:"platform,omitempty" url:"platform,omitempty"`
 	// The domain's public registration record (RDAP), read when you retrieve it by hostname. `null` for domains on Whop, available domains, or a record that couldn't be read.
@@ -517,6 +541,13 @@ func (d *Domain) GetOwnedBy() *DomainOwner {
 		return nil
 	}
 	return d.OwnedBy
+}
+
+func (d *Domain) GetPixel() *DomainPixel {
+	if d == nil {
+		return nil
+	}
+	return d.Pixel
 }
 
 func (d *Domain) GetPlatform() *DomainPlatform {
@@ -645,6 +676,13 @@ func (d *Domain) SetMetadata(metadata map[string]string) {
 func (d *Domain) SetOwnedBy(ownedBy *DomainOwner) {
 	d.OwnedBy = ownedBy
 	d.require(domainFieldOwnedBy)
+}
+
+// SetPixel sets the Pixel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *Domain) SetPixel(pixel *DomainPixel) {
+	d.Pixel = pixel
+	d.require(domainFieldPixel)
 }
 
 // SetPlatform sets the Platform field and marks it as non-optional;
@@ -1366,6 +1404,7 @@ const (
 	DomainIssueCapabilityPlatform     DomainIssueCapability = "platform"
 	DomainIssueCapabilityWebsite      DomainIssueCapability = "website"
 	DomainIssueCapabilityApplePay     DomainIssueCapability = "apple_pay"
+	DomainIssueCapabilityPixel        DomainIssueCapability = "pixel"
 )
 
 func NewDomainIssueCapabilityFromString(s string) (DomainIssueCapability, error) {
@@ -1380,6 +1419,8 @@ func NewDomainIssueCapabilityFromString(s string) (DomainIssueCapability, error)
 		return DomainIssueCapabilityWebsite, nil
 	case "apple_pay":
 		return DomainIssueCapabilityApplePay, nil
+	case "pixel":
+		return DomainIssueCapabilityPixel, nil
 	}
 	var t DomainIssueCapability
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1411,6 +1452,11 @@ const (
 	DomainIssueCodeRenewalFailed           DomainIssueCode = "renewal_failed"
 	DomainIssueCodePaymentActionRequired   DomainIssueCode = "payment_action_required"
 	DomainIssueCodeApplePayUnverified      DomainIssueCode = "apple_pay_unverified"
+	DomainIssueCodePixelNotSeen            DomainIssueCode = "pixel_not_seen"
+	DomainIssueCodePixelNotInstalled       DomainIssueCode = "pixel_not_installed"
+	DomainIssueCodePixelWaiting            DomainIssueCode = "pixel_waiting"
+	DomainIssueCodePixelUnreachable        DomainIssueCode = "pixel_unreachable"
+	DomainIssueCodePixelQuiet              DomainIssueCode = "pixel_quiet"
 )
 
 func NewDomainIssueCodeFromString(s string) (DomainIssueCode, error) {
@@ -1451,6 +1497,16 @@ func NewDomainIssueCodeFromString(s string) (DomainIssueCode, error) {
 		return DomainIssueCodePaymentActionRequired, nil
 	case "apple_pay_unverified":
 		return DomainIssueCodeApplePayUnverified, nil
+	case "pixel_not_seen":
+		return DomainIssueCodePixelNotSeen, nil
+	case "pixel_not_installed":
+		return DomainIssueCodePixelNotInstalled, nil
+	case "pixel_waiting":
+		return DomainIssueCodePixelWaiting, nil
+	case "pixel_unreachable":
+		return DomainIssueCodePixelUnreachable, nil
+	case "pixel_quiet":
+		return DomainIssueCodePixelQuiet, nil
 	}
 	var t DomainIssueCode
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1470,12 +1526,13 @@ var (
 	domainListItemFieldIssues       = big.NewInt(1 << 6)
 	domainListItemFieldMetadata     = big.NewInt(1 << 7)
 	domainListItemFieldOwnedBy      = big.NewInt(1 << 8)
-	domainListItemFieldPlatform     = big.NewInt(1 << 9)
-	domainListItemFieldRegistration = big.NewInt(1 << 10)
-	domainListItemFieldStatus       = big.NewInt(1 << 11)
-	domainListItemFieldUpdatedAt    = big.NewInt(1 << 12)
-	domainListItemFieldVerification = big.NewInt(1 << 13)
-	domainListItemFieldWebsite      = big.NewInt(1 << 14)
+	domainListItemFieldPixel        = big.NewInt(1 << 9)
+	domainListItemFieldPlatform     = big.NewInt(1 << 10)
+	domainListItemFieldRegistration = big.NewInt(1 << 11)
+	domainListItemFieldStatus       = big.NewInt(1 << 12)
+	domainListItemFieldUpdatedAt    = big.NewInt(1 << 13)
+	domainListItemFieldVerification = big.NewInt(1 << 14)
+	domainListItemFieldWebsite      = big.NewInt(1 << 15)
 )
 
 // domainListItemNullableFields maps the wire names of DomainListItem's nullable fields (required or optional) to their field bits.
@@ -1486,6 +1543,7 @@ var domainListItemNullableFields = map[string]*big.Int{
 	"created_at":   domainListItemFieldCreatedAt,
 	"id":           domainListItemFieldID,
 	"owned_by":     domainListItemFieldOwnedBy,
+	"pixel":        domainListItemFieldPixel,
 	"platform":     domainListItemFieldPlatform,
 	"registration": domainListItemFieldRegistration,
 	"status":       domainListItemFieldStatus,
@@ -1512,6 +1570,8 @@ type DomainListItem struct {
 	Metadata map[string]any `json:"metadata" url:"metadata"`
 	// The other account that has proven it owns this hostname. `null` when no other account does.
 	OwnedBy *DomainOwner `json:"owned_by,omitempty" url:"owned_by,omitempty"`
+	// Tracking page views on the domain with the Whop pixel. `null` when not tracked or not visible to you.
+	Pixel *DomainPixel `json:"pixel,omitempty" url:"pixel,omitempty"`
 	// An address on a zone Whop runs, such as example.whop.site, that follows its app's route. `null` for other domains or when not visible to you.
 	Platform *DomainPlatform `json:"platform,omitempty" url:"platform,omitempty"`
 	// Buying the domain through Whop, renewing it, and running its DNS. `null` when not wanted or not visible to you.
@@ -1593,6 +1653,13 @@ func (d *DomainListItem) GetOwnedBy() *DomainOwner {
 		return nil
 	}
 	return d.OwnedBy
+}
+
+func (d *DomainListItem) GetPixel() *DomainPixel {
+	if d == nil {
+		return nil
+	}
+	return d.Pixel
 }
 
 func (d *DomainListItem) GetPlatform() *DomainPlatform {
@@ -1714,6 +1781,13 @@ func (d *DomainListItem) SetMetadata(metadata map[string]any) {
 func (d *DomainListItem) SetOwnedBy(ownedBy *DomainOwner) {
 	d.OwnedBy = ownedBy
 	d.require(domainListItemFieldOwnedBy)
+}
+
+// SetPixel sets the Pixel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainListItem) SetPixel(pixel *DomainPixel) {
+	d.Pixel = pixel
+	d.require(domainListItemFieldPixel)
 }
 
 // SetPlatform sets the Platform field and marks it as non-optional;
@@ -1987,6 +2061,119 @@ func (d *DomainOwner) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", d)
+}
+
+var (
+	domainPixelFieldState = big.NewInt(1 << 0)
+)
+
+type DomainPixel struct {
+	// `ready` while the Whop pixel recorded a page view on the domain in the last 7 days. `pending` until a pixel you asked for records its first one, and `action_required` once it goes 7 days without one; its issue says what to do.
+	State DomainPixelState `json:"state" url:"state"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DomainPixel) GetState() DomainPixelState {
+	if d == nil {
+		return ""
+	}
+	return d.State
+}
+
+func (d *DomainPixel) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DomainPixel) require(field *big.Int) {
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
+	}
+	next.Or(next, field)
+	d.explicitFields = next
+}
+
+// SetState sets the State field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainPixel) SetState(state DomainPixelState) {
+	d.State = state
+	d.require(domainPixelFieldState)
+}
+
+func (d *DomainPixel) UnmarshalJSON(data []byte) error {
+	type unmarshaler DomainPixel
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DomainPixel(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DomainPixel) MarshalJSON() ([]byte, error) {
+	type embed DomainPixel
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DomainPixel) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+// `ready` while the Whop pixel recorded a page view on the domain in the last 7 days. `pending` until a pixel you asked for records its first one, and `action_required` once it goes 7 days without one; its issue says what to do.
+type DomainPixelState string
+
+const (
+	DomainPixelStatePending        DomainPixelState = "pending"
+	DomainPixelStateReady          DomainPixelState = "ready"
+	DomainPixelStateActionRequired DomainPixelState = "action_required"
+)
+
+func NewDomainPixelStateFromString(s string) (DomainPixelState, error) {
+	switch s {
+	case "pending":
+		return DomainPixelStatePending, nil
+	case "ready":
+		return DomainPixelStateReady, nil
+	case "action_required":
+		return DomainPixelStateActionRequired, nil
+	}
+	var t DomainPixelState
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (d DomainPixelState) Ptr() *DomainPixelState {
+	return &d
 }
 
 var (
@@ -3260,6 +3447,74 @@ func (d DomainWebsiteState) Ptr() *DomainWebsiteState {
 	return &d
 }
 
+// Track page views on the domain with the Whop pixel. It needs no other capability: it stays `pending` until the pixel records a page view, and turns `action_required` if it goes 7 days without one. Pass `null` to stop tracking.
+type CreateDomainsRequestPixel struct {
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateDomainsRequestPixel) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateDomainsRequestPixel) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+func (c *CreateDomainsRequestPixel) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateDomainsRequestPixel
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateDomainsRequestPixel(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateDomainsRequestPixel) MarshalJSON() ([]byte, error) {
+	type embed CreateDomainsRequestPixel
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateDomainsRequestPixel) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
 var (
 	createDomainsRequestRegistrationFieldAutoRenew       = big.NewInt(1 << 0)
 	createDomainsRequestRegistrationFieldPaymentMethodID = big.NewInt(1 << 1)
@@ -3617,6 +3872,37 @@ func NewListDomainsRequestOrderFromString(s string) (ListDomainsRequestOrder, er
 }
 
 func (l ListDomainsRequestOrder) Ptr() *ListDomainsRequestOrder {
+	return &l
+}
+
+type ListDomainsRequestPixel string
+
+const (
+	ListDomainsRequestPixelPending        ListDomainsRequestPixel = "pending"
+	ListDomainsRequestPixelReady          ListDomainsRequestPixel = "ready"
+	ListDomainsRequestPixelActionRequired ListDomainsRequestPixel = "action_required"
+	ListDomainsRequestPixelReleasing      ListDomainsRequestPixel = "releasing"
+	ListDomainsRequestPixelAny            ListDomainsRequestPixel = "any"
+)
+
+func NewListDomainsRequestPixelFromString(s string) (ListDomainsRequestPixel, error) {
+	switch s {
+	case "pending":
+		return ListDomainsRequestPixelPending, nil
+	case "ready":
+		return ListDomainsRequestPixelReady, nil
+	case "action_required":
+		return ListDomainsRequestPixelActionRequired, nil
+	case "releasing":
+		return ListDomainsRequestPixelReleasing, nil
+	case "any":
+		return ListDomainsRequestPixelAny, nil
+	}
+	var t ListDomainsRequestPixel
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListDomainsRequestPixel) Ptr() *ListDomainsRequestPixel {
 	return &l
 }
 
@@ -4024,6 +4310,74 @@ func (l *ListDomainsResponsePageInfo) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
+// Track page views on the domain with the Whop pixel. It needs no other capability: it stays `pending` until the pixel records a page view, and turns `action_required` if it goes 7 days without one. Pass `null` to stop tracking.
+type UpdateDomainsRequestPixel struct {
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateDomainsRequestPixel) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateDomainsRequestPixel) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+func (u *UpdateDomainsRequestPixel) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateDomainsRequestPixel
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateDomainsRequestPixel(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateDomainsRequestPixel) MarshalJSON() ([]byte, error) {
+	type embed UpdateDomainsRequestPixel
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateDomainsRequestPixel) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
 var (
 	updateDomainsRequestRegistrationFieldAutoRenew       = big.NewInt(1 << 0)
 	updateDomainsRequestRegistrationFieldPaymentMethodID = big.NewInt(1 << 1)
@@ -4312,9 +4666,10 @@ func (u *UpdateDomainsRequestWebsite) String() string {
 var (
 	updateDomainsRequestFieldID           = big.NewInt(1 << 0)
 	updateDomainsRequestFieldMetadata     = big.NewInt(1 << 1)
-	updateDomainsRequestFieldRegistration = big.NewInt(1 << 2)
-	updateDomainsRequestFieldVerification = big.NewInt(1 << 3)
-	updateDomainsRequestFieldWebsite      = big.NewInt(1 << 4)
+	updateDomainsRequestFieldPixel        = big.NewInt(1 << 2)
+	updateDomainsRequestFieldRegistration = big.NewInt(1 << 3)
+	updateDomainsRequestFieldVerification = big.NewInt(1 << 4)
+	updateDomainsRequestFieldWebsite      = big.NewInt(1 << 5)
 )
 
 type UpdateDomainsRequest struct {
@@ -4322,6 +4677,8 @@ type UpdateDomainsRequest struct {
 	ID string `json:"-" url:"-"`
 	// Replacement custom string keys and values.
 	Metadata map[string]string `json:"metadata,omitempty" url:"-"`
+	// Track page views on the domain with the Whop pixel. It needs no other capability: it stays `pending` until the pixel records a page view, and turns `action_required` if it goes 7 days without one. Pass `null` to stop tracking.
+	Pixel *UpdateDomainsRequestPixel `json:"pixel,omitempty" url:"-"`
 	// Buy the domain through Whop, renew it every year, and let Whop run its DNS. Pass `null` to release an unpaid or failed purchase.
 	Registration *UpdateDomainsRequestRegistration `json:"registration,omitempty" url:"-"`
 	// Prove you control the domain's DNS: Whop returns a TXT record to publish in `issues`, and whoever publishes it owns the domain on Whop. Pass `null` to release it. Can't be combined with `registration`.
@@ -4354,6 +4711,13 @@ func (u *UpdateDomainsRequest) SetID(id string) {
 func (u *UpdateDomainsRequest) SetMetadata(metadata map[string]string) {
 	u.Metadata = metadata
 	u.require(updateDomainsRequestFieldMetadata)
+}
+
+// SetPixel sets the Pixel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateDomainsRequest) SetPixel(pixel *UpdateDomainsRequestPixel) {
+	u.Pixel = pixel
+	u.require(updateDomainsRequestFieldPixel)
 }
 
 // SetRegistration sets the Registration field and marks it as non-optional;

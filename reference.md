@@ -16160,6 +16160,14 @@ client.Domains.List(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**pixel:** `*whopsdk.ListDomainsRequestPixel` — Only domains with pixel in this state, such as `ready`, or `any` for every domain that has pixel.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
@@ -16239,6 +16247,14 @@ client.Domains.Create(
 <dd>
 
 **metadata:** `map[string]string` — Custom string keys and values.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**pixel:** `*whopsdk.CreateDomainsRequestPixel` — Track page views on the domain with the Whop pixel. It needs no other capability: it stays `pending` until the pixel records a page view, and turns `action_required` if it goes 7 days without one. Pass `null` to stop tracking.
     
 </dd>
 </dl>
@@ -16453,6 +16469,14 @@ client.Domains.Update(
 <dd>
 
 **metadata:** `map[string]string` — Replacement custom string keys and values.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**pixel:** `*whopsdk.UpdateDomainsRequestPixel` — Track page views on the domain with the Whop pixel. It needs no other capability: it stays `pending` until the pixel records a page view, and turns `action_required` if it goes 7 days without one. Pass `null` to stop tracking.
     
 </dd>
 </dl>

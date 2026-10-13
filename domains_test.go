@@ -79,6 +79,14 @@ func TestSettersCreateDomainsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetPixel", func(t *testing.T) {
+		obj := &CreateDomainsRequest{}
+		var fernTestValuePixel *CreateDomainsRequestPixel
+		obj.SetPixel(fernTestValuePixel)
+		assert.Equal(t, fernTestValuePixel, obj.Pixel)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetRegistration", func(t *testing.T) {
 		obj := &CreateDomainsRequest{}
 		var fernTestValueRegistration *CreateDomainsRequestRegistration
@@ -176,6 +184,37 @@ func TestSettersMarkExplicitCreateDomainsRequest(t *testing.T) {
 
 		// Act
 		obj.SetMetadata(fernTestValueMetadata)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPixel_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateDomainsRequest{}
+		var fernTestValuePixel *CreateDomainsRequestPixel
+
+		// Act
+		obj.SetPixel(fernTestValuePixel)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -473,6 +512,14 @@ func TestSettersListDomainsRequest(t *testing.T) {
 		var fernTestValueApplePay *ListDomainsRequestApplePay
 		obj.SetApplePay(fernTestValueApplePay)
 		assert.Equal(t, fernTestValueApplePay, obj.ApplePay)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetPixel", func(t *testing.T) {
+		obj := &ListDomainsRequest{}
+		var fernTestValuePixel *ListDomainsRequestPixel
+		obj.SetPixel(fernTestValuePixel)
+		assert.Equal(t, fernTestValuePixel, obj.Pixel)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -1006,6 +1053,37 @@ func TestSettersMarkExplicitListDomainsRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetPixel_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListDomainsRequest{}
+		var fernTestValuePixel *ListDomainsRequestPixel
+
+		// Act
+		obj.SetPixel(fernTestValuePixel)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 }
 
 func TestSettersRetrieveDomainsRequest(t *testing.T) {
@@ -1123,6 +1201,14 @@ func TestSettersDomain(t *testing.T) {
 		var fernTestValueOwnedBy *DomainOwner
 		obj.SetOwnedBy(fernTestValueOwnedBy)
 		assert.Equal(t, fernTestValueOwnedBy, obj.OwnedBy)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetPixel", func(t *testing.T) {
+		obj := &Domain{}
+		var fernTestValuePixel *DomainPixel
+		obj.SetPixel(fernTestValuePixel)
+		assert.Equal(t, fernTestValuePixel, obj.Pixel)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -1470,6 +1556,39 @@ func TestGettersDomain(t *testing.T) {
 			}
 		}()
 		_ = obj.GetOwnedBy() // Should return zero value
+	})
+
+	t.Run("GetPixel", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Domain{}
+		var expected *DomainPixel
+		obj.Pixel = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPixel(), "getter should return the property value")
+	})
+
+	t.Run("GetPixel_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Domain{}
+		obj.Pixel = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPixel(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPixel_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Domain
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPixel() // Should return zero value
 	})
 
 	t.Run("GetPlatform", func(t *testing.T) {
@@ -1962,6 +2081,37 @@ func TestSettersMarkExplicitDomain(t *testing.T) {
 
 		// Act
 		obj.SetOwnedBy(fernTestValueOwnedBy)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPixel_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Domain{}
+		var fernTestValuePixel *DomainPixel
+
+		// Act
+		obj.SetPixel(fernTestValuePixel)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3293,6 +3443,14 @@ func TestSettersDomainListItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetPixel", func(t *testing.T) {
+		obj := &DomainListItem{}
+		var fernTestValuePixel *DomainPixel
+		obj.SetPixel(fernTestValuePixel)
+		assert.Equal(t, fernTestValuePixel, obj.Pixel)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetPlatform", func(t *testing.T) {
 		obj := &DomainListItem{}
 		var fernTestValuePlatform *DomainPlatform
@@ -3629,6 +3787,39 @@ func TestGettersDomainListItem(t *testing.T) {
 			}
 		}()
 		_ = obj.GetOwnedBy() // Should return zero value
+	})
+
+	t.Run("GetPixel", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DomainListItem{}
+		var expected *DomainPixel
+		obj.Pixel = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPixel(), "getter should return the property value")
+	})
+
+	t.Run("GetPixel_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DomainListItem{}
+		obj.Pixel = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPixel(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPixel_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *DomainListItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPixel() // Should return zero value
 	})
 
 	t.Run("GetPlatform", func(t *testing.T) {
@@ -4111,6 +4302,37 @@ func TestSettersMarkExplicitDomainListItem(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetPixel_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DomainListItem{}
+		var fernTestValuePixel *DomainPixel
+
+		// Act
+		obj.SetPixel(fernTestValuePixel)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetPlatform_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -4541,6 +4763,77 @@ func TestSettersMarkExplicitDomainOwner(t *testing.T) {
 
 		// Act
 		obj.SetTitle(fernTestValueTitle)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersDomainPixel(t *testing.T) {
+	t.Run("SetState", func(t *testing.T) {
+		obj := &DomainPixel{}
+		var fernTestValueState DomainPixelState
+		obj.SetState(fernTestValueState)
+		assert.Equal(t, fernTestValueState, obj.State)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersDomainPixel(t *testing.T) {
+	t.Run("GetState", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DomainPixel{}
+		var expected DomainPixelState
+		obj.State = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetState(), "getter should return the property value")
+	})
+
+	t.Run("GetState_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *DomainPixel
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetState() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitDomainPixel(t *testing.T) {
+	t.Run("SetState_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DomainPixel{}
+		var fernTestValueState DomainPixelState
+
+		// Act
+		obj.SetState(fernTestValueState)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -7634,6 +7927,14 @@ func TestSettersUpdateDomainsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetPixel", func(t *testing.T) {
+		obj := &UpdateDomainsRequest{}
+		var fernTestValuePixel *UpdateDomainsRequestPixel
+		obj.SetPixel(fernTestValuePixel)
+		assert.Equal(t, fernTestValuePixel, obj.Pixel)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetRegistration", func(t *testing.T) {
 		obj := &UpdateDomainsRequest{}
 		var fernTestValueRegistration *UpdateDomainsRequestRegistration
@@ -7700,6 +8001,37 @@ func TestSettersMarkExplicitUpdateDomainsRequest(t *testing.T) {
 
 		// Act
 		obj.SetMetadata(fernTestValueMetadata)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPixel_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateDomainsRequest{}
+		var fernTestValuePixel *UpdateDomainsRequestPixel
+
+		// Act
+		obj.SetPixel(fernTestValuePixel)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -7816,6 +8148,39 @@ func TestSettersMarkExplicitUpdateDomainsRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+}
+
+func TestJSONMarshalingCreateDomainsRequestPixel(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateDomainsRequestPixel{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled CreateDomainsRequestPixel
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateDomainsRequestPixel
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateDomainsRequestPixel
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
 }
 
 func TestJSONMarshalingCreateDomainsRequestRegistration(t *testing.T) {
@@ -8148,6 +8513,39 @@ func TestJSONMarshalingDomainOwner(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingDomainPixel(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DomainPixel{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled DomainPixel
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj DomainPixel
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj DomainPixel
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingDomainPlatform(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -8445,6 +8843,39 @@ func TestJSONMarshalingListDomainsResponsePageInfo(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingUpdateDomainsRequestPixel(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateDomainsRequestPixel{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled UpdateDomainsRequestPixel
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateDomainsRequestPixel
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateDomainsRequestPixel
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingUpdateDomainsRequestRegistration(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -8552,6 +8983,7 @@ func TestRequiredNullableRoundTripDomain(t *testing.T) {
 		"created_at",
 		"id",
 		"owned_by",
+		"pixel",
 		"platform",
 		"public_record",
 		"registration",
@@ -8571,7 +9003,7 @@ func TestRequiredNullableRoundTripDomain(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Domain
-		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"apple_pay":null,"availability":null,"created_at":null,"id":null,"owned_by":null,"platform":null,"public_record":null,"registration":null,"status":null,"updated_at":null,"verification":null,"website":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"apple_pay":null,"availability":null,"created_at":null,"id":null,"owned_by":null,"pixel":null,"platform":null,"public_record":null,"registration":null,"status":null,"updated_at":null,"verification":null,"website":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -8695,6 +9127,7 @@ func TestRequiredNullableRoundTripDomainListItem(t *testing.T) {
 		"created_at",
 		"id",
 		"owned_by",
+		"pixel",
 		"platform",
 		"registration",
 		"status",
@@ -8713,7 +9146,7 @@ func TestRequiredNullableRoundTripDomainListItem(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj DomainListItem
-		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"apple_pay":null,"availability":null,"created_at":null,"id":null,"owned_by":null,"platform":null,"registration":null,"status":null,"updated_at":null,"verification":null,"website":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"apple_pay":null,"availability":null,"created_at":null,"id":null,"owned_by":null,"pixel":null,"platform":null,"registration":null,"status":null,"updated_at":null,"verification":null,"website":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -9273,6 +9706,22 @@ func TestOptionalNullableRoundTripUpdateDomainsRequestWebsite(t *testing.T) {
 	})
 }
 
+func TestStringCreateDomainsRequestPixel(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateDomainsRequestPixel{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateDomainsRequestPixel
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
 func TestStringCreateDomainsRequestRegistration(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -9433,6 +9882,22 @@ func TestStringDomainOwner(t *testing.T) {
 	})
 }
 
+func TestStringDomainPixel(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &DomainPixel{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *DomainPixel
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
 func TestStringDomainPlatform(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -9572,6 +10037,22 @@ func TestStringListDomainsResponsePageInfo(t *testing.T) {
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *ListDomainsResponsePageInfo
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringUpdateDomainsRequestPixel(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &UpdateDomainsRequestPixel{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateDomainsRequestPixel
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -9733,6 +10214,13 @@ func TestEnumDomainIssueCapability(t *testing.T) {
 		assert.Equal(t, DomainIssueCapability("apple_pay"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_pixel", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewDomainIssueCapabilityFromString("pixel")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, DomainIssueCapability("pixel"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewDomainIssueCapabilityFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -9874,6 +10362,41 @@ func TestEnumDomainIssueCode(t *testing.T) {
 		assert.Equal(t, DomainIssueCode("apple_pay_unverified"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_pixel_not_seen", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewDomainIssueCodeFromString("pixel_not_seen")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, DomainIssueCode("pixel_not_seen"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pixel_not_installed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewDomainIssueCodeFromString("pixel_not_installed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, DomainIssueCode("pixel_not_installed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pixel_waiting", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewDomainIssueCodeFromString("pixel_waiting")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, DomainIssueCode("pixel_waiting"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pixel_unreachable", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewDomainIssueCodeFromString("pixel_unreachable")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, DomainIssueCode("pixel_unreachable"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pixel_quiet", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewDomainIssueCodeFromString("pixel_quiet")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, DomainIssueCode("pixel_quiet"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewDomainIssueCodeFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -9931,6 +10454,42 @@ func TestEnumDomainListItemStatus(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewDomainListItemStatusFromString("idle")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumDomainPixelState(t *testing.T) {
+	t.Run("NewFromString_pending", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewDomainPixelStateFromString("pending")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, DomainPixelState("pending"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ready", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewDomainPixelStateFromString("ready")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, DomainPixelState("ready"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_action_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewDomainPixelStateFromString("action_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, DomainPixelState("action_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewDomainPixelStateFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewDomainPixelStateFromString("pending")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -10332,6 +10891,56 @@ func TestEnumListDomainsRequestOrder(t *testing.T) {
 	})
 }
 
+func TestEnumListDomainsRequestPixel(t *testing.T) {
+	t.Run("NewFromString_pending", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDomainsRequestPixelFromString("pending")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDomainsRequestPixel("pending"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ready", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDomainsRequestPixelFromString("ready")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDomainsRequestPixel("ready"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_action_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDomainsRequestPixelFromString("action_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDomainsRequestPixel("action_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_releasing", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDomainsRequestPixelFromString("releasing")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDomainsRequestPixel("releasing"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_any", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDomainsRequestPixelFromString("any")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDomainsRequestPixel("any"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewListDomainsRequestPixelFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewListDomainsRequestPixelFromString("pending")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumListDomainsRequestPlatform(t *testing.T) {
 	t.Run("NewFromString_pending", func(t *testing.T) {
 		t.Parallel()
@@ -10582,6 +11191,29 @@ func TestEnumListDomainsRequestWebsite(t *testing.T) {
 	})
 }
 
+func TestExtraPropertiesCreateDomainsRequestPixel(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateDomainsRequestPixel{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateDomainsRequestPixel
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
 func TestExtraPropertiesCreateDomainsRequestRegistration(t *testing.T) {
 	t.Run("GetExtraProperties", func(t *testing.T) {
 		t.Parallel()
@@ -10812,6 +11444,29 @@ func TestExtraPropertiesDomainOwner(t *testing.T) {
 	})
 }
 
+func TestExtraPropertiesDomainPixel(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &DomainPixel{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *DomainPixel
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
 func TestExtraPropertiesDomainPlatform(t *testing.T) {
 	t.Run("GetExtraProperties", func(t *testing.T) {
 		t.Parallel()
@@ -11014,6 +11669,29 @@ func TestExtraPropertiesListDomainsResponsePageInfo(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *ListDomainsResponsePageInfo
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesUpdateDomainsRequestPixel(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &UpdateDomainsRequestPixel{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateDomainsRequestPixel
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
