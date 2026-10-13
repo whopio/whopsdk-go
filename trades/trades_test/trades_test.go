@@ -114,7 +114,6 @@ func TestTradesCreateWithWireMock(
 	)
 	request := &whopsdk.CreateTradesRequest{
 		AccountID: "biz_xxxxxxxxxxxxxx",
-		Market:    "BTC",
 		Type:      whopsdk.CreateTradesRequestTypeBuy,
 	}
 	_, invocationErr := client.Trades.Create(

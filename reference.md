@@ -1162,7 +1162,7 @@ request := &whopsdk.FormCompanyAccountsRequest{
         },
     },
     IndustryGroup: "automotive",
-    IndustryType: "car_wash",
+    IndustryType: "car_wash_and_detailing_shop",
     ShareStructure: &whopsdk.FormCompanyAccountsRequestShareStructure{
         NumberOfShares: 123,
         Value: 123,
@@ -37686,7 +37686,7 @@ client.Trades.List(
 <dl>
 <dd>
 
-Opens or closes a perpetual position from the Whop-managed wallet of an account or user. Answers `201` with the trade in `pending`; it runs in the background, so read it with `GET /trades/:id` until its `status` is `completed`, `failed` or `in_review`. One trade runs at a time for each wallet, and a retry with the same `Idempotency-Key` returns the same trade.
+Places an order, or buys or closes a perpetual position, from the Whop-managed wallet of an account or user. Answers `201` with the trade in `pending`; it runs in the background, so read it with `GET /trades/:id` until its `status` is `completed`, `failed` or `in_review`. A buy or close waits for the wallet's other trades; orders run alongside each other, except a second order on one market at a different leverage, which answers `409`. A retry with the same `Idempotency-Key` returns the same trade.
 </dd>
 </dl>
 </dd>
@@ -37703,7 +37703,6 @@ Opens or closes a perpetual position from the Whop-managed wallet of an account 
 ```go
 request := &whopsdk.CreateTradesRequest{
     AccountID: "biz_xxxxxxxxxxxxxx",
-    Market: "BTC",
     Type: whopsdk.CreateTradesRequestTypeBuy,
 }
 client.Trades.Create(
@@ -37740,7 +37739,7 @@ client.Trades.Create(
 <dl>
 <dd>
 
-**leverage:** `*int` — The cross leverage for a buy, from 1 to the market's maximum. Required for a buy.
+**clientOrderID:** `*string` — Only for an order. Your own ID for the trade, 1 to 128 characters, unique for the account. Sending it again with the same order returns the same trade; with a different order it answers `409`.
     
 </dd>
 </dl>
@@ -37748,7 +37747,7 @@ client.Trades.Create(
 <dl>
 <dd>
 
-**market:** `string` — The perpetual market, for example `BTC`.
+**instrumentType:** `*whopsdk.CreateTradesRequestInstrumentType` — The kind of market. Required for an order.
     
 </dd>
 </dl>
@@ -37756,7 +37755,87 @@ client.Trades.Create(
 <dl>
 <dd>
 
-**type_:** `whopsdk.CreateTradesRequestType` — `buy` bridges `amount` USDT0 to the trading account, sets cross `leverage` on `market`, and places one market buy; if it does not fill, its money goes back to the wallet. `close` closes the position in `market`, if one is open, and sends all withdrawable USDC back to the wallet.
+**leverage:** `*int` — The cross leverage, from 1 to the market's maximum. Required for a buy and for an order that is not `reduce_only`; not accepted on a reduce-only order.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**market:** `*string` — The perpetual market, for example `BTC`. Required for a buy, close or order.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `map[string]string` — Only for an order. Free-form string-to-string annotations: up to 50 keys of at most 40 characters, values up to 500 characters.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**notional:** `*string` — Only for an order. The order value in USD, as a decimal string; the size is rounded down to the market's decimals. Send exactly one of `size` or `notional`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**orderType:** `*whopsdk.CreateTradesRequestOrderType` — `market` fills now within `slippage_bps` of the mid price; `limit` fills now at `price` or better. Anything unfilled is canceled. Required for an order.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**price:** `*string` — Only for an order. The limit price in USD, as a decimal string Hyperliquid accepts without rounding. Required for a limit order; not accepted for a market order.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**reduceOnly:** `*bool` — Only for an order. Only reduce an open position; defaults to `false`. A reduce-only order takes no `leverage`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**side:** `*whopsdk.CreateTradesRequestSide` — `buy` or `sell`. Required for an order.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**size:** `*string` — Only for an order. The size in units of the market, as a decimal string, with at most the market's size decimals. Send exactly one of `size` or `notional`. The order must be worth at least 10 USD, unless reduce-only, and at most 5000 USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**slippageBps:** `*int` — Only for a market order. The worst price as basis points from the mid price, from 1 to 1000; defaults to 100.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**type_:** `whopsdk.CreateTradesRequestType` — `order` places one order from the trading balance and sets cross `leverage` first. `buy` bridges `amount` USDT0 to the trading account, sets cross `leverage` on `market`, and places one market buy; if it does not fill, its money goes back to the wallet. `close` closes the position in `market`, if one is open, and sends all withdrawable USDC back to the wallet.
     
 </dd>
 </dl>
