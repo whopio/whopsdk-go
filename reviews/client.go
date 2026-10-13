@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-10-13"
+		apiVersionDateDefault := "2026-10-13-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -39,33 +39,16 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Lists the customer reviews for a product.
+// Lists the published reviews for a product or account. Without `account_id` or `product_id`, a user lists the reviews they wrote, an account or app API key lists its account's reviews, and a request without credentials returns 400.
 //
 // Example:
 //
 //	request := &whopsdk.ListReviewsRequest{
-//	    First: whopsdk.Int(
-//	        42,
+//	    AccountID: whopsdk.String(
+//	        "biz_xxxxxxxxxxxxxx",
 //	    ),
-//	    Last: whopsdk.Int(
-//	        42,
-//	    ),
-//	    ProductID: "prod_xxxxxxxxxxxxx",
-//	    MinStars: whopsdk.Int(
-//	        42,
-//	    ),
-//	    MaxStars: whopsdk.Int(
-//	        42,
-//	    ),
-//	    CreatedBefore: whopsdk.Time(
-//	        whopsdk.MustParseDateTime(
-//	            "2023-12-01T05:00:00Z",
-//	        ),
-//	    ),
-//	    CreatedAfter: whopsdk.Time(
-//	        whopsdk.MustParseDateTime(
-//	            "2023-12-01T05:00:00Z",
-//	        ),
+//	    ProductID: whopsdk.String(
+//	        "prod_xxxxxxxxxxxxx",
 //	    ),
 //	}
 //	client.Reviews.List(
@@ -143,7 +126,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Retrieves the details of an existing review.
+// Retrieves a published review. Reviews that are not published return 404.
 //
 // Example:
 //
@@ -160,6 +143,33 @@ func (c *Client) Retrieve(
 	opts ...option.RequestOption,
 ) (*whopsdk.Review, error) {
 	response, err := c.WithRawResponse.Retrieve(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Deletes a review the signed-in user wrote. Requires the `review:delete` scope, and returns 404 for a review another user wrote.
+//
+// Example:
+//
+//	request := &whopsdk.DeleteReviewsRequest{
+//	    ID: "rev_xxxxxxxxxxxxxx",
+//	}
+//	client.Reviews.Delete(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Delete(
+	ctx context.Context,
+	request *whopsdk.DeleteReviewsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.DeleteReviewsResponse, error) {
+	response, err := c.WithRawResponse.Delete(
 		ctx,
 		request,
 		opts...,

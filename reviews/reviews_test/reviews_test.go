@@ -89,28 +89,11 @@ func TestReviewsListWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.ListReviewsRequest{
-		First: whopsdk.Int(
-			42,
+		AccountID: whopsdk.String(
+			"biz_xxxxxxxxxxxxxx",
 		),
-		Last: whopsdk.Int(
-			42,
-		),
-		ProductID: "prod_xxxxxxxxxxxxx",
-		MinStars: whopsdk.Int(
-			42,
-		),
-		MaxStars: whopsdk.Int(
-			42,
-		),
-		CreatedBefore: whopsdk.Time(
-			whopsdk.MustParseDateTime(
-				"2023-12-01T05:00:00Z",
-			),
-		),
-		CreatedAfter: whopsdk.Time(
-			whopsdk.MustParseDateTime(
-				"2023-12-01T05:00:00Z",
-			),
+		ProductID: whopsdk.String(
+			"prod_xxxxxxxxxxxxx",
 		),
 	}
 	_, invocationErr := client.Reviews.List(
@@ -122,7 +105,7 @@ func TestReviewsListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestReviewsListWithWireMock", "GET", "/reviews", map[string]interface{}{"first": "42", "last": "42", "product_id": "prod_xxxxxxxxxxxxx", "min_stars": "42", "max_stars": "42", "created_before": "2023-12-01T05:00:00.000Z", "created_after": "2023-12-01T05:00:00.000Z"}, 1)
+	VerifyRequestCount(t, "TestReviewsListWithWireMock", "GET", "/reviews", map[string]interface{}{"account_id": "biz_xxxxxxxxxxxxxx", "product_id": "prod_xxxxxxxxxxxxx"}, 1)
 }
 
 func TestReviewsRetrieveWithWireMock(
@@ -149,4 +132,30 @@ func TestReviewsRetrieveWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestReviewsRetrieveWithWireMock", "GET", "/reviews/rev_xxxxxxxxxxxxxx", nil, 1)
+}
+
+func TestReviewsDeleteWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.DeleteReviewsRequest{
+		ID: "rev_xxxxxxxxxxxxxx",
+	}
+	_, invocationErr := client.Reviews.Delete(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestReviewsDeleteWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestReviewsDeleteWithWireMock", "DELETE", "/reviews/rev_xxxxxxxxxxxxxx", nil, 1)
 }

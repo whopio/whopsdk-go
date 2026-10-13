@@ -31864,47 +31864,48 @@ var (
 	paymentFieldFinancingInstallmentsCount = big.NewInt(1 << 14)
 	paymentFieldHolds                      = big.NewInt(1 << 15)
 	paymentFieldID                         = big.NewInt(1 << 16)
-	paymentFieldLastPaymentAttemptAt       = big.NewInt(1 << 17)
-	paymentFieldLineItems                  = big.NewInt(1 << 18)
-	paymentFieldMemberID                   = big.NewInt(1 << 19)
-	paymentFieldMembershipID               = big.NewInt(1 << 20)
-	paymentFieldMetadata                   = big.NewInt(1 << 21)
-	paymentFieldNeedsTracking              = big.NewInt(1 << 22)
-	paymentFieldNextPaymentAttemptAt       = big.NewInt(1 << 23)
-	paymentFieldPaidAt                     = big.NewInt(1 << 24)
-	paymentFieldPaymentInstrument          = big.NewInt(1 << 25)
-	paymentFieldPaymentMethodID            = big.NewInt(1 << 26)
-	paymentFieldPaymentMethodType          = big.NewInt(1 << 27)
-	paymentFieldPaymentRuleMatches         = big.NewInt(1 << 28)
-	paymentFieldPaymentsFailed             = big.NewInt(1 << 29)
-	paymentFieldPlanID                     = big.NewInt(1 << 30)
-	paymentFieldPresentmentTotal           = big.NewInt(1 << 31)
-	paymentFieldProductID                  = big.NewInt(1 << 32)
-	paymentFieldPromoCodeID                = big.NewInt(1 << 33)
-	paymentFieldQuoteID                    = big.NewInt(1 << 34)
-	paymentFieldRecoveryURL                = big.NewInt(1 << 35)
-	paymentFieldRefundable                 = big.NewInt(1 << 36)
-	paymentFieldRefundedAmount             = big.NewInt(1 << 37)
-	paymentFieldRefundedAt                 = big.NewInt(1 << 38)
-	paymentFieldRetryable                  = big.NewInt(1 << 39)
-	paymentFieldRiskScore                  = big.NewInt(1 << 40)
-	paymentFieldRiskSignals                = big.NewInt(1 << 41)
-	paymentFieldSettlementTimeAt           = big.NewInt(1 << 42)
-	paymentFieldShipmentID                 = big.NewInt(1 << 43)
-	paymentFieldShippingAddress            = big.NewInt(1 << 44)
-	paymentFieldStatus                     = big.NewInt(1 << 45)
-	paymentFieldSubstatus                  = big.NewInt(1 << 46)
-	paymentFieldSubtotal                   = big.NewInt(1 << 47)
-	paymentFieldTaxAmount                  = big.NewInt(1 << 48)
-	paymentFieldTaxBehavior                = big.NewInt(1 << 49)
-	paymentFieldTaxRefundedAmount          = big.NewInt(1 << 50)
-	paymentFieldThreeDsVerified            = big.NewInt(1 << 51)
-	paymentFieldTotal                      = big.NewInt(1 << 52)
-	paymentFieldUpdatedAt                  = big.NewInt(1 << 53)
-	paymentFieldUsdTotal                   = big.NewInt(1 << 54)
-	paymentFieldUser                       = big.NewInt(1 << 55)
-	paymentFieldVerificationChecks         = big.NewInt(1 << 56)
-	paymentFieldVoidable                   = big.NewInt(1 << 57)
+	paymentFieldIPAddress                  = big.NewInt(1 << 17)
+	paymentFieldLastPaymentAttemptAt       = big.NewInt(1 << 18)
+	paymentFieldLineItems                  = big.NewInt(1 << 19)
+	paymentFieldMemberID                   = big.NewInt(1 << 20)
+	paymentFieldMembershipID               = big.NewInt(1 << 21)
+	paymentFieldMetadata                   = big.NewInt(1 << 22)
+	paymentFieldNeedsTracking              = big.NewInt(1 << 23)
+	paymentFieldNextPaymentAttemptAt       = big.NewInt(1 << 24)
+	paymentFieldPaidAt                     = big.NewInt(1 << 25)
+	paymentFieldPaymentInstrument          = big.NewInt(1 << 26)
+	paymentFieldPaymentMethodID            = big.NewInt(1 << 27)
+	paymentFieldPaymentMethodType          = big.NewInt(1 << 28)
+	paymentFieldPaymentRuleMatches         = big.NewInt(1 << 29)
+	paymentFieldPaymentsFailed             = big.NewInt(1 << 30)
+	paymentFieldPlanID                     = big.NewInt(1 << 31)
+	paymentFieldPresentmentTotal           = big.NewInt(1 << 32)
+	paymentFieldProductID                  = big.NewInt(1 << 33)
+	paymentFieldPromoCodeID                = big.NewInt(1 << 34)
+	paymentFieldQuoteID                    = big.NewInt(1 << 35)
+	paymentFieldRecoveryURL                = big.NewInt(1 << 36)
+	paymentFieldRefundable                 = big.NewInt(1 << 37)
+	paymentFieldRefundedAmount             = big.NewInt(1 << 38)
+	paymentFieldRefundedAt                 = big.NewInt(1 << 39)
+	paymentFieldRetryable                  = big.NewInt(1 << 40)
+	paymentFieldRiskScore                  = big.NewInt(1 << 41)
+	paymentFieldRiskSignals                = big.NewInt(1 << 42)
+	paymentFieldSettlementTimeAt           = big.NewInt(1 << 43)
+	paymentFieldShipmentID                 = big.NewInt(1 << 44)
+	paymentFieldShippingAddress            = big.NewInt(1 << 45)
+	paymentFieldStatus                     = big.NewInt(1 << 46)
+	paymentFieldSubstatus                  = big.NewInt(1 << 47)
+	paymentFieldSubtotal                   = big.NewInt(1 << 48)
+	paymentFieldTaxAmount                  = big.NewInt(1 << 49)
+	paymentFieldTaxBehavior                = big.NewInt(1 << 50)
+	paymentFieldTaxRefundedAmount          = big.NewInt(1 << 51)
+	paymentFieldThreeDsVerified            = big.NewInt(1 << 52)
+	paymentFieldTotal                      = big.NewInt(1 << 53)
+	paymentFieldUpdatedAt                  = big.NewInt(1 << 54)
+	paymentFieldUsdTotal                   = big.NewInt(1 << 55)
+	paymentFieldUser                       = big.NewInt(1 << 56)
+	paymentFieldVerificationChecks         = big.NewInt(1 << 57)
+	paymentFieldVoidable                   = big.NewInt(1 << 58)
 )
 
 // paymentNullableFields maps the wire names of Payment's nullable fields (required or optional) to their field bits.
@@ -31920,6 +31921,7 @@ var paymentNullableFields = map[string]*big.Int{
 	"dispute_alerted_at":           paymentFieldDisputeAlertedAt,
 	"failure_message":              paymentFieldFailureMessage,
 	"financing_installments_count": paymentFieldFinancingInstallmentsCount,
+	"ip_address":                   paymentFieldIPAddress,
 	"last_payment_attempt_at":      paymentFieldLastPaymentAttemptAt,
 	"member_id":                    paymentFieldMemberID,
 	"membership_id":                paymentFieldMembershipID,
@@ -31986,6 +31988,8 @@ type Payment struct {
 	Holds                      []*PaymentHold `json:"holds" url:"holds"`
 	// Payment ID, prefixed `pay_`.
 	ID string `json:"id" url:"id"`
+	// The buyer's IP address at checkout, as identified by Whop's fraud screening. Null when the payment was not screened at checkout, such as a subscription renewal or a charge made without the buyer present.
+	IPAddress *string `json:"ip_address,omitempty" url:"ip_address,omitempty"`
 	// When the most recent charge attempt ran, or null.
 	LastPaymentAttemptAt *string            `json:"last_payment_attempt_at,omitempty" url:"last_payment_attempt_at,omitempty"`
 	LineItems            []*ReceiptLineItem `json:"line_items" url:"line_items"`
@@ -32192,6 +32196,13 @@ func (p *Payment) GetID() string {
 		return ""
 	}
 	return p.ID
+}
+
+func (p *Payment) GetIPAddress() *string {
+	if p == nil {
+		return nil
+	}
+	return p.IPAddress
 }
 
 func (p *Payment) GetLastPaymentAttemptAt() *string {
@@ -32614,6 +32625,13 @@ func (p *Payment) SetHolds(holds []*PaymentHold) {
 func (p *Payment) SetID(id string) {
 	p.ID = id
 	p.require(paymentFieldID)
+}
+
+// SetIPAddress sets the IPAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Payment) SetIPAddress(ipAddress *string) {
+	p.IPAddress = ipAddress
+	p.require(paymentFieldIPAddress)
 }
 
 // SetLastPaymentAttemptAt sets the LastPaymentAttemptAt field and marks it as non-optional;
@@ -34102,11 +34120,10 @@ func (p PaymentHoldType) Ptr() *PaymentHoldType {
 
 var (
 	paymentInputFieldAccountID   = big.NewInt(1 << 0)
-	paymentInputFieldLineItems   = big.NewInt(1 << 1)
-	paymentInputFieldPlan        = big.NewInt(1 << 2)
-	paymentInputFieldPlanID      = big.NewInt(1 << 3)
-	paymentInputFieldPromoCode   = big.NewInt(1 << 4)
-	paymentInputFieldPromoCodeID = big.NewInt(1 << 5)
+	paymentInputFieldPlan        = big.NewInt(1 << 1)
+	paymentInputFieldPlanID      = big.NewInt(1 << 2)
+	paymentInputFieldPromoCode   = big.NewInt(1 << 3)
+	paymentInputFieldPromoCodeID = big.NewInt(1 << 4)
 )
 
 // paymentInputNullableFields maps the wire names of PaymentInput's nullable fields (required or optional) to their field bits.
@@ -34115,12 +34132,10 @@ var paymentInputNullableFields = map[string]*big.Int{
 	"promo_code_id": paymentInputFieldPromoCodeID,
 }
 
-// The purchase: the account it belongs to, what is bought, and the promo code applied. The same shape prices a purchase and pays for it.
+// The account, variant and promo code for a purchase.
 type PaymentInput struct {
 	// The account the purchase belongs to, prefixed `biz_`.
 	AccountID string `json:"account_id" url:"account_id"`
-	// What the buyer is purchasing. One entry charges that variant; several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency. Mutually exclusive with `plan_id` and `plan`.
-	LineItems []*PaymentInputLineItemsItem `json:"line_items,omitempty" url:"line_items,omitempty"`
 	// The variant purchased, described by its attributes instead of an id: the variant with exactly these attributes is used, and one is created when none exists. Mutually exclusive with `plan_id` and `line_items`. Creating a variant requires `plan:create`; creating or updating a product requires the corresponding product permission.
 	Plan *PaymentInputPlan `json:"plan,omitempty" url:"plan,omitempty"`
 	// The variant purchased, prefixed `plan_`. It must belong to the account. Mutually exclusive with `plan` and `line_items`.
@@ -34142,13 +34157,6 @@ func (p *PaymentInput) GetAccountID() string {
 		return ""
 	}
 	return p.AccountID
-}
-
-func (p *PaymentInput) GetLineItems() []*PaymentInputLineItemsItem {
-	if p == nil {
-		return nil
-	}
-	return p.LineItems
 }
 
 func (p *PaymentInput) GetPlan() *PaymentInputPlan {
@@ -34200,13 +34208,6 @@ func (p *PaymentInput) require(field *big.Int) {
 func (p *PaymentInput) SetAccountID(accountID string) {
 	p.AccountID = accountID
 	p.require(paymentInputFieldAccountID)
-}
-
-// SetLineItems sets the LineItems field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInput) SetLineItems(lineItems []*PaymentInputLineItemsItem) {
-	p.LineItems = lineItems
-	p.require(paymentInputFieldLineItems)
 }
 
 // SetPlan sets the Plan field and marks it as non-optional;
@@ -34287,161 +34288,49 @@ func (p *PaymentInput) String() string {
 }
 
 var (
-	paymentInputLineItemsItemFieldPlanID   = big.NewInt(1 << 0)
-	paymentInputLineItemsItemFieldQuantity = big.NewInt(1 << 1)
-)
-
-// paymentInputLineItemsItemNullableFields maps the wire names of PaymentInputLineItemsItem's nullable fields (required or optional) to their field bits.
-var paymentInputLineItemsItemNullableFields = map[string]*big.Int{
-	"quantity": paymentInputLineItemsItemFieldQuantity,
-}
-
-type PaymentInputLineItemsItem struct {
-	// An existing variant to charge for, prefixed `plan_`. Each variant may appear once — use `quantity` for multiple units.
-	PlanID string `json:"plan_id" url:"plan_id"`
-	// How many units of the variant to purchase. Defaults to 1; more than 1 requires the variant to allow multiple quantities.
-	Quantity *int `json:"quantity,omitempty" url:"quantity,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentInputLineItemsItem) GetPlanID() string {
-	if p == nil {
-		return ""
-	}
-	return p.PlanID
-}
-
-func (p *PaymentInputLineItemsItem) GetQuantity() *int {
-	if p == nil {
-		return nil
-	}
-	return p.Quantity
-}
-
-func (p *PaymentInputLineItemsItem) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentInputLineItemsItem) require(field *big.Int) {
-	next := new(big.Int)
-	if p.explicitFields != nil {
-		next.Set(p.explicitFields)
-	}
-	next.Or(next, field)
-	p.explicitFields = next
-}
-
-// SetPlanID sets the PlanID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInputLineItemsItem) SetPlanID(planID string) {
-	p.PlanID = planID
-	p.require(paymentInputLineItemsItemFieldPlanID)
-}
-
-// SetQuantity sets the Quantity field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInputLineItemsItem) SetQuantity(quantity *int) {
-	p.Quantity = quantity
-	p.require(paymentInputLineItemsItemFieldQuantity)
-}
-
-func (p *PaymentInputLineItemsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentInputLineItemsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentInputLineItemsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, paymentInputLineItemsItemNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		p.require(presentFields)
-	}
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentInputLineItemsItem) MarshalJSON() ([]byte, error) {
-	type embed PaymentInputLineItemsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentInputLineItemsItem) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-var (
-	paymentInputPlanFieldApplicationFeeAmount = big.NewInt(1 << 0)
-	paymentInputPlanFieldBillingPeriod        = big.NewInt(1 << 1)
-	paymentInputPlanFieldCurrency             = big.NewInt(1 << 2)
-	paymentInputPlanFieldDescription          = big.NewInt(1 << 3)
-	paymentInputPlanFieldExpirationDays       = big.NewInt(1 << 4)
-	paymentInputPlanFieldForceCreateNewPlan   = big.NewInt(1 << 5)
-	paymentInputPlanFieldInitialPrice         = big.NewInt(1 << 6)
-	paymentInputPlanFieldInternalNotes        = big.NewInt(1 << 7)
-	paymentInputPlanFieldOverrideTaxType      = big.NewInt(1 << 8)
-	paymentInputPlanFieldPlanType             = big.NewInt(1 << 9)
-	paymentInputPlanFieldProduct              = big.NewInt(1 << 10)
-	paymentInputPlanFieldProductID            = big.NewInt(1 << 11)
-	paymentInputPlanFieldRenewalPrice         = big.NewInt(1 << 12)
-	paymentInputPlanFieldTitle                = big.NewInt(1 << 13)
-	paymentInputPlanFieldTrialPeriodDays      = big.NewInt(1 << 14)
-	paymentInputPlanFieldVisibility           = big.NewInt(1 << 15)
+	paymentInputPlanFieldAllowMultipleQuantity = big.NewInt(1 << 0)
+	paymentInputPlanFieldApplicationFeeAmount  = big.NewInt(1 << 1)
+	paymentInputPlanFieldBillingPeriod         = big.NewInt(1 << 2)
+	paymentInputPlanFieldCurrency              = big.NewInt(1 << 3)
+	paymentInputPlanFieldDescription           = big.NewInt(1 << 4)
+	paymentInputPlanFieldExpirationDays        = big.NewInt(1 << 5)
+	paymentInputPlanFieldForceCreateNewPlan    = big.NewInt(1 << 6)
+	paymentInputPlanFieldInitialPrice          = big.NewInt(1 << 7)
+	paymentInputPlanFieldInternalNotes         = big.NewInt(1 << 8)
+	paymentInputPlanFieldOverrideTaxType       = big.NewInt(1 << 9)
+	paymentInputPlanFieldPlanType              = big.NewInt(1 << 10)
+	paymentInputPlanFieldProduct               = big.NewInt(1 << 11)
+	paymentInputPlanFieldProductID             = big.NewInt(1 << 12)
+	paymentInputPlanFieldRenewalPrice          = big.NewInt(1 << 13)
+	paymentInputPlanFieldTitle                 = big.NewInt(1 << 14)
+	paymentInputPlanFieldTrialPeriodDays       = big.NewInt(1 << 15)
+	paymentInputPlanFieldVisibility            = big.NewInt(1 << 16)
 )
 
 // paymentInputPlanNullableFields maps the wire names of PaymentInputPlan's nullable fields (required or optional) to their field bits.
 var paymentInputPlanNullableFields = map[string]*big.Int{
-	"application_fee_amount": paymentInputPlanFieldApplicationFeeAmount,
-	"billing_period":         paymentInputPlanFieldBillingPeriod,
-	"description":            paymentInputPlanFieldDescription,
-	"expiration_days":        paymentInputPlanFieldExpirationDays,
-	"force_create_new_plan":  paymentInputPlanFieldForceCreateNewPlan,
-	"initial_price":          paymentInputPlanFieldInitialPrice,
-	"internal_notes":         paymentInputPlanFieldInternalNotes,
-	"override_tax_type":      paymentInputPlanFieldOverrideTaxType,
-	"plan_type":              paymentInputPlanFieldPlanType,
-	"product":                paymentInputPlanFieldProduct,
-	"product_id":             paymentInputPlanFieldProductID,
-	"renewal_price":          paymentInputPlanFieldRenewalPrice,
-	"title":                  paymentInputPlanFieldTitle,
-	"trial_period_days":      paymentInputPlanFieldTrialPeriodDays,
-	"visibility":             paymentInputPlanFieldVisibility,
+	"allow_multiple_quantity": paymentInputPlanFieldAllowMultipleQuantity,
+	"application_fee_amount":  paymentInputPlanFieldApplicationFeeAmount,
+	"billing_period":          paymentInputPlanFieldBillingPeriod,
+	"description":             paymentInputPlanFieldDescription,
+	"expiration_days":         paymentInputPlanFieldExpirationDays,
+	"force_create_new_plan":   paymentInputPlanFieldForceCreateNewPlan,
+	"initial_price":           paymentInputPlanFieldInitialPrice,
+	"internal_notes":          paymentInputPlanFieldInternalNotes,
+	"override_tax_type":       paymentInputPlanFieldOverrideTaxType,
+	"plan_type":               paymentInputPlanFieldPlanType,
+	"product":                 paymentInputPlanFieldProduct,
+	"product_id":              paymentInputPlanFieldProductID,
+	"renewal_price":           paymentInputPlanFieldRenewalPrice,
+	"title":                   paymentInputPlanFieldTitle,
+	"trial_period_days":       paymentInputPlanFieldTrialPeriodDays,
+	"visibility":              paymentInputPlanFieldVisibility,
 }
 
 // The variant purchased, described by its attributes instead of an id: the variant with exactly these attributes is used, and one is created when none exists. Mutually exclusive with `plan_id` and `line_items`. Creating a variant requires `plan:create`; creating or updating a product requires the corresponding product permission.
 type PaymentInputPlan struct {
+	// Whether more than one unit can be purchased in an order.
+	AllowMultipleQuantity *bool `json:"allow_multiple_quantity,omitempty" url:"allow_multiple_quantity,omitempty"`
 	// Application fee the platform collects per unit, in the variant currency (5.00 means $5.00 for USD). Must be positive and below the initial price for one-time variants or renewal price for recurring variants. Paid to the parent account alongside other processing fees; collection is capped to remaining proceeds. Applies to subsequent payments on recurring variants. Only valid for connected accounts with a parent account.
 	ApplicationFeeAmount *float64 `json:"application_fee_amount,omitempty" url:"application_fee_amount,omitempty"`
 	// Recurring billing interval in days.
@@ -34480,6 +34369,13 @@ type PaymentInputPlan struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (p *PaymentInputPlan) GetAllowMultipleQuantity() *bool {
+	if p == nil {
+		return nil
+	}
+	return p.AllowMultipleQuantity
 }
 
 func (p *PaymentInputPlan) GetApplicationFeeAmount() *float64 {
@@ -34608,6 +34504,13 @@ func (p *PaymentInputPlan) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	p.explicitFields = next
+}
+
+// SetAllowMultipleQuantity sets the AllowMultipleQuantity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputPlan) SetAllowMultipleQuantity(allowMultipleQuantity *bool) {
+	p.AllowMultipleQuantity = allowMultipleQuantity
+	p.require(paymentInputPlanFieldAllowMultipleQuantity)
 }
 
 // SetApplicationFeeAmount sets the ApplicationFeeAmount field and marks it as non-optional;

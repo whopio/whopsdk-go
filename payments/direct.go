@@ -15,21 +15,20 @@ var (
 	createDirectRequestFieldAutoCaptureAfterMinutes = big.NewInt(1 << 1)
 	createDirectRequestFieldBillingDetails          = big.NewInt(1 << 2)
 	createDirectRequestFieldCapture                 = big.NewInt(1 << 3)
-	createDirectRequestFieldMemberID                = big.NewInt(1 << 4)
-	createDirectRequestFieldMetadata                = big.NewInt(1 << 5)
-	createDirectRequestFieldOffSession              = big.NewInt(1 << 6)
-	createDirectRequestFieldPaymentMethod           = big.NewInt(1 << 7)
-	createDirectRequestFieldQuoteID                 = big.NewInt(1 << 8)
-	createDirectRequestFieldReturnURL               = big.NewInt(1 << 9)
-	createDirectRequestFieldSetupFutureUsage        = big.NewInt(1 << 10)
-	createDirectRequestFieldStatementDescriptor     = big.NewInt(1 << 11)
+	createDirectRequestFieldLineItems               = big.NewInt(1 << 4)
+	createDirectRequestFieldMemberID                = big.NewInt(1 << 5)
+	createDirectRequestFieldMetadata                = big.NewInt(1 << 6)
+	createDirectRequestFieldOffSession              = big.NewInt(1 << 7)
+	createDirectRequestFieldPaymentMethod           = big.NewInt(1 << 8)
+	createDirectRequestFieldQuoteID                 = big.NewInt(1 << 9)
+	createDirectRequestFieldReturnURL               = big.NewInt(1 << 10)
+	createDirectRequestFieldSetupFutureUsage        = big.NewInt(1 << 11)
+	createDirectRequestFieldStatementDescriptor     = big.NewInt(1 << 12)
 )
 
 type CreateDirectRequest struct {
 	// The account the purchase belongs to, prefixed `biz_`.
 	AccountID string `json:"account_id" url:"-"`
-	// What the buyer is purchasing. One entry charges that variant; several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency. Mutually exclusive with `plan_id` and `plan`.
-	LineItems []*v2.PaymentInputLineItemsItem `json:"line_items,omitempty" url:"-"`
 	// The variant purchased, described by its attributes instead of an id: the variant with exactly these attributes is used, and one is created when none exists. Mutually exclusive with `plan_id` and `line_items`. Creating a variant requires `plan:create`; creating or updating a product requires the corresponding product permission.
 	Plan *v2.PaymentInputPlan `json:"plan,omitempty" url:"-"`
 	// The variant purchased, prefixed `plan_`. It must belong to the account. Mutually exclusive with `plan` and `line_items`.
@@ -46,6 +45,8 @@ type CreateDirectRequest struct {
 	BillingDetails *CreateDirectRequestBillingDetails `json:"billing_details" url:"-"`
 	// Whether to capture the payment immediately. Defaults to true. Pass false to place an authorization hold that must be captured in full within five days via the capture endpoint, or automatically after `auto_capture_after_minutes`.
 	Capture *bool `json:"capture,omitempty" url:"-"`
+	// What the buyer is purchasing. Each entry names an existing variant by plan_id. Several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency.
+	LineItems []*CreateDirectRequestLineItemsItem `json:"line_items,omitempty" url:"-"`
 	// The member to charge, prefixed `mber_`. When omitted the buyer is resolved from `billing_details.email`.
 	MemberID *string `json:"member_id,omitempty" url:"-"`
 	// Custom metadata to attach to the payment.
@@ -102,6 +103,13 @@ func (c *CreateDirectRequest) SetBillingDetails(billingDetails *CreateDirectRequ
 func (c *CreateDirectRequest) SetCapture(capture *bool) {
 	c.Capture = capture
 	c.require(createDirectRequestFieldCapture)
+}
+
+// SetLineItems sets the LineItems field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequest) SetLineItems(lineItems []*CreateDirectRequestLineItemsItem) {
+	c.LineItems = lineItems
+	c.require(createDirectRequestFieldLineItems)
 }
 
 // SetMemberID sets the MemberID field and marks it as non-optional;
@@ -504,6 +512,122 @@ func (c *CreateDirectRequestBillingDetailsAddress) MarshalJSON() ([]byte, error)
 }
 
 func (c *CreateDirectRequestBillingDetailsAddress) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createDirectRequestLineItemsItemFieldPlanID   = big.NewInt(1 << 0)
+	createDirectRequestLineItemsItemFieldQuantity = big.NewInt(1 << 1)
+)
+
+// createDirectRequestLineItemsItemNullableFields maps the wire names of CreateDirectRequestLineItemsItem's nullable fields (required or optional) to their field bits.
+var createDirectRequestLineItemsItemNullableFields = map[string]*big.Int{
+	"quantity": createDirectRequestLineItemsItemFieldQuantity,
+}
+
+type CreateDirectRequestLineItemsItem struct {
+	// An existing variant to charge for, prefixed `plan_`. Each variant may appear once — use `quantity` for multiple units.
+	PlanID string `json:"plan_id" url:"plan_id"`
+	// How many units of the variant to purchase. Defaults to 1; more than 1 requires the variant to allow multiple quantities.
+	Quantity *int `json:"quantity,omitempty" url:"quantity,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateDirectRequestLineItemsItem) GetPlanID() string {
+	if c == nil {
+		return ""
+	}
+	return c.PlanID
+}
+
+func (c *CreateDirectRequestLineItemsItem) GetQuantity() *int {
+	if c == nil {
+		return nil
+	}
+	return c.Quantity
+}
+
+func (c *CreateDirectRequestLineItemsItem) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateDirectRequestLineItemsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetPlanID sets the PlanID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestLineItemsItem) SetPlanID(planID string) {
+	c.PlanID = planID
+	c.require(createDirectRequestLineItemsItemFieldPlanID)
+}
+
+// SetQuantity sets the Quantity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestLineItemsItem) SetQuantity(quantity *int) {
+	c.Quantity = quantity
+	c.require(createDirectRequestLineItemsItemFieldQuantity)
+}
+
+func (c *CreateDirectRequestLineItemsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateDirectRequestLineItemsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateDirectRequestLineItemsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createDirectRequestLineItemsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateDirectRequestLineItemsItem) MarshalJSON() ([]byte, error) {
+	type embed CreateDirectRequestLineItemsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateDirectRequestLineItemsItem) String() string {
 	if c == nil {
 		return "<nil>"
 	}

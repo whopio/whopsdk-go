@@ -45,22 +45,21 @@ var (
 	createPaymentsRequestFieldConfirmationToken       = big.NewInt(1 << 3)
 	createPaymentsRequestFieldEmail                   = big.NewInt(1 << 4)
 	createPaymentsRequestFieldIPAddress               = big.NewInt(1 << 5)
-	createPaymentsRequestFieldMemberID                = big.NewInt(1 << 6)
-	createPaymentsRequestFieldMetadata                = big.NewInt(1 << 7)
-	createPaymentsRequestFieldOffSession              = big.NewInt(1 << 8)
-	createPaymentsRequestFieldPaymentMethod           = big.NewInt(1 << 9)
-	createPaymentsRequestFieldPaymentMethodID         = big.NewInt(1 << 10)
-	createPaymentsRequestFieldQuoteID                 = big.NewInt(1 << 11)
-	createPaymentsRequestFieldReturnURL               = big.NewInt(1 << 12)
-	createPaymentsRequestFieldShippingAddress         = big.NewInt(1 << 13)
-	createPaymentsRequestFieldStatementDescriptor     = big.NewInt(1 << 14)
+	createPaymentsRequestFieldLineItems               = big.NewInt(1 << 6)
+	createPaymentsRequestFieldMemberID                = big.NewInt(1 << 7)
+	createPaymentsRequestFieldMetadata                = big.NewInt(1 << 8)
+	createPaymentsRequestFieldOffSession              = big.NewInt(1 << 9)
+	createPaymentsRequestFieldPaymentMethod           = big.NewInt(1 << 10)
+	createPaymentsRequestFieldPaymentMethodID         = big.NewInt(1 << 11)
+	createPaymentsRequestFieldQuoteID                 = big.NewInt(1 << 12)
+	createPaymentsRequestFieldReturnURL               = big.NewInt(1 << 13)
+	createPaymentsRequestFieldShippingAddress         = big.NewInt(1 << 14)
+	createPaymentsRequestFieldStatementDescriptor     = big.NewInt(1 << 15)
 )
 
 type CreatePaymentsRequest struct {
 	// The account the purchase belongs to, prefixed `biz_`.
 	AccountID string `json:"account_id" url:"-"`
-	// What the buyer is purchasing. One entry charges that variant; several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency. Mutually exclusive with `plan_id` and `plan`.
-	LineItems []*PaymentInputLineItemsItem `json:"line_items,omitempty" url:"-"`
 	// The variant purchased, described by its attributes instead of an id: the variant with exactly these attributes is used, and one is created when none exists. Mutually exclusive with `plan_id` and `line_items`. Creating a variant requires `plan:create`; creating or updating a product requires the corresponding product permission.
 	Plan *PaymentInputPlan `json:"plan,omitempty" url:"-"`
 	// The variant purchased, prefixed `plan_`. It must belong to the account. Mutually exclusive with `plan` and `line_items`.
@@ -81,6 +80,8 @@ type CreatePaymentsRequest struct {
 	Email *string `json:"email,omitempty" url:"-"`
 	// The buyer's IPv4 or IPv6 address, used to assess the charge's risk and passed to the processor. Ignored unless a saved payment method is charged with `off_session` set to false.
 	IPAddress *string `json:"ip_address,omitempty" url:"-"`
+	// What the buyer is purchasing. Each entry takes exactly one of `plan_id` or an inline `plan`. One entry charges that variant; several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency. Mutually exclusive with `plan_id` and `plan`.
+	LineItems []*CreatePaymentsRequestLineItemsItem `json:"line_items,omitempty" url:"-"`
 	// The member to charge, prefixed `mber_`. Required with `payment_method_id` unless `confirmation_token` is provided.
 	MemberID *string `json:"member_id,omitempty" url:"-"`
 	// Custom metadata to attach to the payment.
@@ -153,6 +154,13 @@ func (c *CreatePaymentsRequest) SetEmail(email *string) {
 func (c *CreatePaymentsRequest) SetIPAddress(ipAddress *string) {
 	c.IPAddress = ipAddress
 	c.require(createPaymentsRequestFieldIPAddress)
+}
+
+// SetLineItems sets the LineItems field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequest) SetLineItems(lineItems []*CreatePaymentsRequestLineItemsItem) {
+	c.LineItems = lineItems
+	c.require(createPaymentsRequestFieldLineItems)
 }
 
 // SetMemberID sets the MemberID field and marks it as non-optional;
@@ -1934,6 +1942,1146 @@ func NewPaymentStatusStatusFromString(s string) (PaymentStatusStatus, error) {
 
 func (p PaymentStatusStatus) Ptr() *PaymentStatusStatus {
 	return &p
+}
+
+type CreatePaymentsRequestLineItemsItem struct {
+	Unknown any
+
+	typ string
+}
+
+func (c *CreatePaymentsRequestLineItemsItem) GetUnknown() any {
+	if c == nil {
+		return nil
+	}
+	return c.Unknown
+}
+
+func (c *CreatePaymentsRequestLineItemsItem) UnmarshalJSON(data []byte) error {
+	var valueUnknown any
+	if err := json.Unmarshal(data, &valueUnknown); err == nil {
+		c.typ = "Unknown"
+		c.Unknown = valueUnknown
+		return nil
+	}
+	return fmt.Errorf("%s cannot be deserialized as a %T", data, c)
+}
+
+func (c CreatePaymentsRequestLineItemsItem) MarshalJSON() ([]byte, error) {
+	if c.typ == "Unknown" || c.Unknown != nil {
+		return json.Marshal(c.Unknown)
+	}
+	return nil, fmt.Errorf("type %T does not include a non-empty union type", c)
+}
+
+type CreatePaymentsRequestLineItemsItemVisitor interface {
+	VisitUnknown(any) error
+}
+
+func (c *CreatePaymentsRequestLineItemsItem) Accept(visitor CreatePaymentsRequestLineItemsItemVisitor) error {
+	if c.typ == "Unknown" || c.Unknown != nil {
+		return visitor.VisitUnknown(c.Unknown)
+	}
+	return fmt.Errorf("type %T does not include a non-empty union type", c)
+}
+
+var (
+	createPaymentsRequestLineItemsItemPlanFieldAllowMultipleQuantity = big.NewInt(1 << 0)
+	createPaymentsRequestLineItemsItemPlanFieldApplicationFeeAmount  = big.NewInt(1 << 1)
+	createPaymentsRequestLineItemsItemPlanFieldBillingPeriod         = big.NewInt(1 << 2)
+	createPaymentsRequestLineItemsItemPlanFieldCurrency              = big.NewInt(1 << 3)
+	createPaymentsRequestLineItemsItemPlanFieldDescription           = big.NewInt(1 << 4)
+	createPaymentsRequestLineItemsItemPlanFieldExpirationDays        = big.NewInt(1 << 5)
+	createPaymentsRequestLineItemsItemPlanFieldForceCreateNewPlan    = big.NewInt(1 << 6)
+	createPaymentsRequestLineItemsItemPlanFieldInitialPrice          = big.NewInt(1 << 7)
+	createPaymentsRequestLineItemsItemPlanFieldInternalNotes         = big.NewInt(1 << 8)
+	createPaymentsRequestLineItemsItemPlanFieldOverrideTaxType       = big.NewInt(1 << 9)
+	createPaymentsRequestLineItemsItemPlanFieldPlanType              = big.NewInt(1 << 10)
+	createPaymentsRequestLineItemsItemPlanFieldProduct               = big.NewInt(1 << 11)
+	createPaymentsRequestLineItemsItemPlanFieldProductID             = big.NewInt(1 << 12)
+	createPaymentsRequestLineItemsItemPlanFieldRenewalPrice          = big.NewInt(1 << 13)
+	createPaymentsRequestLineItemsItemPlanFieldTitle                 = big.NewInt(1 << 14)
+	createPaymentsRequestLineItemsItemPlanFieldTrialPeriodDays       = big.NewInt(1 << 15)
+	createPaymentsRequestLineItemsItemPlanFieldVisibility            = big.NewInt(1 << 16)
+)
+
+// createPaymentsRequestLineItemsItemPlanNullableFields maps the wire names of CreatePaymentsRequestLineItemsItemPlan's nullable fields (required or optional) to their field bits.
+var createPaymentsRequestLineItemsItemPlanNullableFields = map[string]*big.Int{
+	"allow_multiple_quantity": createPaymentsRequestLineItemsItemPlanFieldAllowMultipleQuantity,
+	"application_fee_amount":  createPaymentsRequestLineItemsItemPlanFieldApplicationFeeAmount,
+	"billing_period":          createPaymentsRequestLineItemsItemPlanFieldBillingPeriod,
+	"description":             createPaymentsRequestLineItemsItemPlanFieldDescription,
+	"expiration_days":         createPaymentsRequestLineItemsItemPlanFieldExpirationDays,
+	"force_create_new_plan":   createPaymentsRequestLineItemsItemPlanFieldForceCreateNewPlan,
+	"initial_price":           createPaymentsRequestLineItemsItemPlanFieldInitialPrice,
+	"internal_notes":          createPaymentsRequestLineItemsItemPlanFieldInternalNotes,
+	"override_tax_type":       createPaymentsRequestLineItemsItemPlanFieldOverrideTaxType,
+	"plan_type":               createPaymentsRequestLineItemsItemPlanFieldPlanType,
+	"product":                 createPaymentsRequestLineItemsItemPlanFieldProduct,
+	"product_id":              createPaymentsRequestLineItemsItemPlanFieldProductID,
+	"renewal_price":           createPaymentsRequestLineItemsItemPlanFieldRenewalPrice,
+	"title":                   createPaymentsRequestLineItemsItemPlanFieldTitle,
+	"trial_period_days":       createPaymentsRequestLineItemsItemPlanFieldTrialPeriodDays,
+	"visibility":              createPaymentsRequestLineItemsItemPlanFieldVisibility,
+}
+
+// Find or create the variant for this entry through the compatibility input `plan`. Unknown properties return an error. Creating a variant requires `plan:create`, and creating or updating a product requires the matching product permission.
+type CreatePaymentsRequestLineItemsItemPlan struct {
+	// Whether more than one unit can be purchased in an order.
+	AllowMultipleQuantity *bool `json:"allow_multiple_quantity,omitempty" url:"allow_multiple_quantity,omitempty"`
+	// Application fee the platform collects per unit, in the variant currency (5.00 means $5.00 for USD). Must be positive and below the initial price for one-time variants or renewal price for recurring variants. Paid to the parent account alongside other processing fees; collection is capped to remaining proceeds. Applies to subsequent payments on recurring variants. Only valid for connected accounts with a parent account.
+	ApplicationFeeAmount *float64 `json:"application_fee_amount,omitempty" url:"application_fee_amount,omitempty"`
+	// Recurring billing interval in days.
+	BillingPeriod *int `json:"billing_period,omitempty" url:"billing_period,omitempty"`
+	// Currency code for the variant prices.
+	Currency CreatePaymentsRequestLineItemsItemPlanCurrency `json:"currency" url:"currency"`
+	// Variant description.
+	Description *string `json:"description,omitempty" url:"description,omitempty"`
+	// Days until access expires.
+	ExpirationDays *int `json:"expiration_days,omitempty" url:"expiration_days,omitempty"`
+	// Create a new variant instead of reusing a matching variant.
+	ForceCreateNewPlan *bool `json:"force_create_new_plan,omitempty" url:"force_create_new_plan,omitempty"`
+	// Additional amount charged on the first purchase, in the variant currency. For recurring variants without a trial, the first charge includes this amount plus renewal_price.
+	InitialPrice *float64 `json:"initial_price,omitempty" url:"initial_price,omitempty"`
+	// Internal notes for the account.
+	InternalNotes *string `json:"internal_notes,omitempty" url:"internal_notes,omitempty"`
+	// Whether the variant's price includes tax: `inclusive` (tax is included in the price), `exclusive` (tax is added on top), or `unspecified`. Omit it or pass `null` to use the account's tax setting. On an account enrolled in the Whop tax service, `inclusive` or `exclusive` replaces the account's setting and `unspecified` keeps it. Otherwise it applies only where the account is the merchant of record: `inclusive` or `exclusive` replaces the account's setting when the account collects tax, and `unspecified` means the variant collects no tax. Where Whop is the merchant of record, the account's setting applies. Variants that differ only in this value are different variants.
+	OverrideTaxType *CreatePaymentsRequestLineItemsItemPlanOverrideTaxType `json:"override_tax_type,omitempty" url:"override_tax_type,omitempty"`
+	// Billing model for the variant.
+	PlanType *CreatePaymentsRequestLineItemsItemPlanPlanType `json:"plan_type,omitempty" url:"plan_type,omitempty"`
+	// Find or create a product by external identifier. Mutually exclusive with product_id.
+	Product *CreatePaymentsRequestLineItemsItemPlanProduct `json:"product,omitempty" url:"product,omitempty"`
+	// Existing product ID belonging to the account, prefixed `prod_`. Mutually exclusive with `product`.
+	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
+	// Recurring price in the variant currency.
+	RenewalPrice *float64 `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
+	// Variant title.
+	Title *string `json:"title,omitempty" url:"title,omitempty"`
+	// Free trial days before renewal.
+	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
+	// Whether the variant is visible to customers.
+	Visibility *CreatePaymentsRequestLineItemsItemPlanVisibility `json:"visibility,omitempty" url:"visibility,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlan) GetAllowMultipleQuantity() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.AllowMultipleQuantity
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlan) GetApplicationFeeAmount() *float64 {
+	if c == nil {
+		return nil
+	}
+	return c.ApplicationFeeAmount
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlan) GetBillingPeriod() *int {
+	if c == nil {
+		return nil
+	}
+	return c.BillingPeriod
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlan) GetCurrency() CreatePaymentsRequestLineItemsItemPlanCurrency {
+	if c == nil {
+		return ""
+	}
+	return c.Currency
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlan) GetDescription() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Description
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlan) GetExpirationDays() *int {
+	if c == nil {
+		return nil
+	}
+	return c.ExpirationDays
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlan) GetForceCreateNewPlan() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.ForceCreateNewPlan
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlan) GetInitialPrice() *float64 {
+	if c == nil {
+		return nil
+	}
+	return c.InitialPrice
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlan) GetInternalNotes() *string {
+	if c == nil {
+		return nil
+	}
+	return c.InternalNotes
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlan) GetOverrideTaxType() *CreatePaymentsRequestLineItemsItemPlanOverrideTaxType {
+	if c == nil {
+		return nil
+	}
+	return c.OverrideTaxType
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlan) GetPlanType() *CreatePaymentsRequestLineItemsItemPlanPlanType {
+	if c == nil {
+		return nil
+	}
+	return c.PlanType
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlan) GetProduct() *CreatePaymentsRequestLineItemsItemPlanProduct {
+	if c == nil {
+		return nil
+	}
+	return c.Product
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlan) GetProductID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.ProductID
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlan) GetRenewalPrice() *float64 {
+	if c == nil {
+		return nil
+	}
+	return c.RenewalPrice
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlan) GetTitle() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Title
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlan) GetTrialPeriodDays() *int {
+	if c == nil {
+		return nil
+	}
+	return c.TrialPeriodDays
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlan) GetVisibility() *CreatePaymentsRequestLineItemsItemPlanVisibility {
+	if c == nil {
+		return nil
+	}
+	return c.Visibility
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlan) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlan) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetAllowMultipleQuantity sets the AllowMultipleQuantity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemPlan) SetAllowMultipleQuantity(allowMultipleQuantity *bool) {
+	c.AllowMultipleQuantity = allowMultipleQuantity
+	c.require(createPaymentsRequestLineItemsItemPlanFieldAllowMultipleQuantity)
+}
+
+// SetApplicationFeeAmount sets the ApplicationFeeAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemPlan) SetApplicationFeeAmount(applicationFeeAmount *float64) {
+	c.ApplicationFeeAmount = applicationFeeAmount
+	c.require(createPaymentsRequestLineItemsItemPlanFieldApplicationFeeAmount)
+}
+
+// SetBillingPeriod sets the BillingPeriod field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemPlan) SetBillingPeriod(billingPeriod *int) {
+	c.BillingPeriod = billingPeriod
+	c.require(createPaymentsRequestLineItemsItemPlanFieldBillingPeriod)
+}
+
+// SetCurrency sets the Currency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemPlan) SetCurrency(currency CreatePaymentsRequestLineItemsItemPlanCurrency) {
+	c.Currency = currency
+	c.require(createPaymentsRequestLineItemsItemPlanFieldCurrency)
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemPlan) SetDescription(description *string) {
+	c.Description = description
+	c.require(createPaymentsRequestLineItemsItemPlanFieldDescription)
+}
+
+// SetExpirationDays sets the ExpirationDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemPlan) SetExpirationDays(expirationDays *int) {
+	c.ExpirationDays = expirationDays
+	c.require(createPaymentsRequestLineItemsItemPlanFieldExpirationDays)
+}
+
+// SetForceCreateNewPlan sets the ForceCreateNewPlan field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemPlan) SetForceCreateNewPlan(forceCreateNewPlan *bool) {
+	c.ForceCreateNewPlan = forceCreateNewPlan
+	c.require(createPaymentsRequestLineItemsItemPlanFieldForceCreateNewPlan)
+}
+
+// SetInitialPrice sets the InitialPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemPlan) SetInitialPrice(initialPrice *float64) {
+	c.InitialPrice = initialPrice
+	c.require(createPaymentsRequestLineItemsItemPlanFieldInitialPrice)
+}
+
+// SetInternalNotes sets the InternalNotes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemPlan) SetInternalNotes(internalNotes *string) {
+	c.InternalNotes = internalNotes
+	c.require(createPaymentsRequestLineItemsItemPlanFieldInternalNotes)
+}
+
+// SetOverrideTaxType sets the OverrideTaxType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemPlan) SetOverrideTaxType(overrideTaxType *CreatePaymentsRequestLineItemsItemPlanOverrideTaxType) {
+	c.OverrideTaxType = overrideTaxType
+	c.require(createPaymentsRequestLineItemsItemPlanFieldOverrideTaxType)
+}
+
+// SetPlanType sets the PlanType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemPlan) SetPlanType(planType *CreatePaymentsRequestLineItemsItemPlanPlanType) {
+	c.PlanType = planType
+	c.require(createPaymentsRequestLineItemsItemPlanFieldPlanType)
+}
+
+// SetProduct sets the Product field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemPlan) SetProduct(product *CreatePaymentsRequestLineItemsItemPlanProduct) {
+	c.Product = product
+	c.require(createPaymentsRequestLineItemsItemPlanFieldProduct)
+}
+
+// SetProductID sets the ProductID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemPlan) SetProductID(productID *string) {
+	c.ProductID = productID
+	c.require(createPaymentsRequestLineItemsItemPlanFieldProductID)
+}
+
+// SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemPlan) SetRenewalPrice(renewalPrice *float64) {
+	c.RenewalPrice = renewalPrice
+	c.require(createPaymentsRequestLineItemsItemPlanFieldRenewalPrice)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemPlan) SetTitle(title *string) {
+	c.Title = title
+	c.require(createPaymentsRequestLineItemsItemPlanFieldTitle)
+}
+
+// SetTrialPeriodDays sets the TrialPeriodDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemPlan) SetTrialPeriodDays(trialPeriodDays *int) {
+	c.TrialPeriodDays = trialPeriodDays
+	c.require(createPaymentsRequestLineItemsItemPlanFieldTrialPeriodDays)
+}
+
+// SetVisibility sets the Visibility field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemPlan) SetVisibility(visibility *CreatePaymentsRequestLineItemsItemPlanVisibility) {
+	c.Visibility = visibility
+	c.require(createPaymentsRequestLineItemsItemPlanFieldVisibility)
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlan) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreatePaymentsRequestLineItemsItemPlan
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreatePaymentsRequestLineItemsItemPlan(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createPaymentsRequestLineItemsItemPlanNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlan) MarshalJSON() ([]byte, error) {
+	type embed CreatePaymentsRequestLineItemsItemPlan
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlan) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// Currency code for the variant prices.
+type CreatePaymentsRequestLineItemsItemPlanCurrency string
+
+const (
+	CreatePaymentsRequestLineItemsItemPlanCurrencyUsd     CreatePaymentsRequestLineItemsItemPlanCurrency = "usd"
+	CreatePaymentsRequestLineItemsItemPlanCurrencySgd     CreatePaymentsRequestLineItemsItemPlanCurrency = "sgd"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyInr     CreatePaymentsRequestLineItemsItemPlanCurrency = "inr"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyAud     CreatePaymentsRequestLineItemsItemPlanCurrency = "aud"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyBrl     CreatePaymentsRequestLineItemsItemPlanCurrency = "brl"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyCad     CreatePaymentsRequestLineItemsItemPlanCurrency = "cad"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyDkk     CreatePaymentsRequestLineItemsItemPlanCurrency = "dkk"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyEur     CreatePaymentsRequestLineItemsItemPlanCurrency = "eur"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyNok     CreatePaymentsRequestLineItemsItemPlanCurrency = "nok"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyGbp     CreatePaymentsRequestLineItemsItemPlanCurrency = "gbp"
+	CreatePaymentsRequestLineItemsItemPlanCurrencySek     CreatePaymentsRequestLineItemsItemPlanCurrency = "sek"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyChf     CreatePaymentsRequestLineItemsItemPlanCurrency = "chf"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyHkd     CreatePaymentsRequestLineItemsItemPlanCurrency = "hkd"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyHuf     CreatePaymentsRequestLineItemsItemPlanCurrency = "huf"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyJpy     CreatePaymentsRequestLineItemsItemPlanCurrency = "jpy"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyMxn     CreatePaymentsRequestLineItemsItemPlanCurrency = "mxn"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyMyr     CreatePaymentsRequestLineItemsItemPlanCurrency = "myr"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyPln     CreatePaymentsRequestLineItemsItemPlanCurrency = "pln"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyCzk     CreatePaymentsRequestLineItemsItemPlanCurrency = "czk"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyNzd     CreatePaymentsRequestLineItemsItemPlanCurrency = "nzd"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyAed     CreatePaymentsRequestLineItemsItemPlanCurrency = "aed"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyEth     CreatePaymentsRequestLineItemsItemPlanCurrency = "eth"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyApe     CreatePaymentsRequestLineItemsItemPlanCurrency = "ape"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyCop     CreatePaymentsRequestLineItemsItemPlanCurrency = "cop"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyRon     CreatePaymentsRequestLineItemsItemPlanCurrency = "ron"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyThb     CreatePaymentsRequestLineItemsItemPlanCurrency = "thb"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyBgn     CreatePaymentsRequestLineItemsItemPlanCurrency = "bgn"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyIdr     CreatePaymentsRequestLineItemsItemPlanCurrency = "idr"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyDop     CreatePaymentsRequestLineItemsItemPlanCurrency = "dop"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyPhp     CreatePaymentsRequestLineItemsItemPlanCurrency = "php"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyTry     CreatePaymentsRequestLineItemsItemPlanCurrency = "try"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyKrw     CreatePaymentsRequestLineItemsItemPlanCurrency = "krw"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyTwd     CreatePaymentsRequestLineItemsItemPlanCurrency = "twd"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyVnd     CreatePaymentsRequestLineItemsItemPlanCurrency = "vnd"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyPkr     CreatePaymentsRequestLineItemsItemPlanCurrency = "pkr"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyClp     CreatePaymentsRequestLineItemsItemPlanCurrency = "clp"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyUyu     CreatePaymentsRequestLineItemsItemPlanCurrency = "uyu"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyArs     CreatePaymentsRequestLineItemsItemPlanCurrency = "ars"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyZar     CreatePaymentsRequestLineItemsItemPlanCurrency = "zar"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyDzd     CreatePaymentsRequestLineItemsItemPlanCurrency = "dzd"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyTnd     CreatePaymentsRequestLineItemsItemPlanCurrency = "tnd"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyMad     CreatePaymentsRequestLineItemsItemPlanCurrency = "mad"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyKes     CreatePaymentsRequestLineItemsItemPlanCurrency = "kes"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyKwd     CreatePaymentsRequestLineItemsItemPlanCurrency = "kwd"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyJod     CreatePaymentsRequestLineItemsItemPlanCurrency = "jod"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyAll     CreatePaymentsRequestLineItemsItemPlanCurrency = "all"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyXcd     CreatePaymentsRequestLineItemsItemPlanCurrency = "xcd"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyAmd     CreatePaymentsRequestLineItemsItemPlanCurrency = "amd"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyBsd     CreatePaymentsRequestLineItemsItemPlanCurrency = "bsd"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyBhd     CreatePaymentsRequestLineItemsItemPlanCurrency = "bhd"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyBob     CreatePaymentsRequestLineItemsItemPlanCurrency = "bob"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyBam     CreatePaymentsRequestLineItemsItemPlanCurrency = "bam"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyKhr     CreatePaymentsRequestLineItemsItemPlanCurrency = "khr"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyCrc     CreatePaymentsRequestLineItemsItemPlanCurrency = "crc"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyXof     CreatePaymentsRequestLineItemsItemPlanCurrency = "xof"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyEgp     CreatePaymentsRequestLineItemsItemPlanCurrency = "egp"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyEtb     CreatePaymentsRequestLineItemsItemPlanCurrency = "etb"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyGmd     CreatePaymentsRequestLineItemsItemPlanCurrency = "gmd"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyGhs     CreatePaymentsRequestLineItemsItemPlanCurrency = "ghs"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyGtq     CreatePaymentsRequestLineItemsItemPlanCurrency = "gtq"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyGyd     CreatePaymentsRequestLineItemsItemPlanCurrency = "gyd"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyIls     CreatePaymentsRequestLineItemsItemPlanCurrency = "ils"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyJmd     CreatePaymentsRequestLineItemsItemPlanCurrency = "jmd"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyMop     CreatePaymentsRequestLineItemsItemPlanCurrency = "mop"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyMga     CreatePaymentsRequestLineItemsItemPlanCurrency = "mga"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyMur     CreatePaymentsRequestLineItemsItemPlanCurrency = "mur"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyMdl     CreatePaymentsRequestLineItemsItemPlanCurrency = "mdl"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyMnt     CreatePaymentsRequestLineItemsItemPlanCurrency = "mnt"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyNad     CreatePaymentsRequestLineItemsItemPlanCurrency = "nad"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyNgn     CreatePaymentsRequestLineItemsItemPlanCurrency = "ngn"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyMkd     CreatePaymentsRequestLineItemsItemPlanCurrency = "mkd"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyOmr     CreatePaymentsRequestLineItemsItemPlanCurrency = "omr"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyPyg     CreatePaymentsRequestLineItemsItemPlanCurrency = "pyg"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyPen     CreatePaymentsRequestLineItemsItemPlanCurrency = "pen"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyQar     CreatePaymentsRequestLineItemsItemPlanCurrency = "qar"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyRwf     CreatePaymentsRequestLineItemsItemPlanCurrency = "rwf"
+	CreatePaymentsRequestLineItemsItemPlanCurrencySar     CreatePaymentsRequestLineItemsItemPlanCurrency = "sar"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyRsd     CreatePaymentsRequestLineItemsItemPlanCurrency = "rsd"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyLkr     CreatePaymentsRequestLineItemsItemPlanCurrency = "lkr"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyTzs     CreatePaymentsRequestLineItemsItemPlanCurrency = "tzs"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyTtd     CreatePaymentsRequestLineItemsItemPlanCurrency = "ttd"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyUzs     CreatePaymentsRequestLineItemsItemPlanCurrency = "uzs"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyRub     CreatePaymentsRequestLineItemsItemPlanCurrency = "rub"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyBtc     CreatePaymentsRequestLineItemsItemPlanCurrency = "btc"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyCny     CreatePaymentsRequestLineItemsItemPlanCurrency = "cny"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyUsdt    CreatePaymentsRequestLineItemsItemPlanCurrency = "usdt"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyKzt     CreatePaymentsRequestLineItemsItemPlanCurrency = "kzt"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyAwg     CreatePaymentsRequestLineItemsItemPlanCurrency = "awg"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyWhopUsd CreatePaymentsRequestLineItemsItemPlanCurrency = "whop_usd"
+	CreatePaymentsRequestLineItemsItemPlanCurrencyXau     CreatePaymentsRequestLineItemsItemPlanCurrency = "xau"
+)
+
+func NewCreatePaymentsRequestLineItemsItemPlanCurrencyFromString(s string) (CreatePaymentsRequestLineItemsItemPlanCurrency, error) {
+	switch s {
+	case "usd":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyUsd, nil
+	case "sgd":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencySgd, nil
+	case "inr":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyInr, nil
+	case "aud":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyAud, nil
+	case "brl":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyBrl, nil
+	case "cad":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyCad, nil
+	case "dkk":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyDkk, nil
+	case "eur":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyEur, nil
+	case "nok":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyNok, nil
+	case "gbp":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyGbp, nil
+	case "sek":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencySek, nil
+	case "chf":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyChf, nil
+	case "hkd":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyHkd, nil
+	case "huf":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyHuf, nil
+	case "jpy":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyJpy, nil
+	case "mxn":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyMxn, nil
+	case "myr":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyMyr, nil
+	case "pln":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyPln, nil
+	case "czk":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyCzk, nil
+	case "nzd":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyNzd, nil
+	case "aed":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyAed, nil
+	case "eth":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyEth, nil
+	case "ape":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyApe, nil
+	case "cop":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyCop, nil
+	case "ron":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyRon, nil
+	case "thb":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyThb, nil
+	case "bgn":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyBgn, nil
+	case "idr":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyIdr, nil
+	case "dop":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyDop, nil
+	case "php":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyPhp, nil
+	case "try":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyTry, nil
+	case "krw":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyKrw, nil
+	case "twd":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyTwd, nil
+	case "vnd":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyVnd, nil
+	case "pkr":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyPkr, nil
+	case "clp":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyClp, nil
+	case "uyu":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyUyu, nil
+	case "ars":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyArs, nil
+	case "zar":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyZar, nil
+	case "dzd":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyDzd, nil
+	case "tnd":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyTnd, nil
+	case "mad":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyMad, nil
+	case "kes":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyKes, nil
+	case "kwd":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyKwd, nil
+	case "jod":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyJod, nil
+	case "all":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyAll, nil
+	case "xcd":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyXcd, nil
+	case "amd":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyAmd, nil
+	case "bsd":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyBsd, nil
+	case "bhd":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyBhd, nil
+	case "bob":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyBob, nil
+	case "bam":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyBam, nil
+	case "khr":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyKhr, nil
+	case "crc":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyCrc, nil
+	case "xof":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyXof, nil
+	case "egp":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyEgp, nil
+	case "etb":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyEtb, nil
+	case "gmd":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyGmd, nil
+	case "ghs":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyGhs, nil
+	case "gtq":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyGtq, nil
+	case "gyd":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyGyd, nil
+	case "ils":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyIls, nil
+	case "jmd":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyJmd, nil
+	case "mop":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyMop, nil
+	case "mga":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyMga, nil
+	case "mur":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyMur, nil
+	case "mdl":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyMdl, nil
+	case "mnt":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyMnt, nil
+	case "nad":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyNad, nil
+	case "ngn":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyNgn, nil
+	case "mkd":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyMkd, nil
+	case "omr":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyOmr, nil
+	case "pyg":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyPyg, nil
+	case "pen":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyPen, nil
+	case "qar":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyQar, nil
+	case "rwf":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyRwf, nil
+	case "sar":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencySar, nil
+	case "rsd":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyRsd, nil
+	case "lkr":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyLkr, nil
+	case "tzs":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyTzs, nil
+	case "ttd":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyTtd, nil
+	case "uzs":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyUzs, nil
+	case "rub":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyRub, nil
+	case "btc":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyBtc, nil
+	case "cny":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyCny, nil
+	case "usdt":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyUsdt, nil
+	case "kzt":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyKzt, nil
+	case "awg":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyAwg, nil
+	case "whop_usd":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyWhopUsd, nil
+	case "xau":
+		return CreatePaymentsRequestLineItemsItemPlanCurrencyXau, nil
+	}
+	var t CreatePaymentsRequestLineItemsItemPlanCurrency
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreatePaymentsRequestLineItemsItemPlanCurrency) Ptr() *CreatePaymentsRequestLineItemsItemPlanCurrency {
+	return &c
+}
+
+// Whether the variant's price includes tax: `inclusive` (tax is included in the price), `exclusive` (tax is added on top), or `unspecified`. Omit it or pass `null` to use the account's tax setting. On an account enrolled in the Whop tax service, `inclusive` or `exclusive` replaces the account's setting and `unspecified` keeps it. Otherwise it applies only where the account is the merchant of record: `inclusive` or `exclusive` replaces the account's setting when the account collects tax, and `unspecified` means the variant collects no tax. Where Whop is the merchant of record, the account's setting applies. Variants that differ only in this value are different variants.
+type CreatePaymentsRequestLineItemsItemPlanOverrideTaxType string
+
+const (
+	CreatePaymentsRequestLineItemsItemPlanOverrideTaxTypeExclusive   CreatePaymentsRequestLineItemsItemPlanOverrideTaxType = "exclusive"
+	CreatePaymentsRequestLineItemsItemPlanOverrideTaxTypeInclusive   CreatePaymentsRequestLineItemsItemPlanOverrideTaxType = "inclusive"
+	CreatePaymentsRequestLineItemsItemPlanOverrideTaxTypeUnspecified CreatePaymentsRequestLineItemsItemPlanOverrideTaxType = "unspecified"
+)
+
+func NewCreatePaymentsRequestLineItemsItemPlanOverrideTaxTypeFromString(s string) (CreatePaymentsRequestLineItemsItemPlanOverrideTaxType, error) {
+	switch s {
+	case "exclusive":
+		return CreatePaymentsRequestLineItemsItemPlanOverrideTaxTypeExclusive, nil
+	case "inclusive":
+		return CreatePaymentsRequestLineItemsItemPlanOverrideTaxTypeInclusive, nil
+	case "unspecified":
+		return CreatePaymentsRequestLineItemsItemPlanOverrideTaxTypeUnspecified, nil
+	}
+	var t CreatePaymentsRequestLineItemsItemPlanOverrideTaxType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreatePaymentsRequestLineItemsItemPlanOverrideTaxType) Ptr() *CreatePaymentsRequestLineItemsItemPlanOverrideTaxType {
+	return &c
+}
+
+// Billing model for the variant.
+type CreatePaymentsRequestLineItemsItemPlanPlanType string
+
+const (
+	CreatePaymentsRequestLineItemsItemPlanPlanTypeRenewal CreatePaymentsRequestLineItemsItemPlanPlanType = "renewal"
+	CreatePaymentsRequestLineItemsItemPlanPlanTypeOneTime CreatePaymentsRequestLineItemsItemPlanPlanType = "one_time"
+)
+
+func NewCreatePaymentsRequestLineItemsItemPlanPlanTypeFromString(s string) (CreatePaymentsRequestLineItemsItemPlanPlanType, error) {
+	switch s {
+	case "renewal":
+		return CreatePaymentsRequestLineItemsItemPlanPlanTypeRenewal, nil
+	case "one_time":
+		return CreatePaymentsRequestLineItemsItemPlanPlanTypeOneTime, nil
+	}
+	var t CreatePaymentsRequestLineItemsItemPlanPlanType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreatePaymentsRequestLineItemsItemPlanPlanType) Ptr() *CreatePaymentsRequestLineItemsItemPlanPlanType {
+	return &c
+}
+
+var (
+	createPaymentsRequestLineItemsItemPlanProductFieldCollectShippingAddress    = big.NewInt(1 << 0)
+	createPaymentsRequestLineItemsItemPlanProductFieldCustomStatementDescriptor = big.NewInt(1 << 1)
+	createPaymentsRequestLineItemsItemPlanProductFieldDescription               = big.NewInt(1 << 2)
+	createPaymentsRequestLineItemsItemPlanProductFieldExternalIdentifier        = big.NewInt(1 << 3)
+	createPaymentsRequestLineItemsItemPlanProductFieldGlobalAffiliatePercentage = big.NewInt(1 << 4)
+	createPaymentsRequestLineItemsItemPlanProductFieldGlobalAffiliateStatus     = big.NewInt(1 << 5)
+	createPaymentsRequestLineItemsItemPlanProductFieldHeadline                  = big.NewInt(1 << 6)
+	createPaymentsRequestLineItemsItemPlanProductFieldProductTaxCodeID          = big.NewInt(1 << 7)
+	createPaymentsRequestLineItemsItemPlanProductFieldRedirectPurchaseURL       = big.NewInt(1 << 8)
+	createPaymentsRequestLineItemsItemPlanProductFieldRoute                     = big.NewInt(1 << 9)
+	createPaymentsRequestLineItemsItemPlanProductFieldTitle                     = big.NewInt(1 << 10)
+	createPaymentsRequestLineItemsItemPlanProductFieldVisibility                = big.NewInt(1 << 11)
+)
+
+// createPaymentsRequestLineItemsItemPlanProductNullableFields maps the wire names of CreatePaymentsRequestLineItemsItemPlanProduct's nullable fields (required or optional) to their field bits.
+var createPaymentsRequestLineItemsItemPlanProductNullableFields = map[string]*big.Int{
+	"collect_shipping_address":    createPaymentsRequestLineItemsItemPlanProductFieldCollectShippingAddress,
+	"custom_statement_descriptor": createPaymentsRequestLineItemsItemPlanProductFieldCustomStatementDescriptor,
+	"description":                 createPaymentsRequestLineItemsItemPlanProductFieldDescription,
+	"global_affiliate_percentage": createPaymentsRequestLineItemsItemPlanProductFieldGlobalAffiliatePercentage,
+	"global_affiliate_status":     createPaymentsRequestLineItemsItemPlanProductFieldGlobalAffiliateStatus,
+	"headline":                    createPaymentsRequestLineItemsItemPlanProductFieldHeadline,
+	"product_tax_code_id":         createPaymentsRequestLineItemsItemPlanProductFieldProductTaxCodeID,
+	"redirect_purchase_url":       createPaymentsRequestLineItemsItemPlanProductFieldRedirectPurchaseURL,
+	"route":                       createPaymentsRequestLineItemsItemPlanProductFieldRoute,
+}
+
+// Find or create a product by external identifier. Mutually exclusive with product_id.
+type CreatePaymentsRequestLineItemsItemPlanProduct struct {
+	// Whether to collect a shipping address at checkout.
+	CollectShippingAddress *bool `json:"collect_shipping_address,omitempty" url:"collect_shipping_address,omitempty"`
+	// Custom card statement descriptor for the product, starting with WHOP*.
+	CustomStatementDescriptor *string `json:"custom_statement_descriptor,omitempty" url:"custom_statement_descriptor,omitempty"`
+	// Product description.
+	Description *string `json:"description,omitempty" url:"description,omitempty"`
+	// Your unique identifier for the product.
+	ExternalIdentifier string `json:"external_identifier" url:"external_identifier"`
+	// Percentage of revenue paid to global affiliates.
+	GlobalAffiliatePercentage *float64 `json:"global_affiliate_percentage,omitempty" url:"global_affiliate_percentage,omitempty"`
+	// Global affiliate program status.
+	GlobalAffiliateStatus *CreatePaymentsRequestLineItemsItemPlanProductGlobalAffiliateStatus `json:"global_affiliate_status,omitempty" url:"global_affiliate_status,omitempty"`
+	// Product headline.
+	Headline *string `json:"headline,omitempty" url:"headline,omitempty"`
+	// Product tax code identifier.
+	ProductTaxCodeID *string `json:"product_tax_code_id,omitempty" url:"product_tax_code_id,omitempty"`
+	// Where to redirect the buyer after purchase.
+	RedirectPurchaseURL *string `json:"redirect_purchase_url,omitempty" url:"redirect_purchase_url,omitempty"`
+	// Product route.
+	Route *string `json:"route,omitempty" url:"route,omitempty"`
+	// Product title.
+	Title string `json:"title" url:"title"`
+	// Product visibility. Defaults to hidden.
+	Visibility *CreatePaymentsRequestLineItemsItemPlanProductVisibility `json:"visibility,omitempty" url:"visibility,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlanProduct) GetCollectShippingAddress() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.CollectShippingAddress
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlanProduct) GetCustomStatementDescriptor() *string {
+	if c == nil {
+		return nil
+	}
+	return c.CustomStatementDescriptor
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlanProduct) GetDescription() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Description
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlanProduct) GetExternalIdentifier() string {
+	if c == nil {
+		return ""
+	}
+	return c.ExternalIdentifier
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlanProduct) GetGlobalAffiliatePercentage() *float64 {
+	if c == nil {
+		return nil
+	}
+	return c.GlobalAffiliatePercentage
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlanProduct) GetGlobalAffiliateStatus() *CreatePaymentsRequestLineItemsItemPlanProductGlobalAffiliateStatus {
+	if c == nil {
+		return nil
+	}
+	return c.GlobalAffiliateStatus
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlanProduct) GetHeadline() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Headline
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlanProduct) GetProductTaxCodeID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.ProductTaxCodeID
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlanProduct) GetRedirectPurchaseURL() *string {
+	if c == nil {
+		return nil
+	}
+	return c.RedirectPurchaseURL
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlanProduct) GetRoute() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Route
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlanProduct) GetTitle() string {
+	if c == nil {
+		return ""
+	}
+	return c.Title
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlanProduct) GetVisibility() *CreatePaymentsRequestLineItemsItemPlanProductVisibility {
+	if c == nil {
+		return nil
+	}
+	return c.Visibility
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlanProduct) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlanProduct) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetCollectShippingAddress sets the CollectShippingAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemPlanProduct) SetCollectShippingAddress(collectShippingAddress *bool) {
+	c.CollectShippingAddress = collectShippingAddress
+	c.require(createPaymentsRequestLineItemsItemPlanProductFieldCollectShippingAddress)
+}
+
+// SetCustomStatementDescriptor sets the CustomStatementDescriptor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemPlanProduct) SetCustomStatementDescriptor(customStatementDescriptor *string) {
+	c.CustomStatementDescriptor = customStatementDescriptor
+	c.require(createPaymentsRequestLineItemsItemPlanProductFieldCustomStatementDescriptor)
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemPlanProduct) SetDescription(description *string) {
+	c.Description = description
+	c.require(createPaymentsRequestLineItemsItemPlanProductFieldDescription)
+}
+
+// SetExternalIdentifier sets the ExternalIdentifier field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemPlanProduct) SetExternalIdentifier(externalIdentifier string) {
+	c.ExternalIdentifier = externalIdentifier
+	c.require(createPaymentsRequestLineItemsItemPlanProductFieldExternalIdentifier)
+}
+
+// SetGlobalAffiliatePercentage sets the GlobalAffiliatePercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemPlanProduct) SetGlobalAffiliatePercentage(globalAffiliatePercentage *float64) {
+	c.GlobalAffiliatePercentage = globalAffiliatePercentage
+	c.require(createPaymentsRequestLineItemsItemPlanProductFieldGlobalAffiliatePercentage)
+}
+
+// SetGlobalAffiliateStatus sets the GlobalAffiliateStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemPlanProduct) SetGlobalAffiliateStatus(globalAffiliateStatus *CreatePaymentsRequestLineItemsItemPlanProductGlobalAffiliateStatus) {
+	c.GlobalAffiliateStatus = globalAffiliateStatus
+	c.require(createPaymentsRequestLineItemsItemPlanProductFieldGlobalAffiliateStatus)
+}
+
+// SetHeadline sets the Headline field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemPlanProduct) SetHeadline(headline *string) {
+	c.Headline = headline
+	c.require(createPaymentsRequestLineItemsItemPlanProductFieldHeadline)
+}
+
+// SetProductTaxCodeID sets the ProductTaxCodeID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemPlanProduct) SetProductTaxCodeID(productTaxCodeID *string) {
+	c.ProductTaxCodeID = productTaxCodeID
+	c.require(createPaymentsRequestLineItemsItemPlanProductFieldProductTaxCodeID)
+}
+
+// SetRedirectPurchaseURL sets the RedirectPurchaseURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemPlanProduct) SetRedirectPurchaseURL(redirectPurchaseURL *string) {
+	c.RedirectPurchaseURL = redirectPurchaseURL
+	c.require(createPaymentsRequestLineItemsItemPlanProductFieldRedirectPurchaseURL)
+}
+
+// SetRoute sets the Route field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemPlanProduct) SetRoute(route *string) {
+	c.Route = route
+	c.require(createPaymentsRequestLineItemsItemPlanProductFieldRoute)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemPlanProduct) SetTitle(title string) {
+	c.Title = title
+	c.require(createPaymentsRequestLineItemsItemPlanProductFieldTitle)
+}
+
+// SetVisibility sets the Visibility field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemPlanProduct) SetVisibility(visibility *CreatePaymentsRequestLineItemsItemPlanProductVisibility) {
+	c.Visibility = visibility
+	c.require(createPaymentsRequestLineItemsItemPlanProductFieldVisibility)
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlanProduct) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreatePaymentsRequestLineItemsItemPlanProduct
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreatePaymentsRequestLineItemsItemPlanProduct(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createPaymentsRequestLineItemsItemPlanProductNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlanProduct) MarshalJSON() ([]byte, error) {
+	type embed CreatePaymentsRequestLineItemsItemPlanProduct
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreatePaymentsRequestLineItemsItemPlanProduct) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// Global affiliate program status.
+type CreatePaymentsRequestLineItemsItemPlanProductGlobalAffiliateStatus string
+
+const (
+	CreatePaymentsRequestLineItemsItemPlanProductGlobalAffiliateStatusEnabled  CreatePaymentsRequestLineItemsItemPlanProductGlobalAffiliateStatus = "enabled"
+	CreatePaymentsRequestLineItemsItemPlanProductGlobalAffiliateStatusDisabled CreatePaymentsRequestLineItemsItemPlanProductGlobalAffiliateStatus = "disabled"
+)
+
+func NewCreatePaymentsRequestLineItemsItemPlanProductGlobalAffiliateStatusFromString(s string) (CreatePaymentsRequestLineItemsItemPlanProductGlobalAffiliateStatus, error) {
+	switch s {
+	case "enabled":
+		return CreatePaymentsRequestLineItemsItemPlanProductGlobalAffiliateStatusEnabled, nil
+	case "disabled":
+		return CreatePaymentsRequestLineItemsItemPlanProductGlobalAffiliateStatusDisabled, nil
+	}
+	var t CreatePaymentsRequestLineItemsItemPlanProductGlobalAffiliateStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreatePaymentsRequestLineItemsItemPlanProductGlobalAffiliateStatus) Ptr() *CreatePaymentsRequestLineItemsItemPlanProductGlobalAffiliateStatus {
+	return &c
+}
+
+// Product visibility. Defaults to hidden.
+type CreatePaymentsRequestLineItemsItemPlanProductVisibility string
+
+const (
+	CreatePaymentsRequestLineItemsItemPlanProductVisibilityVisible   CreatePaymentsRequestLineItemsItemPlanProductVisibility = "visible"
+	CreatePaymentsRequestLineItemsItemPlanProductVisibilityHidden    CreatePaymentsRequestLineItemsItemPlanProductVisibility = "hidden"
+	CreatePaymentsRequestLineItemsItemPlanProductVisibilityArchived  CreatePaymentsRequestLineItemsItemPlanProductVisibility = "archived"
+	CreatePaymentsRequestLineItemsItemPlanProductVisibilityQuickLink CreatePaymentsRequestLineItemsItemPlanProductVisibility = "quick_link"
+)
+
+func NewCreatePaymentsRequestLineItemsItemPlanProductVisibilityFromString(s string) (CreatePaymentsRequestLineItemsItemPlanProductVisibility, error) {
+	switch s {
+	case "visible":
+		return CreatePaymentsRequestLineItemsItemPlanProductVisibilityVisible, nil
+	case "hidden":
+		return CreatePaymentsRequestLineItemsItemPlanProductVisibilityHidden, nil
+	case "archived":
+		return CreatePaymentsRequestLineItemsItemPlanProductVisibilityArchived, nil
+	case "quick_link":
+		return CreatePaymentsRequestLineItemsItemPlanProductVisibilityQuickLink, nil
+	}
+	var t CreatePaymentsRequestLineItemsItemPlanProductVisibility
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreatePaymentsRequestLineItemsItemPlanProductVisibility) Ptr() *CreatePaymentsRequestLineItemsItemPlanProductVisibility {
+	return &c
+}
+
+// Whether the variant is visible to customers.
+type CreatePaymentsRequestLineItemsItemPlanVisibility string
+
+const (
+	CreatePaymentsRequestLineItemsItemPlanVisibilityVisible   CreatePaymentsRequestLineItemsItemPlanVisibility = "visible"
+	CreatePaymentsRequestLineItemsItemPlanVisibilityHidden    CreatePaymentsRequestLineItemsItemPlanVisibility = "hidden"
+	CreatePaymentsRequestLineItemsItemPlanVisibilityArchived  CreatePaymentsRequestLineItemsItemPlanVisibility = "archived"
+	CreatePaymentsRequestLineItemsItemPlanVisibilityQuickLink CreatePaymentsRequestLineItemsItemPlanVisibility = "quick_link"
+)
+
+func NewCreatePaymentsRequestLineItemsItemPlanVisibilityFromString(s string) (CreatePaymentsRequestLineItemsItemPlanVisibility, error) {
+	switch s {
+	case "visible":
+		return CreatePaymentsRequestLineItemsItemPlanVisibilityVisible, nil
+	case "hidden":
+		return CreatePaymentsRequestLineItemsItemPlanVisibilityHidden, nil
+	case "archived":
+		return CreatePaymentsRequestLineItemsItemPlanVisibilityArchived, nil
+	case "quick_link":
+		return CreatePaymentsRequestLineItemsItemPlanVisibilityQuickLink, nil
+	}
+	var t CreatePaymentsRequestLineItemsItemPlanVisibility
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreatePaymentsRequestLineItemsItemPlanVisibility) Ptr() *CreatePaymentsRequestLineItemsItemPlanVisibility {
+	return &c
 }
 
 var (
