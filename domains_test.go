@@ -2716,6 +2716,14 @@ func TestSettersDomainIssue(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetCodeBlock", func(t *testing.T) {
+		obj := &DomainIssue{}
+		var fernTestValueCodeBlock *string
+		obj.SetCodeBlock(fernTestValueCodeBlock)
+		assert.Equal(t, fernTestValueCodeBlock, obj.CodeBlock)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetDNSRecords", func(t *testing.T) {
 		obj := &DomainIssue{}
 		var fernTestValueDNSRecords []*DomainDNSRecord
@@ -2779,6 +2787,39 @@ func TestGettersDomainIssue(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCode() // Should return zero value
+	})
+
+	t.Run("GetCodeBlock", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DomainIssue{}
+		var expected *string
+		obj.CodeBlock = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCodeBlock(), "getter should return the property value")
+	})
+
+	t.Run("GetCodeBlock_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DomainIssue{}
+		obj.CodeBlock = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCodeBlock(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCodeBlock_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *DomainIssue
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCodeBlock() // Should return zero value
 	})
 
 	t.Run("GetDNSRecords", func(t *testing.T) {
@@ -2879,6 +2920,37 @@ func TestSettersMarkExplicitDomainIssue(t *testing.T) {
 
 		// Act
 		obj.SetCode(fernTestValueCode)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetCodeBlock_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DomainIssue{}
+		var fernTestValueCodeBlock *string
+
+		// Act
+		obj.SetCodeBlock(fernTestValueCodeBlock)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -6253,7 +6325,7 @@ func TestSettersMarkExplicitDomainVerification(t *testing.T) {
 func TestSettersDomainWebsite(t *testing.T) {
 	t.Run("SetAppID", func(t *testing.T) {
 		obj := &DomainWebsite{}
-		var fernTestValueAppID string
+		var fernTestValueAppID *string
 		obj.SetAppID(fernTestValueAppID)
 		assert.Equal(t, fernTestValueAppID, obj.AppID)
 		assert.NotNil(t, obj.explicitFields)
@@ -6274,11 +6346,21 @@ func TestGettersDomainWebsite(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &DomainWebsite{}
-		var expected string
+		var expected *string
 		obj.AppID = expected
 
 		// Act & Assert
 		assert.Equal(t, expected, obj.GetAppID(), "getter should return the property value")
+	})
+
+	t.Run("GetAppID_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DomainWebsite{}
+		obj.AppID = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAppID(), "getter should return nil when property is nil")
 	})
 
 	t.Run("GetAppID_NilReceiver", func(t *testing.T) {
@@ -6323,7 +6405,7 @@ func TestSettersMarkExplicitDomainWebsite(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &DomainWebsite{}
-		var fernTestValueAppID string
+		var fernTestValueAppID *string
 
 		// Act
 		obj.SetAppID(fernTestValueAppID)
@@ -8274,6 +8356,49 @@ func TestRequiredNullableRoundTripDomainAvailability(t *testing.T) {
 	})
 }
 
+func TestRequiredNullableRoundTripDomainIssue(t *testing.T) {
+	requiredNullableKeys := []string{
+		"code_block",
+	}
+	marshalToMap := func(t *testing.T, obj *DomainIssue) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj DomainIssue
+		require.NoError(t, json.Unmarshal([]byte(`{"code_block":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj DomainIssue
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &DomainIssue{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
 func TestRequiredNullableRoundTripDomainListItem(t *testing.T) {
 	requiredNullableKeys := []string{
 		"account_id",
@@ -8600,6 +8725,49 @@ func TestRequiredNullableRoundTripDomainVerification(t *testing.T) {
 	})
 }
 
+func TestRequiredNullableRoundTripDomainWebsite(t *testing.T) {
+	requiredNullableKeys := []string{
+		"app_id",
+	}
+	marshalToMap := func(t *testing.T, obj *DomainWebsite) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj DomainWebsite
+		require.NoError(t, json.Unmarshal([]byte(`{"app_id":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj DomainWebsite
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &DomainWebsite{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
 func TestRequiredNullableRoundTripListDomainsResponsePageInfo(t *testing.T) {
 	requiredNullableKeys := []string{
 		"end_cursor",
@@ -8687,6 +8855,49 @@ func TestOptionalNullableRoundTripCreateDomainsRequestRegistration(t *testing.T)
 	})
 }
 
+func TestOptionalNullableRoundTripCreateDomainsRequestWebsite(t *testing.T) {
+	optionalNullableKeys := []string{
+		"app_id",
+	}
+	marshalToMap := func(t *testing.T, obj *CreateDomainsRequestWebsite) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateDomainsRequestWebsite
+		require.NoError(t, json.Unmarshal([]byte(`{"app_id":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range optionalNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "optional nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "optional nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateDomainsRequestWebsite
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range optionalNullableKeys {
+			assert.NotContains(t, result, key, "optional nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &CreateDomainsRequestWebsite{})
+		for _, key := range optionalNullableKeys {
+			assert.NotContains(t, result, key, "optional nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
 func TestOptionalNullableRoundTripUpdateDomainsRequestRegistration(t *testing.T) {
 	optionalNullableKeys := []string{
 		"payment_method_id",
@@ -8724,6 +8935,49 @@ func TestOptionalNullableRoundTripUpdateDomainsRequestRegistration(t *testing.T)
 	t.Run("FreshValueOmits", func(t *testing.T) {
 		t.Parallel()
 		result := marshalToMap(t, &UpdateDomainsRequestRegistration{})
+		for _, key := range optionalNullableKeys {
+			assert.NotContains(t, result, key, "optional nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestOptionalNullableRoundTripUpdateDomainsRequestWebsite(t *testing.T) {
+	optionalNullableKeys := []string{
+		"app_id",
+	}
+	marshalToMap := func(t *testing.T, obj *UpdateDomainsRequestWebsite) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateDomainsRequestWebsite
+		require.NoError(t, json.Unmarshal([]byte(`{"app_id":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range optionalNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "optional nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "optional nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateDomainsRequestWebsite
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range optionalNullableKeys {
+			assert.NotContains(t, result, key, "optional nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &UpdateDomainsRequestWebsite{})
 		for _, key := range optionalNullableKeys {
 			assert.NotContains(t, result, key, "optional nullable field %q should be omitted from a freshly constructed value", key)
 		}

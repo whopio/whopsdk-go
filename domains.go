@@ -1056,15 +1056,23 @@ func (d DomainDNSRecordType) Ptr() *DomainDNSRecordType {
 var (
 	domainIssueFieldCapability = big.NewInt(1 << 0)
 	domainIssueFieldCode       = big.NewInt(1 << 1)
-	domainIssueFieldDNSRecords = big.NewInt(1 << 2)
-	domainIssueFieldMessage    = big.NewInt(1 << 3)
+	domainIssueFieldCodeBlock  = big.NewInt(1 << 2)
+	domainIssueFieldDNSRecords = big.NewInt(1 << 3)
+	domainIssueFieldMessage    = big.NewInt(1 << 4)
 )
+
+// domainIssueNullableFields maps the wire names of DomainIssue's nullable fields (required or optional) to their field bits.
+var domainIssueNullableFields = map[string]*big.Int{
+	"code_block": domainIssueFieldCodeBlock,
+}
 
 type DomainIssue struct {
 	// The capability the issue is about.
 	Capability DomainIssueCapability `json:"capability" url:"capability"`
 	// What needs attention, as a stable code.
-	Code       DomainIssueCode    `json:"code" url:"code"`
+	Code DomainIssueCode `json:"code" url:"code"`
+	// Code to add to the site to fix the issue, ready to copy. `null` when the issue needs none.
+	CodeBlock  *string            `json:"code_block,omitempty" url:"code_block,omitempty"`
 	DNSRecords []*DomainDNSRecord `json:"dns_records" url:"dns_records"`
 	// What needs attention and how to fix it.
 	Message string `json:"message" url:"message"`
@@ -1088,6 +1096,13 @@ func (d *DomainIssue) GetCode() DomainIssueCode {
 		return ""
 	}
 	return d.Code
+}
+
+func (d *DomainIssue) GetCodeBlock() *string {
+	if d == nil {
+		return nil
+	}
+	return d.CodeBlock
 }
 
 func (d *DomainIssue) GetDNSRecords() []*DomainDNSRecord {
@@ -1134,6 +1149,13 @@ func (d *DomainIssue) SetCode(code DomainIssueCode) {
 	d.require(domainIssueFieldCode)
 }
 
+// SetCodeBlock sets the CodeBlock field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainIssue) SetCodeBlock(codeBlock *string) {
+	d.CodeBlock = codeBlock
+	d.require(domainIssueFieldCodeBlock)
+}
+
 // SetDNSRecords sets the DNSRecords field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (d *DomainIssue) SetDNSRecords(dnsRecords []*DomainDNSRecord) {
@@ -1160,6 +1182,13 @@ func (d *DomainIssue) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	d.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, domainIssueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		d.require(presentFields)
+	}
 	d.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2929,9 +2958,14 @@ var (
 	domainWebsiteFieldState = big.NewInt(1 << 1)
 )
 
+// domainWebsiteNullableFields maps the wire names of DomainWebsite's nullable fields (required or optional) to their field bits.
+var domainWebsiteNullableFields = map[string]*big.Int{
+	"app_id": domainWebsiteFieldAppID,
+}
+
 type DomainWebsite struct {
-	// ID of the app the domain serves, prefixed `app_`.
-	AppID string `json:"app_id" url:"app_id"`
+	// ID of the app the domain serves, prefixed `app_`. `null` until you choose one; the domain shows a placeholder page meanwhile.
+	AppID *string `json:"app_id,omitempty" url:"app_id,omitempty"`
 	// How far serving the website has got.
 	State DomainWebsiteState `json:"state" url:"state"`
 
@@ -2942,9 +2976,9 @@ type DomainWebsite struct {
 	rawJSON         json.RawMessage
 }
 
-func (d *DomainWebsite) GetAppID() string {
+func (d *DomainWebsite) GetAppID() *string {
 	if d == nil {
-		return ""
+		return nil
 	}
 	return d.AppID
 }
@@ -2974,7 +3008,7 @@ func (d *DomainWebsite) require(field *big.Int) {
 
 // SetAppID sets the AppID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DomainWebsite) SetAppID(appID string) {
+func (d *DomainWebsite) SetAppID(appID *string) {
 	d.AppID = appID
 	d.require(domainWebsiteFieldAppID)
 }
@@ -2998,6 +3032,13 @@ func (d *DomainWebsite) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	d.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, domainWebsiteNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		d.require(presentFields)
+	}
 	d.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3246,9 +3287,14 @@ var (
 	createDomainsRequestWebsiteFieldAppID = big.NewInt(1 << 0)
 )
 
+// createDomainsRequestWebsiteNullableFields maps the wire names of CreateDomainsRequestWebsite's nullable fields (required or optional) to their field bits.
+var createDomainsRequestWebsiteNullableFields = map[string]*big.Int{
+	"app_id": createDomainsRequestWebsiteFieldAppID,
+}
+
 // Serve a Whop website on the domain. Pass `null` to stop serving it; the domain keeps its other capabilities.
 type CreateDomainsRequestWebsite struct {
-	// App ID, prefixed app_, of the website to serve. The app must belong to the account.
+	// App ID, prefixed app_, of the website to serve. The app must belong to the account. Leave it out to point the domain at Whop before the website exists; it shows a placeholder until you choose one. Pass `null` to detach the app and keep the domain pointed at Whop.
 	AppID *string `json:"app_id,omitempty" url:"app_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -3300,6 +3346,13 @@ func (c *CreateDomainsRequestWebsite) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createDomainsRequestWebsiteNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3967,9 +4020,14 @@ var (
 	updateDomainsRequestWebsiteFieldAppID = big.NewInt(1 << 0)
 )
 
+// updateDomainsRequestWebsiteNullableFields maps the wire names of UpdateDomainsRequestWebsite's nullable fields (required or optional) to their field bits.
+var updateDomainsRequestWebsiteNullableFields = map[string]*big.Int{
+	"app_id": updateDomainsRequestWebsiteFieldAppID,
+}
+
 // Serve a Whop website on the domain. Pass `null` to stop serving it; the domain keeps its other capabilities.
 type UpdateDomainsRequestWebsite struct {
-	// App ID, prefixed app_, of the website to serve. The app must belong to the account.
+	// App ID, prefixed app_, of the website to serve. The app must belong to the account. Leave it out to point the domain at Whop before the website exists; it shows a placeholder until you choose one. Pass `null` to detach the app and keep the domain pointed at Whop.
 	AppID *string `json:"app_id,omitempty" url:"app_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -4021,6 +4079,13 @@ func (u *UpdateDomainsRequestWebsite) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateDomainsRequestWebsiteNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
