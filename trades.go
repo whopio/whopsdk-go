@@ -34,11 +34,11 @@ type CreateTradesRequest struct {
 	Amount *string `json:"amount,omitempty" url:"-"`
 	// Only for an order. Your own ID for the trade, 1 to 128 characters, unique for the account. Sending it again with the same order returns the same trade; with a different order it answers `409`.
 	ClientOrderID *string `json:"client_order_id,omitempty" url:"-"`
-	// The kind of market. Required for an order.
+	// `perpetual` or `spot`. Required for an order. Spot needs the trading account in Hyperliquid's unified account mode.
 	InstrumentType *CreateTradesRequestInstrumentType `json:"instrument_type,omitempty" url:"-"`
-	// Only for an order. The cross leverage, from 1 to the market's maximum. Required unless `reduce_only`; not accepted on a reduce-only order.
+	// Only for a perpetual order. The cross leverage, from 1 to the market's maximum. Required unless `reduce_only`; not accepted on a reduce-only order.
 	Leverage *int `json:"leverage,omitempty" url:"-"`
-	// The perpetual market, for example `BTC`. Required for an order or close; not accepted for a deposit or withdraw.
+	// The market: a perpetual such as `BTC`, or for spot a pair priced in USDC such as `HYPE/USDC`. Required for an order or close, and a close takes only a perpetual; not accepted for a deposit or withdraw.
 	Market *string `json:"market,omitempty" url:"-"`
 	// Only for an order. Free-form string-to-string annotations: up to 50 keys of at most 40 characters, values up to 500 characters.
 	Metadata map[string]string `json:"metadata,omitempty" url:"-"`
@@ -48,7 +48,7 @@ type CreateTradesRequest struct {
 	OrderType *CreateTradesRequestOrderType `json:"order_type,omitempty" url:"-"`
 	// Only for an order. The limit price in USD, as a decimal string Hyperliquid accepts without rounding. Required for a limit order; not accepted for a market order.
 	Price *string `json:"price,omitempty" url:"-"`
-	// Only for an order. Only reduce an open position; defaults to `false`. A reduce-only order takes no `leverage`.
+	// Only for a perpetual order. Only reduce an open position; defaults to `false`. A reduce-only order takes no `leverage`.
 	ReduceOnly *bool `json:"reduce_only,omitempty" url:"-"`
 	// `buy` or `sell`. Required for an order.
 	Side *CreateTradesRequestSide `json:"side,omitempty" url:"-"`
@@ -56,7 +56,7 @@ type CreateTradesRequest struct {
 	Size *string `json:"size,omitempty" url:"-"`
 	// Only for a market order or a close. The worst price as basis points from the mid price, from 1 to 1000; defaults to 100.
 	SlippageBps *int `json:"slippage_bps,omitempty" url:"-"`
-	// `order` places one order from the trading balance and sets cross `leverage` first; when the balance is short, it bridges the USDT0 it needs from the wallet first. `deposit` bridges `amount` USDT0 from the wallet to the trading balance. `withdraw` sends `amount` USDC (or `all`) from the trading balance back to the wallet. `close` closes the whole position in `market` with a market reduce-only order; when the account is then flat, a `withdraw` trade sends the trading balance back to the wallet.
+	// `order` places one order from the trading balance, setting cross `leverage` first on a perpetual; when the balance is short, it bridges the USDT0 it needs from the wallet first. `deposit` bridges `amount` USDT0 from the wallet to the trading balance. `withdraw` sends `amount` USDC (or `all`) from the trading balance back to the wallet. `close` closes the whole position in `market` with a market reduce-only order; when the account is then flat, a `withdraw` trade sends the trading balance back to the wallet.
 	Type CreateTradesRequestType `json:"type" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -335,30 +335,31 @@ func (r *RetrieveTradesRequest) SetID(id string) {
 }
 
 var (
-	tradeFieldAccountID     = big.NewInt(1 << 0)
-	tradeFieldAmount        = big.NewInt(1 << 1)
-	tradeFieldAveragePrice  = big.NewInt(1 << 2)
-	tradeFieldClientOrderID = big.NewInt(1 << 3)
-	tradeFieldCompletedAt   = big.NewInt(1 << 4)
-	tradeFieldCreatedAt     = big.NewInt(1 << 5)
-	tradeFieldFailureCode   = big.NewInt(1 << 6)
-	tradeFieldFilledSize    = big.NewInt(1 << 7)
-	tradeFieldFundsLocation = big.NewInt(1 << 8)
-	tradeFieldID            = big.NewInt(1 << 9)
-	tradeFieldLeverage      = big.NewInt(1 << 10)
-	tradeFieldMarket        = big.NewInt(1 << 11)
-	tradeFieldMetadata      = big.NewInt(1 << 12)
-	tradeFieldObject        = big.NewInt(1 << 13)
-	tradeFieldOrderType     = big.NewInt(1 << 14)
-	tradeFieldPrice         = big.NewInt(1 << 15)
-	tradeFieldReduceOnly    = big.NewInt(1 << 16)
-	tradeFieldSide          = big.NewInt(1 << 17)
-	tradeFieldSize          = big.NewInt(1 << 18)
-	tradeFieldStatus        = big.NewInt(1 << 19)
-	tradeFieldStatusDetail  = big.NewInt(1 << 20)
-	tradeFieldType          = big.NewInt(1 << 21)
-	tradeFieldUpdatedAt     = big.NewInt(1 << 22)
-	tradeFieldUserID        = big.NewInt(1 << 23)
+	tradeFieldAccountID      = big.NewInt(1 << 0)
+	tradeFieldAmount         = big.NewInt(1 << 1)
+	tradeFieldAveragePrice   = big.NewInt(1 << 2)
+	tradeFieldClientOrderID  = big.NewInt(1 << 3)
+	tradeFieldCompletedAt    = big.NewInt(1 << 4)
+	tradeFieldCreatedAt      = big.NewInt(1 << 5)
+	tradeFieldFailureCode    = big.NewInt(1 << 6)
+	tradeFieldFilledSize     = big.NewInt(1 << 7)
+	tradeFieldFundsLocation  = big.NewInt(1 << 8)
+	tradeFieldID             = big.NewInt(1 << 9)
+	tradeFieldInstrumentType = big.NewInt(1 << 10)
+	tradeFieldLeverage       = big.NewInt(1 << 11)
+	tradeFieldMarket         = big.NewInt(1 << 12)
+	tradeFieldMetadata       = big.NewInt(1 << 13)
+	tradeFieldObject         = big.NewInt(1 << 14)
+	tradeFieldOrderType      = big.NewInt(1 << 15)
+	tradeFieldPrice          = big.NewInt(1 << 16)
+	tradeFieldReduceOnly     = big.NewInt(1 << 17)
+	tradeFieldSide           = big.NewInt(1 << 18)
+	tradeFieldSize           = big.NewInt(1 << 19)
+	tradeFieldStatus         = big.NewInt(1 << 20)
+	tradeFieldStatusDetail   = big.NewInt(1 << 21)
+	tradeFieldType           = big.NewInt(1 << 22)
+	tradeFieldUpdatedAt      = big.NewInt(1 << 23)
+	tradeFieldUserID         = big.NewInt(1 << 24)
 )
 
 // tradeNullableFields maps the wire names of Trade's nullable fields (required or optional) to their field bits.
@@ -371,6 +372,7 @@ var tradeNullableFields = map[string]*big.Int{
 	"failure_code":    tradeFieldFailureCode,
 	"filled_size":     tradeFieldFilledSize,
 	"funds_location":  tradeFieldFundsLocation,
+	"instrument_type": tradeFieldInstrumentType,
 	"leverage":        tradeFieldLeverage,
 	"market":          tradeFieldMarket,
 	"order_type":      tradeFieldOrderType,
@@ -403,9 +405,11 @@ type Trade struct {
 	FundsLocation *TradeFundsLocation `json:"funds_location,omitempty" url:"funds_location,omitempty"`
 	// Trade ID, prefixed `tint_`.
 	ID string `json:"id" url:"id"`
-	// The cross leverage set before an opening order. `null` for a close, deposit, withdraw or reduce-only order.
+	// `perpetual` or `spot` for an order, `perpetual` for a close. `null` for a deposit or withdraw.
+	InstrumentType *TradeInstrumentType `json:"instrument_type,omitempty" url:"instrument_type,omitempty"`
+	// The cross leverage set before an opening perpetual order. `null` for a spot order, close, deposit, withdraw or reduce-only order.
 	Leverage *int `json:"leverage,omitempty" url:"leverage,omitempty"`
-	// The perpetual market, for example `BTC`. `null` for a deposit or withdraw.
+	// The market, for example `BTC` for a perpetual or `HYPE/USDC` for spot. `null` for a deposit or withdraw.
 	Market *string `json:"market,omitempty" url:"market,omitempty"`
 	// Free-form string-to-string annotations stored on the trade.
 	Metadata map[string]any `json:"metadata" url:"metadata"`
@@ -506,6 +510,13 @@ func (t *Trade) GetID() string {
 		return ""
 	}
 	return t.ID
+}
+
+func (t *Trade) GetInstrumentType() *TradeInstrumentType {
+	if t == nil {
+		return nil
+	}
+	return t.InstrumentType
 }
 
 func (t *Trade) GetLeverage() *int {
@@ -690,6 +701,13 @@ func (t *Trade) SetFundsLocation(fundsLocation *TradeFundsLocation) {
 func (t *Trade) SetID(id string) {
 	t.ID = id
 	t.require(tradeFieldID)
+}
+
+// SetInstrumentType sets the InstrumentType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *Trade) SetInstrumentType(instrumentType *TradeInstrumentType) {
+	t.InstrumentType = instrumentType
+	t.require(tradeFieldInstrumentType)
 }
 
 // SetLeverage sets the Leverage field and marks it as non-optional;
@@ -924,6 +942,29 @@ func (t TradeFundsLocation) Ptr() *TradeFundsLocation {
 	return &t
 }
 
+// `perpetual` or `spot` for an order, `perpetual` for a close. `null` for a deposit or withdraw.
+type TradeInstrumentType string
+
+const (
+	TradeInstrumentTypePerpetual TradeInstrumentType = "perpetual"
+	TradeInstrumentTypeSpot      TradeInstrumentType = "spot"
+)
+
+func NewTradeInstrumentTypeFromString(s string) (TradeInstrumentType, error) {
+	switch s {
+	case "perpetual":
+		return TradeInstrumentTypePerpetual, nil
+	case "spot":
+		return TradeInstrumentTypeSpot, nil
+	}
+	var t TradeInstrumentType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (t TradeInstrumentType) Ptr() *TradeInstrumentType {
+	return &t
+}
+
 type TradeObject string
 
 const (
@@ -1070,17 +1111,20 @@ func (t TradeType) Ptr() *TradeType {
 	return &t
 }
 
-// The kind of market. Required for an order.
+// `perpetual` or `spot`. Required for an order. Spot needs the trading account in Hyperliquid's unified account mode.
 type CreateTradesRequestInstrumentType string
 
 const (
 	CreateTradesRequestInstrumentTypePerpetual CreateTradesRequestInstrumentType = "perpetual"
+	CreateTradesRequestInstrumentTypeSpot      CreateTradesRequestInstrumentType = "spot"
 )
 
 func NewCreateTradesRequestInstrumentTypeFromString(s string) (CreateTradesRequestInstrumentType, error) {
 	switch s {
 	case "perpetual":
 		return CreateTradesRequestInstrumentTypePerpetual, nil
+	case "spot":
+		return CreateTradesRequestInstrumentTypeSpot, nil
 	}
 	var t CreateTradesRequestInstrumentType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1136,7 +1180,7 @@ func (c CreateTradesRequestSide) Ptr() *CreateTradesRequestSide {
 	return &c
 }
 
-// `order` places one order from the trading balance and sets cross `leverage` first; when the balance is short, it bridges the USDT0 it needs from the wallet first. `deposit` bridges `amount` USDT0 from the wallet to the trading balance. `withdraw` sends `amount` USDC (or `all`) from the trading balance back to the wallet. `close` closes the whole position in `market` with a market reduce-only order; when the account is then flat, a `withdraw` trade sends the trading balance back to the wallet.
+// `order` places one order from the trading balance, setting cross `leverage` first on a perpetual; when the balance is short, it bridges the USDT0 it needs from the wallet first. `deposit` bridges `amount` USDT0 from the wallet to the trading balance. `withdraw` sends `amount` USDC (or `all`) from the trading balance back to the wallet. `close` closes the whole position in `market` with a market reduce-only order; when the account is then flat, a `withdraw` trade sends the trading balance back to the wallet.
 type CreateTradesRequestType string
 
 const (
