@@ -4066,6 +4066,45 @@ const (
 	AccountPaymentControlsRestrictedPaymentMethodsItemCardMastercard            AccountPaymentControlsRestrictedPaymentMethodsItem = "card_mastercard"
 	AccountPaymentControlsRestrictedPaymentMethodsItemCardAmericanExpress       AccountPaymentControlsRestrictedPaymentMethodsItem = "card_american_express"
 	AccountPaymentControlsRestrictedPaymentMethodsItemCardDiscoverGlobalNetwork AccountPaymentControlsRestrictedPaymentMethodsItem = "card_discover_global_network"
+	AccountPaymentControlsRestrictedPaymentMethodsItemAddi                      AccountPaymentControlsRestrictedPaymentMethodsItem = "addi"
+	AccountPaymentControlsRestrictedPaymentMethodsItemAffirm                    AccountPaymentControlsRestrictedPaymentMethodsItem = "affirm"
+	AccountPaymentControlsRestrictedPaymentMethodsItemAfterpayClearpay          AccountPaymentControlsRestrictedPaymentMethodsItem = "afterpay_clearpay"
+	AccountPaymentControlsRestrictedPaymentMethodsItemAlma                      AccountPaymentControlsRestrictedPaymentMethodsItem = "alma"
+	AccountPaymentControlsRestrictedPaymentMethodsItemBillie                    AccountPaymentControlsRestrictedPaymentMethodsItem = "billie"
+	AccountPaymentControlsRestrictedPaymentMethodsItemCapchasePay               AccountPaymentControlsRestrictedPaymentMethodsItem = "capchase_pay"
+	AccountPaymentControlsRestrictedPaymentMethodsItemClaritypay                AccountPaymentControlsRestrictedPaymentMethodsItem = "claritypay"
+	AccountPaymentControlsRestrictedPaymentMethodsItemFlexPay                   AccountPaymentControlsRestrictedPaymentMethodsItem = "flex_pay"
+	AccountPaymentControlsRestrictedPaymentMethodsItemKlarna                    AccountPaymentControlsRestrictedPaymentMethodsItem = "klarna"
+	AccountPaymentControlsRestrictedPaymentMethodsItemKriya                     AccountPaymentControlsRestrictedPaymentMethodsItem = "kriya"
+	AccountPaymentControlsRestrictedPaymentMethodsItemKueski                    AccountPaymentControlsRestrictedPaymentMethodsItem = "kueski"
+	AccountPaymentControlsRestrictedPaymentMethodsItemMondu                     AccountPaymentControlsRestrictedPaymentMethodsItem = "mondu"
+	AccountPaymentControlsRestrictedPaymentMethodsItemOney                      AccountPaymentControlsRestrictedPaymentMethodsItem = "oney"
+	AccountPaymentControlsRestrictedPaymentMethodsItemScalapay                  AccountPaymentControlsRestrictedPaymentMethodsItem = "scalapay"
+	AccountPaymentControlsRestrictedPaymentMethodsItemSequra                    AccountPaymentControlsRestrictedPaymentMethodsItem = "sequra"
+	AccountPaymentControlsRestrictedPaymentMethodsItemSezzle                    AccountPaymentControlsRestrictedPaymentMethodsItem = "sezzle"
+	AccountPaymentControlsRestrictedPaymentMethodsItemSplitit                   AccountPaymentControlsRestrictedPaymentMethodsItem = "splitit"
+	AccountPaymentControlsRestrictedPaymentMethodsItemSunbit                    AccountPaymentControlsRestrictedPaymentMethodsItem = "sunbit"
+	AccountPaymentControlsRestrictedPaymentMethodsItemTabby                     AccountPaymentControlsRestrictedPaymentMethodsItem = "tabby"
+	AccountPaymentControlsRestrictedPaymentMethodsItemTamara                    AccountPaymentControlsRestrictedPaymentMethodsItem = "tamara"
+	AccountPaymentControlsRestrictedPaymentMethodsItemZip                       AccountPaymentControlsRestrictedPaymentMethodsItem = "zip"
+	AccountPaymentControlsRestrictedPaymentMethodsItemCardInstallmentsThree     AccountPaymentControlsRestrictedPaymentMethodsItem = "card_installments_three"
+	AccountPaymentControlsRestrictedPaymentMethodsItemCardInstallmentsSix       AccountPaymentControlsRestrictedPaymentMethodsItem = "card_installments_six"
+	AccountPaymentControlsRestrictedPaymentMethodsItemCardInstallmentsTwelve    AccountPaymentControlsRestrictedPaymentMethodsItem = "card_installments_twelve"
+	AccountPaymentControlsRestrictedPaymentMethodsItemOney3X                    AccountPaymentControlsRestrictedPaymentMethodsItem = "oney_3x"
+	AccountPaymentControlsRestrictedPaymentMethodsItemOney4X                    AccountPaymentControlsRestrictedPaymentMethodsItem = "oney_4x"
+	AccountPaymentControlsRestrictedPaymentMethodsItemKlarnaPayNow              AccountPaymentControlsRestrictedPaymentMethodsItem = "klarna_pay_now"
+	AccountPaymentControlsRestrictedPaymentMethodsItemUsBankAccount             AccountPaymentControlsRestrictedPaymentMethodsItem = "us_bank_account"
+	AccountPaymentControlsRestrictedPaymentMethodsItemSepaDebit                 AccountPaymentControlsRestrictedPaymentMethodsItem = "sepa_debit"
+	AccountPaymentControlsRestrictedPaymentMethodsItemBacsDebit                 AccountPaymentControlsRestrictedPaymentMethodsItem = "bacs_debit"
+	AccountPaymentControlsRestrictedPaymentMethodsItemAuBecsDebit               AccountPaymentControlsRestrictedPaymentMethodsItem = "au_becs_debit"
+	AccountPaymentControlsRestrictedPaymentMethodsItemAcssDebit                 AccountPaymentControlsRestrictedPaymentMethodsItem = "acss_debit"
+	AccountPaymentControlsRestrictedPaymentMethodsItemPayByBank                 AccountPaymentControlsRestrictedPaymentMethodsItem = "pay_by_bank"
+	AccountPaymentControlsRestrictedPaymentMethodsItemPayto                     AccountPaymentControlsRestrictedPaymentMethodsItem = "payto"
+	AccountPaymentControlsRestrictedPaymentMethodsItemPaypal                    AccountPaymentControlsRestrictedPaymentMethodsItem = "paypal"
+	AccountPaymentControlsRestrictedPaymentMethodsItemCashapp                   AccountPaymentControlsRestrictedPaymentMethodsItem = "cashapp"
+	AccountPaymentControlsRestrictedPaymentMethodsItemVenmo                     AccountPaymentControlsRestrictedPaymentMethodsItem = "venmo"
+	AccountPaymentControlsRestrictedPaymentMethodsItemAmazonPay                 AccountPaymentControlsRestrictedPaymentMethodsItem = "amazon_pay"
+	AccountPaymentControlsRestrictedPaymentMethodsItemLink                      AccountPaymentControlsRestrictedPaymentMethodsItem = "link"
 )
 
 func NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString(s string) (AccountPaymentControlsRestrictedPaymentMethodsItem, error) {
@@ -4078,6 +4117,84 @@ func NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString(s string) (
 		return AccountPaymentControlsRestrictedPaymentMethodsItemCardAmericanExpress, nil
 	case "card_discover_global_network":
 		return AccountPaymentControlsRestrictedPaymentMethodsItemCardDiscoverGlobalNetwork, nil
+	case "addi":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemAddi, nil
+	case "affirm":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemAffirm, nil
+	case "afterpay_clearpay":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemAfterpayClearpay, nil
+	case "alma":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemAlma, nil
+	case "billie":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemBillie, nil
+	case "capchase_pay":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemCapchasePay, nil
+	case "claritypay":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemClaritypay, nil
+	case "flex_pay":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemFlexPay, nil
+	case "klarna":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemKlarna, nil
+	case "kriya":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemKriya, nil
+	case "kueski":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemKueski, nil
+	case "mondu":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemMondu, nil
+	case "oney":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemOney, nil
+	case "scalapay":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemScalapay, nil
+	case "sequra":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemSequra, nil
+	case "sezzle":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemSezzle, nil
+	case "splitit":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemSplitit, nil
+	case "sunbit":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemSunbit, nil
+	case "tabby":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemTabby, nil
+	case "tamara":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemTamara, nil
+	case "zip":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemZip, nil
+	case "card_installments_three":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemCardInstallmentsThree, nil
+	case "card_installments_six":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemCardInstallmentsSix, nil
+	case "card_installments_twelve":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemCardInstallmentsTwelve, nil
+	case "oney_3x":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemOney3X, nil
+	case "oney_4x":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemOney4X, nil
+	case "klarna_pay_now":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemKlarnaPayNow, nil
+	case "us_bank_account":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemUsBankAccount, nil
+	case "sepa_debit":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemSepaDebit, nil
+	case "bacs_debit":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemBacsDebit, nil
+	case "au_becs_debit":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemAuBecsDebit, nil
+	case "acss_debit":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemAcssDebit, nil
+	case "pay_by_bank":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemPayByBank, nil
+	case "payto":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemPayto, nil
+	case "paypal":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemPaypal, nil
+	case "cashapp":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemCashapp, nil
+	case "venmo":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemVenmo, nil
+	case "amazon_pay":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemAmazonPay, nil
+	case "link":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemLink, nil
 	}
 	var t AccountPaymentControlsRestrictedPaymentMethodsItem
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

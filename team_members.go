@@ -21,7 +21,7 @@ type CreateTeamMembersRequest struct {
 	AccountID string `json:"account_id" url:"-"`
 	// Email address to invite. Mutually exclusive with `user_id`. If the email already belongs to a Whop account it is treated the same as passing that account's `user_id`; otherwise a pending invite is created for the email.
 	Email *string `json:"email,omitempty" url:"-"`
-	// The system role to grant. Custom roles cannot be granted through the API. The Partner role can only be granted to the account's attached, verified partner.
+	// The system role to grant. Custom roles cannot be granted through the API. The Partner role provides view-only access.
 	Role CreateTeamMembersRequestRole `json:"role" url:"-"`
 	// The user to add to the team, prefixed `user_`. Mutually exclusive with `email`.
 	UserID *string `json:"user_id,omitempty" url:"-"`
@@ -713,7 +713,7 @@ func (t TeamMemberStatus) Ptr() *TeamMemberStatus {
 	return &t
 }
 
-// The system role to grant. Custom roles cannot be granted through the API. The Partner role can only be granted to the account's attached, verified partner.
+// The system role to grant. Custom roles cannot be granted through the API. The Partner role provides view-only access.
 type CreateTeamMembersRequestRole string
 
 const (
@@ -1198,7 +1198,7 @@ func (l *ListTeamMembersResponsePageInfo) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The system role to grant. Custom roles cannot be granted through the API. The Partner role can only be granted to the account's attached, verified partner.
+// The system role to grant. Custom roles cannot be granted through the API. The Partner role provides view-only access.
 type UpdateTeamMembersRequestRole string
 
 const (
@@ -1244,7 +1244,7 @@ var (
 type UpdateTeamMembersRequest struct {
 	// Team member ID — `ausr_` for accepted members, `ausri_` for pending invites.
 	ID string `json:"-" url:"-"`
-	// The system role to grant. Custom roles cannot be granted through the API. The Partner role can only be granted to the account's attached, verified partner.
+	// The system role to grant. Custom roles cannot be granted through the API. The Partner role provides view-only access.
 	Role *UpdateTeamMembersRequestRole `json:"role,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
