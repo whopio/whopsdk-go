@@ -1630,6 +1630,14 @@ func TestSettersMembership(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetCancelOption", func(t *testing.T) {
+		obj := &Membership{}
+		var fernTestValueCancelOption *MembershipCancelOption
+		obj.SetCancelOption(fernTestValueCancelOption)
+		assert.Equal(t, fernTestValueCancelOption, obj.CancelOption)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCanceledAt", func(t *testing.T) {
 		obj := &Membership{}
 		var fernTestValueCanceledAt *string
@@ -1969,6 +1977,39 @@ func TestGettersMembership(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCancelAtPeriodEnd() // Should return zero value
+	})
+
+	t.Run("GetCancelOption", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Membership{}
+		var expected *MembershipCancelOption
+		obj.CancelOption = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCancelOption(), "getter should return the property value")
+	})
+
+	t.Run("GetCancelOption_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Membership{}
+		obj.CancelOption = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCancelOption(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCancelOption_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Membership
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCancelOption() // Should return zero value
 	})
 
 	t.Run("GetCanceledAt", func(t *testing.T) {
@@ -2906,6 +2947,37 @@ func TestSettersMarkExplicitMembership(t *testing.T) {
 
 		// Act
 		obj.SetCancelAtPeriodEnd(fernTestValueCancelAtPeriodEnd)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetCancelOption_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Membership{}
+		var fernTestValueCancelOption *MembershipCancelOption
+
+		// Act
+		obj.SetCancelOption(fernTestValueCancelOption)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -7871,6 +7943,7 @@ func TestRequiredNullableRoundTripMembership(t *testing.T) {
 	requiredNullableKeys := []string{
 		"affiliate",
 		"billing_period_days",
+		"cancel_option",
 		"canceled_at",
 		"cancellation_reason",
 		"collection_method",
@@ -7901,7 +7974,7 @@ func TestRequiredNullableRoundTripMembership(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Membership
-		require.NoError(t, json.Unmarshal([]byte(`{"affiliate":null,"billing_period_days":null,"canceled_at":null,"cancellation_reason":null,"collection_method":null,"current_period_end":null,"current_period_start":null,"expires_at":null,"license_key":null,"manage_url":null,"member":null,"member_id":null,"most_recent_action":null,"most_recent_action_at":null,"phone_number":null,"promo_code_id":null,"renewal_price":null,"split_pay_current_payments":null,"split_pay_required_payments":null,"user_id":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"affiliate":null,"billing_period_days":null,"cancel_option":null,"canceled_at":null,"cancellation_reason":null,"collection_method":null,"current_period_end":null,"current_period_start":null,"expires_at":null,"license_key":null,"manage_url":null,"member":null,"member_id":null,"most_recent_action":null,"most_recent_action_at":null,"phone_number":null,"promo_code_id":null,"renewal_price":null,"split_pay_current_payments":null,"split_pay_required_payments":null,"user_id":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -8855,6 +8928,70 @@ func TestEnumMembershipAffiliateCommissionType(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewMembershipAffiliateCommissionTypeFromString("flat_fee")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumMembershipCancelOption(t *testing.T) {
+	t.Run("NewFromString_too_expensive", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewMembershipCancelOptionFromString("too_expensive")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, MembershipCancelOption("too_expensive"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_switching", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewMembershipCancelOptionFromString("switching")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, MembershipCancelOption("switching"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_missing_features", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewMembershipCancelOptionFromString("missing_features")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, MembershipCancelOption("missing_features"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_technical_issues", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewMembershipCancelOptionFromString("technical_issues")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, MembershipCancelOption("technical_issues"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_bad_experience", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewMembershipCancelOptionFromString("bad_experience")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, MembershipCancelOption("bad_experience"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_other", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewMembershipCancelOptionFromString("other")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, MembershipCancelOption("other"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_testing", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewMembershipCancelOptionFromString("testing")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, MembershipCancelOption("testing"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewMembershipCancelOptionFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewMembershipCancelOptionFromString("too_expensive")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

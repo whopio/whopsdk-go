@@ -729,39 +729,41 @@ var (
 	membershipFieldAffiliate                = big.NewInt(1 << 1)
 	membershipFieldBillingPeriodDays        = big.NewInt(1 << 2)
 	membershipFieldCancelAtPeriodEnd        = big.NewInt(1 << 3)
-	membershipFieldCanceledAt               = big.NewInt(1 << 4)
-	membershipFieldCancellationReason       = big.NewInt(1 << 5)
-	membershipFieldCollectionMethod         = big.NewInt(1 << 6)
-	membershipFieldCreatedAt                = big.NewInt(1 << 7)
-	membershipFieldCurrentPeriodEnd         = big.NewInt(1 << 8)
-	membershipFieldCurrentPeriodStart       = big.NewInt(1 << 9)
-	membershipFieldExpiresAt                = big.NewInt(1 << 10)
-	membershipFieldID                       = big.NewInt(1 << 11)
-	membershipFieldInitialPrice             = big.NewInt(1 << 12)
-	membershipFieldLicenseKey               = big.NewInt(1 << 13)
-	membershipFieldManageURL                = big.NewInt(1 << 14)
-	membershipFieldMember                   = big.NewInt(1 << 15)
-	membershipFieldMemberID                 = big.NewInt(1 << 16)
-	membershipFieldMetadata                 = big.NewInt(1 << 17)
-	membershipFieldMostRecentAction         = big.NewInt(1 << 18)
-	membershipFieldMostRecentActionAt       = big.NewInt(1 << 19)
-	membershipFieldPhoneNumber              = big.NewInt(1 << 20)
-	membershipFieldPlanID                   = big.NewInt(1 << 21)
-	membershipFieldProduct                  = big.NewInt(1 << 22)
-	membershipFieldProductID                = big.NewInt(1 << 23)
-	membershipFieldPromoCodeID              = big.NewInt(1 << 24)
-	membershipFieldRenewalPrice             = big.NewInt(1 << 25)
-	membershipFieldSplitPayCurrentPayments  = big.NewInt(1 << 26)
-	membershipFieldSplitPayRequiredPayments = big.NewInt(1 << 27)
-	membershipFieldStatus                   = big.NewInt(1 << 28)
-	membershipFieldUpdatedAt                = big.NewInt(1 << 29)
-	membershipFieldUserID                   = big.NewInt(1 << 30)
+	membershipFieldCancelOption             = big.NewInt(1 << 4)
+	membershipFieldCanceledAt               = big.NewInt(1 << 5)
+	membershipFieldCancellationReason       = big.NewInt(1 << 6)
+	membershipFieldCollectionMethod         = big.NewInt(1 << 7)
+	membershipFieldCreatedAt                = big.NewInt(1 << 8)
+	membershipFieldCurrentPeriodEnd         = big.NewInt(1 << 9)
+	membershipFieldCurrentPeriodStart       = big.NewInt(1 << 10)
+	membershipFieldExpiresAt                = big.NewInt(1 << 11)
+	membershipFieldID                       = big.NewInt(1 << 12)
+	membershipFieldInitialPrice             = big.NewInt(1 << 13)
+	membershipFieldLicenseKey               = big.NewInt(1 << 14)
+	membershipFieldManageURL                = big.NewInt(1 << 15)
+	membershipFieldMember                   = big.NewInt(1 << 16)
+	membershipFieldMemberID                 = big.NewInt(1 << 17)
+	membershipFieldMetadata                 = big.NewInt(1 << 18)
+	membershipFieldMostRecentAction         = big.NewInt(1 << 19)
+	membershipFieldMostRecentActionAt       = big.NewInt(1 << 20)
+	membershipFieldPhoneNumber              = big.NewInt(1 << 21)
+	membershipFieldPlanID                   = big.NewInt(1 << 22)
+	membershipFieldProduct                  = big.NewInt(1 << 23)
+	membershipFieldProductID                = big.NewInt(1 << 24)
+	membershipFieldPromoCodeID              = big.NewInt(1 << 25)
+	membershipFieldRenewalPrice             = big.NewInt(1 << 26)
+	membershipFieldSplitPayCurrentPayments  = big.NewInt(1 << 27)
+	membershipFieldSplitPayRequiredPayments = big.NewInt(1 << 28)
+	membershipFieldStatus                   = big.NewInt(1 << 29)
+	membershipFieldUpdatedAt                = big.NewInt(1 << 30)
+	membershipFieldUserID                   = big.NewInt(1 << 31)
 )
 
 // membershipNullableFields maps the wire names of Membership's nullable fields (required or optional) to their field bits.
 var membershipNullableFields = map[string]*big.Int{
 	"affiliate":                   membershipFieldAffiliate,
 	"billing_period_days":         membershipFieldBillingPeriodDays,
+	"cancel_option":               membershipFieldCancelOption,
 	"canceled_at":                 membershipFieldCanceledAt,
 	"cancellation_reason":         membershipFieldCancellationReason,
 	"collection_method":           membershipFieldCollectionMethod,
@@ -791,6 +793,8 @@ type Membership struct {
 	BillingPeriodDays *int `json:"billing_period_days,omitempty" url:"billing_period_days,omitempty"`
 	// Whether the membership is set to cancel when the current billing period ends. Only meaningful for recurring variants.
 	CancelAtPeriodEnd bool `json:"cancel_at_period_end" url:"cancel_at_period_end"`
+	// The category the member picked for why they canceled. `null` when no category was picked.
+	CancelOption *MembershipCancelOption `json:"cancel_option,omitempty" url:"cancel_option,omitempty"`
 	// When cancellation was requested, or when the membership was canceled if no request time is recorded, as an ISO 8601 timestamp. `null` when neither is recorded.
 	CanceledAt *string `json:"canceled_at,omitempty" url:"canceled_at,omitempty"`
 	// Free-text explanation provided when canceling. `null` when no reason was provided.
@@ -879,6 +883,13 @@ func (m *Membership) GetCancelAtPeriodEnd() bool {
 		return false
 	}
 	return m.CancelAtPeriodEnd
+}
+
+func (m *Membership) GetCancelOption() *MembershipCancelOption {
+	if m == nil {
+		return nil
+	}
+	return m.CancelOption
 }
 
 func (m *Membership) GetCanceledAt() *string {
@@ -1112,6 +1123,13 @@ func (m *Membership) SetBillingPeriodDays(billingPeriodDays *int) {
 func (m *Membership) SetCancelAtPeriodEnd(cancelAtPeriodEnd bool) {
 	m.CancelAtPeriodEnd = cancelAtPeriodEnd
 	m.require(membershipFieldCancelAtPeriodEnd)
+}
+
+// SetCancelOption sets the CancelOption field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetCancelOption(cancelOption *MembershipCancelOption) {
+	m.CancelOption = cancelOption
+	m.require(membershipFieldCancelOption)
 }
 
 // SetCanceledAt sets the CanceledAt field and marks it as non-optional;
@@ -1597,6 +1615,44 @@ func NewMembershipAffiliateCommissionTypeFromString(s string) (MembershipAffilia
 }
 
 func (m MembershipAffiliateCommissionType) Ptr() *MembershipAffiliateCommissionType {
+	return &m
+}
+
+// The category the member picked for why they canceled. `null` when no category was picked.
+type MembershipCancelOption string
+
+const (
+	MembershipCancelOptionTooExpensive    MembershipCancelOption = "too_expensive"
+	MembershipCancelOptionSwitching       MembershipCancelOption = "switching"
+	MembershipCancelOptionMissingFeatures MembershipCancelOption = "missing_features"
+	MembershipCancelOptionTechnicalIssues MembershipCancelOption = "technical_issues"
+	MembershipCancelOptionBadExperience   MembershipCancelOption = "bad_experience"
+	MembershipCancelOptionOther           MembershipCancelOption = "other"
+	MembershipCancelOptionTesting         MembershipCancelOption = "testing"
+)
+
+func NewMembershipCancelOptionFromString(s string) (MembershipCancelOption, error) {
+	switch s {
+	case "too_expensive":
+		return MembershipCancelOptionTooExpensive, nil
+	case "switching":
+		return MembershipCancelOptionSwitching, nil
+	case "missing_features":
+		return MembershipCancelOptionMissingFeatures, nil
+	case "technical_issues":
+		return MembershipCancelOptionTechnicalIssues, nil
+	case "bad_experience":
+		return MembershipCancelOptionBadExperience, nil
+	case "other":
+		return MembershipCancelOptionOther, nil
+	case "testing":
+		return MembershipCancelOptionTesting, nil
+	}
+	var t MembershipCancelOption
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (m MembershipCancelOption) Ptr() *MembershipCancelOption {
 	return &m
 }
 
