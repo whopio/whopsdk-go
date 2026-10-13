@@ -637,10 +637,11 @@ func (s *SuspendAccountsRequest) SetID(id string) {
 }
 
 var (
-	transferOwnershipAccountsRequestFieldID         = big.NewInt(1 << 0)
-	transferOwnershipAccountsRequestFieldAsPartner  = big.NewInt(1 << 1)
-	transferOwnershipAccountsRequestFieldIdentifier = big.NewInt(1 << 2)
-	transferOwnershipAccountsRequestFieldMessage    = big.NewInt(1 << 3)
+	transferOwnershipAccountsRequestFieldID               = big.NewInt(1 << 0)
+	transferOwnershipAccountsRequestFieldAsPartner        = big.NewInt(1 << 1)
+	transferOwnershipAccountsRequestFieldAuthorizedUserID = big.NewInt(1 << 2)
+	transferOwnershipAccountsRequestFieldIdentifier       = big.NewInt(1 << 3)
+	transferOwnershipAccountsRequestFieldMessage          = big.NewInt(1 << 4)
 )
 
 type TransferOwnershipAccountsRequest struct {
@@ -648,6 +649,8 @@ type TransferOwnershipAccountsRequest struct {
 	ID string `json:"-" url:"-"`
 	// If true, the current owner is credited as the account's Whop partner, earning partner commission on its sales. Requires the current owner to already be an enrolled Whop partner. Skipped if the account already has an active partner.
 	AsPartner *bool `json:"as_partner,omitempty" url:"-"`
+	// Your team membership on the business this referral is made for, prefixed `ausr_`. The referral then credits that team instead of you personally. Requires `as_partner`.
+	AuthorizedUserID *string `json:"authorized_user_id,omitempty" url:"-"`
 	// The user to transfer ownership to: a user ID (`user_*`) or an email address. An email address with no Whop account yet is sent an invite to create one.
 	Identifier string `json:"identifier" url:"-"`
 	// A note from the partner, shown as a quote in the invite email and signed with their name. Requires `as_partner`; sending it on an ordinary transfer is a 400. Omit it and the email sends without a note.
@@ -678,6 +681,13 @@ func (t *TransferOwnershipAccountsRequest) SetID(id string) {
 func (t *TransferOwnershipAccountsRequest) SetAsPartner(asPartner *bool) {
 	t.AsPartner = asPartner
 	t.require(transferOwnershipAccountsRequestFieldAsPartner)
+}
+
+// SetAuthorizedUserID sets the AuthorizedUserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TransferOwnershipAccountsRequest) SetAuthorizedUserID(authorizedUserID *string) {
+	t.AuthorizedUserID = authorizedUserID
+	t.require(transferOwnershipAccountsRequestFieldAuthorizedUserID)
 }
 
 // SetIdentifier sets the Identifier field and marks it as non-optional;

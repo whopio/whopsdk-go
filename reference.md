@@ -1498,6 +1498,14 @@ client.Accounts.TransferOwnership(
 <dl>
 <dd>
 
+**authorizedUserID:** `*string` — Your team membership on the business this referral is made for, prefixed `ausr_`. The referral then credits that team instead of you personally. Requires `as_partner`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **identifier:** `string` — The user to transfer ownership to: a user ID (`user_*`) or an email address. An email address with no Whop account yet is sent an invite to create one.
     
 </dd>
