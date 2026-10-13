@@ -30,15 +30,15 @@ var (
 type CreateTradesRequest struct {
 	// The account or user whose wallet trades, prefixed `biz_` or `user_`.
 	AccountID string `json:"account_id" url:"-"`
-	// For a buy or deposit, the USDT0 to send from the wallet, with at most 6 decimals. For a withdraw, the USDC to send back, at least 1 with at most 6 decimals, or `all`. Required for buy, deposit and withdraw.
+	// Only for a deposit or withdraw, and required for both. For a deposit, the USDT0 to send from the wallet, with at most 6 decimals. For a withdraw, the USDC to send back, at least 1 with at most 6 decimals, or `all`.
 	Amount *string `json:"amount,omitempty" url:"-"`
 	// Only for an order. Your own ID for the trade, 1 to 128 characters, unique for the account. Sending it again with the same order returns the same trade; with a different order it answers `409`.
 	ClientOrderID *string `json:"client_order_id,omitempty" url:"-"`
 	// The kind of market. Required for an order.
 	InstrumentType *CreateTradesRequestInstrumentType `json:"instrument_type,omitempty" url:"-"`
-	// The cross leverage, from 1 to the market's maximum. Required for a buy and for an order that is not `reduce_only`; not accepted on a reduce-only order.
+	// Only for an order. The cross leverage, from 1 to the market's maximum. Required unless `reduce_only`; not accepted on a reduce-only order.
 	Leverage *int `json:"leverage,omitempty" url:"-"`
-	// The perpetual market, for example `BTC`. Required for a buy, close or order; not accepted for a deposit or withdraw.
+	// The perpetual market, for example `BTC`. Required for an order or close; not accepted for a deposit or withdraw.
 	Market *string `json:"market,omitempty" url:"-"`
 	// Only for an order. Free-form string-to-string annotations: up to 50 keys of at most 40 characters, values up to 500 characters.
 	Metadata map[string]string `json:"metadata,omitempty" url:"-"`
@@ -56,7 +56,7 @@ type CreateTradesRequest struct {
 	Size *string `json:"size,omitempty" url:"-"`
 	// Only for a market order or a close. The worst price as basis points from the mid price, from 1 to 1000; defaults to 100.
 	SlippageBps *int `json:"slippage_bps,omitempty" url:"-"`
-	// `order` places one order from the trading balance and sets cross `leverage` first. `deposit` bridges `amount` USDT0 from the wallet to the trading balance. `withdraw` sends `amount` USDC (or `all`) from the trading balance back to the wallet. `buy` bridges `amount` USDT0 to the trading account, sets cross `leverage` on `market`, and places one market buy; if it does not fill, its money goes back to the wallet. `close` closes the whole position in `market` with a market reduce-only order; when the account is then flat, a `withdraw` trade sends the trading balance back to the wallet.
+	// `order` places one order from the trading balance and sets cross `leverage` first; when the balance is short, it bridges the USDT0 it needs from the wallet first. `deposit` bridges `amount` USDT0 from the wallet to the trading balance. `withdraw` sends `amount` USDC (or `all`) from the trading balance back to the wallet. `close` closes the whole position in `market` with a market reduce-only order; when the account is then flat, a `withdraw` trade sends the trading balance back to the wallet.
 	Type CreateTradesRequestType `json:"type" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -385,9 +385,9 @@ var tradeNullableFields = map[string]*big.Int{
 type Trade struct {
 	// The account that owns the trading wallet, prefixed `biz_`. `null` when a user owns it.
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
-	// The USDT0 that a buy or deposit sends from the wallet, or the USDC that a withdraw sends back, in native units, as a decimal string. `null` for other types and for a withdraw of `all`.
+	// The USDT0 that a deposit, or an order short of trading balance, sends from the wallet, or the USDC that a withdraw sends back, in native units, as a decimal string. `null` otherwise, and for a withdraw of `all`.
 	Amount *string `json:"amount,omitempty" url:"amount,omitempty"`
-	// The average fill price of the buy or order, in USD, as a decimal string. `null` when it is not known.
+	// The average fill price of the order, in USD, as a decimal string. `null` when it is not known.
 	AveragePrice *string `json:"average_price,omitempty" url:"average_price,omitempty"`
 	// The caller's own ID for the trade, unique for the account. `null` when none was sent.
 	ClientOrderID *string `json:"client_order_id,omitempty" url:"client_order_id,omitempty"`
@@ -397,13 +397,13 @@ type Trade struct {
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Why the trade failed, or `null`.
 	FailureCode *TradeFailureCode `json:"failure_code,omitempty" url:"failure_code,omitempty"`
-	// The size the buy or order filled, in units of the market, as a decimal string. `null` until it fills.
+	// The size the order filled, in units of the market, as a decimal string. `null` until it fills.
 	FilledSize *string `json:"filled_size,omitempty" url:"filled_size,omitempty"`
-	// Where the money is when the trade did not complete as asked, or after a close: `wallet`, `trading_account`, or `unknown` while a person checks it. `null` otherwise.
+	// Where the money is when the trade did not complete as asked: `wallet`, `trading_account`, or `unknown` while a person checks it. `null` otherwise.
 	FundsLocation *TradeFundsLocation `json:"funds_location,omitempty" url:"funds_location,omitempty"`
 	// Trade ID, prefixed `tint_`.
 	ID string `json:"id" url:"id"`
-	// The cross leverage set before a buy or an opening order. `null` for a close, deposit, withdraw or reduce-only order.
+	// The cross leverage set before an opening order. `null` for a close, deposit, withdraw or reduce-only order.
 	Leverage *int `json:"leverage,omitempty" url:"leverage,omitempty"`
 	// The perpetual market, for example `BTC`. `null` for a deposit or withdraw.
 	Market *string `json:"market,omitempty" url:"market,omitempty"`
@@ -420,11 +420,11 @@ type Trade struct {
 	Side *TradeSide `json:"side,omitempty" url:"side,omitempty"`
 	// The order size in units of the market, as a decimal string. `null` for other types.
 	Size *string `json:"size,omitempty" url:"size,omitempty"`
-	// `pending` until the trade starts. `processing` while it runs, also while a failed buy sends its money back. `completed` when it did what was asked. `failed` when it did not; `funds_location` says where the money is. `in_review` when the outcome is unknown and a person checks it.
+	// `pending` until the trade starts. `processing` while it runs, also while an order that did not fill sends the money it bridged in back to the wallet. `completed` when it did what was asked. `failed` when it did not; `funds_location` says where the money is. `in_review` when the outcome is unknown and a person checks it.
 	Status TradeStatus `json:"status" url:"status"`
-	// More about the outcome: `partial_fill` (the buy filled only part of its size), `no_position` (the close found no position), `partial_close` (part of the position is still open), or `nothing_to_return` (the close had less than 1 USDC to send back). `null` otherwise.
+	// `partial_fill` when the order filled only part of its size. `null` otherwise.
 	StatusDetail *TradeStatusDetail `json:"status_detail,omitempty" url:"status_detail,omitempty"`
-	// `order` places one order from the trading balance. `deposit` bridges USDT0 from the wallet to the trading balance. `withdraw` sends USDC from the trading balance back to the wallet. `buy` bridges USDT0 to the trading account, sets the leverage and places one market buy. `close` closes the whole position in one market with a market reduce-only order; when the account is then flat, a `withdraw` trade sends the trading balance back to the wallet.
+	// `order` places one order from the trading balance. `deposit` bridges USDT0 from the wallet to the trading balance. `withdraw` sends USDC from the trading balance back to the wallet. `close` closes the whole position in one market with a market reduce-only order; when the account is then flat, a `withdraw` trade sends the trading balance back to the wallet.
 	Type TradeType `json:"type" url:"type"`
 	// When the trade last changed, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
@@ -898,7 +898,7 @@ func (t TradeFailureCode) Ptr() *TradeFailureCode {
 	return &t
 }
 
-// Where the money is when the trade did not complete as asked, or after a close: `wallet`, `trading_account`, or `unknown` while a person checks it. `null` otherwise.
+// Where the money is when the trade did not complete as asked: `wallet`, `trading_account`, or `unknown` while a person checks it. `null` otherwise.
 type TradeFundsLocation string
 
 const (
@@ -989,7 +989,7 @@ func (t TradeSide) Ptr() *TradeSide {
 	return &t
 }
 
-// `pending` until the trade starts. `processing` while it runs, also while a failed buy sends its money back. `completed` when it did what was asked. `failed` when it did not; `funds_location` says where the money is. `in_review` when the outcome is unknown and a person checks it.
+// `pending` until the trade starts. `processing` while it runs, also while an order that did not fill sends the money it bridged in back to the wallet. `completed` when it did what was asked. `failed` when it did not; `funds_location` says where the money is. `in_review` when the outcome is unknown and a person checks it.
 type TradeStatus string
 
 const (
@@ -1021,26 +1021,17 @@ func (t TradeStatus) Ptr() *TradeStatus {
 	return &t
 }
 
-// More about the outcome: `partial_fill` (the buy filled only part of its size), `no_position` (the close found no position), `partial_close` (part of the position is still open), or `nothing_to_return` (the close had less than 1 USDC to send back). `null` otherwise.
+// `partial_fill` when the order filled only part of its size. `null` otherwise.
 type TradeStatusDetail string
 
 const (
-	TradeStatusDetailPartialFill     TradeStatusDetail = "partial_fill"
-	TradeStatusDetailNoPosition      TradeStatusDetail = "no_position"
-	TradeStatusDetailPartialClose    TradeStatusDetail = "partial_close"
-	TradeStatusDetailNothingToReturn TradeStatusDetail = "nothing_to_return"
+	TradeStatusDetailPartialFill TradeStatusDetail = "partial_fill"
 )
 
 func NewTradeStatusDetailFromString(s string) (TradeStatusDetail, error) {
 	switch s {
 	case "partial_fill":
 		return TradeStatusDetailPartialFill, nil
-	case "no_position":
-		return TradeStatusDetailNoPosition, nil
-	case "partial_close":
-		return TradeStatusDetailPartialClose, nil
-	case "nothing_to_return":
-		return TradeStatusDetailNothingToReturn, nil
 	}
 	var t TradeStatusDetail
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1050,11 +1041,10 @@ func (t TradeStatusDetail) Ptr() *TradeStatusDetail {
 	return &t
 }
 
-// `order` places one order from the trading balance. `deposit` bridges USDT0 from the wallet to the trading balance. `withdraw` sends USDC from the trading balance back to the wallet. `buy` bridges USDT0 to the trading account, sets the leverage and places one market buy. `close` closes the whole position in one market with a market reduce-only order; when the account is then flat, a `withdraw` trade sends the trading balance back to the wallet.
+// `order` places one order from the trading balance. `deposit` bridges USDT0 from the wallet to the trading balance. `withdraw` sends USDC from the trading balance back to the wallet. `close` closes the whole position in one market with a market reduce-only order; when the account is then flat, a `withdraw` trade sends the trading balance back to the wallet.
 type TradeType string
 
 const (
-	TradeTypeBuy      TradeType = "buy"
 	TradeTypeClose    TradeType = "close"
 	TradeTypeOrder    TradeType = "order"
 	TradeTypeDeposit  TradeType = "deposit"
@@ -1063,8 +1053,6 @@ const (
 
 func NewTradeTypeFromString(s string) (TradeType, error) {
 	switch s {
-	case "buy":
-		return TradeTypeBuy, nil
 	case "close":
 		return TradeTypeClose, nil
 	case "order":
@@ -1148,11 +1136,10 @@ func (c CreateTradesRequestSide) Ptr() *CreateTradesRequestSide {
 	return &c
 }
 
-// `order` places one order from the trading balance and sets cross `leverage` first. `deposit` bridges `amount` USDT0 from the wallet to the trading balance. `withdraw` sends `amount` USDC (or `all`) from the trading balance back to the wallet. `buy` bridges `amount` USDT0 to the trading account, sets cross `leverage` on `market`, and places one market buy; if it does not fill, its money goes back to the wallet. `close` closes the whole position in `market` with a market reduce-only order; when the account is then flat, a `withdraw` trade sends the trading balance back to the wallet.
+// `order` places one order from the trading balance and sets cross `leverage` first; when the balance is short, it bridges the USDT0 it needs from the wallet first. `deposit` bridges `amount` USDT0 from the wallet to the trading balance. `withdraw` sends `amount` USDC (or `all`) from the trading balance back to the wallet. `close` closes the whole position in `market` with a market reduce-only order; when the account is then flat, a `withdraw` trade sends the trading balance back to the wallet.
 type CreateTradesRequestType string
 
 const (
-	CreateTradesRequestTypeBuy      CreateTradesRequestType = "buy"
 	CreateTradesRequestTypeClose    CreateTradesRequestType = "close"
 	CreateTradesRequestTypeOrder    CreateTradesRequestType = "order"
 	CreateTradesRequestTypeDeposit  CreateTradesRequestType = "deposit"
@@ -1161,8 +1148,6 @@ const (
 
 func NewCreateTradesRequestTypeFromString(s string) (CreateTradesRequestType, error) {
 	switch s {
-	case "buy":
-		return CreateTradesRequestTypeBuy, nil
 	case "close":
 		return CreateTradesRequestTypeClose, nil
 	case "order":
@@ -1258,7 +1243,6 @@ func (l ListTradesRequestStatus) Ptr() *ListTradesRequestStatus {
 type ListTradesRequestType string
 
 const (
-	ListTradesRequestTypeBuy      ListTradesRequestType = "buy"
 	ListTradesRequestTypeClose    ListTradesRequestType = "close"
 	ListTradesRequestTypeOrder    ListTradesRequestType = "order"
 	ListTradesRequestTypeDeposit  ListTradesRequestType = "deposit"
@@ -1267,8 +1251,6 @@ const (
 
 func NewListTradesRequestTypeFromString(s string) (ListTradesRequestType, error) {
 	switch s {
-	case "buy":
-		return ListTradesRequestTypeBuy, nil
 	case "close":
 		return ListTradesRequestTypeClose, nil
 	case "order":

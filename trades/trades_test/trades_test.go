@@ -114,7 +114,7 @@ func TestTradesCreateWithWireMock(
 	)
 	request := &whopsdk.CreateTradesRequest{
 		AccountID: "biz_xxxxxxxxxxxxxx",
-		Type:      whopsdk.CreateTradesRequestTypeBuy,
+		Type:      whopsdk.CreateTradesRequestTypeClose,
 	}
 	_, invocationErr := client.Trades.Create(
 		context.TODO(),
