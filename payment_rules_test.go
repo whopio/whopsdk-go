@@ -1735,18 +1735,18 @@ func TestSettersMarkExplicitPaymentRuleCondition(t *testing.T) {
 }
 
 func TestGettersPaymentRuleConditionValue(t *testing.T) {
-	t.Run("GetInteger", func(t *testing.T) {
+	t.Run("GetDouble", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &PaymentRuleConditionValue{}
-		var expected int
-		obj.Integer = expected
+		var expected float64
+		obj.Double = expected
 
 		// Act & Assert
-		assert.Equal(t, expected, obj.GetInteger(), "getter should return the property value")
+		assert.Equal(t, expected, obj.GetDouble(), "getter should return the property value")
 	})
 
-	t.Run("GetInteger_NilReceiver", func(t *testing.T) {
+	t.Run("GetDouble_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *PaymentRuleConditionValue
 		// Should not panic - getters should handle nil receiver gracefully
@@ -1755,7 +1755,7 @@ func TestGettersPaymentRuleConditionValue(t *testing.T) {
 				t.Errorf("Getter panicked on nil receiver: %v", r)
 			}
 		}()
-		_ = obj.GetInteger() // Should return zero value
+		_ = obj.GetDouble() // Should return zero value
 	})
 
 	t.Run("GetString", func(t *testing.T) {

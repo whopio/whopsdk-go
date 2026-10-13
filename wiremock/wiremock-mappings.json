@@ -10107,7 +10107,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"action\": \"allow\",\n      \"conditions\": {\n        \"all\": [\n          {\n            \"field\": \"risk_score\",\n            \"operator\": \"eq\",\n            \"value\": 1\n          }\n        ]\n      },\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"deleted_at\": \"deleted_at\",\n      \"id\": \"prule_xxxxxxxxxxxxxx\",\n      \"metadata\": {\n        \"key\": \"value\"\n      },\n      \"name\": \"Block high risk\",\n      \"status\": \"active\",\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"action\": \"allow\",\n      \"conditions\": {\n        \"all\": [\n          {\n            \"field\": \"risk_score\",\n            \"operator\": \"eq\",\n            \"value\": 1.1\n          }\n        ]\n      },\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"deleted_at\": \"deleted_at\",\n      \"id\": \"prule_xxxxxxxxxxxxxx\",\n      \"metadata\": {\n        \"key\": \"value\"\n      },\n      \"name\": \"Block high risk\",\n      \"status\": \"active\",\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -10139,7 +10139,7 @@
       },
       "response": {
         "status": 201,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"action\": \"allow\",\n  \"conditions\": {\n    \"all\": [\n      {\n        \"field\": \"risk_score\",\n        \"operator\": \"eq\",\n        \"value\": 1\n      }\n    ]\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"deleted_at\": \"deleted_at\",\n  \"id\": \"prule_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"name\": \"Block high risk\",\n  \"status\": \"active\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"action\": \"allow\",\n  \"conditions\": {\n    \"all\": [\n      {\n        \"field\": \"risk_score\",\n        \"operator\": \"eq\",\n        \"value\": 1.1\n      }\n    ]\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"deleted_at\": \"deleted_at\",\n  \"id\": \"prule_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"name\": \"Block high risk\",\n  \"status\": \"active\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -10207,7 +10207,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"action\": \"allow\",\n  \"conditions\": {\n    \"all\": [\n      {\n        \"field\": \"risk_score\",\n        \"operator\": \"eq\",\n        \"value\": 1\n      }\n    ]\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"deleted_at\": \"deleted_at\",\n  \"id\": \"prule_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"name\": \"Block high risk\",\n  \"status\": \"active\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"action\": \"allow\",\n  \"conditions\": {\n    \"all\": [\n      {\n        \"field\": \"risk_score\",\n        \"operator\": \"eq\",\n        \"value\": 1.1\n      }\n    ]\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"deleted_at\": \"deleted_at\",\n  \"id\": \"prule_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"name\": \"Block high risk\",\n  \"status\": \"active\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -10279,7 +10279,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"action\": \"allow\",\n  \"conditions\": {\n    \"all\": [\n      {\n        \"field\": \"risk_score\",\n        \"operator\": \"eq\",\n        \"value\": 1\n      }\n    ]\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"deleted_at\": \"deleted_at\",\n  \"id\": \"prule_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"name\": \"Block high risk\",\n  \"status\": \"active\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"action\": \"allow\",\n  \"conditions\": {\n    \"all\": [\n      {\n        \"field\": \"risk_score\",\n        \"operator\": \"eq\",\n        \"value\": 1.1\n      }\n    ]\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"deleted_at\": \"deleted_at\",\n  \"id\": \"prule_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"name\": \"Block high risk\",\n  \"status\": \"active\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -10315,7 +10315,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"action\": \"allow\",\n  \"conditions\": {\n    \"all\": [\n      {\n        \"field\": \"risk_score\",\n        \"operator\": \"eq\",\n        \"value\": 1\n      }\n    ]\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"deleted_at\": \"deleted_at\",\n  \"id\": \"prule_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"name\": \"Block high risk\",\n  \"status\": \"active\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"action\": \"allow\",\n  \"conditions\": {\n    \"all\": [\n      {\n        \"field\": \"risk_score\",\n        \"operator\": \"eq\",\n        \"value\": 1.1\n      }\n    ]\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"deleted_at\": \"deleted_at\",\n  \"id\": \"prule_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"name\": \"Block high risk\",\n  \"status\": \"active\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -10351,7 +10351,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"action\": \"allow\",\n  \"conditions\": {\n    \"all\": [\n      {\n        \"field\": \"risk_score\",\n        \"operator\": \"eq\",\n        \"value\": 1\n      }\n    ]\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"deleted_at\": \"deleted_at\",\n  \"id\": \"prule_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"name\": \"Block high risk\",\n  \"status\": \"active\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"action\": \"allow\",\n  \"conditions\": {\n    \"all\": [\n      {\n        \"field\": \"risk_score\",\n        \"operator\": \"eq\",\n        \"value\": 1.1\n      }\n    ]\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"deleted_at\": \"deleted_at\",\n  \"id\": \"prule_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"name\": \"Block high risk\",\n  \"status\": \"active\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -10387,7 +10387,7 @@
       },
       "response": {
         "status": 201,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"action\": \"allow\",\n  \"conditions\": {\n    \"all\": [\n      {\n        \"field\": \"risk_score\",\n        \"operator\": \"eq\",\n        \"value\": 1\n      }\n    ]\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"deleted_at\": \"deleted_at\",\n  \"id\": \"prule_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"name\": \"Block high risk\",\n  \"status\": \"active\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"action\": \"allow\",\n  \"conditions\": {\n    \"all\": [\n      {\n        \"field\": \"risk_score\",\n        \"operator\": \"eq\",\n        \"value\": 1.1\n      }\n    ]\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"deleted_at\": \"deleted_at\",\n  \"id\": \"prule_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"name\": \"Block high risk\",\n  \"status\": \"active\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
