@@ -484,14 +484,6 @@ func TestSettersFormCompanyAccountsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetBusinessType", func(t *testing.T) {
-		obj := &FormCompanyAccountsRequest{}
-		var fernTestValueBusinessType string
-		obj.SetBusinessType(fernTestValueBusinessType)
-		assert.Equal(t, fernTestValueBusinessType, obj.BusinessType)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetBusinessWebsite", func(t *testing.T) {
 		obj := &FormCompanyAccountsRequest{}
 		var fernTestValueBusinessWebsite *string
@@ -537,22 +529,6 @@ func TestSettersFormCompanyAccountsRequest(t *testing.T) {
 		var fernTestValueFounders []*FormCompanyAccountsRequestFoundersItem
 		obj.SetFounders(fernTestValueFounders)
 		assert.Equal(t, fernTestValueFounders, obj.Founders)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetIndustryGroup", func(t *testing.T) {
-		obj := &FormCompanyAccountsRequest{}
-		var fernTestValueIndustryGroup string
-		obj.SetIndustryGroup(fernTestValueIndustryGroup)
-		assert.Equal(t, fernTestValueIndustryGroup, obj.IndustryGroup)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetIndustryType", func(t *testing.T) {
-		obj := &FormCompanyAccountsRequest{}
-		var fernTestValueIndustryType string
-		obj.SetIndustryType(fernTestValueIndustryType)
-		assert.Equal(t, fernTestValueIndustryType, obj.IndustryType)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -676,37 +652,6 @@ func TestSettersMarkExplicitFormCompanyAccountsRequest(t *testing.T) {
 
 		// Act
 		obj.SetBusinessPhone(fernTestValueBusinessPhone)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetBusinessType_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &FormCompanyAccountsRequest{}
-		var fernTestValueBusinessType string
-
-		// Act
-		obj.SetBusinessType(fernTestValueBusinessType)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -893,68 +838,6 @@ func TestSettersMarkExplicitFormCompanyAccountsRequest(t *testing.T) {
 
 		// Act
 		obj.SetFounders(fernTestValueFounders)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetIndustryGroup_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &FormCompanyAccountsRequest{}
-		var fernTestValueIndustryGroup string
-
-		// Act
-		obj.SetIndustryGroup(fernTestValueIndustryGroup)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetIndustryType_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &FormCompanyAccountsRequest{}
-		var fernTestValueIndustryType string
-
-		// Act
-		obj.SetIndustryType(fernTestValueIndustryType)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -2152,14 +2035,6 @@ func TestSettersAccount(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetIndustryGroup", func(t *testing.T) {
-		obj := &Account{}
-		var fernTestValueIndustryGroup *string
-		obj.SetIndustryGroup(fernTestValueIndustryGroup)
-		assert.Equal(t, fernTestValueIndustryGroup, obj.IndustryGroup)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetIndustryType", func(t *testing.T) {
 		obj := &Account{}
 		var fernTestValueIndustryType *string
@@ -3219,39 +3094,6 @@ func TestGettersAccount(t *testing.T) {
 			}
 		}()
 		_ = obj.GetID() // Should return zero value
-	})
-
-	t.Run("GetIndustryGroup", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &Account{}
-		var expected *string
-		obj.IndustryGroup = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetIndustryGroup(), "getter should return the property value")
-	})
-
-	t.Run("GetIndustryGroup_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &Account{}
-		obj.IndustryGroup = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetIndustryGroup(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetIndustryGroup_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *Account
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetIndustryGroup() // Should return zero value
 	})
 
 	t.Run("GetIndustryType", func(t *testing.T) {
@@ -5433,37 +5275,6 @@ func TestSettersMarkExplicitAccount(t *testing.T) {
 
 		// Act
 		obj.SetID(fernTestValueID)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetIndustryGroup_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &Account{}
-		var fernTestValueIndustryGroup *string
-
-		// Act
-		obj.SetIndustryGroup(fernTestValueIndustryGroup)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -18524,14 +18335,6 @@ func TestSettersUpdateAccountsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetBusinessType", func(t *testing.T) {
-		obj := &UpdateAccountsRequest{}
-		var fernTestValueBusinessType *string
-		obj.SetBusinessType(fernTestValueBusinessType)
-		assert.Equal(t, fernTestValueBusinessType, obj.BusinessType)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetCancellationPolicy", func(t *testing.T) {
 		obj := &UpdateAccountsRequest{}
 		var fernTestValueCancellationPolicy *UpdateAccountsRequestCancellationPolicy
@@ -18593,22 +18396,6 @@ func TestSettersUpdateAccountsRequest(t *testing.T) {
 		var fernTestValueHomePreferences []UpdateAccountsRequestHomePreferencesItem
 		obj.SetHomePreferences(fernTestValueHomePreferences)
 		assert.Equal(t, fernTestValueHomePreferences, obj.HomePreferences)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetIndustryGroup", func(t *testing.T) {
-		obj := &UpdateAccountsRequest{}
-		var fernTestValueIndustryGroup *string
-		obj.SetIndustryGroup(fernTestValueIndustryGroup)
-		assert.Equal(t, fernTestValueIndustryGroup, obj.IndustryGroup)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetIndustryType", func(t *testing.T) {
-		obj := &UpdateAccountsRequest{}
-		var fernTestValueIndustryType *string
-		obj.SetIndustryType(fernTestValueIndustryType)
-		assert.Equal(t, fernTestValueIndustryType, obj.IndustryType)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -18860,6 +18647,14 @@ func TestSettersUpdateAccountsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetIndustryType", func(t *testing.T) {
+		obj := &UpdateAccountsRequest{}
+		var fernTestValueIndustryType any
+		obj.SetIndustryType(fernTestValueIndustryType)
+		assert.Equal(t, fernTestValueIndustryType, obj.IndustryType)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestSettersMarkExplicitUpdateAccountsRequest(t *testing.T) {
@@ -19026,37 +18821,6 @@ func TestSettersMarkExplicitUpdateAccountsRequest(t *testing.T) {
 
 		// Act
 		obj.SetBusinessName(fernTestValueBusinessName)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetBusinessType_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &UpdateAccountsRequest{}
-		var fernTestValueBusinessType *string
-
-		// Act
-		obj.SetBusinessType(fernTestValueBusinessType)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -19305,68 +19069,6 @@ func TestSettersMarkExplicitUpdateAccountsRequest(t *testing.T) {
 
 		// Act
 		obj.SetHomePreferences(fernTestValueHomePreferences)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetIndustryGroup_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &UpdateAccountsRequest{}
-		var fernTestValueIndustryGroup *string
-
-		// Act
-		obj.SetIndustryGroup(fernTestValueIndustryGroup)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetIndustryType_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &UpdateAccountsRequest{}
-		var fernTestValueIndustryType *string
-
-		// Act
-		obj.SetIndustryType(fernTestValueIndustryType)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -20328,6 +20030,37 @@ func TestSettersMarkExplicitUpdateAccountsRequest(t *testing.T) {
 
 		// Act
 		obj.SetWebsite(fernTestValueWebsite)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetIndustryType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAccountsRequest{}
+		var fernTestValueIndustryType any
+
+		// Act
+		obj.SetIndustryType(fernTestValueIndustryType)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -21820,7 +21553,6 @@ func TestRequiredNullableRoundTripAccount(t *testing.T) {
 		"email",
 		"eula",
 		"financing",
-		"industry_group",
 		"industry_type",
 		"invoice_prefix",
 		"logo_url",
@@ -21862,7 +21594,7 @@ func TestRequiredNullableRoundTripAccount(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Account
-		require.NoError(t, json.Unmarshal([]byte(`{"ads_spend_usd":null,"banner_image_url":null,"business_address":null,"business_name":null,"business_type":null,"cancellation_policy":null,"capabilities":null,"cards":null,"country":null,"description":null,"email":null,"eula":null,"financing":null,"industry_group":null,"industry_type":null,"invoice_prefix":null,"logo_url":null,"onboarding_type":null,"opengraph_image_url":null,"opengraph_image_variant":null,"other_business_description":null,"other_industry_description":null,"parent_account":null,"payment_controls":null,"privacy_policy":null,"product_tax_code":null,"recommended_actions":null,"required_actions":null,"return_policy":null,"shipping_policy":null,"status":null,"status_reason":null,"target_audience":null,"tax_remitted_by":null,"tax_type":null,"terms_of_service":null,"three_ds_level":null,"total_earned_usd":null,"total_usd":null,"trading":null,"volume_usd":null,"wallet":null,"website":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"ads_spend_usd":null,"banner_image_url":null,"business_address":null,"business_name":null,"business_type":null,"cancellation_policy":null,"capabilities":null,"cards":null,"country":null,"description":null,"email":null,"eula":null,"financing":null,"industry_type":null,"invoice_prefix":null,"logo_url":null,"onboarding_type":null,"opengraph_image_url":null,"opengraph_image_variant":null,"other_business_description":null,"other_industry_description":null,"parent_account":null,"payment_controls":null,"privacy_policy":null,"product_tax_code":null,"recommended_actions":null,"required_actions":null,"return_policy":null,"shipping_policy":null,"status":null,"status_reason":null,"target_audience":null,"tax_remitted_by":null,"tax_type":null,"terms_of_service":null,"three_ds_level":null,"total_earned_usd":null,"total_usd":null,"trading":null,"volume_usd":null,"wallet":null,"website":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]

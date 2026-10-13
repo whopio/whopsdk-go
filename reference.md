@@ -737,14 +737,6 @@ client.Accounts.Update(
 <dl>
 <dd>
 
-**businessType:** `*string` — High-level business category for the account. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **cancellationPolicy:** `*whopsdk.UpdateAccountsRequestCancellationPolicy` — The account's cancellation policy document. Attached to new disputes as the cancellation policy evidence, with the terms of service as the fallback. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
     
 </dd>
@@ -802,22 +794,6 @@ client.Accounts.Update(
 <dd>
 
 **homePreferences:** `[]whopsdk.UpdateAccountsRequestHomePreferencesItem` — Public account home page preferences.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**industryGroup:** `*string` — Account industry group. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**industryType:** `*string` — Specific industry vertical for the account. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
     
 </dd>
 </dl>
@@ -1069,6 +1045,14 @@ client.Accounts.Update(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**industryType:** `any` 
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
@@ -1120,7 +1104,6 @@ request := &whopsdk.FormCompanyAccountsRequest{
     BusinessPhone: whopsdk.String(
         "+15125550142",
     ),
-    BusinessType: "brick_and_mortar",
     BusinessWebsite: whopsdk.String(
         "https://shinetime.example",
     ),
@@ -1161,8 +1144,6 @@ request := &whopsdk.FormCompanyAccountsRequest{
             ),
         },
     },
-    IndustryGroup: "automotive",
-    IndustryType: "car_wash_and_detailing_shop",
     ShareStructure: &whopsdk.FormCompanyAccountsRequestShareStructure{
         NumberOfShares: 123,
         Value: 123,
@@ -1221,14 +1202,6 @@ client.Accounts.FormCompany(
 <dl>
 <dd>
 
-**businessType:** `string` — High-level business category, from the Whop business taxonomy. Valid values are listed on [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary).
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **businessWebsite:** `*string` — Company website URL.
     
 </dd>
@@ -1270,22 +1243,6 @@ client.Accounts.FormCompany(
 <dd>
 
 **founders:** `[]*whopsdk.FormCompanyAccountsRequestFoundersItem` — The company's founders. Exactly one must be marked `is_primary` — the responsible party for the filing.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**industryGroup:** `string` — Industry group, from the Whop business taxonomy. Valid values are listed on [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary).
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**industryType:** `string` — Specific industry vertical, from the Whop business taxonomy. Valid values are listed on [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary).
     
 </dd>
 </dl>

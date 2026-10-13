@@ -182,17 +182,14 @@ var (
 	formCompanyAccountsRequestFieldBusinessAddress    = big.NewInt(1 << 1)
 	formCompanyAccountsRequestFieldBusinessName       = big.NewInt(1 << 2)
 	formCompanyAccountsRequestFieldBusinessPhone      = big.NewInt(1 << 3)
-	formCompanyAccountsRequestFieldBusinessType       = big.NewInt(1 << 4)
-	formCompanyAccountsRequestFieldBusinessWebsite    = big.NewInt(1 << 5)
-	formCompanyAccountsRequestFieldEntitySuffix       = big.NewInt(1 << 6)
-	formCompanyAccountsRequestFieldEntityType         = big.NewInt(1 << 7)
-	formCompanyAccountsRequestFieldExpediteEin        = big.NewInt(1 << 8)
-	formCompanyAccountsRequestFieldFormationState     = big.NewInt(1 << 9)
-	formCompanyAccountsRequestFieldFounders           = big.NewInt(1 << 10)
-	formCompanyAccountsRequestFieldIndustryGroup      = big.NewInt(1 << 11)
-	formCompanyAccountsRequestFieldIndustryType       = big.NewInt(1 << 12)
-	formCompanyAccountsRequestFieldShareStructure     = big.NewInt(1 << 13)
-	formCompanyAccountsRequestFieldUseRegisteredAgent = big.NewInt(1 << 14)
+	formCompanyAccountsRequestFieldBusinessWebsite    = big.NewInt(1 << 4)
+	formCompanyAccountsRequestFieldEntitySuffix       = big.NewInt(1 << 5)
+	formCompanyAccountsRequestFieldEntityType         = big.NewInt(1 << 6)
+	formCompanyAccountsRequestFieldExpediteEin        = big.NewInt(1 << 7)
+	formCompanyAccountsRequestFieldFormationState     = big.NewInt(1 << 8)
+	formCompanyAccountsRequestFieldFounders           = big.NewInt(1 << 9)
+	formCompanyAccountsRequestFieldShareStructure     = big.NewInt(1 << 10)
+	formCompanyAccountsRequestFieldUseRegisteredAgent = big.NewInt(1 << 11)
 )
 
 type FormCompanyAccountsRequest struct {
@@ -204,8 +201,6 @@ type FormCompanyAccountsRequest struct {
 	BusinessName string `json:"business_name" url:"-"`
 	// Business phone number in E.164 format, for example `+12125550100`. Required unless `use_registered_agent` is `true`.
 	BusinessPhone *string `json:"business_phone,omitempty" url:"-"`
-	// High-level business category, from the Whop business taxonomy. Valid values are listed on [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary).
-	BusinessType string `json:"business_type" url:"-"`
 	// Company website URL.
 	BusinessWebsite *string `json:"business_website,omitempty" url:"-"`
 	// Legal entity ending appended to `business_name`. LLC formations accept `LLC`, `L.L.C`, `L.L.C.` or `Limited Liability Company` and default to `LLC`; C-Corp formations accept `Inc`, `Inc.`, `Incorporated`, `Corp.`, `Corporation`, `C Corp`, `C Corporation`, `CCorp` or `Company` and default to `Inc.`. Unrecognized values fall back to the default for the entity type.
@@ -218,10 +213,6 @@ type FormCompanyAccountsRequest struct {
 	FormationState FormCompanyAccountsRequestFormationState `json:"formation_state" url:"-"`
 	// The company's founders. Exactly one must be marked `is_primary` — the responsible party for the filing.
 	Founders []*FormCompanyAccountsRequestFoundersItem `json:"founders" url:"-"`
-	// Industry group, from the Whop business taxonomy. Valid values are listed on [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary).
-	IndustryGroup string `json:"industry_group" url:"-"`
-	// Specific industry vertical, from the Whop business taxonomy. Valid values are listed on [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary).
-	IndustryType string `json:"industry_type" url:"-"`
 	// Authorized share structure. Required when `entity_type` is `c_corp`; ignored for LLCs.
 	ShareStructure *FormCompanyAccountsRequestShareStructure `json:"share_structure,omitempty" url:"-"`
 	// Use the registered agent's address as the company address instead of `business_address`.
@@ -268,13 +259,6 @@ func (f *FormCompanyAccountsRequest) SetBusinessPhone(businessPhone *string) {
 	f.require(formCompanyAccountsRequestFieldBusinessPhone)
 }
 
-// SetBusinessType sets the BusinessType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (f *FormCompanyAccountsRequest) SetBusinessType(businessType string) {
-	f.BusinessType = businessType
-	f.require(formCompanyAccountsRequestFieldBusinessType)
-}
-
 // SetBusinessWebsite sets the BusinessWebsite field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (f *FormCompanyAccountsRequest) SetBusinessWebsite(businessWebsite *string) {
@@ -315,20 +299,6 @@ func (f *FormCompanyAccountsRequest) SetFormationState(formationState FormCompan
 func (f *FormCompanyAccountsRequest) SetFounders(founders []*FormCompanyAccountsRequestFoundersItem) {
 	f.Founders = founders
 	f.require(formCompanyAccountsRequestFieldFounders)
-}
-
-// SetIndustryGroup sets the IndustryGroup field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (f *FormCompanyAccountsRequest) SetIndustryGroup(industryGroup string) {
-	f.IndustryGroup = industryGroup
-	f.require(formCompanyAccountsRequestFieldIndustryGroup)
-}
-
-// SetIndustryType sets the IndustryType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (f *FormCompanyAccountsRequest) SetIndustryType(industryType string) {
-	f.IndustryType = industryType
-	f.require(formCompanyAccountsRequestFieldIndustryType)
 }
 
 // SetShareStructure sets the ShareStructure field and marks it as non-optional;
@@ -748,56 +718,55 @@ var (
 	accountFieldFinancing                           = big.NewInt(1 << 19)
 	accountFieldHomePreferences                     = big.NewInt(1 << 20)
 	accountFieldID                                  = big.NewInt(1 << 21)
-	accountFieldIndustryGroup                       = big.NewInt(1 << 22)
-	accountFieldIndustryType                        = big.NewInt(1 << 23)
-	accountFieldInvoicePrefix                       = big.NewInt(1 << 24)
-	accountFieldLogoURL                             = big.NewInt(1 << 25)
-	accountFieldMetadata                            = big.NewInt(1 << 26)
-	accountFieldOnboardingType                      = big.NewInt(1 << 27)
-	accountFieldOpengraphImageURL                   = big.NewInt(1 << 28)
-	accountFieldOpengraphImageVariant               = big.NewInt(1 << 29)
-	accountFieldOrchestrationEnabled                = big.NewInt(1 << 30)
-	accountFieldOtherBusinessDescription            = big.NewInt(1 << 31)
-	accountFieldOtherIndustryDescription            = big.NewInt(1 << 32)
-	accountFieldOwner                               = big.NewInt(1 << 33)
-	accountFieldParentAccount                       = big.NewInt(1 << 34)
-	accountFieldPartner                             = big.NewInt(1 << 35)
-	accountFieldPaymentControls                     = big.NewInt(1 << 36)
-	accountFieldPlatformCredits                     = big.NewInt(1 << 37)
-	accountFieldPrivacyPolicy                       = big.NewInt(1 << 38)
-	accountFieldProductTaxCode                      = big.NewInt(1 << 39)
-	accountFieldRecommendedActions                  = big.NewInt(1 << 40)
-	accountFieldRequire2Fa                          = big.NewInt(1 << 41)
-	accountFieldRequiredActions                     = big.NewInt(1 << 42)
-	accountFieldReturnPolicy                        = big.NewInt(1 << 43)
-	accountFieldRewards                             = big.NewInt(1 << 44)
-	accountFieldRoute                               = big.NewInt(1 << 45)
-	accountFieldSendCustomerEmails                  = big.NewInt(1 << 46)
-	accountFieldShippingPolicy                      = big.NewInt(1 << 47)
-	accountFieldShowJoinedWhops                     = big.NewInt(1 << 48)
-	accountFieldShowReviewsDtc                      = big.NewInt(1 << 49)
-	accountFieldShowUserDirectory                   = big.NewInt(1 << 50)
-	accountFieldSocialLinks                         = big.NewInt(1 << 51)
-	accountFieldStablecoinRails                     = big.NewInt(1 << 52)
-	accountFieldStatus                              = big.NewInt(1 << 53)
-	accountFieldStatusReason                        = big.NewInt(1 << 54)
-	accountFieldStorePageConfig                     = big.NewInt(1 << 55)
-	accountFieldTargetAudience                      = big.NewInt(1 << 56)
-	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 57)
-	accountFieldTaxIdentifiers                      = big.NewInt(1 << 58)
-	accountFieldTaxRemittedBy                       = big.NewInt(1 << 59)
-	accountFieldTaxType                             = big.NewInt(1 << 60)
-	accountFieldTermsOfService                      = big.NewInt(1 << 61)
-	accountFieldThreeDsLevel                        = big.NewInt(1 << 62)
-	accountFieldTitle                               = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	accountFieldTotalEarnedUsd                      = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	accountFieldTotalUsd                            = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	accountFieldTrading                             = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(0).Lsh(big.NewInt(1), 67)
-	accountFieldVerification                        = big.NewInt(0).Lsh(big.NewInt(1), 68)
-	accountFieldVolumeUsd                           = big.NewInt(0).Lsh(big.NewInt(1), 69)
-	accountFieldWallet                              = big.NewInt(0).Lsh(big.NewInt(1), 70)
-	accountFieldWebsite                             = big.NewInt(0).Lsh(big.NewInt(1), 71)
+	accountFieldIndustryType                        = big.NewInt(1 << 22)
+	accountFieldInvoicePrefix                       = big.NewInt(1 << 23)
+	accountFieldLogoURL                             = big.NewInt(1 << 24)
+	accountFieldMetadata                            = big.NewInt(1 << 25)
+	accountFieldOnboardingType                      = big.NewInt(1 << 26)
+	accountFieldOpengraphImageURL                   = big.NewInt(1 << 27)
+	accountFieldOpengraphImageVariant               = big.NewInt(1 << 28)
+	accountFieldOrchestrationEnabled                = big.NewInt(1 << 29)
+	accountFieldOtherBusinessDescription            = big.NewInt(1 << 30)
+	accountFieldOtherIndustryDescription            = big.NewInt(1 << 31)
+	accountFieldOwner                               = big.NewInt(1 << 32)
+	accountFieldParentAccount                       = big.NewInt(1 << 33)
+	accountFieldPartner                             = big.NewInt(1 << 34)
+	accountFieldPaymentControls                     = big.NewInt(1 << 35)
+	accountFieldPlatformCredits                     = big.NewInt(1 << 36)
+	accountFieldPrivacyPolicy                       = big.NewInt(1 << 37)
+	accountFieldProductTaxCode                      = big.NewInt(1 << 38)
+	accountFieldRecommendedActions                  = big.NewInt(1 << 39)
+	accountFieldRequire2Fa                          = big.NewInt(1 << 40)
+	accountFieldRequiredActions                     = big.NewInt(1 << 41)
+	accountFieldReturnPolicy                        = big.NewInt(1 << 42)
+	accountFieldRewards                             = big.NewInt(1 << 43)
+	accountFieldRoute                               = big.NewInt(1 << 44)
+	accountFieldSendCustomerEmails                  = big.NewInt(1 << 45)
+	accountFieldShippingPolicy                      = big.NewInt(1 << 46)
+	accountFieldShowJoinedWhops                     = big.NewInt(1 << 47)
+	accountFieldShowReviewsDtc                      = big.NewInt(1 << 48)
+	accountFieldShowUserDirectory                   = big.NewInt(1 << 49)
+	accountFieldSocialLinks                         = big.NewInt(1 << 50)
+	accountFieldStablecoinRails                     = big.NewInt(1 << 51)
+	accountFieldStatus                              = big.NewInt(1 << 52)
+	accountFieldStatusReason                        = big.NewInt(1 << 53)
+	accountFieldStorePageConfig                     = big.NewInt(1 << 54)
+	accountFieldTargetAudience                      = big.NewInt(1 << 55)
+	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 56)
+	accountFieldTaxIdentifiers                      = big.NewInt(1 << 57)
+	accountFieldTaxRemittedBy                       = big.NewInt(1 << 58)
+	accountFieldTaxType                             = big.NewInt(1 << 59)
+	accountFieldTermsOfService                      = big.NewInt(1 << 60)
+	accountFieldThreeDsLevel                        = big.NewInt(1 << 61)
+	accountFieldTitle                               = big.NewInt(1 << 62)
+	accountFieldTotalEarnedUsd                      = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	accountFieldTotalUsd                            = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	accountFieldTrading                             = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	accountFieldVerification                        = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	accountFieldVolumeUsd                           = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	accountFieldWallet                              = big.NewInt(0).Lsh(big.NewInt(1), 69)
+	accountFieldWebsite                             = big.NewInt(0).Lsh(big.NewInt(1), 70)
 )
 
 // accountNullableFields maps the wire names of Account's nullable fields (required or optional) to their field bits.
@@ -815,7 +784,6 @@ var accountNullableFields = map[string]*big.Int{
 	"email":                      accountFieldEmail,
 	"eula":                       accountFieldEula,
 	"financing":                  accountFieldFinancing,
-	"industry_group":             accountFieldIndustryGroup,
 	"industry_type":              accountFieldIndustryType,
 	"invoice_prefix":             accountFieldInvoicePrefix,
 	"logo_url":                   accountFieldLogoURL,
@@ -891,8 +859,6 @@ type Account struct {
 	HomePreferences []AccountHomePreferencesItem `json:"home_preferences" url:"home_preferences"`
 	// Account ID, prefixed `biz_`.
 	ID string `json:"id" url:"id"`
-	// Account industry group. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
-	IndustryGroup *string `json:"industry_group,omitempty" url:"industry_group,omitempty"`
 	// Specific industry vertical for the account. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
 	IndustryType *string `json:"industry_type,omitempty" url:"industry_type,omitempty"`
 	// Prefix used for account invoices.
@@ -1145,13 +1111,6 @@ func (a *Account) GetID() string {
 		return ""
 	}
 	return a.ID
-}
-
-func (a *Account) GetIndustryGroup() *string {
-	if a == nil {
-		return nil
-	}
-	return a.IndustryGroup
 }
 
 func (a *Account) GetIndustryType() *string {
@@ -1665,13 +1624,6 @@ func (a *Account) SetHomePreferences(homePreferences []AccountHomePreferencesIte
 func (a *Account) SetID(id string) {
 	a.ID = id
 	a.require(accountFieldID)
-}
-
-// SetIndustryGroup sets the IndustryGroup field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *Account) SetIndustryGroup(industryGroup *string) {
-	a.IndustryGroup = industryGroup
-	a.require(accountFieldIndustryGroup)
 }
 
 // SetIndustryType sets the IndustryType field and marks it as non-optional;
@@ -10463,48 +10415,46 @@ var (
 	updateAccountsRequestFieldBannerImage                     = big.NewInt(1 << 3)
 	updateAccountsRequestFieldBusinessAddress                 = big.NewInt(1 << 4)
 	updateAccountsRequestFieldBusinessName                    = big.NewInt(1 << 5)
-	updateAccountsRequestFieldBusinessType                    = big.NewInt(1 << 6)
-	updateAccountsRequestFieldCancellationPolicy              = big.NewInt(1 << 7)
-	updateAccountsRequestFieldCollectVatID                    = big.NewInt(1 << 8)
-	updateAccountsRequestFieldCountry                         = big.NewInt(1 << 9)
-	updateAccountsRequestFieldDescription                     = big.NewInt(1 << 10)
-	updateAccountsRequestFieldDisputeFighterEnabled           = big.NewInt(1 << 11)
-	updateAccountsRequestFieldEula                            = big.NewInt(1 << 12)
-	updateAccountsRequestFieldFeaturedAffiliateProductID      = big.NewInt(1 << 13)
-	updateAccountsRequestFieldHomePreferences                 = big.NewInt(1 << 14)
-	updateAccountsRequestFieldIndustryGroup                   = big.NewInt(1 << 15)
-	updateAccountsRequestFieldIndustryType                    = big.NewInt(1 << 16)
-	updateAccountsRequestFieldInvoicePrefix                   = big.NewInt(1 << 17)
-	updateAccountsRequestFieldLogo                            = big.NewInt(1 << 18)
-	updateAccountsRequestFieldMetadata                        = big.NewInt(1 << 19)
-	updateAccountsRequestFieldOnboardingType                  = big.NewInt(1 << 20)
-	updateAccountsRequestFieldOpengraphImage                  = big.NewInt(1 << 21)
-	updateAccountsRequestFieldOpengraphImageVariant           = big.NewInt(1 << 22)
-	updateAccountsRequestFieldOrchestrationEnabled            = big.NewInt(1 << 23)
-	updateAccountsRequestFieldOtherBusinessDescription        = big.NewInt(1 << 24)
-	updateAccountsRequestFieldOtherIndustryDescription        = big.NewInt(1 << 25)
-	updateAccountsRequestFieldPrivacyPolicy                   = big.NewInt(1 << 26)
-	updateAccountsRequestFieldProductTaxCodeID                = big.NewInt(1 << 27)
-	updateAccountsRequestFieldRequire2Fa                      = big.NewInt(1 << 28)
-	updateAccountsRequestFieldReturnPolicy                    = big.NewInt(1 << 29)
-	updateAccountsRequestFieldRoute                           = big.NewInt(1 << 30)
-	updateAccountsRequestFieldSendCustomerEmails              = big.NewInt(1 << 31)
-	updateAccountsRequestFieldShippingPolicy                  = big.NewInt(1 << 32)
-	updateAccountsRequestFieldShowJoinedWhops                 = big.NewInt(1 << 33)
-	updateAccountsRequestFieldShowReviewsDtc                  = big.NewInt(1 << 34)
-	updateAccountsRequestFieldShowUserDirectory               = big.NewInt(1 << 35)
-	updateAccountsRequestFieldSocialLinks                     = big.NewInt(1 << 36)
-	updateAccountsRequestFieldStorePageConfig                 = big.NewInt(1 << 37)
-	updateAccountsRequestFieldTargetAudience                  = big.NewInt(1 << 38)
-	updateAccountsRequestFieldTaxCollectionEnabledStates      = big.NewInt(1 << 39)
-	updateAccountsRequestFieldTaxIdentifiers                  = big.NewInt(1 << 40)
-	updateAccountsRequestFieldTaxRemittedBy                   = big.NewInt(1 << 41)
-	updateAccountsRequestFieldTaxType                         = big.NewInt(1 << 42)
-	updateAccountsRequestFieldTermsOfService                  = big.NewInt(1 << 43)
-	updateAccountsRequestFieldThreeDsLevel                    = big.NewInt(1 << 44)
-	updateAccountsRequestFieldTitle                           = big.NewInt(1 << 45)
-	updateAccountsRequestFieldUseLogoAsOpengraphImageFallback = big.NewInt(1 << 46)
-	updateAccountsRequestFieldWebsite                         = big.NewInt(1 << 47)
+	updateAccountsRequestFieldCancellationPolicy              = big.NewInt(1 << 6)
+	updateAccountsRequestFieldCollectVatID                    = big.NewInt(1 << 7)
+	updateAccountsRequestFieldCountry                         = big.NewInt(1 << 8)
+	updateAccountsRequestFieldDescription                     = big.NewInt(1 << 9)
+	updateAccountsRequestFieldDisputeFighterEnabled           = big.NewInt(1 << 10)
+	updateAccountsRequestFieldEula                            = big.NewInt(1 << 11)
+	updateAccountsRequestFieldFeaturedAffiliateProductID      = big.NewInt(1 << 12)
+	updateAccountsRequestFieldHomePreferences                 = big.NewInt(1 << 13)
+	updateAccountsRequestFieldInvoicePrefix                   = big.NewInt(1 << 14)
+	updateAccountsRequestFieldLogo                            = big.NewInt(1 << 15)
+	updateAccountsRequestFieldMetadata                        = big.NewInt(1 << 16)
+	updateAccountsRequestFieldOnboardingType                  = big.NewInt(1 << 17)
+	updateAccountsRequestFieldOpengraphImage                  = big.NewInt(1 << 18)
+	updateAccountsRequestFieldOpengraphImageVariant           = big.NewInt(1 << 19)
+	updateAccountsRequestFieldOrchestrationEnabled            = big.NewInt(1 << 20)
+	updateAccountsRequestFieldOtherBusinessDescription        = big.NewInt(1 << 21)
+	updateAccountsRequestFieldOtherIndustryDescription        = big.NewInt(1 << 22)
+	updateAccountsRequestFieldPrivacyPolicy                   = big.NewInt(1 << 23)
+	updateAccountsRequestFieldProductTaxCodeID                = big.NewInt(1 << 24)
+	updateAccountsRequestFieldRequire2Fa                      = big.NewInt(1 << 25)
+	updateAccountsRequestFieldReturnPolicy                    = big.NewInt(1 << 26)
+	updateAccountsRequestFieldRoute                           = big.NewInt(1 << 27)
+	updateAccountsRequestFieldSendCustomerEmails              = big.NewInt(1 << 28)
+	updateAccountsRequestFieldShippingPolicy                  = big.NewInt(1 << 29)
+	updateAccountsRequestFieldShowJoinedWhops                 = big.NewInt(1 << 30)
+	updateAccountsRequestFieldShowReviewsDtc                  = big.NewInt(1 << 31)
+	updateAccountsRequestFieldShowUserDirectory               = big.NewInt(1 << 32)
+	updateAccountsRequestFieldSocialLinks                     = big.NewInt(1 << 33)
+	updateAccountsRequestFieldStorePageConfig                 = big.NewInt(1 << 34)
+	updateAccountsRequestFieldTargetAudience                  = big.NewInt(1 << 35)
+	updateAccountsRequestFieldTaxCollectionEnabledStates      = big.NewInt(1 << 36)
+	updateAccountsRequestFieldTaxIdentifiers                  = big.NewInt(1 << 37)
+	updateAccountsRequestFieldTaxRemittedBy                   = big.NewInt(1 << 38)
+	updateAccountsRequestFieldTaxType                         = big.NewInt(1 << 39)
+	updateAccountsRequestFieldTermsOfService                  = big.NewInt(1 << 40)
+	updateAccountsRequestFieldThreeDsLevel                    = big.NewInt(1 << 41)
+	updateAccountsRequestFieldTitle                           = big.NewInt(1 << 42)
+	updateAccountsRequestFieldUseLogoAsOpengraphImageFallback = big.NewInt(1 << 43)
+	updateAccountsRequestFieldWebsite                         = big.NewInt(1 << 44)
+	updateAccountsRequestFieldIndustryType                    = big.NewInt(1 << 45)
 )
 
 type UpdateAccountsRequest struct {
@@ -10520,8 +10470,6 @@ type UpdateAccountsRequest struct {
 	BusinessAddress *UpdateAccountsRequestBusinessAddress `json:"business_address,omitempty" url:"-"`
 	// The legal business name used with the account's tax address.
 	BusinessName *string `json:"business_name,omitempty" url:"-"`
-	// High-level business category for the account. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
-	BusinessType *string `json:"business_type,omitempty" url:"-"`
 	// The account's cancellation policy document. Attached to new disputes as the cancellation policy evidence, with the terms of service as the fallback. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
 	CancellationPolicy *UpdateAccountsRequestCancellationPolicy `json:"cancellation_policy,omitempty" url:"-"`
 	// Whether checkout shows a VAT/tax ID field for buyers to optionally enter. Does not require a VAT ID to purchase.
@@ -10538,10 +10486,6 @@ type UpdateAccountsRequest struct {
 	FeaturedAffiliateProductID *string `json:"featured_affiliate_product_id,omitempty" url:"-"`
 	// Public account home page preferences.
 	HomePreferences []UpdateAccountsRequestHomePreferencesItem `json:"home_preferences,omitempty" url:"-"`
-	// Account industry group. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
-	IndustryGroup *string `json:"industry_group,omitempty" url:"-"`
-	// Specific industry vertical for the account. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
-	IndustryType *string `json:"industry_type,omitempty" url:"-"`
 	// Prefix used for account invoices.
 	InvoicePrefix *string `json:"invoice_prefix,omitempty" url:"-"`
 	// Account logo, used as the profile picture when creating a Whop-managed Facebook page. Image files up to 5 MB. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file).
@@ -10603,7 +10547,8 @@ type UpdateAccountsRequest struct {
 	// Whether the account uses its logo as the fallback Open Graph image.
 	UseLogoAsOpengraphImageFallback *bool `json:"use_logo_as_opengraph_image_fallback,omitempty" url:"-"`
 	// The account's business website, as an `http` or `https` URL of at most 255 characters. Also added to the account's `social_links` as a `website` entry. Pass `null` to clear the website; existing social links are left unchanged.
-	Website *string `json:"website,omitempty" url:"-"`
+	Website      *string `json:"website,omitempty" url:"-"`
+	IndustryType any     `json:"industry_type,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -10660,13 +10605,6 @@ func (u *UpdateAccountsRequest) SetBusinessName(businessName *string) {
 	u.require(updateAccountsRequestFieldBusinessName)
 }
 
-// SetBusinessType sets the BusinessType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAccountsRequest) SetBusinessType(businessType *string) {
-	u.BusinessType = businessType
-	u.require(updateAccountsRequestFieldBusinessType)
-}
-
 // SetCancellationPolicy sets the CancellationPolicy field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateAccountsRequest) SetCancellationPolicy(cancellationPolicy *UpdateAccountsRequestCancellationPolicy) {
@@ -10721,20 +10659,6 @@ func (u *UpdateAccountsRequest) SetFeaturedAffiliateProductID(featuredAffiliateP
 func (u *UpdateAccountsRequest) SetHomePreferences(homePreferences []UpdateAccountsRequestHomePreferencesItem) {
 	u.HomePreferences = homePreferences
 	u.require(updateAccountsRequestFieldHomePreferences)
-}
-
-// SetIndustryGroup sets the IndustryGroup field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAccountsRequest) SetIndustryGroup(industryGroup *string) {
-	u.IndustryGroup = industryGroup
-	u.require(updateAccountsRequestFieldIndustryGroup)
-}
-
-// SetIndustryType sets the IndustryType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAccountsRequest) SetIndustryType(industryType *string) {
-	u.IndustryType = industryType
-	u.require(updateAccountsRequestFieldIndustryType)
 }
 
 // SetInvoicePrefix sets the InvoicePrefix field and marks it as non-optional;
@@ -10952,6 +10876,13 @@ func (u *UpdateAccountsRequest) SetUseLogoAsOpengraphImageFallback(useLogoAsOpen
 func (u *UpdateAccountsRequest) SetWebsite(website *string) {
 	u.Website = website
 	u.require(updateAccountsRequestFieldWebsite)
+}
+
+// SetIndustryType sets the IndustryType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequest) SetIndustryType(industryType any) {
+	u.IndustryType = industryType
+	u.require(updateAccountsRequestFieldIndustryType)
 }
 
 func (u *UpdateAccountsRequest) UnmarshalJSON(data []byte) error {
