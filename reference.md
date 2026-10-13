@@ -16152,6 +16152,14 @@ client.Domains.List(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**applePay:** `*whopsdk.ListDomainsRequestApplePay` — Only domains with apple_pay in this state, such as `ready`, or `any` for every domain that has apple_pay.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 

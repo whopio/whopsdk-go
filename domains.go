@@ -181,6 +181,7 @@ var (
 	listDomainsRequestFieldRegistration = big.NewInt(1 << 13)
 	listDomainsRequestFieldPlatform     = big.NewInt(1 << 14)
 	listDomainsRequestFieldWebsite      = big.NewInt(1 << 15)
+	listDomainsRequestFieldApplePay     = big.NewInt(1 << 16)
 )
 
 type ListDomainsRequest struct {
@@ -216,6 +217,8 @@ type ListDomainsRequest struct {
 	Platform *ListDomainsRequestPlatform `json:"-" url:"platform,omitempty"`
 	// Only domains with website in this state, such as `ready`, or `any` for every domain that has website.
 	Website *ListDomainsRequestWebsite `json:"-" url:"website,omitempty"`
+	// Only domains with apple_pay in this state, such as `ready`, or `any` for every domain that has apple_pay.
+	ApplePay *ListDomainsRequestApplePay `json:"-" url:"apple_pay,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -342,6 +345,13 @@ func (l *ListDomainsRequest) SetWebsite(website *ListDomainsRequestWebsite) {
 	l.require(listDomainsRequestFieldWebsite)
 }
 
+// SetApplePay sets the ApplePay field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListDomainsRequest) SetApplePay(applePay *ListDomainsRequestApplePay) {
+	l.ApplePay = applePay
+	l.require(listDomainsRequestFieldApplePay)
+}
+
 var (
 	retrieveDomainsRequestFieldID = big.NewInt(1 << 0)
 )
@@ -372,25 +382,27 @@ func (r *RetrieveDomainsRequest) SetID(id string) {
 
 var (
 	domainFieldAccountID    = big.NewInt(1 << 0)
-	domainFieldAvailability = big.NewInt(1 << 1)
-	domainFieldCreatedAt    = big.NewInt(1 << 2)
-	domainFieldDomain       = big.NewInt(1 << 3)
-	domainFieldID           = big.NewInt(1 << 4)
-	domainFieldIssues       = big.NewInt(1 << 5)
-	domainFieldMetadata     = big.NewInt(1 << 6)
-	domainFieldOwnedBy      = big.NewInt(1 << 7)
-	domainFieldPlatform     = big.NewInt(1 << 8)
-	domainFieldPublicRecord = big.NewInt(1 << 9)
-	domainFieldRegistration = big.NewInt(1 << 10)
-	domainFieldStatus       = big.NewInt(1 << 11)
-	domainFieldUpdatedAt    = big.NewInt(1 << 12)
-	domainFieldVerification = big.NewInt(1 << 13)
-	domainFieldWebsite      = big.NewInt(1 << 14)
+	domainFieldApplePay     = big.NewInt(1 << 1)
+	domainFieldAvailability = big.NewInt(1 << 2)
+	domainFieldCreatedAt    = big.NewInt(1 << 3)
+	domainFieldDomain       = big.NewInt(1 << 4)
+	domainFieldID           = big.NewInt(1 << 5)
+	domainFieldIssues       = big.NewInt(1 << 6)
+	domainFieldMetadata     = big.NewInt(1 << 7)
+	domainFieldOwnedBy      = big.NewInt(1 << 8)
+	domainFieldPlatform     = big.NewInt(1 << 9)
+	domainFieldPublicRecord = big.NewInt(1 << 10)
+	domainFieldRegistration = big.NewInt(1 << 11)
+	domainFieldStatus       = big.NewInt(1 << 12)
+	domainFieldUpdatedAt    = big.NewInt(1 << 13)
+	domainFieldVerification = big.NewInt(1 << 14)
+	domainFieldWebsite      = big.NewInt(1 << 15)
 )
 
 // domainNullableFields maps the wire names of Domain's nullable fields (required or optional) to their field bits.
 var domainNullableFields = map[string]*big.Int{
 	"account_id":    domainFieldAccountID,
+	"apple_pay":     domainFieldApplePay,
 	"availability":  domainFieldAvailability,
 	"created_at":    domainFieldCreatedAt,
 	"id":            domainFieldID,
@@ -407,6 +419,8 @@ var domainNullableFields = map[string]*big.Int{
 type Domain struct {
 	// ID of the account the domain belongs to, prefixed `biz_`.
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// Offering Apple Pay at checkouts served from the domain, managed in checkout settings. `null` when not enrolled or not visible to you.
+	ApplePay *DomainApplePay `json:"apple_pay,omitempty" url:"apple_pay,omitempty"`
 	// Whether you can register the hostname and what it costs. Set only when no domain on Whop has it.
 	Availability *DomainAvailability `json:"availability,omitempty" url:"availability,omitempty"`
 	// When the domain was created, as an ISO 8601 timestamp.
@@ -447,6 +461,13 @@ func (d *Domain) GetAccountID() *string {
 		return nil
 	}
 	return d.AccountID
+}
+
+func (d *Domain) GetApplePay() *DomainApplePay {
+	if d == nil {
+		return nil
+	}
+	return d.ApplePay
 }
 
 func (d *Domain) GetAvailability() *DomainAvailability {
@@ -568,6 +589,13 @@ func (d *Domain) require(field *big.Int) {
 func (d *Domain) SetAccountID(accountID *string) {
 	d.AccountID = accountID
 	d.require(domainFieldAccountID)
+}
+
+// SetApplePay sets the ApplePay field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *Domain) SetApplePay(applePay *DomainApplePay) {
+	d.ApplePay = applePay
+	d.require(domainFieldApplePay)
 }
 
 // SetAvailability sets the Availability field and marks it as non-optional;
@@ -715,6 +743,116 @@ func (d *Domain) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", d)
+}
+
+var (
+	domainApplePayFieldState = big.NewInt(1 << 0)
+)
+
+type DomainApplePay struct {
+	// `ready` once Apple verified the domain, `action_required` when Apple couldn't; its issue says how to fix it.
+	State DomainApplePayState `json:"state" url:"state"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DomainApplePay) GetState() DomainApplePayState {
+	if d == nil {
+		return ""
+	}
+	return d.State
+}
+
+func (d *DomainApplePay) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DomainApplePay) require(field *big.Int) {
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
+	}
+	next.Or(next, field)
+	d.explicitFields = next
+}
+
+// SetState sets the State field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainApplePay) SetState(state DomainApplePayState) {
+	d.State = state
+	d.require(domainApplePayFieldState)
+}
+
+func (d *DomainApplePay) UnmarshalJSON(data []byte) error {
+	type unmarshaler DomainApplePay
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DomainApplePay(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DomainApplePay) MarshalJSON() ([]byte, error) {
+	type embed DomainApplePay
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DomainApplePay) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+// `ready` once Apple verified the domain, `action_required` when Apple couldn't; its issue says how to fix it.
+type DomainApplePayState string
+
+const (
+	DomainApplePayStateReady          DomainApplePayState = "ready"
+	DomainApplePayStateActionRequired DomainApplePayState = "action_required"
+)
+
+func NewDomainApplePayStateFromString(s string) (DomainApplePayState, error) {
+	switch s {
+	case "ready":
+		return DomainApplePayStateReady, nil
+	case "action_required":
+		return DomainApplePayStateActionRequired, nil
+	}
+	var t DomainApplePayState
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (d DomainApplePayState) Ptr() *DomainApplePayState {
+	return &d
 }
 
 var (
@@ -1227,6 +1365,7 @@ const (
 	DomainIssueCapabilityRegistration DomainIssueCapability = "registration"
 	DomainIssueCapabilityPlatform     DomainIssueCapability = "platform"
 	DomainIssueCapabilityWebsite      DomainIssueCapability = "website"
+	DomainIssueCapabilityApplePay     DomainIssueCapability = "apple_pay"
 )
 
 func NewDomainIssueCapabilityFromString(s string) (DomainIssueCapability, error) {
@@ -1239,6 +1378,8 @@ func NewDomainIssueCapabilityFromString(s string) (DomainIssueCapability, error)
 		return DomainIssueCapabilityPlatform, nil
 	case "website":
 		return DomainIssueCapabilityWebsite, nil
+	case "apple_pay":
+		return DomainIssueCapabilityApplePay, nil
 	}
 	var t DomainIssueCapability
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1269,6 +1410,7 @@ const (
 	DomainIssueCodeRegistrationFailed      DomainIssueCode = "registration_failed"
 	DomainIssueCodeRenewalFailed           DomainIssueCode = "renewal_failed"
 	DomainIssueCodePaymentActionRequired   DomainIssueCode = "payment_action_required"
+	DomainIssueCodeApplePayUnverified      DomainIssueCode = "apple_pay_unverified"
 )
 
 func NewDomainIssueCodeFromString(s string) (DomainIssueCode, error) {
@@ -1307,6 +1449,8 @@ func NewDomainIssueCodeFromString(s string) (DomainIssueCode, error) {
 		return DomainIssueCodeRenewalFailed, nil
 	case "payment_action_required":
 		return DomainIssueCodePaymentActionRequired, nil
+	case "apple_pay_unverified":
+		return DomainIssueCodeApplePayUnverified, nil
 	}
 	var t DomainIssueCode
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1318,24 +1462,26 @@ func (d DomainIssueCode) Ptr() *DomainIssueCode {
 
 var (
 	domainListItemFieldAccountID    = big.NewInt(1 << 0)
-	domainListItemFieldAvailability = big.NewInt(1 << 1)
-	domainListItemFieldCreatedAt    = big.NewInt(1 << 2)
-	domainListItemFieldDomain       = big.NewInt(1 << 3)
-	domainListItemFieldID           = big.NewInt(1 << 4)
-	domainListItemFieldIssues       = big.NewInt(1 << 5)
-	domainListItemFieldMetadata     = big.NewInt(1 << 6)
-	domainListItemFieldOwnedBy      = big.NewInt(1 << 7)
-	domainListItemFieldPlatform     = big.NewInt(1 << 8)
-	domainListItemFieldRegistration = big.NewInt(1 << 9)
-	domainListItemFieldStatus       = big.NewInt(1 << 10)
-	domainListItemFieldUpdatedAt    = big.NewInt(1 << 11)
-	domainListItemFieldVerification = big.NewInt(1 << 12)
-	domainListItemFieldWebsite      = big.NewInt(1 << 13)
+	domainListItemFieldApplePay     = big.NewInt(1 << 1)
+	domainListItemFieldAvailability = big.NewInt(1 << 2)
+	domainListItemFieldCreatedAt    = big.NewInt(1 << 3)
+	domainListItemFieldDomain       = big.NewInt(1 << 4)
+	domainListItemFieldID           = big.NewInt(1 << 5)
+	domainListItemFieldIssues       = big.NewInt(1 << 6)
+	domainListItemFieldMetadata     = big.NewInt(1 << 7)
+	domainListItemFieldOwnedBy      = big.NewInt(1 << 8)
+	domainListItemFieldPlatform     = big.NewInt(1 << 9)
+	domainListItemFieldRegistration = big.NewInt(1 << 10)
+	domainListItemFieldStatus       = big.NewInt(1 << 11)
+	domainListItemFieldUpdatedAt    = big.NewInt(1 << 12)
+	domainListItemFieldVerification = big.NewInt(1 << 13)
+	domainListItemFieldWebsite      = big.NewInt(1 << 14)
 )
 
 // domainListItemNullableFields maps the wire names of DomainListItem's nullable fields (required or optional) to their field bits.
 var domainListItemNullableFields = map[string]*big.Int{
 	"account_id":   domainListItemFieldAccountID,
+	"apple_pay":    domainListItemFieldApplePay,
 	"availability": domainListItemFieldAvailability,
 	"created_at":   domainListItemFieldCreatedAt,
 	"id":           domainListItemFieldID,
@@ -1351,6 +1497,8 @@ var domainListItemNullableFields = map[string]*big.Int{
 type DomainListItem struct {
 	// ID of the account the domain belongs to, prefixed `biz_`.
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// Offering Apple Pay at checkouts served from the domain, managed in checkout settings. `null` when not enrolled or not visible to you.
+	ApplePay *DomainApplePay `json:"apple_pay,omitempty" url:"apple_pay,omitempty"`
 	// Whether you can register the hostname and what it costs. Set only when no domain on Whop has it.
 	Availability *DomainAvailability `json:"availability,omitempty" url:"availability,omitempty"`
 	// When the domain was created, as an ISO 8601 timestamp.
@@ -1389,6 +1537,13 @@ func (d *DomainListItem) GetAccountID() *string {
 		return nil
 	}
 	return d.AccountID
+}
+
+func (d *DomainListItem) GetApplePay() *DomainApplePay {
+	if d == nil {
+		return nil
+	}
+	return d.ApplePay
 }
 
 func (d *DomainListItem) GetAvailability() *DomainAvailability {
@@ -1503,6 +1658,13 @@ func (d *DomainListItem) require(field *big.Int) {
 func (d *DomainListItem) SetAccountID(accountID *string) {
 	d.AccountID = accountID
 	d.require(domainListItemFieldAccountID)
+}
+
+// SetApplePay sets the ApplePay field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainListItem) SetApplePay(applePay *DomainApplePay) {
+	d.ApplePay = applePay
+	d.require(domainListItemFieldApplePay)
 }
 
 // SetAvailability sets the Availability field and marks it as non-optional;
@@ -3381,6 +3543,37 @@ func (c *CreateDomainsRequestWebsite) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", c)
+}
+
+type ListDomainsRequestApplePay string
+
+const (
+	ListDomainsRequestApplePayPending        ListDomainsRequestApplePay = "pending"
+	ListDomainsRequestApplePayReady          ListDomainsRequestApplePay = "ready"
+	ListDomainsRequestApplePayActionRequired ListDomainsRequestApplePay = "action_required"
+	ListDomainsRequestApplePayReleasing      ListDomainsRequestApplePay = "releasing"
+	ListDomainsRequestApplePayAny            ListDomainsRequestApplePay = "any"
+)
+
+func NewListDomainsRequestApplePayFromString(s string) (ListDomainsRequestApplePay, error) {
+	switch s {
+	case "pending":
+		return ListDomainsRequestApplePayPending, nil
+	case "ready":
+		return ListDomainsRequestApplePayReady, nil
+	case "action_required":
+		return ListDomainsRequestApplePayActionRequired, nil
+	case "releasing":
+		return ListDomainsRequestApplePayReleasing, nil
+	case "any":
+		return ListDomainsRequestApplePayAny, nil
+	}
+	var t ListDomainsRequestApplePay
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListDomainsRequestApplePay) Ptr() *ListDomainsRequestApplePay {
+	return &l
 }
 
 type ListDomainsRequestDirection string
