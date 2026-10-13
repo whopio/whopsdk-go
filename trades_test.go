@@ -1093,7 +1093,7 @@ func TestSettersTrade(t *testing.T) {
 
 	t.Run("SetMarket", func(t *testing.T) {
 		obj := &Trade{}
-		var fernTestValueMarket string
+		var fernTestValueMarket *string
 		obj.SetMarket(fernTestValueMarket)
 		assert.Equal(t, fernTestValueMarket, obj.Market)
 		assert.NotNil(t, obj.explicitFields)
@@ -1545,11 +1545,21 @@ func TestGettersTrade(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &Trade{}
-		var expected string
+		var expected *string
 		obj.Market = expected
 
 		// Act & Assert
 		assert.Equal(t, expected, obj.GetMarket(), "getter should return the property value")
+	})
+
+	t.Run("GetMarket_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Trade{}
+		obj.Market = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetMarket(), "getter should return nil when property is nil")
 	})
 
 	t.Run("GetMarket_NilReceiver", func(t *testing.T) {
@@ -2268,7 +2278,7 @@ func TestSettersMarkExplicitTrade(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &Trade{}
-		var fernTestValueMarket string
+		var fernTestValueMarket *string
 
 		// Act
 		obj.SetMarket(fernTestValueMarket)
@@ -3253,6 +3263,7 @@ func TestRequiredNullableRoundTripTrade(t *testing.T) {
 		"filled_size",
 		"funds_location",
 		"leverage",
+		"market",
 		"order_type",
 		"price",
 		"reduce_only",
@@ -3272,7 +3283,7 @@ func TestRequiredNullableRoundTripTrade(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Trade
-		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"amount":null,"average_price":null,"client_order_id":null,"completed_at":null,"failure_code":null,"filled_size":null,"funds_location":null,"leverage":null,"order_type":null,"price":null,"reduce_only":null,"side":null,"size":null,"status_detail":null,"user_id":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"amount":null,"average_price":null,"client_order_id":null,"completed_at":null,"failure_code":null,"filled_size":null,"funds_location":null,"leverage":null,"market":null,"order_type":null,"price":null,"reduce_only":null,"side":null,"size":null,"status_detail":null,"user_id":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -3450,6 +3461,20 @@ func TestEnumCreateTradesRequestType(t *testing.T) {
 		assert.Equal(t, CreateTradesRequestType("order"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_deposit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateTradesRequestTypeFromString("deposit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateTradesRequestType("deposit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_withdraw", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateTradesRequestTypeFromString("withdraw")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateTradesRequestType("withdraw"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewCreateTradesRequestTypeFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -3594,6 +3619,20 @@ func TestEnumListTradesRequestType(t *testing.T) {
 		assert.Equal(t, ListTradesRequestType("order"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_deposit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListTradesRequestTypeFromString("deposit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListTradesRequestType("deposit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_withdraw", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListTradesRequestTypeFromString("withdraw")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListTradesRequestType("withdraw"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewListTradesRequestTypeFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -3698,6 +3737,13 @@ func TestEnumTradeFailureCode(t *testing.T) {
 		val, err := NewTradeFailureCodeFromString("return_failed")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, TradeFailureCode("return_failed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_withdraw_failed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTradeFailureCodeFromString("withdraw_failed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TradeFailureCode("withdraw_failed"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -3943,6 +3989,20 @@ func TestEnumTradeType(t *testing.T) {
 		val, err := NewTradeTypeFromString("order")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, TradeType("order"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_deposit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTradeTypeFromString("deposit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TradeType("deposit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_withdraw", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTradeTypeFromString("withdraw")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TradeType("withdraw"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
