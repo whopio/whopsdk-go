@@ -11,28 +11,53 @@ import (
 )
 
 var (
-	listReviewsRequestFieldAfter         = big.NewInt(1 << 0)
-	listReviewsRequestFieldBefore        = big.NewInt(1 << 1)
-	listReviewsRequestFieldFirst         = big.NewInt(1 << 2)
-	listReviewsRequestFieldLast          = big.NewInt(1 << 3)
-	listReviewsRequestFieldProductID     = big.NewInt(1 << 4)
-	listReviewsRequestFieldMinStars      = big.NewInt(1 << 5)
-	listReviewsRequestFieldMaxStars      = big.NewInt(1 << 6)
-	listReviewsRequestFieldCreatedBefore = big.NewInt(1 << 7)
-	listReviewsRequestFieldCreatedAfter  = big.NewInt(1 << 8)
+	deleteReviewsRequestFieldID = big.NewInt(1 << 0)
+)
+
+type DeleteReviewsRequest struct {
+	// The unique identifier of the review.
+	ID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (d *DeleteReviewsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
+	}
+	next.Or(next, field)
+	d.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteReviewsRequest) SetID(id string) {
+	d.ID = id
+	d.require(deleteReviewsRequestFieldID)
+}
+
+var (
+	listReviewsRequestFieldAccountID     = big.NewInt(1 << 0)
+	listReviewsRequestFieldProductID     = big.NewInt(1 << 1)
+	listReviewsRequestFieldMinStars      = big.NewInt(1 << 2)
+	listReviewsRequestFieldMaxStars      = big.NewInt(1 << 3)
+	listReviewsRequestFieldCreatedBefore = big.NewInt(1 << 4)
+	listReviewsRequestFieldCreatedAfter  = big.NewInt(1 << 5)
+	listReviewsRequestFieldOrder         = big.NewInt(1 << 6)
+	listReviewsRequestFieldDirection     = big.NewInt(1 << 7)
+	listReviewsRequestFieldFirst         = big.NewInt(1 << 8)
+	listReviewsRequestFieldAfter         = big.NewInt(1 << 9)
+	listReviewsRequestFieldLast          = big.NewInt(1 << 10)
+	listReviewsRequestFieldBefore        = big.NewInt(1 << 11)
 )
 
 type ListReviewsRequest struct {
-	// Returns the elements in the list that come after the specified cursor.
-	After *string `json:"-" url:"after,omitempty"`
-	// Returns the elements in the list that come before the specified cursor.
-	Before *string `json:"-" url:"before,omitempty"`
-	// Returns the first _n_ elements from the list.
-	First *int `json:"-" url:"first,omitempty"`
-	// Returns the last _n_ elements from the list.
-	Last *int `json:"-" url:"last,omitempty"`
+	// The unique identifier of the account to list reviews for.
+	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// The unique identifier of the product to list reviews for.
-	ProductID string `json:"-" url:"product_id"`
+	ProductID *string `json:"-" url:"product_id,omitempty"`
 	// The minimum star rating to include in results, from 1 to 5 inclusive.
 	MinStars *int `json:"-" url:"min_stars,omitempty"`
 	// The maximum star rating to include in results, from 1 to 5 inclusive.
@@ -41,6 +66,18 @@ type ListReviewsRequest struct {
 	CreatedBefore *time.Time `json:"-" url:"created_before,omitempty"`
 	// Only return reviews created after this timestamp.
 	CreatedAfter *time.Time `json:"-" url:"created_after,omitempty"`
+	// The field to sort reviews by.
+	Order *ListReviewsRequestOrder `json:"-" url:"order,omitempty"`
+	// The sort direction.
+	Direction *ListReviewsRequestDirection `json:"-" url:"direction,omitempty"`
+	// Number of results to return from the start of the range.
+	First *int `json:"-" url:"first,omitempty"`
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+	After *string `json:"-" url:"after,omitempty"`
+	// Number of results to return from the end of the range.
+	Last *int `json:"-" url:"last,omitempty"`
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+	Before *string `json:"-" url:"before,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -55,37 +92,16 @@ func (l *ListReviewsRequest) require(field *big.Int) {
 	l.explicitFields = next
 }
 
-// SetAfter sets the After field and marks it as non-optional;
+// SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListReviewsRequest) SetAfter(after *string) {
-	l.After = after
-	l.require(listReviewsRequestFieldAfter)
-}
-
-// SetBefore sets the Before field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListReviewsRequest) SetBefore(before *string) {
-	l.Before = before
-	l.require(listReviewsRequestFieldBefore)
-}
-
-// SetFirst sets the First field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListReviewsRequest) SetFirst(first *int) {
-	l.First = first
-	l.require(listReviewsRequestFieldFirst)
-}
-
-// SetLast sets the Last field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListReviewsRequest) SetLast(last *int) {
-	l.Last = last
-	l.require(listReviewsRequestFieldLast)
+func (l *ListReviewsRequest) SetAccountID(accountID *string) {
+	l.AccountID = accountID
+	l.require(listReviewsRequestFieldAccountID)
 }
 
 // SetProductID sets the ProductID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListReviewsRequest) SetProductID(productID string) {
+func (l *ListReviewsRequest) SetProductID(productID *string) {
 	l.ProductID = productID
 	l.require(listReviewsRequestFieldProductID)
 }
@@ -118,12 +134,54 @@ func (l *ListReviewsRequest) SetCreatedAfter(createdAfter *time.Time) {
 	l.require(listReviewsRequestFieldCreatedAfter)
 }
 
+// SetOrder sets the Order field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListReviewsRequest) SetOrder(order *ListReviewsRequestOrder) {
+	l.Order = order
+	l.require(listReviewsRequestFieldOrder)
+}
+
+// SetDirection sets the Direction field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListReviewsRequest) SetDirection(direction *ListReviewsRequestDirection) {
+	l.Direction = direction
+	l.require(listReviewsRequestFieldDirection)
+}
+
+// SetFirst sets the First field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListReviewsRequest) SetFirst(first *int) {
+	l.First = first
+	l.require(listReviewsRequestFieldFirst)
+}
+
+// SetAfter sets the After field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListReviewsRequest) SetAfter(after *string) {
+	l.After = after
+	l.require(listReviewsRequestFieldAfter)
+}
+
+// SetLast sets the Last field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListReviewsRequest) SetLast(last *int) {
+	l.Last = last
+	l.require(listReviewsRequestFieldLast)
+}
+
+// SetBefore sets the Before field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListReviewsRequest) SetBefore(before *string) {
+	l.Before = before
+	l.require(listReviewsRequestFieldBefore)
+}
+
 var (
 	retrieveReviewsRequestFieldID = big.NewInt(1 << 0)
 )
 
 type RetrieveReviewsRequest struct {
-	// The unique identifier of the review to retrieve.
+	// The unique identifier of the review.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -147,8 +205,8 @@ func (r *RetrieveReviewsRequest) SetID(id string) {
 }
 
 var (
-	reviewFieldAttachments    = big.NewInt(1 << 0)
-	reviewFieldCompany        = big.NewInt(1 << 1)
+	reviewFieldAccount        = big.NewInt(1 << 0)
+	reviewFieldAttachments    = big.NewInt(1 << 1)
 	reviewFieldCreatedAt      = big.NewInt(1 << 2)
 	reviewFieldDescription    = big.NewInt(1 << 3)
 	reviewFieldID             = big.NewInt(1 << 4)
@@ -172,34 +230,32 @@ var reviewNullableFields = map[string]*big.Int{
 	"title":            reviewFieldTitle,
 }
 
-// A user-submitted review of a company, including a star rating and optional text feedback.
 type Review struct {
-	// A list of files and media attached to the review.
-	Attachments []*ReviewAttachmentsItem `json:"attachments" url:"attachments"`
-	// The company that this review was written for.
-	Company *ReviewCompany `json:"company" url:"company"`
-	// The datetime the review was created.
-	CreatedAt time.Time `json:"created_at" url:"created_at"`
+	// The account that this review was written for.
+	Account     *ReviewAccount      `json:"account" url:"account"`
+	Attachments []*ReviewAttachment `json:"attachments" url:"attachments"`
+	// When the review was created, as an ISO 8601 timestamp.
+	CreatedAt string `json:"created_at" url:"created_at"`
 	// The body text of the review containing the user's detailed feedback. Returns an empty string if no description was provided.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
 	// The unique identifier for the review.
 	ID string `json:"id" url:"id"`
-	// The timestamp of when the reviewer first joined the product. Null if unknown.
-	JoinedAt *time.Time `json:"joined_at,omitempty" url:"joined_at,omitempty"`
+	// When the reviewer first joined the product, as an ISO 8601 timestamp. Null if unknown.
+	JoinedAt *string `json:"joined_at,omitempty" url:"joined_at,omitempty"`
 	// Whether the reviewer paid for the product. Null if the payment status is unknown.
 	PaidForProduct *bool `json:"paid_for_product,omitempty" url:"paid_for_product,omitempty"`
 	// The product that this review was written for.
 	Product *ReviewProduct `json:"product" url:"product"`
-	// The timestamp of when the review was published. Null if the review has not been published yet.
-	PublishedAt *time.Time `json:"published_at,omitempty" url:"published_at,omitempty"`
+	// When the review was published, as an ISO 8601 timestamp. Null if unknown.
+	PublishedAt *string `json:"published_at,omitempty" url:"published_at,omitempty"`
 	// The star rating given by the reviewer, from 1 to 5.
 	Stars int `json:"stars" url:"stars"`
-	// The current moderation status of the review.
+	// The moderation status of the review. Only published reviews are returned.
 	Status ReviewStatus `json:"status" url:"status"`
 	// A short summary title for the review. Null if the reviewer did not provide one.
 	Title *string `json:"title,omitempty" url:"title,omitempty"`
-	// The datetime the review was last updated.
-	UpdatedAt time.Time `json:"updated_at" url:"updated_at"`
+	// When the review was last updated, as an ISO 8601 timestamp.
+	UpdatedAt string `json:"updated_at" url:"updated_at"`
 	// The user account of the person who wrote this review.
 	User *ReviewUser `json:"user" url:"user"`
 
@@ -210,23 +266,23 @@ type Review struct {
 	rawJSON         json.RawMessage
 }
 
-func (r *Review) GetAttachments() []*ReviewAttachmentsItem {
+func (r *Review) GetAccount() *ReviewAccount {
+	if r == nil {
+		return nil
+	}
+	return r.Account
+}
+
+func (r *Review) GetAttachments() []*ReviewAttachment {
 	if r == nil {
 		return nil
 	}
 	return r.Attachments
 }
 
-func (r *Review) GetCompany() *ReviewCompany {
+func (r *Review) GetCreatedAt() string {
 	if r == nil {
-		return nil
-	}
-	return r.Company
-}
-
-func (r *Review) GetCreatedAt() time.Time {
-	if r == nil {
-		return time.Time{}
+		return ""
 	}
 	return r.CreatedAt
 }
@@ -245,7 +301,7 @@ func (r *Review) GetID() string {
 	return r.ID
 }
 
-func (r *Review) GetJoinedAt() *time.Time {
+func (r *Review) GetJoinedAt() *string {
 	if r == nil {
 		return nil
 	}
@@ -266,7 +322,7 @@ func (r *Review) GetProduct() *ReviewProduct {
 	return r.Product
 }
 
-func (r *Review) GetPublishedAt() *time.Time {
+func (r *Review) GetPublishedAt() *string {
 	if r == nil {
 		return nil
 	}
@@ -294,9 +350,9 @@ func (r *Review) GetTitle() *string {
 	return r.Title
 }
 
-func (r *Review) GetUpdatedAt() time.Time {
+func (r *Review) GetUpdatedAt() string {
 	if r == nil {
-		return time.Time{}
+		return ""
 	}
 	return r.UpdatedAt
 }
@@ -324,23 +380,23 @@ func (r *Review) require(field *big.Int) {
 	r.explicitFields = next
 }
 
+// SetAccount sets the Account field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *Review) SetAccount(account *ReviewAccount) {
+	r.Account = account
+	r.require(reviewFieldAccount)
+}
+
 // SetAttachments sets the Attachments field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *Review) SetAttachments(attachments []*ReviewAttachmentsItem) {
+func (r *Review) SetAttachments(attachments []*ReviewAttachment) {
 	r.Attachments = attachments
 	r.require(reviewFieldAttachments)
 }
 
-// SetCompany sets the Company field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *Review) SetCompany(company *ReviewCompany) {
-	r.Company = company
-	r.require(reviewFieldCompany)
-}
-
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *Review) SetCreatedAt(createdAt time.Time) {
+func (r *Review) SetCreatedAt(createdAt string) {
 	r.CreatedAt = createdAt
 	r.require(reviewFieldCreatedAt)
 }
@@ -361,7 +417,7 @@ func (r *Review) SetID(id string) {
 
 // SetJoinedAt sets the JoinedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *Review) SetJoinedAt(joinedAt *time.Time) {
+func (r *Review) SetJoinedAt(joinedAt *string) {
 	r.JoinedAt = joinedAt
 	r.require(reviewFieldJoinedAt)
 }
@@ -382,7 +438,7 @@ func (r *Review) SetProduct(product *ReviewProduct) {
 
 // SetPublishedAt sets the PublishedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *Review) SetPublishedAt(publishedAt *time.Time) {
+func (r *Review) SetPublishedAt(publishedAt *string) {
 	r.PublishedAt = publishedAt
 	r.require(reviewFieldPublishedAt)
 }
@@ -410,7 +466,7 @@ func (r *Review) SetTitle(title *string) {
 
 // SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *Review) SetUpdatedAt(updatedAt time.Time) {
+func (r *Review) SetUpdatedAt(updatedAt string) {
 	r.UpdatedAt = updatedAt
 	r.require(reviewFieldUpdatedAt)
 }
@@ -423,24 +479,12 @@ func (r *Review) SetUser(user *ReviewUser) {
 }
 
 func (r *Review) UnmarshalJSON(data []byte) error {
-	type embed Review
-	var unmarshaler = struct {
-		embed
-		CreatedAt   *internal.DateTime `json:"created_at"`
-		JoinedAt    *internal.DateTime `json:"joined_at,omitempty"`
-		PublishedAt *internal.DateTime `json:"published_at,omitempty"`
-		UpdatedAt   *internal.DateTime `json:"updated_at"`
-	}{
-		embed: embed(*r),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+	type unmarshaler Review
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*r = Review(unmarshaler.embed)
-	r.CreatedAt = unmarshaler.CreatedAt.Time()
-	r.JoinedAt = unmarshaler.JoinedAt.TimePtr()
-	r.PublishedAt = unmarshaler.PublishedAt.TimePtr()
-	r.UpdatedAt = unmarshaler.UpdatedAt.Time()
+	*r = Review(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *r)
 	if err != nil {
 		return err
@@ -461,16 +505,8 @@ func (r *Review) MarshalJSON() ([]byte, error) {
 	type embed Review
 	var marshaler = struct {
 		embed
-		CreatedAt   *internal.DateTime `json:"created_at"`
-		JoinedAt    *internal.DateTime `json:"joined_at,omitempty"`
-		PublishedAt *internal.DateTime `json:"published_at,omitempty"`
-		UpdatedAt   *internal.DateTime `json:"updated_at"`
 	}{
-		embed:       embed(*r),
-		CreatedAt:   internal.NewDateTime(r.CreatedAt),
-		JoinedAt:    internal.NewOptionalDateTime(r.JoinedAt),
-		PublishedAt: internal.NewOptionalDateTime(r.PublishedAt),
-		UpdatedAt:   internal.NewDateTime(r.UpdatedAt),
+		embed: embed(*r),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
 	return json.Marshal(explicitMarshaler)
@@ -492,29 +528,18 @@ func (r *Review) String() string {
 }
 
 var (
-	reviewAttachmentsItemFieldContentType = big.NewInt(1 << 0)
-	reviewAttachmentsItemFieldFilename    = big.NewInt(1 << 1)
-	reviewAttachmentsItemFieldID          = big.NewInt(1 << 2)
-	reviewAttachmentsItemFieldURL         = big.NewInt(1 << 3)
+	reviewAccountFieldID    = big.NewInt(1 << 0)
+	reviewAccountFieldRoute = big.NewInt(1 << 1)
+	reviewAccountFieldTitle = big.NewInt(1 << 2)
 )
 
-// reviewAttachmentsItemNullableFields maps the wire names of ReviewAttachmentsItem's nullable fields (required or optional) to their field bits.
-var reviewAttachmentsItemNullableFields = map[string]*big.Int{
-	"content_type": reviewAttachmentsItemFieldContentType,
-	"filename":     reviewAttachmentsItemFieldFilename,
-	"url":          reviewAttachmentsItemFieldURL,
-}
-
-// Represents an image attachment
-type ReviewAttachmentsItem struct {
-	// Uploaded file MIME type, such as image/jpeg, video/mp4, or audio/mpeg.
-	ContentType *string `json:"content_type,omitempty" url:"content_type,omitempty"`
-	// The original filename of the uploaded attachment, including its file extension.
-	Filename *string `json:"filename,omitempty" url:"filename,omitempty"`
-	// Represents a unique identifier that is Base64 obfuscated. It is often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `"VXNlci0xMA=="`) or integer (such as `4`) input value will be accepted as an ID.
+type ReviewAccount struct {
+	// The unique identifier for the account.
 	ID string `json:"id" url:"id"`
-	// A pre-optimized URL for rendering this attachment on the client. This should be used for displaying attachments in apps.
-	URL *string `json:"url,omitempty" url:"url,omitempty"`
+	// URL slug for the account's store page, e.g. `pickaxe` in whop.com/pickaxe.
+	Route string `json:"route" url:"route"`
+	// The display name of the account shown to customers.
+	Title string `json:"title" url:"title"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -523,42 +548,35 @@ type ReviewAttachmentsItem struct {
 	rawJSON         json.RawMessage
 }
 
-func (r *ReviewAttachmentsItem) GetContentType() *string {
-	if r == nil {
-		return nil
-	}
-	return r.ContentType
-}
-
-func (r *ReviewAttachmentsItem) GetFilename() *string {
-	if r == nil {
-		return nil
-	}
-	return r.Filename
-}
-
-func (r *ReviewAttachmentsItem) GetID() string {
+func (r *ReviewAccount) GetID() string {
 	if r == nil {
 		return ""
 	}
 	return r.ID
 }
 
-func (r *ReviewAttachmentsItem) GetURL() *string {
+func (r *ReviewAccount) GetRoute() string {
 	if r == nil {
-		return nil
+		return ""
 	}
-	return r.URL
+	return r.Route
 }
 
-func (r *ReviewAttachmentsItem) GetExtraProperties() map[string]interface{} {
+func (r *ReviewAccount) GetTitle() string {
+	if r == nil {
+		return ""
+	}
+	return r.Title
+}
+
+func (r *ReviewAccount) GetExtraProperties() map[string]interface{} {
 	if r == nil {
 		return nil
 	}
 	return r.extraProperties
 }
 
-func (r *ReviewAttachmentsItem) require(field *big.Int) {
+func (r *ReviewAccount) require(field *big.Int) {
 	next := new(big.Int)
 	if r.explicitFields != nil {
 		next.Set(r.explicitFields)
@@ -567,59 +585,45 @@ func (r *ReviewAttachmentsItem) require(field *big.Int) {
 	r.explicitFields = next
 }
 
-// SetContentType sets the ContentType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ReviewAttachmentsItem) SetContentType(contentType *string) {
-	r.ContentType = contentType
-	r.require(reviewAttachmentsItemFieldContentType)
-}
-
-// SetFilename sets the Filename field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ReviewAttachmentsItem) SetFilename(filename *string) {
-	r.Filename = filename
-	r.require(reviewAttachmentsItemFieldFilename)
-}
-
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ReviewAttachmentsItem) SetID(id string) {
+func (r *ReviewAccount) SetID(id string) {
 	r.ID = id
-	r.require(reviewAttachmentsItemFieldID)
+	r.require(reviewAccountFieldID)
 }
 
-// SetURL sets the URL field and marks it as non-optional;
+// SetRoute sets the Route field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ReviewAttachmentsItem) SetURL(url *string) {
-	r.URL = url
-	r.require(reviewAttachmentsItemFieldURL)
+func (r *ReviewAccount) SetRoute(route string) {
+	r.Route = route
+	r.require(reviewAccountFieldRoute)
 }
 
-func (r *ReviewAttachmentsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler ReviewAttachmentsItem
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReviewAccount) SetTitle(title string) {
+	r.Title = title
+	r.require(reviewAccountFieldTitle)
+}
+
+func (r *ReviewAccount) UnmarshalJSON(data []byte) error {
+	type unmarshaler ReviewAccount
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*r = ReviewAttachmentsItem(value)
+	*r = ReviewAccount(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *r)
 	if err != nil {
 		return err
 	}
 	r.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, reviewAttachmentsItemNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		r.require(presentFields)
-	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
 
-func (r *ReviewAttachmentsItem) MarshalJSON() ([]byte, error) {
-	type embed ReviewAttachmentsItem
+func (r *ReviewAccount) MarshalJSON() ([]byte, error) {
+	type embed ReviewAccount
 	var marshaler = struct {
 		embed
 	}{
@@ -629,7 +633,7 @@ func (r *ReviewAttachmentsItem) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (r *ReviewAttachmentsItem) String() string {
+func (r *ReviewAccount) String() string {
 	if r == nil {
 		return "<nil>"
 	}
@@ -645,19 +649,28 @@ func (r *ReviewAttachmentsItem) String() string {
 }
 
 var (
-	reviewCompanyFieldID    = big.NewInt(1 << 0)
-	reviewCompanyFieldRoute = big.NewInt(1 << 1)
-	reviewCompanyFieldTitle = big.NewInt(1 << 2)
+	reviewAttachmentFieldContentType = big.NewInt(1 << 0)
+	reviewAttachmentFieldFilename    = big.NewInt(1 << 1)
+	reviewAttachmentFieldID          = big.NewInt(1 << 2)
+	reviewAttachmentFieldURL         = big.NewInt(1 << 3)
 )
 
-// The company that this review was written for.
-type ReviewCompany struct {
-	// The unique identifier for the company.
+// reviewAttachmentNullableFields maps the wire names of ReviewAttachment's nullable fields (required or optional) to their field bits.
+var reviewAttachmentNullableFields = map[string]*big.Int{
+	"content_type": reviewAttachmentFieldContentType,
+	"filename":     reviewAttachmentFieldFilename,
+	"url":          reviewAttachmentFieldURL,
+}
+
+type ReviewAttachment struct {
+	// Uploaded file MIME type, such as image/jpeg, video/mp4, or audio/mpeg.
+	ContentType *string `json:"content_type,omitempty" url:"content_type,omitempty"`
+	// The original filename of the uploaded attachment, including its file extension.
+	Filename *string `json:"filename,omitempty" url:"filename,omitempty"`
+	// The unique identifier for the attachment.
 	ID string `json:"id" url:"id"`
-	// URL slug for the account's store page, e.g. `pickaxe` in whop.com/pickaxe.
-	Route string `json:"route" url:"route"`
-	// The display name of the company shown to customers.
-	Title string `json:"title" url:"title"`
+	// A pre-optimized URL for rendering this attachment on the client. This should be used for displaying attachments in apps.
+	URL *string `json:"url,omitempty" url:"url,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -666,35 +679,42 @@ type ReviewCompany struct {
 	rawJSON         json.RawMessage
 }
 
-func (r *ReviewCompany) GetID() string {
+func (r *ReviewAttachment) GetContentType() *string {
+	if r == nil {
+		return nil
+	}
+	return r.ContentType
+}
+
+func (r *ReviewAttachment) GetFilename() *string {
+	if r == nil {
+		return nil
+	}
+	return r.Filename
+}
+
+func (r *ReviewAttachment) GetID() string {
 	if r == nil {
 		return ""
 	}
 	return r.ID
 }
 
-func (r *ReviewCompany) GetRoute() string {
+func (r *ReviewAttachment) GetURL() *string {
 	if r == nil {
-		return ""
+		return nil
 	}
-	return r.Route
+	return r.URL
 }
 
-func (r *ReviewCompany) GetTitle() string {
-	if r == nil {
-		return ""
-	}
-	return r.Title
-}
-
-func (r *ReviewCompany) GetExtraProperties() map[string]interface{} {
+func (r *ReviewAttachment) GetExtraProperties() map[string]interface{} {
 	if r == nil {
 		return nil
 	}
 	return r.extraProperties
 }
 
-func (r *ReviewCompany) require(field *big.Int) {
+func (r *ReviewAttachment) require(field *big.Int) {
 	next := new(big.Int)
 	if r.explicitFields != nil {
 		next.Set(r.explicitFields)
@@ -703,45 +723,59 @@ func (r *ReviewCompany) require(field *big.Int) {
 	r.explicitFields = next
 }
 
+// SetContentType sets the ContentType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReviewAttachment) SetContentType(contentType *string) {
+	r.ContentType = contentType
+	r.require(reviewAttachmentFieldContentType)
+}
+
+// SetFilename sets the Filename field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReviewAttachment) SetFilename(filename *string) {
+	r.Filename = filename
+	r.require(reviewAttachmentFieldFilename)
+}
+
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ReviewCompany) SetID(id string) {
+func (r *ReviewAttachment) SetID(id string) {
 	r.ID = id
-	r.require(reviewCompanyFieldID)
+	r.require(reviewAttachmentFieldID)
 }
 
-// SetRoute sets the Route field and marks it as non-optional;
+// SetURL sets the URL field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ReviewCompany) SetRoute(route string) {
-	r.Route = route
-	r.require(reviewCompanyFieldRoute)
+func (r *ReviewAttachment) SetURL(url *string) {
+	r.URL = url
+	r.require(reviewAttachmentFieldURL)
 }
 
-// SetTitle sets the Title field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ReviewCompany) SetTitle(title string) {
-	r.Title = title
-	r.require(reviewCompanyFieldTitle)
-}
-
-func (r *ReviewCompany) UnmarshalJSON(data []byte) error {
-	type unmarshaler ReviewCompany
+func (r *ReviewAttachment) UnmarshalJSON(data []byte) error {
+	type unmarshaler ReviewAttachment
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*r = ReviewCompany(value)
+	*r = ReviewAttachment(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *r)
 	if err != nil {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, reviewAttachmentNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
 
-func (r *ReviewCompany) MarshalJSON() ([]byte, error) {
-	type embed ReviewCompany
+func (r *ReviewAttachment) MarshalJSON() ([]byte, error) {
+	type embed ReviewAttachment
 	var marshaler = struct {
 		embed
 	}{
@@ -751,7 +785,7 @@ func (r *ReviewCompany) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (r *ReviewCompany) String() string {
+func (r *ReviewAttachment) String() string {
 	if r == nil {
 		return "<nil>"
 	}
@@ -790,32 +824,30 @@ var reviewListItemNullableFields = map[string]*big.Int{
 	"title":            reviewListItemFieldTitle,
 }
 
-// A user-submitted review of a company, including a star rating and optional text feedback.
 type ReviewListItem struct {
-	// A list of files and media attached to the review.
-	Attachments []*ReviewListItemAttachmentsItem `json:"attachments" url:"attachments"`
-	// The datetime the review was created.
-	CreatedAt time.Time `json:"created_at" url:"created_at"`
+	Attachments []*ReviewAttachment `json:"attachments" url:"attachments"`
+	// When the review was created, as an ISO 8601 timestamp.
+	CreatedAt string `json:"created_at" url:"created_at"`
 	// The body text of the review containing the user's detailed feedback. Returns an empty string if no description was provided.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
 	// The unique identifier for the review.
 	ID string `json:"id" url:"id"`
-	// The timestamp of when the reviewer first joined the product. Null if unknown.
-	JoinedAt *time.Time `json:"joined_at,omitempty" url:"joined_at,omitempty"`
+	// When the reviewer first joined the product, as an ISO 8601 timestamp. Null if unknown.
+	JoinedAt *string `json:"joined_at,omitempty" url:"joined_at,omitempty"`
 	// Whether the reviewer paid for the product. Null if the payment status is unknown.
 	PaidForProduct *bool `json:"paid_for_product,omitempty" url:"paid_for_product,omitempty"`
-	// The timestamp of when the review was published. Null if the review has not been published yet.
-	PublishedAt *time.Time `json:"published_at,omitempty" url:"published_at,omitempty"`
+	// When the review was published, as an ISO 8601 timestamp. Null if unknown.
+	PublishedAt *string `json:"published_at,omitempty" url:"published_at,omitempty"`
 	// The star rating given by the reviewer, from 1 to 5.
 	Stars int `json:"stars" url:"stars"`
-	// The current moderation status of the review.
-	Status ReviewStatus `json:"status" url:"status"`
+	// The moderation status of the review. Only published reviews are returned.
+	Status ReviewListItemStatus `json:"status" url:"status"`
 	// A short summary title for the review. Null if the reviewer did not provide one.
 	Title *string `json:"title,omitempty" url:"title,omitempty"`
-	// The datetime the review was last updated.
-	UpdatedAt time.Time `json:"updated_at" url:"updated_at"`
+	// When the review was last updated, as an ISO 8601 timestamp.
+	UpdatedAt string `json:"updated_at" url:"updated_at"`
 	// The user account of the person who wrote this review.
-	User *ReviewListItemUser `json:"user" url:"user"`
+	User *ReviewUser `json:"user" url:"user"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -824,16 +856,16 @@ type ReviewListItem struct {
 	rawJSON         json.RawMessage
 }
 
-func (r *ReviewListItem) GetAttachments() []*ReviewListItemAttachmentsItem {
+func (r *ReviewListItem) GetAttachments() []*ReviewAttachment {
 	if r == nil {
 		return nil
 	}
 	return r.Attachments
 }
 
-func (r *ReviewListItem) GetCreatedAt() time.Time {
+func (r *ReviewListItem) GetCreatedAt() string {
 	if r == nil {
-		return time.Time{}
+		return ""
 	}
 	return r.CreatedAt
 }
@@ -852,7 +884,7 @@ func (r *ReviewListItem) GetID() string {
 	return r.ID
 }
 
-func (r *ReviewListItem) GetJoinedAt() *time.Time {
+func (r *ReviewListItem) GetJoinedAt() *string {
 	if r == nil {
 		return nil
 	}
@@ -866,7 +898,7 @@ func (r *ReviewListItem) GetPaidForProduct() *bool {
 	return r.PaidForProduct
 }
 
-func (r *ReviewListItem) GetPublishedAt() *time.Time {
+func (r *ReviewListItem) GetPublishedAt() *string {
 	if r == nil {
 		return nil
 	}
@@ -880,7 +912,7 @@ func (r *ReviewListItem) GetStars() int {
 	return r.Stars
 }
 
-func (r *ReviewListItem) GetStatus() ReviewStatus {
+func (r *ReviewListItem) GetStatus() ReviewListItemStatus {
 	if r == nil {
 		return ""
 	}
@@ -894,14 +926,14 @@ func (r *ReviewListItem) GetTitle() *string {
 	return r.Title
 }
 
-func (r *ReviewListItem) GetUpdatedAt() time.Time {
+func (r *ReviewListItem) GetUpdatedAt() string {
 	if r == nil {
-		return time.Time{}
+		return ""
 	}
 	return r.UpdatedAt
 }
 
-func (r *ReviewListItem) GetUser() *ReviewListItemUser {
+func (r *ReviewListItem) GetUser() *ReviewUser {
 	if r == nil {
 		return nil
 	}
@@ -926,14 +958,14 @@ func (r *ReviewListItem) require(field *big.Int) {
 
 // SetAttachments sets the Attachments field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ReviewListItem) SetAttachments(attachments []*ReviewListItemAttachmentsItem) {
+func (r *ReviewListItem) SetAttachments(attachments []*ReviewAttachment) {
 	r.Attachments = attachments
 	r.require(reviewListItemFieldAttachments)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ReviewListItem) SetCreatedAt(createdAt time.Time) {
+func (r *ReviewListItem) SetCreatedAt(createdAt string) {
 	r.CreatedAt = createdAt
 	r.require(reviewListItemFieldCreatedAt)
 }
@@ -954,7 +986,7 @@ func (r *ReviewListItem) SetID(id string) {
 
 // SetJoinedAt sets the JoinedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ReviewListItem) SetJoinedAt(joinedAt *time.Time) {
+func (r *ReviewListItem) SetJoinedAt(joinedAt *string) {
 	r.JoinedAt = joinedAt
 	r.require(reviewListItemFieldJoinedAt)
 }
@@ -968,7 +1000,7 @@ func (r *ReviewListItem) SetPaidForProduct(paidForProduct *bool) {
 
 // SetPublishedAt sets the PublishedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ReviewListItem) SetPublishedAt(publishedAt *time.Time) {
+func (r *ReviewListItem) SetPublishedAt(publishedAt *string) {
 	r.PublishedAt = publishedAt
 	r.require(reviewListItemFieldPublishedAt)
 }
@@ -982,7 +1014,7 @@ func (r *ReviewListItem) SetStars(stars int) {
 
 // SetStatus sets the Status field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ReviewListItem) SetStatus(status ReviewStatus) {
+func (r *ReviewListItem) SetStatus(status ReviewListItemStatus) {
 	r.Status = status
 	r.require(reviewListItemFieldStatus)
 }
@@ -996,37 +1028,25 @@ func (r *ReviewListItem) SetTitle(title *string) {
 
 // SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ReviewListItem) SetUpdatedAt(updatedAt time.Time) {
+func (r *ReviewListItem) SetUpdatedAt(updatedAt string) {
 	r.UpdatedAt = updatedAt
 	r.require(reviewListItemFieldUpdatedAt)
 }
 
 // SetUser sets the User field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ReviewListItem) SetUser(user *ReviewListItemUser) {
+func (r *ReviewListItem) SetUser(user *ReviewUser) {
 	r.User = user
 	r.require(reviewListItemFieldUser)
 }
 
 func (r *ReviewListItem) UnmarshalJSON(data []byte) error {
-	type embed ReviewListItem
-	var unmarshaler = struct {
-		embed
-		CreatedAt   *internal.DateTime `json:"created_at"`
-		JoinedAt    *internal.DateTime `json:"joined_at,omitempty"`
-		PublishedAt *internal.DateTime `json:"published_at,omitempty"`
-		UpdatedAt   *internal.DateTime `json:"updated_at"`
-	}{
-		embed: embed(*r),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+	type unmarshaler ReviewListItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*r = ReviewListItem(unmarshaler.embed)
-	r.CreatedAt = unmarshaler.CreatedAt.Time()
-	r.JoinedAt = unmarshaler.JoinedAt.TimePtr()
-	r.PublishedAt = unmarshaler.PublishedAt.TimePtr()
-	r.UpdatedAt = unmarshaler.UpdatedAt.Time()
+	*r = ReviewListItem(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *r)
 	if err != nil {
 		return err
@@ -1047,16 +1067,8 @@ func (r *ReviewListItem) MarshalJSON() ([]byte, error) {
 	type embed ReviewListItem
 	var marshaler = struct {
 		embed
-		CreatedAt   *internal.DateTime `json:"created_at"`
-		JoinedAt    *internal.DateTime `json:"joined_at,omitempty"`
-		PublishedAt *internal.DateTime `json:"published_at,omitempty"`
-		UpdatedAt   *internal.DateTime `json:"updated_at"`
 	}{
-		embed:       embed(*r),
-		CreatedAt:   internal.NewDateTime(r.CreatedAt),
-		JoinedAt:    internal.NewOptionalDateTime(r.JoinedAt),
-		PublishedAt: internal.NewOptionalDateTime(r.PublishedAt),
-		UpdatedAt:   internal.NewDateTime(r.UpdatedAt),
+		embed: embed(*r),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
 	return json.Marshal(explicitMarshaler)
@@ -1077,291 +1089,24 @@ func (r *ReviewListItem) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-var (
-	reviewListItemAttachmentsItemFieldContentType = big.NewInt(1 << 0)
-	reviewListItemAttachmentsItemFieldFilename    = big.NewInt(1 << 1)
-	reviewListItemAttachmentsItemFieldID          = big.NewInt(1 << 2)
-	reviewListItemAttachmentsItemFieldURL         = big.NewInt(1 << 3)
+// The moderation status of the review. Only published reviews are returned.
+type ReviewListItemStatus string
+
+const (
+	ReviewListItemStatusPublished ReviewListItemStatus = "published"
 )
 
-// reviewListItemAttachmentsItemNullableFields maps the wire names of ReviewListItemAttachmentsItem's nullable fields (required or optional) to their field bits.
-var reviewListItemAttachmentsItemNullableFields = map[string]*big.Int{
-	"content_type": reviewListItemAttachmentsItemFieldContentType,
-	"filename":     reviewListItemAttachmentsItemFieldFilename,
-	"url":          reviewListItemAttachmentsItemFieldURL,
+func NewReviewListItemStatusFromString(s string) (ReviewListItemStatus, error) {
+	switch s {
+	case "published":
+		return ReviewListItemStatusPublished, nil
+	}
+	var t ReviewListItemStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-// Represents an image attachment
-type ReviewListItemAttachmentsItem struct {
-	// Uploaded file MIME type, such as image/jpeg, video/mp4, or audio/mpeg.
-	ContentType *string `json:"content_type,omitempty" url:"content_type,omitempty"`
-	// The original filename of the uploaded attachment, including its file extension.
-	Filename *string `json:"filename,omitempty" url:"filename,omitempty"`
-	// Represents a unique identifier that is Base64 obfuscated. It is often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `"VXNlci0xMA=="`) or integer (such as `4`) input value will be accepted as an ID.
-	ID string `json:"id" url:"id"`
-	// A pre-optimized URL for rendering this attachment on the client. This should be used for displaying attachments in apps.
-	URL *string `json:"url,omitempty" url:"url,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (r *ReviewListItemAttachmentsItem) GetContentType() *string {
-	if r == nil {
-		return nil
-	}
-	return r.ContentType
-}
-
-func (r *ReviewListItemAttachmentsItem) GetFilename() *string {
-	if r == nil {
-		return nil
-	}
-	return r.Filename
-}
-
-func (r *ReviewListItemAttachmentsItem) GetID() string {
-	if r == nil {
-		return ""
-	}
-	return r.ID
-}
-
-func (r *ReviewListItemAttachmentsItem) GetURL() *string {
-	if r == nil {
-		return nil
-	}
-	return r.URL
-}
-
-func (r *ReviewListItemAttachmentsItem) GetExtraProperties() map[string]interface{} {
-	if r == nil {
-		return nil
-	}
-	return r.extraProperties
-}
-
-func (r *ReviewListItemAttachmentsItem) require(field *big.Int) {
-	next := new(big.Int)
-	if r.explicitFields != nil {
-		next.Set(r.explicitFields)
-	}
-	next.Or(next, field)
-	r.explicitFields = next
-}
-
-// SetContentType sets the ContentType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ReviewListItemAttachmentsItem) SetContentType(contentType *string) {
-	r.ContentType = contentType
-	r.require(reviewListItemAttachmentsItemFieldContentType)
-}
-
-// SetFilename sets the Filename field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ReviewListItemAttachmentsItem) SetFilename(filename *string) {
-	r.Filename = filename
-	r.require(reviewListItemAttachmentsItemFieldFilename)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ReviewListItemAttachmentsItem) SetID(id string) {
-	r.ID = id
-	r.require(reviewListItemAttachmentsItemFieldID)
-}
-
-// SetURL sets the URL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ReviewListItemAttachmentsItem) SetURL(url *string) {
-	r.URL = url
-	r.require(reviewListItemAttachmentsItemFieldURL)
-}
-
-func (r *ReviewListItemAttachmentsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler ReviewListItemAttachmentsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*r = ReviewListItemAttachmentsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *r)
-	if err != nil {
-		return err
-	}
-	r.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, reviewListItemAttachmentsItemNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		r.require(presentFields)
-	}
-	r.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (r *ReviewListItemAttachmentsItem) MarshalJSON() ([]byte, error) {
-	type embed ReviewListItemAttachmentsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*r),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (r *ReviewListItemAttachmentsItem) String() string {
-	if r == nil {
-		return "<nil>"
-	}
-	if len(r.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(r); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", r)
-}
-
-var (
-	reviewListItemUserFieldID       = big.NewInt(1 << 0)
-	reviewListItemUserFieldName     = big.NewInt(1 << 1)
-	reviewListItemUserFieldUsername = big.NewInt(1 << 2)
-)
-
-// reviewListItemUserNullableFields maps the wire names of ReviewListItemUser's nullable fields (required or optional) to their field bits.
-var reviewListItemUserNullableFields = map[string]*big.Int{
-	"name": reviewListItemUserFieldName,
-}
-
-// The user account of the person who wrote this review.
-type ReviewListItemUser struct {
-	// The unique identifier for the user.
-	ID string `json:"id" url:"id"`
-	// The user's display name shown on their public profile.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// The user's unique username shown on their public profile.
-	Username string `json:"username" url:"username"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (r *ReviewListItemUser) GetID() string {
-	if r == nil {
-		return ""
-	}
-	return r.ID
-}
-
-func (r *ReviewListItemUser) GetName() *string {
-	if r == nil {
-		return nil
-	}
-	return r.Name
-}
-
-func (r *ReviewListItemUser) GetUsername() string {
-	if r == nil {
-		return ""
-	}
-	return r.Username
-}
-
-func (r *ReviewListItemUser) GetExtraProperties() map[string]interface{} {
-	if r == nil {
-		return nil
-	}
-	return r.extraProperties
-}
-
-func (r *ReviewListItemUser) require(field *big.Int) {
-	next := new(big.Int)
-	if r.explicitFields != nil {
-		next.Set(r.explicitFields)
-	}
-	next.Or(next, field)
-	r.explicitFields = next
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ReviewListItemUser) SetID(id string) {
-	r.ID = id
-	r.require(reviewListItemUserFieldID)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ReviewListItemUser) SetName(name *string) {
-	r.Name = name
-	r.require(reviewListItemUserFieldName)
-}
-
-// SetUsername sets the Username field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ReviewListItemUser) SetUsername(username string) {
-	r.Username = username
-	r.require(reviewListItemUserFieldUsername)
-}
-
-func (r *ReviewListItemUser) UnmarshalJSON(data []byte) error {
-	type unmarshaler ReviewListItemUser
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*r = ReviewListItemUser(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *r)
-	if err != nil {
-		return err
-	}
-	r.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, reviewListItemUserNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		r.require(presentFields)
-	}
-	r.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (r *ReviewListItemUser) MarshalJSON() ([]byte, error) {
-	type embed ReviewListItemUser
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*r),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (r *ReviewListItemUser) String() string {
-	if r == nil {
-		return "<nil>"
-	}
-	if len(r.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(r); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", r)
+func (r ReviewListItemStatus) Ptr() *ReviewListItemStatus {
+	return &r
 }
 
 var (
@@ -1369,7 +1114,6 @@ var (
 	reviewProductFieldTitle = big.NewInt(1 << 1)
 )
 
-// The product that this review was written for.
 type ReviewProduct struct {
 	// The unique identifier for the product.
 	ID string `json:"id" url:"id"`
@@ -1506,7 +1250,6 @@ var reviewUserNullableFields = map[string]*big.Int{
 	"name": reviewUserFieldName,
 }
 
-// The user account of the person who wrote this review.
 type ReviewUser struct {
 	// The unique identifier for the user.
 	ID string `json:"id" url:"id"`
@@ -1630,16 +1373,159 @@ func (r *ReviewUser) String() string {
 }
 
 var (
+	deleteReviewsResponseFieldDeleted = big.NewInt(1 << 0)
+	deleteReviewsResponseFieldID      = big.NewInt(1 << 1)
+)
+
+type DeleteReviewsResponse struct {
+	Deleted bool   `json:"deleted" url:"deleted"`
+	ID      string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DeleteReviewsResponse) GetDeleted() bool {
+	if d == nil {
+		return false
+	}
+	return d.Deleted
+}
+
+func (d *DeleteReviewsResponse) GetID() string {
+	if d == nil {
+		return ""
+	}
+	return d.ID
+}
+
+func (d *DeleteReviewsResponse) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DeleteReviewsResponse) require(field *big.Int) {
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
+	}
+	next.Or(next, field)
+	d.explicitFields = next
+}
+
+// SetDeleted sets the Deleted field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteReviewsResponse) SetDeleted(deleted bool) {
+	d.Deleted = deleted
+	d.require(deleteReviewsResponseFieldDeleted)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteReviewsResponse) SetID(id string) {
+	d.ID = id
+	d.require(deleteReviewsResponseFieldID)
+}
+
+func (d *DeleteReviewsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler DeleteReviewsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DeleteReviewsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DeleteReviewsResponse) MarshalJSON() ([]byte, error) {
+	type embed DeleteReviewsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DeleteReviewsResponse) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+type ListReviewsRequestDirection string
+
+const (
+	ListReviewsRequestDirectionAsc  ListReviewsRequestDirection = "asc"
+	ListReviewsRequestDirectionDesc ListReviewsRequestDirection = "desc"
+)
+
+func NewListReviewsRequestDirectionFromString(s string) (ListReviewsRequestDirection, error) {
+	switch s {
+	case "asc":
+		return ListReviewsRequestDirectionAsc, nil
+	case "desc":
+		return ListReviewsRequestDirectionDesc, nil
+	}
+	var t ListReviewsRequestDirection
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListReviewsRequestDirection) Ptr() *ListReviewsRequestDirection {
+	return &l
+}
+
+type ListReviewsRequestOrder string
+
+const (
+	ListReviewsRequestOrderCreatedAt ListReviewsRequestOrder = "created_at"
+	ListReviewsRequestOrderStars     ListReviewsRequestOrder = "stars"
+)
+
+func NewListReviewsRequestOrderFromString(s string) (ListReviewsRequestOrder, error) {
+	switch s {
+	case "created_at":
+		return ListReviewsRequestOrderCreatedAt, nil
+	case "stars":
+		return ListReviewsRequestOrderStars, nil
+	}
+	var t ListReviewsRequestOrder
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListReviewsRequestOrder) Ptr() *ListReviewsRequestOrder {
+	return &l
+}
+
+var (
 	listReviewsResponseFieldData     = big.NewInt(1 << 0)
 	listReviewsResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
-// The connection type for Review.
 type ListReviewsResponse struct {
-	// A list of nodes.
-	Data []*ReviewListItem `json:"data" url:"data"`
-	// Information to aid in pagination.
-	PageInfo *PageInfo `json:"page_info" url:"page_info"`
+	Data     []*ReviewListItem            `json:"data" url:"data"`
+	PageInfo *ListReviewsResponsePageInfo `json:"page_info" url:"page_info"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1655,7 +1541,7 @@ func (l *ListReviewsResponse) GetData() []*ReviewListItem {
 	return l.Data
 }
 
-func (l *ListReviewsResponse) GetPageInfo() *PageInfo {
+func (l *ListReviewsResponse) GetPageInfo() *ListReviewsResponsePageInfo {
 	if l == nil {
 		return nil
 	}
@@ -1687,7 +1573,7 @@ func (l *ListReviewsResponse) SetData(data []*ReviewListItem) {
 
 // SetPageInfo sets the PageInfo field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListReviewsResponse) SetPageInfo(pageInfo *PageInfo) {
+func (l *ListReviewsResponse) SetPageInfo(pageInfo *ListReviewsResponsePageInfo) {
 	l.PageInfo = pageInfo
 	l.require(listReviewsResponseFieldPageInfo)
 }
@@ -1720,6 +1606,153 @@ func (l *ListReviewsResponse) MarshalJSON() ([]byte, error) {
 }
 
 func (l *ListReviewsResponse) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	listReviewsResponsePageInfoFieldEndCursor       = big.NewInt(1 << 0)
+	listReviewsResponsePageInfoFieldHasNextPage     = big.NewInt(1 << 1)
+	listReviewsResponsePageInfoFieldHasPreviousPage = big.NewInt(1 << 2)
+	listReviewsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
+)
+
+// listReviewsResponsePageInfoNullableFields maps the wire names of ListReviewsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listReviewsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listReviewsResponsePageInfoFieldEndCursor,
+	"start_cursor": listReviewsResponsePageInfoFieldStartCursor,
+}
+
+type ListReviewsResponsePageInfo struct {
+	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
+	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
+	HasPreviousPage bool    `json:"has_previous_page" url:"has_previous_page"`
+	StartCursor     *string `json:"start_cursor,omitempty" url:"start_cursor,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListReviewsResponsePageInfo) GetEndCursor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.EndCursor
+}
+
+func (l *ListReviewsResponsePageInfo) GetHasNextPage() bool {
+	if l == nil {
+		return false
+	}
+	return l.HasNextPage
+}
+
+func (l *ListReviewsResponsePageInfo) GetHasPreviousPage() bool {
+	if l == nil {
+		return false
+	}
+	return l.HasPreviousPage
+}
+
+func (l *ListReviewsResponsePageInfo) GetStartCursor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.StartCursor
+}
+
+func (l *ListReviewsResponsePageInfo) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListReviewsResponsePageInfo) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetEndCursor sets the EndCursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListReviewsResponsePageInfo) SetEndCursor(endCursor *string) {
+	l.EndCursor = endCursor
+	l.require(listReviewsResponsePageInfoFieldEndCursor)
+}
+
+// SetHasNextPage sets the HasNextPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListReviewsResponsePageInfo) SetHasNextPage(hasNextPage bool) {
+	l.HasNextPage = hasNextPage
+	l.require(listReviewsResponsePageInfoFieldHasNextPage)
+}
+
+// SetHasPreviousPage sets the HasPreviousPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListReviewsResponsePageInfo) SetHasPreviousPage(hasPreviousPage bool) {
+	l.HasPreviousPage = hasPreviousPage
+	l.require(listReviewsResponsePageInfoFieldHasPreviousPage)
+}
+
+// SetStartCursor sets the StartCursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListReviewsResponsePageInfo) SetStartCursor(startCursor *string) {
+	l.StartCursor = startCursor
+	l.require(listReviewsResponsePageInfoFieldStartCursor)
+}
+
+func (l *ListReviewsResponsePageInfo) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListReviewsResponsePageInfo
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListReviewsResponsePageInfo(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listReviewsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListReviewsResponsePageInfo) MarshalJSON() ([]byte, error) {
+	type embed ListReviewsResponsePageInfo
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListReviewsResponsePageInfo) String() string {
 	if l == nil {
 		return "<nil>"
 	}

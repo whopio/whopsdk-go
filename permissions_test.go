@@ -427,6 +427,13 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("waitlist_entry:cancel"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_review_delete", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("review:delete")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("review:delete"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_experiment_manage", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewPermissionActionFromString("experiment:manage")

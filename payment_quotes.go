@@ -12,17 +12,16 @@ import (
 var (
 	createPaymentQuotesRequestFieldAddress             = big.NewInt(1 << 0)
 	createPaymentQuotesRequestFieldIPAddress           = big.NewInt(1 << 1)
-	createPaymentQuotesRequestFieldPresentmentCountry  = big.NewInt(1 << 2)
-	createPaymentQuotesRequestFieldPresentmentCurrency = big.NewInt(1 << 3)
-	createPaymentQuotesRequestFieldShippingAddress     = big.NewInt(1 << 4)
-	createPaymentQuotesRequestFieldTaxIDs              = big.NewInt(1 << 5)
+	createPaymentQuotesRequestFieldLineItems           = big.NewInt(1 << 2)
+	createPaymentQuotesRequestFieldPresentmentCountry  = big.NewInt(1 << 3)
+	createPaymentQuotesRequestFieldPresentmentCurrency = big.NewInt(1 << 4)
+	createPaymentQuotesRequestFieldShippingAddress     = big.NewInt(1 << 5)
+	createPaymentQuotesRequestFieldTaxIDs              = big.NewInt(1 << 6)
 )
 
 type CreatePaymentQuotesRequest struct {
 	// The account the purchase belongs to, prefixed `biz_`.
 	AccountID string `json:"account_id" url:"-"`
-	// What the buyer is purchasing. One entry charges that variant; several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency. Mutually exclusive with `plan_id` and `plan`.
-	LineItems []*PaymentInputLineItemsItem `json:"line_items,omitempty" url:"-"`
 	// The variant purchased, described by its attributes instead of an id: the variant with exactly these attributes is used, and one is created when none exists. Mutually exclusive with `plan_id` and `line_items`. Creating a variant requires `plan:create`; creating or updating a product requires the corresponding product permission.
 	Plan *PaymentInputPlan `json:"plan,omitempty" url:"-"`
 	// The variant purchased, prefixed `plan_`. It must belong to the account. Mutually exclusive with `plan` and `line_items`.
@@ -35,6 +34,8 @@ type CreatePaymentQuotesRequest struct {
 	Address *CreatePaymentQuotesRequestAddress `json:"address,omitempty" url:"-"`
 	// The buyer's IP address, when your server makes the call on their behalf. Locates the buyer when neither address carries a country and no `presentment_country` is sent. A quote located this way (`located_by` is `ip_address`) is a preview: a payment refuses it with `quote_preview_only`, so quote again with the buyer's address before paying. Also where `presentment_currency` `auto` and `recommended_currencies` find the buyer's local currency, and where a payment method must be able to collect it.
 	IPAddress *string `json:"ip_address,omitempty" url:"-"`
+	// What the buyer is purchasing. Each entry names an existing variant by plan_id. Several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency.
+	LineItems []*CreatePaymentQuotesRequestLineItemsItem `json:"line_items,omitempty" url:"-"`
 	// The country to price the purchase for, as an ISO 3166-1 alpha-2 code such as `JP`, when the buyer chose one: a store's country picker. Prices in the currency `auto` would pick for a buyer in that country, so send it instead of `presentment_currency`, never with it. Whether a payment method can collect that currency is still judged where the buyer is: by `ip_address`, and by this country only without one. With no address that carries a country, tax is estimated for this country (`located_by` is `presentment_country`) at the country level, and a quote located this way is a preview a payment refuses with `quote_preview_only`. Send it only once the buyer has chosen a country: without it, an `ip_address` estimates more precisely, such as for a US state. For a country Whop has no currency for, the quote is priced as `auto` for the buyer's `ip_address`, and tax is still estimated for the country.
 	PresentmentCountry *string `json:"presentment_country,omitempty" url:"-"`
 	// The currency to price and charge the purchase in. Omit it, or send null, to price in the variants' own currency. `auto` prices in the currency of the country Whop places the buyer's `ip_address` in when the purchase can be converted into it and a payment method can collect it, and in the variants' own currency otherwise, including when no `ip_address` is sent or Whop cannot place it in a country. To choose that country instead, send `presentment_country` in place of this. A three-letter ISO 4217 code, such as `eur`, prices in that currency or is refused: with `presentment_currency_unsupported` when the purchase cannot be converted into it (adaptive pricing is off for the variant, the variant is not a one-time purchase, or `plan` describes a variant that does not exist yet), and with `presentment_currency_not_payable` when no payment method can collect it. A converted quote states every amount in this currency at an `exchange_rate` fixed until `expires_at`, and the payment that consumes it is charged in this currency at that rate.
@@ -69,6 +70,13 @@ func (c *CreatePaymentQuotesRequest) SetAddress(address *CreatePaymentQuotesRequ
 func (c *CreatePaymentQuotesRequest) SetIPAddress(ipAddress *string) {
 	c.IPAddress = ipAddress
 	c.require(createPaymentQuotesRequestFieldIPAddress)
+}
+
+// SetLineItems sets the LineItems field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentQuotesRequest) SetLineItems(lineItems []*CreatePaymentQuotesRequestLineItemsItem) {
+	c.LineItems = lineItems
+	c.require(createPaymentQuotesRequestFieldLineItems)
 }
 
 // SetPresentmentCountry sets the PresentmentCountry field and marks it as non-optional;
@@ -1523,6 +1531,122 @@ func (c *CreatePaymentQuotesRequestAddress) MarshalJSON() ([]byte, error) {
 }
 
 func (c *CreatePaymentQuotesRequestAddress) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createPaymentQuotesRequestLineItemsItemFieldPlanID   = big.NewInt(1 << 0)
+	createPaymentQuotesRequestLineItemsItemFieldQuantity = big.NewInt(1 << 1)
+)
+
+// createPaymentQuotesRequestLineItemsItemNullableFields maps the wire names of CreatePaymentQuotesRequestLineItemsItem's nullable fields (required or optional) to their field bits.
+var createPaymentQuotesRequestLineItemsItemNullableFields = map[string]*big.Int{
+	"quantity": createPaymentQuotesRequestLineItemsItemFieldQuantity,
+}
+
+type CreatePaymentQuotesRequestLineItemsItem struct {
+	// An existing variant to charge for, prefixed `plan_`. Each variant may appear once — use `quantity` for multiple units.
+	PlanID string `json:"plan_id" url:"plan_id"`
+	// How many units of the variant to purchase. Defaults to 1; more than 1 requires the variant to allow multiple quantities.
+	Quantity *int `json:"quantity,omitempty" url:"quantity,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreatePaymentQuotesRequestLineItemsItem) GetPlanID() string {
+	if c == nil {
+		return ""
+	}
+	return c.PlanID
+}
+
+func (c *CreatePaymentQuotesRequestLineItemsItem) GetQuantity() *int {
+	if c == nil {
+		return nil
+	}
+	return c.Quantity
+}
+
+func (c *CreatePaymentQuotesRequestLineItemsItem) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreatePaymentQuotesRequestLineItemsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetPlanID sets the PlanID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentQuotesRequestLineItemsItem) SetPlanID(planID string) {
+	c.PlanID = planID
+	c.require(createPaymentQuotesRequestLineItemsItemFieldPlanID)
+}
+
+// SetQuantity sets the Quantity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentQuotesRequestLineItemsItem) SetQuantity(quantity *int) {
+	c.Quantity = quantity
+	c.require(createPaymentQuotesRequestLineItemsItemFieldQuantity)
+}
+
+func (c *CreatePaymentQuotesRequestLineItemsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreatePaymentQuotesRequestLineItemsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreatePaymentQuotesRequestLineItemsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createPaymentQuotesRequestLineItemsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreatePaymentQuotesRequestLineItemsItem) MarshalJSON() ([]byte, error) {
+	type embed CreatePaymentQuotesRequestLineItemsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreatePaymentQuotesRequestLineItemsItem) String() string {
 	if c == nil {
 		return "<nil>"
 	}

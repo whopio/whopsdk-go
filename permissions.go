@@ -54,6 +54,7 @@ const (
 	PermissionActionWaitlistEntryRead                 PermissionAction = "waitlist_entry:read"
 	PermissionActionWaitlistEntryCreate               PermissionAction = "waitlist_entry:create"
 	PermissionActionWaitlistEntryCancel               PermissionAction = "waitlist_entry:cancel"
+	PermissionActionReviewDelete                      PermissionAction = "review:delete"
 	PermissionActionExperimentManage                  PermissionAction = "experiment:manage"
 	PermissionActionExperimentRead                    PermissionAction = "experiment:read"
 	PermissionActionDomainManage                      PermissionAction = "domain:manage"
@@ -338,6 +339,8 @@ func NewPermissionActionFromString(s string) (PermissionAction, error) {
 		return PermissionActionWaitlistEntryCreate, nil
 	case "waitlist_entry:cancel":
 		return PermissionActionWaitlistEntryCancel, nil
+	case "review:delete":
+		return PermissionActionReviewDelete, nil
 	case "experiment:manage":
 		return PermissionActionExperimentManage, nil
 	case "experiment:read":
