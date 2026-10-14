@@ -14389,6 +14389,20 @@ func TestEnumLedgerActivityLineType(t *testing.T) {
 		assert.Equal(t, LedgerActivityLineType("onchain_wallet_transfer_incoming"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_onchain_internal_transfer_outgoing", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("onchain_internal_transfer_outgoing")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("onchain_internal_transfer_outgoing"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_onchain_internal_transfer_incoming", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("onchain_internal_transfer_incoming")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("onchain_internal_transfer_incoming"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_onchain_swap_source", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewLedgerActivityLineTypeFromString("onchain_swap_source")
@@ -16825,6 +16839,20 @@ func TestEnumListFinancialActivityRequestLineTypesItem(t *testing.T) {
 		val, err := NewListFinancialActivityRequestLineTypesItemFromString("onchain_deposit")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListFinancialActivityRequestLineTypesItem("onchain_deposit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_onchain_internal_transfer_incoming", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListFinancialActivityRequestLineTypesItemFromString("onchain_internal_transfer_incoming")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListFinancialActivityRequestLineTypesItem("onchain_internal_transfer_incoming"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_onchain_internal_transfer_outgoing", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListFinancialActivityRequestLineTypesItemFromString("onchain_internal_transfer_outgoing")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListFinancialActivityRequestLineTypesItem("onchain_internal_transfer_outgoing"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_onchain_swap_source", func(t *testing.T) {
