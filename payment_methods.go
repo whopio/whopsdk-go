@@ -12372,14 +12372,21 @@ var (
 	paymentMethodListItemUsBankAccountPaymentMethodUsBankAccountFieldLast4       = big.NewInt(1 << 2)
 )
 
+// paymentMethodListItemUsBankAccountPaymentMethodUsBankAccountNullableFields maps the wire names of PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount's nullable fields (required or optional) to their field bits.
+var paymentMethodListItemUsBankAccountPaymentMethodUsBankAccountNullableFields = map[string]*big.Int{
+	"account_type": paymentMethodListItemUsBankAccountPaymentMethodUsBankAccountFieldAccountType,
+	"bank_name":    paymentMethodListItemUsBankAccountPaymentMethodUsBankAccountFieldBankName,
+	"last4":        paymentMethodListItemUsBankAccountPaymentMethodUsBankAccountFieldLast4,
+}
+
 // The bank account-specific details for this payment method, including bank name and last four digits.
 type PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount struct {
 	// The type of bank account (e.g., checking, savings).
-	AccountType string `json:"account_type" url:"account_type"`
+	AccountType *string `json:"account_type,omitempty" url:"account_type,omitempty"`
 	// The name of the financial institution holding the account.
-	BankName string `json:"bank_name" url:"bank_name"`
+	BankName *string `json:"bank_name,omitempty" url:"bank_name,omitempty"`
 	// The last four digits of the bank account number.
-	Last4 string `json:"last4" url:"last4"`
+	Last4 *string `json:"last4,omitempty" url:"last4,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -12388,23 +12395,23 @@ type PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount struct {
 	rawJSON         json.RawMessage
 }
 
-func (p *PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount) GetAccountType() string {
+func (p *PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount) GetAccountType() *string {
 	if p == nil {
-		return ""
+		return nil
 	}
 	return p.AccountType
 }
 
-func (p *PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount) GetBankName() string {
+func (p *PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount) GetBankName() *string {
 	if p == nil {
-		return ""
+		return nil
 	}
 	return p.BankName
 }
 
-func (p *PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount) GetLast4() string {
+func (p *PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount) GetLast4() *string {
 	if p == nil {
-		return ""
+		return nil
 	}
 	return p.Last4
 }
@@ -12427,21 +12434,21 @@ func (p *PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount) require(f
 
 // SetAccountType sets the AccountType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount) SetAccountType(accountType string) {
+func (p *PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount) SetAccountType(accountType *string) {
 	p.AccountType = accountType
 	p.require(paymentMethodListItemUsBankAccountPaymentMethodUsBankAccountFieldAccountType)
 }
 
 // SetBankName sets the BankName field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount) SetBankName(bankName string) {
+func (p *PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount) SetBankName(bankName *string) {
 	p.BankName = bankName
 	p.require(paymentMethodListItemUsBankAccountPaymentMethodUsBankAccountFieldBankName)
 }
 
 // SetLast4 sets the Last4 field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount) SetLast4(last4 string) {
+func (p *PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount) SetLast4(last4 *string) {
 	p.Last4 = last4
 	p.require(paymentMethodListItemUsBankAccountPaymentMethodUsBankAccountFieldLast4)
 }
@@ -12458,6 +12465,13 @@ func (p *PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount) Unmarshal
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, paymentMethodListItemUsBankAccountPaymentMethodUsBankAccountNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -14718,14 +14732,21 @@ var (
 	paymentMethodUsBankAccountPaymentMethodUsBankAccountFieldLast4       = big.NewInt(1 << 2)
 )
 
+// paymentMethodUsBankAccountPaymentMethodUsBankAccountNullableFields maps the wire names of PaymentMethodUsBankAccountPaymentMethodUsBankAccount's nullable fields (required or optional) to their field bits.
+var paymentMethodUsBankAccountPaymentMethodUsBankAccountNullableFields = map[string]*big.Int{
+	"account_type": paymentMethodUsBankAccountPaymentMethodUsBankAccountFieldAccountType,
+	"bank_name":    paymentMethodUsBankAccountPaymentMethodUsBankAccountFieldBankName,
+	"last4":        paymentMethodUsBankAccountPaymentMethodUsBankAccountFieldLast4,
+}
+
 // The bank account-specific details for this payment method, including bank name and last four digits.
 type PaymentMethodUsBankAccountPaymentMethodUsBankAccount struct {
 	// The type of bank account (e.g., checking, savings).
-	AccountType string `json:"account_type" url:"account_type"`
+	AccountType *string `json:"account_type,omitempty" url:"account_type,omitempty"`
 	// The name of the financial institution holding the account.
-	BankName string `json:"bank_name" url:"bank_name"`
+	BankName *string `json:"bank_name,omitempty" url:"bank_name,omitempty"`
 	// The last four digits of the bank account number.
-	Last4 string `json:"last4" url:"last4"`
+	Last4 *string `json:"last4,omitempty" url:"last4,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -14734,23 +14755,23 @@ type PaymentMethodUsBankAccountPaymentMethodUsBankAccount struct {
 	rawJSON         json.RawMessage
 }
 
-func (p *PaymentMethodUsBankAccountPaymentMethodUsBankAccount) GetAccountType() string {
+func (p *PaymentMethodUsBankAccountPaymentMethodUsBankAccount) GetAccountType() *string {
 	if p == nil {
-		return ""
+		return nil
 	}
 	return p.AccountType
 }
 
-func (p *PaymentMethodUsBankAccountPaymentMethodUsBankAccount) GetBankName() string {
+func (p *PaymentMethodUsBankAccountPaymentMethodUsBankAccount) GetBankName() *string {
 	if p == nil {
-		return ""
+		return nil
 	}
 	return p.BankName
 }
 
-func (p *PaymentMethodUsBankAccountPaymentMethodUsBankAccount) GetLast4() string {
+func (p *PaymentMethodUsBankAccountPaymentMethodUsBankAccount) GetLast4() *string {
 	if p == nil {
-		return ""
+		return nil
 	}
 	return p.Last4
 }
@@ -14773,21 +14794,21 @@ func (p *PaymentMethodUsBankAccountPaymentMethodUsBankAccount) require(field *bi
 
 // SetAccountType sets the AccountType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentMethodUsBankAccountPaymentMethodUsBankAccount) SetAccountType(accountType string) {
+func (p *PaymentMethodUsBankAccountPaymentMethodUsBankAccount) SetAccountType(accountType *string) {
 	p.AccountType = accountType
 	p.require(paymentMethodUsBankAccountPaymentMethodUsBankAccountFieldAccountType)
 }
 
 // SetBankName sets the BankName field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentMethodUsBankAccountPaymentMethodUsBankAccount) SetBankName(bankName string) {
+func (p *PaymentMethodUsBankAccountPaymentMethodUsBankAccount) SetBankName(bankName *string) {
 	p.BankName = bankName
 	p.require(paymentMethodUsBankAccountPaymentMethodUsBankAccountFieldBankName)
 }
 
 // SetLast4 sets the Last4 field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentMethodUsBankAccountPaymentMethodUsBankAccount) SetLast4(last4 string) {
+func (p *PaymentMethodUsBankAccountPaymentMethodUsBankAccount) SetLast4(last4 *string) {
 	p.Last4 = last4
 	p.require(paymentMethodUsBankAccountPaymentMethodUsBankAccountFieldLast4)
 }
@@ -14804,6 +14825,13 @@ func (p *PaymentMethodUsBankAccountPaymentMethodUsBankAccount) UnmarshalJSON(dat
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, paymentMethodUsBankAccountPaymentMethodUsBankAccountNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }

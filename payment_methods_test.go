@@ -21616,7 +21616,7 @@ func TestSettersMarkExplicitPaymentMethodListItemUsBankAccountPaymentMethodIcons
 func TestSettersPaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount(t *testing.T) {
 	t.Run("SetAccountType", func(t *testing.T) {
 		obj := &PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount{}
-		var fernTestValueAccountType string
+		var fernTestValueAccountType *string
 		obj.SetAccountType(fernTestValueAccountType)
 		assert.Equal(t, fernTestValueAccountType, obj.AccountType)
 		assert.NotNil(t, obj.explicitFields)
@@ -21624,7 +21624,7 @@ func TestSettersPaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount(t *
 
 	t.Run("SetBankName", func(t *testing.T) {
 		obj := &PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount{}
-		var fernTestValueBankName string
+		var fernTestValueBankName *string
 		obj.SetBankName(fernTestValueBankName)
 		assert.Equal(t, fernTestValueBankName, obj.BankName)
 		assert.NotNil(t, obj.explicitFields)
@@ -21632,7 +21632,7 @@ func TestSettersPaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount(t *
 
 	t.Run("SetLast4", func(t *testing.T) {
 		obj := &PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount{}
-		var fernTestValueLast4 string
+		var fernTestValueLast4 *string
 		obj.SetLast4(fernTestValueLast4)
 		assert.Equal(t, fernTestValueLast4, obj.Last4)
 		assert.NotNil(t, obj.explicitFields)
@@ -21645,11 +21645,21 @@ func TestGettersPaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount(t *
 		t.Parallel()
 		// Arrange
 		obj := &PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount{}
-		var expected string
+		var expected *string
 		obj.AccountType = expected
 
 		// Act & Assert
 		assert.Equal(t, expected, obj.GetAccountType(), "getter should return the property value")
+	})
+
+	t.Run("GetAccountType_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount{}
+		obj.AccountType = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAccountType(), "getter should return nil when property is nil")
 	})
 
 	t.Run("GetAccountType_NilReceiver", func(t *testing.T) {
@@ -21668,11 +21678,21 @@ func TestGettersPaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount(t *
 		t.Parallel()
 		// Arrange
 		obj := &PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount{}
-		var expected string
+		var expected *string
 		obj.BankName = expected
 
 		// Act & Assert
 		assert.Equal(t, expected, obj.GetBankName(), "getter should return the property value")
+	})
+
+	t.Run("GetBankName_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount{}
+		obj.BankName = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetBankName(), "getter should return nil when property is nil")
 	})
 
 	t.Run("GetBankName_NilReceiver", func(t *testing.T) {
@@ -21691,11 +21711,21 @@ func TestGettersPaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount(t *
 		t.Parallel()
 		// Arrange
 		obj := &PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount{}
-		var expected string
+		var expected *string
 		obj.Last4 = expected
 
 		// Act & Assert
 		assert.Equal(t, expected, obj.GetLast4(), "getter should return the property value")
+	})
+
+	t.Run("GetLast4_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount{}
+		obj.Last4 = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetLast4(), "getter should return nil when property is nil")
 	})
 
 	t.Run("GetLast4_NilReceiver", func(t *testing.T) {
@@ -21717,7 +21747,7 @@ func TestSettersMarkExplicitPaymentMethodListItemUsBankAccountPaymentMethodUsBan
 		t.Parallel()
 		// Arrange
 		obj := &PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount{}
-		var fernTestValueAccountType string
+		var fernTestValueAccountType *string
 
 		// Act
 		obj.SetAccountType(fernTestValueAccountType)
@@ -21748,7 +21778,7 @@ func TestSettersMarkExplicitPaymentMethodListItemUsBankAccountPaymentMethodUsBan
 		t.Parallel()
 		// Arrange
 		obj := &PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount{}
-		var fernTestValueBankName string
+		var fernTestValueBankName *string
 
 		// Act
 		obj.SetBankName(fernTestValueBankName)
@@ -21779,7 +21809,7 @@ func TestSettersMarkExplicitPaymentMethodListItemUsBankAccountPaymentMethodUsBan
 		t.Parallel()
 		// Arrange
 		obj := &PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount{}
-		var fernTestValueLast4 string
+		var fernTestValueLast4 *string
 
 		// Act
 		obj.SetLast4(fernTestValueLast4)
@@ -25760,7 +25790,7 @@ func TestSettersMarkExplicitPaymentMethodUsBankAccountPaymentMethodIconsSquareLi
 func TestSettersPaymentMethodUsBankAccountPaymentMethodUsBankAccount(t *testing.T) {
 	t.Run("SetAccountType", func(t *testing.T) {
 		obj := &PaymentMethodUsBankAccountPaymentMethodUsBankAccount{}
-		var fernTestValueAccountType string
+		var fernTestValueAccountType *string
 		obj.SetAccountType(fernTestValueAccountType)
 		assert.Equal(t, fernTestValueAccountType, obj.AccountType)
 		assert.NotNil(t, obj.explicitFields)
@@ -25768,7 +25798,7 @@ func TestSettersPaymentMethodUsBankAccountPaymentMethodUsBankAccount(t *testing.
 
 	t.Run("SetBankName", func(t *testing.T) {
 		obj := &PaymentMethodUsBankAccountPaymentMethodUsBankAccount{}
-		var fernTestValueBankName string
+		var fernTestValueBankName *string
 		obj.SetBankName(fernTestValueBankName)
 		assert.Equal(t, fernTestValueBankName, obj.BankName)
 		assert.NotNil(t, obj.explicitFields)
@@ -25776,7 +25806,7 @@ func TestSettersPaymentMethodUsBankAccountPaymentMethodUsBankAccount(t *testing.
 
 	t.Run("SetLast4", func(t *testing.T) {
 		obj := &PaymentMethodUsBankAccountPaymentMethodUsBankAccount{}
-		var fernTestValueLast4 string
+		var fernTestValueLast4 *string
 		obj.SetLast4(fernTestValueLast4)
 		assert.Equal(t, fernTestValueLast4, obj.Last4)
 		assert.NotNil(t, obj.explicitFields)
@@ -25789,11 +25819,21 @@ func TestGettersPaymentMethodUsBankAccountPaymentMethodUsBankAccount(t *testing.
 		t.Parallel()
 		// Arrange
 		obj := &PaymentMethodUsBankAccountPaymentMethodUsBankAccount{}
-		var expected string
+		var expected *string
 		obj.AccountType = expected
 
 		// Act & Assert
 		assert.Equal(t, expected, obj.GetAccountType(), "getter should return the property value")
+	})
+
+	t.Run("GetAccountType_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentMethodUsBankAccountPaymentMethodUsBankAccount{}
+		obj.AccountType = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAccountType(), "getter should return nil when property is nil")
 	})
 
 	t.Run("GetAccountType_NilReceiver", func(t *testing.T) {
@@ -25812,11 +25852,21 @@ func TestGettersPaymentMethodUsBankAccountPaymentMethodUsBankAccount(t *testing.
 		t.Parallel()
 		// Arrange
 		obj := &PaymentMethodUsBankAccountPaymentMethodUsBankAccount{}
-		var expected string
+		var expected *string
 		obj.BankName = expected
 
 		// Act & Assert
 		assert.Equal(t, expected, obj.GetBankName(), "getter should return the property value")
+	})
+
+	t.Run("GetBankName_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentMethodUsBankAccountPaymentMethodUsBankAccount{}
+		obj.BankName = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetBankName(), "getter should return nil when property is nil")
 	})
 
 	t.Run("GetBankName_NilReceiver", func(t *testing.T) {
@@ -25835,11 +25885,21 @@ func TestGettersPaymentMethodUsBankAccountPaymentMethodUsBankAccount(t *testing.
 		t.Parallel()
 		// Arrange
 		obj := &PaymentMethodUsBankAccountPaymentMethodUsBankAccount{}
-		var expected string
+		var expected *string
 		obj.Last4 = expected
 
 		// Act & Assert
 		assert.Equal(t, expected, obj.GetLast4(), "getter should return the property value")
+	})
+
+	t.Run("GetLast4_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentMethodUsBankAccountPaymentMethodUsBankAccount{}
+		obj.Last4 = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetLast4(), "getter should return nil when property is nil")
 	})
 
 	t.Run("GetLast4_NilReceiver", func(t *testing.T) {
@@ -25861,7 +25921,7 @@ func TestSettersMarkExplicitPaymentMethodUsBankAccountPaymentMethodUsBankAccount
 		t.Parallel()
 		// Arrange
 		obj := &PaymentMethodUsBankAccountPaymentMethodUsBankAccount{}
-		var fernTestValueAccountType string
+		var fernTestValueAccountType *string
 
 		// Act
 		obj.SetAccountType(fernTestValueAccountType)
@@ -25892,7 +25952,7 @@ func TestSettersMarkExplicitPaymentMethodUsBankAccountPaymentMethodUsBankAccount
 		t.Parallel()
 		// Arrange
 		obj := &PaymentMethodUsBankAccountPaymentMethodUsBankAccount{}
-		var fernTestValueBankName string
+		var fernTestValueBankName *string
 
 		// Act
 		obj.SetBankName(fernTestValueBankName)
@@ -25923,7 +25983,7 @@ func TestSettersMarkExplicitPaymentMethodUsBankAccountPaymentMethodUsBankAccount
 		t.Parallel()
 		// Arrange
 		obj := &PaymentMethodUsBankAccountPaymentMethodUsBankAccount{}
-		var fernTestValueLast4 string
+		var fernTestValueLast4 *string
 
 		// Act
 		obj.SetLast4(fernTestValueLast4)
@@ -29954,6 +30014,51 @@ func TestRequiredNullableRoundTripPaymentMethodListItemSepaDebitPaymentMethodSep
 	})
 }
 
+func TestRequiredNullableRoundTripPaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount(t *testing.T) {
+	requiredNullableKeys := []string{
+		"account_type",
+		"bank_name",
+		"last4",
+	}
+	marshalToMap := func(t *testing.T, obj *PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount
+		require.NoError(t, json.Unmarshal([]byte(`{"account_type":null,"bank_name":null,"last4":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
 func TestRequiredNullableRoundTripPaymentMethodSepaDebitPaymentMethodSepaDebit(t *testing.T) {
 	requiredNullableKeys := []string{
 		"bank_code",
@@ -29994,6 +30099,51 @@ func TestRequiredNullableRoundTripPaymentMethodSepaDebitPaymentMethodSepaDebit(t
 	t.Run("FreshValueOmits", func(t *testing.T) {
 		t.Parallel()
 		result := marshalToMap(t, &PaymentMethodSepaDebitPaymentMethodSepaDebit{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestRequiredNullableRoundTripPaymentMethodUsBankAccountPaymentMethodUsBankAccount(t *testing.T) {
+	requiredNullableKeys := []string{
+		"account_type",
+		"bank_name",
+		"last4",
+	}
+	marshalToMap := func(t *testing.T, obj *PaymentMethodUsBankAccountPaymentMethodUsBankAccount) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj PaymentMethodUsBankAccountPaymentMethodUsBankAccount
+		require.NoError(t, json.Unmarshal([]byte(`{"account_type":null,"bank_name":null,"last4":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj PaymentMethodUsBankAccountPaymentMethodUsBankAccount
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &PaymentMethodUsBankAccountPaymentMethodUsBankAccount{})
 		for _, key := range requiredNullableKeys {
 			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
 		}
