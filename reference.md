@@ -45283,7 +45283,7 @@ client.Payouts.Methods.Create(
 <dl>
 <dd>
 
-**paypalLinkToken:** `*string` — The token your `return_url` received after a Log in with PayPal session started with `POST /payouts/paypal_link_sessions`. Use it for a PayPal supported payout method instead of `fields`. Sending `fields` or `plaid_public_token` alongside it is rejected, and `nickname` is ignored because Whop names the method after the PayPal email. The PayPal account must be verified with a confirmed email, and its holder name must match the name on the account's payout setup. Single use; expires 15 minutes after the login.
+**paypalLinkToken:** `*string` — The token your `return_url` received after a Log in with PayPal session started with `POST /payouts/paypal_link_sessions`. Use it for a PayPal supported payout method instead of `fields`. Sending `fields` or `plaid_public_token` alongside it is rejected, and `nickname` is ignored because Whop names the method after the PayPal email. The PayPal holder's name must match the name on the account's payout setup. An account PayPal reports as unverified, or with an unconfirmed email, is saved and flagged on the method's log rather than refused. Single use; expires 15 minutes after the login.
     
 </dd>
 </dl>
