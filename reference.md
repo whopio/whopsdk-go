@@ -16203,6 +16203,14 @@ client.Domains.Create(
 <dl>
 <dd>
 
+**applePay:** `*whopsdk.CreateDomainsRequestApplePay` — Accept Apple Pay at checkout on the domain. It needs no other capability. Whop registers the domain with Apple: it stays `pending` until Apple answers, then turns `ready`, or `action_required` when Apple couldn't fetch the domain association file. Serve the file, then check the domain to register it again. Pass `null` to turn Apple Pay off: Whop removes the domain from Apple, and the domain stays, like releasing any other capability.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **domain:** `string` — Bare hostname, such as example.com or checkout.example.com. A bought domain must be a root domain. Wildcards, paths, schemes, and ports are not accepted.
     
 </dd>
@@ -16426,6 +16434,14 @@ client.Domains.Update(
 <dd>
 
 **id:** `string` — Domain ID, prefixed `dom_`, or a hostname such as `example.com`; a bare name looks up `.com`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**applePay:** `*whopsdk.UpdateDomainsRequestApplePay` — Accept Apple Pay at checkout on the domain. It needs no other capability. Whop registers the domain with Apple: it stays `pending` until Apple answers, then turns `ready`, or `action_required` when Apple couldn't fetch the domain association file. Serve the file, then check the domain to register it again. Pass `null` to turn Apple Pay off: Whop removes the domain from Apple, and the domain stays, like releasing any other capability.
     
 </dd>
 </dl>
