@@ -29364,7 +29364,7 @@ type Payment struct {
 	BillingReason *BillingReasons `json:"billing_reason,omitempty" url:"billing_reason,omitempty"`
 	// The checkout configuration the buyer paid through, prefixed `ch_`, or null.
 	CheckoutConfigurationID *string `json:"checkout_configuration_id,omitempty" url:"checkout_configuration_id,omitempty"`
-	// The credential a buyer's surface presents to poll this payment and set its return URL. Only on payments created from a confirmation token, and always null in list responses — retrieve the payment for it.
+	// The credential a buyer's surface presents to poll this payment, set its return URL and resume it when the bank asked the customer to authenticate. Only on payments created from a confirmation token or waiting on that authentication, and always null in list responses — retrieve the payment for it.
 	ClientSecret *string `json:"client_secret,omitempty" url:"client_secret,omitempty"`
 	// When the payment was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
