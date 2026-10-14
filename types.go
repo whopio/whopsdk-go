@@ -61658,10 +61658,13 @@ const (
 	WebhookEventShipmentUpdated                    WebhookEvent = "shipment.updated"
 	WebhookEventMemberCreated                      WebhookEvent = "member.created"
 	WebhookEventMemberUpdated                      WebhookEvent = "member.updated"
+	WebhookEventAdCampaignCreated                  WebhookEvent = "ad_campaign.created"
 	WebhookEventAdCampaignPaymentFailed            WebhookEvent = "ad_campaign.payment_failed"
 	WebhookEventAdCampaignUpdated                  WebhookEvent = "ad_campaign.updated"
 	WebhookEventAdCampaignEvents                   WebhookEvent = "ad_campaign.events"
+	WebhookEventAdGroupCreated                     WebhookEvent = "ad_group.created"
 	WebhookEventAdGroupUpdated                     WebhookEvent = "ad_group.updated"
+	WebhookEventAdCreated                          WebhookEvent = "ad.created"
 	WebhookEventAdUpdated                          WebhookEvent = "ad.updated"
 	WebhookEventChatMessageCreated                 WebhookEvent = "chat.message.created"
 	WebhookEventChatReactionCreated                WebhookEvent = "chat.reaction.created"
@@ -61826,14 +61829,20 @@ func NewWebhookEventFromString(s string) (WebhookEvent, error) {
 		return WebhookEventMemberCreated, nil
 	case "member.updated":
 		return WebhookEventMemberUpdated, nil
+	case "ad_campaign.created":
+		return WebhookEventAdCampaignCreated, nil
 	case "ad_campaign.payment_failed":
 		return WebhookEventAdCampaignPaymentFailed, nil
 	case "ad_campaign.updated":
 		return WebhookEventAdCampaignUpdated, nil
 	case "ad_campaign.events":
 		return WebhookEventAdCampaignEvents, nil
+	case "ad_group.created":
+		return WebhookEventAdGroupCreated, nil
 	case "ad_group.updated":
 		return WebhookEventAdGroupUpdated, nil
+	case "ad.created":
+		return WebhookEventAdCreated, nil
 	case "ad.updated":
 		return WebhookEventAdUpdated, nil
 	case "chat.message.created":
