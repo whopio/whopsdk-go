@@ -16,9 +16,10 @@ var (
 	createMethodsRequestFieldFields                  = big.NewInt(1 << 2)
 	createMethodsRequestFieldIsDefault               = big.NewInt(1 << 3)
 	createMethodsRequestFieldNickname                = big.NewInt(1 << 4)
-	createMethodsRequestFieldRecipient               = big.NewInt(1 << 5)
-	createMethodsRequestFieldSupportedPayoutMethodID = big.NewInt(1 << 6)
-	createMethodsRequestFieldUserID                  = big.NewInt(1 << 7)
+	createMethodsRequestFieldPaypalLinkToken         = big.NewInt(1 << 5)
+	createMethodsRequestFieldRecipient               = big.NewInt(1 << 6)
+	createMethodsRequestFieldSupportedPayoutMethodID = big.NewInt(1 << 7)
+	createMethodsRequestFieldUserID                  = big.NewInt(1 << 8)
 )
 
 type CreateMethodsRequest struct {
@@ -32,6 +33,8 @@ type CreateMethodsRequest struct {
 	IsDefault *bool `json:"is_default,omitempty" url:"-"`
 	// A label for the payout method, unique per destination.
 	Nickname *string `json:"nickname,omitempty" url:"-"`
+	// The token your `return_url` received after a Log in with PayPal session started with `POST /payouts/paypal_link_sessions`. Use it for a PayPal supported payout method instead of `fields`. Sending `fields` or `plaid_public_token` alongside it is rejected, and `nickname` is ignored because Whop names the method after the PayPal email. The PayPal account must be verified with a confirmed email, and its holder name must match the name on the account's payout setup. Single use; expires 15 minutes after the login.
+	PaypalLinkToken *string `json:"paypal_link_token,omitempty" url:"-"`
 	// Creates a recipient payout account linked to the funding ledger as a non-default account, then saves the bank method on it. No Whop user, company, or recipient ledger is created. A valid recipient email is required. Recipient methods cannot be default or recurring methods and cannot use Plaid.
 	Recipient *CreateMethodsRequestRecipient `json:"recipient,omitempty" url:"-"`
 	// The supported payout method to save (a podst_ identifier from a previous listing).
@@ -85,6 +88,13 @@ func (c *CreateMethodsRequest) SetIsDefault(isDefault *bool) {
 func (c *CreateMethodsRequest) SetNickname(nickname *string) {
 	c.Nickname = nickname
 	c.require(createMethodsRequestFieldNickname)
+}
+
+// SetPaypalLinkToken sets the PaypalLinkToken field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMethodsRequest) SetPaypalLinkToken(paypalLinkToken *string) {
+	c.PaypalLinkToken = paypalLinkToken
+	c.require(createMethodsRequestFieldPaypalLinkToken)
 }
 
 // SetRecipient sets the Recipient field and marks it as non-optional;

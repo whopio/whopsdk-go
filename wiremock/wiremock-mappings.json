@@ -9729,7 +9729,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"hostname\": \"checkout.shinetime.com\",\n      \"id\": \"pmd_xxxxxxxxxxxxxx\",\n      \"provider\": \"apple\",\n      \"status\": \"pending\",\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"hostname\": \"checkout.shinetime.com\",\n      \"id\": \"dom_xxxxxxxxxxxxxx\",\n      \"provider\": \"apple\",\n      \"status\": \"pending\",\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -9761,7 +9761,7 @@
       },
       "response": {
         "status": 201,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"hostname\": \"checkout.shinetime.com\",\n  \"id\": \"pmd_xxxxxxxxxxxxxx\",\n  \"provider\": \"apple\",\n  \"status\": \"pending\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"hostname\": \"checkout.shinetime.com\",\n  \"id\": \"dom_xxxxxxxxxxxxxx\",\n  \"provider\": \"apple\",\n  \"status\": \"pending\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -9797,7 +9797,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"hostname\": \"checkout.shinetime.com\",\n  \"id\": \"pmd_xxxxxxxxxxxxxx\",\n  \"provider\": \"apple\",\n  \"status\": \"pending\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"hostname\": \"checkout.shinetime.com\",\n  \"id\": \"dom_xxxxxxxxxxxxxx\",\n  \"provider\": \"apple\",\n  \"status\": \"pending\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -9833,7 +9833,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"deleted\": true,\n  \"id\": \"pmd_xxxxxxxxxxxxxx\"\n}",
+        "body": "{\n  \"deleted\": true,\n  \"id\": \"dom_xxxxxxxxxxxxxx\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -9869,7 +9869,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"hostname\": \"checkout.shinetime.com\",\n  \"id\": \"pmd_xxxxxxxxxxxxxx\",\n  \"provider\": \"apple\",\n  \"status\": \"pending\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"hostname\": \"checkout.shinetime.com\",\n  \"id\": \"dom_xxxxxxxxxxxxxx\",\n  \"provider\": \"apple\",\n  \"status\": \"pending\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -16712,6 +16712,37 @@
       }
     },
     {
+      "id": "68d5061c-ac72-40e5-8b6a-5e7378bcf0dc",
+      "name": "Create PayPal Link Session - default",
+      "request": {
+        "urlPathTemplate": "/payouts/paypal_link_sessions",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "body": "{\n  \"authorize_url\": \"https://www.paypal.com/connect\",\n  \"expires_at\": \"2026-01-01T12:00:00Z\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "68d5061c-ac72-40e5-8b6a-5e7378bcf0dc",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "647a7383-9486-4fd0-983f-64fda7b0a794",
       "name": "List Supported Payout Methods - default",
       "request": {
@@ -16725,7 +16756,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"delivery_type\": \"cash_pickup\",\n      \"icon_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/ach-bank-deposit\",\n      \"id\": \"podst_xxxxxxxxxxxxxx\",\n      \"name\": \"SEPA Bank Transfer\",\n      \"object\": \"supported_payout_method\",\n      \"quotes\": [\n        {\n          \"amount\": 2500,\n          \"currency\": \"usd\",\n          \"destination_currency\": \"usd\",\n          \"exchange_rate\": 1,\n          \"instant\": {\n            \"estimated_arrival\": \"2026-01-01T12:00:00Z\",\n            \"fee\": 12.5,\n            \"total_received\": 2487.5\n          },\n          \"max_limit\": 50000,\n          \"min_limit\": 10,\n          \"standard\": {\n            \"estimated_arrival\": \"2026-01-01T12:00:00Z\",\n            \"fee\": 2.5,\n            \"total_received\": 2497.5\n          }\n        }\n      ],\n      \"required_fields\": [\n        {\n          \"id\": \"fld_bank_account_number\",\n          \"input_type\": \"text\",\n          \"label\": \"Account Number\",\n          \"object\": \"required_field\",\n          \"options\": [\n            \"savings\"\n          ],\n          \"placeholder\": \"8825310472\",\n          \"required\": true,\n          \"sensitive\": true,\n          \"type\": \"bank_account_number\",\n          \"validation\": \"^[0-9]{4,17}$\"\n        }\n      ],\n      \"supports_instant_delivery\": false,\n      \"supports_standard_delivery\": true\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"MQ\",\n    \"has_next_page\": true,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"MQ\"\n  }\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"delivery_type\": \"cash_pickup\",\n      \"icon_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/ach-bank-deposit\",\n      \"id\": \"podst_xxxxxxxxxxxxxx\",\n      \"name\": \"SEPA Bank Transfer\",\n      \"object\": \"supported_payout_method\",\n      \"quotes\": [\n        {\n          \"amount\": 2500,\n          \"currency\": \"usd\",\n          \"destination_currency\": \"usd\",\n          \"exchange_rate\": 1,\n          \"instant\": {\n            \"estimated_arrival\": \"2026-01-01T12:00:00Z\",\n            \"fee\": 12.5,\n            \"total_received\": 2487.5\n          },\n          \"max_limit\": 50000,\n          \"min_limit\": 10,\n          \"standard\": {\n            \"estimated_arrival\": \"2026-01-01T12:00:00Z\",\n            \"fee\": 2.5,\n            \"total_received\": 2497.5\n          }\n        }\n      ],\n      \"required_fields\": [\n        {\n          \"id\": \"fld_bank_account_number\",\n          \"input_type\": \"text\",\n          \"label\": \"Account Number\",\n          \"object\": \"required_field\",\n          \"options\": [\n            \"savings\"\n          ],\n          \"placeholder\": \"8825310472\",\n          \"required\": true,\n          \"sensitive\": true,\n          \"type\": \"bank_account_number\",\n          \"validation\": \"^[0-9]{4,17}$\"\n        }\n      ],\n      \"supports_instant_delivery\": false,\n      \"supports_paypal_login\": false,\n      \"supports_standard_delivery\": true\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"MQ\",\n    \"has_next_page\": true,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"MQ\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -17288,6 +17319,6 @@
     }
   ],
   "meta": {
-    "total": 482
+    "total": 483
   }
 }

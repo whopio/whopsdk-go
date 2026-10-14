@@ -11,13 +11,15 @@ import (
 	internal "github.com/whopio/whopsdk-go/v2/internal"
 	option "github.com/whopio/whopsdk-go/v2/option"
 	methods "github.com/whopio/whopsdk-go/v2/payouts/methods"
+	paypallinksessions "github.com/whopio/whopsdk-go/v2/payouts/paypallinksessions"
 	supportedmethods "github.com/whopio/whopsdk-go/v2/payouts/supportedmethods"
 )
 
 type Client struct {
-	WithRawResponse  *RawClient
-	Methods          *methods.Client
-	SupportedMethods *supportedmethods.Client
+	WithRawResponse    *RawClient
+	Methods            *methods.Client
+	PaypalLinkSessions *paypallinksessions.Client
+	SupportedMethods   *supportedmethods.Client
 
 	options *core.RequestOptions
 	baseURL string
@@ -30,11 +32,12 @@ func NewClient(options *core.RequestOptions) *Client {
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
-		Methods:          methods.NewClient(options),
-		SupportedMethods: supportedmethods.NewClient(options),
-		WithRawResponse:  NewRawClient(options),
-		options:          options,
-		baseURL:          options.BaseURL,
+		Methods:            methods.NewClient(options),
+		PaypalLinkSessions: paypallinksessions.NewClient(options),
+		SupportedMethods:   supportedmethods.NewClient(options),
+		WithRawResponse:    NewRawClient(options),
+		options:            options,
+		baseURL:            options.BaseURL,
 		caller: internal.NewCaller(
 			&internal.CallerParams{
 				Client:         options.HTTPClient,

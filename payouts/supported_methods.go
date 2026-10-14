@@ -249,7 +249,8 @@ var (
 	listSupportedMethodsResponseDataItemFieldQuotes                   = big.NewInt(1 << 5)
 	listSupportedMethodsResponseDataItemFieldRequiredFields           = big.NewInt(1 << 6)
 	listSupportedMethodsResponseDataItemFieldSupportsInstantDelivery  = big.NewInt(1 << 7)
-	listSupportedMethodsResponseDataItemFieldSupportsStandardDelivery = big.NewInt(1 << 8)
+	listSupportedMethodsResponseDataItemFieldSupportsPaypalLogin      = big.NewInt(1 << 8)
+	listSupportedMethodsResponseDataItemFieldSupportsStandardDelivery = big.NewInt(1 << 9)
 )
 
 // listSupportedMethodsResponseDataItemNullableFields maps the wire names of ListSupportedMethodsResponseDataItem's nullable fields (required or optional) to their field bits.
@@ -273,9 +274,11 @@ type ListSupportedMethodsResponseDataItem struct {
 	// Fee and delivery estimates for the requested amount, one per destination currency. Null unless an amount was provided.
 	Quotes []*ListSupportedMethodsResponseDataItemQuotesItem `json:"quotes,omitempty" url:"quotes,omitempty"`
 	// Fields to collect before saving this supported payout method. Present only when supported_payout_method_id narrows the request to one method.
-	RequiredFields           []*ListSupportedMethodsResponseDataItemRequiredFieldsItem `json:"required_fields,omitempty" url:"required_fields,omitempty"`
-	SupportsInstantDelivery  bool                                                      `json:"supports_instant_delivery" url:"supports_instant_delivery"`
-	SupportsStandardDelivery bool                                                      `json:"supports_standard_delivery" url:"supports_standard_delivery"`
+	RequiredFields          []*ListSupportedMethodsResponseDataItemRequiredFieldsItem `json:"required_fields,omitempty" url:"required_fields,omitempty"`
+	SupportsInstantDelivery bool                                                      `json:"supports_instant_delivery" url:"supports_instant_delivery"`
+	// Whether the payer can add this method by logging in to PayPal through `POST /payouts/paypal_link_sessions`, which confirms the PayPal account is verified and owned by the payee. True only for the PayPal method, and only once PayPal login is enabled for the account.
+	SupportsPaypalLogin      *bool `json:"supports_paypal_login,omitempty" url:"supports_paypal_login,omitempty"`
+	SupportsStandardDelivery bool  `json:"supports_standard_delivery" url:"supports_standard_delivery"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -338,6 +341,13 @@ func (l *ListSupportedMethodsResponseDataItem) GetSupportsInstantDelivery() bool
 		return false
 	}
 	return l.SupportsInstantDelivery
+}
+
+func (l *ListSupportedMethodsResponseDataItem) GetSupportsPaypalLogin() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.SupportsPaypalLogin
 }
 
 func (l *ListSupportedMethodsResponseDataItem) GetSupportsStandardDelivery() bool {
@@ -417,6 +427,13 @@ func (l *ListSupportedMethodsResponseDataItem) SetRequiredFields(requiredFields 
 func (l *ListSupportedMethodsResponseDataItem) SetSupportsInstantDelivery(supportsInstantDelivery bool) {
 	l.SupportsInstantDelivery = supportsInstantDelivery
 	l.require(listSupportedMethodsResponseDataItemFieldSupportsInstantDelivery)
+}
+
+// SetSupportsPaypalLogin sets the SupportsPaypalLogin field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSupportedMethodsResponseDataItem) SetSupportsPaypalLogin(supportsPaypalLogin *bool) {
+	l.SupportsPaypalLogin = supportsPaypalLogin
+	l.require(listSupportedMethodsResponseDataItemFieldSupportsPaypalLogin)
 }
 
 // SetSupportsStandardDelivery sets the SupportsStandardDelivery field and marks it as non-optional;
