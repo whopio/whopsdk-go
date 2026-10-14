@@ -213,3 +213,31 @@ func (c *Client) AcceptCommissionAdvance(
 	}
 	return response.Body, nil
 }
+
+// Re-emails an outstanding invite to claim ownership of a referred business. Find the invite in the business's `pending_owner_invites`. Only the first-tier partner can resend, from a whop.com session or the Whop CLI or MCP with `partner:handoff`. Rate limited to one resend per invite every five minutes.
+//
+// Example:
+//
+//	request := &partners.ResendInviteBusinessesRequest{
+//	    ID: "id",
+//	    InviteID: "ausri_xxxxxxxxxxxxxx",
+//	}
+//	client.Partners.Businesses.ResendInvite(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) ResendInvite(
+	ctx context.Context,
+	request *partners.ResendInviteBusinessesRequest,
+	opts ...option.RequestOption,
+) (*partners.ResendInviteBusinessesResponse, error) {
+	response, err := c.WithRawResponse.ResendInvite(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}

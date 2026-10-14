@@ -245,6 +245,7 @@ const (
 	PermissionActionPartnerReferralRequestAccept      PermissionAction = "partner:referral_request:accept"
 	PermissionActionPartnerReferralRequestDecline     PermissionAction = "partner:referral_request:decline"
 	PermissionActionPartnerReferralRequestCancel      PermissionAction = "partner:referral_request:cancel"
+	PermissionActionPartnerHandoff                    PermissionAction = "partner:handoff"
 	PermissionActionPartnerCreate                     PermissionAction = "partner:create"
 	PermissionActionStatsRead                         PermissionAction = "stats:read"
 	PermissionActionSupportChatRead                   PermissionAction = "support_chat:read"
@@ -723,6 +724,8 @@ func NewPermissionActionFromString(s string) (PermissionAction, error) {
 		return PermissionActionPartnerReferralRequestDecline, nil
 	case "partner:referral_request:cancel":
 		return PermissionActionPartnerReferralRequestCancel, nil
+	case "partner:handoff":
+		return PermissionActionPartnerHandoff, nil
 	case "partner:create":
 		return PermissionActionPartnerCreate, nil
 	case "stats:read":

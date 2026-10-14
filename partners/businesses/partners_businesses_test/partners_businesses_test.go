@@ -188,3 +188,30 @@ func TestPartnersBusinessesAcceptCommissionAdvanceWithWireMock(
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestPartnersBusinessesAcceptCommissionAdvanceWithWireMock", "POST", "/partners/businesses/id/accept_commission_advance", nil, 1)
 }
+
+func TestPartnersBusinessesResendInviteWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &partners.ResendInviteBusinessesRequest{
+		ID:       "id",
+		InviteID: "ausri_xxxxxxxxxxxxxx",
+	}
+	_, invocationErr := client.Partners.Businesses.ResendInvite(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestPartnersBusinessesResendInviteWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestPartnersBusinessesResendInviteWithWireMock", "POST", "/partners/businesses/id/resend_invite", nil, 1)
+}

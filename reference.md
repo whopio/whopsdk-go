@@ -1402,7 +1402,7 @@ client.Accounts.Suspend(
 <dl>
 <dd>
 
-Transfers ownership of the account to another user, identified by user ID or email address. If the recipient already holds the owner role, ownership moves immediately; otherwise they get an invite and ownership moves when they accept.
+Transfers ownership of the account to another user, identified by user ID or email address. If the recipient already holds the owner role, ownership moves immediately; otherwise they get an invite and ownership moves when they accept. The Whop CLI and MCP can hand off a business their user owns as a partner (`as_partner: true`) with the `partner:handoff` scope; other OAuth apps cannot transfer ownership.
 </dd>
 </dl>
 </dd>
@@ -25790,6 +25790,47 @@ client.Partners.Create(
 </dl>
 </details>
 
+<details><summary><code>client.Partners.FeeOptions() -> *whopsdk.FeeOptionsPartnersResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists, per income stream, the fee a business the caller refers would be charged, how low the caller may price it, and the commission the caller earns on that stream. Answers for a referral that does not exist yet, so a referral flow can price the deal before the business is created. Requires `partner:fees:update`, since the floors a partner may price down to are only for a credential that can set them.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+client.Partners.FeeOptions(
+    context.TODO(),
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Partners.Leaderboard() -> *whopsdk.LeaderboardPartnersResponse</code></summary>
 <dl>
 <dd>
@@ -44736,6 +44777,75 @@ client.Partners.Businesses.AcceptCommissionAdvance(
 <dd>
 
 **termsVersion:** `string` — Reviewed CPA terms version.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Partners.Businesses.ResendInvite(ID, request) -> *partners.ResendInviteBusinessesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Re-emails an outstanding invite to claim ownership of a referred business. Find the invite in the business's `pending_owner_invites`. Only the first-tier partner can resend, from a whop.com session or the Whop CLI or MCP with `partner:handoff`. Rate limited to one resend per invite every five minutes.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &partners.ResendInviteBusinessesRequest{
+    ID: "id",
+    InviteID: "ausri_xxxxxxxxxxxxxx",
+}
+client.Partners.Businesses.ResendInvite(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The partner business ID (a coma_ identifier).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**inviteID:** `string` — The outstanding invite to resend (an ausri_ identifier from `pending_owner_invites`).
     
 </dd>
 </dl>
