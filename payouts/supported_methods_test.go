@@ -663,6 +663,14 @@ func TestSettersListSupportedMethodsResponseDataItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSupportsPaypalLogin", func(t *testing.T) {
+		obj := &ListSupportedMethodsResponseDataItem{}
+		var fernTestValueSupportsPaypalLogin *bool
+		obj.SetSupportsPaypalLogin(fernTestValueSupportsPaypalLogin)
+		assert.Equal(t, fernTestValueSupportsPaypalLogin, obj.SupportsPaypalLogin)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetSupportsStandardDelivery", func(t *testing.T) {
 		obj := &ListSupportedMethodsResponseDataItem{}
 		var fernTestValueSupportsStandardDelivery bool
@@ -896,6 +904,39 @@ func TestGettersListSupportedMethodsResponseDataItem(t *testing.T) {
 			}
 		}()
 		_ = obj.GetSupportsInstantDelivery() // Should return zero value
+	})
+
+	t.Run("GetSupportsPaypalLogin", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListSupportedMethodsResponseDataItem{}
+		var expected *bool
+		obj.SupportsPaypalLogin = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSupportsPaypalLogin(), "getter should return the property value")
+	})
+
+	t.Run("GetSupportsPaypalLogin_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListSupportedMethodsResponseDataItem{}
+		obj.SupportsPaypalLogin = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSupportsPaypalLogin(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSupportsPaypalLogin_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListSupportedMethodsResponseDataItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSupportsPaypalLogin() // Should return zero value
 	})
 
 	t.Run("GetSupportsStandardDelivery", func(t *testing.T) {
@@ -1149,6 +1190,37 @@ func TestSettersMarkExplicitListSupportedMethodsResponseDataItem(t *testing.T) {
 
 		// Act
 		obj.SetSupportsInstantDelivery(fernTestValueSupportsInstantDelivery)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSupportsPaypalLogin_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListSupportedMethodsResponseDataItem{}
+		var fernTestValueSupportsPaypalLogin *bool
+
+		// Act
+		obj.SetSupportsPaypalLogin(fernTestValueSupportsPaypalLogin)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
