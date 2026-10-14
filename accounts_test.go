@@ -1979,6 +1979,14 @@ func TestSettersAccount(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetDirectReportsCount", func(t *testing.T) {
+		obj := &Account{}
+		var fernTestValueDirectReportsCount *int
+		obj.SetDirectReportsCount(fernTestValueDirectReportsCount)
+		assert.Equal(t, fernTestValueDirectReportsCount, obj.DirectReportsCount)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetDisputeFighterEnabled", func(t *testing.T) {
 		obj := &Account{}
 		var fernTestValueDisputeFighterEnabled bool
@@ -2901,6 +2909,39 @@ func TestGettersAccount(t *testing.T) {
 			}
 		}()
 		_ = obj.GetDescription() // Should return zero value
+	})
+
+	t.Run("GetDirectReportsCount", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Account{}
+		var expected *int
+		obj.DirectReportsCount = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDirectReportsCount(), "getter should return the property value")
+	})
+
+	t.Run("GetDirectReportsCount_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Account{}
+		obj.DirectReportsCount = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDirectReportsCount(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDirectReportsCount_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Account
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDirectReportsCount() // Should return zero value
 	})
 
 	t.Run("GetDisputeFighterEnabled", func(t *testing.T) {
@@ -5099,6 +5140,37 @@ func TestSettersMarkExplicitAccount(t *testing.T) {
 
 		// Act
 		obj.SetDescription(fernTestValueDescription)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDirectReportsCount_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Account{}
+		var fernTestValueDirectReportsCount *int
+
+		// Act
+		obj.SetDirectReportsCount(fernTestValueDirectReportsCount)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
