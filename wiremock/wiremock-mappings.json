@@ -5168,7 +5168,7 @@
       },
       "response": {
         "status": 201,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"amount\": \"50.00\",\n  \"hosted_url\": \"https://whop.com/deposit/biz_xxxxxxxxxxxxxx/\",\n  \"methods\": {\n    \"bank\": {\n      \"currencies\": [\n        {\n          \"account_number\": \"8825310472\",\n          \"currency\": \"USD\",\n          \"deposit_bank_address\": \"2115 Linwood Avenue, Fort Lee, New Jersey 07024\",\n          \"deposit_bank_name\": \"Cross River Bank\",\n          \"deposit_beneficiary_name\": \"Shine Time Auto Detailing\",\n          \"deposit_reference\": \"SHINE-1042\",\n          \"rails\": [\n            \"ach\"\n          ],\n          \"routing_number\": \"021214891\",\n          \"swift_bic\": \"CRBAUS33\"\n        }\n      ]\n    },\n    \"crypto\": [\n      {\n        \"deposit_address\": \"soladdr\",\n        \"icon_url\": \"https://whop.com/_static/images/crypto/solana.svg\",\n        \"name\": \"Ethereum\",\n        \"supported_currencies\": [\n          {\n            \"icon_url\": \"https://whop.com/_static/images/crypto/pyusd.svg\",\n            \"name\": \"ARB\"\n          }\n        ]\n      }\n    ]\n  },\n  \"object\": \"deposit\"\n}",
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"amount\": \"50.00\",\n  \"card\": {\n    \"payment_id\": \"pay_xxxxxxxxxxxxxx\",\n    \"payment_method_id\": \"payt_xxxxxxxxxxxxxx\"\n  },\n  \"hosted_url\": \"https://whop.com/deposit/biz_xxxxxxxxxxxxxx/\",\n  \"methods\": {\n    \"bank\": {\n      \"currencies\": [\n        {\n          \"account_number\": \"8825310472\",\n          \"currency\": \"USD\",\n          \"deposit_bank_address\": \"2115 Linwood Avenue, Fort Lee, New Jersey 07024\",\n          \"deposit_bank_name\": \"Cross River Bank\",\n          \"deposit_beneficiary_name\": \"Shine Time Auto Detailing\",\n          \"deposit_reference\": \"SHINE-1042\",\n          \"rails\": [\n            \"ach\"\n          ],\n          \"routing_number\": \"021214891\",\n          \"swift_bic\": \"CRBAUS33\"\n        }\n      ]\n    },\n    \"crypto\": [\n      {\n        \"deposit_address\": \"soladdr\",\n        \"icon_url\": \"https://whop.com/_static/images/crypto/solana.svg\",\n        \"name\": \"Ethereum\",\n        \"supported_currencies\": [\n          {\n            \"icon_url\": \"https://whop.com/_static/images/crypto/pyusd.svg\",\n            \"name\": \"ARB\"\n          }\n        ]\n      }\n    ]\n  },\n  \"object\": \"deposit\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -13920,37 +13920,6 @@
       }
     },
     {
-      "id": "ecc00ab9-0822-4b1d-9369-896d1005d1c2",
-      "name": "Create topup - default",
-      "request": {
-        "urlPathTemplate": "/topups",
-        "method": "POST",
-        "headers": {
-          "Authorization": {
-            "matches": "Bearer .+"
-          }
-        }
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n  \"created_at\": \"2023-12-01T05:00:00Z\",\n  \"currency\": \"usd\",\n  \"failure_message\": \"failure_message\",\n  \"id\": \"pay_xxxxxxxxxxxxxx\",\n  \"paid_at\": \"2023-12-01T05:00:00Z\",\n  \"status\": \"draft\",\n  \"total\": 6.9\n}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      },
-      "uuid": "ecc00ab9-0822-4b1d-9369-896d1005d1c2",
-      "persistent": true,
-      "priority": 3,
-      "metadata": {
-        "mocklab": {
-          "created": {
-            "at": "2020-01-01T00:00:00.000Z",
-            "via": "SYSTEM"
-          }
-        }
-      }
-    },
-    {
       "id": "1a3ff3ef-74ad-4f36-91b2-1767bb24ebd2",
       "name": "List Trades - default",
       "request": {
@@ -17387,6 +17356,6 @@
     }
   ],
   "meta": {
-    "total": 485
+    "total": 484
   }
 }
