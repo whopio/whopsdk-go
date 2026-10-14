@@ -584,7 +584,7 @@ type ListAdGroupsRequest struct {
 	Status *ListAdGroupsRequestStatus `json:"-" url:"status,omitempty"`
 	// Filter ad groups by a title or ID substring.
 	Query *string `json:"-" url:"query,omitempty"`
-	// The field to sort by. Defaults to created_at. Stat columns (spend, impressions, …) rank over the stats_from/stats_to window across the whole list, not just the current page. results, cost_per_result and return_on_ad_spend rank by the same Whop pixel-attributed values the response reports.
+	// The field to sort by. Defaults to created_at. Stat columns (spend, impressions, …) rank over the stats_from/stats_to window across the whole list, not just the current page. results, cost_per_result and return_on_ad_spend rank by the same Whop pixel-attributed values the response reports, and link_clicks by the same Whop pixel page views.
 	Order *ListAdGroupsRequestOrder `json:"-" url:"order,omitempty"`
 	// The sort direction. Defaults to desc.
 	Direction *ListAdGroupsRequestDirection `json:"-" url:"direction,omitempty"`
@@ -1151,7 +1151,7 @@ type AdGroup struct {
 	Leads float64 `json:"leads" url:"leads"`
 	// Progress toward the ad platform's learning conversion threshold for this ad group. Null unless it is learning or learning limited and the platform reports valid counts. Reaching the threshold does not determine delivery status.
 	LearningProgress *AdGroupLearningProgress `json:"learning_progress,omitempty" url:"learning_progress,omitempty"`
-	// Clicks on links in the ad that lead to your destination, as reported by the ad platform. A subset of clicks, which also counts likes, comments, and other interactions with the ad.
+	// Page views on your destination from people who clicked the ad, recorded by the Whop pixel. Counted the same way on every ad platform.
 	LinkClicks  float64                  `json:"link_clicks" url:"link_clicks"`
 	MessageApps []AdGroupMessageAppsItem `json:"message_apps,omitempty" url:"message_apps,omitempty"`
 	// Minimum the ad group tries to spend each day. `null` when no floor is set.
