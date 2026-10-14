@@ -1839,6 +1839,13 @@ func TestEnumConnectExternalAccountsRequestPlatform(t *testing.T) {
 		assert.Equal(t, ConnectExternalAccountsRequestPlatform("youtube"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_x", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewConnectExternalAccountsRequestPlatformFromString("x")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ConnectExternalAccountsRequestPlatform("x"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_snapchat", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewConnectExternalAccountsRequestPlatformFromString("snapchat")
