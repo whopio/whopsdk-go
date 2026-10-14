@@ -38043,7 +38043,7 @@ client.Trades.Create(
 <dl>
 <dd>
 
-**instrumentType:** `*whopsdk.CreateTradesRequestInstrumentType` — `perpetual` or `spot`. Required for an order. Spot needs the trading account in Hyperliquid's unified account mode.
+**instrumentType:** `*whopsdk.CreateTradesRequestInstrumentType` — `perpetual` or `spot`. Required for an order. A spot order first switches the trading account to Hyperliquid's unified account mode, where spot and perpetuals share one USDC balance.
     
 </dd>
 </dl>
