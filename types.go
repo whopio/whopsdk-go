@@ -353,6 +353,209 @@ func (a *AccountBalanceSettlement) String() string {
 }
 
 var (
+	accountBalanceTokenFieldBalance   = big.NewInt(1 << 0)
+	accountBalanceTokenFieldBreakdown = big.NewInt(1 << 1)
+	accountBalanceTokenFieldIconURL   = big.NewInt(1 << 2)
+	accountBalanceTokenFieldName      = big.NewInt(1 << 3)
+	accountBalanceTokenFieldPriceUsd  = big.NewInt(1 << 4)
+	accountBalanceTokenFieldSymbol    = big.NewInt(1 << 5)
+	accountBalanceTokenFieldValueUsd  = big.NewInt(1 << 6)
+)
+
+// accountBalanceTokenNullableFields maps the wire names of AccountBalanceToken's nullable fields (required or optional) to their field bits.
+var accountBalanceTokenNullableFields = map[string]*big.Int{
+	"icon_url":  accountBalanceTokenFieldIconURL,
+	"price_usd": accountBalanceTokenFieldPriceUsd,
+	"value_usd": accountBalanceTokenFieldValueUsd,
+}
+
+type AccountBalanceToken struct {
+	// Total amount held in native units, as a decimal string.
+	Balance string `json:"balance" url:"balance"`
+	// Balance split into available, pending, and reserve amounts, as native-unit decimal strings, with the days the pending amount is expected to settle. On-chain crypto is entirely available; good_funds and fiat cash can have pending or reserve portions.
+	Breakdown *AccountBalanceBreakdown `json:"breakdown" url:"breakdown"`
+	// Holding icon URL.
+	IconURL *string `json:"icon_url,omitempty" url:"icon_url,omitempty"`
+	// The holding's display name
+	Name string `json:"name" url:"name"`
+	// USD price per unit, or `null` when no exchange rate is available.
+	PriceUsd *float64 `json:"price_usd,omitempty" url:"price_usd,omitempty"`
+	// Holding display symbol, such as `USDT`, `cbBTC`, or `EUR`.
+	Symbol string `json:"symbol" url:"symbol"`
+	// Holding USD value, or `null` when no exchange rate is available.
+	ValueUsd *string `json:"value_usd,omitempty" url:"value_usd,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AccountBalanceToken) GetBalance() string {
+	if a == nil {
+		return ""
+	}
+	return a.Balance
+}
+
+func (a *AccountBalanceToken) GetBreakdown() *AccountBalanceBreakdown {
+	if a == nil {
+		return nil
+	}
+	return a.Breakdown
+}
+
+func (a *AccountBalanceToken) GetIconURL() *string {
+	if a == nil {
+		return nil
+	}
+	return a.IconURL
+}
+
+func (a *AccountBalanceToken) GetName() string {
+	if a == nil {
+		return ""
+	}
+	return a.Name
+}
+
+func (a *AccountBalanceToken) GetPriceUsd() *float64 {
+	if a == nil {
+		return nil
+	}
+	return a.PriceUsd
+}
+
+func (a *AccountBalanceToken) GetSymbol() string {
+	if a == nil {
+		return ""
+	}
+	return a.Symbol
+}
+
+func (a *AccountBalanceToken) GetValueUsd() *string {
+	if a == nil {
+		return nil
+	}
+	return a.ValueUsd
+}
+
+func (a *AccountBalanceToken) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AccountBalanceToken) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetBalance sets the Balance field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountBalanceToken) SetBalance(balance string) {
+	a.Balance = balance
+	a.require(accountBalanceTokenFieldBalance)
+}
+
+// SetBreakdown sets the Breakdown field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountBalanceToken) SetBreakdown(breakdown *AccountBalanceBreakdown) {
+	a.Breakdown = breakdown
+	a.require(accountBalanceTokenFieldBreakdown)
+}
+
+// SetIconURL sets the IconURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountBalanceToken) SetIconURL(iconURL *string) {
+	a.IconURL = iconURL
+	a.require(accountBalanceTokenFieldIconURL)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountBalanceToken) SetName(name string) {
+	a.Name = name
+	a.require(accountBalanceTokenFieldName)
+}
+
+// SetPriceUsd sets the PriceUsd field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountBalanceToken) SetPriceUsd(priceUsd *float64) {
+	a.PriceUsd = priceUsd
+	a.require(accountBalanceTokenFieldPriceUsd)
+}
+
+// SetSymbol sets the Symbol field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountBalanceToken) SetSymbol(symbol string) {
+	a.Symbol = symbol
+	a.require(accountBalanceTokenFieldSymbol)
+}
+
+// SetValueUsd sets the ValueUsd field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountBalanceToken) SetValueUsd(valueUsd *string) {
+	a.ValueUsd = valueUsd
+	a.require(accountBalanceTokenFieldValueUsd)
+}
+
+func (a *AccountBalanceToken) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccountBalanceToken
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccountBalanceToken(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, accountBalanceTokenNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccountBalanceToken) MarshalJSON() ([]byte, error) {
+	type embed AccountBalanceToken
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AccountBalanceToken) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+var (
 	accountCapabilitiesFieldAcceptBankPayments = big.NewInt(1 << 0)
 	accountCapabilitiesFieldAcceptBnplPayments = big.NewInt(1 << 1)
 	accountCapabilitiesFieldAcceptCardPayments = big.NewInt(1 << 2)
