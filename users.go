@@ -519,23 +519,25 @@ func (o *OwnerLevel) String() string {
 var (
 	userFieldBalance                           = big.NewInt(1 << 0)
 	userFieldBalanceHistory                    = big.NewInt(1 << 1)
-	userFieldBanner                            = big.NewInt(1 << 2)
-	userFieldBio                               = big.NewInt(1 << 3)
-	userFieldCards                             = big.NewInt(1 << 4)
-	userFieldCreatedAt                         = big.NewInt(1 << 5)
-	userFieldEarningsUsd                       = big.NewInt(1 << 6)
-	userFieldEmail                             = big.NewInt(1 << 7)
-	userFieldID                                = big.NewInt(1 << 8)
-	userFieldLevel                             = big.NewInt(1 << 9)
-	userFieldName                              = big.NewInt(1 << 10)
-	userFieldProfilePicture                    = big.NewInt(1 << 11)
-	userFieldSocialLinks                       = big.NewInt(1 << 12)
-	userFieldTrading                           = big.NewInt(1 << 13)
-	userFieldUsername                          = big.NewInt(1 << 14)
-	userFieldVerification                      = big.NewInt(1 << 15)
-	userFieldWhopPartnerEnabledAt              = big.NewInt(1 << 16)
-	userFieldWhopPartnerOnboardedAccountsCount = big.NewInt(1 << 17)
-	userFieldWhopPartnerVerifiedAt             = big.NewInt(1 << 18)
+	userFieldBalances                          = big.NewInt(1 << 2)
+	userFieldBanner                            = big.NewInt(1 << 3)
+	userFieldBio                               = big.NewInt(1 << 4)
+	userFieldCards                             = big.NewInt(1 << 5)
+	userFieldCreatedAt                         = big.NewInt(1 << 6)
+	userFieldEarningsUsd                       = big.NewInt(1 << 7)
+	userFieldEmail                             = big.NewInt(1 << 8)
+	userFieldID                                = big.NewInt(1 << 9)
+	userFieldLevel                             = big.NewInt(1 << 10)
+	userFieldName                              = big.NewInt(1 << 11)
+	userFieldProfilePicture                    = big.NewInt(1 << 12)
+	userFieldSocialLinks                       = big.NewInt(1 << 13)
+	userFieldTotalUsd                          = big.NewInt(1 << 14)
+	userFieldTrading                           = big.NewInt(1 << 15)
+	userFieldUsername                          = big.NewInt(1 << 16)
+	userFieldVerification                      = big.NewInt(1 << 17)
+	userFieldWhopPartnerEnabledAt              = big.NewInt(1 << 18)
+	userFieldWhopPartnerOnboardedAccountsCount = big.NewInt(1 << 19)
+	userFieldWhopPartnerVerifiedAt             = big.NewInt(1 << 20)
 )
 
 // userNullableFields maps the wire names of User's nullable fields (required or optional) to their field bits.
@@ -549,6 +551,7 @@ var userNullableFields = map[string]*big.Int{
 	"email":                                 userFieldEmail,
 	"level":                                 userFieldLevel,
 	"name":                                  userFieldName,
+	"total_usd":                             userFieldTotalUsd,
 	"trading":                               userFieldTrading,
 	"whop_partner_enabled_at":               userFieldWhopPartnerEnabledAt,
 	"whop_partner_onboarded_accounts_count": userFieldWhopPartnerOnboardedAccountsCount,
@@ -559,7 +562,8 @@ type User struct {
 	// The user's balance: personal cash + crypto + in-flight treasury deposits, plus account balances for accounts they own. Computed only on the self view (retrieved with the reserved id `me`) for callers with balance-read scope; `null` otherwise, or when `include_balance=false`.
 	Balance *UserBalance `json:"balance,omitempty" url:"balance,omitempty"`
 	// The user's cumulative wallet balance over time (USD `{ t, v }` points plus last/min/max), for the balance chart. Opt in with `include_balance_history=true` when retrieving yourself with the reserved id `me`; populated only for callers with balance-read scope and `null` otherwise. A user with no wallet activity returns an empty series.
-	BalanceHistory *UserBalanceHistory `json:"balance_history,omitempty" url:"balance_history,omitempty"`
+	BalanceHistory *UserBalanceHistory    `json:"balance_history,omitempty" url:"balance_history,omitempty"`
+	Balances       []*AccountBalanceToken `json:"balances" url:"balances"`
 	// The user's profile banner wrapper. `null` when the user has no banner.
 	Banner *UserBanner `json:"banner,omitempty" url:"banner,omitempty"`
 	// The user's biography
@@ -581,6 +585,8 @@ type User struct {
 	// Avatar wrapper; its `url` is always present, using a generated placeholder when the user set no picture.
 	ProfilePicture *UserProfilePicture `json:"profile_picture" url:"profile_picture"`
 	SocialLinks    []*UserSocialLink   `json:"social_links" url:"social_links"`
+	// Total USD value of the user's personal holdings in `balances`, across those with known exchange rates. Computed only on the self view (retrieved with the reserved id `me`) for callers with balance-read scope; `null` otherwise, when `include_balance=false`, or when the balance source is unavailable.
+	TotalUsd *string `json:"total_usd,omitempty" url:"total_usd,omitempty"`
 	// The trading account address and its WebSocket subscriptions. Opt in with `include_trading=true` when retrieving `me`. `null` otherwise, without trading permission, or without an Ethereum wallet.
 	Trading *TradingAccount `json:"trading,omitempty" url:"trading,omitempty"`
 	// The user's unique username
@@ -613,6 +619,13 @@ func (u *User) GetBalanceHistory() *UserBalanceHistory {
 		return nil
 	}
 	return u.BalanceHistory
+}
+
+func (u *User) GetBalances() []*AccountBalanceToken {
+	if u == nil {
+		return nil
+	}
+	return u.Balances
 }
 
 func (u *User) GetBanner() *UserBanner {
@@ -692,6 +705,13 @@ func (u *User) GetSocialLinks() []*UserSocialLink {
 	return u.SocialLinks
 }
 
+func (u *User) GetTotalUsd() *string {
+	if u == nil {
+		return nil
+	}
+	return u.TotalUsd
+}
+
 func (u *User) GetTrading() *TradingAccount {
 	if u == nil {
 		return nil
@@ -762,6 +782,13 @@ func (u *User) SetBalance(balance *UserBalance) {
 func (u *User) SetBalanceHistory(balanceHistory *UserBalanceHistory) {
 	u.BalanceHistory = balanceHistory
 	u.require(userFieldBalanceHistory)
+}
+
+// SetBalances sets the Balances field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *User) SetBalances(balances []*AccountBalanceToken) {
+	u.Balances = balances
+	u.require(userFieldBalances)
 }
 
 // SetBanner sets the Banner field and marks it as non-optional;
@@ -839,6 +866,13 @@ func (u *User) SetProfilePicture(profilePicture *UserProfilePicture) {
 func (u *User) SetSocialLinks(socialLinks []*UserSocialLink) {
 	u.SocialLinks = socialLinks
 	u.require(userFieldSocialLinks)
+}
+
+// SetTotalUsd sets the TotalUsd field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *User) SetTotalUsd(totalUsd *string) {
+	u.TotalUsd = totalUsd
+	u.require(userFieldTotalUsd)
 }
 
 // SetTrading sets the Trading field and marks it as non-optional;
