@@ -330,6 +330,7 @@ const (
 	PermissionActionAiChatDelete                      PermissionAction = "ai_chat:delete"
 	PermissionActionAiChatUpdate                      PermissionAction = "ai_chat:update"
 	PermissionActionUserNotificationsRead             PermissionAction = "user:notifications:read"
+	PermissionActionUserAbuseReportCreate             PermissionAction = "user:abuse_report:create"
 	PermissionActionUserNotificationsUpdate           PermissionAction = "user:notifications:update"
 	PermissionActionUserProfileUpdate                 PermissionAction = "user:profile:update"
 )
@@ -894,6 +895,8 @@ func NewPermissionActionFromString(s string) (PermissionAction, error) {
 		return PermissionActionAiChatUpdate, nil
 	case "user:notifications:read":
 		return PermissionActionUserNotificationsRead, nil
+	case "user:abuse_report:create":
+		return PermissionActionUserAbuseReportCreate, nil
 	case "user:notifications:update":
 		return PermissionActionUserNotificationsUpdate, nil
 	case "user:profile:update":
