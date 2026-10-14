@@ -34,7 +34,7 @@ type CreateTradesRequest struct {
 	Amount *string `json:"amount,omitempty" url:"-"`
 	// Only for an order. Your own ID for the trade, 1 to 128 characters, unique for the account. Sending it again with the same order returns the same trade; with a different order it answers `409`.
 	ClientOrderID *string `json:"client_order_id,omitempty" url:"-"`
-	// `perpetual` or `spot`. Required for an order. Spot needs the trading account in Hyperliquid's unified account mode.
+	// `perpetual` or `spot`. Required for an order. A spot order first switches the trading account to Hyperliquid's unified account mode, where spot and perpetuals share one USDC balance.
 	InstrumentType *CreateTradesRequestInstrumentType `json:"instrument_type,omitempty" url:"-"`
 	// Only for a perpetual order. The cross leverage, from 1 to the market's maximum. Required unless `reduce_only`; not accepted on a reduce-only order.
 	Leverage *int `json:"leverage,omitempty" url:"-"`
@@ -1111,7 +1111,7 @@ func (t TradeType) Ptr() *TradeType {
 	return &t
 }
 
-// `perpetual` or `spot`. Required for an order. Spot needs the trading account in Hyperliquid's unified account mode.
+// `perpetual` or `spot`. Required for an order. A spot order first switches the trading account to Hyperliquid's unified account mode, where spot and perpetuals share one USDC balance.
 type CreateTradesRequestInstrumentType string
 
 const (
