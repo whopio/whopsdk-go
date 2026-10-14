@@ -63,6 +63,27 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
+// Lists, per income stream, the fee a business the caller refers would be charged, how low the caller may price it, and the commission the caller earns on that stream. Answers for a referral that does not exist yet, so a referral flow can price the deal before the business is created. Requires `partner:fees:update`, since the floors a partner may price down to are only for a credential that can set them.
+//
+// Example:
+//
+//	client.Partners.FeeOptions(
+//	    context.TODO(),
+//	)
+func (c *Client) FeeOptions(
+	ctx context.Context,
+	opts ...option.RequestOption,
+) (*whopsdk.FeeOptionsPartnersResponse, error) {
+	response, err := c.WithRawResponse.FeeOptions(
+		ctx,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Ranks referrers by partner business earnings over the chosen `period`, all-time by default. Authentication is optional: authenticated callers also get their own standing, anonymous callers get the rankings alone.
 //
 // Example:

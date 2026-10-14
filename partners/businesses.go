@@ -278,6 +278,65 @@ func (l *ListBusinessesRequest) SetBusinessPrefixQuery(businessPrefixQuery *stri
 }
 
 var (
+	resendInviteBusinessesRequestFieldID       = big.NewInt(1 << 0)
+	resendInviteBusinessesRequestFieldInviteID = big.NewInt(1 << 1)
+)
+
+type ResendInviteBusinessesRequest struct {
+	// The partner business ID (a coma_ identifier).
+	ID string `json:"-" url:"-"`
+	// The outstanding invite to resend (an ausri_ identifier from `pending_owner_invites`).
+	InviteID string `json:"invite_id" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (r *ResendInviteBusinessesRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesRequest) SetID(id string) {
+	r.ID = id
+	r.require(resendInviteBusinessesRequestFieldID)
+}
+
+// SetInviteID sets the InviteID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesRequest) SetInviteID(inviteID string) {
+	r.InviteID = inviteID
+	r.require(resendInviteBusinessesRequestFieldInviteID)
+}
+
+func (r *ResendInviteBusinessesRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler ResendInviteBusinessesRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*r = ResendInviteBusinessesRequest(body)
+	return nil
+}
+
+func (r *ResendInviteBusinessesRequest) MarshalJSON() ([]byte, error) {
+	type embed ResendInviteBusinessesRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	retrieveBusinessesRequestFieldID = big.NewInt(1 << 0)
 )
 
@@ -2826,22 +2885,2193 @@ func (l *ListBusinessesResponsePageInfo) String() string {
 }
 
 var (
-	retrieveBusinessesResponseFieldAccount           = big.NewInt(1 << 0)
-	retrieveBusinessesResponseFieldBlueprintPartner  = big.NewInt(1 << 1)
-	retrieveBusinessesResponseFieldCommissionAdvance = big.NewInt(1 << 2)
-	retrieveBusinessesResponseFieldCreatedAt         = big.NewInt(1 << 3)
-	retrieveBusinessesResponseFieldEarningsUsd       = big.NewInt(1 << 4)
-	retrieveBusinessesResponseFieldFirstTierPartner  = big.NewInt(1 << 5)
-	retrieveBusinessesResponseFieldID                = big.NewInt(1 << 6)
-	retrieveBusinessesResponseFieldMyPartnerTier     = big.NewInt(1 << 7)
-	retrieveBusinessesResponseFieldObject            = big.NewInt(1 << 8)
-	retrieveBusinessesResponseFieldOwner             = big.NewInt(1 << 9)
-	retrieveBusinessesResponseFieldPayoutPercentages = big.NewInt(1 << 10)
-	retrieveBusinessesResponseFieldReferralExpiresAt = big.NewInt(1 << 11)
-	retrieveBusinessesResponseFieldReferralStartedAt = big.NewInt(1 << 12)
-	retrieveBusinessesResponseFieldSecondTierPartner = big.NewInt(1 << 13)
-	retrieveBusinessesResponseFieldStatus            = big.NewInt(1 << 14)
-	retrieveBusinessesResponseFieldVolumeUsd         = big.NewInt(1 << 15)
+	resendInviteBusinessesResponseFieldAccount             = big.NewInt(1 << 0)
+	resendInviteBusinessesResponseFieldBlueprintPartner    = big.NewInt(1 << 1)
+	resendInviteBusinessesResponseFieldCommissionAdvance   = big.NewInt(1 << 2)
+	resendInviteBusinessesResponseFieldCreatedAt           = big.NewInt(1 << 3)
+	resendInviteBusinessesResponseFieldEarningsUsd         = big.NewInt(1 << 4)
+	resendInviteBusinessesResponseFieldFirstTierPartner    = big.NewInt(1 << 5)
+	resendInviteBusinessesResponseFieldID                  = big.NewInt(1 << 6)
+	resendInviteBusinessesResponseFieldMyPartnerTier       = big.NewInt(1 << 7)
+	resendInviteBusinessesResponseFieldObject              = big.NewInt(1 << 8)
+	resendInviteBusinessesResponseFieldOwner               = big.NewInt(1 << 9)
+	resendInviteBusinessesResponseFieldPayoutPercentages   = big.NewInt(1 << 10)
+	resendInviteBusinessesResponseFieldPendingOwnerInvites = big.NewInt(1 << 11)
+	resendInviteBusinessesResponseFieldReferralExpiresAt   = big.NewInt(1 << 12)
+	resendInviteBusinessesResponseFieldReferralStartedAt   = big.NewInt(1 << 13)
+	resendInviteBusinessesResponseFieldSecondTierPartner   = big.NewInt(1 << 14)
+	resendInviteBusinessesResponseFieldStatus              = big.NewInt(1 << 15)
+	resendInviteBusinessesResponseFieldVolumeUsd           = big.NewInt(1 << 16)
+)
+
+// resendInviteBusinessesResponseNullableFields maps the wire names of ResendInviteBusinessesResponse's nullable fields (required or optional) to their field bits.
+var resendInviteBusinessesResponseNullableFields = map[string]*big.Int{
+	"account":             resendInviteBusinessesResponseFieldAccount,
+	"blueprint_partner":   resendInviteBusinessesResponseFieldBlueprintPartner,
+	"commission_advance":  resendInviteBusinessesResponseFieldCommissionAdvance,
+	"first_tier_partner":  resendInviteBusinessesResponseFieldFirstTierPartner,
+	"owner":               resendInviteBusinessesResponseFieldOwner,
+	"referral_expires_at": resendInviteBusinessesResponseFieldReferralExpiresAt,
+	"referral_started_at": resendInviteBusinessesResponseFieldReferralStartedAt,
+	"second_tier_partner": resendInviteBusinessesResponseFieldSecondTierPartner,
+}
+
+type ResendInviteBusinessesResponse struct {
+	// Referred account.
+	Account *ResendInviteBusinessesResponseAccount `json:"account,omitempty" url:"account,omitempty"`
+	// The partner whose blueprint the business deployed. Null unless this is a blueprint referral.
+	BlueprintPartner *ResendInviteBusinessesResponseBlueprintPartner `json:"blueprint_partner,omitempty" url:"blueprint_partner,omitempty"`
+	// CPA terms for the referring partner. Omitted for other callers. An offer token requires partner:commission_advance:accept permission.
+	CommissionAdvance *v2.PartnerAdvance `json:"commission_advance,omitempty" url:"commission_advance,omitempty"`
+	// When the partner business was created.
+	CreatedAt   time.Time                                  `json:"created_at" url:"created_at"`
+	EarningsUsd *ResendInviteBusinessesResponseEarningsUsd `json:"earnings_usd" url:"earnings_usd"`
+	// The partner who referred the business owner onto Whop (first tier). Null if there is no active first-tier partner.
+	FirstTierPartner *ResendInviteBusinessesResponseFirstTierPartner `json:"first_tier_partner,omitempty" url:"first_tier_partner,omitempty"`
+	// Partner business ID.
+	ID string `json:"id" url:"id"`
+	// Which tier the caller earns on for this business: `first` (they referred the owner), `second` (they referred the first-tier partner), or `blueprint` (the business deployed a site from their blueprint).
+	MyPartnerTier ResendInviteBusinessesResponseMyPartnerTier `json:"my_partner_tier" url:"my_partner_tier"`
+	Object        ResendInviteBusinessesResponseObject        `json:"object" url:"object"`
+	// The owner of the referred business.
+	Owner *ResendInviteBusinessesResponseOwner `json:"owner,omitempty" url:"owner,omitempty"`
+	// The referrer's commission rate for each income source, expressed as a fraction (0.3 = 30%).
+	PayoutPercentages *ResendInviteBusinessesResponsePayoutPercentages `json:"payout_percentages" url:"payout_percentages"`
+	// Outstanding invites to claim ownership of this business. Present only to the first-tier partner's whop.com session, or the Whop CLI or MCP with the `partner:handoff` scope, and empty once every invite has been accepted.
+	PendingOwnerInvites []*ResendInviteBusinessesResponsePendingOwnerInvitesItem `json:"pending_owner_invites,omitempty" url:"pending_owner_invites,omitempty"`
+	// When the referral expires.
+	ReferralExpiresAt *time.Time `json:"referral_expires_at,omitempty" url:"referral_expires_at,omitempty"`
+	// When the referral became active.
+	ReferralStartedAt *time.Time `json:"referral_started_at,omitempty" url:"referral_started_at,omitempty"`
+	// The second-tier partner who earns on this business (referred the first-tier partner). Null if there is no active second-tier partner.
+	SecondTierPartner *ResendInviteBusinessesResponseSecondTierPartner `json:"second_tier_partner,omitempty" url:"second_tier_partner,omitempty"`
+	// Current referral status.
+	Status    ResendInviteBusinessesResponseStatus     `json:"status" url:"status"`
+	VolumeUsd *ResendInviteBusinessesResponseVolumeUsd `json:"volume_usd" url:"volume_usd"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *ResendInviteBusinessesResponse) GetAccount() *ResendInviteBusinessesResponseAccount {
+	if r == nil {
+		return nil
+	}
+	return r.Account
+}
+
+func (r *ResendInviteBusinessesResponse) GetBlueprintPartner() *ResendInviteBusinessesResponseBlueprintPartner {
+	if r == nil {
+		return nil
+	}
+	return r.BlueprintPartner
+}
+
+func (r *ResendInviteBusinessesResponse) GetCommissionAdvance() *v2.PartnerAdvance {
+	if r == nil {
+		return nil
+	}
+	return r.CommissionAdvance
+}
+
+func (r *ResendInviteBusinessesResponse) GetCreatedAt() time.Time {
+	if r == nil {
+		return time.Time{}
+	}
+	return r.CreatedAt
+}
+
+func (r *ResendInviteBusinessesResponse) GetEarningsUsd() *ResendInviteBusinessesResponseEarningsUsd {
+	if r == nil {
+		return nil
+	}
+	return r.EarningsUsd
+}
+
+func (r *ResendInviteBusinessesResponse) GetFirstTierPartner() *ResendInviteBusinessesResponseFirstTierPartner {
+	if r == nil {
+		return nil
+	}
+	return r.FirstTierPartner
+}
+
+func (r *ResendInviteBusinessesResponse) GetID() string {
+	if r == nil {
+		return ""
+	}
+	return r.ID
+}
+
+func (r *ResendInviteBusinessesResponse) GetMyPartnerTier() ResendInviteBusinessesResponseMyPartnerTier {
+	if r == nil {
+		return ""
+	}
+	return r.MyPartnerTier
+}
+
+func (r *ResendInviteBusinessesResponse) GetObject() ResendInviteBusinessesResponseObject {
+	if r == nil {
+		return ""
+	}
+	return r.Object
+}
+
+func (r *ResendInviteBusinessesResponse) GetOwner() *ResendInviteBusinessesResponseOwner {
+	if r == nil {
+		return nil
+	}
+	return r.Owner
+}
+
+func (r *ResendInviteBusinessesResponse) GetPayoutPercentages() *ResendInviteBusinessesResponsePayoutPercentages {
+	if r == nil {
+		return nil
+	}
+	return r.PayoutPercentages
+}
+
+func (r *ResendInviteBusinessesResponse) GetPendingOwnerInvites() []*ResendInviteBusinessesResponsePendingOwnerInvitesItem {
+	if r == nil {
+		return nil
+	}
+	return r.PendingOwnerInvites
+}
+
+func (r *ResendInviteBusinessesResponse) GetReferralExpiresAt() *time.Time {
+	if r == nil {
+		return nil
+	}
+	return r.ReferralExpiresAt
+}
+
+func (r *ResendInviteBusinessesResponse) GetReferralStartedAt() *time.Time {
+	if r == nil {
+		return nil
+	}
+	return r.ReferralStartedAt
+}
+
+func (r *ResendInviteBusinessesResponse) GetSecondTierPartner() *ResendInviteBusinessesResponseSecondTierPartner {
+	if r == nil {
+		return nil
+	}
+	return r.SecondTierPartner
+}
+
+func (r *ResendInviteBusinessesResponse) GetStatus() ResendInviteBusinessesResponseStatus {
+	if r == nil {
+		return ""
+	}
+	return r.Status
+}
+
+func (r *ResendInviteBusinessesResponse) GetVolumeUsd() *ResendInviteBusinessesResponseVolumeUsd {
+	if r == nil {
+		return nil
+	}
+	return r.VolumeUsd
+}
+
+func (r *ResendInviteBusinessesResponse) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *ResendInviteBusinessesResponse) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetAccount sets the Account field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponse) SetAccount(account *ResendInviteBusinessesResponseAccount) {
+	r.Account = account
+	r.require(resendInviteBusinessesResponseFieldAccount)
+}
+
+// SetBlueprintPartner sets the BlueprintPartner field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponse) SetBlueprintPartner(blueprintPartner *ResendInviteBusinessesResponseBlueprintPartner) {
+	r.BlueprintPartner = blueprintPartner
+	r.require(resendInviteBusinessesResponseFieldBlueprintPartner)
+}
+
+// SetCommissionAdvance sets the CommissionAdvance field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponse) SetCommissionAdvance(commissionAdvance *v2.PartnerAdvance) {
+	r.CommissionAdvance = commissionAdvance
+	r.require(resendInviteBusinessesResponseFieldCommissionAdvance)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponse) SetCreatedAt(createdAt time.Time) {
+	r.CreatedAt = createdAt
+	r.require(resendInviteBusinessesResponseFieldCreatedAt)
+}
+
+// SetEarningsUsd sets the EarningsUsd field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponse) SetEarningsUsd(earningsUsd *ResendInviteBusinessesResponseEarningsUsd) {
+	r.EarningsUsd = earningsUsd
+	r.require(resendInviteBusinessesResponseFieldEarningsUsd)
+}
+
+// SetFirstTierPartner sets the FirstTierPartner field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponse) SetFirstTierPartner(firstTierPartner *ResendInviteBusinessesResponseFirstTierPartner) {
+	r.FirstTierPartner = firstTierPartner
+	r.require(resendInviteBusinessesResponseFieldFirstTierPartner)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponse) SetID(id string) {
+	r.ID = id
+	r.require(resendInviteBusinessesResponseFieldID)
+}
+
+// SetMyPartnerTier sets the MyPartnerTier field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponse) SetMyPartnerTier(myPartnerTier ResendInviteBusinessesResponseMyPartnerTier) {
+	r.MyPartnerTier = myPartnerTier
+	r.require(resendInviteBusinessesResponseFieldMyPartnerTier)
+}
+
+// SetObject sets the Object field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponse) SetObject(object ResendInviteBusinessesResponseObject) {
+	r.Object = object
+	r.require(resendInviteBusinessesResponseFieldObject)
+}
+
+// SetOwner sets the Owner field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponse) SetOwner(owner *ResendInviteBusinessesResponseOwner) {
+	r.Owner = owner
+	r.require(resendInviteBusinessesResponseFieldOwner)
+}
+
+// SetPayoutPercentages sets the PayoutPercentages field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponse) SetPayoutPercentages(payoutPercentages *ResendInviteBusinessesResponsePayoutPercentages) {
+	r.PayoutPercentages = payoutPercentages
+	r.require(resendInviteBusinessesResponseFieldPayoutPercentages)
+}
+
+// SetPendingOwnerInvites sets the PendingOwnerInvites field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponse) SetPendingOwnerInvites(pendingOwnerInvites []*ResendInviteBusinessesResponsePendingOwnerInvitesItem) {
+	r.PendingOwnerInvites = pendingOwnerInvites
+	r.require(resendInviteBusinessesResponseFieldPendingOwnerInvites)
+}
+
+// SetReferralExpiresAt sets the ReferralExpiresAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponse) SetReferralExpiresAt(referralExpiresAt *time.Time) {
+	r.ReferralExpiresAt = referralExpiresAt
+	r.require(resendInviteBusinessesResponseFieldReferralExpiresAt)
+}
+
+// SetReferralStartedAt sets the ReferralStartedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponse) SetReferralStartedAt(referralStartedAt *time.Time) {
+	r.ReferralStartedAt = referralStartedAt
+	r.require(resendInviteBusinessesResponseFieldReferralStartedAt)
+}
+
+// SetSecondTierPartner sets the SecondTierPartner field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponse) SetSecondTierPartner(secondTierPartner *ResendInviteBusinessesResponseSecondTierPartner) {
+	r.SecondTierPartner = secondTierPartner
+	r.require(resendInviteBusinessesResponseFieldSecondTierPartner)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponse) SetStatus(status ResendInviteBusinessesResponseStatus) {
+	r.Status = status
+	r.require(resendInviteBusinessesResponseFieldStatus)
+}
+
+// SetVolumeUsd sets the VolumeUsd field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponse) SetVolumeUsd(volumeUsd *ResendInviteBusinessesResponseVolumeUsd) {
+	r.VolumeUsd = volumeUsd
+	r.require(resendInviteBusinessesResponseFieldVolumeUsd)
+}
+
+func (r *ResendInviteBusinessesResponse) UnmarshalJSON(data []byte) error {
+	type embed ResendInviteBusinessesResponse
+	var unmarshaler = struct {
+		embed
+		CreatedAt         *internal.DateTime `json:"created_at"`
+		ReferralExpiresAt *internal.DateTime `json:"referral_expires_at,omitempty"`
+		ReferralStartedAt *internal.DateTime `json:"referral_started_at,omitempty"`
+	}{
+		embed: embed(*r),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*r = ResendInviteBusinessesResponse(unmarshaler.embed)
+	r.CreatedAt = unmarshaler.CreatedAt.Time()
+	r.ReferralExpiresAt = unmarshaler.ReferralExpiresAt.TimePtr()
+	r.ReferralStartedAt = unmarshaler.ReferralStartedAt.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, resendInviteBusinessesResponseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *ResendInviteBusinessesResponse) MarshalJSON() ([]byte, error) {
+	type embed ResendInviteBusinessesResponse
+	var marshaler = struct {
+		embed
+		CreatedAt         *internal.DateTime `json:"created_at"`
+		ReferralExpiresAt *internal.DateTime `json:"referral_expires_at,omitempty"`
+		ReferralStartedAt *internal.DateTime `json:"referral_started_at,omitempty"`
+	}{
+		embed:             embed(*r),
+		CreatedAt:         internal.NewDateTime(r.CreatedAt),
+		ReferralExpiresAt: internal.NewOptionalDateTime(r.ReferralExpiresAt),
+		ReferralStartedAt: internal.NewOptionalDateTime(r.ReferralStartedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *ResendInviteBusinessesResponse) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+var (
+	resendInviteBusinessesResponseAccountFieldCapabilities       = big.NewInt(1 << 0)
+	resendInviteBusinessesResponseAccountFieldID                 = big.NewInt(1 << 1)
+	resendInviteBusinessesResponseAccountFieldLogoURL            = big.NewInt(1 << 2)
+	resendInviteBusinessesResponseAccountFieldRecommendedActions = big.NewInt(1 << 3)
+	resendInviteBusinessesResponseAccountFieldRequiredActions    = big.NewInt(1 << 4)
+	resendInviteBusinessesResponseAccountFieldRoute              = big.NewInt(1 << 5)
+	resendInviteBusinessesResponseAccountFieldTitle              = big.NewInt(1 << 6)
+)
+
+// resendInviteBusinessesResponseAccountNullableFields maps the wire names of ResendInviteBusinessesResponseAccount's nullable fields (required or optional) to their field bits.
+var resendInviteBusinessesResponseAccountNullableFields = map[string]*big.Int{
+	"logo_url":            resendInviteBusinessesResponseAccountFieldLogoURL,
+	"recommended_actions": resendInviteBusinessesResponseAccountFieldRecommendedActions,
+	"required_actions":    resendInviteBusinessesResponseAccountFieldRequiredActions,
+}
+
+// Referred account.
+type ResendInviteBusinessesResponseAccount struct {
+	Capabilities *v2.AccountCapabilities `json:"capabilities" url:"capabilities"`
+	// Referred account ID.
+	ID string `json:"id" url:"id"`
+	// Referred account logo URL.
+	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
+	// Optional actions that unlock capabilities or grow the referred account.
+	RecommendedActions []*v2.AccountRecommendedAction `json:"recommended_actions,omitempty" url:"recommended_actions,omitempty"`
+	// Actions the referred account owner must take to unblock capabilities.
+	RequiredActions []*v2.AccountRequiredAction `json:"required_actions,omitempty" url:"required_actions,omitempty"`
+	// Referred account route.
+	Route string `json:"route" url:"route"`
+	// Referred account display name.
+	Title string `json:"title" url:"title"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *ResendInviteBusinessesResponseAccount) GetCapabilities() *v2.AccountCapabilities {
+	if r == nil {
+		return nil
+	}
+	return r.Capabilities
+}
+
+func (r *ResendInviteBusinessesResponseAccount) GetID() string {
+	if r == nil {
+		return ""
+	}
+	return r.ID
+}
+
+func (r *ResendInviteBusinessesResponseAccount) GetLogoURL() *string {
+	if r == nil {
+		return nil
+	}
+	return r.LogoURL
+}
+
+func (r *ResendInviteBusinessesResponseAccount) GetRecommendedActions() []*v2.AccountRecommendedAction {
+	if r == nil {
+		return nil
+	}
+	return r.RecommendedActions
+}
+
+func (r *ResendInviteBusinessesResponseAccount) GetRequiredActions() []*v2.AccountRequiredAction {
+	if r == nil {
+		return nil
+	}
+	return r.RequiredActions
+}
+
+func (r *ResendInviteBusinessesResponseAccount) GetRoute() string {
+	if r == nil {
+		return ""
+	}
+	return r.Route
+}
+
+func (r *ResendInviteBusinessesResponseAccount) GetTitle() string {
+	if r == nil {
+		return ""
+	}
+	return r.Title
+}
+
+func (r *ResendInviteBusinessesResponseAccount) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *ResendInviteBusinessesResponseAccount) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetCapabilities sets the Capabilities field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseAccount) SetCapabilities(capabilities *v2.AccountCapabilities) {
+	r.Capabilities = capabilities
+	r.require(resendInviteBusinessesResponseAccountFieldCapabilities)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseAccount) SetID(id string) {
+	r.ID = id
+	r.require(resendInviteBusinessesResponseAccountFieldID)
+}
+
+// SetLogoURL sets the LogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseAccount) SetLogoURL(logoURL *string) {
+	r.LogoURL = logoURL
+	r.require(resendInviteBusinessesResponseAccountFieldLogoURL)
+}
+
+// SetRecommendedActions sets the RecommendedActions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseAccount) SetRecommendedActions(recommendedActions []*v2.AccountRecommendedAction) {
+	r.RecommendedActions = recommendedActions
+	r.require(resendInviteBusinessesResponseAccountFieldRecommendedActions)
+}
+
+// SetRequiredActions sets the RequiredActions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseAccount) SetRequiredActions(requiredActions []*v2.AccountRequiredAction) {
+	r.RequiredActions = requiredActions
+	r.require(resendInviteBusinessesResponseAccountFieldRequiredActions)
+}
+
+// SetRoute sets the Route field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseAccount) SetRoute(route string) {
+	r.Route = route
+	r.require(resendInviteBusinessesResponseAccountFieldRoute)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseAccount) SetTitle(title string) {
+	r.Title = title
+	r.require(resendInviteBusinessesResponseAccountFieldTitle)
+}
+
+func (r *ResendInviteBusinessesResponseAccount) UnmarshalJSON(data []byte) error {
+	type unmarshaler ResendInviteBusinessesResponseAccount
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = ResendInviteBusinessesResponseAccount(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, resendInviteBusinessesResponseAccountNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *ResendInviteBusinessesResponseAccount) MarshalJSON() ([]byte, error) {
+	type embed ResendInviteBusinessesResponseAccount
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *ResendInviteBusinessesResponseAccount) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+var (
+	resendInviteBusinessesResponseBlueprintPartnerFieldID             = big.NewInt(1 << 0)
+	resendInviteBusinessesResponseBlueprintPartnerFieldName           = big.NewInt(1 << 1)
+	resendInviteBusinessesResponseBlueprintPartnerFieldProfilePicture = big.NewInt(1 << 2)
+	resendInviteBusinessesResponseBlueprintPartnerFieldUsername       = big.NewInt(1 << 3)
+)
+
+// resendInviteBusinessesResponseBlueprintPartnerNullableFields maps the wire names of ResendInviteBusinessesResponseBlueprintPartner's nullable fields (required or optional) to their field bits.
+var resendInviteBusinessesResponseBlueprintPartnerNullableFields = map[string]*big.Int{
+	"name": resendInviteBusinessesResponseBlueprintPartnerFieldName,
+}
+
+// The partner whose blueprint the business deployed. Null unless this is a blueprint referral.
+type ResendInviteBusinessesResponseBlueprintPartner struct {
+	// User ID, prefixed `user_`.
+	ID string `json:"id" url:"id"`
+	// The user's display name.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// The user's profile picture.
+	ProfilePicture *ResendInviteBusinessesResponseBlueprintPartnerProfilePicture `json:"profile_picture" url:"profile_picture"`
+	// The user's unique username.
+	Username string `json:"username" url:"username"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *ResendInviteBusinessesResponseBlueprintPartner) GetID() string {
+	if r == nil {
+		return ""
+	}
+	return r.ID
+}
+
+func (r *ResendInviteBusinessesResponseBlueprintPartner) GetName() *string {
+	if r == nil {
+		return nil
+	}
+	return r.Name
+}
+
+func (r *ResendInviteBusinessesResponseBlueprintPartner) GetProfilePicture() *ResendInviteBusinessesResponseBlueprintPartnerProfilePicture {
+	if r == nil {
+		return nil
+	}
+	return r.ProfilePicture
+}
+
+func (r *ResendInviteBusinessesResponseBlueprintPartner) GetUsername() string {
+	if r == nil {
+		return ""
+	}
+	return r.Username
+}
+
+func (r *ResendInviteBusinessesResponseBlueprintPartner) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *ResendInviteBusinessesResponseBlueprintPartner) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseBlueprintPartner) SetID(id string) {
+	r.ID = id
+	r.require(resendInviteBusinessesResponseBlueprintPartnerFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseBlueprintPartner) SetName(name *string) {
+	r.Name = name
+	r.require(resendInviteBusinessesResponseBlueprintPartnerFieldName)
+}
+
+// SetProfilePicture sets the ProfilePicture field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseBlueprintPartner) SetProfilePicture(profilePicture *ResendInviteBusinessesResponseBlueprintPartnerProfilePicture) {
+	r.ProfilePicture = profilePicture
+	r.require(resendInviteBusinessesResponseBlueprintPartnerFieldProfilePicture)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseBlueprintPartner) SetUsername(username string) {
+	r.Username = username
+	r.require(resendInviteBusinessesResponseBlueprintPartnerFieldUsername)
+}
+
+func (r *ResendInviteBusinessesResponseBlueprintPartner) UnmarshalJSON(data []byte) error {
+	type unmarshaler ResendInviteBusinessesResponseBlueprintPartner
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = ResendInviteBusinessesResponseBlueprintPartner(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, resendInviteBusinessesResponseBlueprintPartnerNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *ResendInviteBusinessesResponseBlueprintPartner) MarshalJSON() ([]byte, error) {
+	type embed ResendInviteBusinessesResponseBlueprintPartner
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *ResendInviteBusinessesResponseBlueprintPartner) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+var (
+	resendInviteBusinessesResponseBlueprintPartnerProfilePictureFieldURL = big.NewInt(1 << 0)
+)
+
+// The user's profile picture.
+type ResendInviteBusinessesResponseBlueprintPartnerProfilePicture struct {
+	// The user's profile picture URL.
+	URL string `json:"url" url:"url"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *ResendInviteBusinessesResponseBlueprintPartnerProfilePicture) GetURL() string {
+	if r == nil {
+		return ""
+	}
+	return r.URL
+}
+
+func (r *ResendInviteBusinessesResponseBlueprintPartnerProfilePicture) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *ResendInviteBusinessesResponseBlueprintPartnerProfilePicture) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseBlueprintPartnerProfilePicture) SetURL(url string) {
+	r.URL = url
+	r.require(resendInviteBusinessesResponseBlueprintPartnerProfilePictureFieldURL)
+}
+
+func (r *ResendInviteBusinessesResponseBlueprintPartnerProfilePicture) UnmarshalJSON(data []byte) error {
+	type unmarshaler ResendInviteBusinessesResponseBlueprintPartnerProfilePicture
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = ResendInviteBusinessesResponseBlueprintPartnerProfilePicture(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *ResendInviteBusinessesResponseBlueprintPartnerProfilePicture) MarshalJSON() ([]byte, error) {
+	type embed ResendInviteBusinessesResponseBlueprintPartnerProfilePicture
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *ResendInviteBusinessesResponseBlueprintPartnerProfilePicture) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+var (
+	resendInviteBusinessesResponseEarningsUsdFieldCompleted = big.NewInt(1 << 0)
+	resendInviteBusinessesResponseEarningsUsdFieldPending   = big.NewInt(1 << 1)
+	resendInviteBusinessesResponseEarningsUsdFieldTotal     = big.NewInt(1 << 2)
+)
+
+type ResendInviteBusinessesResponseEarningsUsd struct {
+	// Commission already paid out, in USD.
+	Completed string `json:"completed" url:"completed"`
+	// Commission scheduled but not yet paid, in USD.
+	Pending string `json:"pending" url:"pending"`
+	// Pending + completed commission, in USD.
+	Total string `json:"total" url:"total"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *ResendInviteBusinessesResponseEarningsUsd) GetCompleted() string {
+	if r == nil {
+		return ""
+	}
+	return r.Completed
+}
+
+func (r *ResendInviteBusinessesResponseEarningsUsd) GetPending() string {
+	if r == nil {
+		return ""
+	}
+	return r.Pending
+}
+
+func (r *ResendInviteBusinessesResponseEarningsUsd) GetTotal() string {
+	if r == nil {
+		return ""
+	}
+	return r.Total
+}
+
+func (r *ResendInviteBusinessesResponseEarningsUsd) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *ResendInviteBusinessesResponseEarningsUsd) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetCompleted sets the Completed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseEarningsUsd) SetCompleted(completed string) {
+	r.Completed = completed
+	r.require(resendInviteBusinessesResponseEarningsUsdFieldCompleted)
+}
+
+// SetPending sets the Pending field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseEarningsUsd) SetPending(pending string) {
+	r.Pending = pending
+	r.require(resendInviteBusinessesResponseEarningsUsdFieldPending)
+}
+
+// SetTotal sets the Total field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseEarningsUsd) SetTotal(total string) {
+	r.Total = total
+	r.require(resendInviteBusinessesResponseEarningsUsdFieldTotal)
+}
+
+func (r *ResendInviteBusinessesResponseEarningsUsd) UnmarshalJSON(data []byte) error {
+	type unmarshaler ResendInviteBusinessesResponseEarningsUsd
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = ResendInviteBusinessesResponseEarningsUsd(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *ResendInviteBusinessesResponseEarningsUsd) MarshalJSON() ([]byte, error) {
+	type embed ResendInviteBusinessesResponseEarningsUsd
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *ResendInviteBusinessesResponseEarningsUsd) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+var (
+	resendInviteBusinessesResponseFirstTierPartnerFieldID             = big.NewInt(1 << 0)
+	resendInviteBusinessesResponseFirstTierPartnerFieldName           = big.NewInt(1 << 1)
+	resendInviteBusinessesResponseFirstTierPartnerFieldProfilePicture = big.NewInt(1 << 2)
+	resendInviteBusinessesResponseFirstTierPartnerFieldUsername       = big.NewInt(1 << 3)
+)
+
+// resendInviteBusinessesResponseFirstTierPartnerNullableFields maps the wire names of ResendInviteBusinessesResponseFirstTierPartner's nullable fields (required or optional) to their field bits.
+var resendInviteBusinessesResponseFirstTierPartnerNullableFields = map[string]*big.Int{
+	"name": resendInviteBusinessesResponseFirstTierPartnerFieldName,
+}
+
+// The partner who referred the business owner onto Whop (first tier). Null if there is no active first-tier partner.
+type ResendInviteBusinessesResponseFirstTierPartner struct {
+	// User ID, prefixed `user_`.
+	ID string `json:"id" url:"id"`
+	// The user's display name.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// The user's profile picture.
+	ProfilePicture *ResendInviteBusinessesResponseFirstTierPartnerProfilePicture `json:"profile_picture" url:"profile_picture"`
+	// The user's unique username.
+	Username string `json:"username" url:"username"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *ResendInviteBusinessesResponseFirstTierPartner) GetID() string {
+	if r == nil {
+		return ""
+	}
+	return r.ID
+}
+
+func (r *ResendInviteBusinessesResponseFirstTierPartner) GetName() *string {
+	if r == nil {
+		return nil
+	}
+	return r.Name
+}
+
+func (r *ResendInviteBusinessesResponseFirstTierPartner) GetProfilePicture() *ResendInviteBusinessesResponseFirstTierPartnerProfilePicture {
+	if r == nil {
+		return nil
+	}
+	return r.ProfilePicture
+}
+
+func (r *ResendInviteBusinessesResponseFirstTierPartner) GetUsername() string {
+	if r == nil {
+		return ""
+	}
+	return r.Username
+}
+
+func (r *ResendInviteBusinessesResponseFirstTierPartner) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *ResendInviteBusinessesResponseFirstTierPartner) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseFirstTierPartner) SetID(id string) {
+	r.ID = id
+	r.require(resendInviteBusinessesResponseFirstTierPartnerFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseFirstTierPartner) SetName(name *string) {
+	r.Name = name
+	r.require(resendInviteBusinessesResponseFirstTierPartnerFieldName)
+}
+
+// SetProfilePicture sets the ProfilePicture field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseFirstTierPartner) SetProfilePicture(profilePicture *ResendInviteBusinessesResponseFirstTierPartnerProfilePicture) {
+	r.ProfilePicture = profilePicture
+	r.require(resendInviteBusinessesResponseFirstTierPartnerFieldProfilePicture)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseFirstTierPartner) SetUsername(username string) {
+	r.Username = username
+	r.require(resendInviteBusinessesResponseFirstTierPartnerFieldUsername)
+}
+
+func (r *ResendInviteBusinessesResponseFirstTierPartner) UnmarshalJSON(data []byte) error {
+	type unmarshaler ResendInviteBusinessesResponseFirstTierPartner
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = ResendInviteBusinessesResponseFirstTierPartner(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, resendInviteBusinessesResponseFirstTierPartnerNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *ResendInviteBusinessesResponseFirstTierPartner) MarshalJSON() ([]byte, error) {
+	type embed ResendInviteBusinessesResponseFirstTierPartner
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *ResendInviteBusinessesResponseFirstTierPartner) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+var (
+	resendInviteBusinessesResponseFirstTierPartnerProfilePictureFieldURL = big.NewInt(1 << 0)
+)
+
+// The user's profile picture.
+type ResendInviteBusinessesResponseFirstTierPartnerProfilePicture struct {
+	// The user's profile picture URL.
+	URL string `json:"url" url:"url"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *ResendInviteBusinessesResponseFirstTierPartnerProfilePicture) GetURL() string {
+	if r == nil {
+		return ""
+	}
+	return r.URL
+}
+
+func (r *ResendInviteBusinessesResponseFirstTierPartnerProfilePicture) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *ResendInviteBusinessesResponseFirstTierPartnerProfilePicture) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseFirstTierPartnerProfilePicture) SetURL(url string) {
+	r.URL = url
+	r.require(resendInviteBusinessesResponseFirstTierPartnerProfilePictureFieldURL)
+}
+
+func (r *ResendInviteBusinessesResponseFirstTierPartnerProfilePicture) UnmarshalJSON(data []byte) error {
+	type unmarshaler ResendInviteBusinessesResponseFirstTierPartnerProfilePicture
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = ResendInviteBusinessesResponseFirstTierPartnerProfilePicture(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *ResendInviteBusinessesResponseFirstTierPartnerProfilePicture) MarshalJSON() ([]byte, error) {
+	type embed ResendInviteBusinessesResponseFirstTierPartnerProfilePicture
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *ResendInviteBusinessesResponseFirstTierPartnerProfilePicture) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+// Which tier the caller earns on for this business: `first` (they referred the owner), `second` (they referred the first-tier partner), or `blueprint` (the business deployed a site from their blueprint).
+type ResendInviteBusinessesResponseMyPartnerTier string
+
+const (
+	ResendInviteBusinessesResponseMyPartnerTierFirst     ResendInviteBusinessesResponseMyPartnerTier = "first"
+	ResendInviteBusinessesResponseMyPartnerTierSecond    ResendInviteBusinessesResponseMyPartnerTier = "second"
+	ResendInviteBusinessesResponseMyPartnerTierBlueprint ResendInviteBusinessesResponseMyPartnerTier = "blueprint"
+)
+
+func NewResendInviteBusinessesResponseMyPartnerTierFromString(s string) (ResendInviteBusinessesResponseMyPartnerTier, error) {
+	switch s {
+	case "first":
+		return ResendInviteBusinessesResponseMyPartnerTierFirst, nil
+	case "second":
+		return ResendInviteBusinessesResponseMyPartnerTierSecond, nil
+	case "blueprint":
+		return ResendInviteBusinessesResponseMyPartnerTierBlueprint, nil
+	}
+	var t ResendInviteBusinessesResponseMyPartnerTier
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r ResendInviteBusinessesResponseMyPartnerTier) Ptr() *ResendInviteBusinessesResponseMyPartnerTier {
+	return &r
+}
+
+type ResendInviteBusinessesResponseObject string
+
+const (
+	ResendInviteBusinessesResponseObjectPartnerBusiness ResendInviteBusinessesResponseObject = "partner_business"
+)
+
+func NewResendInviteBusinessesResponseObjectFromString(s string) (ResendInviteBusinessesResponseObject, error) {
+	switch s {
+	case "partner_business":
+		return ResendInviteBusinessesResponseObjectPartnerBusiness, nil
+	}
+	var t ResendInviteBusinessesResponseObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r ResendInviteBusinessesResponseObject) Ptr() *ResendInviteBusinessesResponseObject {
+	return &r
+}
+
+var (
+	resendInviteBusinessesResponseOwnerFieldEmail          = big.NewInt(1 << 0)
+	resendInviteBusinessesResponseOwnerFieldID             = big.NewInt(1 << 1)
+	resendInviteBusinessesResponseOwnerFieldName           = big.NewInt(1 << 2)
+	resendInviteBusinessesResponseOwnerFieldProfilePicture = big.NewInt(1 << 3)
+	resendInviteBusinessesResponseOwnerFieldUsername       = big.NewInt(1 << 4)
+)
+
+// resendInviteBusinessesResponseOwnerNullableFields maps the wire names of ResendInviteBusinessesResponseOwner's nullable fields (required or optional) to their field bits.
+var resendInviteBusinessesResponseOwnerNullableFields = map[string]*big.Int{
+	"email": resendInviteBusinessesResponseOwnerFieldEmail,
+	"name":  resendInviteBusinessesResponseOwnerFieldName,
+}
+
+// The owner of the referred business.
+type ResendInviteBusinessesResponseOwner struct {
+	// The business owner's email address, so a partner can follow up on a referral they made. Requires the `partner:email:read` scope; `null` without it, or while the account has no reachable address of its own.
+	Email *string `json:"email,omitempty" url:"email,omitempty"`
+	// User ID, prefixed `user_`.
+	ID string `json:"id" url:"id"`
+	// The user's display name.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// The user's profile picture.
+	ProfilePicture *ResendInviteBusinessesResponseOwnerProfilePicture `json:"profile_picture" url:"profile_picture"`
+	// The user's unique username.
+	Username string `json:"username" url:"username"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *ResendInviteBusinessesResponseOwner) GetEmail() *string {
+	if r == nil {
+		return nil
+	}
+	return r.Email
+}
+
+func (r *ResendInviteBusinessesResponseOwner) GetID() string {
+	if r == nil {
+		return ""
+	}
+	return r.ID
+}
+
+func (r *ResendInviteBusinessesResponseOwner) GetName() *string {
+	if r == nil {
+		return nil
+	}
+	return r.Name
+}
+
+func (r *ResendInviteBusinessesResponseOwner) GetProfilePicture() *ResendInviteBusinessesResponseOwnerProfilePicture {
+	if r == nil {
+		return nil
+	}
+	return r.ProfilePicture
+}
+
+func (r *ResendInviteBusinessesResponseOwner) GetUsername() string {
+	if r == nil {
+		return ""
+	}
+	return r.Username
+}
+
+func (r *ResendInviteBusinessesResponseOwner) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *ResendInviteBusinessesResponseOwner) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseOwner) SetEmail(email *string) {
+	r.Email = email
+	r.require(resendInviteBusinessesResponseOwnerFieldEmail)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseOwner) SetID(id string) {
+	r.ID = id
+	r.require(resendInviteBusinessesResponseOwnerFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseOwner) SetName(name *string) {
+	r.Name = name
+	r.require(resendInviteBusinessesResponseOwnerFieldName)
+}
+
+// SetProfilePicture sets the ProfilePicture field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseOwner) SetProfilePicture(profilePicture *ResendInviteBusinessesResponseOwnerProfilePicture) {
+	r.ProfilePicture = profilePicture
+	r.require(resendInviteBusinessesResponseOwnerFieldProfilePicture)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseOwner) SetUsername(username string) {
+	r.Username = username
+	r.require(resendInviteBusinessesResponseOwnerFieldUsername)
+}
+
+func (r *ResendInviteBusinessesResponseOwner) UnmarshalJSON(data []byte) error {
+	type unmarshaler ResendInviteBusinessesResponseOwner
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = ResendInviteBusinessesResponseOwner(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, resendInviteBusinessesResponseOwnerNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *ResendInviteBusinessesResponseOwner) MarshalJSON() ([]byte, error) {
+	type embed ResendInviteBusinessesResponseOwner
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *ResendInviteBusinessesResponseOwner) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+var (
+	resendInviteBusinessesResponseOwnerProfilePictureFieldURL = big.NewInt(1 << 0)
+)
+
+// The user's profile picture.
+type ResendInviteBusinessesResponseOwnerProfilePicture struct {
+	// The user's profile picture URL.
+	URL string `json:"url" url:"url"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *ResendInviteBusinessesResponseOwnerProfilePicture) GetURL() string {
+	if r == nil {
+		return ""
+	}
+	return r.URL
+}
+
+func (r *ResendInviteBusinessesResponseOwnerProfilePicture) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *ResendInviteBusinessesResponseOwnerProfilePicture) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseOwnerProfilePicture) SetURL(url string) {
+	r.URL = url
+	r.require(resendInviteBusinessesResponseOwnerProfilePictureFieldURL)
+}
+
+func (r *ResendInviteBusinessesResponseOwnerProfilePicture) UnmarshalJSON(data []byte) error {
+	type unmarshaler ResendInviteBusinessesResponseOwnerProfilePicture
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = ResendInviteBusinessesResponseOwnerProfilePicture(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *ResendInviteBusinessesResponseOwnerProfilePicture) MarshalJSON() ([]byte, error) {
+	type embed ResendInviteBusinessesResponseOwnerProfilePicture
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *ResendInviteBusinessesResponseOwnerProfilePicture) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+var (
+	resendInviteBusinessesResponsePayoutPercentagesFieldAdSpend         = big.NewInt(1 << 0)
+	resendInviteBusinessesResponsePayoutPercentagesFieldCardInterchange = big.NewInt(1 << 1)
+	resendInviteBusinessesResponsePayoutPercentagesFieldSales           = big.NewInt(1 << 2)
+	resendInviteBusinessesResponsePayoutPercentagesFieldTransfer        = big.NewInt(1 << 3)
+	resendInviteBusinessesResponsePayoutPercentagesFieldWithdrawal      = big.NewInt(1 << 4)
+)
+
+// resendInviteBusinessesResponsePayoutPercentagesNullableFields maps the wire names of ResendInviteBusinessesResponsePayoutPercentages's nullable fields (required or optional) to their field bits.
+var resendInviteBusinessesResponsePayoutPercentagesNullableFields = map[string]*big.Int{
+	"ad_spend":         resendInviteBusinessesResponsePayoutPercentagesFieldAdSpend,
+	"card_interchange": resendInviteBusinessesResponsePayoutPercentagesFieldCardInterchange,
+	"transfer":         resendInviteBusinessesResponsePayoutPercentagesFieldTransfer,
+	"withdrawal":       resendInviteBusinessesResponsePayoutPercentagesFieldWithdrawal,
+}
+
+// The referrer's commission rate for each income source, expressed as a fraction (0.3 = 30%).
+type ResendInviteBusinessesResponsePayoutPercentages struct {
+	// Share of the referred business's Whop Ads spend.
+	AdSpend *float64 `json:"ad_spend,omitempty" url:"ad_spend,omitempty"`
+	// Share of Whop's profit from card interchange.
+	CardInterchange *float64 `json:"card_interchange,omitempty" url:"card_interchange,omitempty"`
+	// Share of Whop's profit from product sales.
+	Sales float64 `json:"sales" url:"sales"`
+	// Share of Whop's profit from platform balance transfers.
+	Transfer *float64 `json:"transfer,omitempty" url:"transfer,omitempty"`
+	// Share of Whop's profit from withdrawals.
+	Withdrawal *float64 `json:"withdrawal,omitempty" url:"withdrawal,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *ResendInviteBusinessesResponsePayoutPercentages) GetAdSpend() *float64 {
+	if r == nil {
+		return nil
+	}
+	return r.AdSpend
+}
+
+func (r *ResendInviteBusinessesResponsePayoutPercentages) GetCardInterchange() *float64 {
+	if r == nil {
+		return nil
+	}
+	return r.CardInterchange
+}
+
+func (r *ResendInviteBusinessesResponsePayoutPercentages) GetSales() float64 {
+	if r == nil {
+		return 0
+	}
+	return r.Sales
+}
+
+func (r *ResendInviteBusinessesResponsePayoutPercentages) GetTransfer() *float64 {
+	if r == nil {
+		return nil
+	}
+	return r.Transfer
+}
+
+func (r *ResendInviteBusinessesResponsePayoutPercentages) GetWithdrawal() *float64 {
+	if r == nil {
+		return nil
+	}
+	return r.Withdrawal
+}
+
+func (r *ResendInviteBusinessesResponsePayoutPercentages) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *ResendInviteBusinessesResponsePayoutPercentages) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetAdSpend sets the AdSpend field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponsePayoutPercentages) SetAdSpend(adSpend *float64) {
+	r.AdSpend = adSpend
+	r.require(resendInviteBusinessesResponsePayoutPercentagesFieldAdSpend)
+}
+
+// SetCardInterchange sets the CardInterchange field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponsePayoutPercentages) SetCardInterchange(cardInterchange *float64) {
+	r.CardInterchange = cardInterchange
+	r.require(resendInviteBusinessesResponsePayoutPercentagesFieldCardInterchange)
+}
+
+// SetSales sets the Sales field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponsePayoutPercentages) SetSales(sales float64) {
+	r.Sales = sales
+	r.require(resendInviteBusinessesResponsePayoutPercentagesFieldSales)
+}
+
+// SetTransfer sets the Transfer field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponsePayoutPercentages) SetTransfer(transfer *float64) {
+	r.Transfer = transfer
+	r.require(resendInviteBusinessesResponsePayoutPercentagesFieldTransfer)
+}
+
+// SetWithdrawal sets the Withdrawal field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponsePayoutPercentages) SetWithdrawal(withdrawal *float64) {
+	r.Withdrawal = withdrawal
+	r.require(resendInviteBusinessesResponsePayoutPercentagesFieldWithdrawal)
+}
+
+func (r *ResendInviteBusinessesResponsePayoutPercentages) UnmarshalJSON(data []byte) error {
+	type unmarshaler ResendInviteBusinessesResponsePayoutPercentages
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = ResendInviteBusinessesResponsePayoutPercentages(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, resendInviteBusinessesResponsePayoutPercentagesNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *ResendInviteBusinessesResponsePayoutPercentages) MarshalJSON() ([]byte, error) {
+	type embed ResendInviteBusinessesResponsePayoutPercentages
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *ResendInviteBusinessesResponsePayoutPercentages) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+var (
+	resendInviteBusinessesResponsePendingOwnerInvitesItemFieldEmail = big.NewInt(1 << 0)
+	resendInviteBusinessesResponsePendingOwnerInvitesItemFieldID    = big.NewInt(1 << 1)
+)
+
+type ResendInviteBusinessesResponsePendingOwnerInvitesItem struct {
+	// The address the invite to claim this business was emailed to.
+	Email string `json:"email" url:"email"`
+	// The invite ID (an ausri_ identifier). Pass it to the resend endpoint.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *ResendInviteBusinessesResponsePendingOwnerInvitesItem) GetEmail() string {
+	if r == nil {
+		return ""
+	}
+	return r.Email
+}
+
+func (r *ResendInviteBusinessesResponsePendingOwnerInvitesItem) GetID() string {
+	if r == nil {
+		return ""
+	}
+	return r.ID
+}
+
+func (r *ResendInviteBusinessesResponsePendingOwnerInvitesItem) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *ResendInviteBusinessesResponsePendingOwnerInvitesItem) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponsePendingOwnerInvitesItem) SetEmail(email string) {
+	r.Email = email
+	r.require(resendInviteBusinessesResponsePendingOwnerInvitesItemFieldEmail)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponsePendingOwnerInvitesItem) SetID(id string) {
+	r.ID = id
+	r.require(resendInviteBusinessesResponsePendingOwnerInvitesItemFieldID)
+}
+
+func (r *ResendInviteBusinessesResponsePendingOwnerInvitesItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler ResendInviteBusinessesResponsePendingOwnerInvitesItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = ResendInviteBusinessesResponsePendingOwnerInvitesItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *ResendInviteBusinessesResponsePendingOwnerInvitesItem) MarshalJSON() ([]byte, error) {
+	type embed ResendInviteBusinessesResponsePendingOwnerInvitesItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *ResendInviteBusinessesResponsePendingOwnerInvitesItem) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+var (
+	resendInviteBusinessesResponseSecondTierPartnerFieldID             = big.NewInt(1 << 0)
+	resendInviteBusinessesResponseSecondTierPartnerFieldName           = big.NewInt(1 << 1)
+	resendInviteBusinessesResponseSecondTierPartnerFieldProfilePicture = big.NewInt(1 << 2)
+	resendInviteBusinessesResponseSecondTierPartnerFieldUsername       = big.NewInt(1 << 3)
+)
+
+// resendInviteBusinessesResponseSecondTierPartnerNullableFields maps the wire names of ResendInviteBusinessesResponseSecondTierPartner's nullable fields (required or optional) to their field bits.
+var resendInviteBusinessesResponseSecondTierPartnerNullableFields = map[string]*big.Int{
+	"name": resendInviteBusinessesResponseSecondTierPartnerFieldName,
+}
+
+// The second-tier partner who earns on this business (referred the first-tier partner). Null if there is no active second-tier partner.
+type ResendInviteBusinessesResponseSecondTierPartner struct {
+	// User ID, prefixed `user_`.
+	ID string `json:"id" url:"id"`
+	// The user's display name.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// The user's profile picture.
+	ProfilePicture *ResendInviteBusinessesResponseSecondTierPartnerProfilePicture `json:"profile_picture" url:"profile_picture"`
+	// The user's unique username.
+	Username string `json:"username" url:"username"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *ResendInviteBusinessesResponseSecondTierPartner) GetID() string {
+	if r == nil {
+		return ""
+	}
+	return r.ID
+}
+
+func (r *ResendInviteBusinessesResponseSecondTierPartner) GetName() *string {
+	if r == nil {
+		return nil
+	}
+	return r.Name
+}
+
+func (r *ResendInviteBusinessesResponseSecondTierPartner) GetProfilePicture() *ResendInviteBusinessesResponseSecondTierPartnerProfilePicture {
+	if r == nil {
+		return nil
+	}
+	return r.ProfilePicture
+}
+
+func (r *ResendInviteBusinessesResponseSecondTierPartner) GetUsername() string {
+	if r == nil {
+		return ""
+	}
+	return r.Username
+}
+
+func (r *ResendInviteBusinessesResponseSecondTierPartner) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *ResendInviteBusinessesResponseSecondTierPartner) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseSecondTierPartner) SetID(id string) {
+	r.ID = id
+	r.require(resendInviteBusinessesResponseSecondTierPartnerFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseSecondTierPartner) SetName(name *string) {
+	r.Name = name
+	r.require(resendInviteBusinessesResponseSecondTierPartnerFieldName)
+}
+
+// SetProfilePicture sets the ProfilePicture field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseSecondTierPartner) SetProfilePicture(profilePicture *ResendInviteBusinessesResponseSecondTierPartnerProfilePicture) {
+	r.ProfilePicture = profilePicture
+	r.require(resendInviteBusinessesResponseSecondTierPartnerFieldProfilePicture)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseSecondTierPartner) SetUsername(username string) {
+	r.Username = username
+	r.require(resendInviteBusinessesResponseSecondTierPartnerFieldUsername)
+}
+
+func (r *ResendInviteBusinessesResponseSecondTierPartner) UnmarshalJSON(data []byte) error {
+	type unmarshaler ResendInviteBusinessesResponseSecondTierPartner
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = ResendInviteBusinessesResponseSecondTierPartner(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, resendInviteBusinessesResponseSecondTierPartnerNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *ResendInviteBusinessesResponseSecondTierPartner) MarshalJSON() ([]byte, error) {
+	type embed ResendInviteBusinessesResponseSecondTierPartner
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *ResendInviteBusinessesResponseSecondTierPartner) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+var (
+	resendInviteBusinessesResponseSecondTierPartnerProfilePictureFieldURL = big.NewInt(1 << 0)
+)
+
+// The user's profile picture.
+type ResendInviteBusinessesResponseSecondTierPartnerProfilePicture struct {
+	// The user's profile picture URL.
+	URL string `json:"url" url:"url"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *ResendInviteBusinessesResponseSecondTierPartnerProfilePicture) GetURL() string {
+	if r == nil {
+		return ""
+	}
+	return r.URL
+}
+
+func (r *ResendInviteBusinessesResponseSecondTierPartnerProfilePicture) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *ResendInviteBusinessesResponseSecondTierPartnerProfilePicture) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseSecondTierPartnerProfilePicture) SetURL(url string) {
+	r.URL = url
+	r.require(resendInviteBusinessesResponseSecondTierPartnerProfilePictureFieldURL)
+}
+
+func (r *ResendInviteBusinessesResponseSecondTierPartnerProfilePicture) UnmarshalJSON(data []byte) error {
+	type unmarshaler ResendInviteBusinessesResponseSecondTierPartnerProfilePicture
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = ResendInviteBusinessesResponseSecondTierPartnerProfilePicture(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *ResendInviteBusinessesResponseSecondTierPartnerProfilePicture) MarshalJSON() ([]byte, error) {
+	type embed ResendInviteBusinessesResponseSecondTierPartnerProfilePicture
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *ResendInviteBusinessesResponseSecondTierPartnerProfilePicture) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+// Current referral status.
+type ResendInviteBusinessesResponseStatus string
+
+const (
+	ResendInviteBusinessesResponseStatusActive  ResendInviteBusinessesResponseStatus = "active"
+	ResendInviteBusinessesResponseStatusRemoved ResendInviteBusinessesResponseStatus = "removed"
+)
+
+func NewResendInviteBusinessesResponseStatusFromString(s string) (ResendInviteBusinessesResponseStatus, error) {
+	switch s {
+	case "active":
+		return ResendInviteBusinessesResponseStatusActive, nil
+	case "removed":
+		return ResendInviteBusinessesResponseStatusRemoved, nil
+	}
+	var t ResendInviteBusinessesResponseStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r ResendInviteBusinessesResponseStatus) Ptr() *ResendInviteBusinessesResponseStatus {
+	return &r
+}
+
+var (
+	resendInviteBusinessesResponseVolumeUsdFieldAttributed         = big.NewInt(1 << 0)
+	resendInviteBusinessesResponseVolumeUsdFieldAwaitingSettlement = big.NewInt(1 << 1)
+	resendInviteBusinessesResponseVolumeUsdFieldLast30D            = big.NewInt(1 << 2)
+	resendInviteBusinessesResponseVolumeUsdFieldSettled            = big.NewInt(1 << 3)
+)
+
+type ResendInviteBusinessesResponseVolumeUsd struct {
+	// Credited GMV (awaiting_settlement + settled); excludes canceled and reversed, in USD.
+	Attributed string `json:"attributed" url:"attributed"`
+	// GMV awaiting settlement (commission not yet computed), in USD.
+	AwaitingSettlement string `json:"awaiting_settlement" url:"awaiting_settlement"`
+	// Credited GMV from the trailing 30 days (awaiting_settlement + settled), in USD.
+	Last30D string `json:"last_30d" url:"last_30d"`
+	// GMV of pending + completed payments, in USD.
+	Settled string `json:"settled" url:"settled"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *ResendInviteBusinessesResponseVolumeUsd) GetAttributed() string {
+	if r == nil {
+		return ""
+	}
+	return r.Attributed
+}
+
+func (r *ResendInviteBusinessesResponseVolumeUsd) GetAwaitingSettlement() string {
+	if r == nil {
+		return ""
+	}
+	return r.AwaitingSettlement
+}
+
+func (r *ResendInviteBusinessesResponseVolumeUsd) GetLast30D() string {
+	if r == nil {
+		return ""
+	}
+	return r.Last30D
+}
+
+func (r *ResendInviteBusinessesResponseVolumeUsd) GetSettled() string {
+	if r == nil {
+		return ""
+	}
+	return r.Settled
+}
+
+func (r *ResendInviteBusinessesResponseVolumeUsd) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *ResendInviteBusinessesResponseVolumeUsd) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetAttributed sets the Attributed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseVolumeUsd) SetAttributed(attributed string) {
+	r.Attributed = attributed
+	r.require(resendInviteBusinessesResponseVolumeUsdFieldAttributed)
+}
+
+// SetAwaitingSettlement sets the AwaitingSettlement field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseVolumeUsd) SetAwaitingSettlement(awaitingSettlement string) {
+	r.AwaitingSettlement = awaitingSettlement
+	r.require(resendInviteBusinessesResponseVolumeUsdFieldAwaitingSettlement)
+}
+
+// SetLast30D sets the Last30D field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseVolumeUsd) SetLast30D(last30D string) {
+	r.Last30D = last30D
+	r.require(resendInviteBusinessesResponseVolumeUsdFieldLast30D)
+}
+
+// SetSettled sets the Settled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseVolumeUsd) SetSettled(settled string) {
+	r.Settled = settled
+	r.require(resendInviteBusinessesResponseVolumeUsdFieldSettled)
+}
+
+func (r *ResendInviteBusinessesResponseVolumeUsd) UnmarshalJSON(data []byte) error {
+	type unmarshaler ResendInviteBusinessesResponseVolumeUsd
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = ResendInviteBusinessesResponseVolumeUsd(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *ResendInviteBusinessesResponseVolumeUsd) MarshalJSON() ([]byte, error) {
+	type embed ResendInviteBusinessesResponseVolumeUsd
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *ResendInviteBusinessesResponseVolumeUsd) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+var (
+	retrieveBusinessesResponseFieldAccount             = big.NewInt(1 << 0)
+	retrieveBusinessesResponseFieldBlueprintPartner    = big.NewInt(1 << 1)
+	retrieveBusinessesResponseFieldCommissionAdvance   = big.NewInt(1 << 2)
+	retrieveBusinessesResponseFieldCreatedAt           = big.NewInt(1 << 3)
+	retrieveBusinessesResponseFieldEarningsUsd         = big.NewInt(1 << 4)
+	retrieveBusinessesResponseFieldFirstTierPartner    = big.NewInt(1 << 5)
+	retrieveBusinessesResponseFieldID                  = big.NewInt(1 << 6)
+	retrieveBusinessesResponseFieldMyPartnerTier       = big.NewInt(1 << 7)
+	retrieveBusinessesResponseFieldObject              = big.NewInt(1 << 8)
+	retrieveBusinessesResponseFieldOwner               = big.NewInt(1 << 9)
+	retrieveBusinessesResponseFieldPayoutPercentages   = big.NewInt(1 << 10)
+	retrieveBusinessesResponseFieldPendingOwnerInvites = big.NewInt(1 << 11)
+	retrieveBusinessesResponseFieldReferralExpiresAt   = big.NewInt(1 << 12)
+	retrieveBusinessesResponseFieldReferralStartedAt   = big.NewInt(1 << 13)
+	retrieveBusinessesResponseFieldSecondTierPartner   = big.NewInt(1 << 14)
+	retrieveBusinessesResponseFieldStatus              = big.NewInt(1 << 15)
+	retrieveBusinessesResponseFieldVolumeUsd           = big.NewInt(1 << 16)
 )
 
 // retrieveBusinessesResponseNullableFields maps the wire names of RetrieveBusinessesResponse's nullable fields (required or optional) to their field bits.
@@ -2877,6 +5107,8 @@ type RetrieveBusinessesResponse struct {
 	Owner *RetrieveBusinessesResponseOwner `json:"owner,omitempty" url:"owner,omitempty"`
 	// The referrer's commission rate for each income source, expressed as a fraction (0.3 = 30%).
 	PayoutPercentages *RetrieveBusinessesResponsePayoutPercentages `json:"payout_percentages" url:"payout_percentages"`
+	// Outstanding invites to claim ownership of this business. Present only to the first-tier partner's whop.com session, or the Whop CLI or MCP with the `partner:handoff` scope, and empty once every invite has been accepted.
+	PendingOwnerInvites []*RetrieveBusinessesResponsePendingOwnerInvitesItem `json:"pending_owner_invites,omitempty" url:"pending_owner_invites,omitempty"`
 	// When the referral expires.
 	ReferralExpiresAt *time.Time `json:"referral_expires_at,omitempty" url:"referral_expires_at,omitempty"`
 	// When the referral became active.
@@ -2969,6 +5201,13 @@ func (r *RetrieveBusinessesResponse) GetPayoutPercentages() *RetrieveBusinessesR
 		return nil
 	}
 	return r.PayoutPercentages
+}
+
+func (r *RetrieveBusinessesResponse) GetPendingOwnerInvites() []*RetrieveBusinessesResponsePendingOwnerInvitesItem {
+	if r == nil {
+		return nil
+	}
+	return r.PendingOwnerInvites
 }
 
 func (r *RetrieveBusinessesResponse) GetReferralExpiresAt() *time.Time {
@@ -3097,6 +5336,13 @@ func (r *RetrieveBusinessesResponse) SetOwner(owner *RetrieveBusinessesResponseO
 func (r *RetrieveBusinessesResponse) SetPayoutPercentages(payoutPercentages *RetrieveBusinessesResponsePayoutPercentages) {
 	r.PayoutPercentages = payoutPercentages
 	r.require(retrieveBusinessesResponseFieldPayoutPercentages)
+}
+
+// SetPendingOwnerInvites sets the PendingOwnerInvites field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBusinessesResponse) SetPendingOwnerInvites(pendingOwnerInvites []*RetrieveBusinessesResponsePendingOwnerInvitesItem) {
+	r.PendingOwnerInvites = pendingOwnerInvites
+	r.require(retrieveBusinessesResponseFieldPendingOwnerInvites)
 }
 
 // SetReferralExpiresAt sets the ReferralExpiresAt field and marks it as non-optional;
@@ -4460,6 +6706,110 @@ func (r *RetrieveBusinessesResponsePayoutPercentages) MarshalJSON() ([]byte, err
 }
 
 func (r *RetrieveBusinessesResponsePayoutPercentages) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+var (
+	retrieveBusinessesResponsePendingOwnerInvitesItemFieldEmail = big.NewInt(1 << 0)
+	retrieveBusinessesResponsePendingOwnerInvitesItemFieldID    = big.NewInt(1 << 1)
+)
+
+type RetrieveBusinessesResponsePendingOwnerInvitesItem struct {
+	// The address the invite to claim this business was emailed to.
+	Email string `json:"email" url:"email"`
+	// The invite ID (an ausri_ identifier). Pass it to the resend endpoint.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *RetrieveBusinessesResponsePendingOwnerInvitesItem) GetEmail() string {
+	if r == nil {
+		return ""
+	}
+	return r.Email
+}
+
+func (r *RetrieveBusinessesResponsePendingOwnerInvitesItem) GetID() string {
+	if r == nil {
+		return ""
+	}
+	return r.ID
+}
+
+func (r *RetrieveBusinessesResponsePendingOwnerInvitesItem) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *RetrieveBusinessesResponsePendingOwnerInvitesItem) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBusinessesResponsePendingOwnerInvitesItem) SetEmail(email string) {
+	r.Email = email
+	r.require(retrieveBusinessesResponsePendingOwnerInvitesItemFieldEmail)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBusinessesResponsePendingOwnerInvitesItem) SetID(id string) {
+	r.ID = id
+	r.require(retrieveBusinessesResponsePendingOwnerInvitesItemFieldID)
+}
+
+func (r *RetrieveBusinessesResponsePendingOwnerInvitesItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler RetrieveBusinessesResponsePendingOwnerInvitesItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RetrieveBusinessesResponsePendingOwnerInvitesItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RetrieveBusinessesResponsePendingOwnerInvitesItem) MarshalJSON() ([]byte, error) {
+	type embed RetrieveBusinessesResponsePendingOwnerInvitesItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *RetrieveBusinessesResponsePendingOwnerInvitesItem) String() string {
 	if r == nil {
 		return "<nil>"
 	}

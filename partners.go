@@ -941,6 +941,639 @@ func (c *CreatePartnersResponse) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
+var (
+	feeOptionsPartnersResponseFieldObject  = big.NewInt(1 << 0)
+	feeOptionsPartnersResponseFieldStreams = big.NewInt(1 << 1)
+)
+
+type FeeOptionsPartnersResponse struct {
+	Object FeeOptionsPartnersResponseObject `json:"object" url:"object"`
+	// One entry per income stream a partner earns on.
+	Streams []*FeeOptionsPartnersResponseStreamsItem `json:"streams" url:"streams"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *FeeOptionsPartnersResponse) GetObject() FeeOptionsPartnersResponseObject {
+	if f == nil {
+		return ""
+	}
+	return f.Object
+}
+
+func (f *FeeOptionsPartnersResponse) GetStreams() []*FeeOptionsPartnersResponseStreamsItem {
+	if f == nil {
+		return nil
+	}
+	return f.Streams
+}
+
+func (f *FeeOptionsPartnersResponse) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *FeeOptionsPartnersResponse) require(field *big.Int) {
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
+	}
+	next.Or(next, field)
+	f.explicitFields = next
+}
+
+// SetObject sets the Object field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FeeOptionsPartnersResponse) SetObject(object FeeOptionsPartnersResponseObject) {
+	f.Object = object
+	f.require(feeOptionsPartnersResponseFieldObject)
+}
+
+// SetStreams sets the Streams field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FeeOptionsPartnersResponse) SetStreams(streams []*FeeOptionsPartnersResponseStreamsItem) {
+	f.Streams = streams
+	f.require(feeOptionsPartnersResponseFieldStreams)
+}
+
+func (f *FeeOptionsPartnersResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler FeeOptionsPartnersResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FeeOptionsPartnersResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FeeOptionsPartnersResponse) MarshalJSON() ([]byte, error) {
+	type embed FeeOptionsPartnersResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *FeeOptionsPartnersResponse) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+type FeeOptionsPartnersResponseObject string
+
+const (
+	FeeOptionsPartnersResponseObjectPartnerFeeOptions FeeOptionsPartnersResponseObject = "partner_fee_options"
+)
+
+func NewFeeOptionsPartnersResponseObjectFromString(s string) (FeeOptionsPartnersResponseObject, error) {
+	switch s {
+	case "partner_fee_options":
+		return FeeOptionsPartnersResponseObjectPartnerFeeOptions, nil
+	}
+	var t FeeOptionsPartnersResponseObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FeeOptionsPartnersResponseObject) Ptr() *FeeOptionsPartnersResponseObject {
+	return &f
+}
+
+var (
+	feeOptionsPartnersResponseStreamsItemFieldAdjustable           = big.NewInt(1 << 0)
+	feeOptionsPartnersResponseStreamsItemFieldCommissionPercentage = big.NewInt(1 << 1)
+	feeOptionsPartnersResponseStreamsItemFieldFee                  = big.NewInt(1 << 2)
+	feeOptionsPartnersResponseStreamsItemFieldIncomeStream         = big.NewInt(1 << 3)
+	feeOptionsPartnersResponseStreamsItemFieldUnadjustableReason   = big.NewInt(1 << 4)
+)
+
+// feeOptionsPartnersResponseStreamsItemNullableFields maps the wire names of FeeOptionsPartnersResponseStreamsItem's nullable fields (required or optional) to their field bits.
+var feeOptionsPartnersResponseStreamsItemNullableFields = map[string]*big.Int{
+	"commission_percentage": feeOptionsPartnersResponseStreamsItemFieldCommissionPercentage,
+	"fee":                   feeOptionsPartnersResponseStreamsItemFieldFee,
+	"unadjustable_reason":   feeOptionsPartnersResponseStreamsItemFieldUnadjustableReason,
+}
+
+type FeeOptionsPartnersResponseStreamsItem struct {
+	// Whether a partner may lower the fee on this stream in exchange for a cut to their commission on it.
+	Adjustable bool `json:"adjustable" url:"adjustable"`
+	// The partner's commission on this stream, in percent units (30 means 30%).
+	CommissionPercentage *float64 `json:"commission_percentage,omitempty" url:"commission_percentage,omitempty"`
+	// The merchant fee behind this stream, or null when the business is charged nothing on it.
+	Fee *FeeOptionsPartnersResponseStreamsItemFee `json:"fee,omitempty" url:"fee,omitempty"`
+	// The income stream these terms describe.
+	IncomeStream FeeOptionsPartnersResponseStreamsItemIncomeStream `json:"income_stream" url:"income_stream"`
+	// Why the stream cannot be adjusted: `no_merchant_fee` (the business is charged nothing on it), `commission_fixed` (the commission is a flat share a fee discount may not move), `no_headroom` (already at the floor), `fee_unavailable` (no fee or rate could be resolved). Null when adjustable.
+	UnadjustableReason *FeeOptionsPartnersResponseStreamsItemUnadjustableReason `json:"unadjustable_reason,omitempty" url:"unadjustable_reason,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *FeeOptionsPartnersResponseStreamsItem) GetAdjustable() bool {
+	if f == nil {
+		return false
+	}
+	return f.Adjustable
+}
+
+func (f *FeeOptionsPartnersResponseStreamsItem) GetCommissionPercentage() *float64 {
+	if f == nil {
+		return nil
+	}
+	return f.CommissionPercentage
+}
+
+func (f *FeeOptionsPartnersResponseStreamsItem) GetFee() *FeeOptionsPartnersResponseStreamsItemFee {
+	if f == nil {
+		return nil
+	}
+	return f.Fee
+}
+
+func (f *FeeOptionsPartnersResponseStreamsItem) GetIncomeStream() FeeOptionsPartnersResponseStreamsItemIncomeStream {
+	if f == nil {
+		return ""
+	}
+	return f.IncomeStream
+}
+
+func (f *FeeOptionsPartnersResponseStreamsItem) GetUnadjustableReason() *FeeOptionsPartnersResponseStreamsItemUnadjustableReason {
+	if f == nil {
+		return nil
+	}
+	return f.UnadjustableReason
+}
+
+func (f *FeeOptionsPartnersResponseStreamsItem) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *FeeOptionsPartnersResponseStreamsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
+	}
+	next.Or(next, field)
+	f.explicitFields = next
+}
+
+// SetAdjustable sets the Adjustable field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FeeOptionsPartnersResponseStreamsItem) SetAdjustable(adjustable bool) {
+	f.Adjustable = adjustable
+	f.require(feeOptionsPartnersResponseStreamsItemFieldAdjustable)
+}
+
+// SetCommissionPercentage sets the CommissionPercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FeeOptionsPartnersResponseStreamsItem) SetCommissionPercentage(commissionPercentage *float64) {
+	f.CommissionPercentage = commissionPercentage
+	f.require(feeOptionsPartnersResponseStreamsItemFieldCommissionPercentage)
+}
+
+// SetFee sets the Fee field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FeeOptionsPartnersResponseStreamsItem) SetFee(fee *FeeOptionsPartnersResponseStreamsItemFee) {
+	f.Fee = fee
+	f.require(feeOptionsPartnersResponseStreamsItemFieldFee)
+}
+
+// SetIncomeStream sets the IncomeStream field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FeeOptionsPartnersResponseStreamsItem) SetIncomeStream(incomeStream FeeOptionsPartnersResponseStreamsItemIncomeStream) {
+	f.IncomeStream = incomeStream
+	f.require(feeOptionsPartnersResponseStreamsItemFieldIncomeStream)
+}
+
+// SetUnadjustableReason sets the UnadjustableReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FeeOptionsPartnersResponseStreamsItem) SetUnadjustableReason(unadjustableReason *FeeOptionsPartnersResponseStreamsItemUnadjustableReason) {
+	f.UnadjustableReason = unadjustableReason
+	f.require(feeOptionsPartnersResponseStreamsItemFieldUnadjustableReason)
+}
+
+func (f *FeeOptionsPartnersResponseStreamsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler FeeOptionsPartnersResponseStreamsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FeeOptionsPartnersResponseStreamsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, feeOptionsPartnersResponseStreamsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		f.require(presentFields)
+	}
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FeeOptionsPartnersResponseStreamsItem) MarshalJSON() ([]byte, error) {
+	type embed FeeOptionsPartnersResponseStreamsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *FeeOptionsPartnersResponseStreamsItem) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+var (
+	feeOptionsPartnersResponseStreamsItemFeeFieldMinimumPercentage = big.NewInt(1 << 0)
+	feeOptionsPartnersResponseStreamsItemFeeFieldPercentage        = big.NewInt(1 << 1)
+	feeOptionsPartnersResponseStreamsItemFeeFieldReferenceRegion   = big.NewInt(1 << 2)
+	feeOptionsPartnersResponseStreamsItemFeeFieldRegions           = big.NewInt(1 << 3)
+)
+
+// feeOptionsPartnersResponseStreamsItemFeeNullableFields maps the wire names of FeeOptionsPartnersResponseStreamsItemFee's nullable fields (required or optional) to their field bits.
+var feeOptionsPartnersResponseStreamsItemFeeNullableFields = map[string]*big.Int{
+	"reference_region": feeOptionsPartnersResponseStreamsItemFeeFieldReferenceRegion,
+}
+
+// The merchant fee behind this stream, or null when the business is charged nothing on it.
+type FeeOptionsPartnersResponseStreamsItemFee struct {
+	// The lowest the fee may be priced down to.
+	MinimumPercentage float64 `json:"minimum_percentage" url:"minimum_percentage"`
+	// The fee in force, in percent units (2.7 means 2.7%).
+	Percentage float64 `json:"percentage" url:"percentage"`
+	// For a regionally priced fee, the region `percentage` and `minimum_percentage` describe, and the region an adjustment is quoted against. Null for a fee that is not priced per region.
+	ReferenceRegion *string `json:"reference_region,omitempty" url:"reference_region,omitempty"`
+	// Every region this fee is priced for, so a caller can tell which regions a given value would reach. Empty for a fee that is not priced per region.
+	Regions []*FeeOptionsPartnersResponseStreamsItemFeeRegionsItem `json:"regions" url:"regions"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *FeeOptionsPartnersResponseStreamsItemFee) GetMinimumPercentage() float64 {
+	if f == nil {
+		return 0
+	}
+	return f.MinimumPercentage
+}
+
+func (f *FeeOptionsPartnersResponseStreamsItemFee) GetPercentage() float64 {
+	if f == nil {
+		return 0
+	}
+	return f.Percentage
+}
+
+func (f *FeeOptionsPartnersResponseStreamsItemFee) GetReferenceRegion() *string {
+	if f == nil {
+		return nil
+	}
+	return f.ReferenceRegion
+}
+
+func (f *FeeOptionsPartnersResponseStreamsItemFee) GetRegions() []*FeeOptionsPartnersResponseStreamsItemFeeRegionsItem {
+	if f == nil {
+		return nil
+	}
+	return f.Regions
+}
+
+func (f *FeeOptionsPartnersResponseStreamsItemFee) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *FeeOptionsPartnersResponseStreamsItemFee) require(field *big.Int) {
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
+	}
+	next.Or(next, field)
+	f.explicitFields = next
+}
+
+// SetMinimumPercentage sets the MinimumPercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FeeOptionsPartnersResponseStreamsItemFee) SetMinimumPercentage(minimumPercentage float64) {
+	f.MinimumPercentage = minimumPercentage
+	f.require(feeOptionsPartnersResponseStreamsItemFeeFieldMinimumPercentage)
+}
+
+// SetPercentage sets the Percentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FeeOptionsPartnersResponseStreamsItemFee) SetPercentage(percentage float64) {
+	f.Percentage = percentage
+	f.require(feeOptionsPartnersResponseStreamsItemFeeFieldPercentage)
+}
+
+// SetReferenceRegion sets the ReferenceRegion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FeeOptionsPartnersResponseStreamsItemFee) SetReferenceRegion(referenceRegion *string) {
+	f.ReferenceRegion = referenceRegion
+	f.require(feeOptionsPartnersResponseStreamsItemFeeFieldReferenceRegion)
+}
+
+// SetRegions sets the Regions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FeeOptionsPartnersResponseStreamsItemFee) SetRegions(regions []*FeeOptionsPartnersResponseStreamsItemFeeRegionsItem) {
+	f.Regions = regions
+	f.require(feeOptionsPartnersResponseStreamsItemFeeFieldRegions)
+}
+
+func (f *FeeOptionsPartnersResponseStreamsItemFee) UnmarshalJSON(data []byte) error {
+	type unmarshaler FeeOptionsPartnersResponseStreamsItemFee
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FeeOptionsPartnersResponseStreamsItemFee(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, feeOptionsPartnersResponseStreamsItemFeeNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		f.require(presentFields)
+	}
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FeeOptionsPartnersResponseStreamsItemFee) MarshalJSON() ([]byte, error) {
+	type embed FeeOptionsPartnersResponseStreamsItemFee
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *FeeOptionsPartnersResponseStreamsItemFee) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+var (
+	feeOptionsPartnersResponseStreamsItemFeeRegionsItemFieldMinimumPercentage = big.NewInt(1 << 0)
+	feeOptionsPartnersResponseStreamsItemFeeRegionsItemFieldPercentage        = big.NewInt(1 << 1)
+	feeOptionsPartnersResponseStreamsItemFeeRegionsItemFieldRegion            = big.NewInt(1 << 2)
+)
+
+type FeeOptionsPartnersResponseStreamsItemFeeRegionsItem struct {
+	// The lowest fee this region may be priced down to.
+	MinimumPercentage float64 `json:"minimum_percentage" url:"minimum_percentage"`
+	// The fee in force for this region.
+	Percentage float64 `json:"percentage" url:"percentage"`
+	// The region this card row prices, e.g. `usa`.
+	Region string `json:"region" url:"region"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *FeeOptionsPartnersResponseStreamsItemFeeRegionsItem) GetMinimumPercentage() float64 {
+	if f == nil {
+		return 0
+	}
+	return f.MinimumPercentage
+}
+
+func (f *FeeOptionsPartnersResponseStreamsItemFeeRegionsItem) GetPercentage() float64 {
+	if f == nil {
+		return 0
+	}
+	return f.Percentage
+}
+
+func (f *FeeOptionsPartnersResponseStreamsItemFeeRegionsItem) GetRegion() string {
+	if f == nil {
+		return ""
+	}
+	return f.Region
+}
+
+func (f *FeeOptionsPartnersResponseStreamsItemFeeRegionsItem) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *FeeOptionsPartnersResponseStreamsItemFeeRegionsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
+	}
+	next.Or(next, field)
+	f.explicitFields = next
+}
+
+// SetMinimumPercentage sets the MinimumPercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FeeOptionsPartnersResponseStreamsItemFeeRegionsItem) SetMinimumPercentage(minimumPercentage float64) {
+	f.MinimumPercentage = minimumPercentage
+	f.require(feeOptionsPartnersResponseStreamsItemFeeRegionsItemFieldMinimumPercentage)
+}
+
+// SetPercentage sets the Percentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FeeOptionsPartnersResponseStreamsItemFeeRegionsItem) SetPercentage(percentage float64) {
+	f.Percentage = percentage
+	f.require(feeOptionsPartnersResponseStreamsItemFeeRegionsItemFieldPercentage)
+}
+
+// SetRegion sets the Region field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FeeOptionsPartnersResponseStreamsItemFeeRegionsItem) SetRegion(region string) {
+	f.Region = region
+	f.require(feeOptionsPartnersResponseStreamsItemFeeRegionsItemFieldRegion)
+}
+
+func (f *FeeOptionsPartnersResponseStreamsItemFeeRegionsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler FeeOptionsPartnersResponseStreamsItemFeeRegionsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FeeOptionsPartnersResponseStreamsItemFeeRegionsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FeeOptionsPartnersResponseStreamsItemFeeRegionsItem) MarshalJSON() ([]byte, error) {
+	type embed FeeOptionsPartnersResponseStreamsItemFeeRegionsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *FeeOptionsPartnersResponseStreamsItemFeeRegionsItem) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+// The income stream these terms describe.
+type FeeOptionsPartnersResponseStreamsItemIncomeStream string
+
+const (
+	FeeOptionsPartnersResponseStreamsItemIncomeStreamSales                          FeeOptionsPartnersResponseStreamsItemIncomeStream = "sales"
+	FeeOptionsPartnersResponseStreamsItemIncomeStreamTransfer                       FeeOptionsPartnersResponseStreamsItemIncomeStream = "transfer"
+	FeeOptionsPartnersResponseStreamsItemIncomeStreamCardInterchange                FeeOptionsPartnersResponseStreamsItemIncomeStream = "card_interchange"
+	FeeOptionsPartnersResponseStreamsItemIncomeStreamAdSpend                        FeeOptionsPartnersResponseStreamsItemIncomeStream = "ad_spend"
+	FeeOptionsPartnersResponseStreamsItemIncomeStreamWithdrawal                     FeeOptionsPartnersResponseStreamsItemIncomeStream = "withdrawal"
+	FeeOptionsPartnersResponseStreamsItemIncomeStreamOnboardingReward               FeeOptionsPartnersResponseStreamsItemIncomeStream = "onboarding_reward"
+	FeeOptionsPartnersResponseStreamsItemIncomeStreamPartnerReward                  FeeOptionsPartnersResponseStreamsItemIncomeStream = "partner_reward"
+	FeeOptionsPartnersResponseStreamsItemIncomeStreamVerifiedPartnerReferralPayback FeeOptionsPartnersResponseStreamsItemIncomeStream = "verified_partner_referral_payback"
+)
+
+func NewFeeOptionsPartnersResponseStreamsItemIncomeStreamFromString(s string) (FeeOptionsPartnersResponseStreamsItemIncomeStream, error) {
+	switch s {
+	case "sales":
+		return FeeOptionsPartnersResponseStreamsItemIncomeStreamSales, nil
+	case "transfer":
+		return FeeOptionsPartnersResponseStreamsItemIncomeStreamTransfer, nil
+	case "card_interchange":
+		return FeeOptionsPartnersResponseStreamsItemIncomeStreamCardInterchange, nil
+	case "ad_spend":
+		return FeeOptionsPartnersResponseStreamsItemIncomeStreamAdSpend, nil
+	case "withdrawal":
+		return FeeOptionsPartnersResponseStreamsItemIncomeStreamWithdrawal, nil
+	case "onboarding_reward":
+		return FeeOptionsPartnersResponseStreamsItemIncomeStreamOnboardingReward, nil
+	case "partner_reward":
+		return FeeOptionsPartnersResponseStreamsItemIncomeStreamPartnerReward, nil
+	case "verified_partner_referral_payback":
+		return FeeOptionsPartnersResponseStreamsItemIncomeStreamVerifiedPartnerReferralPayback, nil
+	}
+	var t FeeOptionsPartnersResponseStreamsItemIncomeStream
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FeeOptionsPartnersResponseStreamsItemIncomeStream) Ptr() *FeeOptionsPartnersResponseStreamsItemIncomeStream {
+	return &f
+}
+
+// Why the stream cannot be adjusted: `no_merchant_fee` (the business is charged nothing on it), `commission_fixed` (the commission is a flat share a fee discount may not move), `no_headroom` (already at the floor), `fee_unavailable` (no fee or rate could be resolved). Null when adjustable.
+type FeeOptionsPartnersResponseStreamsItemUnadjustableReason string
+
+const (
+	FeeOptionsPartnersResponseStreamsItemUnadjustableReasonNoMerchantFee   FeeOptionsPartnersResponseStreamsItemUnadjustableReason = "no_merchant_fee"
+	FeeOptionsPartnersResponseStreamsItemUnadjustableReasonCommissionFixed FeeOptionsPartnersResponseStreamsItemUnadjustableReason = "commission_fixed"
+	FeeOptionsPartnersResponseStreamsItemUnadjustableReasonNoHeadroom      FeeOptionsPartnersResponseStreamsItemUnadjustableReason = "no_headroom"
+	FeeOptionsPartnersResponseStreamsItemUnadjustableReasonFeeUnavailable  FeeOptionsPartnersResponseStreamsItemUnadjustableReason = "fee_unavailable"
+)
+
+func NewFeeOptionsPartnersResponseStreamsItemUnadjustableReasonFromString(s string) (FeeOptionsPartnersResponseStreamsItemUnadjustableReason, error) {
+	switch s {
+	case "no_merchant_fee":
+		return FeeOptionsPartnersResponseStreamsItemUnadjustableReasonNoMerchantFee, nil
+	case "commission_fixed":
+		return FeeOptionsPartnersResponseStreamsItemUnadjustableReasonCommissionFixed, nil
+	case "no_headroom":
+		return FeeOptionsPartnersResponseStreamsItemUnadjustableReasonNoHeadroom, nil
+	case "fee_unavailable":
+		return FeeOptionsPartnersResponseStreamsItemUnadjustableReasonFeeUnavailable, nil
+	}
+	var t FeeOptionsPartnersResponseStreamsItemUnadjustableReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FeeOptionsPartnersResponseStreamsItemUnadjustableReason) Ptr() *FeeOptionsPartnersResponseStreamsItemUnadjustableReason {
+	return &f
+}
+
 type LeaderboardPartnersRequestPeriod string
 
 const (
