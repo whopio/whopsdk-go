@@ -39,17 +39,20 @@ func (c *CheckDomainsRequest) SetID(id string) {
 
 var (
 	createDomainsRequestFieldAccountID    = big.NewInt(1 << 0)
-	createDomainsRequestFieldDomain       = big.NewInt(1 << 1)
-	createDomainsRequestFieldMetadata     = big.NewInt(1 << 2)
-	createDomainsRequestFieldPixel        = big.NewInt(1 << 3)
-	createDomainsRequestFieldRegistration = big.NewInt(1 << 4)
-	createDomainsRequestFieldVerification = big.NewInt(1 << 5)
-	createDomainsRequestFieldWebsite      = big.NewInt(1 << 6)
+	createDomainsRequestFieldApplePay     = big.NewInt(1 << 1)
+	createDomainsRequestFieldDomain       = big.NewInt(1 << 2)
+	createDomainsRequestFieldMetadata     = big.NewInt(1 << 3)
+	createDomainsRequestFieldPixel        = big.NewInt(1 << 4)
+	createDomainsRequestFieldRegistration = big.NewInt(1 << 5)
+	createDomainsRequestFieldVerification = big.NewInt(1 << 6)
+	createDomainsRequestFieldWebsite      = big.NewInt(1 << 7)
 )
 
 type CreateDomainsRequest struct {
 	// Account ID, prefixed biz_. Required for user credentials; otherwise defaults to the credential's account.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
+	// Accept Apple Pay at checkout on the domain. It needs no other capability. Whop registers the domain with Apple: it stays `pending` until Apple answers, then turns `ready`, or `action_required` when Apple couldn't fetch the domain association file. Serve the file, then check the domain to register it again. Pass `null` to turn Apple Pay off: Whop removes the domain from Apple, and the domain stays, like releasing any other capability.
+	ApplePay *CreateDomainsRequestApplePay `json:"apple_pay,omitempty" url:"-"`
 	// Bare hostname, such as example.com or checkout.example.com. A bought domain must be a root domain. Wildcards, paths, schemes, and ports are not accepted.
 	Domain string `json:"domain" url:"-"`
 	// Custom string keys and values.
@@ -81,6 +84,13 @@ func (c *CreateDomainsRequest) require(field *big.Int) {
 func (c *CreateDomainsRequest) SetAccountID(accountID *string) {
 	c.AccountID = accountID
 	c.require(createDomainsRequestFieldAccountID)
+}
+
+// SetApplePay sets the ApplePay field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDomainsRequest) SetApplePay(applePay *CreateDomainsRequestApplePay) {
+	c.ApplePay = applePay
+	c.require(createDomainsRequestFieldApplePay)
 }
 
 // SetDomain sets the Domain field and marks it as non-optional;
@@ -441,7 +451,7 @@ var domainNullableFields = map[string]*big.Int{
 type Domain struct {
 	// ID of the account the domain belongs to, prefixed `biz_`.
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
-	// Offering Apple Pay at checkouts served from the domain, managed in checkout settings. `null` when not enrolled or not visible to you.
+	// Offering Apple Pay at checkouts served from the domain. `null` when not enrolled or not visible to you.
 	ApplePay *DomainApplePay `json:"apple_pay,omitempty" url:"apple_pay,omitempty"`
 	// Whether you can register the hostname and what it costs. Set only when no domain on Whop has it.
 	Availability *DomainAvailability `json:"availability,omitempty" url:"availability,omitempty"`
@@ -788,7 +798,7 @@ var (
 )
 
 type DomainApplePay struct {
-	// `ready` once Apple verified the domain, `action_required` when Apple couldn't; its issue says how to fix it.
+	// `pending` while Whop registers the domain with Apple, `ready` once Apple verified it, and `action_required` when Apple couldn't; its issue says how to fix it. `releasing` while Whop removes it from Apple.
 	State DomainApplePayState `json:"state" url:"state"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -870,20 +880,26 @@ func (d *DomainApplePay) String() string {
 	return fmt.Sprintf("%#v", d)
 }
 
-// `ready` once Apple verified the domain, `action_required` when Apple couldn't; its issue says how to fix it.
+// `pending` while Whop registers the domain with Apple, `ready` once Apple verified it, and `action_required` when Apple couldn't; its issue says how to fix it. `releasing` while Whop removes it from Apple.
 type DomainApplePayState string
 
 const (
+	DomainApplePayStatePending        DomainApplePayState = "pending"
 	DomainApplePayStateReady          DomainApplePayState = "ready"
 	DomainApplePayStateActionRequired DomainApplePayState = "action_required"
+	DomainApplePayStateReleasing      DomainApplePayState = "releasing"
 )
 
 func NewDomainApplePayStateFromString(s string) (DomainApplePayState, error) {
 	switch s {
+	case "pending":
+		return DomainApplePayStatePending, nil
 	case "ready":
 		return DomainApplePayStateReady, nil
 	case "action_required":
 		return DomainApplePayStateActionRequired, nil
+	case "releasing":
+		return DomainApplePayStateReleasing, nil
 	}
 	var t DomainApplePayState
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1555,7 +1571,7 @@ var domainListItemNullableFields = map[string]*big.Int{
 type DomainListItem struct {
 	// ID of the account the domain belongs to, prefixed `biz_`.
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
-	// Offering Apple Pay at checkouts served from the domain, managed in checkout settings. `null` when not enrolled or not visible to you.
+	// Offering Apple Pay at checkouts served from the domain. `null` when not enrolled or not visible to you.
 	ApplePay *DomainApplePay `json:"apple_pay,omitempty" url:"apple_pay,omitempty"`
 	// Whether you can register the hostname and what it costs. Set only when no domain on Whop has it.
 	Availability *DomainAvailability `json:"availability,omitempty" url:"availability,omitempty"`
@@ -3563,6 +3579,74 @@ func (d DomainWebsiteState) Ptr() *DomainWebsiteState {
 	return &d
 }
 
+// Accept Apple Pay at checkout on the domain. It needs no other capability. Whop registers the domain with Apple: it stays `pending` until Apple answers, then turns `ready`, or `action_required` when Apple couldn't fetch the domain association file. Serve the file, then check the domain to register it again. Pass `null` to turn Apple Pay off: Whop removes the domain from Apple, and the domain stays, like releasing any other capability.
+type CreateDomainsRequestApplePay struct {
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateDomainsRequestApplePay) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateDomainsRequestApplePay) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+func (c *CreateDomainsRequestApplePay) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateDomainsRequestApplePay
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateDomainsRequestApplePay(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateDomainsRequestApplePay) MarshalJSON() ([]byte, error) {
+	type embed CreateDomainsRequestApplePay
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateDomainsRequestApplePay) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
 // Track page views on the domain with the Whop pixel. It needs no other capability: it stays `pending` until the pixel records a page view, and turns `action_required` if it goes 7 days without one. Pass `null` to stop tracking.
 type CreateDomainsRequestPixel struct {
 
@@ -4426,6 +4510,74 @@ func (l *ListDomainsResponsePageInfo) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
+// Accept Apple Pay at checkout on the domain. It needs no other capability. Whop registers the domain with Apple: it stays `pending` until Apple answers, then turns `ready`, or `action_required` when Apple couldn't fetch the domain association file. Serve the file, then check the domain to register it again. Pass `null` to turn Apple Pay off: Whop removes the domain from Apple, and the domain stays, like releasing any other capability.
+type UpdateDomainsRequestApplePay struct {
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateDomainsRequestApplePay) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateDomainsRequestApplePay) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+func (u *UpdateDomainsRequestApplePay) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateDomainsRequestApplePay
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateDomainsRequestApplePay(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateDomainsRequestApplePay) MarshalJSON() ([]byte, error) {
+	type embed UpdateDomainsRequestApplePay
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateDomainsRequestApplePay) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
 // Track page views on the domain with the Whop pixel. It needs no other capability: it stays `pending` until the pixel records a page view, and turns `action_required` if it goes 7 days without one. Pass `null` to stop tracking.
 type UpdateDomainsRequestPixel struct {
 
@@ -4781,16 +4933,19 @@ func (u *UpdateDomainsRequestWebsite) String() string {
 
 var (
 	updateDomainsRequestFieldID           = big.NewInt(1 << 0)
-	updateDomainsRequestFieldMetadata     = big.NewInt(1 << 1)
-	updateDomainsRequestFieldPixel        = big.NewInt(1 << 2)
-	updateDomainsRequestFieldRegistration = big.NewInt(1 << 3)
-	updateDomainsRequestFieldVerification = big.NewInt(1 << 4)
-	updateDomainsRequestFieldWebsite      = big.NewInt(1 << 5)
+	updateDomainsRequestFieldApplePay     = big.NewInt(1 << 1)
+	updateDomainsRequestFieldMetadata     = big.NewInt(1 << 2)
+	updateDomainsRequestFieldPixel        = big.NewInt(1 << 3)
+	updateDomainsRequestFieldRegistration = big.NewInt(1 << 4)
+	updateDomainsRequestFieldVerification = big.NewInt(1 << 5)
+	updateDomainsRequestFieldWebsite      = big.NewInt(1 << 6)
 )
 
 type UpdateDomainsRequest struct {
 	// Domain ID, prefixed `dom_`, or a hostname such as `example.com`; a bare name looks up `.com`.
 	ID string `json:"-" url:"-"`
+	// Accept Apple Pay at checkout on the domain. It needs no other capability. Whop registers the domain with Apple: it stays `pending` until Apple answers, then turns `ready`, or `action_required` when Apple couldn't fetch the domain association file. Serve the file, then check the domain to register it again. Pass `null` to turn Apple Pay off: Whop removes the domain from Apple, and the domain stays, like releasing any other capability.
+	ApplePay *UpdateDomainsRequestApplePay `json:"apple_pay,omitempty" url:"-"`
 	// Replacement custom string keys and values.
 	Metadata map[string]string `json:"metadata,omitempty" url:"-"`
 	// Track page views on the domain with the Whop pixel. It needs no other capability: it stays `pending` until the pixel records a page view, and turns `action_required` if it goes 7 days without one. Pass `null` to stop tracking.
@@ -4820,6 +4975,13 @@ func (u *UpdateDomainsRequest) require(field *big.Int) {
 func (u *UpdateDomainsRequest) SetID(id string) {
 	u.ID = id
 	u.require(updateDomainsRequestFieldID)
+}
+
+// SetApplePay sets the ApplePay field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateDomainsRequest) SetApplePay(applePay *UpdateDomainsRequestApplePay) {
+	u.ApplePay = applePay
+	u.require(updateDomainsRequestFieldApplePay)
 }
 
 // SetMetadata sets the Metadata field and marks it as non-optional;
