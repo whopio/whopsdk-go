@@ -7070,6 +7070,13 @@ func TestEnumConnectSocialAccountsRequestPlatform(t *testing.T) {
 		assert.Equal(t, ConnectSocialAccountsRequestPlatform("youtube"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_x", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewConnectSocialAccountsRequestPlatformFromString("x")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ConnectSocialAccountsRequestPlatform("x"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_snapchat", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewConnectSocialAccountsRequestPlatformFromString("snapchat")
