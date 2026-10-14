@@ -212,7 +212,7 @@ type ListDomainsRequest struct {
 	AppID *string `json:"-" url:"app_id,omitempty"`
 	// Only domains with this status: the most pressing state of their capabilities, or `idle` when they want nothing.
 	Status *ListDomainsRequestStatus `json:"-" url:"status,omitempty"`
-	// Field to sort by.
+	// Field to sort by. Domains with the same value keep their creation order in the same direction.
 	Order *ListDomainsRequestOrder `json:"-" url:"order,omitempty"`
 	// Sort direction.
 	Direction *ListDomainsRequestDirection `json:"-" url:"direction,omitempty"`
@@ -424,10 +424,11 @@ var (
 	domainFieldPlatform     = big.NewInt(1 << 10)
 	domainFieldPublicRecord = big.NewInt(1 << 11)
 	domainFieldRegistration = big.NewInt(1 << 12)
-	domainFieldStatus       = big.NewInt(1 << 13)
-	domainFieldUpdatedAt    = big.NewInt(1 << 14)
-	domainFieldVerification = big.NewInt(1 << 15)
-	domainFieldWebsite      = big.NewInt(1 << 16)
+	domainFieldStats        = big.NewInt(1 << 13)
+	domainFieldStatus       = big.NewInt(1 << 14)
+	domainFieldUpdatedAt    = big.NewInt(1 << 15)
+	domainFieldVerification = big.NewInt(1 << 16)
+	domainFieldWebsite      = big.NewInt(1 << 17)
 )
 
 // domainNullableFields maps the wire names of Domain's nullable fields (required or optional) to their field bits.
@@ -442,6 +443,7 @@ var domainNullableFields = map[string]*big.Int{
 	"platform":      domainFieldPlatform,
 	"public_record": domainFieldPublicRecord,
 	"registration":  domainFieldRegistration,
+	"stats":         domainFieldStats,
 	"status":        domainFieldStatus,
 	"updated_at":    domainFieldUpdatedAt,
 	"verification":  domainFieldVerification,
@@ -474,6 +476,8 @@ type Domain struct {
 	PublicRecord *DomainPublicRecord `json:"public_record,omitempty" url:"public_record,omitempty"`
 	// Buying the domain through Whop, renewing it, and running its DNS. `null` when not wanted or not visible to you.
 	Registration *DomainRegistration `json:"registration,omitempty" url:"registration,omitempty"`
+	// Traffic on the domain. `null` when the domain isn't on Whop or isn't visible to you.
+	Stats *DomainStats `json:"stats,omitempty" url:"stats,omitempty"`
 	// The most pressing state of the domain's capabilities: `releasing`, then `action_required`, then `pending`, then `ready`. `idle` when it wants nothing.
 	Status *DomainStatus `json:"status,omitempty" url:"status,omitempty"`
 	// When the domain was last updated, as an ISO 8601 timestamp.
@@ -579,6 +583,13 @@ func (d *Domain) GetRegistration() *DomainRegistration {
 		return nil
 	}
 	return d.Registration
+}
+
+func (d *Domain) GetStats() *DomainStats {
+	if d == nil {
+		return nil
+	}
+	return d.Stats
 }
 
 func (d *Domain) GetStatus() *DomainStatus {
@@ -714,6 +725,13 @@ func (d *Domain) SetPublicRecord(publicRecord *DomainPublicRecord) {
 func (d *Domain) SetRegistration(registration *DomainRegistration) {
 	d.Registration = registration
 	d.require(domainFieldRegistration)
+}
+
+// SetStats sets the Stats field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *Domain) SetStats(stats *DomainStats) {
+	d.Stats = stats
+	d.require(domainFieldStats)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -1545,10 +1563,11 @@ var (
 	domainListItemFieldPixel        = big.NewInt(1 << 9)
 	domainListItemFieldPlatform     = big.NewInt(1 << 10)
 	domainListItemFieldRegistration = big.NewInt(1 << 11)
-	domainListItemFieldStatus       = big.NewInt(1 << 12)
-	domainListItemFieldUpdatedAt    = big.NewInt(1 << 13)
-	domainListItemFieldVerification = big.NewInt(1 << 14)
-	domainListItemFieldWebsite      = big.NewInt(1 << 15)
+	domainListItemFieldStats        = big.NewInt(1 << 12)
+	domainListItemFieldStatus       = big.NewInt(1 << 13)
+	domainListItemFieldUpdatedAt    = big.NewInt(1 << 14)
+	domainListItemFieldVerification = big.NewInt(1 << 15)
+	domainListItemFieldWebsite      = big.NewInt(1 << 16)
 )
 
 // domainListItemNullableFields maps the wire names of DomainListItem's nullable fields (required or optional) to their field bits.
@@ -1562,6 +1581,7 @@ var domainListItemNullableFields = map[string]*big.Int{
 	"pixel":        domainListItemFieldPixel,
 	"platform":     domainListItemFieldPlatform,
 	"registration": domainListItemFieldRegistration,
+	"stats":        domainListItemFieldStats,
 	"status":       domainListItemFieldStatus,
 	"updated_at":   domainListItemFieldUpdatedAt,
 	"verification": domainListItemFieldVerification,
@@ -1592,6 +1612,8 @@ type DomainListItem struct {
 	Platform *DomainPlatform `json:"platform,omitempty" url:"platform,omitempty"`
 	// Buying the domain through Whop, renewing it, and running its DNS. `null` when not wanted or not visible to you.
 	Registration *DomainRegistration `json:"registration,omitempty" url:"registration,omitempty"`
+	// Traffic on the domain. `null` when the domain isn't on Whop or isn't visible to you.
+	Stats *DomainStats `json:"stats,omitempty" url:"stats,omitempty"`
 	// The most pressing state of the domain's capabilities: `releasing`, then `action_required`, then `pending`, then `ready`. `idle` when it wants nothing.
 	Status *DomainListItemStatus `json:"status,omitempty" url:"status,omitempty"`
 	// When the domain was last updated, as an ISO 8601 timestamp.
@@ -1690,6 +1712,13 @@ func (d *DomainListItem) GetRegistration() *DomainRegistration {
 		return nil
 	}
 	return d.Registration
+}
+
+func (d *DomainListItem) GetStats() *DomainStats {
+	if d == nil {
+		return nil
+	}
+	return d.Stats
 }
 
 func (d *DomainListItem) GetStatus() *DomainListItemStatus {
@@ -1818,6 +1847,13 @@ func (d *DomainListItem) SetPlatform(platform *DomainPlatform) {
 func (d *DomainListItem) SetRegistration(registration *DomainRegistration) {
 	d.Registration = registration
 	d.require(domainListItemFieldRegistration)
+}
+
+// SetStats sets the Stats field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainListItem) SetStats(stats *DomainStats) {
+	d.Stats = stats
+	d.require(domainListItemFieldStats)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -3141,6 +3177,93 @@ func (d DomainRegistrationState) Ptr() *DomainRegistrationState {
 	return &d
 }
 
+var (
+	domainStatsFieldUniqueVisitorsLast7Days = big.NewInt(1 << 0)
+)
+
+type DomainStats struct {
+	// People who viewed a page on the domain with the Whop pixel in the last 7 days, refreshed hourly.
+	UniqueVisitorsLast7Days int `json:"unique_visitors_last_7_days" url:"unique_visitors_last_7_days"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DomainStats) GetUniqueVisitorsLast7Days() int {
+	if d == nil {
+		return 0
+	}
+	return d.UniqueVisitorsLast7Days
+}
+
+func (d *DomainStats) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DomainStats) require(field *big.Int) {
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
+	}
+	next.Or(next, field)
+	d.explicitFields = next
+}
+
+// SetUniqueVisitorsLast7Days sets the UniqueVisitorsLast7Days field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainStats) SetUniqueVisitorsLast7Days(uniqueVisitorsLast7Days int) {
+	d.UniqueVisitorsLast7Days = uniqueVisitorsLast7Days
+	d.require(domainStatsFieldUniqueVisitorsLast7Days)
+}
+
+func (d *DomainStats) UnmarshalJSON(data []byte) error {
+	type unmarshaler DomainStats
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DomainStats(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DomainStats) MarshalJSON() ([]byte, error) {
+	type embed DomainStats
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DomainStats) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
 // The most pressing state of the domain's capabilities: `releasing`, then `action_required`, then `pending`, then `ready`. `idle` when it wants nothing.
 type DomainStatus string
 
@@ -4056,16 +4179,22 @@ func (l ListDomainsRequestDirection) Ptr() *ListDomainsRequestDirection {
 type ListDomainsRequestOrder string
 
 const (
-	ListDomainsRequestOrderCreatedAt ListDomainsRequestOrder = "created_at"
-	ListDomainsRequestOrderUpdatedAt ListDomainsRequestOrder = "updated_at"
+	ListDomainsRequestOrderUniqueVisitorsLast7Days ListDomainsRequestOrder = "unique_visitors_last_7_days"
+	ListDomainsRequestOrderCreatedAt               ListDomainsRequestOrder = "created_at"
+	ListDomainsRequestOrderUpdatedAt               ListDomainsRequestOrder = "updated_at"
+	ListDomainsRequestOrderDomain                  ListDomainsRequestOrder = "domain"
 )
 
 func NewListDomainsRequestOrderFromString(s string) (ListDomainsRequestOrder, error) {
 	switch s {
+	case "unique_visitors_last_7_days":
+		return ListDomainsRequestOrderUniqueVisitorsLast7Days, nil
 	case "created_at":
 		return ListDomainsRequestOrderCreatedAt, nil
 	case "updated_at":
 		return ListDomainsRequestOrderUpdatedAt, nil
+	case "domain":
+		return ListDomainsRequestOrderDomain, nil
 	}
 	var t ListDomainsRequestOrder
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
