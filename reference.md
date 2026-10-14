@@ -1049,6 +1049,14 @@ client.Accounts.Update(
 <dl>
 <dd>
 
+**whopPartnerEnabled:** `*bool` — Set to `true` to turn on Whop Partner mode for the account, so its team can refer businesses and the account is paid partner commission on their sales. Recorded once; `false` is rejected.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **industryType:** `any` 
     
 </dd>

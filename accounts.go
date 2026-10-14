@@ -769,6 +769,7 @@ var (
 	accountFieldVolumeUsd                           = big.NewInt(0).Lsh(big.NewInt(1), 70)
 	accountFieldWallet                              = big.NewInt(0).Lsh(big.NewInt(1), 71)
 	accountFieldWebsite                             = big.NewInt(0).Lsh(big.NewInt(1), 72)
+	accountFieldWhopPartnerEnabledAt                = big.NewInt(0).Lsh(big.NewInt(1), 73)
 )
 
 // accountNullableFields maps the wire names of Account's nullable fields (required or optional) to their field bits.
@@ -817,6 +818,7 @@ var accountNullableFields = map[string]*big.Int{
 	"volume_usd":                 accountFieldVolumeUsd,
 	"wallet":                     accountFieldWallet,
 	"website":                    accountFieldWebsite,
+	"whop_partner_enabled_at":    accountFieldWhopPartnerEnabledAt,
 }
 
 type Account struct {
@@ -958,6 +960,8 @@ type Account struct {
 	Wallet *AccountWallet `json:"wallet,omitempty" url:"wallet,omitempty"`
 	// The account's business website URL, or `null` if none has been provided. Setting it also adds a `website` entry to `social_links`.
 	Website *string `json:"website,omitempty" url:"website,omitempty"`
+	// When the account turned on Whop Partner mode, as an ISO 8601 timestamp. Present on single-account reads and update responses; `null` until the account turns Whop Partner mode on by sending `whop_partner_enabled: true` on update.
+	WhopPartnerEnabledAt *string `json:"whop_partner_enabled_at,omitempty" url:"whop_partner_enabled_at,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1475,6 +1479,13 @@ func (a *Account) GetWebsite() *string {
 		return nil
 	}
 	return a.Website
+}
+
+func (a *Account) GetWhopPartnerEnabledAt() *string {
+	if a == nil {
+		return nil
+	}
+	return a.WhopPartnerEnabledAt
 }
 
 func (a *Account) GetExtraProperties() map[string]interface{} {
@@ -2002,6 +2013,13 @@ func (a *Account) SetWallet(wallet *AccountWallet) {
 func (a *Account) SetWebsite(website *string) {
 	a.Website = website
 	a.require(accountFieldWebsite)
+}
+
+// SetWhopPartnerEnabledAt sets the WhopPartnerEnabledAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetWhopPartnerEnabledAt(whopPartnerEnabledAt *string) {
+	a.WhopPartnerEnabledAt = whopPartnerEnabledAt
+	a.require(accountFieldWhopPartnerEnabledAt)
 }
 
 func (a *Account) UnmarshalJSON(data []byte) error {
@@ -10587,7 +10605,8 @@ var (
 	updateAccountsRequestFieldTitle                           = big.NewInt(1 << 42)
 	updateAccountsRequestFieldUseLogoAsOpengraphImageFallback = big.NewInt(1 << 43)
 	updateAccountsRequestFieldWebsite                         = big.NewInt(1 << 44)
-	updateAccountsRequestFieldIndustryType                    = big.NewInt(1 << 45)
+	updateAccountsRequestFieldWhopPartnerEnabled              = big.NewInt(1 << 45)
+	updateAccountsRequestFieldIndustryType                    = big.NewInt(1 << 46)
 )
 
 type UpdateAccountsRequest struct {
@@ -10680,8 +10699,10 @@ type UpdateAccountsRequest struct {
 	// Whether the account uses its logo as the fallback Open Graph image.
 	UseLogoAsOpengraphImageFallback *bool `json:"use_logo_as_opengraph_image_fallback,omitempty" url:"-"`
 	// The account's business website, as an `http` or `https` URL of at most 255 characters. Also added to the account's `social_links` as a `website` entry. Pass `null` to clear the website; existing social links are left unchanged.
-	Website      *string `json:"website,omitempty" url:"-"`
-	IndustryType any     `json:"industry_type,omitempty" url:"-"`
+	Website *string `json:"website,omitempty" url:"-"`
+	// Set to `true` to turn on Whop Partner mode for the account, so its team can refer businesses and the account is paid partner commission on their sales. Recorded once; `false` is rejected.
+	WhopPartnerEnabled *bool `json:"whop_partner_enabled,omitempty" url:"-"`
+	IndustryType       any   `json:"industry_type,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -11009,6 +11030,13 @@ func (u *UpdateAccountsRequest) SetUseLogoAsOpengraphImageFallback(useLogoAsOpen
 func (u *UpdateAccountsRequest) SetWebsite(website *string) {
 	u.Website = website
 	u.require(updateAccountsRequestFieldWebsite)
+}
+
+// SetWhopPartnerEnabled sets the WhopPartnerEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequest) SetWhopPartnerEnabled(whopPartnerEnabled *bool) {
+	u.WhopPartnerEnabled = whopPartnerEnabled
+	u.require(updateAccountsRequestFieldWhopPartnerEnabled)
 }
 
 // SetIndustryType sets the IndustryType field and marks it as non-optional;
