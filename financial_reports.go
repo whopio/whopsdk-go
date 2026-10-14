@@ -291,6 +291,8 @@ const (
 	RetrieveFinancialReportsRequestLineTypesItemMiscReversal                              RetrieveFinancialReportsRequestLineTypesItem = "misc_reversal"
 	RetrieveFinancialReportsRequestLineTypesItemOnboardingReward                          RetrieveFinancialReportsRequestLineTypesItem = "onboarding_reward"
 	RetrieveFinancialReportsRequestLineTypesItemOnchainDeposit                            RetrieveFinancialReportsRequestLineTypesItem = "onchain_deposit"
+	RetrieveFinancialReportsRequestLineTypesItemOnchainInternalTransferIncoming           RetrieveFinancialReportsRequestLineTypesItem = "onchain_internal_transfer_incoming"
+	RetrieveFinancialReportsRequestLineTypesItemOnchainInternalTransferOutgoing           RetrieveFinancialReportsRequestLineTypesItem = "onchain_internal_transfer_outgoing"
 	RetrieveFinancialReportsRequestLineTypesItemOnchainSwapSource                         RetrieveFinancialReportsRequestLineTypesItem = "onchain_swap_source"
 	RetrieveFinancialReportsRequestLineTypesItemOnchainSwapTarget                         RetrieveFinancialReportsRequestLineTypesItem = "onchain_swap_target"
 	RetrieveFinancialReportsRequestLineTypesItemOnchainWalletTransferIncoming             RetrieveFinancialReportsRequestLineTypesItem = "onchain_wallet_transfer_incoming"
@@ -505,6 +507,10 @@ func NewRetrieveFinancialReportsRequestLineTypesItemFromString(s string) (Retrie
 		return RetrieveFinancialReportsRequestLineTypesItemOnboardingReward, nil
 	case "onchain_deposit":
 		return RetrieveFinancialReportsRequestLineTypesItemOnchainDeposit, nil
+	case "onchain_internal_transfer_incoming":
+		return RetrieveFinancialReportsRequestLineTypesItemOnchainInternalTransferIncoming, nil
+	case "onchain_internal_transfer_outgoing":
+		return RetrieveFinancialReportsRequestLineTypesItemOnchainInternalTransferOutgoing, nil
 	case "onchain_swap_source":
 		return RetrieveFinancialReportsRequestLineTypesItemOnchainSwapSource, nil
 	case "onchain_swap_target":
@@ -1554,6 +1560,8 @@ const (
 	RetrieveFinancialReportsResponseRowsItemLineCategoryOnboardingReward                          RetrieveFinancialReportsResponseRowsItemLineCategory = "onboarding_reward"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryOnchainDeposit                            RetrieveFinancialReportsResponseRowsItemLineCategory = "onchain_deposit"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryOnchainDepositOffset                      RetrieveFinancialReportsResponseRowsItemLineCategory = "onchain_deposit_offset"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryOnchainInternalTransferIncoming           RetrieveFinancialReportsResponseRowsItemLineCategory = "onchain_internal_transfer_incoming"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryOnchainInternalTransferOutgoing           RetrieveFinancialReportsResponseRowsItemLineCategory = "onchain_internal_transfer_outgoing"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryOnchainSwapOffset                         RetrieveFinancialReportsResponseRowsItemLineCategory = "onchain_swap_offset"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryOnchainSwapSource                         RetrieveFinancialReportsResponseRowsItemLineCategory = "onchain_swap_source"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryOnchainSwapTarget                         RetrieveFinancialReportsResponseRowsItemLineCategory = "onchain_swap_target"
@@ -1983,6 +1991,10 @@ func NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString(s string)
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryOnchainDeposit, nil
 	case "onchain_deposit_offset":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryOnchainDepositOffset, nil
+	case "onchain_internal_transfer_incoming":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryOnchainInternalTransferIncoming, nil
+	case "onchain_internal_transfer_outgoing":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryOnchainInternalTransferOutgoing, nil
 	case "onchain_swap_offset":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryOnchainSwapOffset, nil
 	case "onchain_swap_source":
