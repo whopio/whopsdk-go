@@ -450,11 +450,27 @@ func TestSettersCreateVerificationsRequestBodyBusiness(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetDocuments", func(t *testing.T) {
+		obj := &CreateVerificationsRequestBodyBusiness{}
+		var fernTestValueDocuments *CreateVerificationsRequestBodyBusinessDocuments
+		obj.SetDocuments(fernTestValueDocuments)
+		assert.Equal(t, fernTestValueDocuments, obj.Documents)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetFirstName", func(t *testing.T) {
 		obj := &CreateVerificationsRequestBodyBusiness{}
 		var fernTestValueFirstName *string
 		obj.SetFirstName(fernTestValueFirstName)
 		assert.Equal(t, fernTestValueFirstName, obj.FirstName)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetIncorporationDate", func(t *testing.T) {
+		obj := &CreateVerificationsRequestBodyBusiness{}
+		var fernTestValueIncorporationDate *time.Time
+		obj.SetIncorporationDate(fernTestValueIncorporationDate)
+		assert.Equal(t, fernTestValueIncorporationDate, obj.IncorporationDate)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -471,6 +487,14 @@ func TestSettersCreateVerificationsRequestBodyBusiness(t *testing.T) {
 		var fernTestValuePlaceOfIncorporation *string
 		obj.SetPlaceOfIncorporation(fernTestValuePlaceOfIncorporation)
 		assert.Equal(t, fernTestValuePlaceOfIncorporation, obj.PlaceOfIncorporation)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetRegistrationNumber", func(t *testing.T) {
+		obj := &CreateVerificationsRequestBodyBusiness{}
+		var fernTestValueRegistrationNumber *string
+		obj.SetRegistrationNumber(fernTestValueRegistrationNumber)
+		assert.Equal(t, fernTestValueRegistrationNumber, obj.RegistrationNumber)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -732,6 +756,39 @@ func TestGettersCreateVerificationsRequestBodyBusiness(t *testing.T) {
 		_ = obj.GetDateOfBirth() // Should return zero value
 	})
 
+	t.Run("GetDocuments", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsRequestBodyBusiness{}
+		var expected *CreateVerificationsRequestBodyBusinessDocuments
+		obj.Documents = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDocuments(), "getter should return the property value")
+	})
+
+	t.Run("GetDocuments_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsRequestBodyBusiness{}
+		obj.Documents = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDocuments(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDocuments_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateVerificationsRequestBodyBusiness
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDocuments() // Should return zero value
+	})
+
 	t.Run("GetFirstName", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -763,6 +820,39 @@ func TestGettersCreateVerificationsRequestBodyBusiness(t *testing.T) {
 			}
 		}()
 		_ = obj.GetFirstName() // Should return zero value
+	})
+
+	t.Run("GetIncorporationDate", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsRequestBodyBusiness{}
+		var expected *time.Time
+		obj.IncorporationDate = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetIncorporationDate(), "getter should return the property value")
+	})
+
+	t.Run("GetIncorporationDate_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsRequestBodyBusiness{}
+		obj.IncorporationDate = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetIncorporationDate(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetIncorporationDate_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateVerificationsRequestBodyBusiness
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetIncorporationDate() // Should return zero value
 	})
 
 	t.Run("GetLastName", func(t *testing.T) {
@@ -829,6 +919,39 @@ func TestGettersCreateVerificationsRequestBodyBusiness(t *testing.T) {
 			}
 		}()
 		_ = obj.GetPlaceOfIncorporation() // Should return zero value
+	})
+
+	t.Run("GetRegistrationNumber", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsRequestBodyBusiness{}
+		var expected *string
+		obj.RegistrationNumber = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetRegistrationNumber(), "getter should return the property value")
+	})
+
+	t.Run("GetRegistrationNumber_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsRequestBodyBusiness{}
+		obj.RegistrationNumber = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetRegistrationNumber(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetRegistrationNumber_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateVerificationsRequestBodyBusiness
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetRegistrationNumber() // Should return zero value
 	})
 
 	t.Run("GetShareToken", func(t *testing.T) {
@@ -1150,6 +1273,37 @@ func TestSettersMarkExplicitCreateVerificationsRequestBodyBusiness(t *testing.T)
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetDocuments_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsRequestBodyBusiness{}
+		var fernTestValueDocuments *CreateVerificationsRequestBodyBusinessDocuments
+
+		// Act
+		obj.SetDocuments(fernTestValueDocuments)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetFirstName_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -1158,6 +1312,37 @@ func TestSettersMarkExplicitCreateVerificationsRequestBodyBusiness(t *testing.T)
 
 		// Act
 		obj.SetFirstName(fernTestValueFirstName)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetIncorporationDate_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsRequestBodyBusiness{}
+		var fernTestValueIncorporationDate *time.Time
+
+		// Act
+		obj.SetIncorporationDate(fernTestValueIncorporationDate)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1220,6 +1405,37 @@ func TestSettersMarkExplicitCreateVerificationsRequestBodyBusiness(t *testing.T)
 
 		// Act
 		obj.SetPlaceOfIncorporation(fernTestValuePlaceOfIncorporation)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetRegistrationNumber_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsRequestBodyBusiness{}
+		var fernTestValueRegistrationNumber *string
+
+		// Act
+		obj.SetRegistrationNumber(fernTestValueRegistrationNumber)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1754,6 +1970,159 @@ func TestSettersMarkExplicitCreateVerificationsRequestBodyBusinessAddress(t *tes
 
 		// Act
 		obj.SetState(fernTestValueState)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersCreateVerificationsRequestBodyBusinessDocuments(t *testing.T) {
+	t.Run("SetArticlesOfIncorporation", func(t *testing.T) {
+		obj := &CreateVerificationsRequestBodyBusinessDocuments{}
+		var fernTestValueArticlesOfIncorporation *string
+		obj.SetArticlesOfIncorporation(fernTestValueArticlesOfIncorporation)
+		assert.Equal(t, fernTestValueArticlesOfIncorporation, obj.ArticlesOfIncorporation)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetCertificateOfIncorporation", func(t *testing.T) {
+		obj := &CreateVerificationsRequestBodyBusinessDocuments{}
+		var fernTestValueCertificateOfIncorporation *string
+		obj.SetCertificateOfIncorporation(fernTestValueCertificateOfIncorporation)
+		assert.Equal(t, fernTestValueCertificateOfIncorporation, obj.CertificateOfIncorporation)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersCreateVerificationsRequestBodyBusinessDocuments(t *testing.T) {
+	t.Run("GetArticlesOfIncorporation", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsRequestBodyBusinessDocuments{}
+		var expected *string
+		obj.ArticlesOfIncorporation = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetArticlesOfIncorporation(), "getter should return the property value")
+	})
+
+	t.Run("GetArticlesOfIncorporation_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsRequestBodyBusinessDocuments{}
+		obj.ArticlesOfIncorporation = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetArticlesOfIncorporation(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetArticlesOfIncorporation_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateVerificationsRequestBodyBusinessDocuments
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetArticlesOfIncorporation() // Should return zero value
+	})
+
+	t.Run("GetCertificateOfIncorporation", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsRequestBodyBusinessDocuments{}
+		var expected *string
+		obj.CertificateOfIncorporation = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCertificateOfIncorporation(), "getter should return the property value")
+	})
+
+	t.Run("GetCertificateOfIncorporation_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsRequestBodyBusinessDocuments{}
+		obj.CertificateOfIncorporation = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCertificateOfIncorporation(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCertificateOfIncorporation_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateVerificationsRequestBodyBusinessDocuments
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCertificateOfIncorporation() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitCreateVerificationsRequestBodyBusinessDocuments(t *testing.T) {
+	t.Run("SetArticlesOfIncorporation_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsRequestBodyBusinessDocuments{}
+		var fernTestValueArticlesOfIncorporation *string
+
+		// Act
+		obj.SetArticlesOfIncorporation(fernTestValueArticlesOfIncorporation)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetCertificateOfIncorporation_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsRequestBodyBusinessDocuments{}
+		var fernTestValueCertificateOfIncorporation *string
+
+		// Act
+		obj.SetCertificateOfIncorporation(fernTestValueCertificateOfIncorporation)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3991,6 +4360,14 @@ func TestSettersCreateVerificationsResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetRegistrationNumber", func(t *testing.T) {
+		obj := &CreateVerificationsResponse{}
+		var fernTestValueRegistrationNumber *string
+		obj.SetRegistrationNumber(fernTestValueRegistrationNumber)
+		assert.Equal(t, fernTestValueRegistrationNumber, obj.RegistrationNumber)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetRequestedInformation", func(t *testing.T) {
 		obj := &CreateVerificationsResponse{}
 		var fernTestValueRequestedInformation []*CreateVerificationsResponseRequestedInformationItem
@@ -4428,6 +4805,39 @@ func TestGettersCreateVerificationsResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetPhone() // Should return zero value
+	})
+
+	t.Run("GetRegistrationNumber", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsResponse{}
+		var expected *string
+		obj.RegistrationNumber = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetRegistrationNumber(), "getter should return the property value")
+	})
+
+	t.Run("GetRegistrationNumber_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsResponse{}
+		obj.RegistrationNumber = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetRegistrationNumber(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetRegistrationNumber_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateVerificationsResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetRegistrationNumber() // Should return zero value
 	})
 
 	t.Run("GetRequestedInformation", func(t *testing.T) {
@@ -4947,6 +5357,37 @@ func TestSettersMarkExplicitCreateVerificationsResponse(t *testing.T) {
 
 		// Act
 		obj.SetPhone(fernTestValuePhone)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetRegistrationNumber_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsResponse{}
+		var fernTestValueRegistrationNumber *string
+
+		// Act
+		obj.SetRegistrationNumber(fernTestValueRegistrationNumber)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -7317,6 +7758,14 @@ func TestSettersListVerificationsResponseDataItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetRegistrationNumber", func(t *testing.T) {
+		obj := &ListVerificationsResponseDataItem{}
+		var fernTestValueRegistrationNumber *string
+		obj.SetRegistrationNumber(fernTestValueRegistrationNumber)
+		assert.Equal(t, fernTestValueRegistrationNumber, obj.RegistrationNumber)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetRequestedInformation", func(t *testing.T) {
 		obj := &ListVerificationsResponseDataItem{}
 		var fernTestValueRequestedInformation []*ListVerificationsResponseDataItemRequestedInformationItem
@@ -7754,6 +8203,39 @@ func TestGettersListVerificationsResponseDataItem(t *testing.T) {
 			}
 		}()
 		_ = obj.GetPhone() // Should return zero value
+	})
+
+	t.Run("GetRegistrationNumber", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListVerificationsResponseDataItem{}
+		var expected *string
+		obj.RegistrationNumber = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetRegistrationNumber(), "getter should return the property value")
+	})
+
+	t.Run("GetRegistrationNumber_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListVerificationsResponseDataItem{}
+		obj.RegistrationNumber = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetRegistrationNumber(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetRegistrationNumber_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListVerificationsResponseDataItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetRegistrationNumber() // Should return zero value
 	})
 
 	t.Run("GetRequestedInformation", func(t *testing.T) {
@@ -8273,6 +8755,37 @@ func TestSettersMarkExplicitListVerificationsResponseDataItem(t *testing.T) {
 
 		// Act
 		obj.SetPhone(fernTestValuePhone)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetRegistrationNumber_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListVerificationsResponseDataItem{}
+		var fernTestValueRegistrationNumber *string
+
+		// Act
+		obj.SetRegistrationNumber(fernTestValueRegistrationNumber)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -11723,6 +12236,14 @@ func TestSettersRetrieveVerificationsResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetRegistrationNumber", func(t *testing.T) {
+		obj := &RetrieveVerificationsResponse{}
+		var fernTestValueRegistrationNumber *string
+		obj.SetRegistrationNumber(fernTestValueRegistrationNumber)
+		assert.Equal(t, fernTestValueRegistrationNumber, obj.RegistrationNumber)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetRequestedInformation", func(t *testing.T) {
 		obj := &RetrieveVerificationsResponse{}
 		var fernTestValueRequestedInformation []*RetrieveVerificationsResponseRequestedInformationItem
@@ -12160,6 +12681,39 @@ func TestGettersRetrieveVerificationsResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetPhone() // Should return zero value
+	})
+
+	t.Run("GetRegistrationNumber", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveVerificationsResponse{}
+		var expected *string
+		obj.RegistrationNumber = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetRegistrationNumber(), "getter should return the property value")
+	})
+
+	t.Run("GetRegistrationNumber_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveVerificationsResponse{}
+		obj.RegistrationNumber = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetRegistrationNumber(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetRegistrationNumber_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrieveVerificationsResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetRegistrationNumber() // Should return zero value
 	})
 
 	t.Run("GetRequestedInformation", func(t *testing.T) {
@@ -12679,6 +13233,37 @@ func TestSettersMarkExplicitRetrieveVerificationsResponse(t *testing.T) {
 
 		// Act
 		obj.SetPhone(fernTestValuePhone)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetRegistrationNumber_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveVerificationsResponse{}
+		var fernTestValueRegistrationNumber *string
+
+		// Act
+		obj.SetRegistrationNumber(fernTestValueRegistrationNumber)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -20579,6 +21164,14 @@ func TestSettersUpdateVerificationsResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetRegistrationNumber", func(t *testing.T) {
+		obj := &UpdateVerificationsResponse{}
+		var fernTestValueRegistrationNumber *string
+		obj.SetRegistrationNumber(fernTestValueRegistrationNumber)
+		assert.Equal(t, fernTestValueRegistrationNumber, obj.RegistrationNumber)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetRequestedInformation", func(t *testing.T) {
 		obj := &UpdateVerificationsResponse{}
 		var fernTestValueRequestedInformation []*UpdateVerificationsResponseRequestedInformationItem
@@ -21016,6 +21609,39 @@ func TestGettersUpdateVerificationsResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetPhone() // Should return zero value
+	})
+
+	t.Run("GetRegistrationNumber", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateVerificationsResponse{}
+		var expected *string
+		obj.RegistrationNumber = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetRegistrationNumber(), "getter should return the property value")
+	})
+
+	t.Run("GetRegistrationNumber_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateVerificationsResponse{}
+		obj.RegistrationNumber = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetRegistrationNumber(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetRegistrationNumber_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateVerificationsResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetRegistrationNumber() // Should return zero value
 	})
 
 	t.Run("GetRequestedInformation", func(t *testing.T) {
@@ -21535,6 +22161,37 @@ func TestSettersMarkExplicitUpdateVerificationsResponse(t *testing.T) {
 
 		// Act
 		obj.SetPhone(fernTestValuePhone)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetRegistrationNumber_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateVerificationsResponse{}
+		var fernTestValueRegistrationNumber *string
+
+		// Act
+		obj.SetRegistrationNumber(fernTestValueRegistrationNumber)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -23838,6 +24495,39 @@ func TestJSONMarshalingCreateVerificationsRequestBodyBusinessAddress(t *testing.
 	})
 }
 
+func TestJSONMarshalingCreateVerificationsRequestBodyBusinessDocuments(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsRequestBodyBusinessDocuments{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled CreateVerificationsRequestBodyBusinessDocuments
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateVerificationsRequestBodyBusinessDocuments
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateVerificationsRequestBodyBusinessDocuments
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingCreateVerificationsRequestBodyIndividual(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -25252,6 +25942,7 @@ func TestOptionalNullableRoundTripCreateVerificationsResponse(t *testing.T) {
 		"first_name",
 		"last_name",
 		"phone",
+		"registration_number",
 		"session_url",
 	}
 	marshalToMap := func(t *testing.T, obj *CreateVerificationsResponse) map[string]json.RawMessage {
@@ -25265,7 +25956,7 @@ func TestOptionalNullableRoundTripCreateVerificationsResponse(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj CreateVerificationsResponse
-		require.NoError(t, json.Unmarshal([]byte(`{"address":null,"business_name":null,"business_structure":null,"country":null,"date_of_birth":null,"email":null,"first_name":null,"last_name":null,"phone":null,"session_url":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"address":null,"business_name":null,"business_structure":null,"country":null,"date_of_birth":null,"email":null,"first_name":null,"last_name":null,"phone":null,"registration_number":null,"session_url":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range optionalNullableKeys {
 			value, ok := result[key]
@@ -25394,6 +26085,7 @@ func TestOptionalNullableRoundTripListVerificationsResponseDataItem(t *testing.T
 		"first_name",
 		"last_name",
 		"phone",
+		"registration_number",
 		"session_url",
 	}
 	marshalToMap := func(t *testing.T, obj *ListVerificationsResponseDataItem) map[string]json.RawMessage {
@@ -25407,7 +26099,7 @@ func TestOptionalNullableRoundTripListVerificationsResponseDataItem(t *testing.T
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj ListVerificationsResponseDataItem
-		require.NoError(t, json.Unmarshal([]byte(`{"address":null,"business_name":null,"business_structure":null,"country":null,"date_of_birth":null,"email":null,"first_name":null,"last_name":null,"phone":null,"session_url":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"address":null,"business_name":null,"business_structure":null,"country":null,"date_of_birth":null,"email":null,"first_name":null,"last_name":null,"phone":null,"registration_number":null,"session_url":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range optionalNullableKeys {
 			value, ok := result[key]
@@ -25622,6 +26314,7 @@ func TestOptionalNullableRoundTripRetrieveVerificationsResponse(t *testing.T) {
 		"first_name",
 		"last_name",
 		"phone",
+		"registration_number",
 		"session_url",
 	}
 	marshalToMap := func(t *testing.T, obj *RetrieveVerificationsResponse) map[string]json.RawMessage {
@@ -25635,7 +26328,7 @@ func TestOptionalNullableRoundTripRetrieveVerificationsResponse(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj RetrieveVerificationsResponse
-		require.NoError(t, json.Unmarshal([]byte(`{"address":null,"business_name":null,"business_structure":null,"country":null,"date_of_birth":null,"email":null,"first_name":null,"last_name":null,"phone":null,"session_url":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"address":null,"business_name":null,"business_structure":null,"country":null,"date_of_birth":null,"email":null,"first_name":null,"last_name":null,"phone":null,"registration_number":null,"session_url":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range optionalNullableKeys {
 			value, ok := result[key]
@@ -25956,6 +26649,7 @@ func TestOptionalNullableRoundTripUpdateVerificationsResponse(t *testing.T) {
 		"first_name",
 		"last_name",
 		"phone",
+		"registration_number",
 		"session_url",
 	}
 	marshalToMap := func(t *testing.T, obj *UpdateVerificationsResponse) map[string]json.RawMessage {
@@ -25969,7 +26663,7 @@ func TestOptionalNullableRoundTripUpdateVerificationsResponse(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj UpdateVerificationsResponse
-		require.NoError(t, json.Unmarshal([]byte(`{"address":null,"business_name":null,"business_structure":null,"country":null,"date_of_birth":null,"email":null,"first_name":null,"last_name":null,"phone":null,"session_url":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"address":null,"business_name":null,"business_structure":null,"country":null,"date_of_birth":null,"email":null,"first_name":null,"last_name":null,"phone":null,"registration_number":null,"session_url":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range optionalNullableKeys {
 			value, ok := result[key]
@@ -26114,6 +26808,22 @@ func TestStringCreateVerificationsRequestBodyBusinessAddress(t *testing.T) {
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *CreateVerificationsRequestBodyBusinessAddress
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringCreateVerificationsRequestBodyBusinessDocuments(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateVerificationsRequestBodyBusinessDocuments{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateVerificationsRequestBodyBusinessDocuments
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -27831,6 +28541,29 @@ func TestExtraPropertiesCreateVerificationsRequestBodyBusinessAddress(t *testing
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *CreateVerificationsRequestBodyBusinessAddress
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesCreateVerificationsRequestBodyBusinessDocuments(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateVerificationsRequestBodyBusinessDocuments{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateVerificationsRequestBodyBusinessDocuments
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
