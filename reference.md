@@ -36388,6 +36388,14 @@ client.Stats.Retrieve(
 <dl>
 <dd>
 
+**productCategory:** `*string` — Filter to one product category, for example `algo_trading_course`. Pair with `breakdown_by=product_category` to split by product category. Available on metrics that list `product_category`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **issuer:** `*string` — Filter to one card-issuing bank, named as the processor reports it, for example JPMORGAN CHASE BANK N A, or unknown for payments with no reported bank. Available on metrics that list issuer.
     
 </dd>
@@ -45948,7 +45956,7 @@ client.Stats.Reports.List(
 <dl>
 <dd>
 
-Retrieves payments across all of Whop for up to four windows at once, optionally broken down by business type, industry type, account country or customer country. The report covers the whole platform, so it takes no `account_id` and any authenticated caller can read it.
+Retrieves payments across all of Whop for up to four windows at once, optionally broken down by business type, industry type, product category, account country or customer country. The report covers the whole platform, so it takes no `account_id` and any authenticated caller can read it.
 </dd>
 </dl>
 </dd>
@@ -46047,6 +46055,14 @@ client.Stats.Reports.PlatformTrends(
 <dd>
 
 **industryType:** `*string` — Only counts payments to businesses in these comma-separated industry types, such as `options_trading`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**productCategory:** `*string` — Only counts payments for products in these comma-separated product categories, such as `algo_trading_course`.
     
 </dd>
 </dl>
@@ -46486,6 +46502,14 @@ client.Stats.TimeSeries.Retrieve(
 <dd>
 
 **industryType:** `*string` — Filter to one industry type, for example `options_trading`. Pair with `breakdown_by=industry_type` to split by industry type. Available on metrics that list `industry_type`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**productCategory:** `*string` — Filter to one product category, for example `algo_trading_course`. Pair with `breakdown_by=product_category` to split by product category. Available on metrics that list `product_category`.
     
 </dd>
 </dl>

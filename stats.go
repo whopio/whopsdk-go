@@ -48,40 +48,41 @@ var (
 	retrieveStatsRequestFieldEvent               = big.NewInt(1 << 34)
 	retrieveStatsRequestFieldBusinessType        = big.NewInt(1 << 35)
 	retrieveStatsRequestFieldIndustryType        = big.NewInt(1 << 36)
-	retrieveStatsRequestFieldIssuer              = big.NewInt(1 << 37)
-	retrieveStatsRequestFieldConversionWindow    = big.NewInt(1 << 38)
-	retrieveStatsRequestFieldMatureOnly          = big.NewInt(1 << 39)
-	retrieveStatsRequestFieldSteps               = big.NewInt(1 << 40)
-	retrieveStatsRequestFieldCompareTo           = big.NewInt(1 << 41)
-	retrieveStatsRequestFieldConfidenceLevel     = big.NewInt(1 << 42)
-	retrieveStatsRequestFieldContactable         = big.NewInt(1 << 43)
-	retrieveStatsRequestFieldHasPurchased        = big.NewInt(1 << 44)
-	retrieveStatsRequestFieldFirstSeenAfter      = big.NewInt(1 << 45)
-	retrieveStatsRequestFieldFirstSeenBefore     = big.NewInt(1 << 46)
-	retrieveStatsRequestFieldLastSeenAfter       = big.NewInt(1 << 47)
-	retrieveStatsRequestFieldLastSeenBefore      = big.NewInt(1 << 48)
-	retrieveStatsRequestFieldFirstSeenWithinDays = big.NewInt(1 << 49)
-	retrieveStatsRequestFieldLastSeenWithinDays  = big.NewInt(1 << 50)
-	retrieveStatsRequestFieldKnown               = big.NewInt(1 << 51)
-	retrieveStatsRequestFieldHasEmail            = big.NewInt(1 << 52)
-	retrieveStatsRequestFieldHasPhone            = big.NewInt(1 << 53)
-	retrieveStatsRequestFieldLtvGt               = big.NewInt(1 << 54)
-	retrieveStatsRequestFieldLtvGte              = big.NewInt(1 << 55)
-	retrieveStatsRequestFieldLtvLt               = big.NewInt(1 << 56)
-	retrieveStatsRequestFieldLtvLte              = big.NewInt(1 << 57)
-	retrieveStatsRequestFieldAovGt               = big.NewInt(1 << 58)
-	retrieveStatsRequestFieldAovGte              = big.NewInt(1 << 59)
-	retrieveStatsRequestFieldAovLt               = big.NewInt(1 << 60)
-	retrieveStatsRequestFieldAovLte              = big.NewInt(1 << 61)
-	retrieveStatsRequestFieldPurchaseCountGt     = big.NewInt(1 << 62)
-	retrieveStatsRequestFieldPurchaseCountGte    = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	retrieveStatsRequestFieldPurchaseCountLt     = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	retrieveStatsRequestFieldPurchaseCountLte    = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	retrieveStatsRequestFieldEventCountGt        = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	retrieveStatsRequestFieldEventCountGte       = big.NewInt(0).Lsh(big.NewInt(1), 67)
-	retrieveStatsRequestFieldEventCountLt        = big.NewInt(0).Lsh(big.NewInt(1), 68)
-	retrieveStatsRequestFieldEventCountLte       = big.NewInt(0).Lsh(big.NewInt(1), 69)
-	retrieveStatsRequestFieldReferringAccountID  = big.NewInt(0).Lsh(big.NewInt(1), 70)
+	retrieveStatsRequestFieldProductCategory     = big.NewInt(1 << 37)
+	retrieveStatsRequestFieldIssuer              = big.NewInt(1 << 38)
+	retrieveStatsRequestFieldConversionWindow    = big.NewInt(1 << 39)
+	retrieveStatsRequestFieldMatureOnly          = big.NewInt(1 << 40)
+	retrieveStatsRequestFieldSteps               = big.NewInt(1 << 41)
+	retrieveStatsRequestFieldCompareTo           = big.NewInt(1 << 42)
+	retrieveStatsRequestFieldConfidenceLevel     = big.NewInt(1 << 43)
+	retrieveStatsRequestFieldContactable         = big.NewInt(1 << 44)
+	retrieveStatsRequestFieldHasPurchased        = big.NewInt(1 << 45)
+	retrieveStatsRequestFieldFirstSeenAfter      = big.NewInt(1 << 46)
+	retrieveStatsRequestFieldFirstSeenBefore     = big.NewInt(1 << 47)
+	retrieveStatsRequestFieldLastSeenAfter       = big.NewInt(1 << 48)
+	retrieveStatsRequestFieldLastSeenBefore      = big.NewInt(1 << 49)
+	retrieveStatsRequestFieldFirstSeenWithinDays = big.NewInt(1 << 50)
+	retrieveStatsRequestFieldLastSeenWithinDays  = big.NewInt(1 << 51)
+	retrieveStatsRequestFieldKnown               = big.NewInt(1 << 52)
+	retrieveStatsRequestFieldHasEmail            = big.NewInt(1 << 53)
+	retrieveStatsRequestFieldHasPhone            = big.NewInt(1 << 54)
+	retrieveStatsRequestFieldLtvGt               = big.NewInt(1 << 55)
+	retrieveStatsRequestFieldLtvGte              = big.NewInt(1 << 56)
+	retrieveStatsRequestFieldLtvLt               = big.NewInt(1 << 57)
+	retrieveStatsRequestFieldLtvLte              = big.NewInt(1 << 58)
+	retrieveStatsRequestFieldAovGt               = big.NewInt(1 << 59)
+	retrieveStatsRequestFieldAovGte              = big.NewInt(1 << 60)
+	retrieveStatsRequestFieldAovLt               = big.NewInt(1 << 61)
+	retrieveStatsRequestFieldAovLte              = big.NewInt(1 << 62)
+	retrieveStatsRequestFieldPurchaseCountGt     = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	retrieveStatsRequestFieldPurchaseCountGte    = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	retrieveStatsRequestFieldPurchaseCountLt     = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	retrieveStatsRequestFieldPurchaseCountLte    = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	retrieveStatsRequestFieldEventCountGt        = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	retrieveStatsRequestFieldEventCountGte       = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	retrieveStatsRequestFieldEventCountLt        = big.NewInt(0).Lsh(big.NewInt(1), 69)
+	retrieveStatsRequestFieldEventCountLte       = big.NewInt(0).Lsh(big.NewInt(1), 70)
+	retrieveStatsRequestFieldReferringAccountID  = big.NewInt(0).Lsh(big.NewInt(1), 71)
 )
 
 type RetrieveStatsRequest struct {
@@ -159,6 +160,8 @@ type RetrieveStatsRequest struct {
 	BusinessType *string `json:"-" url:"business_type,omitempty"`
 	// Filter to one industry type, for example `options_trading`. Pair with `breakdown_by=industry_type` to split by industry type. Available on metrics that list `industry_type`.
 	IndustryType *string `json:"-" url:"industry_type,omitempty"`
+	// Filter to one product category, for example `algo_trading_course`. Pair with `breakdown_by=product_category` to split by product category. Available on metrics that list `product_category`.
+	ProductCategory *string `json:"-" url:"product_category,omitempty"`
 	// Filter to one card-issuing bank, named as the processor reports it, for example JPMORGAN CHASE BANK N A, or unknown for payments with no reported bank. Available on metrics that list issuer.
 	Issuer *string `json:"-" url:"issuer,omitempty"`
 	// Funnel only. Time allowed from the first event to the final event: integer minutes, hours, or days, up to 30d.
@@ -498,6 +501,13 @@ func (r *RetrieveStatsRequest) SetBusinessType(businessType *string) {
 func (r *RetrieveStatsRequest) SetIndustryType(industryType *string) {
 	r.IndustryType = industryType
 	r.require(retrieveStatsRequestFieldIndustryType)
+}
+
+// SetProductCategory sets the ProductCategory field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetProductCategory(productCategory *string) {
+	r.ProductCategory = productCategory
+	r.require(retrieveStatsRequestFieldProductCategory)
 }
 
 // SetIssuer sets the Issuer field and marks it as non-optional;

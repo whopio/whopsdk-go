@@ -20,10 +20,11 @@ var (
 	platformTrendsReportsRequestFieldConvertTo       = big.NewInt(1 << 6)
 	platformTrendsReportsRequestFieldBusinessType    = big.NewInt(1 << 7)
 	platformTrendsReportsRequestFieldIndustryType    = big.NewInt(1 << 8)
-	platformTrendsReportsRequestFieldAccountCountry  = big.NewInt(1 << 9)
-	platformTrendsReportsRequestFieldCustomerCountry = big.NewInt(1 << 10)
-	platformTrendsReportsRequestFieldFirst           = big.NewInt(1 << 11)
-	platformTrendsReportsRequestFieldAfter           = big.NewInt(1 << 12)
+	platformTrendsReportsRequestFieldProductCategory = big.NewInt(1 << 9)
+	platformTrendsReportsRequestFieldAccountCountry  = big.NewInt(1 << 10)
+	platformTrendsReportsRequestFieldCustomerCountry = big.NewInt(1 << 11)
+	platformTrendsReportsRequestFieldFirst           = big.NewInt(1 << 12)
+	platformTrendsReportsRequestFieldAfter           = big.NewInt(1 << 13)
 )
 
 type PlatformTrendsReportsRequest struct {
@@ -45,6 +46,8 @@ type PlatformTrendsReportsRequest struct {
 	BusinessType *string `json:"-" url:"business_type,omitempty"`
 	// Only counts payments to businesses in these comma-separated industry types, such as `options_trading`.
 	IndustryType *string `json:"-" url:"industry_type,omitempty"`
+	// Only counts payments for products in these comma-separated product categories, such as `algo_trading_course`.
+	ProductCategory *string `json:"-" url:"product_category,omitempty"`
 	// Only counts payments to accounts located in these comma-separated countries, as ISO 3166-1 alpha-2 codes such as `US`.
 	AccountCountry *string `json:"-" url:"account_country,omitempty"`
 	// Only counts payments from customers in these comma-separated countries, as ISO 3166-1 alpha-2 codes such as `US`.
@@ -128,6 +131,13 @@ func (p *PlatformTrendsReportsRequest) SetBusinessType(businessType *string) {
 func (p *PlatformTrendsReportsRequest) SetIndustryType(industryType *string) {
 	p.IndustryType = industryType
 	p.require(platformTrendsReportsRequestFieldIndustryType)
+}
+
+// SetProductCategory sets the ProductCategory field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsRequest) SetProductCategory(productCategory *string) {
+	p.ProductCategory = productCategory
+	p.require(platformTrendsReportsRequestFieldProductCategory)
 }
 
 // SetAccountCountry sets the AccountCountry field and marks it as non-optional;
@@ -848,6 +858,7 @@ type PlatformTrendsReportsRequestBreakdownBy string
 const (
 	PlatformTrendsReportsRequestBreakdownByBusinessType    PlatformTrendsReportsRequestBreakdownBy = "business_type"
 	PlatformTrendsReportsRequestBreakdownByIndustryType    PlatformTrendsReportsRequestBreakdownBy = "industry_type"
+	PlatformTrendsReportsRequestBreakdownByProductCategory PlatformTrendsReportsRequestBreakdownBy = "product_category"
 	PlatformTrendsReportsRequestBreakdownByAccountCountry  PlatformTrendsReportsRequestBreakdownBy = "account_country"
 	PlatformTrendsReportsRequestBreakdownByCustomerCountry PlatformTrendsReportsRequestBreakdownBy = "customer_country"
 )
@@ -858,6 +869,8 @@ func NewPlatformTrendsReportsRequestBreakdownByFromString(s string) (PlatformTre
 		return PlatformTrendsReportsRequestBreakdownByBusinessType, nil
 	case "industry_type":
 		return PlatformTrendsReportsRequestBreakdownByIndustryType, nil
+	case "product_category":
+		return PlatformTrendsReportsRequestBreakdownByProductCategory, nil
 	case "account_country":
 		return PlatformTrendsReportsRequestBreakdownByAccountCountry, nil
 	case "customer_country":
@@ -1594,7 +1607,8 @@ var (
 	platformTrendsReportsResponseDataReportsItemRowsItemFieldMedianGrossRevenue = big.NewInt(1 << 11)
 	platformTrendsReportsResponseDataReportsItemRowsItemFieldNewBusinesses      = big.NewInt(1 << 12)
 	platformTrendsReportsResponseDataReportsItemRowsItemFieldPayments           = big.NewInt(1 << 13)
-	platformTrendsReportsResponseDataReportsItemRowsItemFieldRepeatRate         = big.NewInt(1 << 14)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldProductCategory    = big.NewInt(1 << 14)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldRepeatRate         = big.NewInt(1 << 15)
 )
 
 // platformTrendsReportsResponseDataReportsItemRowsItemNullableFields maps the wire names of PlatformTrendsReportsResponseDataReportsItemRowsItem's nullable fields (required or optional) to their field bits.
@@ -1613,6 +1627,7 @@ var platformTrendsReportsResponseDataReportsItemRowsItemNullableFields = map[str
 	"median_gross_revenue": platformTrendsReportsResponseDataReportsItemRowsItemFieldMedianGrossRevenue,
 	"new_businesses":       platformTrendsReportsResponseDataReportsItemRowsItemFieldNewBusinesses,
 	"payments":             platformTrendsReportsResponseDataReportsItemRowsItemFieldPayments,
+	"product_category":     platformTrendsReportsResponseDataReportsItemRowsItemFieldProductCategory,
 	"repeat_rate":          platformTrendsReportsResponseDataReportsItemRowsItemFieldRepeatRate,
 }
 
@@ -1640,7 +1655,8 @@ type PlatformTrendsReportsResponseDataReportsItemRowsItem struct {
 	// Businesses created in the window that also sold in it.
 	NewBusinesses *int `json:"new_businesses,omitempty" url:"new_businesses,omitempty"`
 	// Paid payments.
-	Payments *int `json:"payments,omitempty" url:"payments,omitempty"`
+	Payments        *int                                                                 `json:"payments,omitempty" url:"payments,omitempty"`
+	ProductCategory *PlatformTrendsReportsResponseDataReportsItemRowsItemProductCategory `json:"product_category,omitempty" url:"product_category,omitempty"`
 	// Share of customers who paid more than once, as a fraction.
 	RepeatRate *float64 `json:"repeat_rate,omitempty" url:"repeat_rate,omitempty"`
 
@@ -1747,6 +1763,13 @@ func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) GetPayments() *in
 		return nil
 	}
 	return p.Payments
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) GetProductCategory() *PlatformTrendsReportsResponseDataReportsItemRowsItemProductCategory {
+	if p == nil {
+		return nil
+	}
+	return p.ProductCategory
 }
 
 func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) GetRepeatRate() *float64 {
@@ -1868,6 +1891,13 @@ func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) SetNewBusinesses(
 func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) SetPayments(payments *int) {
 	p.Payments = payments
 	p.require(platformTrendsReportsResponseDataReportsItemRowsItemFieldPayments)
+}
+
+// SetProductCategory sets the ProductCategory field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) SetProductCategory(productCategory *PlatformTrendsReportsResponseDataReportsItemRowsItemProductCategory) {
+	p.ProductCategory = productCategory
+	p.require(platformTrendsReportsResponseDataReportsItemRowsItemFieldProductCategory)
 }
 
 // SetRepeatRate sets the RepeatRate field and marks it as non-optional;
@@ -2328,6 +2358,110 @@ func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemIndustryType) Marsh
 }
 
 func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemIndustryType) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	platformTrendsReportsResponseDataReportsItemRowsItemProductCategoryFieldID   = big.NewInt(1 << 0)
+	platformTrendsReportsResponseDataReportsItemRowsItemProductCategoryFieldName = big.NewInt(1 << 1)
+)
+
+type PlatformTrendsReportsResponseDataReportsItemRowsItemProductCategory struct {
+	// The value's id, such as `options_trading`.
+	ID string `json:"id" url:"id"`
+	// The value's display name.
+	Name string `json:"name" url:"name"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemProductCategory) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemProductCategory) GetName() string {
+	if p == nil {
+		return ""
+	}
+	return p.Name
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemProductCategory) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemProductCategory) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemProductCategory) SetID(id string) {
+	p.ID = id
+	p.require(platformTrendsReportsResponseDataReportsItemRowsItemProductCategoryFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemProductCategory) SetName(name string) {
+	p.Name = name
+	p.require(platformTrendsReportsResponseDataReportsItemRowsItemProductCategoryFieldName)
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemProductCategory) UnmarshalJSON(data []byte) error {
+	type unmarshaler PlatformTrendsReportsResponseDataReportsItemRowsItemProductCategory
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PlatformTrendsReportsResponseDataReportsItemRowsItemProductCategory(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemProductCategory) MarshalJSON() ([]byte, error) {
+	type embed PlatformTrendsReportsResponseDataReportsItemRowsItemProductCategory
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemProductCategory) String() string {
 	if p == nil {
 		return "<nil>"
 	}
