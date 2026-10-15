@@ -16,10 +16,11 @@ var (
 	createSetupIntentsRequestFieldCurrency          = big.NewInt(1 << 2)
 	createSetupIntentsRequestFieldEmail             = big.NewInt(1 << 3)
 	createSetupIntentsRequestFieldMetadata          = big.NewInt(1 << 4)
-	createSetupIntentsRequestFieldPaymentMethodID   = big.NewInt(1 << 5)
-	createSetupIntentsRequestFieldPurpose           = big.NewInt(1 << 6)
-	createSetupIntentsRequestFieldReturnURL         = big.NewInt(1 << 7)
-	createSetupIntentsRequestFieldThreeDsLevel      = big.NewInt(1 << 8)
+	createSetupIntentsRequestFieldOwnerID           = big.NewInt(1 << 5)
+	createSetupIntentsRequestFieldPaymentMethodID   = big.NewInt(1 << 6)
+	createSetupIntentsRequestFieldPurpose           = big.NewInt(1 << 7)
+	createSetupIntentsRequestFieldReturnURL         = big.NewInt(1 << 8)
+	createSetupIntentsRequestFieldThreeDsLevel      = big.NewInt(1 << 9)
 )
 
 type CreateSetupIntentsRequest struct {
@@ -33,6 +34,8 @@ type CreateSetupIntentsRequest struct {
 	Email *string `json:"email,omitempty" url:"-"`
 	// Custom metadata to attach to the setup intent. Returned on the setup intent and its webhooks.
 	Metadata map[string]*string `json:"metadata,omitempty" url:"-"`
+	// Who the saved payment method belongs to. Pass `account_id` to save it on the account itself, which needs `payment:charge` on the account. Pass your own user ID, prefixed `user_`, to save it on the authenticated user. Omit it to save it on the buyer: the caller when it is the buyer, otherwise the user the confirmation token names. Not available with `payment_method_id`, which keeps its current owner, or with `purpose`.
+	OwnerID *string `json:"owner_id,omitempty" url:"-"`
 	// An existing payment method to re-verify and save, prefixed `payt_`. Provide this or `confirmation_token`, not both. Not available to a buyer credential.
 	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
 	// What the saved payment method will pay for. Set to `ads_billing` when saving a card to pay for Whop Ads on `account_id`: the card is verified by Whop Ads, the merchant that charges it, which helps minimize security declines on ad payments, and it requires `ad_campaign:create` on `account_id`. Omit it for any other payment method.
@@ -88,6 +91,13 @@ func (c *CreateSetupIntentsRequest) SetEmail(email *string) {
 func (c *CreateSetupIntentsRequest) SetMetadata(metadata map[string]*string) {
 	c.Metadata = metadata
 	c.require(createSetupIntentsRequestFieldMetadata)
+}
+
+// SetOwnerID sets the OwnerID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateSetupIntentsRequest) SetOwnerID(ownerID *string) {
+	c.OwnerID = ownerID
+	c.require(createSetupIntentsRequestFieldOwnerID)
 }
 
 // SetPaymentMethodID sets the PaymentMethodID field and marks it as non-optional;
