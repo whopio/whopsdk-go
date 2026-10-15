@@ -216,7 +216,7 @@ func (r *RetrieveTransfersRequest) SetID(id string) {
 
 type CreateTransfersRequestBody struct {
 	Type string
-	// Moves credit between two Whop balances and returns a `transfer`. A transfer from a stablecoin-rails account settles on-chain when covered, and still returns a `transfer`.
+	// Moves credit between two Whop balances and returns a `transfer`. The transfer can come back `processing` and reach `succeeded` or `failed` asynchronously, usually within seconds.
 	Balance *CreateTransfersRequestBodyBalance
 	// Funds a shareable link anyone with the URL can redeem and returns a `claim_link`.
 	ClaimLink *CreateTransfersRequestBodyClaimLink
@@ -363,7 +363,7 @@ var createTransfersRequestBodyBalanceNullableFields = map[string]*big.Int{
 	"notes":           createTransfersRequestBodyBalanceFieldNotes,
 }
 
-// Moves credit between two Whop balances and returns a `transfer`. A transfer from a stablecoin-rails account settles on-chain when covered, and still returns a `transfer`.
+// Moves credit between two Whop balances and returns a `transfer`. The transfer can come back `processing` and reach `succeeded` or `failed` asynchronously, usually within seconds.
 type CreateTransfersRequestBodyBalance struct {
 	// The amount to move, in the transfer currency. For example 25.00.
 	Amount float64 `json:"amount" url:"amount"`
@@ -1826,7 +1826,7 @@ type CreateTransfersResponseTransfer struct {
 	Notes *string `json:"notes,omitempty" url:"notes,omitempty"`
 	// Business account or user sending the transfer.
 	Origin *CreateTransfersResponseTransferOrigin `json:"origin,omitempty" url:"origin,omitempty"`
-	// Current transfer status.
+	// Current transfer status. A transfer can be created `processing` and settle a few seconds later; poll Retrieve Transfer or listen for the `transfer.completed` and `transfer.failed` webhooks instead of treating the create response as final. `succeeded` and `failed` are final.
 	Status CreateTransfersResponseTransferStatus `json:"status" url:"status"`
 	// Recorded time of the current transition. Null when the historical transition time is unknown.
 	StatusChangedAt *time.Time `json:"status_changed_at,omitempty" url:"status_changed_at,omitempty"`
@@ -2487,7 +2487,7 @@ func (c CreateTransfersResponseTransferOriginObject) Ptr() *CreateTransfersRespo
 	return &c
 }
 
-// Current transfer status.
+// Current transfer status. A transfer can be created `processing` and settle a few seconds later; poll Retrieve Transfer or listen for the `transfer.completed` and `transfer.failed` webhooks instead of treating the create response as final. `succeeded` and `failed` are final.
 type CreateTransfersResponseTransferStatus string
 
 const (
@@ -3397,7 +3397,7 @@ type ListTransfersResponseDataItem struct {
 	Object ListTransfersResponseDataItemObject `json:"object" url:"object"`
 	// Business account or user sending the transfer.
 	Origin *ListTransfersResponseDataItemOrigin `json:"origin,omitempty" url:"origin,omitempty"`
-	// Current transfer status.
+	// Current transfer status. A transfer can be created `processing` and settle a few seconds later; poll Retrieve Transfer or listen for the `transfer.completed` and `transfer.failed` webhooks instead of treating the create response as final. `succeeded` and `failed` are final.
 	Status ListTransfersResponseDataItemStatus `json:"status" url:"status"`
 	// Recorded time of the current transition. Null when the historical transition time is unknown.
 	StatusChangedAt *time.Time `json:"status_changed_at,omitempty" url:"status_changed_at,omitempty"`
@@ -4092,7 +4092,7 @@ func (l ListTransfersResponseDataItemOriginObject) Ptr() *ListTransfersResponseD
 	return &l
 }
 
-// Current transfer status.
+// Current transfer status. A transfer can be created `processing` and settle a few seconds later; poll Retrieve Transfer or listen for the `transfer.completed` and `transfer.failed` webhooks instead of treating the create response as final. `succeeded` and `failed` are final.
 type ListTransfersResponseDataItemStatus string
 
 const (
@@ -4571,7 +4571,7 @@ type PostTransferCompletedPayloadData struct {
 	Object PostTransferCompletedPayloadDataObject `json:"object" url:"object"`
 	// Business account or user sending the transfer.
 	Origin *PostTransferCompletedPayloadDataOrigin `json:"origin,omitempty" url:"origin,omitempty"`
-	// Current transfer status.
+	// Current transfer status. A transfer can be created `processing` and settle a few seconds later; poll Retrieve Transfer or listen for the `transfer.completed` and `transfer.failed` webhooks instead of treating the create response as final. `succeeded` and `failed` are final.
 	Status PostTransferCompletedPayloadDataStatus `json:"status" url:"status"`
 	// Recorded time of the current transition. Null when the historical transition time is unknown.
 	StatusChangedAt *time.Time `json:"status_changed_at,omitempty" url:"status_changed_at,omitempty"`
@@ -5266,7 +5266,7 @@ func (p PostTransferCompletedPayloadDataOriginObject) Ptr() *PostTransferComplet
 	return &p
 }
 
-// Current transfer status.
+// Current transfer status. A transfer can be created `processing` and settle a few seconds later; poll Retrieve Transfer or listen for the `transfer.completed` and `transfer.failed` webhooks instead of treating the create response as final. `succeeded` and `failed` are final.
 type PostTransferCompletedPayloadDataStatus string
 
 const (
@@ -5618,7 +5618,7 @@ type PostTransferCreatedPayloadData struct {
 	Object PostTransferCreatedPayloadDataObject `json:"object" url:"object"`
 	// Business account or user sending the transfer.
 	Origin *PostTransferCreatedPayloadDataOrigin `json:"origin,omitempty" url:"origin,omitempty"`
-	// Current transfer status.
+	// Current transfer status. A transfer can be created `processing` and settle a few seconds later; poll Retrieve Transfer or listen for the `transfer.completed` and `transfer.failed` webhooks instead of treating the create response as final. `succeeded` and `failed` are final.
 	Status PostTransferCreatedPayloadDataStatus `json:"status" url:"status"`
 	// Recorded time of the current transition. Null when the historical transition time is unknown.
 	StatusChangedAt *time.Time `json:"status_changed_at,omitempty" url:"status_changed_at,omitempty"`
@@ -6313,7 +6313,7 @@ func (p PostTransferCreatedPayloadDataOriginObject) Ptr() *PostTransferCreatedPa
 	return &p
 }
 
-// Current transfer status.
+// Current transfer status. A transfer can be created `processing` and settle a few seconds later; poll Retrieve Transfer or listen for the `transfer.completed` and `transfer.failed` webhooks instead of treating the create response as final. `succeeded` and `failed` are final.
 type PostTransferCreatedPayloadDataStatus string
 
 const (
@@ -6665,7 +6665,7 @@ type PostTransferFailedPayloadData struct {
 	Object PostTransferFailedPayloadDataObject `json:"object" url:"object"`
 	// Business account or user sending the transfer.
 	Origin *PostTransferFailedPayloadDataOrigin `json:"origin,omitempty" url:"origin,omitempty"`
-	// Current transfer status.
+	// Current transfer status. A transfer can be created `processing` and settle a few seconds later; poll Retrieve Transfer or listen for the `transfer.completed` and `transfer.failed` webhooks instead of treating the create response as final. `succeeded` and `failed` are final.
 	Status PostTransferFailedPayloadDataStatus `json:"status" url:"status"`
 	// Recorded time of the current transition. Null when the historical transition time is unknown.
 	StatusChangedAt *time.Time `json:"status_changed_at,omitempty" url:"status_changed_at,omitempty"`
@@ -7360,7 +7360,7 @@ func (p PostTransferFailedPayloadDataOriginObject) Ptr() *PostTransferFailedPayl
 	return &p
 }
 
-// Current transfer status.
+// Current transfer status. A transfer can be created `processing` and settle a few seconds later; poll Retrieve Transfer or listen for the `transfer.completed` and `transfer.failed` webhooks instead of treating the create response as final. `succeeded` and `failed` are final.
 type PostTransferFailedPayloadDataStatus string
 
 const (
@@ -7465,7 +7465,7 @@ type RetrieveTransfersResponse struct {
 	Object RetrieveTransfersResponseObject `json:"object" url:"object"`
 	// Business account or user sending the transfer.
 	Origin *RetrieveTransfersResponseOrigin `json:"origin,omitempty" url:"origin,omitempty"`
-	// Current transfer status.
+	// Current transfer status. A transfer can be created `processing` and settle a few seconds later; poll Retrieve Transfer or listen for the `transfer.completed` and `transfer.failed` webhooks instead of treating the create response as final. `succeeded` and `failed` are final.
 	Status RetrieveTransfersResponseStatus `json:"status" url:"status"`
 	// Recorded time of the current transition. Null when the historical transition time is unknown.
 	StatusChangedAt *time.Time `json:"status_changed_at,omitempty" url:"status_changed_at,omitempty"`
@@ -8160,7 +8160,7 @@ func (r RetrieveTransfersResponseOriginObject) Ptr() *RetrieveTransfersResponseO
 	return &r
 }
 
-// Current transfer status.
+// Current transfer status. A transfer can be created `processing` and settle a few seconds later; poll Retrieve Transfer or listen for the `transfer.completed` and `transfer.failed` webhooks instead of treating the create response as final. `succeeded` and `failed` are final.
 type RetrieveTransfersResponseStatus string
 
 const (

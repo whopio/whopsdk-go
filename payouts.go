@@ -578,7 +578,7 @@ type CancelPayoutsResponse struct {
 	Currency string `json:"currency" url:"currency"`
 	// The amount delivered in the destination currency, as a decimal string. Assigned when the payout is processed, so it is `null` before then and on payouts without a recorded conversion.
 	DestinationAmount *string `json:"destination_amount,omitempty" url:"destination_amount,omitempty"`
-	// Currency the funds are delivered in, taken from the payout method when the payout is created. On a stablecoin payout it follows the settlement payout minted alongside it — the `GET /payouts` row carrying this payout's id as `payout_request_id` — and is `null` only when no settlement payout exists.
+	// Currency the funds are delivered in, taken from the payout method when the payout is created. On a payout funded by a conversion request it follows the settlement payout minted alongside it — the `GET /payouts` row carrying this payout's id as `payout_request_id` — and is `null` only when no settlement payout exists.
 	DestinationCurrency *string `json:"destination_currency,omitempty" url:"destination_currency,omitempty"`
 	// Estimated time the funds become available in the destination account.
 	EstimatedArrival *time.Time `json:"estimated_arrival,omitempty" url:"estimated_arrival,omitempty"`
@@ -596,7 +596,7 @@ type CancelPayoutsResponse struct {
 	MarkupFee string `json:"markup_fee" url:"markup_fee"`
 	// Key-value data attached at creation and echoed on every read. At most 50 keys, key names up to 40 characters, string values up to 500 characters.
 	Metadata map[string]string `json:"metadata" url:"metadata"`
-	// The planned net for the destination, in the payout currency: amount minus fee_amount minus markup_fee when fee_paid_by is `self`; equal to amount when the platform covers the fees. A payout that ends denied, canceled, or failed delivered nothing — most keep the planned figure and `failure` says where the funds are, but a canceled stablecoin payout can report the settled outcome instead: `amount` carries what stayed in the balance, fees are zero because none were charged, and `net_amount` is 0 because nothing was delivered.
+	// The planned net for the destination, in the payout currency: amount minus fee_amount minus markup_fee when fee_paid_by is `self`; equal to amount when the platform covers the fees. A payout that ends denied, canceled, or failed delivered nothing — most keep the planned figure and `failure` says where the funds are, but a canceled payout funded by a conversion request can report the settled outcome instead: `amount` carries what stayed in the balance, fees are zero because none were charged, and `net_amount` is 0 because nothing was delivered.
 	NetAmount string `json:"net_amount" url:"net_amount"`
 	// Free-form notes attached by the payout creator, or `null` when none were provided. Maximum 255 characters.
 	Notes  *string                     `json:"notes,omitempty" url:"notes,omitempty"`
@@ -615,7 +615,7 @@ type CancelPayoutsResponse struct {
 	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"statement_descriptor,omitempty"`
 	// Current payout status.
 	Status CancelPayoutsResponseStatus `json:"status" url:"status"`
-	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the stablecoin conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
+	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
 	StatusDetail string `json:"status_detail" url:"status_detail"`
 	// ACH trace number the recipient's bank can use to locate this payout. Assigned when the payout is submitted to the bank, so it is `null` before then and on payouts not sent over ACH.
 	TraceCode *string `json:"trace_code,omitempty" url:"trace_code,omitempty"`
@@ -1720,7 +1720,7 @@ type CreatePayoutsResponse struct {
 	Currency string `json:"currency" url:"currency"`
 	// The amount delivered in the destination currency, as a decimal string. Null until the payout settles; appears on the payout in GET /payouts once assigned.
 	DestinationAmount *string `json:"destination_amount,omitempty" url:"destination_amount,omitempty"`
-	// Currency the funds are delivered in, taken from the payout method. On a stablecoin payout it follows the settlement payout minted alongside it — the `GET /payouts` row carrying this payout's id as `payout_request_id` — and is `null` only when no settlement payout exists.
+	// Currency the funds are delivered in, taken from the payout method. On a payout funded by a conversion request it follows the settlement payout minted alongside it — the `GET /payouts` row carrying this payout's id as `payout_request_id` — and is `null` only when no settlement payout exists.
 	DestinationCurrency *string `json:"destination_currency,omitempty" url:"destination_currency,omitempty"`
 	// Estimated time the funds become available in the destination account. Null until the payout settles.
 	EstimatedArrival *time.Time `json:"estimated_arrival,omitempty" url:"estimated_arrival,omitempty"`
@@ -1738,7 +1738,7 @@ type CreatePayoutsResponse struct {
 	MarkupFee string `json:"markup_fee" url:"markup_fee"`
 	// Key-value data attached at creation and echoed on every read. At most 50 keys, key names up to 40 characters, string values up to 500 characters.
 	Metadata map[string]string `json:"metadata" url:"metadata"`
-	// The planned net for the destination, in the payout currency: amount minus fee_amount minus markup_fee when fee_paid_by is `self`; equal to amount when the platform covers the fees. A payout that ends denied, canceled, or failed delivered nothing — most keep the planned figure and `failure` says where the funds are, but a canceled stablecoin payout can report the settled outcome instead: `amount` carries what stayed in the balance, fees are zero because none were charged, and `net_amount` is 0 because nothing was delivered.
+	// The planned net for the destination, in the payout currency: amount minus fee_amount minus markup_fee when fee_paid_by is `self`; equal to amount when the platform covers the fees. A payout that ends denied, canceled, or failed delivered nothing — most keep the planned figure and `failure` says where the funds are, but a canceled payout funded by a conversion request can report the settled outcome instead: `amount` carries what stayed in the balance, fees are zero because none were charged, and `net_amount` is 0 because nothing was delivered.
 	NetAmount string `json:"net_amount" url:"net_amount"`
 	// Free-form notes attached by the payout creator, or `null` when none were provided. Maximum 255 characters.
 	Notes  *string                     `json:"notes,omitempty" url:"notes,omitempty"`
@@ -1747,7 +1747,7 @@ type CreatePayoutsResponse struct {
 	PayerName *string `json:"payer_name,omitempty" url:"payer_name,omitempty"`
 	// The saved payout method used. Requires payout:destination:read; null without it.
 	PayoutMethod *CreatePayoutsResponsePayoutMethod `json:"payout_method,omitempty" url:"payout_method,omitempty"`
-	// For a stablecoin payout, the id of the conversion request that funds it, prefixed `cofr_`; `null` on fiat payouts.
+	// The id of the conversion request that funds this payout, prefixed `cofr_`; `null` when the payout has none.
 	PayoutRequestID *string `json:"payout_request_id,omitempty" url:"payout_request_id,omitempty"`
 	// How the payout was created. `automatic` means a scheduled auto-payout; `null` on payouts created before source tracking or through internal tooling.
 	Source *CreatePayoutsResponseSource `json:"source,omitempty" url:"source,omitempty"`
@@ -1757,7 +1757,7 @@ type CreatePayoutsResponse struct {
 	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"statement_descriptor,omitempty"`
 	// Current payout status, in the same vocabulary as GET /payouts.
 	Status CreatePayoutsResponseStatus `json:"status" url:"status"`
-	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the stablecoin conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
+	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
 	StatusDetail string `json:"status_detail" url:"status_detail"`
 	// ACH trace number the recipient's bank can use to locate this payout. Always `null` here — it is assigned when the payout is submitted to the bank, and appears on the payout in GET /payouts once it has been sent; payouts not sent over ACH never get one.
 	TraceCode *string `json:"trace_code,omitempty" url:"trace_code,omitempty"`
@@ -3517,7 +3517,7 @@ type ListPayoutsResponseDataItem struct {
 	Currency string `json:"currency" url:"currency"`
 	// The amount delivered in the destination currency, as a decimal string. Assigned when the payout is processed, so it is `null` before then and on payouts without a recorded conversion.
 	DestinationAmount *string `json:"destination_amount,omitempty" url:"destination_amount,omitempty"`
-	// Currency the funds are delivered in, taken from the payout method when the payout is created. On a stablecoin payout it follows the settlement payout minted alongside it — the `GET /payouts` row carrying this payout's id as `payout_request_id` — and is `null` only when no settlement payout exists.
+	// Currency the funds are delivered in, taken from the payout method when the payout is created. On a payout funded by a conversion request it follows the settlement payout minted alongside it — the `GET /payouts` row carrying this payout's id as `payout_request_id` — and is `null` only when no settlement payout exists.
 	DestinationCurrency *string `json:"destination_currency,omitempty" url:"destination_currency,omitempty"`
 	// Estimated time the funds become available in the destination account.
 	EstimatedArrival *time.Time `json:"estimated_arrival,omitempty" url:"estimated_arrival,omitempty"`
@@ -3535,7 +3535,7 @@ type ListPayoutsResponseDataItem struct {
 	MarkupFee string `json:"markup_fee" url:"markup_fee"`
 	// Key-value data attached at creation and echoed on every read. At most 50 keys, key names up to 40 characters, string values up to 500 characters.
 	Metadata map[string]string `json:"metadata" url:"metadata"`
-	// The planned net for the destination, in the payout currency: amount minus fee_amount minus markup_fee when fee_paid_by is `self`; equal to amount when the platform covers the fees. A payout that ends denied, canceled, or failed delivered nothing — most keep the planned figure and `failure` says where the funds are, but a canceled stablecoin payout can report the settled outcome instead: `amount` carries what stayed in the balance, fees are zero because none were charged, and `net_amount` is 0 because nothing was delivered.
+	// The planned net for the destination, in the payout currency: amount minus fee_amount minus markup_fee when fee_paid_by is `self`; equal to amount when the platform covers the fees. A payout that ends denied, canceled, or failed delivered nothing — most keep the planned figure and `failure` says where the funds are, but a canceled payout funded by a conversion request can report the settled outcome instead: `amount` carries what stayed in the balance, fees are zero because none were charged, and `net_amount` is 0 because nothing was delivered.
 	NetAmount string `json:"net_amount" url:"net_amount"`
 	// Free-form notes attached by the payout creator, or `null` when none were provided. Maximum 255 characters.
 	Notes  *string                           `json:"notes,omitempty" url:"notes,omitempty"`
@@ -3554,7 +3554,7 @@ type ListPayoutsResponseDataItem struct {
 	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"statement_descriptor,omitempty"`
 	// Current payout status.
 	Status ListPayoutsResponseDataItemStatus `json:"status" url:"status"`
-	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the stablecoin conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
+	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
 	StatusDetail string `json:"status_detail" url:"status_detail"`
 	// ACH trace number the recipient's bank can use to locate this payout. Assigned when the payout is submitted to the bank, so it is `null` before then and on payouts not sent over ACH.
 	TraceCode *string `json:"trace_code,omitempty" url:"trace_code,omitempty"`
@@ -5029,7 +5029,7 @@ type PostPayoutCreatedPayloadData struct {
 	Currency string `json:"currency" url:"currency"`
 	// The amount delivered in the destination currency, as a decimal string. Assigned when the payout is processed, so it is `null` before then and on payouts without a recorded conversion.
 	DestinationAmount *string `json:"destination_amount,omitempty" url:"destination_amount,omitempty"`
-	// Currency the funds are delivered in, taken from the payout method when the payout is created. On a stablecoin payout it follows the settlement payout minted alongside it — the `GET /payouts` row carrying this payout's id as `payout_request_id` — and is `null` only when no settlement payout exists.
+	// Currency the funds are delivered in, taken from the payout method when the payout is created. On a payout funded by a conversion request it follows the settlement payout minted alongside it — the `GET /payouts` row carrying this payout's id as `payout_request_id` — and is `null` only when no settlement payout exists.
 	DestinationCurrency *string `json:"destination_currency,omitempty" url:"destination_currency,omitempty"`
 	// Estimated time the funds become available in the destination account.
 	EstimatedArrival *time.Time `json:"estimated_arrival,omitempty" url:"estimated_arrival,omitempty"`
@@ -5047,7 +5047,7 @@ type PostPayoutCreatedPayloadData struct {
 	MarkupFee string `json:"markup_fee" url:"markup_fee"`
 	// Key-value data attached at creation and echoed on every read. At most 50 keys, key names up to 40 characters, string values up to 500 characters.
 	Metadata map[string]string `json:"metadata" url:"metadata"`
-	// The planned net for the destination, in the payout currency: amount minus fee_amount minus markup_fee when fee_paid_by is `self`; equal to amount when the platform covers the fees. A payout that ends denied, canceled, or failed delivered nothing — most keep the planned figure and `failure` says where the funds are, but a canceled stablecoin payout can report the settled outcome instead: `amount` carries what stayed in the balance, fees are zero because none were charged, and `net_amount` is 0 because nothing was delivered.
+	// The planned net for the destination, in the payout currency: amount minus fee_amount minus markup_fee when fee_paid_by is `self`; equal to amount when the platform covers the fees. A payout that ends denied, canceled, or failed delivered nothing — most keep the planned figure and `failure` says where the funds are, but a canceled payout funded by a conversion request can report the settled outcome instead: `amount` carries what stayed in the balance, fees are zero because none were charged, and `net_amount` is 0 because nothing was delivered.
 	NetAmount string `json:"net_amount" url:"net_amount"`
 	// Free-form notes attached by the payout creator, or `null` when none were provided. Maximum 255 characters.
 	Notes  *string                            `json:"notes,omitempty" url:"notes,omitempty"`
@@ -5066,7 +5066,7 @@ type PostPayoutCreatedPayloadData struct {
 	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"statement_descriptor,omitempty"`
 	// Current payout status.
 	Status PostPayoutCreatedPayloadDataStatus `json:"status" url:"status"`
-	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the stablecoin conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
+	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
 	StatusDetail string `json:"status_detail" url:"status_detail"`
 	// ACH trace number the recipient's bank can use to locate this payout. Assigned when the payout is submitted to the bank, so it is `null` before then and on payouts not sent over ACH.
 	TraceCode *string `json:"trace_code,omitempty" url:"trace_code,omitempty"`
@@ -8341,7 +8341,7 @@ type PostPayoutReversedPayloadData struct {
 	Currency string `json:"currency" url:"currency"`
 	// The amount delivered in the destination currency, as a decimal string. Assigned when the payout is processed, so it is `null` before then and on payouts without a recorded conversion.
 	DestinationAmount *string `json:"destination_amount,omitempty" url:"destination_amount,omitempty"`
-	// Currency the funds are delivered in, taken from the payout method when the payout is created. On a stablecoin payout it follows the settlement payout minted alongside it — the `GET /payouts` row carrying this payout's id as `payout_request_id` — and is `null` only when no settlement payout exists.
+	// Currency the funds are delivered in, taken from the payout method when the payout is created. On a payout funded by a conversion request it follows the settlement payout minted alongside it — the `GET /payouts` row carrying this payout's id as `payout_request_id` — and is `null` only when no settlement payout exists.
 	DestinationCurrency *string `json:"destination_currency,omitempty" url:"destination_currency,omitempty"`
 	// Estimated time the funds become available in the destination account.
 	EstimatedArrival *time.Time `json:"estimated_arrival,omitempty" url:"estimated_arrival,omitempty"`
@@ -8359,7 +8359,7 @@ type PostPayoutReversedPayloadData struct {
 	MarkupFee string `json:"markup_fee" url:"markup_fee"`
 	// Key-value data attached at creation and echoed on every read. At most 50 keys, key names up to 40 characters, string values up to 500 characters.
 	Metadata map[string]string `json:"metadata" url:"metadata"`
-	// The planned net for the destination, in the payout currency: amount minus fee_amount minus markup_fee when fee_paid_by is `self`; equal to amount when the platform covers the fees. A payout that ends denied, canceled, or failed delivered nothing — most keep the planned figure and `failure` says where the funds are, but a canceled stablecoin payout can report the settled outcome instead: `amount` carries what stayed in the balance, fees are zero because none were charged, and `net_amount` is 0 because nothing was delivered.
+	// The planned net for the destination, in the payout currency: amount minus fee_amount minus markup_fee when fee_paid_by is `self`; equal to amount when the platform covers the fees. A payout that ends denied, canceled, or failed delivered nothing — most keep the planned figure and `failure` says where the funds are, but a canceled payout funded by a conversion request can report the settled outcome instead: `amount` carries what stayed in the balance, fees are zero because none were charged, and `net_amount` is 0 because nothing was delivered.
 	NetAmount string `json:"net_amount" url:"net_amount"`
 	// Free-form notes attached by the payout creator, or `null` when none were provided. Maximum 255 characters.
 	Notes  *string                             `json:"notes,omitempty" url:"notes,omitempty"`
@@ -8378,7 +8378,7 @@ type PostPayoutReversedPayloadData struct {
 	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"statement_descriptor,omitempty"`
 	// Current payout status.
 	Status PostPayoutReversedPayloadDataStatus `json:"status" url:"status"`
-	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the stablecoin conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
+	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
 	StatusDetail string `json:"status_detail" url:"status_detail"`
 	// ACH trace number the recipient's bank can use to locate this payout. Assigned when the payout is submitted to the bank, so it is `null` before then and on payouts not sent over ACH.
 	TraceCode *string `json:"trace_code,omitempty" url:"trace_code,omitempty"`
@@ -9726,7 +9726,7 @@ type PostPayoutUpdatedPayloadData struct {
 	Currency string `json:"currency" url:"currency"`
 	// The amount delivered in the destination currency, as a decimal string. Assigned when the payout is processed, so it is `null` before then and on payouts without a recorded conversion.
 	DestinationAmount *string `json:"destination_amount,omitempty" url:"destination_amount,omitempty"`
-	// Currency the funds are delivered in, taken from the payout method when the payout is created. On a stablecoin payout it follows the settlement payout minted alongside it — the `GET /payouts` row carrying this payout's id as `payout_request_id` — and is `null` only when no settlement payout exists.
+	// Currency the funds are delivered in, taken from the payout method when the payout is created. On a payout funded by a conversion request it follows the settlement payout minted alongside it — the `GET /payouts` row carrying this payout's id as `payout_request_id` — and is `null` only when no settlement payout exists.
 	DestinationCurrency *string `json:"destination_currency,omitempty" url:"destination_currency,omitempty"`
 	// Estimated time the funds become available in the destination account.
 	EstimatedArrival *time.Time `json:"estimated_arrival,omitempty" url:"estimated_arrival,omitempty"`
@@ -9744,7 +9744,7 @@ type PostPayoutUpdatedPayloadData struct {
 	MarkupFee string `json:"markup_fee" url:"markup_fee"`
 	// Key-value data attached at creation and echoed on every read. At most 50 keys, key names up to 40 characters, string values up to 500 characters.
 	Metadata map[string]string `json:"metadata" url:"metadata"`
-	// The planned net for the destination, in the payout currency: amount minus fee_amount minus markup_fee when fee_paid_by is `self`; equal to amount when the platform covers the fees. A payout that ends denied, canceled, or failed delivered nothing — most keep the planned figure and `failure` says where the funds are, but a canceled stablecoin payout can report the settled outcome instead: `amount` carries what stayed in the balance, fees are zero because none were charged, and `net_amount` is 0 because nothing was delivered.
+	// The planned net for the destination, in the payout currency: amount minus fee_amount minus markup_fee when fee_paid_by is `self`; equal to amount when the platform covers the fees. A payout that ends denied, canceled, or failed delivered nothing — most keep the planned figure and `failure` says where the funds are, but a canceled payout funded by a conversion request can report the settled outcome instead: `amount` carries what stayed in the balance, fees are zero because none were charged, and `net_amount` is 0 because nothing was delivered.
 	NetAmount string `json:"net_amount" url:"net_amount"`
 	// Free-form notes attached by the payout creator, or `null` when none were provided. Maximum 255 characters.
 	Notes  *string                            `json:"notes,omitempty" url:"notes,omitempty"`
@@ -9763,7 +9763,7 @@ type PostPayoutUpdatedPayloadData struct {
 	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"statement_descriptor,omitempty"`
 	// Current payout status.
 	Status PostPayoutUpdatedPayloadDataStatus `json:"status" url:"status"`
-	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the stablecoin conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
+	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
 	StatusDetail string `json:"status_detail" url:"status_detail"`
 	// ACH trace number the recipient's bank can use to locate this payout. Assigned when the payout is submitted to the bank, so it is `null` before then and on payouts not sent over ACH.
 	TraceCode *string `json:"trace_code,omitempty" url:"trace_code,omitempty"`
@@ -10875,7 +10875,7 @@ type RetrievePayoutsResponse struct {
 	Delayed *bool `json:"delayed,omitempty" url:"delayed,omitempty"`
 	// The amount delivered in the destination currency, as a decimal string. Assigned when the payout is processed, so it is `null` before then and on payouts without a recorded conversion.
 	DestinationAmount *string `json:"destination_amount,omitempty" url:"destination_amount,omitempty"`
-	// Currency the funds are delivered in, taken from the payout method when the payout is created. On a stablecoin payout it follows the settlement payout minted alongside it — the `GET /payouts` row carrying this payout's id as `payout_request_id` — and is `null` only when no settlement payout exists.
+	// Currency the funds are delivered in, taken from the payout method when the payout is created. On a payout funded by a conversion request it follows the settlement payout minted alongside it — the `GET /payouts` row carrying this payout's id as `payout_request_id` — and is `null` only when no settlement payout exists.
 	DestinationCurrency *string `json:"destination_currency,omitempty" url:"destination_currency,omitempty"`
 	// Estimated time the funds become available in the destination account.
 	EstimatedArrival *time.Time `json:"estimated_arrival,omitempty" url:"estimated_arrival,omitempty"`
@@ -10895,7 +10895,7 @@ type RetrievePayoutsResponse struct {
 	MarkupFee *string `json:"markup_fee,omitempty" url:"markup_fee,omitempty"`
 	// Key-value data attached at creation and echoed on every read. At most 50 keys, key names up to 40 characters, string values up to 500 characters. Only returned to callers with payout:withdrawal:read on the owning ledger.
 	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
-	// The planned net for the destination, in the payout currency: amount minus fee_amount minus markup_fee when fee_paid_by is `self`; equal to amount when the platform covers the fees. A payout that ends denied, canceled, or failed delivered nothing — most keep the planned figure and `failure` says where the funds are, but a canceled stablecoin payout can report the settled outcome instead: `amount` carries what stayed in the balance, fees are zero because none were charged, and `net_amount` is 0 because nothing was delivered.
+	// The planned net for the destination, in the payout currency: amount minus fee_amount minus markup_fee when fee_paid_by is `self`; equal to amount when the platform covers the fees. A payout that ends denied, canceled, or failed delivered nothing — most keep the planned figure and `failure` says where the funds are, but a canceled payout funded by a conversion request can report the settled outcome instead: `amount` carries what stayed in the balance, fees are zero because none were charged, and `net_amount` is 0 because nothing was delivered.
 	NetAmount string `json:"net_amount" url:"net_amount"`
 	// Free-form notes attached by the payout creator, or `null` when none were provided. Maximum 255 characters.
 	Notes  *string                       `json:"notes,omitempty" url:"notes,omitempty"`
@@ -10918,7 +10918,7 @@ type RetrievePayoutsResponse struct {
 	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"statement_descriptor,omitempty"`
 	// Current payout status.
 	Status RetrievePayoutsResponseStatus `json:"status" url:"status"`
-	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the stablecoin conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
+	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
 	StatusDetail string `json:"status_detail" url:"status_detail"`
 	// Completed lifecycle events in chronological order. Present once the payout has a withdrawal record.
 	Timeline []*RetrievePayoutsResponseTimelineItem `json:"timeline,omitempty" url:"timeline,omitempty"`

@@ -3388,7 +3388,7 @@ type LedgerActivityResourceAuthorizedAt struct {
 	PostedAt *time.Time `json:"posted_at,omitempty" url:"posted_at,omitempty"`
 	// Current card transaction status.
 	Status *string `json:"status,omitempty" url:"status,omitempty"`
-	// The processor-settled USD amount as a decimal string. The ledger's USDT leg is posted 1:1 from this value.
+	// The processor-settled USD amount as a decimal string.
 	UsdAmount *string `json:"usd_amount,omitempty" url:"usd_amount,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

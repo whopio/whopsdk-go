@@ -759,28 +759,27 @@ var (
 	accountFieldShowReviewsDtc                      = big.NewInt(1 << 50)
 	accountFieldShowUserDirectory                   = big.NewInt(1 << 51)
 	accountFieldSocialLinks                         = big.NewInt(1 << 52)
-	accountFieldStablecoinRails                     = big.NewInt(1 << 53)
-	accountFieldStatus                              = big.NewInt(1 << 54)
-	accountFieldStatusReason                        = big.NewInt(1 << 55)
-	accountFieldStorePageConfig                     = big.NewInt(1 << 56)
-	accountFieldTargetAudience                      = big.NewInt(1 << 57)
-	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 58)
-	accountFieldTaxIdentifiers                      = big.NewInt(1 << 59)
-	accountFieldTaxRemittedBy                       = big.NewInt(1 << 60)
-	accountFieldTaxType                             = big.NewInt(1 << 61)
-	accountFieldTermsOfService                      = big.NewInt(1 << 62)
-	accountFieldThreeDsLevel                        = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	accountFieldTitle                               = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	accountFieldTotalEarnedUsd                      = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	accountFieldTotalUsd                            = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	accountFieldTrading                             = big.NewInt(0).Lsh(big.NewInt(1), 67)
-	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(0).Lsh(big.NewInt(1), 68)
-	accountFieldVerification                        = big.NewInt(0).Lsh(big.NewInt(1), 69)
-	accountFieldVolumeL30DUsd                       = big.NewInt(0).Lsh(big.NewInt(1), 70)
-	accountFieldVolumeUsd                           = big.NewInt(0).Lsh(big.NewInt(1), 71)
-	accountFieldWallet                              = big.NewInt(0).Lsh(big.NewInt(1), 72)
-	accountFieldWebsite                             = big.NewInt(0).Lsh(big.NewInt(1), 73)
-	accountFieldWhopPartnerEnabledAt                = big.NewInt(0).Lsh(big.NewInt(1), 74)
+	accountFieldStatus                              = big.NewInt(1 << 53)
+	accountFieldStatusReason                        = big.NewInt(1 << 54)
+	accountFieldStorePageConfig                     = big.NewInt(1 << 55)
+	accountFieldTargetAudience                      = big.NewInt(1 << 56)
+	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 57)
+	accountFieldTaxIdentifiers                      = big.NewInt(1 << 58)
+	accountFieldTaxRemittedBy                       = big.NewInt(1 << 59)
+	accountFieldTaxType                             = big.NewInt(1 << 60)
+	accountFieldTermsOfService                      = big.NewInt(1 << 61)
+	accountFieldThreeDsLevel                        = big.NewInt(1 << 62)
+	accountFieldTitle                               = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	accountFieldTotalEarnedUsd                      = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	accountFieldTotalUsd                            = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	accountFieldTrading                             = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	accountFieldVerification                        = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	accountFieldVolumeL30DUsd                       = big.NewInt(0).Lsh(big.NewInt(1), 69)
+	accountFieldVolumeUsd                           = big.NewInt(0).Lsh(big.NewInt(1), 70)
+	accountFieldWallet                              = big.NewInt(0).Lsh(big.NewInt(1), 71)
+	accountFieldWebsite                             = big.NewInt(0).Lsh(big.NewInt(1), 72)
+	accountFieldWhopPartnerEnabledAt                = big.NewInt(0).Lsh(big.NewInt(1), 73)
 )
 
 // accountNullableFields maps the wire names of Account's nullable fields (required or optional) to their field bits.
@@ -934,8 +933,6 @@ type Account struct {
 	// Whether the account shows users in the user directory.
 	ShowUserDirectory bool                 `json:"show_user_directory" url:"show_user_directory"`
 	SocialLinks       []*AccountSocialLink `json:"social_links" url:"social_links"`
-	// Whether the account settles on stablecoin rails — its balance is held on-chain as USDT and paid out over crypto, rather than as fiat cash.
-	StablecoinRails bool `json:"stablecoin_rails" url:"stablecoin_rails"`
 	// Whether the account can operate on Whop: `active` or `suspended`. Computed on `list`, `retrieve`, `me`, and `suspend`; `null` otherwise.
 	Status *string `json:"status,omitempty" url:"status,omitempty"`
 	// Why the account was suspended, as the label shown to the account owner, such as `Suspended - Fraudulent activity`. Computed on `retrieve`, `me`, and `suspend`; `null` otherwise, when `status` is not `suspended`, and when the suspension was recorded without a reason.
@@ -1353,13 +1350,6 @@ func (a *Account) GetSocialLinks() []*AccountSocialLink {
 		return nil
 	}
 	return a.SocialLinks
-}
-
-func (a *Account) GetStablecoinRails() bool {
-	if a == nil {
-		return false
-	}
-	return a.StablecoinRails
 }
 
 func (a *Account) GetStatus() *string {
@@ -1894,13 +1884,6 @@ func (a *Account) SetShowUserDirectory(showUserDirectory bool) {
 func (a *Account) SetSocialLinks(socialLinks []*AccountSocialLink) {
 	a.SocialLinks = socialLinks
 	a.require(accountFieldSocialLinks)
-}
-
-// SetStablecoinRails sets the StablecoinRails field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *Account) SetStablecoinRails(stablecoinRails bool) {
-	a.StablecoinRails = stablecoinRails
-	a.require(accountFieldStablecoinRails)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
