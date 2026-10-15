@@ -317,6 +317,14 @@ client.Accounts.List(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**ownerID:** `*string` — Return only accounts owned by this user (`user_...`), the account's `owner`. Cannot be combined with `parent_account_id`.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
