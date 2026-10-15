@@ -7329,16 +7329,13 @@ func (u *UpdateBusinessesResponse) String() string {
 
 var (
 	updateBusinessesRequestFieldID                  = big.NewInt(1 << 0)
-	updateBusinessesRequestFieldAnnualAdsUsd        = big.NewInt(1 << 1)
-	updateBusinessesRequestFieldAnnualProcessingUsd = big.NewInt(1 << 2)
+	updateBusinessesRequestFieldAnnualProcessingUsd = big.NewInt(1 << 1)
 )
 
 type UpdateBusinessesRequest struct {
 	// The partner business ID (a coma_ identifier).
 	ID string `json:"-" url:"-"`
-	// Annual projected Whop Ads spend in USD.
-	AnnualAdsUsd string `json:"annual_ads_usd" url:"-"`
-	// Annual projected processing on Whop in USD.
+	// Annual projected card and BNPL payment volume on Whop in USD.
 	AnnualProcessingUsd string `json:"annual_processing_usd" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -7359,13 +7356,6 @@ func (u *UpdateBusinessesRequest) require(field *big.Int) {
 func (u *UpdateBusinessesRequest) SetID(id string) {
 	u.ID = id
 	u.require(updateBusinessesRequestFieldID)
-}
-
-// SetAnnualAdsUsd sets the AnnualAdsUsd field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateBusinessesRequest) SetAnnualAdsUsd(annualAdsUsd string) {
-	u.AnnualAdsUsd = annualAdsUsd
-	u.require(updateBusinessesRequestFieldAnnualAdsUsd)
 }
 
 // SetAnnualProcessingUsd sets the AnnualProcessingUsd field and marks it as non-optional;

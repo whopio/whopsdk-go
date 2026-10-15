@@ -156,7 +156,6 @@ func (c *Client) Retrieve(
 //
 //	request := &partners.UpdateBusinessesRequest{
 //	    ID: "id",
-//	    AnnualAdsUsd: "120000",
 //	    AnnualProcessingUsd: "1200000",
 //	}
 //	client.Partners.Businesses.Update(
@@ -190,7 +189,7 @@ func (c *Client) Update(
 //	        partners.AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItemClawback,
 //	        partners.AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItemTerm,
 //	    },
-//	    ExpectedAmountUsd: "1439.99",
+//	    ExpectedAmountUsd: "1079.99",
 //	    OfferToken: "eyJfcmFpbHMiOnsiZGF0YSI6MSwicHVyIjoiYmxvYl9pZCJ9fQ==--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 //	    TermsVersion: "2026-01-01",
 //	}
