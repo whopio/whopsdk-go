@@ -11,6 +11,34 @@ import (
 )
 
 var (
+	acceptDisputesRequestFieldID = big.NewInt(1 << 0)
+)
+
+type AcceptDisputesRequest struct {
+	// The dispute ID (`dspt_` tag).
+	ID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (a *AcceptDisputesRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AcceptDisputesRequest) SetID(id string) {
+	a.ID = id
+	a.require(acceptDisputesRequestFieldID)
+}
+
+var (
 	listDisputesRequestFieldAccountID     = big.NewInt(1 << 0)
 	listDisputesRequestFieldFirst         = big.NewInt(1 << 1)
 	listDisputesRequestFieldAfter         = big.NewInt(1 << 2)
@@ -273,28 +301,29 @@ func (s *SummaryDisputesRequest) SetCreatedAfter(createdAfter *string) {
 }
 
 var (
-	disputeFieldAccountID            = big.NewInt(1 << 0)
-	disputeFieldAmount               = big.NewInt(1 << 1)
-	disputeFieldBuyer                = big.NewInt(1 << 2)
-	disputeFieldCreatedAt            = big.NewInt(1 << 3)
-	disputeFieldCurrency             = big.NewInt(1 << 4)
-	disputeFieldEvidence             = big.NewInt(1 << 5)
-	disputeFieldEvidenceDueAt        = big.NewInt(1 << 6)
-	disputeFieldEvidenceEditable     = big.NewInt(1 << 7)
-	disputeFieldEvidenceLockedReason = big.NewInt(1 << 8)
-	disputeFieldEvidenceSubmittedAt  = big.NewInt(1 << 9)
-	disputeFieldFee                  = big.NewInt(1 << 10)
-	disputeFieldID                   = big.NewInt(1 << 11)
-	disputeFieldInquiry              = big.NewInt(1 << 12)
-	disputeFieldIssuerComments       = big.NewInt(1 << 13)
-	disputeFieldLineItems            = big.NewInt(1 << 14)
-	disputeFieldPayment              = big.NewInt(1 << 15)
-	disputeFieldPlanID               = big.NewInt(1 << 16)
-	disputeFieldProductID            = big.NewInt(1 << 17)
-	disputeFieldReason               = big.NewInt(1 << 18)
-	disputeFieldReasonCode           = big.NewInt(1 << 19)
-	disputeFieldStatus               = big.NewInt(1 << 20)
-	disputeFieldUpdatedAt            = big.NewInt(1 << 21)
+	disputeFieldAcceptable           = big.NewInt(1 << 0)
+	disputeFieldAccountID            = big.NewInt(1 << 1)
+	disputeFieldAmount               = big.NewInt(1 << 2)
+	disputeFieldBuyer                = big.NewInt(1 << 3)
+	disputeFieldCreatedAt            = big.NewInt(1 << 4)
+	disputeFieldCurrency             = big.NewInt(1 << 5)
+	disputeFieldEvidence             = big.NewInt(1 << 6)
+	disputeFieldEvidenceDueAt        = big.NewInt(1 << 7)
+	disputeFieldEvidenceEditable     = big.NewInt(1 << 8)
+	disputeFieldEvidenceLockedReason = big.NewInt(1 << 9)
+	disputeFieldEvidenceSubmittedAt  = big.NewInt(1 << 10)
+	disputeFieldFee                  = big.NewInt(1 << 11)
+	disputeFieldID                   = big.NewInt(1 << 12)
+	disputeFieldInquiry              = big.NewInt(1 << 13)
+	disputeFieldIssuerComments       = big.NewInt(1 << 14)
+	disputeFieldLineItems            = big.NewInt(1 << 15)
+	disputeFieldPayment              = big.NewInt(1 << 16)
+	disputeFieldPlanID               = big.NewInt(1 << 17)
+	disputeFieldProductID            = big.NewInt(1 << 18)
+	disputeFieldReason               = big.NewInt(1 << 19)
+	disputeFieldReasonCode           = big.NewInt(1 << 20)
+	disputeFieldStatus               = big.NewInt(1 << 21)
+	disputeFieldUpdatedAt            = big.NewInt(1 << 22)
 )
 
 // disputeNullableFields maps the wire names of Dispute's nullable fields (required or optional) to their field bits.
@@ -310,6 +339,8 @@ var disputeNullableFields = map[string]*big.Int{
 }
 
 type Dispute struct {
+	// Whether the dispute can be conceded to the customer with `POST /disputes/{id}/accept`. True only for a chargeback still awaiting a response, before `evidence_due_at`, whose payment processor supports accepting disputes. Inquiries are never acceptable.
+	Acceptable bool `json:"acceptable" url:"acceptable"`
 	// The account the dispute was filed against, prefixed `biz_`.
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
 	// The disputed amount, in whole units of `currency`.
@@ -358,6 +389,13 @@ type Dispute struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (d *Dispute) GetAcceptable() bool {
+	if d == nil {
+		return false
+	}
+	return d.Acceptable
 }
 
 func (d *Dispute) GetAccountID() *string {
@@ -528,6 +566,13 @@ func (d *Dispute) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	d.explicitFields = next
+}
+
+// SetAcceptable sets the Acceptable field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *Dispute) SetAcceptable(acceptable bool) {
+	d.Acceptable = acceptable
+	d.require(disputeFieldAcceptable)
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
