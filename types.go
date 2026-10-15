@@ -3133,13 +3133,13 @@ type AccountFees struct {
 	PaymentMethods map[string]*AccountFee `json:"payment_methods" url:"payment_methods"`
 	// Fees on withdrawals, keyed by payout method: `bank_wire`, `same_day_bank`, `next_day_bank`, `rtp`, `crypto`, and `digital_wallet`. Payout fees the parent account covers show as zero when a connected account's fees are read without access to its parent account.
 	Payouts map[string]*AccountFee `json:"payouts" url:"payouts"`
-	// Charged on a Whop Ads auto top-up that is funded from pending balance.
+	// Charged when pending, not-yet-settled balance is advanced to fund the account's cards balance.
 	PendingAutoTopup *AccountFee `json:"pending_auto_topup" url:"pending_auto_topup"`
 	// Whop's share of every payment, on top of card processing.
 	PlatformProcessing *AccountFee `json:"platform_processing" url:"platform_processing"`
 	// Charged on payouts from a shared pool balance.
 	PoolPayout *AccountFee `json:"pool_payout" url:"pool_payout"`
-	// Charged on revenue shared with the account.
+	// Charged on payments where the account shares revenue with revshare affiliates.
 	Revshare *AccountFee `json:"revshare" url:"revshare"`
 	// Charged when tax is calculated on a payment.
 	TaxCalculation *AccountFee `json:"tax_calculation" url:"tax_calculation"`
@@ -59407,6 +59407,161 @@ func NewUploadStatusesFromString(s string) (UploadStatuses, error) {
 
 func (u UploadStatuses) Ptr() *UploadStatuses {
 	return &u
+}
+
+var (
+	userFeesFieldBankDeposit      = big.NewInt(1 << 0)
+	userFeesFieldPayouts          = big.NewInt(1 << 1)
+	userFeesFieldPendingAutoTopup = big.NewInt(1 << 2)
+	userFeesFieldTransfers        = big.NewInt(1 << 3)
+	userFeesFieldUserID           = big.NewInt(1 << 4)
+)
+
+type UserFees struct {
+	// Charged on bank deposits into the user's balance.
+	BankDeposit *AccountFee `json:"bank_deposit" url:"bank_deposit"`
+	// Fees on withdrawals, keyed by payout method: `bank_wire`, `same_day_bank`, `next_day_bank`, `rtp`, `crypto`, and `digital_wallet`.
+	Payouts map[string]*AccountFee `json:"payouts" url:"payouts"`
+	// Charged when pending, not-yet-settled balance is advanced to fund the user's cards balance.
+	PendingAutoTopup *AccountFee `json:"pending_auto_topup" url:"pending_auto_topup"`
+	// Charged on transfers from the user's balance to another Whop balance.
+	Transfers *AccountFee `json:"transfers" url:"transfers"`
+	// The user these fees are charged to, prefixed `user_`.
+	UserID string `json:"user_id" url:"user_id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UserFees) GetBankDeposit() *AccountFee {
+	if u == nil {
+		return nil
+	}
+	return u.BankDeposit
+}
+
+func (u *UserFees) GetPayouts() map[string]*AccountFee {
+	if u == nil {
+		return nil
+	}
+	return u.Payouts
+}
+
+func (u *UserFees) GetPendingAutoTopup() *AccountFee {
+	if u == nil {
+		return nil
+	}
+	return u.PendingAutoTopup
+}
+
+func (u *UserFees) GetTransfers() *AccountFee {
+	if u == nil {
+		return nil
+	}
+	return u.Transfers
+}
+
+func (u *UserFees) GetUserID() string {
+	if u == nil {
+		return ""
+	}
+	return u.UserID
+}
+
+func (u *UserFees) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UserFees) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetBankDeposit sets the BankDeposit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UserFees) SetBankDeposit(bankDeposit *AccountFee) {
+	u.BankDeposit = bankDeposit
+	u.require(userFeesFieldBankDeposit)
+}
+
+// SetPayouts sets the Payouts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UserFees) SetPayouts(payouts map[string]*AccountFee) {
+	u.Payouts = payouts
+	u.require(userFeesFieldPayouts)
+}
+
+// SetPendingAutoTopup sets the PendingAutoTopup field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UserFees) SetPendingAutoTopup(pendingAutoTopup *AccountFee) {
+	u.PendingAutoTopup = pendingAutoTopup
+	u.require(userFeesFieldPendingAutoTopup)
+}
+
+// SetTransfers sets the Transfers field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UserFees) SetTransfers(transfers *AccountFee) {
+	u.Transfers = transfers
+	u.require(userFeesFieldTransfers)
+}
+
+// SetUserID sets the UserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UserFees) SetUserID(userID string) {
+	u.UserID = userID
+	u.require(userFeesFieldUserID)
+}
+
+func (u *UserFees) UnmarshalJSON(data []byte) error {
+	type unmarshaler UserFees
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UserFees(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UserFees) MarshalJSON() ([]byte, error) {
+	type embed UserFees
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UserFees) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
 }
 
 var (
