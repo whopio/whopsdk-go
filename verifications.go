@@ -290,11 +290,12 @@ var (
 	createVerificationsRequestBodyBusinessFieldFirstName                       = big.NewInt(1 << 8)
 	createVerificationsRequestBodyBusinessFieldIncorporationDate               = big.NewInt(1 << 9)
 	createVerificationsRequestBodyBusinessFieldLastName                        = big.NewInt(1 << 10)
-	createVerificationsRequestBodyBusinessFieldPlaceOfIncorporation            = big.NewInt(1 << 11)
-	createVerificationsRequestBodyBusinessFieldRegistrationNumber              = big.NewInt(1 << 12)
-	createVerificationsRequestBodyBusinessFieldShareToken                      = big.NewInt(1 << 13)
-	createVerificationsRequestBodyBusinessFieldTaxIdentificationNumber         = big.NewInt(1 << 14)
-	createVerificationsRequestBodyBusinessFieldVerificationID                  = big.NewInt(1 << 15)
+	createVerificationsRequestBodyBusinessFieldOwners                          = big.NewInt(1 << 11)
+	createVerificationsRequestBodyBusinessFieldPlaceOfIncorporation            = big.NewInt(1 << 12)
+	createVerificationsRequestBodyBusinessFieldRegistrationNumber              = big.NewInt(1 << 13)
+	createVerificationsRequestBodyBusinessFieldShareToken                      = big.NewInt(1 << 14)
+	createVerificationsRequestBodyBusinessFieldTaxIdentificationNumber         = big.NewInt(1 << 15)
+	createVerificationsRequestBodyBusinessFieldVerificationID                  = big.NewInt(1 << 16)
 )
 
 // Request body for a business entity (KYB) verification. Set `kind` to `business`. KYB includes everything KYC provides and additionally unlocks financing options for payments and business Whop Cards.
@@ -321,6 +322,8 @@ type CreateVerificationsRequestBodyBusiness struct {
 	IncorporationDate *time.Time `json:"incorporation_date,omitempty" url:"incorporation_date,omitempty" format:"date"`
 	// Last name of the business representative, used to prefill the verification session.
 	LastName *string `json:"last_name,omitempty" url:"last_name,omitempty"`
+	// Owners of the business, up to 10 per request. Once the company details, the company documents, and the owners are in and every new owner's documents were sent, Create Verification sends the business for review: in the request that completes it, as soon as the last owner's documents finish sending in the background, or when called again after Update Verification. Owners can still be added, changed, or removed while the review waits on them.
+	Owners []*CreateVerificationsRequestBodyBusinessOwnersItem `json:"owners,omitempty" url:"owners,omitempty"`
 	// State or region where the business is incorporated. Sent to the verification provider and not returned in the response.
 	PlaceOfIncorporation *string `json:"place_of_incorporation,omitempty" url:"place_of_incorporation,omitempty"`
 	// Number the business was registered under in its place of incorporation, such as a state file number in the US or a Company Number in the UK. Sent to the verification provider; `registration_number` in the response shows the verified number once the business verification is approved.
@@ -414,6 +417,13 @@ func (c *CreateVerificationsRequestBodyBusiness) GetLastName() *string {
 		return nil
 	}
 	return c.LastName
+}
+
+func (c *CreateVerificationsRequestBodyBusiness) GetOwners() []*CreateVerificationsRequestBodyBusinessOwnersItem {
+	if c == nil {
+		return nil
+	}
+	return c.Owners
 }
 
 func (c *CreateVerificationsRequestBodyBusiness) GetPlaceOfIncorporation() *string {
@@ -542,6 +552,13 @@ func (c *CreateVerificationsRequestBodyBusiness) SetIncorporationDate(incorporat
 func (c *CreateVerificationsRequestBodyBusiness) SetLastName(lastName *string) {
 	c.LastName = lastName
 	c.require(createVerificationsRequestBodyBusinessFieldLastName)
+}
+
+// SetOwners sets the Owners field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsRequestBodyBusiness) SetOwners(owners []*CreateVerificationsRequestBodyBusinessOwnersItem) {
+	c.Owners = owners
+	c.require(createVerificationsRequestBodyBusinessFieldOwners)
 }
 
 // SetPlaceOfIncorporation sets the PlaceOfIncorporation field and marks it as non-optional;
@@ -924,6 +941,759 @@ func (c *CreateVerificationsRequestBodyBusinessDocuments) String() string {
 }
 
 var (
+	createVerificationsRequestBodyBusinessOwnersItemFieldAddress                 = big.NewInt(1 << 0)
+	createVerificationsRequestBodyBusinessOwnersItemFieldCountry                 = big.NewInt(1 << 1)
+	createVerificationsRequestBodyBusinessOwnersItemFieldDateOfBirth             = big.NewInt(1 << 2)
+	createVerificationsRequestBodyBusinessOwnersItemFieldDocumentType            = big.NewInt(1 << 3)
+	createVerificationsRequestBodyBusinessOwnersItemFieldDocuments               = big.NewInt(1 << 4)
+	createVerificationsRequestBodyBusinessOwnersItemFieldEmail                   = big.NewInt(1 << 5)
+	createVerificationsRequestBodyBusinessOwnersItemFieldFirstName               = big.NewInt(1 << 6)
+	createVerificationsRequestBodyBusinessOwnersItemFieldLastName                = big.NewInt(1 << 7)
+	createVerificationsRequestBodyBusinessOwnersItemFieldOwnershipPercentage     = big.NewInt(1 << 8)
+	createVerificationsRequestBodyBusinessOwnersItemFieldPhone                   = big.NewInt(1 << 9)
+	createVerificationsRequestBodyBusinessOwnersItemFieldRoles                   = big.NewInt(1 << 10)
+	createVerificationsRequestBodyBusinessOwnersItemFieldTaxIdentificationNumber = big.NewInt(1 << 11)
+	createVerificationsRequestBodyBusinessOwnersItemFieldVerificationID          = big.NewInt(1 << 12)
+)
+
+// An owner of the business. Send `verification_id` to add someone with an approved verification on this account or on a member of its team, or a new owner's details and documents to verify them from this request. An owner already on the verification is not added twice, so a retried request is safe.
+type CreateVerificationsRequestBodyBusinessOwnersItem struct {
+	// The new owner's home address, with `line1`, `city`, `state`, and `postal_code`.
+	Address *CreateVerificationsRequestBodyBusinessOwnersItemAddress `json:"address,omitempty" url:"address,omitempty"`
+	// The new owner's country, as a two-letter ISO 3166-1 code.
+	Country *string `json:"country,omitempty" url:"country,omitempty"`
+	// The new owner's date of birth, formatted as `YYYY-MM-DD`.
+	DateOfBirth *time.Time `json:"date_of_birth,omitempty" url:"date_of_birth,omitempty" format:"date"`
+	// Identity document in `documents`. Decides which slots to send: `id_card` → `id_card_front` + `id_card_back`; `drivers` → `drivers_front` + `drivers_back`; `residence_permit` → `residence_permit_front` + `residence_permit_back`; `passport` → `passport_front`. Every type also takes `selfie`.
+	DocumentType *CreateVerificationsRequestBodyBusinessOwnersItemDocumentType `json:"document_type,omitempty" url:"document_type,omitempty"`
+	// The owner's identity document and selfie, each the ID of a ready file uploaded with Create File and not yet attached to anything else, prefixed `file_`. Send every slot for `document_type` plus `selfie`. Document files can be a PDF, JPEG, or PNG and the selfie a JPEG or PNG, each up to 10MB. They're sent to the verification provider in the background: the owner reads `processing` until then, and `action_required`, with a `rejection_reason` on each document, if a file couldn't be used.
+	Documents *CreateVerificationsRequestBodyBusinessOwnersItemDocuments `json:"documents,omitempty" url:"documents,omitempty"`
+	// The new owner's email address.
+	Email *string `json:"email,omitempty" url:"email,omitempty"`
+	// The new owner's first name.
+	FirstName *string `json:"first_name,omitempty" url:"first_name,omitempty"`
+	// The new owner's last name.
+	LastName *string `json:"last_name,omitempty" url:"last_name,omitempty"`
+	// Share of the business the person owns, from 0 to 100. Across every owner it can't add up to more than 100.
+	OwnershipPercentage *float64 `json:"ownership_percentage,omitempty" url:"ownership_percentage,omitempty"`
+	// The new owner's phone number, with country code.
+	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
+	// What the person is to the business: `ubo` for an ultimate beneficial owner, `director`, `representative` for someone who acts for the business, or `shareholder`. Required for a new owner.
+	Roles []CreateVerificationsRequestBodyBusinessOwnersItemRolesItem `json:"roles,omitempty" url:"roles,omitempty"`
+	// The new owner's government-issued ID number, such as a Social Security Number in the US.
+	TaxIdentificationNumber *string `json:"tax_identification_number,omitempty" url:"tax_identification_number,omitempty"`
+	// ID of an `approved` individual verification to add as this owner, prefixed `idpf_`. It must be the account's own verification or a team member's. Takes only `roles` and `ownership_percentage` alongside it.
+	VerificationID *string `json:"verification_id,omitempty" url:"verification_id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItem) GetAddress() *CreateVerificationsRequestBodyBusinessOwnersItemAddress {
+	if c == nil {
+		return nil
+	}
+	return c.Address
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItem) GetCountry() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Country
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItem) GetDateOfBirth() *time.Time {
+	if c == nil {
+		return nil
+	}
+	return c.DateOfBirth
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItem) GetDocumentType() *CreateVerificationsRequestBodyBusinessOwnersItemDocumentType {
+	if c == nil {
+		return nil
+	}
+	return c.DocumentType
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItem) GetDocuments() *CreateVerificationsRequestBodyBusinessOwnersItemDocuments {
+	if c == nil {
+		return nil
+	}
+	return c.Documents
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItem) GetEmail() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Email
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItem) GetFirstName() *string {
+	if c == nil {
+		return nil
+	}
+	return c.FirstName
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItem) GetLastName() *string {
+	if c == nil {
+		return nil
+	}
+	return c.LastName
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItem) GetOwnershipPercentage() *float64 {
+	if c == nil {
+		return nil
+	}
+	return c.OwnershipPercentage
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItem) GetPhone() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Phone
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItem) GetRoles() []CreateVerificationsRequestBodyBusinessOwnersItemRolesItem {
+	if c == nil {
+		return nil
+	}
+	return c.Roles
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItem) GetTaxIdentificationNumber() *string {
+	if c == nil {
+		return nil
+	}
+	return c.TaxIdentificationNumber
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItem) GetVerificationID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.VerificationID
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItem) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItem) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetAddress sets the Address field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsRequestBodyBusinessOwnersItem) SetAddress(address *CreateVerificationsRequestBodyBusinessOwnersItemAddress) {
+	c.Address = address
+	c.require(createVerificationsRequestBodyBusinessOwnersItemFieldAddress)
+}
+
+// SetCountry sets the Country field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsRequestBodyBusinessOwnersItem) SetCountry(country *string) {
+	c.Country = country
+	c.require(createVerificationsRequestBodyBusinessOwnersItemFieldCountry)
+}
+
+// SetDateOfBirth sets the DateOfBirth field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsRequestBodyBusinessOwnersItem) SetDateOfBirth(dateOfBirth *time.Time) {
+	c.DateOfBirth = dateOfBirth
+	c.require(createVerificationsRequestBodyBusinessOwnersItemFieldDateOfBirth)
+}
+
+// SetDocumentType sets the DocumentType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsRequestBodyBusinessOwnersItem) SetDocumentType(documentType *CreateVerificationsRequestBodyBusinessOwnersItemDocumentType) {
+	c.DocumentType = documentType
+	c.require(createVerificationsRequestBodyBusinessOwnersItemFieldDocumentType)
+}
+
+// SetDocuments sets the Documents field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsRequestBodyBusinessOwnersItem) SetDocuments(documents *CreateVerificationsRequestBodyBusinessOwnersItemDocuments) {
+	c.Documents = documents
+	c.require(createVerificationsRequestBodyBusinessOwnersItemFieldDocuments)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsRequestBodyBusinessOwnersItem) SetEmail(email *string) {
+	c.Email = email
+	c.require(createVerificationsRequestBodyBusinessOwnersItemFieldEmail)
+}
+
+// SetFirstName sets the FirstName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsRequestBodyBusinessOwnersItem) SetFirstName(firstName *string) {
+	c.FirstName = firstName
+	c.require(createVerificationsRequestBodyBusinessOwnersItemFieldFirstName)
+}
+
+// SetLastName sets the LastName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsRequestBodyBusinessOwnersItem) SetLastName(lastName *string) {
+	c.LastName = lastName
+	c.require(createVerificationsRequestBodyBusinessOwnersItemFieldLastName)
+}
+
+// SetOwnershipPercentage sets the OwnershipPercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsRequestBodyBusinessOwnersItem) SetOwnershipPercentage(ownershipPercentage *float64) {
+	c.OwnershipPercentage = ownershipPercentage
+	c.require(createVerificationsRequestBodyBusinessOwnersItemFieldOwnershipPercentage)
+}
+
+// SetPhone sets the Phone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsRequestBodyBusinessOwnersItem) SetPhone(phone *string) {
+	c.Phone = phone
+	c.require(createVerificationsRequestBodyBusinessOwnersItemFieldPhone)
+}
+
+// SetRoles sets the Roles field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsRequestBodyBusinessOwnersItem) SetRoles(roles []CreateVerificationsRequestBodyBusinessOwnersItemRolesItem) {
+	c.Roles = roles
+	c.require(createVerificationsRequestBodyBusinessOwnersItemFieldRoles)
+}
+
+// SetTaxIdentificationNumber sets the TaxIdentificationNumber field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsRequestBodyBusinessOwnersItem) SetTaxIdentificationNumber(taxIdentificationNumber *string) {
+	c.TaxIdentificationNumber = taxIdentificationNumber
+	c.require(createVerificationsRequestBodyBusinessOwnersItemFieldTaxIdentificationNumber)
+}
+
+// SetVerificationID sets the VerificationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsRequestBodyBusinessOwnersItem) SetVerificationID(verificationID *string) {
+	c.VerificationID = verificationID
+	c.require(createVerificationsRequestBodyBusinessOwnersItemFieldVerificationID)
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItem) UnmarshalJSON(data []byte) error {
+	type embed CreateVerificationsRequestBodyBusinessOwnersItem
+	var unmarshaler = struct {
+		embed
+		DateOfBirth *internal.Date `json:"date_of_birth,omitempty"`
+	}{
+		embed: embed(*c),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*c = CreateVerificationsRequestBodyBusinessOwnersItem(unmarshaler.embed)
+	c.DateOfBirth = unmarshaler.DateOfBirth.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItem) MarshalJSON() ([]byte, error) {
+	type embed CreateVerificationsRequestBodyBusinessOwnersItem
+	var marshaler = struct {
+		embed
+		DateOfBirth *internal.Date `json:"date_of_birth,omitempty"`
+	}{
+		embed:       embed(*c),
+		DateOfBirth: internal.NewOptionalDate(c.DateOfBirth),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItem) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createVerificationsRequestBodyBusinessOwnersItemAddressFieldCity       = big.NewInt(1 << 0)
+	createVerificationsRequestBodyBusinessOwnersItemAddressFieldCountry    = big.NewInt(1 << 1)
+	createVerificationsRequestBodyBusinessOwnersItemAddressFieldLine1      = big.NewInt(1 << 2)
+	createVerificationsRequestBodyBusinessOwnersItemAddressFieldLine2      = big.NewInt(1 << 3)
+	createVerificationsRequestBodyBusinessOwnersItemAddressFieldPostalCode = big.NewInt(1 << 4)
+	createVerificationsRequestBodyBusinessOwnersItemAddressFieldState      = big.NewInt(1 << 5)
+)
+
+// createVerificationsRequestBodyBusinessOwnersItemAddressNullableFields maps the wire names of CreateVerificationsRequestBodyBusinessOwnersItemAddress's nullable fields (required or optional) to their field bits.
+var createVerificationsRequestBodyBusinessOwnersItemAddressNullableFields = map[string]*big.Int{
+	"city":        createVerificationsRequestBodyBusinessOwnersItemAddressFieldCity,
+	"country":     createVerificationsRequestBodyBusinessOwnersItemAddressFieldCountry,
+	"line1":       createVerificationsRequestBodyBusinessOwnersItemAddressFieldLine1,
+	"line2":       createVerificationsRequestBodyBusinessOwnersItemAddressFieldLine2,
+	"postal_code": createVerificationsRequestBodyBusinessOwnersItemAddressFieldPostalCode,
+	"state":       createVerificationsRequestBodyBusinessOwnersItemAddressFieldState,
+}
+
+// The new owner's home address, with `line1`, `city`, `state`, and `postal_code`.
+type CreateVerificationsRequestBodyBusinessOwnersItemAddress struct {
+	City *string `json:"city,omitempty" url:"city,omitempty"`
+	// Two-letter ISO 3166-1 country code, for example `US`, `DE`, or `GB`.
+	Country *string `json:"country,omitempty" url:"country,omitempty"`
+	// First line of the street address.
+	Line1 *string `json:"line1,omitempty" url:"line1,omitempty"`
+	// Second line of the street address.
+	Line2 *string `json:"line2,omitempty" url:"line2,omitempty"`
+	// Postal or ZIP code.
+	PostalCode *string `json:"postal_code,omitempty" url:"postal_code,omitempty"`
+	// State, province, or region code, for example `CA`.
+	State *string `json:"state,omitempty" url:"state,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemAddress) GetCity() *string {
+	if c == nil {
+		return nil
+	}
+	return c.City
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemAddress) GetCountry() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Country
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemAddress) GetLine1() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Line1
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemAddress) GetLine2() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Line2
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemAddress) GetPostalCode() *string {
+	if c == nil {
+		return nil
+	}
+	return c.PostalCode
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemAddress) GetState() *string {
+	if c == nil {
+		return nil
+	}
+	return c.State
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemAddress) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemAddress) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetCity sets the City field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemAddress) SetCity(city *string) {
+	c.City = city
+	c.require(createVerificationsRequestBodyBusinessOwnersItemAddressFieldCity)
+}
+
+// SetCountry sets the Country field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemAddress) SetCountry(country *string) {
+	c.Country = country
+	c.require(createVerificationsRequestBodyBusinessOwnersItemAddressFieldCountry)
+}
+
+// SetLine1 sets the Line1 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemAddress) SetLine1(line1 *string) {
+	c.Line1 = line1
+	c.require(createVerificationsRequestBodyBusinessOwnersItemAddressFieldLine1)
+}
+
+// SetLine2 sets the Line2 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemAddress) SetLine2(line2 *string) {
+	c.Line2 = line2
+	c.require(createVerificationsRequestBodyBusinessOwnersItemAddressFieldLine2)
+}
+
+// SetPostalCode sets the PostalCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemAddress) SetPostalCode(postalCode *string) {
+	c.PostalCode = postalCode
+	c.require(createVerificationsRequestBodyBusinessOwnersItemAddressFieldPostalCode)
+}
+
+// SetState sets the State field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemAddress) SetState(state *string) {
+	c.State = state
+	c.require(createVerificationsRequestBodyBusinessOwnersItemAddressFieldState)
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemAddress) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateVerificationsRequestBodyBusinessOwnersItemAddress
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateVerificationsRequestBodyBusinessOwnersItemAddress(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createVerificationsRequestBodyBusinessOwnersItemAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemAddress) MarshalJSON() ([]byte, error) {
+	type embed CreateVerificationsRequestBodyBusinessOwnersItemAddress
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemAddress) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// Identity document in `documents`. Decides which slots to send: `id_card` → `id_card_front` + `id_card_back`; `drivers` → `drivers_front` + `drivers_back`; `residence_permit` → `residence_permit_front` + `residence_permit_back`; `passport` → `passport_front`. Every type also takes `selfie`.
+type CreateVerificationsRequestBodyBusinessOwnersItemDocumentType string
+
+const (
+	CreateVerificationsRequestBodyBusinessOwnersItemDocumentTypeIDCard          CreateVerificationsRequestBodyBusinessOwnersItemDocumentType = "id_card"
+	CreateVerificationsRequestBodyBusinessOwnersItemDocumentTypeDrivers         CreateVerificationsRequestBodyBusinessOwnersItemDocumentType = "drivers"
+	CreateVerificationsRequestBodyBusinessOwnersItemDocumentTypeResidencePermit CreateVerificationsRequestBodyBusinessOwnersItemDocumentType = "residence_permit"
+	CreateVerificationsRequestBodyBusinessOwnersItemDocumentTypePassport        CreateVerificationsRequestBodyBusinessOwnersItemDocumentType = "passport"
+)
+
+func NewCreateVerificationsRequestBodyBusinessOwnersItemDocumentTypeFromString(s string) (CreateVerificationsRequestBodyBusinessOwnersItemDocumentType, error) {
+	switch s {
+	case "id_card":
+		return CreateVerificationsRequestBodyBusinessOwnersItemDocumentTypeIDCard, nil
+	case "drivers":
+		return CreateVerificationsRequestBodyBusinessOwnersItemDocumentTypeDrivers, nil
+	case "residence_permit":
+		return CreateVerificationsRequestBodyBusinessOwnersItemDocumentTypeResidencePermit, nil
+	case "passport":
+		return CreateVerificationsRequestBodyBusinessOwnersItemDocumentTypePassport, nil
+	}
+	var t CreateVerificationsRequestBodyBusinessOwnersItemDocumentType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateVerificationsRequestBodyBusinessOwnersItemDocumentType) Ptr() *CreateVerificationsRequestBodyBusinessOwnersItemDocumentType {
+	return &c
+}
+
+var (
+	createVerificationsRequestBodyBusinessOwnersItemDocumentsFieldDriversBack          = big.NewInt(1 << 0)
+	createVerificationsRequestBodyBusinessOwnersItemDocumentsFieldDriversFront         = big.NewInt(1 << 1)
+	createVerificationsRequestBodyBusinessOwnersItemDocumentsFieldIDCardBack           = big.NewInt(1 << 2)
+	createVerificationsRequestBodyBusinessOwnersItemDocumentsFieldIDCardFront          = big.NewInt(1 << 3)
+	createVerificationsRequestBodyBusinessOwnersItemDocumentsFieldPassportFront        = big.NewInt(1 << 4)
+	createVerificationsRequestBodyBusinessOwnersItemDocumentsFieldResidencePermitBack  = big.NewInt(1 << 5)
+	createVerificationsRequestBodyBusinessOwnersItemDocumentsFieldResidencePermitFront = big.NewInt(1 << 6)
+	createVerificationsRequestBodyBusinessOwnersItemDocumentsFieldSelfie               = big.NewInt(1 << 7)
+)
+
+// The owner's identity document and selfie, each the ID of a ready file uploaded with Create File and not yet attached to anything else, prefixed `file_`. Send every slot for `document_type` plus `selfie`. Document files can be a PDF, JPEG, or PNG and the selfie a JPEG or PNG, each up to 10MB. They're sent to the verification provider in the background: the owner reads `processing` until then, and `action_required`, with a `rejection_reason` on each document, if a file couldn't be used.
+type CreateVerificationsRequestBodyBusinessOwnersItemDocuments struct {
+	// File ID of the back of the driver's license. Required when `document_type` is `drivers`.
+	DriversBack *string `json:"drivers_back,omitempty" url:"drivers_back,omitempty"`
+	// File ID of the front of the driver's license. Required when `document_type` is `drivers`.
+	DriversFront *string `json:"drivers_front,omitempty" url:"drivers_front,omitempty"`
+	// File ID of the back of the ID card. Required when `document_type` is `id_card`.
+	IDCardBack *string `json:"id_card_back,omitempty" url:"id_card_back,omitempty"`
+	// File ID of the front of the ID card. Required when `document_type` is `id_card`.
+	IDCardFront *string `json:"id_card_front,omitempty" url:"id_card_front,omitempty"`
+	// File ID of the passport's photo page. Required when `document_type` is `passport`.
+	PassportFront *string `json:"passport_front,omitempty" url:"passport_front,omitempty"`
+	// File ID of the back of the residence permit. Required when `document_type` is `residence_permit`.
+	ResidencePermitBack *string `json:"residence_permit_back,omitempty" url:"residence_permit_back,omitempty"`
+	// File ID of the front of the residence permit. Required when `document_type` is `residence_permit`.
+	ResidencePermitFront *string `json:"residence_permit_front,omitempty" url:"residence_permit_front,omitempty"`
+	// File ID of a photo of the owner's face. Always required. Must be a JPEG or PNG.
+	Selfie *string `json:"selfie,omitempty" url:"selfie,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemDocuments) GetDriversBack() *string {
+	if c == nil {
+		return nil
+	}
+	return c.DriversBack
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemDocuments) GetDriversFront() *string {
+	if c == nil {
+		return nil
+	}
+	return c.DriversFront
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemDocuments) GetIDCardBack() *string {
+	if c == nil {
+		return nil
+	}
+	return c.IDCardBack
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemDocuments) GetIDCardFront() *string {
+	if c == nil {
+		return nil
+	}
+	return c.IDCardFront
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemDocuments) GetPassportFront() *string {
+	if c == nil {
+		return nil
+	}
+	return c.PassportFront
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemDocuments) GetResidencePermitBack() *string {
+	if c == nil {
+		return nil
+	}
+	return c.ResidencePermitBack
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemDocuments) GetResidencePermitFront() *string {
+	if c == nil {
+		return nil
+	}
+	return c.ResidencePermitFront
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemDocuments) GetSelfie() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Selfie
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemDocuments) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemDocuments) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetDriversBack sets the DriversBack field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemDocuments) SetDriversBack(driversBack *string) {
+	c.DriversBack = driversBack
+	c.require(createVerificationsRequestBodyBusinessOwnersItemDocumentsFieldDriversBack)
+}
+
+// SetDriversFront sets the DriversFront field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemDocuments) SetDriversFront(driversFront *string) {
+	c.DriversFront = driversFront
+	c.require(createVerificationsRequestBodyBusinessOwnersItemDocumentsFieldDriversFront)
+}
+
+// SetIDCardBack sets the IDCardBack field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemDocuments) SetIDCardBack(idCardBack *string) {
+	c.IDCardBack = idCardBack
+	c.require(createVerificationsRequestBodyBusinessOwnersItemDocumentsFieldIDCardBack)
+}
+
+// SetIDCardFront sets the IDCardFront field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemDocuments) SetIDCardFront(idCardFront *string) {
+	c.IDCardFront = idCardFront
+	c.require(createVerificationsRequestBodyBusinessOwnersItemDocumentsFieldIDCardFront)
+}
+
+// SetPassportFront sets the PassportFront field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemDocuments) SetPassportFront(passportFront *string) {
+	c.PassportFront = passportFront
+	c.require(createVerificationsRequestBodyBusinessOwnersItemDocumentsFieldPassportFront)
+}
+
+// SetResidencePermitBack sets the ResidencePermitBack field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemDocuments) SetResidencePermitBack(residencePermitBack *string) {
+	c.ResidencePermitBack = residencePermitBack
+	c.require(createVerificationsRequestBodyBusinessOwnersItemDocumentsFieldResidencePermitBack)
+}
+
+// SetResidencePermitFront sets the ResidencePermitFront field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemDocuments) SetResidencePermitFront(residencePermitFront *string) {
+	c.ResidencePermitFront = residencePermitFront
+	c.require(createVerificationsRequestBodyBusinessOwnersItemDocumentsFieldResidencePermitFront)
+}
+
+// SetSelfie sets the Selfie field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemDocuments) SetSelfie(selfie *string) {
+	c.Selfie = selfie
+	c.require(createVerificationsRequestBodyBusinessOwnersItemDocumentsFieldSelfie)
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemDocuments) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateVerificationsRequestBodyBusinessOwnersItemDocuments
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateVerificationsRequestBodyBusinessOwnersItemDocuments(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemDocuments) MarshalJSON() ([]byte, error) {
+	type embed CreateVerificationsRequestBodyBusinessOwnersItemDocuments
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateVerificationsRequestBodyBusinessOwnersItemDocuments) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type CreateVerificationsRequestBodyBusinessOwnersItemRolesItem string
+
+const (
+	CreateVerificationsRequestBodyBusinessOwnersItemRolesItemUbo            CreateVerificationsRequestBodyBusinessOwnersItemRolesItem = "ubo"
+	CreateVerificationsRequestBodyBusinessOwnersItemRolesItemDirector       CreateVerificationsRequestBodyBusinessOwnersItemRolesItem = "director"
+	CreateVerificationsRequestBodyBusinessOwnersItemRolesItemRepresentative CreateVerificationsRequestBodyBusinessOwnersItemRolesItem = "representative"
+	CreateVerificationsRequestBodyBusinessOwnersItemRolesItemShareholder    CreateVerificationsRequestBodyBusinessOwnersItemRolesItem = "shareholder"
+)
+
+func NewCreateVerificationsRequestBodyBusinessOwnersItemRolesItemFromString(s string) (CreateVerificationsRequestBodyBusinessOwnersItemRolesItem, error) {
+	switch s {
+	case "ubo":
+		return CreateVerificationsRequestBodyBusinessOwnersItemRolesItemUbo, nil
+	case "director":
+		return CreateVerificationsRequestBodyBusinessOwnersItemRolesItemDirector, nil
+	case "representative":
+		return CreateVerificationsRequestBodyBusinessOwnersItemRolesItemRepresentative, nil
+	case "shareholder":
+		return CreateVerificationsRequestBodyBusinessOwnersItemRolesItemShareholder, nil
+	}
+	var t CreateVerificationsRequestBodyBusinessOwnersItemRolesItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateVerificationsRequestBodyBusinessOwnersItemRolesItem) Ptr() *CreateVerificationsRequestBodyBusinessOwnersItemRolesItem {
+	return &c
+}
+
+var (
 	createVerificationsRequestBodyIndividualFieldAddress                         = big.NewInt(1 << 0)
 	createVerificationsRequestBodyIndividualFieldBusinessName                    = big.NewInt(1 << 1)
 	createVerificationsRequestBodyIndividualFieldBusinessStructure               = big.NewInt(1 << 2)
@@ -959,7 +1729,7 @@ type CreateVerificationsRequestBodyIndividual struct {
 	Country *string `json:"country,omitempty" url:"country,omitempty"`
 	// Formatted as `YYYY-MM-DD`.
 	DateOfBirth *string `json:"date_of_birth,omitempty" url:"date_of_birth,omitempty"`
-	// Identity document being sent, when verifying with `documents`. Decides exactly which file slots to send: `ID_CARD` → `id_card_front` + `id_card_back` + `selfie`; `DRIVERS` → `drivers_front` + `drivers_back` + `selfie`; `RESIDENCE_PERMIT` → `residence_permit_front` + `residence_permit_back` + `selfie`; `PASSPORT` → `passport_front` + `selfie`. See [Identity documents](/developer/verification/identity-documents).
+	// Identity document being sent, when verifying with `documents`. Decides exactly which file slots to send: `id_card` → `id_card_front` + `id_card_back` + `selfie`; `drivers` → `drivers_front` + `drivers_back` + `selfie`; `residence_permit` → `residence_permit_front` + `residence_permit_back` + `selfie`; `passport` → `passport_front` + `selfie`. See [Identity documents](/developer/verification/identity-documents).
 	DocumentType *CreateVerificationsRequestBodyIndividualDocumentType `json:"document_type,omitempty" url:"document_type,omitempty"`
 	// Identity document files, each value the file's raw bytes base64-encoded (JPEG, PNG, or PDF, up to 5MB per file before encoding). Sending this object verifies the person from the files in this request instead of a hosted session — individual verifications only, and the request must also carry `document_type`, `first_name`, `last_name`, `date_of_birth`, `country`, `phone`, `tax_identification_number`, and an `address` with `line1`, `city`, `state`, and `postal_code`. Send every slot for your `document_type` — a missing or rejected file fails the whole request and nothing is submitted; review starts automatically once every document is accepted. See [Identity documents](/developer/verification/identity-documents) for a full walkthrough.
 	Documents *CreateVerificationsRequestBodyIndividualDocuments `json:"documents,omitempty" url:"documents,omitempty"`
@@ -1437,25 +2207,25 @@ func (c *CreateVerificationsRequestBodyIndividualAddress) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Identity document being sent, when verifying with `documents`. Decides exactly which file slots to send: `ID_CARD` → `id_card_front` + `id_card_back` + `selfie`; `DRIVERS` → `drivers_front` + `drivers_back` + `selfie`; `RESIDENCE_PERMIT` → `residence_permit_front` + `residence_permit_back` + `selfie`; `PASSPORT` → `passport_front` + `selfie`. See [Identity documents](/developer/verification/identity-documents).
+// Identity document being sent, when verifying with `documents`. Decides exactly which file slots to send: `id_card` → `id_card_front` + `id_card_back` + `selfie`; `drivers` → `drivers_front` + `drivers_back` + `selfie`; `residence_permit` → `residence_permit_front` + `residence_permit_back` + `selfie`; `passport` → `passport_front` + `selfie`. See [Identity documents](/developer/verification/identity-documents).
 type CreateVerificationsRequestBodyIndividualDocumentType string
 
 const (
-	CreateVerificationsRequestBodyIndividualDocumentTypeIDCard          CreateVerificationsRequestBodyIndividualDocumentType = "ID_CARD"
-	CreateVerificationsRequestBodyIndividualDocumentTypeDrivers         CreateVerificationsRequestBodyIndividualDocumentType = "DRIVERS"
-	CreateVerificationsRequestBodyIndividualDocumentTypeResidencePermit CreateVerificationsRequestBodyIndividualDocumentType = "RESIDENCE_PERMIT"
-	CreateVerificationsRequestBodyIndividualDocumentTypePassport        CreateVerificationsRequestBodyIndividualDocumentType = "PASSPORT"
+	CreateVerificationsRequestBodyIndividualDocumentTypeIDCard          CreateVerificationsRequestBodyIndividualDocumentType = "id_card"
+	CreateVerificationsRequestBodyIndividualDocumentTypeDrivers         CreateVerificationsRequestBodyIndividualDocumentType = "drivers"
+	CreateVerificationsRequestBodyIndividualDocumentTypeResidencePermit CreateVerificationsRequestBodyIndividualDocumentType = "residence_permit"
+	CreateVerificationsRequestBodyIndividualDocumentTypePassport        CreateVerificationsRequestBodyIndividualDocumentType = "passport"
 )
 
 func NewCreateVerificationsRequestBodyIndividualDocumentTypeFromString(s string) (CreateVerificationsRequestBodyIndividualDocumentType, error) {
 	switch s {
-	case "ID_CARD":
+	case "id_card":
 		return CreateVerificationsRequestBodyIndividualDocumentTypeIDCard, nil
-	case "DRIVERS":
+	case "drivers":
 		return CreateVerificationsRequestBodyIndividualDocumentTypeDrivers, nil
-	case "RESIDENCE_PERMIT":
+	case "residence_permit":
 		return CreateVerificationsRequestBodyIndividualDocumentTypeResidencePermit, nil
-	case "PASSPORT":
+	case "passport":
 		return CreateVerificationsRequestBodyIndividualDocumentTypePassport, nil
 	}
 	var t CreateVerificationsRequestBodyIndividualDocumentType
@@ -1479,19 +2249,19 @@ var (
 
 // Identity document files, each value the file's raw bytes base64-encoded (JPEG, PNG, or PDF, up to 5MB per file before encoding). Sending this object verifies the person from the files in this request instead of a hosted session — individual verifications only, and the request must also carry `document_type`, `first_name`, `last_name`, `date_of_birth`, `country`, `phone`, `tax_identification_number`, and an `address` with `line1`, `city`, `state`, and `postal_code`. Send every slot for your `document_type` — a missing or rejected file fails the whole request and nothing is submitted; review starts automatically once every document is accepted. See [Identity documents](/developer/verification/identity-documents) for a full walkthrough.
 type CreateVerificationsRequestBodyIndividualDocuments struct {
-	// Back of the driver's license, base64-encoded. Required when `document_type` is `DRIVERS`.
+	// Back of the driver's license, base64-encoded. Required when `document_type` is `drivers`.
 	DriversBack *string `json:"drivers_back,omitempty" url:"drivers_back,omitempty"`
-	// Front of the driver's license, base64-encoded. Required when `document_type` is `DRIVERS`.
+	// Front of the driver's license, base64-encoded. Required when `document_type` is `drivers`.
 	DriversFront *string `json:"drivers_front,omitempty" url:"drivers_front,omitempty"`
-	// Back of the ID card, base64-encoded. Required when `document_type` is `ID_CARD`.
+	// Back of the ID card, base64-encoded. Required when `document_type` is `id_card`.
 	IDCardBack *string `json:"id_card_back,omitempty" url:"id_card_back,omitempty"`
-	// Front of the ID card, base64-encoded. Required when `document_type` is `ID_CARD`.
+	// Front of the ID card, base64-encoded. Required when `document_type` is `id_card`.
 	IDCardFront *string `json:"id_card_front,omitempty" url:"id_card_front,omitempty"`
-	// Photo page of the passport, base64-encoded. Required when `document_type` is `PASSPORT`.
+	// Photo page of the passport, base64-encoded. Required when `document_type` is `passport`.
 	PassportFront *string `json:"passport_front,omitempty" url:"passport_front,omitempty"`
-	// Back of the residence permit, base64-encoded. Required when `document_type` is `RESIDENCE_PERMIT`.
+	// Back of the residence permit, base64-encoded. Required when `document_type` is `residence_permit`.
 	ResidencePermitBack *string `json:"residence_permit_back,omitempty" url:"residence_permit_back,omitempty"`
-	// Front of the residence permit, base64-encoded. Required when `document_type` is `RESIDENCE_PERMIT`.
+	// Front of the residence permit, base64-encoded. Required when `document_type` is `residence_permit`.
 	ResidencePermitFront *string `json:"residence_permit_front,omitempty" url:"residence_permit_front,omitempty"`
 	// Photo of the person's face, base64-encoded. Always required, with every document type. Must be JPEG or PNG.
 	Selfie *string `json:"selfie,omitempty" url:"selfie,omitempty"`
@@ -1685,13 +2455,14 @@ var (
 	createVerificationsResponseFieldID                   = big.NewInt(1 << 8)
 	createVerificationsResponseFieldKind                 = big.NewInt(1 << 9)
 	createVerificationsResponseFieldLastName             = big.NewInt(1 << 10)
-	createVerificationsResponseFieldPhone                = big.NewInt(1 << 11)
-	createVerificationsResponseFieldRegistrationNumber   = big.NewInt(1 << 12)
-	createVerificationsResponseFieldRequestedInformation = big.NewInt(1 << 13)
-	createVerificationsResponseFieldRequiredDocuments    = big.NewInt(1 << 14)
-	createVerificationsResponseFieldSessionURL           = big.NewInt(1 << 15)
-	createVerificationsResponseFieldStatus               = big.NewInt(1 << 16)
-	createVerificationsResponseFieldUpdatedAt            = big.NewInt(1 << 17)
+	createVerificationsResponseFieldOwners               = big.NewInt(1 << 11)
+	createVerificationsResponseFieldPhone                = big.NewInt(1 << 12)
+	createVerificationsResponseFieldRegistrationNumber   = big.NewInt(1 << 13)
+	createVerificationsResponseFieldRequestedInformation = big.NewInt(1 << 14)
+	createVerificationsResponseFieldRequiredDocuments    = big.NewInt(1 << 15)
+	createVerificationsResponseFieldSessionURL           = big.NewInt(1 << 16)
+	createVerificationsResponseFieldStatus               = big.NewInt(1 << 17)
+	createVerificationsResponseFieldUpdatedAt            = big.NewInt(1 << 18)
 )
 
 // createVerificationsResponseNullableFields maps the wire names of CreateVerificationsResponse's nullable fields (required or optional) to their field bits.
@@ -1729,6 +2500,8 @@ type CreateVerificationsResponse struct {
 	ID       *string                          `json:"id,omitempty" url:"id,omitempty"`
 	Kind     *CreateVerificationsResponseKind `json:"kind,omitempty" url:"kind,omitempty"`
 	LastName *string                          `json:"last_name,omitempty" url:"last_name,omitempty"`
+	// Owners of the business and the progress of each one's own verification. Empty for individual verifications.
+	Owners []*CreateVerificationsResponseOwnersItem `json:"owners" url:"owners"`
 	// Phone number on the verification profile.
 	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
 	// Number the business was registered under in its place of incorporation, such as a state file number in the US or a Company Number in the UK. Business verifications only; `null` until the business verification is approved.
@@ -1826,6 +2599,13 @@ func (c *CreateVerificationsResponse) GetLastName() *string {
 		return nil
 	}
 	return c.LastName
+}
+
+func (c *CreateVerificationsResponse) GetOwners() []*CreateVerificationsResponseOwnersItem {
+	if c == nil {
+		return nil
+	}
+	return c.Owners
 }
 
 func (c *CreateVerificationsResponse) GetPhone() *string {
@@ -1968,6 +2748,13 @@ func (c *CreateVerificationsResponse) SetKind(kind *CreateVerificationsResponseK
 func (c *CreateVerificationsResponse) SetLastName(lastName *string) {
 	c.LastName = lastName
 	c.require(createVerificationsResponseFieldLastName)
+}
+
+// SetOwners sets the Owners field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponse) SetOwners(owners []*CreateVerificationsResponseOwnersItem) {
+	c.Owners = owners
+	c.require(createVerificationsResponseFieldOwners)
 }
 
 // SetPhone sets the Phone field and marks it as non-optional;
@@ -2275,6 +3062,429 @@ func NewCreateVerificationsResponseKindFromString(s string) (CreateVerifications
 }
 
 func (c CreateVerificationsResponseKind) Ptr() *CreateVerificationsResponseKind {
+	return &c
+}
+
+var (
+	createVerificationsResponseOwnersItemFieldFirstName           = big.NewInt(1 << 0)
+	createVerificationsResponseOwnersItemFieldID                  = big.NewInt(1 << 1)
+	createVerificationsResponseOwnersItemFieldLastName            = big.NewInt(1 << 2)
+	createVerificationsResponseOwnersItemFieldOwnershipPercentage = big.NewInt(1 << 3)
+	createVerificationsResponseOwnersItemFieldRequiredDocuments   = big.NewInt(1 << 4)
+	createVerificationsResponseOwnersItemFieldRoles               = big.NewInt(1 << 5)
+	createVerificationsResponseOwnersItemFieldStatus              = big.NewInt(1 << 6)
+)
+
+// createVerificationsResponseOwnersItemNullableFields maps the wire names of CreateVerificationsResponseOwnersItem's nullable fields (required or optional) to their field bits.
+var createVerificationsResponseOwnersItemNullableFields = map[string]*big.Int{
+	"first_name":           createVerificationsResponseOwnersItemFieldFirstName,
+	"last_name":            createVerificationsResponseOwnersItemFieldLastName,
+	"ownership_percentage": createVerificationsResponseOwnersItemFieldOwnershipPercentage,
+}
+
+type CreateVerificationsResponseOwnersItem struct {
+	FirstName *string `json:"first_name,omitempty" url:"first_name,omitempty"`
+	// Owner ID, prefixed `own_`. Send it in Update Verification's `owners` to change or remove the owner, including one added in the hosted session.
+	ID       string  `json:"id" url:"id"`
+	LastName *string `json:"last_name,omitempty" url:"last_name,omitempty"`
+	// Share of the business the person owns, from 0 to 100.
+	OwnershipPercentage *float64 `json:"ownership_percentage,omitempty" url:"ownership_percentage,omitempty"`
+	// The owner's documents and their progress. Empty for an owner added with `verification_id`.
+	RequiredDocuments []*CreateVerificationsResponseOwnersItemRequiredDocumentsItem `json:"required_documents" url:"required_documents"`
+	// What the person is to the business.
+	Roles []CreateVerificationsResponseOwnersItemRolesItem `json:"roles" url:"roles"`
+	// Where the owner's own verification stands, in the same states as `status`. `action_required` when their documents need sending again.
+	Status CreateVerificationsResponseOwnersItemStatus `json:"status" url:"status"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateVerificationsResponseOwnersItem) GetFirstName() *string {
+	if c == nil {
+		return nil
+	}
+	return c.FirstName
+}
+
+func (c *CreateVerificationsResponseOwnersItem) GetID() string {
+	if c == nil {
+		return ""
+	}
+	return c.ID
+}
+
+func (c *CreateVerificationsResponseOwnersItem) GetLastName() *string {
+	if c == nil {
+		return nil
+	}
+	return c.LastName
+}
+
+func (c *CreateVerificationsResponseOwnersItem) GetOwnershipPercentage() *float64 {
+	if c == nil {
+		return nil
+	}
+	return c.OwnershipPercentage
+}
+
+func (c *CreateVerificationsResponseOwnersItem) GetRequiredDocuments() []*CreateVerificationsResponseOwnersItemRequiredDocumentsItem {
+	if c == nil {
+		return nil
+	}
+	return c.RequiredDocuments
+}
+
+func (c *CreateVerificationsResponseOwnersItem) GetRoles() []CreateVerificationsResponseOwnersItemRolesItem {
+	if c == nil {
+		return nil
+	}
+	return c.Roles
+}
+
+func (c *CreateVerificationsResponseOwnersItem) GetStatus() CreateVerificationsResponseOwnersItemStatus {
+	if c == nil {
+		return ""
+	}
+	return c.Status
+}
+
+func (c *CreateVerificationsResponseOwnersItem) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateVerificationsResponseOwnersItem) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetFirstName sets the FirstName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponseOwnersItem) SetFirstName(firstName *string) {
+	c.FirstName = firstName
+	c.require(createVerificationsResponseOwnersItemFieldFirstName)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponseOwnersItem) SetID(id string) {
+	c.ID = id
+	c.require(createVerificationsResponseOwnersItemFieldID)
+}
+
+// SetLastName sets the LastName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponseOwnersItem) SetLastName(lastName *string) {
+	c.LastName = lastName
+	c.require(createVerificationsResponseOwnersItemFieldLastName)
+}
+
+// SetOwnershipPercentage sets the OwnershipPercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponseOwnersItem) SetOwnershipPercentage(ownershipPercentage *float64) {
+	c.OwnershipPercentage = ownershipPercentage
+	c.require(createVerificationsResponseOwnersItemFieldOwnershipPercentage)
+}
+
+// SetRequiredDocuments sets the RequiredDocuments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponseOwnersItem) SetRequiredDocuments(requiredDocuments []*CreateVerificationsResponseOwnersItemRequiredDocumentsItem) {
+	c.RequiredDocuments = requiredDocuments
+	c.require(createVerificationsResponseOwnersItemFieldRequiredDocuments)
+}
+
+// SetRoles sets the Roles field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponseOwnersItem) SetRoles(roles []CreateVerificationsResponseOwnersItemRolesItem) {
+	c.Roles = roles
+	c.require(createVerificationsResponseOwnersItemFieldRoles)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponseOwnersItem) SetStatus(status CreateVerificationsResponseOwnersItemStatus) {
+	c.Status = status
+	c.require(createVerificationsResponseOwnersItemFieldStatus)
+}
+
+func (c *CreateVerificationsResponseOwnersItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateVerificationsResponseOwnersItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateVerificationsResponseOwnersItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createVerificationsResponseOwnersItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateVerificationsResponseOwnersItem) MarshalJSON() ([]byte, error) {
+	type embed CreateVerificationsResponseOwnersItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateVerificationsResponseOwnersItem) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createVerificationsResponseOwnersItemRequiredDocumentsItemFieldDocument        = big.NewInt(1 << 0)
+	createVerificationsResponseOwnersItemRequiredDocumentsItemFieldRejectionReason = big.NewInt(1 << 1)
+	createVerificationsResponseOwnersItemRequiredDocumentsItemFieldStatus          = big.NewInt(1 << 2)
+)
+
+// createVerificationsResponseOwnersItemRequiredDocumentsItemNullableFields maps the wire names of CreateVerificationsResponseOwnersItemRequiredDocumentsItem's nullable fields (required or optional) to their field bits.
+var createVerificationsResponseOwnersItemRequiredDocumentsItemNullableFields = map[string]*big.Int{
+	"rejection_reason": createVerificationsResponseOwnersItemRequiredDocumentsItemFieldRejectionReason,
+}
+
+type CreateVerificationsResponseOwnersItemRequiredDocumentsItem struct {
+	// Document slot key, such as `id_card_front`, `id_card_back`, or `selfie`.
+	Document *string `json:"document,omitempty" url:"document,omitempty"`
+	// Why the previous submission was rejected, when the provider requested new documents or declined the verification.
+	RejectionReason *string `json:"rejection_reason,omitempty" url:"rejection_reason,omitempty"`
+	// `pending_upload` until the document has been relayed for review; `submitted` afterwards.
+	Status *CreateVerificationsResponseOwnersItemRequiredDocumentsItemStatus `json:"status,omitempty" url:"status,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateVerificationsResponseOwnersItemRequiredDocumentsItem) GetDocument() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Document
+}
+
+func (c *CreateVerificationsResponseOwnersItemRequiredDocumentsItem) GetRejectionReason() *string {
+	if c == nil {
+		return nil
+	}
+	return c.RejectionReason
+}
+
+func (c *CreateVerificationsResponseOwnersItemRequiredDocumentsItem) GetStatus() *CreateVerificationsResponseOwnersItemRequiredDocumentsItemStatus {
+	if c == nil {
+		return nil
+	}
+	return c.Status
+}
+
+func (c *CreateVerificationsResponseOwnersItemRequiredDocumentsItem) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateVerificationsResponseOwnersItemRequiredDocumentsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetDocument sets the Document field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponseOwnersItemRequiredDocumentsItem) SetDocument(document *string) {
+	c.Document = document
+	c.require(createVerificationsResponseOwnersItemRequiredDocumentsItemFieldDocument)
+}
+
+// SetRejectionReason sets the RejectionReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponseOwnersItemRequiredDocumentsItem) SetRejectionReason(rejectionReason *string) {
+	c.RejectionReason = rejectionReason
+	c.require(createVerificationsResponseOwnersItemRequiredDocumentsItemFieldRejectionReason)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponseOwnersItemRequiredDocumentsItem) SetStatus(status *CreateVerificationsResponseOwnersItemRequiredDocumentsItemStatus) {
+	c.Status = status
+	c.require(createVerificationsResponseOwnersItemRequiredDocumentsItemFieldStatus)
+}
+
+func (c *CreateVerificationsResponseOwnersItemRequiredDocumentsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateVerificationsResponseOwnersItemRequiredDocumentsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateVerificationsResponseOwnersItemRequiredDocumentsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createVerificationsResponseOwnersItemRequiredDocumentsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateVerificationsResponseOwnersItemRequiredDocumentsItem) MarshalJSON() ([]byte, error) {
+	type embed CreateVerificationsResponseOwnersItemRequiredDocumentsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateVerificationsResponseOwnersItemRequiredDocumentsItem) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// `pending_upload` until the document has been relayed for review; `submitted` afterwards.
+type CreateVerificationsResponseOwnersItemRequiredDocumentsItemStatus string
+
+const (
+	CreateVerificationsResponseOwnersItemRequiredDocumentsItemStatusPendingUpload CreateVerificationsResponseOwnersItemRequiredDocumentsItemStatus = "pending_upload"
+	CreateVerificationsResponseOwnersItemRequiredDocumentsItemStatusSubmitted     CreateVerificationsResponseOwnersItemRequiredDocumentsItemStatus = "submitted"
+)
+
+func NewCreateVerificationsResponseOwnersItemRequiredDocumentsItemStatusFromString(s string) (CreateVerificationsResponseOwnersItemRequiredDocumentsItemStatus, error) {
+	switch s {
+	case "pending_upload":
+		return CreateVerificationsResponseOwnersItemRequiredDocumentsItemStatusPendingUpload, nil
+	case "submitted":
+		return CreateVerificationsResponseOwnersItemRequiredDocumentsItemStatusSubmitted, nil
+	}
+	var t CreateVerificationsResponseOwnersItemRequiredDocumentsItemStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateVerificationsResponseOwnersItemRequiredDocumentsItemStatus) Ptr() *CreateVerificationsResponseOwnersItemRequiredDocumentsItemStatus {
+	return &c
+}
+
+type CreateVerificationsResponseOwnersItemRolesItem string
+
+const (
+	CreateVerificationsResponseOwnersItemRolesItemUbo            CreateVerificationsResponseOwnersItemRolesItem = "ubo"
+	CreateVerificationsResponseOwnersItemRolesItemDirector       CreateVerificationsResponseOwnersItemRolesItem = "director"
+	CreateVerificationsResponseOwnersItemRolesItemRepresentative CreateVerificationsResponseOwnersItemRolesItem = "representative"
+	CreateVerificationsResponseOwnersItemRolesItemShareholder    CreateVerificationsResponseOwnersItemRolesItem = "shareholder"
+)
+
+func NewCreateVerificationsResponseOwnersItemRolesItemFromString(s string) (CreateVerificationsResponseOwnersItemRolesItem, error) {
+	switch s {
+	case "ubo":
+		return CreateVerificationsResponseOwnersItemRolesItemUbo, nil
+	case "director":
+		return CreateVerificationsResponseOwnersItemRolesItemDirector, nil
+	case "representative":
+		return CreateVerificationsResponseOwnersItemRolesItemRepresentative, nil
+	case "shareholder":
+		return CreateVerificationsResponseOwnersItemRolesItemShareholder, nil
+	}
+	var t CreateVerificationsResponseOwnersItemRolesItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateVerificationsResponseOwnersItemRolesItem) Ptr() *CreateVerificationsResponseOwnersItemRolesItem {
+	return &c
+}
+
+// Where the owner's own verification stands, in the same states as `status`. `action_required` when their documents need sending again.
+type CreateVerificationsResponseOwnersItemStatus string
+
+const (
+	CreateVerificationsResponseOwnersItemStatusNotStarted     CreateVerificationsResponseOwnersItemStatus = "not_started"
+	CreateVerificationsResponseOwnersItemStatusPending        CreateVerificationsResponseOwnersItemStatus = "pending"
+	CreateVerificationsResponseOwnersItemStatusProcessing     CreateVerificationsResponseOwnersItemStatus = "processing"
+	CreateVerificationsResponseOwnersItemStatusManualReview   CreateVerificationsResponseOwnersItemStatus = "manual_review"
+	CreateVerificationsResponseOwnersItemStatusApproved       CreateVerificationsResponseOwnersItemStatus = "approved"
+	CreateVerificationsResponseOwnersItemStatusRejected       CreateVerificationsResponseOwnersItemStatus = "rejected"
+	CreateVerificationsResponseOwnersItemStatusActionRequired CreateVerificationsResponseOwnersItemStatus = "action_required"
+)
+
+func NewCreateVerificationsResponseOwnersItemStatusFromString(s string) (CreateVerificationsResponseOwnersItemStatus, error) {
+	switch s {
+	case "not_started":
+		return CreateVerificationsResponseOwnersItemStatusNotStarted, nil
+	case "pending":
+		return CreateVerificationsResponseOwnersItemStatusPending, nil
+	case "processing":
+		return CreateVerificationsResponseOwnersItemStatusProcessing, nil
+	case "manual_review":
+		return CreateVerificationsResponseOwnersItemStatusManualReview, nil
+	case "approved":
+		return CreateVerificationsResponseOwnersItemStatusApproved, nil
+	case "rejected":
+		return CreateVerificationsResponseOwnersItemStatusRejected, nil
+	case "action_required":
+		return CreateVerificationsResponseOwnersItemStatusActionRequired, nil
+	}
+	var t CreateVerificationsResponseOwnersItemStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateVerificationsResponseOwnersItemStatus) Ptr() *CreateVerificationsResponseOwnersItemStatus {
 	return &c
 }
 
@@ -3135,13 +4345,14 @@ var (
 	listVerificationsResponseDataItemFieldID                   = big.NewInt(1 << 8)
 	listVerificationsResponseDataItemFieldKind                 = big.NewInt(1 << 9)
 	listVerificationsResponseDataItemFieldLastName             = big.NewInt(1 << 10)
-	listVerificationsResponseDataItemFieldPhone                = big.NewInt(1 << 11)
-	listVerificationsResponseDataItemFieldRegistrationNumber   = big.NewInt(1 << 12)
-	listVerificationsResponseDataItemFieldRequestedInformation = big.NewInt(1 << 13)
-	listVerificationsResponseDataItemFieldRequiredDocuments    = big.NewInt(1 << 14)
-	listVerificationsResponseDataItemFieldSessionURL           = big.NewInt(1 << 15)
-	listVerificationsResponseDataItemFieldStatus               = big.NewInt(1 << 16)
-	listVerificationsResponseDataItemFieldUpdatedAt            = big.NewInt(1 << 17)
+	listVerificationsResponseDataItemFieldOwners               = big.NewInt(1 << 11)
+	listVerificationsResponseDataItemFieldPhone                = big.NewInt(1 << 12)
+	listVerificationsResponseDataItemFieldRegistrationNumber   = big.NewInt(1 << 13)
+	listVerificationsResponseDataItemFieldRequestedInformation = big.NewInt(1 << 14)
+	listVerificationsResponseDataItemFieldRequiredDocuments    = big.NewInt(1 << 15)
+	listVerificationsResponseDataItemFieldSessionURL           = big.NewInt(1 << 16)
+	listVerificationsResponseDataItemFieldStatus               = big.NewInt(1 << 17)
+	listVerificationsResponseDataItemFieldUpdatedAt            = big.NewInt(1 << 18)
 )
 
 // listVerificationsResponseDataItemNullableFields maps the wire names of ListVerificationsResponseDataItem's nullable fields (required or optional) to their field bits.
@@ -3179,6 +4390,8 @@ type ListVerificationsResponseDataItem struct {
 	ID       *string                                `json:"id,omitempty" url:"id,omitempty"`
 	Kind     *ListVerificationsResponseDataItemKind `json:"kind,omitempty" url:"kind,omitempty"`
 	LastName *string                                `json:"last_name,omitempty" url:"last_name,omitempty"`
+	// Owners of the business and the progress of each one's own verification. Empty for individual verifications.
+	Owners []*ListVerificationsResponseDataItemOwnersItem `json:"owners" url:"owners"`
 	// Phone number on the verification profile.
 	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
 	// Number the business was registered under in its place of incorporation, such as a state file number in the US or a Company Number in the UK. Business verifications only; `null` until the business verification is approved.
@@ -3276,6 +4489,13 @@ func (l *ListVerificationsResponseDataItem) GetLastName() *string {
 		return nil
 	}
 	return l.LastName
+}
+
+func (l *ListVerificationsResponseDataItem) GetOwners() []*ListVerificationsResponseDataItemOwnersItem {
+	if l == nil {
+		return nil
+	}
+	return l.Owners
 }
 
 func (l *ListVerificationsResponseDataItem) GetPhone() *string {
@@ -3418,6 +4638,13 @@ func (l *ListVerificationsResponseDataItem) SetKind(kind *ListVerificationsRespo
 func (l *ListVerificationsResponseDataItem) SetLastName(lastName *string) {
 	l.LastName = lastName
 	l.require(listVerificationsResponseDataItemFieldLastName)
+}
+
+// SetOwners sets the Owners field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItem) SetOwners(owners []*ListVerificationsResponseDataItemOwnersItem) {
+	l.Owners = owners
+	l.require(listVerificationsResponseDataItemFieldOwners)
 }
 
 // SetPhone sets the Phone field and marks it as non-optional;
@@ -3725,6 +4952,429 @@ func NewListVerificationsResponseDataItemKindFromString(s string) (ListVerificat
 }
 
 func (l ListVerificationsResponseDataItemKind) Ptr() *ListVerificationsResponseDataItemKind {
+	return &l
+}
+
+var (
+	listVerificationsResponseDataItemOwnersItemFieldFirstName           = big.NewInt(1 << 0)
+	listVerificationsResponseDataItemOwnersItemFieldID                  = big.NewInt(1 << 1)
+	listVerificationsResponseDataItemOwnersItemFieldLastName            = big.NewInt(1 << 2)
+	listVerificationsResponseDataItemOwnersItemFieldOwnershipPercentage = big.NewInt(1 << 3)
+	listVerificationsResponseDataItemOwnersItemFieldRequiredDocuments   = big.NewInt(1 << 4)
+	listVerificationsResponseDataItemOwnersItemFieldRoles               = big.NewInt(1 << 5)
+	listVerificationsResponseDataItemOwnersItemFieldStatus              = big.NewInt(1 << 6)
+)
+
+// listVerificationsResponseDataItemOwnersItemNullableFields maps the wire names of ListVerificationsResponseDataItemOwnersItem's nullable fields (required or optional) to their field bits.
+var listVerificationsResponseDataItemOwnersItemNullableFields = map[string]*big.Int{
+	"first_name":           listVerificationsResponseDataItemOwnersItemFieldFirstName,
+	"last_name":            listVerificationsResponseDataItemOwnersItemFieldLastName,
+	"ownership_percentage": listVerificationsResponseDataItemOwnersItemFieldOwnershipPercentage,
+}
+
+type ListVerificationsResponseDataItemOwnersItem struct {
+	FirstName *string `json:"first_name,omitempty" url:"first_name,omitempty"`
+	// Owner ID, prefixed `own_`. Send it in Update Verification's `owners` to change or remove the owner, including one added in the hosted session.
+	ID       string  `json:"id" url:"id"`
+	LastName *string `json:"last_name,omitempty" url:"last_name,omitempty"`
+	// Share of the business the person owns, from 0 to 100.
+	OwnershipPercentage *float64 `json:"ownership_percentage,omitempty" url:"ownership_percentage,omitempty"`
+	// The owner's documents and their progress. Empty for an owner added with `verification_id`.
+	RequiredDocuments []*ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItem `json:"required_documents" url:"required_documents"`
+	// What the person is to the business.
+	Roles []ListVerificationsResponseDataItemOwnersItemRolesItem `json:"roles" url:"roles"`
+	// Where the owner's own verification stands, in the same states as `status`. `action_required` when their documents need sending again.
+	Status ListVerificationsResponseDataItemOwnersItemStatus `json:"status" url:"status"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListVerificationsResponseDataItemOwnersItem) GetFirstName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.FirstName
+}
+
+func (l *ListVerificationsResponseDataItemOwnersItem) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *ListVerificationsResponseDataItemOwnersItem) GetLastName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.LastName
+}
+
+func (l *ListVerificationsResponseDataItemOwnersItem) GetOwnershipPercentage() *float64 {
+	if l == nil {
+		return nil
+	}
+	return l.OwnershipPercentage
+}
+
+func (l *ListVerificationsResponseDataItemOwnersItem) GetRequiredDocuments() []*ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItem {
+	if l == nil {
+		return nil
+	}
+	return l.RequiredDocuments
+}
+
+func (l *ListVerificationsResponseDataItemOwnersItem) GetRoles() []ListVerificationsResponseDataItemOwnersItemRolesItem {
+	if l == nil {
+		return nil
+	}
+	return l.Roles
+}
+
+func (l *ListVerificationsResponseDataItemOwnersItem) GetStatus() ListVerificationsResponseDataItemOwnersItemStatus {
+	if l == nil {
+		return ""
+	}
+	return l.Status
+}
+
+func (l *ListVerificationsResponseDataItemOwnersItem) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListVerificationsResponseDataItemOwnersItem) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetFirstName sets the FirstName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItemOwnersItem) SetFirstName(firstName *string) {
+	l.FirstName = firstName
+	l.require(listVerificationsResponseDataItemOwnersItemFieldFirstName)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItemOwnersItem) SetID(id string) {
+	l.ID = id
+	l.require(listVerificationsResponseDataItemOwnersItemFieldID)
+}
+
+// SetLastName sets the LastName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItemOwnersItem) SetLastName(lastName *string) {
+	l.LastName = lastName
+	l.require(listVerificationsResponseDataItemOwnersItemFieldLastName)
+}
+
+// SetOwnershipPercentage sets the OwnershipPercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItemOwnersItem) SetOwnershipPercentage(ownershipPercentage *float64) {
+	l.OwnershipPercentage = ownershipPercentage
+	l.require(listVerificationsResponseDataItemOwnersItemFieldOwnershipPercentage)
+}
+
+// SetRequiredDocuments sets the RequiredDocuments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItemOwnersItem) SetRequiredDocuments(requiredDocuments []*ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItem) {
+	l.RequiredDocuments = requiredDocuments
+	l.require(listVerificationsResponseDataItemOwnersItemFieldRequiredDocuments)
+}
+
+// SetRoles sets the Roles field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItemOwnersItem) SetRoles(roles []ListVerificationsResponseDataItemOwnersItemRolesItem) {
+	l.Roles = roles
+	l.require(listVerificationsResponseDataItemOwnersItemFieldRoles)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItemOwnersItem) SetStatus(status ListVerificationsResponseDataItemOwnersItemStatus) {
+	l.Status = status
+	l.require(listVerificationsResponseDataItemOwnersItemFieldStatus)
+}
+
+func (l *ListVerificationsResponseDataItemOwnersItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListVerificationsResponseDataItemOwnersItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListVerificationsResponseDataItemOwnersItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listVerificationsResponseDataItemOwnersItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListVerificationsResponseDataItemOwnersItem) MarshalJSON() ([]byte, error) {
+	type embed ListVerificationsResponseDataItemOwnersItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListVerificationsResponseDataItemOwnersItem) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	listVerificationsResponseDataItemOwnersItemRequiredDocumentsItemFieldDocument        = big.NewInt(1 << 0)
+	listVerificationsResponseDataItemOwnersItemRequiredDocumentsItemFieldRejectionReason = big.NewInt(1 << 1)
+	listVerificationsResponseDataItemOwnersItemRequiredDocumentsItemFieldStatus          = big.NewInt(1 << 2)
+)
+
+// listVerificationsResponseDataItemOwnersItemRequiredDocumentsItemNullableFields maps the wire names of ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItem's nullable fields (required or optional) to their field bits.
+var listVerificationsResponseDataItemOwnersItemRequiredDocumentsItemNullableFields = map[string]*big.Int{
+	"rejection_reason": listVerificationsResponseDataItemOwnersItemRequiredDocumentsItemFieldRejectionReason,
+}
+
+type ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItem struct {
+	// Document slot key, such as `id_card_front`, `id_card_back`, or `selfie`.
+	Document *string `json:"document,omitempty" url:"document,omitempty"`
+	// Why the previous submission was rejected, when the provider requested new documents or declined the verification.
+	RejectionReason *string `json:"rejection_reason,omitempty" url:"rejection_reason,omitempty"`
+	// `pending_upload` until the document has been relayed for review; `submitted` afterwards.
+	Status *ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItemStatus `json:"status,omitempty" url:"status,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItem) GetDocument() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Document
+}
+
+func (l *ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItem) GetRejectionReason() *string {
+	if l == nil {
+		return nil
+	}
+	return l.RejectionReason
+}
+
+func (l *ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItem) GetStatus() *ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItemStatus {
+	if l == nil {
+		return nil
+	}
+	return l.Status
+}
+
+func (l *ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItem) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetDocument sets the Document field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItem) SetDocument(document *string) {
+	l.Document = document
+	l.require(listVerificationsResponseDataItemOwnersItemRequiredDocumentsItemFieldDocument)
+}
+
+// SetRejectionReason sets the RejectionReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItem) SetRejectionReason(rejectionReason *string) {
+	l.RejectionReason = rejectionReason
+	l.require(listVerificationsResponseDataItemOwnersItemRequiredDocumentsItemFieldRejectionReason)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItem) SetStatus(status *ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItemStatus) {
+	l.Status = status
+	l.require(listVerificationsResponseDataItemOwnersItemRequiredDocumentsItemFieldStatus)
+}
+
+func (l *ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listVerificationsResponseDataItemOwnersItemRequiredDocumentsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItem) MarshalJSON() ([]byte, error) {
+	type embed ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItem) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+// `pending_upload` until the document has been relayed for review; `submitted` afterwards.
+type ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItemStatus string
+
+const (
+	ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItemStatusPendingUpload ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItemStatus = "pending_upload"
+	ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItemStatusSubmitted     ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItemStatus = "submitted"
+)
+
+func NewListVerificationsResponseDataItemOwnersItemRequiredDocumentsItemStatusFromString(s string) (ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItemStatus, error) {
+	switch s {
+	case "pending_upload":
+		return ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItemStatusPendingUpload, nil
+	case "submitted":
+		return ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItemStatusSubmitted, nil
+	}
+	var t ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItemStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItemStatus) Ptr() *ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItemStatus {
+	return &l
+}
+
+type ListVerificationsResponseDataItemOwnersItemRolesItem string
+
+const (
+	ListVerificationsResponseDataItemOwnersItemRolesItemUbo            ListVerificationsResponseDataItemOwnersItemRolesItem = "ubo"
+	ListVerificationsResponseDataItemOwnersItemRolesItemDirector       ListVerificationsResponseDataItemOwnersItemRolesItem = "director"
+	ListVerificationsResponseDataItemOwnersItemRolesItemRepresentative ListVerificationsResponseDataItemOwnersItemRolesItem = "representative"
+	ListVerificationsResponseDataItemOwnersItemRolesItemShareholder    ListVerificationsResponseDataItemOwnersItemRolesItem = "shareholder"
+)
+
+func NewListVerificationsResponseDataItemOwnersItemRolesItemFromString(s string) (ListVerificationsResponseDataItemOwnersItemRolesItem, error) {
+	switch s {
+	case "ubo":
+		return ListVerificationsResponseDataItemOwnersItemRolesItemUbo, nil
+	case "director":
+		return ListVerificationsResponseDataItemOwnersItemRolesItemDirector, nil
+	case "representative":
+		return ListVerificationsResponseDataItemOwnersItemRolesItemRepresentative, nil
+	case "shareholder":
+		return ListVerificationsResponseDataItemOwnersItemRolesItemShareholder, nil
+	}
+	var t ListVerificationsResponseDataItemOwnersItemRolesItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListVerificationsResponseDataItemOwnersItemRolesItem) Ptr() *ListVerificationsResponseDataItemOwnersItemRolesItem {
+	return &l
+}
+
+// Where the owner's own verification stands, in the same states as `status`. `action_required` when their documents need sending again.
+type ListVerificationsResponseDataItemOwnersItemStatus string
+
+const (
+	ListVerificationsResponseDataItemOwnersItemStatusNotStarted     ListVerificationsResponseDataItemOwnersItemStatus = "not_started"
+	ListVerificationsResponseDataItemOwnersItemStatusPending        ListVerificationsResponseDataItemOwnersItemStatus = "pending"
+	ListVerificationsResponseDataItemOwnersItemStatusProcessing     ListVerificationsResponseDataItemOwnersItemStatus = "processing"
+	ListVerificationsResponseDataItemOwnersItemStatusManualReview   ListVerificationsResponseDataItemOwnersItemStatus = "manual_review"
+	ListVerificationsResponseDataItemOwnersItemStatusApproved       ListVerificationsResponseDataItemOwnersItemStatus = "approved"
+	ListVerificationsResponseDataItemOwnersItemStatusRejected       ListVerificationsResponseDataItemOwnersItemStatus = "rejected"
+	ListVerificationsResponseDataItemOwnersItemStatusActionRequired ListVerificationsResponseDataItemOwnersItemStatus = "action_required"
+)
+
+func NewListVerificationsResponseDataItemOwnersItemStatusFromString(s string) (ListVerificationsResponseDataItemOwnersItemStatus, error) {
+	switch s {
+	case "not_started":
+		return ListVerificationsResponseDataItemOwnersItemStatusNotStarted, nil
+	case "pending":
+		return ListVerificationsResponseDataItemOwnersItemStatusPending, nil
+	case "processing":
+		return ListVerificationsResponseDataItemOwnersItemStatusProcessing, nil
+	case "manual_review":
+		return ListVerificationsResponseDataItemOwnersItemStatusManualReview, nil
+	case "approved":
+		return ListVerificationsResponseDataItemOwnersItemStatusApproved, nil
+	case "rejected":
+		return ListVerificationsResponseDataItemOwnersItemStatusRejected, nil
+	case "action_required":
+		return ListVerificationsResponseDataItemOwnersItemStatusActionRequired, nil
+	}
+	var t ListVerificationsResponseDataItemOwnersItemStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListVerificationsResponseDataItemOwnersItemStatus) Ptr() *ListVerificationsResponseDataItemOwnersItemStatus {
 	return &l
 }
 
@@ -5074,13 +6724,14 @@ var (
 	retrieveVerificationsResponseFieldID                   = big.NewInt(1 << 8)
 	retrieveVerificationsResponseFieldKind                 = big.NewInt(1 << 9)
 	retrieveVerificationsResponseFieldLastName             = big.NewInt(1 << 10)
-	retrieveVerificationsResponseFieldPhone                = big.NewInt(1 << 11)
-	retrieveVerificationsResponseFieldRegistrationNumber   = big.NewInt(1 << 12)
-	retrieveVerificationsResponseFieldRequestedInformation = big.NewInt(1 << 13)
-	retrieveVerificationsResponseFieldRequiredDocuments    = big.NewInt(1 << 14)
-	retrieveVerificationsResponseFieldSessionURL           = big.NewInt(1 << 15)
-	retrieveVerificationsResponseFieldStatus               = big.NewInt(1 << 16)
-	retrieveVerificationsResponseFieldUpdatedAt            = big.NewInt(1 << 17)
+	retrieveVerificationsResponseFieldOwners               = big.NewInt(1 << 11)
+	retrieveVerificationsResponseFieldPhone                = big.NewInt(1 << 12)
+	retrieveVerificationsResponseFieldRegistrationNumber   = big.NewInt(1 << 13)
+	retrieveVerificationsResponseFieldRequestedInformation = big.NewInt(1 << 14)
+	retrieveVerificationsResponseFieldRequiredDocuments    = big.NewInt(1 << 15)
+	retrieveVerificationsResponseFieldSessionURL           = big.NewInt(1 << 16)
+	retrieveVerificationsResponseFieldStatus               = big.NewInt(1 << 17)
+	retrieveVerificationsResponseFieldUpdatedAt            = big.NewInt(1 << 18)
 )
 
 // retrieveVerificationsResponseNullableFields maps the wire names of RetrieveVerificationsResponse's nullable fields (required or optional) to their field bits.
@@ -5118,6 +6769,8 @@ type RetrieveVerificationsResponse struct {
 	ID       *string                            `json:"id,omitempty" url:"id,omitempty"`
 	Kind     *RetrieveVerificationsResponseKind `json:"kind,omitempty" url:"kind,omitempty"`
 	LastName *string                            `json:"last_name,omitempty" url:"last_name,omitempty"`
+	// Owners of the business and the progress of each one's own verification. Empty for individual verifications.
+	Owners []*RetrieveVerificationsResponseOwnersItem `json:"owners" url:"owners"`
 	// Phone number on the verification profile.
 	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
 	// Number the business was registered under in its place of incorporation, such as a state file number in the US or a Company Number in the UK. Business verifications only; `null` until the business verification is approved.
@@ -5215,6 +6868,13 @@ func (r *RetrieveVerificationsResponse) GetLastName() *string {
 		return nil
 	}
 	return r.LastName
+}
+
+func (r *RetrieveVerificationsResponse) GetOwners() []*RetrieveVerificationsResponseOwnersItem {
+	if r == nil {
+		return nil
+	}
+	return r.Owners
 }
 
 func (r *RetrieveVerificationsResponse) GetPhone() *string {
@@ -5357,6 +7017,13 @@ func (r *RetrieveVerificationsResponse) SetKind(kind *RetrieveVerificationsRespo
 func (r *RetrieveVerificationsResponse) SetLastName(lastName *string) {
 	r.LastName = lastName
 	r.require(retrieveVerificationsResponseFieldLastName)
+}
+
+// SetOwners sets the Owners field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponse) SetOwners(owners []*RetrieveVerificationsResponseOwnersItem) {
+	r.Owners = owners
+	r.require(retrieveVerificationsResponseFieldOwners)
 }
 
 // SetPhone sets the Phone field and marks it as non-optional;
@@ -5664,6 +7331,429 @@ func NewRetrieveVerificationsResponseKindFromString(s string) (RetrieveVerificat
 }
 
 func (r RetrieveVerificationsResponseKind) Ptr() *RetrieveVerificationsResponseKind {
+	return &r
+}
+
+var (
+	retrieveVerificationsResponseOwnersItemFieldFirstName           = big.NewInt(1 << 0)
+	retrieveVerificationsResponseOwnersItemFieldID                  = big.NewInt(1 << 1)
+	retrieveVerificationsResponseOwnersItemFieldLastName            = big.NewInt(1 << 2)
+	retrieveVerificationsResponseOwnersItemFieldOwnershipPercentage = big.NewInt(1 << 3)
+	retrieveVerificationsResponseOwnersItemFieldRequiredDocuments   = big.NewInt(1 << 4)
+	retrieveVerificationsResponseOwnersItemFieldRoles               = big.NewInt(1 << 5)
+	retrieveVerificationsResponseOwnersItemFieldStatus              = big.NewInt(1 << 6)
+)
+
+// retrieveVerificationsResponseOwnersItemNullableFields maps the wire names of RetrieveVerificationsResponseOwnersItem's nullable fields (required or optional) to their field bits.
+var retrieveVerificationsResponseOwnersItemNullableFields = map[string]*big.Int{
+	"first_name":           retrieveVerificationsResponseOwnersItemFieldFirstName,
+	"last_name":            retrieveVerificationsResponseOwnersItemFieldLastName,
+	"ownership_percentage": retrieveVerificationsResponseOwnersItemFieldOwnershipPercentage,
+}
+
+type RetrieveVerificationsResponseOwnersItem struct {
+	FirstName *string `json:"first_name,omitempty" url:"first_name,omitempty"`
+	// Owner ID, prefixed `own_`. Send it in Update Verification's `owners` to change or remove the owner, including one added in the hosted session.
+	ID       string  `json:"id" url:"id"`
+	LastName *string `json:"last_name,omitempty" url:"last_name,omitempty"`
+	// Share of the business the person owns, from 0 to 100.
+	OwnershipPercentage *float64 `json:"ownership_percentage,omitempty" url:"ownership_percentage,omitempty"`
+	// The owner's documents and their progress. Empty for an owner added with `verification_id`.
+	RequiredDocuments []*RetrieveVerificationsResponseOwnersItemRequiredDocumentsItem `json:"required_documents" url:"required_documents"`
+	// What the person is to the business.
+	Roles []RetrieveVerificationsResponseOwnersItemRolesItem `json:"roles" url:"roles"`
+	// Where the owner's own verification stands, in the same states as `status`. `action_required` when their documents need sending again.
+	Status RetrieveVerificationsResponseOwnersItemStatus `json:"status" url:"status"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *RetrieveVerificationsResponseOwnersItem) GetFirstName() *string {
+	if r == nil {
+		return nil
+	}
+	return r.FirstName
+}
+
+func (r *RetrieveVerificationsResponseOwnersItem) GetID() string {
+	if r == nil {
+		return ""
+	}
+	return r.ID
+}
+
+func (r *RetrieveVerificationsResponseOwnersItem) GetLastName() *string {
+	if r == nil {
+		return nil
+	}
+	return r.LastName
+}
+
+func (r *RetrieveVerificationsResponseOwnersItem) GetOwnershipPercentage() *float64 {
+	if r == nil {
+		return nil
+	}
+	return r.OwnershipPercentage
+}
+
+func (r *RetrieveVerificationsResponseOwnersItem) GetRequiredDocuments() []*RetrieveVerificationsResponseOwnersItemRequiredDocumentsItem {
+	if r == nil {
+		return nil
+	}
+	return r.RequiredDocuments
+}
+
+func (r *RetrieveVerificationsResponseOwnersItem) GetRoles() []RetrieveVerificationsResponseOwnersItemRolesItem {
+	if r == nil {
+		return nil
+	}
+	return r.Roles
+}
+
+func (r *RetrieveVerificationsResponseOwnersItem) GetStatus() RetrieveVerificationsResponseOwnersItemStatus {
+	if r == nil {
+		return ""
+	}
+	return r.Status
+}
+
+func (r *RetrieveVerificationsResponseOwnersItem) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *RetrieveVerificationsResponseOwnersItem) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetFirstName sets the FirstName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponseOwnersItem) SetFirstName(firstName *string) {
+	r.FirstName = firstName
+	r.require(retrieveVerificationsResponseOwnersItemFieldFirstName)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponseOwnersItem) SetID(id string) {
+	r.ID = id
+	r.require(retrieveVerificationsResponseOwnersItemFieldID)
+}
+
+// SetLastName sets the LastName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponseOwnersItem) SetLastName(lastName *string) {
+	r.LastName = lastName
+	r.require(retrieveVerificationsResponseOwnersItemFieldLastName)
+}
+
+// SetOwnershipPercentage sets the OwnershipPercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponseOwnersItem) SetOwnershipPercentage(ownershipPercentage *float64) {
+	r.OwnershipPercentage = ownershipPercentage
+	r.require(retrieveVerificationsResponseOwnersItemFieldOwnershipPercentage)
+}
+
+// SetRequiredDocuments sets the RequiredDocuments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponseOwnersItem) SetRequiredDocuments(requiredDocuments []*RetrieveVerificationsResponseOwnersItemRequiredDocumentsItem) {
+	r.RequiredDocuments = requiredDocuments
+	r.require(retrieveVerificationsResponseOwnersItemFieldRequiredDocuments)
+}
+
+// SetRoles sets the Roles field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponseOwnersItem) SetRoles(roles []RetrieveVerificationsResponseOwnersItemRolesItem) {
+	r.Roles = roles
+	r.require(retrieveVerificationsResponseOwnersItemFieldRoles)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponseOwnersItem) SetStatus(status RetrieveVerificationsResponseOwnersItemStatus) {
+	r.Status = status
+	r.require(retrieveVerificationsResponseOwnersItemFieldStatus)
+}
+
+func (r *RetrieveVerificationsResponseOwnersItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler RetrieveVerificationsResponseOwnersItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RetrieveVerificationsResponseOwnersItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveVerificationsResponseOwnersItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RetrieveVerificationsResponseOwnersItem) MarshalJSON() ([]byte, error) {
+	type embed RetrieveVerificationsResponseOwnersItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *RetrieveVerificationsResponseOwnersItem) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+var (
+	retrieveVerificationsResponseOwnersItemRequiredDocumentsItemFieldDocument        = big.NewInt(1 << 0)
+	retrieveVerificationsResponseOwnersItemRequiredDocumentsItemFieldRejectionReason = big.NewInt(1 << 1)
+	retrieveVerificationsResponseOwnersItemRequiredDocumentsItemFieldStatus          = big.NewInt(1 << 2)
+)
+
+// retrieveVerificationsResponseOwnersItemRequiredDocumentsItemNullableFields maps the wire names of RetrieveVerificationsResponseOwnersItemRequiredDocumentsItem's nullable fields (required or optional) to their field bits.
+var retrieveVerificationsResponseOwnersItemRequiredDocumentsItemNullableFields = map[string]*big.Int{
+	"rejection_reason": retrieveVerificationsResponseOwnersItemRequiredDocumentsItemFieldRejectionReason,
+}
+
+type RetrieveVerificationsResponseOwnersItemRequiredDocumentsItem struct {
+	// Document slot key, such as `id_card_front`, `id_card_back`, or `selfie`.
+	Document *string `json:"document,omitempty" url:"document,omitempty"`
+	// Why the previous submission was rejected, when the provider requested new documents or declined the verification.
+	RejectionReason *string `json:"rejection_reason,omitempty" url:"rejection_reason,omitempty"`
+	// `pending_upload` until the document has been relayed for review; `submitted` afterwards.
+	Status *RetrieveVerificationsResponseOwnersItemRequiredDocumentsItemStatus `json:"status,omitempty" url:"status,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *RetrieveVerificationsResponseOwnersItemRequiredDocumentsItem) GetDocument() *string {
+	if r == nil {
+		return nil
+	}
+	return r.Document
+}
+
+func (r *RetrieveVerificationsResponseOwnersItemRequiredDocumentsItem) GetRejectionReason() *string {
+	if r == nil {
+		return nil
+	}
+	return r.RejectionReason
+}
+
+func (r *RetrieveVerificationsResponseOwnersItemRequiredDocumentsItem) GetStatus() *RetrieveVerificationsResponseOwnersItemRequiredDocumentsItemStatus {
+	if r == nil {
+		return nil
+	}
+	return r.Status
+}
+
+func (r *RetrieveVerificationsResponseOwnersItemRequiredDocumentsItem) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *RetrieveVerificationsResponseOwnersItemRequiredDocumentsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetDocument sets the Document field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponseOwnersItemRequiredDocumentsItem) SetDocument(document *string) {
+	r.Document = document
+	r.require(retrieveVerificationsResponseOwnersItemRequiredDocumentsItemFieldDocument)
+}
+
+// SetRejectionReason sets the RejectionReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponseOwnersItemRequiredDocumentsItem) SetRejectionReason(rejectionReason *string) {
+	r.RejectionReason = rejectionReason
+	r.require(retrieveVerificationsResponseOwnersItemRequiredDocumentsItemFieldRejectionReason)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponseOwnersItemRequiredDocumentsItem) SetStatus(status *RetrieveVerificationsResponseOwnersItemRequiredDocumentsItemStatus) {
+	r.Status = status
+	r.require(retrieveVerificationsResponseOwnersItemRequiredDocumentsItemFieldStatus)
+}
+
+func (r *RetrieveVerificationsResponseOwnersItemRequiredDocumentsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler RetrieveVerificationsResponseOwnersItemRequiredDocumentsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RetrieveVerificationsResponseOwnersItemRequiredDocumentsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveVerificationsResponseOwnersItemRequiredDocumentsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RetrieveVerificationsResponseOwnersItemRequiredDocumentsItem) MarshalJSON() ([]byte, error) {
+	type embed RetrieveVerificationsResponseOwnersItemRequiredDocumentsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *RetrieveVerificationsResponseOwnersItemRequiredDocumentsItem) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+// `pending_upload` until the document has been relayed for review; `submitted` afterwards.
+type RetrieveVerificationsResponseOwnersItemRequiredDocumentsItemStatus string
+
+const (
+	RetrieveVerificationsResponseOwnersItemRequiredDocumentsItemStatusPendingUpload RetrieveVerificationsResponseOwnersItemRequiredDocumentsItemStatus = "pending_upload"
+	RetrieveVerificationsResponseOwnersItemRequiredDocumentsItemStatusSubmitted     RetrieveVerificationsResponseOwnersItemRequiredDocumentsItemStatus = "submitted"
+)
+
+func NewRetrieveVerificationsResponseOwnersItemRequiredDocumentsItemStatusFromString(s string) (RetrieveVerificationsResponseOwnersItemRequiredDocumentsItemStatus, error) {
+	switch s {
+	case "pending_upload":
+		return RetrieveVerificationsResponseOwnersItemRequiredDocumentsItemStatusPendingUpload, nil
+	case "submitted":
+		return RetrieveVerificationsResponseOwnersItemRequiredDocumentsItemStatusSubmitted, nil
+	}
+	var t RetrieveVerificationsResponseOwnersItemRequiredDocumentsItemStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrieveVerificationsResponseOwnersItemRequiredDocumentsItemStatus) Ptr() *RetrieveVerificationsResponseOwnersItemRequiredDocumentsItemStatus {
+	return &r
+}
+
+type RetrieveVerificationsResponseOwnersItemRolesItem string
+
+const (
+	RetrieveVerificationsResponseOwnersItemRolesItemUbo            RetrieveVerificationsResponseOwnersItemRolesItem = "ubo"
+	RetrieveVerificationsResponseOwnersItemRolesItemDirector       RetrieveVerificationsResponseOwnersItemRolesItem = "director"
+	RetrieveVerificationsResponseOwnersItemRolesItemRepresentative RetrieveVerificationsResponseOwnersItemRolesItem = "representative"
+	RetrieveVerificationsResponseOwnersItemRolesItemShareholder    RetrieveVerificationsResponseOwnersItemRolesItem = "shareholder"
+)
+
+func NewRetrieveVerificationsResponseOwnersItemRolesItemFromString(s string) (RetrieveVerificationsResponseOwnersItemRolesItem, error) {
+	switch s {
+	case "ubo":
+		return RetrieveVerificationsResponseOwnersItemRolesItemUbo, nil
+	case "director":
+		return RetrieveVerificationsResponseOwnersItemRolesItemDirector, nil
+	case "representative":
+		return RetrieveVerificationsResponseOwnersItemRolesItemRepresentative, nil
+	case "shareholder":
+		return RetrieveVerificationsResponseOwnersItemRolesItemShareholder, nil
+	}
+	var t RetrieveVerificationsResponseOwnersItemRolesItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrieveVerificationsResponseOwnersItemRolesItem) Ptr() *RetrieveVerificationsResponseOwnersItemRolesItem {
+	return &r
+}
+
+// Where the owner's own verification stands, in the same states as `status`. `action_required` when their documents need sending again.
+type RetrieveVerificationsResponseOwnersItemStatus string
+
+const (
+	RetrieveVerificationsResponseOwnersItemStatusNotStarted     RetrieveVerificationsResponseOwnersItemStatus = "not_started"
+	RetrieveVerificationsResponseOwnersItemStatusPending        RetrieveVerificationsResponseOwnersItemStatus = "pending"
+	RetrieveVerificationsResponseOwnersItemStatusProcessing     RetrieveVerificationsResponseOwnersItemStatus = "processing"
+	RetrieveVerificationsResponseOwnersItemStatusManualReview   RetrieveVerificationsResponseOwnersItemStatus = "manual_review"
+	RetrieveVerificationsResponseOwnersItemStatusApproved       RetrieveVerificationsResponseOwnersItemStatus = "approved"
+	RetrieveVerificationsResponseOwnersItemStatusRejected       RetrieveVerificationsResponseOwnersItemStatus = "rejected"
+	RetrieveVerificationsResponseOwnersItemStatusActionRequired RetrieveVerificationsResponseOwnersItemStatus = "action_required"
+)
+
+func NewRetrieveVerificationsResponseOwnersItemStatusFromString(s string) (RetrieveVerificationsResponseOwnersItemStatus, error) {
+	switch s {
+	case "not_started":
+		return RetrieveVerificationsResponseOwnersItemStatusNotStarted, nil
+	case "pending":
+		return RetrieveVerificationsResponseOwnersItemStatusPending, nil
+	case "processing":
+		return RetrieveVerificationsResponseOwnersItemStatusProcessing, nil
+	case "manual_review":
+		return RetrieveVerificationsResponseOwnersItemStatusManualReview, nil
+	case "approved":
+		return RetrieveVerificationsResponseOwnersItemStatusApproved, nil
+	case "rejected":
+		return RetrieveVerificationsResponseOwnersItemStatusRejected, nil
+	case "action_required":
+		return RetrieveVerificationsResponseOwnersItemStatusActionRequired, nil
+	}
+	var t RetrieveVerificationsResponseOwnersItemStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrieveVerificationsResponseOwnersItemStatus) Ptr() *RetrieveVerificationsResponseOwnersItemStatus {
 	return &r
 }
 
@@ -6414,7 +8504,7 @@ func (u *UpdateVerificationsRequestBody) UnmarshalJSON(data []byte) error {
 			return nil
 		}
 	}
-	if internal.MatchesObjectKeys(data, []string{"business_address", "business_name", "business_structure", "business_tax_identification_number", "country", "date_of_birth", "documents", "first_name", "incorporation_date", "last_name", "place_of_incorporation", "registration_number", "requested_information", "tax_identification_number"}, []string{}) {
+	if internal.MatchesObjectKeys(data, []string{"business_address", "business_name", "business_structure", "business_tax_identification_number", "country", "date_of_birth", "documents", "first_name", "incorporation_date", "last_name", "owners", "place_of_incorporation", "registration_number", "requested_information", "tax_identification_number"}, []string{}) {
 		valueUpdateVerificationsRequestBodyBusinessAddress := new(UpdateVerificationsRequestBodyBusinessAddress)
 		if err := json.Unmarshal(data, &valueUpdateVerificationsRequestBodyBusinessAddress); err == nil {
 			u.typ = "UpdateVerificationsRequestBodyBusinessAddress"
@@ -6473,10 +8563,11 @@ var (
 	updateVerificationsRequestBodyBusinessAddressFieldFirstName                       = big.NewInt(1 << 7)
 	updateVerificationsRequestBodyBusinessAddressFieldIncorporationDate               = big.NewInt(1 << 8)
 	updateVerificationsRequestBodyBusinessAddressFieldLastName                        = big.NewInt(1 << 9)
-	updateVerificationsRequestBodyBusinessAddressFieldPlaceOfIncorporation            = big.NewInt(1 << 10)
-	updateVerificationsRequestBodyBusinessAddressFieldRegistrationNumber              = big.NewInt(1 << 11)
-	updateVerificationsRequestBodyBusinessAddressFieldRequestedInformation            = big.NewInt(1 << 12)
-	updateVerificationsRequestBodyBusinessAddressFieldTaxIdentificationNumber         = big.NewInt(1 << 13)
+	updateVerificationsRequestBodyBusinessAddressFieldOwners                          = big.NewInt(1 << 10)
+	updateVerificationsRequestBodyBusinessAddressFieldPlaceOfIncorporation            = big.NewInt(1 << 11)
+	updateVerificationsRequestBodyBusinessAddressFieldRegistrationNumber              = big.NewInt(1 << 12)
+	updateVerificationsRequestBodyBusinessAddressFieldRequestedInformation            = big.NewInt(1 << 13)
+	updateVerificationsRequestBodyBusinessAddressFieldTaxIdentificationNumber         = big.NewInt(1 << 14)
 )
 
 // Fields that can be updated on a business entity (KYB) verification. At least one field is required.
@@ -6501,6 +8592,8 @@ type UpdateVerificationsRequestBodyBusinessAddress struct {
 	IncorporationDate *time.Time `json:"incorporation_date,omitempty" url:"incorporation_date,omitempty" format:"date"`
 	// Last name of the business representative.
 	LastName *string `json:"last_name,omitempty" url:"last_name,omitempty"`
+	// Owners of the business, up to 10 per request. Once the company details, the company documents, and the owners are in and every new owner's documents were sent, Create Verification sends the business for review: in the request that completes it, as soon as the last owner's documents finish sending in the background, or when called again after Update Verification. Owners can still be added, changed, or removed while the review waits on them.
+	Owners []*UpdateVerificationsRequestBodyBusinessAddressOwnersItem `json:"owners,omitempty" url:"owners,omitempty"`
 	// State or region where the business is incorporated. Sent to the verification provider and not returned in the response.
 	PlaceOfIncorporation *string `json:"place_of_incorporation,omitempty" url:"place_of_incorporation,omitempty"`
 	// Number the business was registered under in its place of incorporation, such as a state file number in the US or a Company Number in the UK. Sent to the verification provider; `registration_number` in the response shows the verified number once the business verification is approved.
@@ -6585,6 +8678,13 @@ func (u *UpdateVerificationsRequestBodyBusinessAddress) GetLastName() *string {
 		return nil
 	}
 	return u.LastName
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddress) GetOwners() []*UpdateVerificationsRequestBodyBusinessAddressOwnersItem {
+	if u == nil {
+		return nil
+	}
+	return u.Owners
 }
 
 func (u *UpdateVerificationsRequestBodyBusinessAddress) GetPlaceOfIncorporation() *string {
@@ -6699,6 +8799,13 @@ func (u *UpdateVerificationsRequestBodyBusinessAddress) SetIncorporationDate(inc
 func (u *UpdateVerificationsRequestBodyBusinessAddress) SetLastName(lastName *string) {
 	u.LastName = lastName
 	u.require(updateVerificationsRequestBodyBusinessAddressFieldLastName)
+}
+
+// SetOwners sets the Owners field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddress) SetOwners(owners []*UpdateVerificationsRequestBodyBusinessAddressOwnersItem) {
+	u.Owners = owners
+	u.require(updateVerificationsRequestBodyBusinessAddressFieldOwners)
 }
 
 // SetPlaceOfIncorporation sets the PlaceOfIncorporation field and marks it as non-optional;
@@ -7071,6 +9178,793 @@ func (u *UpdateVerificationsRequestBodyBusinessAddressDocuments) String() string
 		return value
 	}
 	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateVerificationsRequestBodyBusinessAddressOwnersItemFieldAddress                 = big.NewInt(1 << 0)
+	updateVerificationsRequestBodyBusinessAddressOwnersItemFieldCountry                 = big.NewInt(1 << 1)
+	updateVerificationsRequestBodyBusinessAddressOwnersItemFieldDateOfBirth             = big.NewInt(1 << 2)
+	updateVerificationsRequestBodyBusinessAddressOwnersItemFieldDocumentType            = big.NewInt(1 << 3)
+	updateVerificationsRequestBodyBusinessAddressOwnersItemFieldDocuments               = big.NewInt(1 << 4)
+	updateVerificationsRequestBodyBusinessAddressOwnersItemFieldEmail                   = big.NewInt(1 << 5)
+	updateVerificationsRequestBodyBusinessAddressOwnersItemFieldFirstName               = big.NewInt(1 << 6)
+	updateVerificationsRequestBodyBusinessAddressOwnersItemFieldID                      = big.NewInt(1 << 7)
+	updateVerificationsRequestBodyBusinessAddressOwnersItemFieldLastName                = big.NewInt(1 << 8)
+	updateVerificationsRequestBodyBusinessAddressOwnersItemFieldOwnershipPercentage     = big.NewInt(1 << 9)
+	updateVerificationsRequestBodyBusinessAddressOwnersItemFieldPhone                   = big.NewInt(1 << 10)
+	updateVerificationsRequestBodyBusinessAddressOwnersItemFieldRemove                  = big.NewInt(1 << 11)
+	updateVerificationsRequestBodyBusinessAddressOwnersItemFieldRoles                   = big.NewInt(1 << 12)
+	updateVerificationsRequestBodyBusinessAddressOwnersItemFieldTaxIdentificationNumber = big.NewInt(1 << 13)
+	updateVerificationsRequestBodyBusinessAddressOwnersItemFieldVerificationID          = big.NewInt(1 << 14)
+)
+
+// An owner to add, change, or remove. Send `id` to change an owner already on the verification: new `roles` or `ownership_percentage`, or `document_type` and `documents` when the owner's documents are still needed. Send `id` with `remove` set to `true` to remove that owner. Without `id`, the entry adds an owner as it does on Create Verification. Owners left out are not changed.
+type UpdateVerificationsRequestBodyBusinessAddressOwnersItem struct {
+	// The new owner's home address, with `line1`, `city`, `state`, and `postal_code`.
+	Address *UpdateVerificationsRequestBodyBusinessAddressOwnersItemAddress `json:"address,omitempty" url:"address,omitempty"`
+	// The new owner's country, as a two-letter ISO 3166-1 code.
+	Country *string `json:"country,omitempty" url:"country,omitempty"`
+	// The new owner's date of birth, formatted as `YYYY-MM-DD`.
+	DateOfBirth *time.Time `json:"date_of_birth,omitempty" url:"date_of_birth,omitempty" format:"date"`
+	// Identity document in `documents`. Decides which slots to send: `id_card` → `id_card_front` + `id_card_back`; `drivers` → `drivers_front` + `drivers_back`; `residence_permit` → `residence_permit_front` + `residence_permit_back`; `passport` → `passport_front`. Every type also takes `selfie`.
+	DocumentType *UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocumentType `json:"document_type,omitempty" url:"document_type,omitempty"`
+	// The owner's identity document and selfie, each the ID of a ready file uploaded with Create File and not yet attached to anything else, prefixed `file_`. Send every slot for `document_type` plus `selfie`. Document files can be a PDF, JPEG, or PNG and the selfie a JPEG or PNG, each up to 10MB. They're sent to the verification provider in the background: the owner reads `processing` until then, and `action_required`, with a `rejection_reason` on each document, if a file couldn't be used.
+	Documents *UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocuments `json:"documents,omitempty" url:"documents,omitempty"`
+	// The new owner's email address.
+	Email *string `json:"email,omitempty" url:"email,omitempty"`
+	// The new owner's first name.
+	FirstName *string `json:"first_name,omitempty" url:"first_name,omitempty"`
+	// An owner already on the verification, prefixed `own_`, from `owners`.
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+	// The new owner's last name.
+	LastName *string `json:"last_name,omitempty" url:"last_name,omitempty"`
+	// Share of the business the person owns, from 0 to 100. Across every owner it can't add up to more than 100.
+	OwnershipPercentage *float64 `json:"ownership_percentage,omitempty" url:"ownership_percentage,omitempty"`
+	// The new owner's phone number, with country code.
+	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
+	// Set to `true` with `id` to remove that owner from the business. Takes no other fields. The owner's own verification is kept, so a reused owner can be added back with `verification_id` and a person you added by sending their details and documents again.
+	Remove *bool `json:"remove,omitempty" url:"remove,omitempty"`
+	// What the person is to the business: `ubo` for an ultimate beneficial owner, `director`, `representative` for someone who acts for the business, or `shareholder`. Required for a new owner.
+	Roles []UpdateVerificationsRequestBodyBusinessAddressOwnersItemRolesItem `json:"roles,omitempty" url:"roles,omitempty"`
+	// The new owner's government-issued ID number, such as a Social Security Number in the US.
+	TaxIdentificationNumber *string `json:"tax_identification_number,omitempty" url:"tax_identification_number,omitempty"`
+	// ID of an `approved` individual verification to add as this owner, prefixed `idpf_`. It must be the account's own verification or a team member's. Takes only `roles` and `ownership_percentage` alongside it.
+	VerificationID *string `json:"verification_id,omitempty" url:"verification_id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) GetAddress() *UpdateVerificationsRequestBodyBusinessAddressOwnersItemAddress {
+	if u == nil {
+		return nil
+	}
+	return u.Address
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) GetCountry() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Country
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) GetDateOfBirth() *time.Time {
+	if u == nil {
+		return nil
+	}
+	return u.DateOfBirth
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) GetDocumentType() *UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocumentType {
+	if u == nil {
+		return nil
+	}
+	return u.DocumentType
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) GetDocuments() *UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocuments {
+	if u == nil {
+		return nil
+	}
+	return u.Documents
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) GetEmail() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Email
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) GetFirstName() *string {
+	if u == nil {
+		return nil
+	}
+	return u.FirstName
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) GetID() *string {
+	if u == nil {
+		return nil
+	}
+	return u.ID
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) GetLastName() *string {
+	if u == nil {
+		return nil
+	}
+	return u.LastName
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) GetOwnershipPercentage() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.OwnershipPercentage
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) GetPhone() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Phone
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) GetRemove() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.Remove
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) GetRoles() []UpdateVerificationsRequestBodyBusinessAddressOwnersItemRolesItem {
+	if u == nil {
+		return nil
+	}
+	return u.Roles
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) GetTaxIdentificationNumber() *string {
+	if u == nil {
+		return nil
+	}
+	return u.TaxIdentificationNumber
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) GetVerificationID() *string {
+	if u == nil {
+		return nil
+	}
+	return u.VerificationID
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetAddress sets the Address field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) SetAddress(address *UpdateVerificationsRequestBodyBusinessAddressOwnersItemAddress) {
+	u.Address = address
+	u.require(updateVerificationsRequestBodyBusinessAddressOwnersItemFieldAddress)
+}
+
+// SetCountry sets the Country field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) SetCountry(country *string) {
+	u.Country = country
+	u.require(updateVerificationsRequestBodyBusinessAddressOwnersItemFieldCountry)
+}
+
+// SetDateOfBirth sets the DateOfBirth field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) SetDateOfBirth(dateOfBirth *time.Time) {
+	u.DateOfBirth = dateOfBirth
+	u.require(updateVerificationsRequestBodyBusinessAddressOwnersItemFieldDateOfBirth)
+}
+
+// SetDocumentType sets the DocumentType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) SetDocumentType(documentType *UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocumentType) {
+	u.DocumentType = documentType
+	u.require(updateVerificationsRequestBodyBusinessAddressOwnersItemFieldDocumentType)
+}
+
+// SetDocuments sets the Documents field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) SetDocuments(documents *UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocuments) {
+	u.Documents = documents
+	u.require(updateVerificationsRequestBodyBusinessAddressOwnersItemFieldDocuments)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) SetEmail(email *string) {
+	u.Email = email
+	u.require(updateVerificationsRequestBodyBusinessAddressOwnersItemFieldEmail)
+}
+
+// SetFirstName sets the FirstName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) SetFirstName(firstName *string) {
+	u.FirstName = firstName
+	u.require(updateVerificationsRequestBodyBusinessAddressOwnersItemFieldFirstName)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) SetID(id *string) {
+	u.ID = id
+	u.require(updateVerificationsRequestBodyBusinessAddressOwnersItemFieldID)
+}
+
+// SetLastName sets the LastName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) SetLastName(lastName *string) {
+	u.LastName = lastName
+	u.require(updateVerificationsRequestBodyBusinessAddressOwnersItemFieldLastName)
+}
+
+// SetOwnershipPercentage sets the OwnershipPercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) SetOwnershipPercentage(ownershipPercentage *float64) {
+	u.OwnershipPercentage = ownershipPercentage
+	u.require(updateVerificationsRequestBodyBusinessAddressOwnersItemFieldOwnershipPercentage)
+}
+
+// SetPhone sets the Phone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) SetPhone(phone *string) {
+	u.Phone = phone
+	u.require(updateVerificationsRequestBodyBusinessAddressOwnersItemFieldPhone)
+}
+
+// SetRemove sets the Remove field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) SetRemove(remove *bool) {
+	u.Remove = remove
+	u.require(updateVerificationsRequestBodyBusinessAddressOwnersItemFieldRemove)
+}
+
+// SetRoles sets the Roles field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) SetRoles(roles []UpdateVerificationsRequestBodyBusinessAddressOwnersItemRolesItem) {
+	u.Roles = roles
+	u.require(updateVerificationsRequestBodyBusinessAddressOwnersItemFieldRoles)
+}
+
+// SetTaxIdentificationNumber sets the TaxIdentificationNumber field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) SetTaxIdentificationNumber(taxIdentificationNumber *string) {
+	u.TaxIdentificationNumber = taxIdentificationNumber
+	u.require(updateVerificationsRequestBodyBusinessAddressOwnersItemFieldTaxIdentificationNumber)
+}
+
+// SetVerificationID sets the VerificationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) SetVerificationID(verificationID *string) {
+	u.VerificationID = verificationID
+	u.require(updateVerificationsRequestBodyBusinessAddressOwnersItemFieldVerificationID)
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) UnmarshalJSON(data []byte) error {
+	type embed UpdateVerificationsRequestBodyBusinessAddressOwnersItem
+	var unmarshaler = struct {
+		embed
+		DateOfBirth *internal.Date `json:"date_of_birth,omitempty"`
+	}{
+		embed: embed(*u),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*u = UpdateVerificationsRequestBodyBusinessAddressOwnersItem(unmarshaler.embed)
+	u.DateOfBirth = unmarshaler.DateOfBirth.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) MarshalJSON() ([]byte, error) {
+	type embed UpdateVerificationsRequestBodyBusinessAddressOwnersItem
+	var marshaler = struct {
+		embed
+		DateOfBirth *internal.Date `json:"date_of_birth,omitempty"`
+	}{
+		embed:       embed(*u),
+		DateOfBirth: internal.NewOptionalDate(u.DateOfBirth),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateVerificationsRequestBodyBusinessAddressOwnersItemAddressFieldCity       = big.NewInt(1 << 0)
+	updateVerificationsRequestBodyBusinessAddressOwnersItemAddressFieldCountry    = big.NewInt(1 << 1)
+	updateVerificationsRequestBodyBusinessAddressOwnersItemAddressFieldLine1      = big.NewInt(1 << 2)
+	updateVerificationsRequestBodyBusinessAddressOwnersItemAddressFieldLine2      = big.NewInt(1 << 3)
+	updateVerificationsRequestBodyBusinessAddressOwnersItemAddressFieldPostalCode = big.NewInt(1 << 4)
+	updateVerificationsRequestBodyBusinessAddressOwnersItemAddressFieldState      = big.NewInt(1 << 5)
+)
+
+// updateVerificationsRequestBodyBusinessAddressOwnersItemAddressNullableFields maps the wire names of UpdateVerificationsRequestBodyBusinessAddressOwnersItemAddress's nullable fields (required or optional) to their field bits.
+var updateVerificationsRequestBodyBusinessAddressOwnersItemAddressNullableFields = map[string]*big.Int{
+	"city":        updateVerificationsRequestBodyBusinessAddressOwnersItemAddressFieldCity,
+	"country":     updateVerificationsRequestBodyBusinessAddressOwnersItemAddressFieldCountry,
+	"line1":       updateVerificationsRequestBodyBusinessAddressOwnersItemAddressFieldLine1,
+	"line2":       updateVerificationsRequestBodyBusinessAddressOwnersItemAddressFieldLine2,
+	"postal_code": updateVerificationsRequestBodyBusinessAddressOwnersItemAddressFieldPostalCode,
+	"state":       updateVerificationsRequestBodyBusinessAddressOwnersItemAddressFieldState,
+}
+
+// The new owner's home address, with `line1`, `city`, `state`, and `postal_code`.
+type UpdateVerificationsRequestBodyBusinessAddressOwnersItemAddress struct {
+	City *string `json:"city,omitempty" url:"city,omitempty"`
+	// Two-letter ISO 3166-1 country code, for example `US`, `DE`, or `GB`.
+	Country *string `json:"country,omitempty" url:"country,omitempty"`
+	// First line of the street address.
+	Line1 *string `json:"line1,omitempty" url:"line1,omitempty"`
+	// Second line of the street address.
+	Line2 *string `json:"line2,omitempty" url:"line2,omitempty"`
+	// Postal or ZIP code.
+	PostalCode *string `json:"postal_code,omitempty" url:"postal_code,omitempty"`
+	// State, province, or region code, for example `CA`.
+	State *string `json:"state,omitempty" url:"state,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemAddress) GetCity() *string {
+	if u == nil {
+		return nil
+	}
+	return u.City
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemAddress) GetCountry() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Country
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemAddress) GetLine1() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Line1
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemAddress) GetLine2() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Line2
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemAddress) GetPostalCode() *string {
+	if u == nil {
+		return nil
+	}
+	return u.PostalCode
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemAddress) GetState() *string {
+	if u == nil {
+		return nil
+	}
+	return u.State
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemAddress) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemAddress) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetCity sets the City field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemAddress) SetCity(city *string) {
+	u.City = city
+	u.require(updateVerificationsRequestBodyBusinessAddressOwnersItemAddressFieldCity)
+}
+
+// SetCountry sets the Country field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemAddress) SetCountry(country *string) {
+	u.Country = country
+	u.require(updateVerificationsRequestBodyBusinessAddressOwnersItemAddressFieldCountry)
+}
+
+// SetLine1 sets the Line1 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemAddress) SetLine1(line1 *string) {
+	u.Line1 = line1
+	u.require(updateVerificationsRequestBodyBusinessAddressOwnersItemAddressFieldLine1)
+}
+
+// SetLine2 sets the Line2 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemAddress) SetLine2(line2 *string) {
+	u.Line2 = line2
+	u.require(updateVerificationsRequestBodyBusinessAddressOwnersItemAddressFieldLine2)
+}
+
+// SetPostalCode sets the PostalCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemAddress) SetPostalCode(postalCode *string) {
+	u.PostalCode = postalCode
+	u.require(updateVerificationsRequestBodyBusinessAddressOwnersItemAddressFieldPostalCode)
+}
+
+// SetState sets the State field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemAddress) SetState(state *string) {
+	u.State = state
+	u.require(updateVerificationsRequestBodyBusinessAddressOwnersItemAddressFieldState)
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemAddress) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateVerificationsRequestBodyBusinessAddressOwnersItemAddress
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateVerificationsRequestBodyBusinessAddressOwnersItemAddress(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateVerificationsRequestBodyBusinessAddressOwnersItemAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemAddress) MarshalJSON() ([]byte, error) {
+	type embed UpdateVerificationsRequestBodyBusinessAddressOwnersItemAddress
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemAddress) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// Identity document in `documents`. Decides which slots to send: `id_card` → `id_card_front` + `id_card_back`; `drivers` → `drivers_front` + `drivers_back`; `residence_permit` → `residence_permit_front` + `residence_permit_back`; `passport` → `passport_front`. Every type also takes `selfie`.
+type UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocumentType string
+
+const (
+	UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocumentTypeIDCard          UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocumentType = "id_card"
+	UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocumentTypeDrivers         UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocumentType = "drivers"
+	UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocumentTypeResidencePermit UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocumentType = "residence_permit"
+	UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocumentTypePassport        UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocumentType = "passport"
+)
+
+func NewUpdateVerificationsRequestBodyBusinessAddressOwnersItemDocumentTypeFromString(s string) (UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocumentType, error) {
+	switch s {
+	case "id_card":
+		return UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocumentTypeIDCard, nil
+	case "drivers":
+		return UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocumentTypeDrivers, nil
+	case "residence_permit":
+		return UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocumentTypeResidencePermit, nil
+	case "passport":
+		return UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocumentTypePassport, nil
+	}
+	var t UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocumentType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocumentType) Ptr() *UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocumentType {
+	return &u
+}
+
+var (
+	updateVerificationsRequestBodyBusinessAddressOwnersItemDocumentsFieldDriversBack          = big.NewInt(1 << 0)
+	updateVerificationsRequestBodyBusinessAddressOwnersItemDocumentsFieldDriversFront         = big.NewInt(1 << 1)
+	updateVerificationsRequestBodyBusinessAddressOwnersItemDocumentsFieldIDCardBack           = big.NewInt(1 << 2)
+	updateVerificationsRequestBodyBusinessAddressOwnersItemDocumentsFieldIDCardFront          = big.NewInt(1 << 3)
+	updateVerificationsRequestBodyBusinessAddressOwnersItemDocumentsFieldPassportFront        = big.NewInt(1 << 4)
+	updateVerificationsRequestBodyBusinessAddressOwnersItemDocumentsFieldResidencePermitBack  = big.NewInt(1 << 5)
+	updateVerificationsRequestBodyBusinessAddressOwnersItemDocumentsFieldResidencePermitFront = big.NewInt(1 << 6)
+	updateVerificationsRequestBodyBusinessAddressOwnersItemDocumentsFieldSelfie               = big.NewInt(1 << 7)
+)
+
+// The owner's identity document and selfie, each the ID of a ready file uploaded with Create File and not yet attached to anything else, prefixed `file_`. Send every slot for `document_type` plus `selfie`. Document files can be a PDF, JPEG, or PNG and the selfie a JPEG or PNG, each up to 10MB. They're sent to the verification provider in the background: the owner reads `processing` until then, and `action_required`, with a `rejection_reason` on each document, if a file couldn't be used.
+type UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocuments struct {
+	// File ID of the back of the driver's license. Required when `document_type` is `drivers`.
+	DriversBack *string `json:"drivers_back,omitempty" url:"drivers_back,omitempty"`
+	// File ID of the front of the driver's license. Required when `document_type` is `drivers`.
+	DriversFront *string `json:"drivers_front,omitempty" url:"drivers_front,omitempty"`
+	// File ID of the back of the ID card. Required when `document_type` is `id_card`.
+	IDCardBack *string `json:"id_card_back,omitempty" url:"id_card_back,omitempty"`
+	// File ID of the front of the ID card. Required when `document_type` is `id_card`.
+	IDCardFront *string `json:"id_card_front,omitempty" url:"id_card_front,omitempty"`
+	// File ID of the passport's photo page. Required when `document_type` is `passport`.
+	PassportFront *string `json:"passport_front,omitempty" url:"passport_front,omitempty"`
+	// File ID of the back of the residence permit. Required when `document_type` is `residence_permit`.
+	ResidencePermitBack *string `json:"residence_permit_back,omitempty" url:"residence_permit_back,omitempty"`
+	// File ID of the front of the residence permit. Required when `document_type` is `residence_permit`.
+	ResidencePermitFront *string `json:"residence_permit_front,omitempty" url:"residence_permit_front,omitempty"`
+	// File ID of a photo of the owner's face. Always required. Must be a JPEG or PNG.
+	Selfie *string `json:"selfie,omitempty" url:"selfie,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocuments) GetDriversBack() *string {
+	if u == nil {
+		return nil
+	}
+	return u.DriversBack
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocuments) GetDriversFront() *string {
+	if u == nil {
+		return nil
+	}
+	return u.DriversFront
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocuments) GetIDCardBack() *string {
+	if u == nil {
+		return nil
+	}
+	return u.IDCardBack
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocuments) GetIDCardFront() *string {
+	if u == nil {
+		return nil
+	}
+	return u.IDCardFront
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocuments) GetPassportFront() *string {
+	if u == nil {
+		return nil
+	}
+	return u.PassportFront
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocuments) GetResidencePermitBack() *string {
+	if u == nil {
+		return nil
+	}
+	return u.ResidencePermitBack
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocuments) GetResidencePermitFront() *string {
+	if u == nil {
+		return nil
+	}
+	return u.ResidencePermitFront
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocuments) GetSelfie() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Selfie
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocuments) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocuments) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetDriversBack sets the DriversBack field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocuments) SetDriversBack(driversBack *string) {
+	u.DriversBack = driversBack
+	u.require(updateVerificationsRequestBodyBusinessAddressOwnersItemDocumentsFieldDriversBack)
+}
+
+// SetDriversFront sets the DriversFront field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocuments) SetDriversFront(driversFront *string) {
+	u.DriversFront = driversFront
+	u.require(updateVerificationsRequestBodyBusinessAddressOwnersItemDocumentsFieldDriversFront)
+}
+
+// SetIDCardBack sets the IDCardBack field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocuments) SetIDCardBack(idCardBack *string) {
+	u.IDCardBack = idCardBack
+	u.require(updateVerificationsRequestBodyBusinessAddressOwnersItemDocumentsFieldIDCardBack)
+}
+
+// SetIDCardFront sets the IDCardFront field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocuments) SetIDCardFront(idCardFront *string) {
+	u.IDCardFront = idCardFront
+	u.require(updateVerificationsRequestBodyBusinessAddressOwnersItemDocumentsFieldIDCardFront)
+}
+
+// SetPassportFront sets the PassportFront field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocuments) SetPassportFront(passportFront *string) {
+	u.PassportFront = passportFront
+	u.require(updateVerificationsRequestBodyBusinessAddressOwnersItemDocumentsFieldPassportFront)
+}
+
+// SetResidencePermitBack sets the ResidencePermitBack field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocuments) SetResidencePermitBack(residencePermitBack *string) {
+	u.ResidencePermitBack = residencePermitBack
+	u.require(updateVerificationsRequestBodyBusinessAddressOwnersItemDocumentsFieldResidencePermitBack)
+}
+
+// SetResidencePermitFront sets the ResidencePermitFront field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocuments) SetResidencePermitFront(residencePermitFront *string) {
+	u.ResidencePermitFront = residencePermitFront
+	u.require(updateVerificationsRequestBodyBusinessAddressOwnersItemDocumentsFieldResidencePermitFront)
+}
+
+// SetSelfie sets the Selfie field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocuments) SetSelfie(selfie *string) {
+	u.Selfie = selfie
+	u.require(updateVerificationsRequestBodyBusinessAddressOwnersItemDocumentsFieldSelfie)
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocuments) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocuments
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocuments(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocuments) MarshalJSON() ([]byte, error) {
+	type embed UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocuments
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocuments) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+type UpdateVerificationsRequestBodyBusinessAddressOwnersItemRolesItem string
+
+const (
+	UpdateVerificationsRequestBodyBusinessAddressOwnersItemRolesItemUbo            UpdateVerificationsRequestBodyBusinessAddressOwnersItemRolesItem = "ubo"
+	UpdateVerificationsRequestBodyBusinessAddressOwnersItemRolesItemDirector       UpdateVerificationsRequestBodyBusinessAddressOwnersItemRolesItem = "director"
+	UpdateVerificationsRequestBodyBusinessAddressOwnersItemRolesItemRepresentative UpdateVerificationsRequestBodyBusinessAddressOwnersItemRolesItem = "representative"
+	UpdateVerificationsRequestBodyBusinessAddressOwnersItemRolesItemShareholder    UpdateVerificationsRequestBodyBusinessAddressOwnersItemRolesItem = "shareholder"
+)
+
+func NewUpdateVerificationsRequestBodyBusinessAddressOwnersItemRolesItemFromString(s string) (UpdateVerificationsRequestBodyBusinessAddressOwnersItemRolesItem, error) {
+	switch s {
+	case "ubo":
+		return UpdateVerificationsRequestBodyBusinessAddressOwnersItemRolesItemUbo, nil
+	case "director":
+		return UpdateVerificationsRequestBodyBusinessAddressOwnersItemRolesItemDirector, nil
+	case "representative":
+		return UpdateVerificationsRequestBodyBusinessAddressOwnersItemRolesItemRepresentative, nil
+	case "shareholder":
+		return UpdateVerificationsRequestBodyBusinessAddressOwnersItemRolesItemShareholder, nil
+	}
+	var t UpdateVerificationsRequestBodyBusinessAddressOwnersItemRolesItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateVerificationsRequestBodyBusinessAddressOwnersItemRolesItem) Ptr() *UpdateVerificationsRequestBodyBusinessAddressOwnersItemRolesItem {
+	return &u
 }
 
 var (
@@ -8763,13 +11657,14 @@ var (
 	updateVerificationsResponseFieldID                   = big.NewInt(1 << 8)
 	updateVerificationsResponseFieldKind                 = big.NewInt(1 << 9)
 	updateVerificationsResponseFieldLastName             = big.NewInt(1 << 10)
-	updateVerificationsResponseFieldPhone                = big.NewInt(1 << 11)
-	updateVerificationsResponseFieldRegistrationNumber   = big.NewInt(1 << 12)
-	updateVerificationsResponseFieldRequestedInformation = big.NewInt(1 << 13)
-	updateVerificationsResponseFieldRequiredDocuments    = big.NewInt(1 << 14)
-	updateVerificationsResponseFieldSessionURL           = big.NewInt(1 << 15)
-	updateVerificationsResponseFieldStatus               = big.NewInt(1 << 16)
-	updateVerificationsResponseFieldUpdatedAt            = big.NewInt(1 << 17)
+	updateVerificationsResponseFieldOwners               = big.NewInt(1 << 11)
+	updateVerificationsResponseFieldPhone                = big.NewInt(1 << 12)
+	updateVerificationsResponseFieldRegistrationNumber   = big.NewInt(1 << 13)
+	updateVerificationsResponseFieldRequestedInformation = big.NewInt(1 << 14)
+	updateVerificationsResponseFieldRequiredDocuments    = big.NewInt(1 << 15)
+	updateVerificationsResponseFieldSessionURL           = big.NewInt(1 << 16)
+	updateVerificationsResponseFieldStatus               = big.NewInt(1 << 17)
+	updateVerificationsResponseFieldUpdatedAt            = big.NewInt(1 << 18)
 )
 
 // updateVerificationsResponseNullableFields maps the wire names of UpdateVerificationsResponse's nullable fields (required or optional) to their field bits.
@@ -8807,6 +11702,8 @@ type UpdateVerificationsResponse struct {
 	ID       *string                          `json:"id,omitempty" url:"id,omitempty"`
 	Kind     *UpdateVerificationsResponseKind `json:"kind,omitempty" url:"kind,omitempty"`
 	LastName *string                          `json:"last_name,omitempty" url:"last_name,omitempty"`
+	// Owners of the business and the progress of each one's own verification. Empty for individual verifications.
+	Owners []*UpdateVerificationsResponseOwnersItem `json:"owners" url:"owners"`
 	// Phone number on the verification profile.
 	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
 	// Number the business was registered under in its place of incorporation, such as a state file number in the US or a Company Number in the UK. Business verifications only; `null` until the business verification is approved.
@@ -8904,6 +11801,13 @@ func (u *UpdateVerificationsResponse) GetLastName() *string {
 		return nil
 	}
 	return u.LastName
+}
+
+func (u *UpdateVerificationsResponse) GetOwners() []*UpdateVerificationsResponseOwnersItem {
+	if u == nil {
+		return nil
+	}
+	return u.Owners
 }
 
 func (u *UpdateVerificationsResponse) GetPhone() *string {
@@ -9046,6 +11950,13 @@ func (u *UpdateVerificationsResponse) SetKind(kind *UpdateVerificationsResponseK
 func (u *UpdateVerificationsResponse) SetLastName(lastName *string) {
 	u.LastName = lastName
 	u.require(updateVerificationsResponseFieldLastName)
+}
+
+// SetOwners sets the Owners field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponse) SetOwners(owners []*UpdateVerificationsResponseOwnersItem) {
+	u.Owners = owners
+	u.require(updateVerificationsResponseFieldOwners)
 }
 
 // SetPhone sets the Phone field and marks it as non-optional;
@@ -9353,6 +12264,429 @@ func NewUpdateVerificationsResponseKindFromString(s string) (UpdateVerifications
 }
 
 func (u UpdateVerificationsResponseKind) Ptr() *UpdateVerificationsResponseKind {
+	return &u
+}
+
+var (
+	updateVerificationsResponseOwnersItemFieldFirstName           = big.NewInt(1 << 0)
+	updateVerificationsResponseOwnersItemFieldID                  = big.NewInt(1 << 1)
+	updateVerificationsResponseOwnersItemFieldLastName            = big.NewInt(1 << 2)
+	updateVerificationsResponseOwnersItemFieldOwnershipPercentage = big.NewInt(1 << 3)
+	updateVerificationsResponseOwnersItemFieldRequiredDocuments   = big.NewInt(1 << 4)
+	updateVerificationsResponseOwnersItemFieldRoles               = big.NewInt(1 << 5)
+	updateVerificationsResponseOwnersItemFieldStatus              = big.NewInt(1 << 6)
+)
+
+// updateVerificationsResponseOwnersItemNullableFields maps the wire names of UpdateVerificationsResponseOwnersItem's nullable fields (required or optional) to their field bits.
+var updateVerificationsResponseOwnersItemNullableFields = map[string]*big.Int{
+	"first_name":           updateVerificationsResponseOwnersItemFieldFirstName,
+	"last_name":            updateVerificationsResponseOwnersItemFieldLastName,
+	"ownership_percentage": updateVerificationsResponseOwnersItemFieldOwnershipPercentage,
+}
+
+type UpdateVerificationsResponseOwnersItem struct {
+	FirstName *string `json:"first_name,omitempty" url:"first_name,omitempty"`
+	// Owner ID, prefixed `own_`. Send it in Update Verification's `owners` to change or remove the owner, including one added in the hosted session.
+	ID       string  `json:"id" url:"id"`
+	LastName *string `json:"last_name,omitempty" url:"last_name,omitempty"`
+	// Share of the business the person owns, from 0 to 100.
+	OwnershipPercentage *float64 `json:"ownership_percentage,omitempty" url:"ownership_percentage,omitempty"`
+	// The owner's documents and their progress. Empty for an owner added with `verification_id`.
+	RequiredDocuments []*UpdateVerificationsResponseOwnersItemRequiredDocumentsItem `json:"required_documents" url:"required_documents"`
+	// What the person is to the business.
+	Roles []UpdateVerificationsResponseOwnersItemRolesItem `json:"roles" url:"roles"`
+	// Where the owner's own verification stands, in the same states as `status`. `action_required` when their documents need sending again.
+	Status UpdateVerificationsResponseOwnersItemStatus `json:"status" url:"status"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateVerificationsResponseOwnersItem) GetFirstName() *string {
+	if u == nil {
+		return nil
+	}
+	return u.FirstName
+}
+
+func (u *UpdateVerificationsResponseOwnersItem) GetID() string {
+	if u == nil {
+		return ""
+	}
+	return u.ID
+}
+
+func (u *UpdateVerificationsResponseOwnersItem) GetLastName() *string {
+	if u == nil {
+		return nil
+	}
+	return u.LastName
+}
+
+func (u *UpdateVerificationsResponseOwnersItem) GetOwnershipPercentage() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.OwnershipPercentage
+}
+
+func (u *UpdateVerificationsResponseOwnersItem) GetRequiredDocuments() []*UpdateVerificationsResponseOwnersItemRequiredDocumentsItem {
+	if u == nil {
+		return nil
+	}
+	return u.RequiredDocuments
+}
+
+func (u *UpdateVerificationsResponseOwnersItem) GetRoles() []UpdateVerificationsResponseOwnersItemRolesItem {
+	if u == nil {
+		return nil
+	}
+	return u.Roles
+}
+
+func (u *UpdateVerificationsResponseOwnersItem) GetStatus() UpdateVerificationsResponseOwnersItemStatus {
+	if u == nil {
+		return ""
+	}
+	return u.Status
+}
+
+func (u *UpdateVerificationsResponseOwnersItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateVerificationsResponseOwnersItem) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetFirstName sets the FirstName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponseOwnersItem) SetFirstName(firstName *string) {
+	u.FirstName = firstName
+	u.require(updateVerificationsResponseOwnersItemFieldFirstName)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponseOwnersItem) SetID(id string) {
+	u.ID = id
+	u.require(updateVerificationsResponseOwnersItemFieldID)
+}
+
+// SetLastName sets the LastName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponseOwnersItem) SetLastName(lastName *string) {
+	u.LastName = lastName
+	u.require(updateVerificationsResponseOwnersItemFieldLastName)
+}
+
+// SetOwnershipPercentage sets the OwnershipPercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponseOwnersItem) SetOwnershipPercentage(ownershipPercentage *float64) {
+	u.OwnershipPercentage = ownershipPercentage
+	u.require(updateVerificationsResponseOwnersItemFieldOwnershipPercentage)
+}
+
+// SetRequiredDocuments sets the RequiredDocuments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponseOwnersItem) SetRequiredDocuments(requiredDocuments []*UpdateVerificationsResponseOwnersItemRequiredDocumentsItem) {
+	u.RequiredDocuments = requiredDocuments
+	u.require(updateVerificationsResponseOwnersItemFieldRequiredDocuments)
+}
+
+// SetRoles sets the Roles field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponseOwnersItem) SetRoles(roles []UpdateVerificationsResponseOwnersItemRolesItem) {
+	u.Roles = roles
+	u.require(updateVerificationsResponseOwnersItemFieldRoles)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponseOwnersItem) SetStatus(status UpdateVerificationsResponseOwnersItemStatus) {
+	u.Status = status
+	u.require(updateVerificationsResponseOwnersItemFieldStatus)
+}
+
+func (u *UpdateVerificationsResponseOwnersItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateVerificationsResponseOwnersItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateVerificationsResponseOwnersItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateVerificationsResponseOwnersItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateVerificationsResponseOwnersItem) MarshalJSON() ([]byte, error) {
+	type embed UpdateVerificationsResponseOwnersItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateVerificationsResponseOwnersItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateVerificationsResponseOwnersItemRequiredDocumentsItemFieldDocument        = big.NewInt(1 << 0)
+	updateVerificationsResponseOwnersItemRequiredDocumentsItemFieldRejectionReason = big.NewInt(1 << 1)
+	updateVerificationsResponseOwnersItemRequiredDocumentsItemFieldStatus          = big.NewInt(1 << 2)
+)
+
+// updateVerificationsResponseOwnersItemRequiredDocumentsItemNullableFields maps the wire names of UpdateVerificationsResponseOwnersItemRequiredDocumentsItem's nullable fields (required or optional) to their field bits.
+var updateVerificationsResponseOwnersItemRequiredDocumentsItemNullableFields = map[string]*big.Int{
+	"rejection_reason": updateVerificationsResponseOwnersItemRequiredDocumentsItemFieldRejectionReason,
+}
+
+type UpdateVerificationsResponseOwnersItemRequiredDocumentsItem struct {
+	// Document slot key, such as `id_card_front`, `id_card_back`, or `selfie`.
+	Document *string `json:"document,omitempty" url:"document,omitempty"`
+	// Why the previous submission was rejected, when the provider requested new documents or declined the verification.
+	RejectionReason *string `json:"rejection_reason,omitempty" url:"rejection_reason,omitempty"`
+	// `pending_upload` until the document has been relayed for review; `submitted` afterwards.
+	Status *UpdateVerificationsResponseOwnersItemRequiredDocumentsItemStatus `json:"status,omitempty" url:"status,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateVerificationsResponseOwnersItemRequiredDocumentsItem) GetDocument() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Document
+}
+
+func (u *UpdateVerificationsResponseOwnersItemRequiredDocumentsItem) GetRejectionReason() *string {
+	if u == nil {
+		return nil
+	}
+	return u.RejectionReason
+}
+
+func (u *UpdateVerificationsResponseOwnersItemRequiredDocumentsItem) GetStatus() *UpdateVerificationsResponseOwnersItemRequiredDocumentsItemStatus {
+	if u == nil {
+		return nil
+	}
+	return u.Status
+}
+
+func (u *UpdateVerificationsResponseOwnersItemRequiredDocumentsItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateVerificationsResponseOwnersItemRequiredDocumentsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetDocument sets the Document field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponseOwnersItemRequiredDocumentsItem) SetDocument(document *string) {
+	u.Document = document
+	u.require(updateVerificationsResponseOwnersItemRequiredDocumentsItemFieldDocument)
+}
+
+// SetRejectionReason sets the RejectionReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponseOwnersItemRequiredDocumentsItem) SetRejectionReason(rejectionReason *string) {
+	u.RejectionReason = rejectionReason
+	u.require(updateVerificationsResponseOwnersItemRequiredDocumentsItemFieldRejectionReason)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponseOwnersItemRequiredDocumentsItem) SetStatus(status *UpdateVerificationsResponseOwnersItemRequiredDocumentsItemStatus) {
+	u.Status = status
+	u.require(updateVerificationsResponseOwnersItemRequiredDocumentsItemFieldStatus)
+}
+
+func (u *UpdateVerificationsResponseOwnersItemRequiredDocumentsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateVerificationsResponseOwnersItemRequiredDocumentsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateVerificationsResponseOwnersItemRequiredDocumentsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateVerificationsResponseOwnersItemRequiredDocumentsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateVerificationsResponseOwnersItemRequiredDocumentsItem) MarshalJSON() ([]byte, error) {
+	type embed UpdateVerificationsResponseOwnersItemRequiredDocumentsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateVerificationsResponseOwnersItemRequiredDocumentsItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// `pending_upload` until the document has been relayed for review; `submitted` afterwards.
+type UpdateVerificationsResponseOwnersItemRequiredDocumentsItemStatus string
+
+const (
+	UpdateVerificationsResponseOwnersItemRequiredDocumentsItemStatusPendingUpload UpdateVerificationsResponseOwnersItemRequiredDocumentsItemStatus = "pending_upload"
+	UpdateVerificationsResponseOwnersItemRequiredDocumentsItemStatusSubmitted     UpdateVerificationsResponseOwnersItemRequiredDocumentsItemStatus = "submitted"
+)
+
+func NewUpdateVerificationsResponseOwnersItemRequiredDocumentsItemStatusFromString(s string) (UpdateVerificationsResponseOwnersItemRequiredDocumentsItemStatus, error) {
+	switch s {
+	case "pending_upload":
+		return UpdateVerificationsResponseOwnersItemRequiredDocumentsItemStatusPendingUpload, nil
+	case "submitted":
+		return UpdateVerificationsResponseOwnersItemRequiredDocumentsItemStatusSubmitted, nil
+	}
+	var t UpdateVerificationsResponseOwnersItemRequiredDocumentsItemStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateVerificationsResponseOwnersItemRequiredDocumentsItemStatus) Ptr() *UpdateVerificationsResponseOwnersItemRequiredDocumentsItemStatus {
+	return &u
+}
+
+type UpdateVerificationsResponseOwnersItemRolesItem string
+
+const (
+	UpdateVerificationsResponseOwnersItemRolesItemUbo            UpdateVerificationsResponseOwnersItemRolesItem = "ubo"
+	UpdateVerificationsResponseOwnersItemRolesItemDirector       UpdateVerificationsResponseOwnersItemRolesItem = "director"
+	UpdateVerificationsResponseOwnersItemRolesItemRepresentative UpdateVerificationsResponseOwnersItemRolesItem = "representative"
+	UpdateVerificationsResponseOwnersItemRolesItemShareholder    UpdateVerificationsResponseOwnersItemRolesItem = "shareholder"
+)
+
+func NewUpdateVerificationsResponseOwnersItemRolesItemFromString(s string) (UpdateVerificationsResponseOwnersItemRolesItem, error) {
+	switch s {
+	case "ubo":
+		return UpdateVerificationsResponseOwnersItemRolesItemUbo, nil
+	case "director":
+		return UpdateVerificationsResponseOwnersItemRolesItemDirector, nil
+	case "representative":
+		return UpdateVerificationsResponseOwnersItemRolesItemRepresentative, nil
+	case "shareholder":
+		return UpdateVerificationsResponseOwnersItemRolesItemShareholder, nil
+	}
+	var t UpdateVerificationsResponseOwnersItemRolesItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateVerificationsResponseOwnersItemRolesItem) Ptr() *UpdateVerificationsResponseOwnersItemRolesItem {
+	return &u
+}
+
+// Where the owner's own verification stands, in the same states as `status`. `action_required` when their documents need sending again.
+type UpdateVerificationsResponseOwnersItemStatus string
+
+const (
+	UpdateVerificationsResponseOwnersItemStatusNotStarted     UpdateVerificationsResponseOwnersItemStatus = "not_started"
+	UpdateVerificationsResponseOwnersItemStatusPending        UpdateVerificationsResponseOwnersItemStatus = "pending"
+	UpdateVerificationsResponseOwnersItemStatusProcessing     UpdateVerificationsResponseOwnersItemStatus = "processing"
+	UpdateVerificationsResponseOwnersItemStatusManualReview   UpdateVerificationsResponseOwnersItemStatus = "manual_review"
+	UpdateVerificationsResponseOwnersItemStatusApproved       UpdateVerificationsResponseOwnersItemStatus = "approved"
+	UpdateVerificationsResponseOwnersItemStatusRejected       UpdateVerificationsResponseOwnersItemStatus = "rejected"
+	UpdateVerificationsResponseOwnersItemStatusActionRequired UpdateVerificationsResponseOwnersItemStatus = "action_required"
+)
+
+func NewUpdateVerificationsResponseOwnersItemStatusFromString(s string) (UpdateVerificationsResponseOwnersItemStatus, error) {
+	switch s {
+	case "not_started":
+		return UpdateVerificationsResponseOwnersItemStatusNotStarted, nil
+	case "pending":
+		return UpdateVerificationsResponseOwnersItemStatusPending, nil
+	case "processing":
+		return UpdateVerificationsResponseOwnersItemStatusProcessing, nil
+	case "manual_review":
+		return UpdateVerificationsResponseOwnersItemStatusManualReview, nil
+	case "approved":
+		return UpdateVerificationsResponseOwnersItemStatusApproved, nil
+	case "rejected":
+		return UpdateVerificationsResponseOwnersItemStatusRejected, nil
+	case "action_required":
+		return UpdateVerificationsResponseOwnersItemStatusActionRequired, nil
+	}
+	var t UpdateVerificationsResponseOwnersItemStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateVerificationsResponseOwnersItemStatus) Ptr() *UpdateVerificationsResponseOwnersItemStatus {
 	return &u
 }
 
