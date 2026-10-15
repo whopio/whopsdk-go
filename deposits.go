@@ -21,7 +21,7 @@ type CreateDepositsRequest struct {
 	Amount *float64 `json:"amount,omitempty" url:"-"`
 	// Account ID to fund, `biz_` or `user_`. Any business resolves without authentication; a user account resolves only for that same authenticated user.
 	Destination string `json:"destination" url:"-"`
-	// A saved payment method of the business to charge for `amount`, prefixed `payt_`. Only for a `biz_` destination, and requires authentication with the `payment:charge` scope. A declined charge fails the request with 400.
+	// A saved payment method of the business to charge for `amount`, prefixed `payt_`. Save one with Create setup intent and `owner_id` set to the account. Only for a `biz_` destination, and requires authentication with the `payment:charge` scope. A declined charge fails the request with 400.
 	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
