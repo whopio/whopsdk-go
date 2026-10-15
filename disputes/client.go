@@ -198,6 +198,33 @@ func (c *Client) Update(
 	return response.Body, nil
 }
 
+// Accepts a chargeback, conceding it to the customer instead of contesting it. The payment processor closes the dispute as `lost`. This is final — the dispute cannot be contested afterwards. Only a dispute whose `acceptable` is true can be accepted.
+//
+// Example:
+//
+//	request := &whopsdk.AcceptDisputesRequest{
+//	    ID: "id",
+//	}
+//	client.Disputes.Accept(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Accept(
+	ctx context.Context,
+	request *whopsdk.AcceptDisputesRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.Dispute, error) {
+	response, err := c.WithRawResponse.Accept(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Sends a dispute's evidence to the payment processor. This is final — it cannot be edited or sent again.
 //
 // Example:

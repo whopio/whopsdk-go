@@ -15044,6 +15044,66 @@ client.Disputes.Update(
 </dl>
 </details>
 
+<details><summary><code>client.Disputes.Accept(ID) -> *whopsdk.Dispute</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Accepts a chargeback, conceding it to the customer instead of contesting it. The payment processor closes the dispute as `lost`. This is final — the dispute cannot be contested afterwards. Only a dispute whose `acceptable` is true can be accepted.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.AcceptDisputesRequest{
+    ID: "id",
+}
+client.Disputes.Accept(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The dispute ID (`dspt_` tag).
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Disputes.Submit(ID) -> *whopsdk.Dispute</code></summary>
 <dl>
 <dd>
