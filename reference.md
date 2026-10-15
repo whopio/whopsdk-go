@@ -44683,7 +44683,6 @@ Save annual projections for a business referred by the authenticated partner. Pr
 ```go
 request := &partners.UpdateBusinessesRequest{
     ID: "id",
-    AnnualAdsUsd: "120000",
     AnnualProcessingUsd: "1200000",
 }
 client.Partners.Businesses.Update(
@@ -44712,15 +44711,7 @@ client.Partners.Businesses.Update(
 <dl>
 <dd>
 
-**annualAdsUsd:** `string` — Annual projected Whop Ads spend in USD.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**annualProcessingUsd:** `string` — Annual projected processing on Whop in USD.
+**annualProcessingUsd:** `string` — Annual projected card and BNPL payment volume on Whop in USD.
     
 </dd>
 </dl>
@@ -44766,7 +44757,7 @@ request := &partners.AcceptCommissionAdvanceBusinessesRequest{
         partners.AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItemClawback,
         partners.AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItemTerm,
     },
-    ExpectedAmountUsd: "1439.99",
+    ExpectedAmountUsd: "1079.99",
     OfferToken: "eyJfcmFpbHMiOnsiZGF0YSI6MSwicHVyIjoiYmxvYl9pZCJ9fQ==--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
     TermsVersion: "2026-01-01",
 }

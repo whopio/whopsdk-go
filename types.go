@@ -28861,21 +28861,19 @@ func (p *Pagination) String() string {
 var (
 	partnerAdvanceFieldActivity60Day                  = big.NewInt(1 << 0)
 	partnerAdvanceFieldAmount                         = big.NewInt(1 << 1)
-	partnerAdvanceFieldAnnualAds                      = big.NewInt(1 << 2)
-	partnerAdvanceFieldAnnualProcessing               = big.NewInt(1 << 3)
-	partnerAdvanceFieldClawedBackAt                   = big.NewInt(1 << 4)
-	partnerAdvanceFieldDeadlineAt                     = big.NewInt(1 << 5)
-	partnerAdvanceFieldFundedAt                       = big.NewInt(1 << 6)
-	partnerAdvanceFieldOfferToken                     = big.NewInt(1 << 7)
-	partnerAdvanceFieldProcessingTarget               = big.NewInt(1 << 8)
-	partnerAdvanceFieldProjected60DayActivity         = big.NewInt(1 << 9)
-	partnerAdvanceFieldProjectedAdsCommissions        = big.NewInt(1 << 10)
-	partnerAdvanceFieldProjectedCommissions           = big.NewInt(1 << 11)
-	partnerAdvanceFieldProjectedProcessingCommissions = big.NewInt(1 << 12)
-	partnerAdvanceFieldQualifiedAt                    = big.NewInt(1 << 13)
-	partnerAdvanceFieldRecoveryThreshold              = big.NewInt(1 << 14)
-	partnerAdvanceFieldStatus                         = big.NewInt(1 << 15)
-	partnerAdvanceFieldTermsVersion                   = big.NewInt(1 << 16)
+	partnerAdvanceFieldAnnualProcessing               = big.NewInt(1 << 2)
+	partnerAdvanceFieldClawedBackAt                   = big.NewInt(1 << 3)
+	partnerAdvanceFieldDeadlineAt                     = big.NewInt(1 << 4)
+	partnerAdvanceFieldFundedAt                       = big.NewInt(1 << 5)
+	partnerAdvanceFieldOfferToken                     = big.NewInt(1 << 6)
+	partnerAdvanceFieldProcessingTarget               = big.NewInt(1 << 7)
+	partnerAdvanceFieldProjected60DayActivity         = big.NewInt(1 << 8)
+	partnerAdvanceFieldProjectedCommissions           = big.NewInt(1 << 9)
+	partnerAdvanceFieldProjectedProcessingCommissions = big.NewInt(1 << 10)
+	partnerAdvanceFieldQualifiedAt                    = big.NewInt(1 << 11)
+	partnerAdvanceFieldRecoveryThreshold              = big.NewInt(1 << 12)
+	partnerAdvanceFieldStatus                         = big.NewInt(1 << 13)
+	partnerAdvanceFieldTermsVersion                   = big.NewInt(1 << 14)
 )
 
 // partnerAdvanceNullableFields maps the wire names of PartnerAdvance's nullable fields (required or optional) to their field bits.
@@ -28887,7 +28885,6 @@ var partnerAdvanceNullableFields = map[string]*big.Int{
 	"funded_at":                        partnerAdvanceFieldFundedAt,
 	"offer_token":                      partnerAdvanceFieldOfferToken,
 	"projected_60_day_activity":        partnerAdvanceFieldProjected60DayActivity,
-	"projected_ads_commissions":        partnerAdvanceFieldProjectedAdsCommissions,
 	"projected_commissions":            partnerAdvanceFieldProjectedCommissions,
 	"projected_processing_commissions": partnerAdvanceFieldProjectedProcessingCommissions,
 	"qualified_at":                     partnerAdvanceFieldQualifiedAt,
@@ -28896,12 +28893,10 @@ var partnerAdvanceNullableFields = map[string]*big.Int{
 }
 
 type PartnerAdvance struct {
-	// Actual processing plus ads spend in the preceding 60 days, in USD. Null when unavailable.
+	// Actual payment volume (cards and BNPL) in the preceding 60 days, in USD. Null when unavailable.
 	Activity60Day *Money `json:"activity_60_day,omitempty" url:"activity_60_day,omitempty"`
 	// The offered or accepted upfront CPA payment in USD.
 	Amount *Money `json:"amount,omitempty" url:"amount,omitempty"`
-	// Annual projected Whop Ads spend in USD.
-	AnnualAds *Money `json:"annual_ads" url:"annual_ads"`
 	// Annual projected processing in USD.
 	AnnualProcessing *Money `json:"annual_processing" url:"annual_processing"`
 	// When low activity triggered reversal and normal partner terms resumed. No prior commissions are paid retroactively.
@@ -28914,17 +28909,15 @@ type PartnerAdvance struct {
 	OfferToken *string `json:"offer_token,omitempty" url:"offer_token,omitempty"`
 	// Processing required in a rolling 30-day period to qualify, in USD.
 	ProcessingTarget *Money `json:"processing_target" url:"processing_target"`
-	// Projected processing plus ads spend over 60 days, in USD.
+	// Projected payment volume (cards and BNPL) over 60 days, in USD.
 	Projected60DayActivity *Money `json:"projected_60_day_activity,omitempty" url:"projected_60_day_activity,omitempty"`
-	// Ads commissions projected for the remaining CPA term, in USD.
-	ProjectedAdsCommissions *Money `json:"projected_ads_commissions,omitempty" url:"projected_ads_commissions,omitempty"`
 	// Projected commissions over the remaining CPA term.
 	ProjectedCommissions *Money `json:"projected_commissions,omitempty" url:"projected_commissions,omitempty"`
 	// Processing commissions projected for the remaining CPA term, in USD.
 	ProjectedProcessingCommissions *Money `json:"projected_processing_commissions,omitempty" url:"projected_processing_commissions,omitempty"`
 	// First qualification timestamp.
 	QualifiedAt *string `json:"qualified_at,omitempty" url:"qualified_at,omitempty"`
-	// 20% of projected 60-day processing plus ads spend. Performance checks begin 60 days after funding.
+	// 20% of projected 60-day payment volume (cards and BNPL). Performance checks begin 60 days after funding.
 	RecoveryThreshold *Money `json:"recovery_threshold,omitempty" url:"recovery_threshold,omitempty"`
 	// The CPA payment lifecycle state.
 	Status PartnerAdvanceStatus `json:"status" url:"status"`
@@ -28950,13 +28943,6 @@ func (p *PartnerAdvance) GetAmount() *Money {
 		return nil
 	}
 	return p.Amount
-}
-
-func (p *PartnerAdvance) GetAnnualAds() *Money {
-	if p == nil {
-		return nil
-	}
-	return p.AnnualAds
 }
 
 func (p *PartnerAdvance) GetAnnualProcessing() *Money {
@@ -29006,13 +28992,6 @@ func (p *PartnerAdvance) GetProjected60DayActivity() *Money {
 		return nil
 	}
 	return p.Projected60DayActivity
-}
-
-func (p *PartnerAdvance) GetProjectedAdsCommissions() *Money {
-	if p == nil {
-		return nil
-	}
-	return p.ProjectedAdsCommissions
 }
 
 func (p *PartnerAdvance) GetProjectedCommissions() *Money {
@@ -29087,13 +29066,6 @@ func (p *PartnerAdvance) SetAmount(amount *Money) {
 	p.require(partnerAdvanceFieldAmount)
 }
 
-// SetAnnualAds sets the AnnualAds field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PartnerAdvance) SetAnnualAds(annualAds *Money) {
-	p.AnnualAds = annualAds
-	p.require(partnerAdvanceFieldAnnualAds)
-}
-
 // SetAnnualProcessing sets the AnnualProcessing field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *PartnerAdvance) SetAnnualProcessing(annualProcessing *Money) {
@@ -29141,13 +29113,6 @@ func (p *PartnerAdvance) SetProcessingTarget(processingTarget *Money) {
 func (p *PartnerAdvance) SetProjected60DayActivity(projected60DayActivity *Money) {
 	p.Projected60DayActivity = projected60DayActivity
 	p.require(partnerAdvanceFieldProjected60DayActivity)
-}
-
-// SetProjectedAdsCommissions sets the ProjectedAdsCommissions field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PartnerAdvance) SetProjectedAdsCommissions(projectedAdsCommissions *Money) {
-	p.ProjectedAdsCommissions = projectedAdsCommissions
-	p.require(partnerAdvanceFieldProjectedAdsCommissions)
 }
 
 // SetProjectedCommissions sets the ProjectedCommissions field and marks it as non-optional;
