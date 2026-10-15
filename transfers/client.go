@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-10-15"
+		apiVersionDateDefault := "2026-10-15-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -118,7 +118,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Moves money between Whop balances, sends USDT from an account's wallet, or funds a claim link anyone with the URL can redeem. The `type` you send decides which object comes back.
+// Moves money between Whop balances or funds a claim link anyone with the URL can redeem. The `type` you send decides which object comes back.
 //
 // Example:
 //

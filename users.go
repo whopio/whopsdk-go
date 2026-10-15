@@ -559,7 +559,7 @@ var userNullableFields = map[string]*big.Int{
 }
 
 type User struct {
-	// The user's balance: personal cash + crypto + in-flight treasury deposits, plus account balances for accounts they own. Computed only on the self view (retrieved with the reserved id `me`) for callers with balance-read scope; `null` otherwise, or when `include_balance=false`.
+	// The user's balance: personal cash + other holdings + deposits still in flight, plus account balances for accounts they own. Computed only on the self view (retrieved with the reserved id `me`) for callers with balance-read scope; `null` otherwise, or when `include_balance=false`.
 	Balance *UserBalance `json:"balance,omitempty" url:"balance,omitempty"`
 	// The user's cumulative wallet balance over time (USD `{ t, v }` points plus last/min/max), for the balance chart. Opt in with `include_balance_history=true` when retrieving yourself with the reserved id `me`; populated only for callers with balance-read scope and `null` otherwise. A user with no wallet activity returns an empty series.
 	BalanceHistory *UserBalanceHistory    `json:"balance_history,omitempty" url:"balance_history,omitempty"`
@@ -990,9 +990,9 @@ type UserBalance struct {
 	CryptoUsd string `json:"crypto_usd" url:"crypto_usd"`
 	// Fiat pending and in-transit balances, plus in-flight treasury deposits, in USD.
 	PendingUsd string `json:"pending_usd" url:"pending_usd"`
-	// The user's personal balance in USD: cash (available + pending + in-transit + reserve) + crypto + in-flight treasury deposits. Excludes account balances (see businesses_total_usd).
+	// The user's personal balance in USD: cash (available + pending + in-transit + reserve) + other holdings + deposits still in flight. Excludes account balances (see businesses_total_usd).
 	TotalUsd string `json:"total_usd" url:"total_usd"`
-	// Balance-to-wallet USDT0 payouts still in flight, in USD.
+	// Balance moves into the user's wallet still in flight, in USD.
 	TreasuryPendingUsd string `json:"treasury_pending_usd" url:"treasury_pending_usd"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

@@ -105,7 +105,7 @@ var (
 type AccountBalanceBreakdown struct {
 	// Amount you can spend, send, or withdraw now, in native units, as a decimal string.
 	Available string `json:"available" url:"available"`
-	// Amount moving between the account's own destinations, such as a treasury sweep to its crypto wallet or a card top-up. In native units, as a decimal string.
+	// Amount moving between the account's own destinations, such as a card top-up. In native units, as a decimal string.
 	InTransit string `json:"in_transit" url:"in_transit"`
 	// Amount from recent payments still settling, in native units, as a decimal string.
 	Pending            string                      `json:"pending" url:"pending"`
@@ -372,7 +372,7 @@ var accountBalanceTokenNullableFields = map[string]*big.Int{
 type AccountBalanceToken struct {
 	// Total amount held in native units, as a decimal string.
 	Balance string `json:"balance" url:"balance"`
-	// Balance split into available, pending, and reserve amounts, as native-unit decimal strings, with the days the pending amount is expected to settle. On-chain crypto is entirely available; good_funds and fiat cash can have pending or reserve portions.
+	// Balance split into available, pending, and reserve amounts, as native-unit decimal strings, with the days the pending amount is expected to settle.
 	Breakdown *AccountBalanceBreakdown `json:"breakdown" url:"breakdown"`
 	// Holding icon URL.
 	IconURL *string `json:"icon_url,omitempty" url:"icon_url,omitempty"`
@@ -5071,7 +5071,7 @@ var (
 )
 
 type AccountReserve struct {
-	// Total held in this currency, in native units, as a decimal string. `usd` and `usdt` are reported as one `usd` entry, matching how the balance row groups them.
+	// Total held in this currency, in native units, as a decimal string. All dollar holdings are reported as one `usd` entry, matching how the balance row groups them.
 	Amount string                `json:"amount" url:"amount"`
 	ByType []*AccountReserveType `json:"by_type" url:"by_type"`
 	// Lowercase ISO currency code, such as `usd` or `eur`.
