@@ -350,6 +350,7 @@ var (
 	listAccountsRequestFieldVolumeMin       = big.NewInt(1 << 10)
 	listAccountsRequestFieldVolumeMax       = big.NewInt(1 << 11)
 	listAccountsRequestFieldParentAccountID = big.NewInt(1 << 12)
+	listAccountsRequestFieldOwnerID         = big.NewInt(1 << 13)
 )
 
 type ListAccountsRequest struct {
@@ -379,6 +380,8 @@ type ListAccountsRequest struct {
 	VolumeMax *float64 `json:"-" url:"volume_max,omitempty"`
 	// For platforms: the parent account ID whose direct connected accounts to return. Requires `payout:account:read` on the parent account.
 	ParentAccountID *string `json:"-" url:"parent_account_id,omitempty"`
+	// Return only accounts owned by this user (`user_...`), the account's `owner`. Cannot be combined with `parent_account_id`.
+	OwnerID *string `json:"-" url:"owner_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -482,6 +485,13 @@ func (l *ListAccountsRequest) SetVolumeMax(volumeMax *float64) {
 func (l *ListAccountsRequest) SetParentAccountID(parentAccountID *string) {
 	l.ParentAccountID = parentAccountID
 	l.require(listAccountsRequestFieldParentAccountID)
+}
+
+// SetOwnerID sets the OwnerID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAccountsRequest) SetOwnerID(ownerID *string) {
+	l.OwnerID = ownerID
+	l.require(listAccountsRequestFieldOwnerID)
 }
 
 var (
