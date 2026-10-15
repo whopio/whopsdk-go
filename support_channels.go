@@ -97,12 +97,13 @@ var (
 	listSupportChannelsRequestFieldView                = big.NewInt(1 << 4)
 	listSupportChannelsRequestFieldOpen                = big.NewInt(1 << 5)
 	listSupportChannelsRequestFieldCustomerUserID      = big.NewInt(1 << 6)
-	listSupportChannelsRequestFieldParticipated        = big.NewInt(1 << 7)
-	listSupportChannelsRequestFieldIncludeLastMessage  = big.NewInt(1 << 8)
-	listSupportChannelsRequestFieldIncludeParticipated = big.NewInt(1 << 9)
-	listSupportChannelsRequestFieldDirection           = big.NewInt(1 << 10)
-	listSupportChannelsRequestFieldOrder               = big.NewInt(1 << 11)
-	listSupportChannelsRequestFieldAccountID           = big.NewInt(1 << 12)
+	listSupportChannelsRequestFieldCustomerUserIDs     = big.NewInt(1 << 7)
+	listSupportChannelsRequestFieldParticipated        = big.NewInt(1 << 8)
+	listSupportChannelsRequestFieldIncludeLastMessage  = big.NewInt(1 << 9)
+	listSupportChannelsRequestFieldIncludeParticipated = big.NewInt(1 << 10)
+	listSupportChannelsRequestFieldDirection           = big.NewInt(1 << 11)
+	listSupportChannelsRequestFieldOrder               = big.NewInt(1 << 12)
+	listSupportChannelsRequestFieldAccountID           = big.NewInt(1 << 13)
 )
 
 type ListSupportChannelsRequest struct {
@@ -119,6 +120,8 @@ type ListSupportChannelsRequest struct {
 	Open *bool `json:"-" url:"open,omitempty"`
 	// Only return support channels opened by this customer.
 	CustomerUserID *string `json:"-" url:"customer_user_id,omitempty"`
+	// Only return support channels opened by any of these customers. Maximum 100 IDs per request.
+	CustomerUserIDs []*string `json:"-" url:"customer_user_ids,omitempty"`
 	// Set to true to only return channels the authenticated user has joined as a participant. Requires a user.
 	Participated *bool `json:"-" url:"participated,omitempty"`
 	// Set to true to return `last_message` and `unread` on each channel. Both are `null` otherwise, which keeps large lists fast.
@@ -190,6 +193,13 @@ func (l *ListSupportChannelsRequest) SetOpen(open *bool) {
 func (l *ListSupportChannelsRequest) SetCustomerUserID(customerUserID *string) {
 	l.CustomerUserID = customerUserID
 	l.require(listSupportChannelsRequestFieldCustomerUserID)
+}
+
+// SetCustomerUserIDs sets the CustomerUserIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSupportChannelsRequest) SetCustomerUserIDs(customerUserIDs []*string) {
+	l.CustomerUserIDs = customerUserIDs
+	l.require(listSupportChannelsRequestFieldCustomerUserIDs)
 }
 
 // SetParticipated sets the Participated field and marks it as non-optional;

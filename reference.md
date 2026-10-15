@@ -36772,6 +36772,14 @@ client.SupportChannels.List(
 <dl>
 <dd>
 
+**customerUserIDs:** `*string` — Only return support channels opened by any of these customers. Maximum 100 IDs per request.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **participated:** `*bool` — Set to true to only return channels the authenticated user has joined as a participant. Requires a user.
     
 </dd>
