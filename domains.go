@@ -466,7 +466,7 @@ type Domain struct {
 	Issues []*DomainIssue `json:"issues" url:"issues"`
 	// Custom string keys and values attached to this domain. Empty when the domain isn't yours.
 	Metadata map[string]string `json:"metadata" url:"metadata"`
-	// The other account that has proven it owns this hostname. `null` when no other account does.
+	// The account that has proven it owns this hostname on Whop, which can be your own. `null` when no account has.
 	OwnedBy *DomainOwner `json:"owned_by,omitempty" url:"owned_by,omitempty"`
 	// Tracking page views on the domain with the Whop pixel. `null` when not tracked or not visible to you.
 	Pixel *DomainPixel `json:"pixel,omitempty" url:"pixel,omitempty"`
@@ -1604,7 +1604,7 @@ type DomainListItem struct {
 	Issues []*DomainIssue `json:"issues" url:"issues"`
 	// Custom string keys and values attached to this domain. Empty when the domain isn't yours.
 	Metadata map[string]any `json:"metadata" url:"metadata"`
-	// The other account that has proven it owns this hostname. `null` when no other account does.
+	// The account that has proven it owns this hostname on Whop, which can be your own. `null` when no account has.
 	OwnedBy *DomainOwner `json:"owned_by,omitempty" url:"owned_by,omitempty"`
 	// Tracking page views on the domain with the Whop pixel. `null` when not tracked or not visible to you.
 	Pixel *DomainPixel `json:"pixel,omitempty" url:"pixel,omitempty"`
