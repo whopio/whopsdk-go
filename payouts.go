@@ -524,30 +524,31 @@ func (r *RetrievePayoutsRequest) SetUserID(userID *string) {
 
 var (
 	cancelPayoutsResponseFieldAmount              = big.NewInt(1 << 0)
-	cancelPayoutsResponseFieldCreatedAt           = big.NewInt(1 << 1)
-	cancelPayoutsResponseFieldCurrency            = big.NewInt(1 << 2)
-	cancelPayoutsResponseFieldDestinationAmount   = big.NewInt(1 << 3)
-	cancelPayoutsResponseFieldDestinationCurrency = big.NewInt(1 << 4)
-	cancelPayoutsResponseFieldEstimatedArrival    = big.NewInt(1 << 5)
-	cancelPayoutsResponseFieldExchangeRate        = big.NewInt(1 << 6)
-	cancelPayoutsResponseFieldFailure             = big.NewInt(1 << 7)
-	cancelPayoutsResponseFieldFeeAmount           = big.NewInt(1 << 8)
-	cancelPayoutsResponseFieldFeePaidBy           = big.NewInt(1 << 9)
-	cancelPayoutsResponseFieldID                  = big.NewInt(1 << 10)
-	cancelPayoutsResponseFieldMarkupFee           = big.NewInt(1 << 11)
-	cancelPayoutsResponseFieldMetadata            = big.NewInt(1 << 12)
-	cancelPayoutsResponseFieldNetAmount           = big.NewInt(1 << 13)
-	cancelPayoutsResponseFieldNotes               = big.NewInt(1 << 14)
-	cancelPayoutsResponseFieldObject              = big.NewInt(1 << 15)
-	cancelPayoutsResponseFieldPayerName           = big.NewInt(1 << 16)
-	cancelPayoutsResponseFieldPayoutMethod        = big.NewInt(1 << 17)
-	cancelPayoutsResponseFieldPayoutRequestID     = big.NewInt(1 << 18)
-	cancelPayoutsResponseFieldSource              = big.NewInt(1 << 19)
-	cancelPayoutsResponseFieldSpeed               = big.NewInt(1 << 20)
-	cancelPayoutsResponseFieldStatementDescriptor = big.NewInt(1 << 21)
-	cancelPayoutsResponseFieldStatus              = big.NewInt(1 << 22)
-	cancelPayoutsResponseFieldStatusDetail        = big.NewInt(1 << 23)
-	cancelPayoutsResponseFieldTraceCode           = big.NewInt(1 << 24)
+	cancelPayoutsResponseFieldCancelable          = big.NewInt(1 << 1)
+	cancelPayoutsResponseFieldCreatedAt           = big.NewInt(1 << 2)
+	cancelPayoutsResponseFieldCurrency            = big.NewInt(1 << 3)
+	cancelPayoutsResponseFieldDestinationAmount   = big.NewInt(1 << 4)
+	cancelPayoutsResponseFieldDestinationCurrency = big.NewInt(1 << 5)
+	cancelPayoutsResponseFieldEstimatedArrival    = big.NewInt(1 << 6)
+	cancelPayoutsResponseFieldExchangeRate        = big.NewInt(1 << 7)
+	cancelPayoutsResponseFieldFailure             = big.NewInt(1 << 8)
+	cancelPayoutsResponseFieldFeeAmount           = big.NewInt(1 << 9)
+	cancelPayoutsResponseFieldFeePaidBy           = big.NewInt(1 << 10)
+	cancelPayoutsResponseFieldID                  = big.NewInt(1 << 11)
+	cancelPayoutsResponseFieldMarkupFee           = big.NewInt(1 << 12)
+	cancelPayoutsResponseFieldMetadata            = big.NewInt(1 << 13)
+	cancelPayoutsResponseFieldNetAmount           = big.NewInt(1 << 14)
+	cancelPayoutsResponseFieldNotes               = big.NewInt(1 << 15)
+	cancelPayoutsResponseFieldObject              = big.NewInt(1 << 16)
+	cancelPayoutsResponseFieldPayerName           = big.NewInt(1 << 17)
+	cancelPayoutsResponseFieldPayoutMethod        = big.NewInt(1 << 18)
+	cancelPayoutsResponseFieldPayoutRequestID     = big.NewInt(1 << 19)
+	cancelPayoutsResponseFieldSource              = big.NewInt(1 << 20)
+	cancelPayoutsResponseFieldSpeed               = big.NewInt(1 << 21)
+	cancelPayoutsResponseFieldStatementDescriptor = big.NewInt(1 << 22)
+	cancelPayoutsResponseFieldStatus              = big.NewInt(1 << 23)
+	cancelPayoutsResponseFieldStatusDetail        = big.NewInt(1 << 24)
+	cancelPayoutsResponseFieldTraceCode           = big.NewInt(1 << 25)
 )
 
 // cancelPayoutsResponseNullableFields maps the wire names of CancelPayoutsResponse's nullable fields (required or optional) to their field bits.
@@ -569,6 +570,8 @@ var cancelPayoutsResponseNullableFields = map[string]*big.Int{
 type CancelPayoutsResponse struct {
 	// The payout amount in whole currency units, as a decimal string.
 	Amount string `json:"amount" url:"amount"`
+	// Whether `POST /payouts/{id}/cancel` would act on this payout right now: `true` while it is `in_review`, while it is `processing` with nothing yet submitted to the payout provider, or while a submitted payout can still be asked to cancel at the provider. `false` once the money has arrived or the payout has already ended.
+	Cancelable bool `json:"cancelable" url:"cancelable"`
 	// When the payout was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
 	// Payout currency.
@@ -629,6 +632,13 @@ func (c *CancelPayoutsResponse) GetAmount() string {
 		return ""
 	}
 	return c.Amount
+}
+
+func (c *CancelPayoutsResponse) GetCancelable() bool {
+	if c == nil {
+		return false
+	}
+	return c.Cancelable
 }
 
 func (c *CancelPayoutsResponse) GetCreatedAt() time.Time {
@@ -820,6 +830,13 @@ func (c *CancelPayoutsResponse) require(field *big.Int) {
 func (c *CancelPayoutsResponse) SetAmount(amount string) {
 	c.Amount = amount
 	c.require(cancelPayoutsResponseFieldAmount)
+}
+
+// SetCancelable sets the Cancelable field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponse) SetCancelable(cancelable bool) {
+	c.Cancelable = cancelable
+	c.require(cancelPayoutsResponseFieldCancelable)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -1649,30 +1666,31 @@ func (c CreatePayoutsRequestSpeed) Ptr() *CreatePayoutsRequestSpeed {
 
 var (
 	createPayoutsResponseFieldAmount              = big.NewInt(1 << 0)
-	createPayoutsResponseFieldCreatedAt           = big.NewInt(1 << 1)
-	createPayoutsResponseFieldCurrency            = big.NewInt(1 << 2)
-	createPayoutsResponseFieldDestinationAmount   = big.NewInt(1 << 3)
-	createPayoutsResponseFieldDestinationCurrency = big.NewInt(1 << 4)
-	createPayoutsResponseFieldEstimatedArrival    = big.NewInt(1 << 5)
-	createPayoutsResponseFieldExchangeRate        = big.NewInt(1 << 6)
-	createPayoutsResponseFieldFailure             = big.NewInt(1 << 7)
-	createPayoutsResponseFieldFeeAmount           = big.NewInt(1 << 8)
-	createPayoutsResponseFieldFeePaidBy           = big.NewInt(1 << 9)
-	createPayoutsResponseFieldID                  = big.NewInt(1 << 10)
-	createPayoutsResponseFieldMarkupFee           = big.NewInt(1 << 11)
-	createPayoutsResponseFieldMetadata            = big.NewInt(1 << 12)
-	createPayoutsResponseFieldNetAmount           = big.NewInt(1 << 13)
-	createPayoutsResponseFieldNotes               = big.NewInt(1 << 14)
-	createPayoutsResponseFieldObject              = big.NewInt(1 << 15)
-	createPayoutsResponseFieldPayerName           = big.NewInt(1 << 16)
-	createPayoutsResponseFieldPayoutMethod        = big.NewInt(1 << 17)
-	createPayoutsResponseFieldPayoutRequestID     = big.NewInt(1 << 18)
-	createPayoutsResponseFieldSource              = big.NewInt(1 << 19)
-	createPayoutsResponseFieldSpeed               = big.NewInt(1 << 20)
-	createPayoutsResponseFieldStatementDescriptor = big.NewInt(1 << 21)
-	createPayoutsResponseFieldStatus              = big.NewInt(1 << 22)
-	createPayoutsResponseFieldStatusDetail        = big.NewInt(1 << 23)
-	createPayoutsResponseFieldTraceCode           = big.NewInt(1 << 24)
+	createPayoutsResponseFieldCancelable          = big.NewInt(1 << 1)
+	createPayoutsResponseFieldCreatedAt           = big.NewInt(1 << 2)
+	createPayoutsResponseFieldCurrency            = big.NewInt(1 << 3)
+	createPayoutsResponseFieldDestinationAmount   = big.NewInt(1 << 4)
+	createPayoutsResponseFieldDestinationCurrency = big.NewInt(1 << 5)
+	createPayoutsResponseFieldEstimatedArrival    = big.NewInt(1 << 6)
+	createPayoutsResponseFieldExchangeRate        = big.NewInt(1 << 7)
+	createPayoutsResponseFieldFailure             = big.NewInt(1 << 8)
+	createPayoutsResponseFieldFeeAmount           = big.NewInt(1 << 9)
+	createPayoutsResponseFieldFeePaidBy           = big.NewInt(1 << 10)
+	createPayoutsResponseFieldID                  = big.NewInt(1 << 11)
+	createPayoutsResponseFieldMarkupFee           = big.NewInt(1 << 12)
+	createPayoutsResponseFieldMetadata            = big.NewInt(1 << 13)
+	createPayoutsResponseFieldNetAmount           = big.NewInt(1 << 14)
+	createPayoutsResponseFieldNotes               = big.NewInt(1 << 15)
+	createPayoutsResponseFieldObject              = big.NewInt(1 << 16)
+	createPayoutsResponseFieldPayerName           = big.NewInt(1 << 17)
+	createPayoutsResponseFieldPayoutMethod        = big.NewInt(1 << 18)
+	createPayoutsResponseFieldPayoutRequestID     = big.NewInt(1 << 19)
+	createPayoutsResponseFieldSource              = big.NewInt(1 << 20)
+	createPayoutsResponseFieldSpeed               = big.NewInt(1 << 21)
+	createPayoutsResponseFieldStatementDescriptor = big.NewInt(1 << 22)
+	createPayoutsResponseFieldStatus              = big.NewInt(1 << 23)
+	createPayoutsResponseFieldStatusDetail        = big.NewInt(1 << 24)
+	createPayoutsResponseFieldTraceCode           = big.NewInt(1 << 25)
 )
 
 // createPayoutsResponseNullableFields maps the wire names of CreatePayoutsResponse's nullable fields (required or optional) to their field bits.
@@ -1694,6 +1712,8 @@ var createPayoutsResponseNullableFields = map[string]*big.Int{
 type CreatePayoutsResponse struct {
 	// The payout amount in whole currency units, as a decimal string.
 	Amount string `json:"amount" url:"amount"`
+	// Whether `POST /payouts/{id}/cancel` would act on this payout right now: `true` while it is `in_review`, while it is `processing` with nothing yet submitted to the payout provider, or while a submitted payout can still be asked to cancel at the provider. `false` once the money has arrived or the payout has already ended.
+	Cancelable bool `json:"cancelable" url:"cancelable"`
 	// When the payout was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
 	// Payout currency.
@@ -1754,6 +1774,13 @@ func (c *CreatePayoutsResponse) GetAmount() string {
 		return ""
 	}
 	return c.Amount
+}
+
+func (c *CreatePayoutsResponse) GetCancelable() bool {
+	if c == nil {
+		return false
+	}
+	return c.Cancelable
 }
 
 func (c *CreatePayoutsResponse) GetCreatedAt() time.Time {
@@ -1945,6 +1972,13 @@ func (c *CreatePayoutsResponse) require(field *big.Int) {
 func (c *CreatePayoutsResponse) SetAmount(amount string) {
 	c.Amount = amount
 	c.require(createPayoutsResponseFieldAmount)
+}
+
+// SetCancelable sets the Cancelable field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePayoutsResponse) SetCancelable(cancelable bool) {
+	c.Cancelable = cancelable
+	c.require(createPayoutsResponseFieldCancelable)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -3429,30 +3463,31 @@ func (l *ListPayoutsResponse) String() string {
 
 var (
 	listPayoutsResponseDataItemFieldAmount              = big.NewInt(1 << 0)
-	listPayoutsResponseDataItemFieldCreatedAt           = big.NewInt(1 << 1)
-	listPayoutsResponseDataItemFieldCurrency            = big.NewInt(1 << 2)
-	listPayoutsResponseDataItemFieldDestinationAmount   = big.NewInt(1 << 3)
-	listPayoutsResponseDataItemFieldDestinationCurrency = big.NewInt(1 << 4)
-	listPayoutsResponseDataItemFieldEstimatedArrival    = big.NewInt(1 << 5)
-	listPayoutsResponseDataItemFieldExchangeRate        = big.NewInt(1 << 6)
-	listPayoutsResponseDataItemFieldFailure             = big.NewInt(1 << 7)
-	listPayoutsResponseDataItemFieldFeeAmount           = big.NewInt(1 << 8)
-	listPayoutsResponseDataItemFieldFeePaidBy           = big.NewInt(1 << 9)
-	listPayoutsResponseDataItemFieldID                  = big.NewInt(1 << 10)
-	listPayoutsResponseDataItemFieldMarkupFee           = big.NewInt(1 << 11)
-	listPayoutsResponseDataItemFieldMetadata            = big.NewInt(1 << 12)
-	listPayoutsResponseDataItemFieldNetAmount           = big.NewInt(1 << 13)
-	listPayoutsResponseDataItemFieldNotes               = big.NewInt(1 << 14)
-	listPayoutsResponseDataItemFieldObject              = big.NewInt(1 << 15)
-	listPayoutsResponseDataItemFieldPayerName           = big.NewInt(1 << 16)
-	listPayoutsResponseDataItemFieldPayoutMethod        = big.NewInt(1 << 17)
-	listPayoutsResponseDataItemFieldPayoutRequestID     = big.NewInt(1 << 18)
-	listPayoutsResponseDataItemFieldSource              = big.NewInt(1 << 19)
-	listPayoutsResponseDataItemFieldSpeed               = big.NewInt(1 << 20)
-	listPayoutsResponseDataItemFieldStatementDescriptor = big.NewInt(1 << 21)
-	listPayoutsResponseDataItemFieldStatus              = big.NewInt(1 << 22)
-	listPayoutsResponseDataItemFieldStatusDetail        = big.NewInt(1 << 23)
-	listPayoutsResponseDataItemFieldTraceCode           = big.NewInt(1 << 24)
+	listPayoutsResponseDataItemFieldCancelable          = big.NewInt(1 << 1)
+	listPayoutsResponseDataItemFieldCreatedAt           = big.NewInt(1 << 2)
+	listPayoutsResponseDataItemFieldCurrency            = big.NewInt(1 << 3)
+	listPayoutsResponseDataItemFieldDestinationAmount   = big.NewInt(1 << 4)
+	listPayoutsResponseDataItemFieldDestinationCurrency = big.NewInt(1 << 5)
+	listPayoutsResponseDataItemFieldEstimatedArrival    = big.NewInt(1 << 6)
+	listPayoutsResponseDataItemFieldExchangeRate        = big.NewInt(1 << 7)
+	listPayoutsResponseDataItemFieldFailure             = big.NewInt(1 << 8)
+	listPayoutsResponseDataItemFieldFeeAmount           = big.NewInt(1 << 9)
+	listPayoutsResponseDataItemFieldFeePaidBy           = big.NewInt(1 << 10)
+	listPayoutsResponseDataItemFieldID                  = big.NewInt(1 << 11)
+	listPayoutsResponseDataItemFieldMarkupFee           = big.NewInt(1 << 12)
+	listPayoutsResponseDataItemFieldMetadata            = big.NewInt(1 << 13)
+	listPayoutsResponseDataItemFieldNetAmount           = big.NewInt(1 << 14)
+	listPayoutsResponseDataItemFieldNotes               = big.NewInt(1 << 15)
+	listPayoutsResponseDataItemFieldObject              = big.NewInt(1 << 16)
+	listPayoutsResponseDataItemFieldPayerName           = big.NewInt(1 << 17)
+	listPayoutsResponseDataItemFieldPayoutMethod        = big.NewInt(1 << 18)
+	listPayoutsResponseDataItemFieldPayoutRequestID     = big.NewInt(1 << 19)
+	listPayoutsResponseDataItemFieldSource              = big.NewInt(1 << 20)
+	listPayoutsResponseDataItemFieldSpeed               = big.NewInt(1 << 21)
+	listPayoutsResponseDataItemFieldStatementDescriptor = big.NewInt(1 << 22)
+	listPayoutsResponseDataItemFieldStatus              = big.NewInt(1 << 23)
+	listPayoutsResponseDataItemFieldStatusDetail        = big.NewInt(1 << 24)
+	listPayoutsResponseDataItemFieldTraceCode           = big.NewInt(1 << 25)
 )
 
 // listPayoutsResponseDataItemNullableFields maps the wire names of ListPayoutsResponseDataItem's nullable fields (required or optional) to their field bits.
@@ -3474,6 +3509,8 @@ var listPayoutsResponseDataItemNullableFields = map[string]*big.Int{
 type ListPayoutsResponseDataItem struct {
 	// The payout amount in whole currency units, as a decimal string.
 	Amount string `json:"amount" url:"amount"`
+	// Whether `POST /payouts/{id}/cancel` would act on this payout right now: `true` while it is `in_review`, while it is `processing` with nothing yet submitted to the payout provider, or while a submitted payout can still be asked to cancel at the provider. `false` once the money has arrived or the payout has already ended.
+	Cancelable bool `json:"cancelable" url:"cancelable"`
 	// When the payout was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
 	// Payout currency.
@@ -3534,6 +3571,13 @@ func (l *ListPayoutsResponseDataItem) GetAmount() string {
 		return ""
 	}
 	return l.Amount
+}
+
+func (l *ListPayoutsResponseDataItem) GetCancelable() bool {
+	if l == nil {
+		return false
+	}
+	return l.Cancelable
 }
 
 func (l *ListPayoutsResponseDataItem) GetCreatedAt() time.Time {
@@ -3725,6 +3769,13 @@ func (l *ListPayoutsResponseDataItem) require(field *big.Int) {
 func (l *ListPayoutsResponseDataItem) SetAmount(amount string) {
 	l.Amount = amount
 	l.require(listPayoutsResponseDataItemFieldAmount)
+}
+
+// SetCancelable sets the Cancelable field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPayoutsResponseDataItem) SetCancelable(cancelable bool) {
+	l.Cancelable = cancelable
+	l.require(listPayoutsResponseDataItemFieldCancelable)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -4924,30 +4975,31 @@ func (p PostPayoutCreatedPayloadAPIVersion) Ptr() *PostPayoutCreatedPayloadAPIVe
 
 var (
 	postPayoutCreatedPayloadDataFieldAmount              = big.NewInt(1 << 0)
-	postPayoutCreatedPayloadDataFieldCreatedAt           = big.NewInt(1 << 1)
-	postPayoutCreatedPayloadDataFieldCurrency            = big.NewInt(1 << 2)
-	postPayoutCreatedPayloadDataFieldDestinationAmount   = big.NewInt(1 << 3)
-	postPayoutCreatedPayloadDataFieldDestinationCurrency = big.NewInt(1 << 4)
-	postPayoutCreatedPayloadDataFieldEstimatedArrival    = big.NewInt(1 << 5)
-	postPayoutCreatedPayloadDataFieldExchangeRate        = big.NewInt(1 << 6)
-	postPayoutCreatedPayloadDataFieldFailure             = big.NewInt(1 << 7)
-	postPayoutCreatedPayloadDataFieldFeeAmount           = big.NewInt(1 << 8)
-	postPayoutCreatedPayloadDataFieldFeePaidBy           = big.NewInt(1 << 9)
-	postPayoutCreatedPayloadDataFieldID                  = big.NewInt(1 << 10)
-	postPayoutCreatedPayloadDataFieldMarkupFee           = big.NewInt(1 << 11)
-	postPayoutCreatedPayloadDataFieldMetadata            = big.NewInt(1 << 12)
-	postPayoutCreatedPayloadDataFieldNetAmount           = big.NewInt(1 << 13)
-	postPayoutCreatedPayloadDataFieldNotes               = big.NewInt(1 << 14)
-	postPayoutCreatedPayloadDataFieldObject              = big.NewInt(1 << 15)
-	postPayoutCreatedPayloadDataFieldPayerName           = big.NewInt(1 << 16)
-	postPayoutCreatedPayloadDataFieldPayoutMethod        = big.NewInt(1 << 17)
-	postPayoutCreatedPayloadDataFieldPayoutRequestID     = big.NewInt(1 << 18)
-	postPayoutCreatedPayloadDataFieldSource              = big.NewInt(1 << 19)
-	postPayoutCreatedPayloadDataFieldSpeed               = big.NewInt(1 << 20)
-	postPayoutCreatedPayloadDataFieldStatementDescriptor = big.NewInt(1 << 21)
-	postPayoutCreatedPayloadDataFieldStatus              = big.NewInt(1 << 22)
-	postPayoutCreatedPayloadDataFieldStatusDetail        = big.NewInt(1 << 23)
-	postPayoutCreatedPayloadDataFieldTraceCode           = big.NewInt(1 << 24)
+	postPayoutCreatedPayloadDataFieldCancelable          = big.NewInt(1 << 1)
+	postPayoutCreatedPayloadDataFieldCreatedAt           = big.NewInt(1 << 2)
+	postPayoutCreatedPayloadDataFieldCurrency            = big.NewInt(1 << 3)
+	postPayoutCreatedPayloadDataFieldDestinationAmount   = big.NewInt(1 << 4)
+	postPayoutCreatedPayloadDataFieldDestinationCurrency = big.NewInt(1 << 5)
+	postPayoutCreatedPayloadDataFieldEstimatedArrival    = big.NewInt(1 << 6)
+	postPayoutCreatedPayloadDataFieldExchangeRate        = big.NewInt(1 << 7)
+	postPayoutCreatedPayloadDataFieldFailure             = big.NewInt(1 << 8)
+	postPayoutCreatedPayloadDataFieldFeeAmount           = big.NewInt(1 << 9)
+	postPayoutCreatedPayloadDataFieldFeePaidBy           = big.NewInt(1 << 10)
+	postPayoutCreatedPayloadDataFieldID                  = big.NewInt(1 << 11)
+	postPayoutCreatedPayloadDataFieldMarkupFee           = big.NewInt(1 << 12)
+	postPayoutCreatedPayloadDataFieldMetadata            = big.NewInt(1 << 13)
+	postPayoutCreatedPayloadDataFieldNetAmount           = big.NewInt(1 << 14)
+	postPayoutCreatedPayloadDataFieldNotes               = big.NewInt(1 << 15)
+	postPayoutCreatedPayloadDataFieldObject              = big.NewInt(1 << 16)
+	postPayoutCreatedPayloadDataFieldPayerName           = big.NewInt(1 << 17)
+	postPayoutCreatedPayloadDataFieldPayoutMethod        = big.NewInt(1 << 18)
+	postPayoutCreatedPayloadDataFieldPayoutRequestID     = big.NewInt(1 << 19)
+	postPayoutCreatedPayloadDataFieldSource              = big.NewInt(1 << 20)
+	postPayoutCreatedPayloadDataFieldSpeed               = big.NewInt(1 << 21)
+	postPayoutCreatedPayloadDataFieldStatementDescriptor = big.NewInt(1 << 22)
+	postPayoutCreatedPayloadDataFieldStatus              = big.NewInt(1 << 23)
+	postPayoutCreatedPayloadDataFieldStatusDetail        = big.NewInt(1 << 24)
+	postPayoutCreatedPayloadDataFieldTraceCode           = big.NewInt(1 << 25)
 )
 
 // postPayoutCreatedPayloadDataNullableFields maps the wire names of PostPayoutCreatedPayloadData's nullable fields (required or optional) to their field bits.
@@ -4969,6 +5021,8 @@ var postPayoutCreatedPayloadDataNullableFields = map[string]*big.Int{
 type PostPayoutCreatedPayloadData struct {
 	// The payout amount in whole currency units, as a decimal string.
 	Amount string `json:"amount" url:"amount"`
+	// Whether `POST /payouts/{id}/cancel` would act on this payout right now: `true` while it is `in_review`, while it is `processing` with nothing yet submitted to the payout provider, or while a submitted payout can still be asked to cancel at the provider. `false` once the money has arrived or the payout has already ended.
+	Cancelable bool `json:"cancelable" url:"cancelable"`
 	// When the payout was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
 	// Payout currency.
@@ -5029,6 +5083,13 @@ func (p *PostPayoutCreatedPayloadData) GetAmount() string {
 		return ""
 	}
 	return p.Amount
+}
+
+func (p *PostPayoutCreatedPayloadData) GetCancelable() bool {
+	if p == nil {
+		return false
+	}
+	return p.Cancelable
 }
 
 func (p *PostPayoutCreatedPayloadData) GetCreatedAt() time.Time {
@@ -5220,6 +5281,13 @@ func (p *PostPayoutCreatedPayloadData) require(field *big.Int) {
 func (p *PostPayoutCreatedPayloadData) SetAmount(amount string) {
 	p.Amount = amount
 	p.require(postPayoutCreatedPayloadDataFieldAmount)
+}
+
+// SetCancelable sets the Cancelable field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadData) SetCancelable(cancelable bool) {
+	p.Cancelable = cancelable
+	p.require(postPayoutCreatedPayloadDataFieldCancelable)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -8219,30 +8287,31 @@ func (p PostPayoutReversedPayloadAPIVersion) Ptr() *PostPayoutReversedPayloadAPI
 
 var (
 	postPayoutReversedPayloadDataFieldAmount              = big.NewInt(1 << 0)
-	postPayoutReversedPayloadDataFieldCreatedAt           = big.NewInt(1 << 1)
-	postPayoutReversedPayloadDataFieldCurrency            = big.NewInt(1 << 2)
-	postPayoutReversedPayloadDataFieldDestinationAmount   = big.NewInt(1 << 3)
-	postPayoutReversedPayloadDataFieldDestinationCurrency = big.NewInt(1 << 4)
-	postPayoutReversedPayloadDataFieldEstimatedArrival    = big.NewInt(1 << 5)
-	postPayoutReversedPayloadDataFieldExchangeRate        = big.NewInt(1 << 6)
-	postPayoutReversedPayloadDataFieldFailure             = big.NewInt(1 << 7)
-	postPayoutReversedPayloadDataFieldFeeAmount           = big.NewInt(1 << 8)
-	postPayoutReversedPayloadDataFieldFeePaidBy           = big.NewInt(1 << 9)
-	postPayoutReversedPayloadDataFieldID                  = big.NewInt(1 << 10)
-	postPayoutReversedPayloadDataFieldMarkupFee           = big.NewInt(1 << 11)
-	postPayoutReversedPayloadDataFieldMetadata            = big.NewInt(1 << 12)
-	postPayoutReversedPayloadDataFieldNetAmount           = big.NewInt(1 << 13)
-	postPayoutReversedPayloadDataFieldNotes               = big.NewInt(1 << 14)
-	postPayoutReversedPayloadDataFieldObject              = big.NewInt(1 << 15)
-	postPayoutReversedPayloadDataFieldPayerName           = big.NewInt(1 << 16)
-	postPayoutReversedPayloadDataFieldPayoutMethod        = big.NewInt(1 << 17)
-	postPayoutReversedPayloadDataFieldPayoutRequestID     = big.NewInt(1 << 18)
-	postPayoutReversedPayloadDataFieldSource              = big.NewInt(1 << 19)
-	postPayoutReversedPayloadDataFieldSpeed               = big.NewInt(1 << 20)
-	postPayoutReversedPayloadDataFieldStatementDescriptor = big.NewInt(1 << 21)
-	postPayoutReversedPayloadDataFieldStatus              = big.NewInt(1 << 22)
-	postPayoutReversedPayloadDataFieldStatusDetail        = big.NewInt(1 << 23)
-	postPayoutReversedPayloadDataFieldTraceCode           = big.NewInt(1 << 24)
+	postPayoutReversedPayloadDataFieldCancelable          = big.NewInt(1 << 1)
+	postPayoutReversedPayloadDataFieldCreatedAt           = big.NewInt(1 << 2)
+	postPayoutReversedPayloadDataFieldCurrency            = big.NewInt(1 << 3)
+	postPayoutReversedPayloadDataFieldDestinationAmount   = big.NewInt(1 << 4)
+	postPayoutReversedPayloadDataFieldDestinationCurrency = big.NewInt(1 << 5)
+	postPayoutReversedPayloadDataFieldEstimatedArrival    = big.NewInt(1 << 6)
+	postPayoutReversedPayloadDataFieldExchangeRate        = big.NewInt(1 << 7)
+	postPayoutReversedPayloadDataFieldFailure             = big.NewInt(1 << 8)
+	postPayoutReversedPayloadDataFieldFeeAmount           = big.NewInt(1 << 9)
+	postPayoutReversedPayloadDataFieldFeePaidBy           = big.NewInt(1 << 10)
+	postPayoutReversedPayloadDataFieldID                  = big.NewInt(1 << 11)
+	postPayoutReversedPayloadDataFieldMarkupFee           = big.NewInt(1 << 12)
+	postPayoutReversedPayloadDataFieldMetadata            = big.NewInt(1 << 13)
+	postPayoutReversedPayloadDataFieldNetAmount           = big.NewInt(1 << 14)
+	postPayoutReversedPayloadDataFieldNotes               = big.NewInt(1 << 15)
+	postPayoutReversedPayloadDataFieldObject              = big.NewInt(1 << 16)
+	postPayoutReversedPayloadDataFieldPayerName           = big.NewInt(1 << 17)
+	postPayoutReversedPayloadDataFieldPayoutMethod        = big.NewInt(1 << 18)
+	postPayoutReversedPayloadDataFieldPayoutRequestID     = big.NewInt(1 << 19)
+	postPayoutReversedPayloadDataFieldSource              = big.NewInt(1 << 20)
+	postPayoutReversedPayloadDataFieldSpeed               = big.NewInt(1 << 21)
+	postPayoutReversedPayloadDataFieldStatementDescriptor = big.NewInt(1 << 22)
+	postPayoutReversedPayloadDataFieldStatus              = big.NewInt(1 << 23)
+	postPayoutReversedPayloadDataFieldStatusDetail        = big.NewInt(1 << 24)
+	postPayoutReversedPayloadDataFieldTraceCode           = big.NewInt(1 << 25)
 )
 
 // postPayoutReversedPayloadDataNullableFields maps the wire names of PostPayoutReversedPayloadData's nullable fields (required or optional) to their field bits.
@@ -8264,6 +8333,8 @@ var postPayoutReversedPayloadDataNullableFields = map[string]*big.Int{
 type PostPayoutReversedPayloadData struct {
 	// The payout amount in whole currency units, as a decimal string.
 	Amount string `json:"amount" url:"amount"`
+	// Whether `POST /payouts/{id}/cancel` would act on this payout right now: `true` while it is `in_review`, while it is `processing` with nothing yet submitted to the payout provider, or while a submitted payout can still be asked to cancel at the provider. `false` once the money has arrived or the payout has already ended.
+	Cancelable bool `json:"cancelable" url:"cancelable"`
 	// When the payout was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
 	// Payout currency.
@@ -8324,6 +8395,13 @@ func (p *PostPayoutReversedPayloadData) GetAmount() string {
 		return ""
 	}
 	return p.Amount
+}
+
+func (p *PostPayoutReversedPayloadData) GetCancelable() bool {
+	if p == nil {
+		return false
+	}
+	return p.Cancelable
 }
 
 func (p *PostPayoutReversedPayloadData) GetCreatedAt() time.Time {
@@ -8515,6 +8593,13 @@ func (p *PostPayoutReversedPayloadData) require(field *big.Int) {
 func (p *PostPayoutReversedPayloadData) SetAmount(amount string) {
 	p.Amount = amount
 	p.require(postPayoutReversedPayloadDataFieldAmount)
+}
+
+// SetCancelable sets the Cancelable field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutReversedPayloadData) SetCancelable(cancelable bool) {
+	p.Cancelable = cancelable
+	p.require(postPayoutReversedPayloadDataFieldCancelable)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -9587,30 +9672,31 @@ func (p PostPayoutUpdatedPayloadAPIVersion) Ptr() *PostPayoutUpdatedPayloadAPIVe
 
 var (
 	postPayoutUpdatedPayloadDataFieldAmount              = big.NewInt(1 << 0)
-	postPayoutUpdatedPayloadDataFieldCreatedAt           = big.NewInt(1 << 1)
-	postPayoutUpdatedPayloadDataFieldCurrency            = big.NewInt(1 << 2)
-	postPayoutUpdatedPayloadDataFieldDestinationAmount   = big.NewInt(1 << 3)
-	postPayoutUpdatedPayloadDataFieldDestinationCurrency = big.NewInt(1 << 4)
-	postPayoutUpdatedPayloadDataFieldEstimatedArrival    = big.NewInt(1 << 5)
-	postPayoutUpdatedPayloadDataFieldExchangeRate        = big.NewInt(1 << 6)
-	postPayoutUpdatedPayloadDataFieldFailure             = big.NewInt(1 << 7)
-	postPayoutUpdatedPayloadDataFieldFeeAmount           = big.NewInt(1 << 8)
-	postPayoutUpdatedPayloadDataFieldFeePaidBy           = big.NewInt(1 << 9)
-	postPayoutUpdatedPayloadDataFieldID                  = big.NewInt(1 << 10)
-	postPayoutUpdatedPayloadDataFieldMarkupFee           = big.NewInt(1 << 11)
-	postPayoutUpdatedPayloadDataFieldMetadata            = big.NewInt(1 << 12)
-	postPayoutUpdatedPayloadDataFieldNetAmount           = big.NewInt(1 << 13)
-	postPayoutUpdatedPayloadDataFieldNotes               = big.NewInt(1 << 14)
-	postPayoutUpdatedPayloadDataFieldObject              = big.NewInt(1 << 15)
-	postPayoutUpdatedPayloadDataFieldPayerName           = big.NewInt(1 << 16)
-	postPayoutUpdatedPayloadDataFieldPayoutMethod        = big.NewInt(1 << 17)
-	postPayoutUpdatedPayloadDataFieldPayoutRequestID     = big.NewInt(1 << 18)
-	postPayoutUpdatedPayloadDataFieldSource              = big.NewInt(1 << 19)
-	postPayoutUpdatedPayloadDataFieldSpeed               = big.NewInt(1 << 20)
-	postPayoutUpdatedPayloadDataFieldStatementDescriptor = big.NewInt(1 << 21)
-	postPayoutUpdatedPayloadDataFieldStatus              = big.NewInt(1 << 22)
-	postPayoutUpdatedPayloadDataFieldStatusDetail        = big.NewInt(1 << 23)
-	postPayoutUpdatedPayloadDataFieldTraceCode           = big.NewInt(1 << 24)
+	postPayoutUpdatedPayloadDataFieldCancelable          = big.NewInt(1 << 1)
+	postPayoutUpdatedPayloadDataFieldCreatedAt           = big.NewInt(1 << 2)
+	postPayoutUpdatedPayloadDataFieldCurrency            = big.NewInt(1 << 3)
+	postPayoutUpdatedPayloadDataFieldDestinationAmount   = big.NewInt(1 << 4)
+	postPayoutUpdatedPayloadDataFieldDestinationCurrency = big.NewInt(1 << 5)
+	postPayoutUpdatedPayloadDataFieldEstimatedArrival    = big.NewInt(1 << 6)
+	postPayoutUpdatedPayloadDataFieldExchangeRate        = big.NewInt(1 << 7)
+	postPayoutUpdatedPayloadDataFieldFailure             = big.NewInt(1 << 8)
+	postPayoutUpdatedPayloadDataFieldFeeAmount           = big.NewInt(1 << 9)
+	postPayoutUpdatedPayloadDataFieldFeePaidBy           = big.NewInt(1 << 10)
+	postPayoutUpdatedPayloadDataFieldID                  = big.NewInt(1 << 11)
+	postPayoutUpdatedPayloadDataFieldMarkupFee           = big.NewInt(1 << 12)
+	postPayoutUpdatedPayloadDataFieldMetadata            = big.NewInt(1 << 13)
+	postPayoutUpdatedPayloadDataFieldNetAmount           = big.NewInt(1 << 14)
+	postPayoutUpdatedPayloadDataFieldNotes               = big.NewInt(1 << 15)
+	postPayoutUpdatedPayloadDataFieldObject              = big.NewInt(1 << 16)
+	postPayoutUpdatedPayloadDataFieldPayerName           = big.NewInt(1 << 17)
+	postPayoutUpdatedPayloadDataFieldPayoutMethod        = big.NewInt(1 << 18)
+	postPayoutUpdatedPayloadDataFieldPayoutRequestID     = big.NewInt(1 << 19)
+	postPayoutUpdatedPayloadDataFieldSource              = big.NewInt(1 << 20)
+	postPayoutUpdatedPayloadDataFieldSpeed               = big.NewInt(1 << 21)
+	postPayoutUpdatedPayloadDataFieldStatementDescriptor = big.NewInt(1 << 22)
+	postPayoutUpdatedPayloadDataFieldStatus              = big.NewInt(1 << 23)
+	postPayoutUpdatedPayloadDataFieldStatusDetail        = big.NewInt(1 << 24)
+	postPayoutUpdatedPayloadDataFieldTraceCode           = big.NewInt(1 << 25)
 )
 
 // postPayoutUpdatedPayloadDataNullableFields maps the wire names of PostPayoutUpdatedPayloadData's nullable fields (required or optional) to their field bits.
@@ -9632,6 +9718,8 @@ var postPayoutUpdatedPayloadDataNullableFields = map[string]*big.Int{
 type PostPayoutUpdatedPayloadData struct {
 	// The payout amount in whole currency units, as a decimal string.
 	Amount string `json:"amount" url:"amount"`
+	// Whether `POST /payouts/{id}/cancel` would act on this payout right now: `true` while it is `in_review`, while it is `processing` with nothing yet submitted to the payout provider, or while a submitted payout can still be asked to cancel at the provider. `false` once the money has arrived or the payout has already ended.
+	Cancelable bool `json:"cancelable" url:"cancelable"`
 	// When the payout was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
 	// Payout currency.
@@ -9692,6 +9780,13 @@ func (p *PostPayoutUpdatedPayloadData) GetAmount() string {
 		return ""
 	}
 	return p.Amount
+}
+
+func (p *PostPayoutUpdatedPayloadData) GetCancelable() bool {
+	if p == nil {
+		return false
+	}
+	return p.Cancelable
 }
 
 func (p *PostPayoutUpdatedPayloadData) GetCreatedAt() time.Time {
@@ -9883,6 +9978,13 @@ func (p *PostPayoutUpdatedPayloadData) require(field *big.Int) {
 func (p *PostPayoutUpdatedPayloadData) SetAmount(amount string) {
 	p.Amount = amount
 	p.require(postPayoutUpdatedPayloadDataFieldAmount)
+}
+
+// SetCancelable sets the Cancelable field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutUpdatedPayloadData) SetCancelable(cancelable bool) {
+	p.Cancelable = cancelable
+	p.require(postPayoutUpdatedPayloadDataFieldCancelable)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -10709,35 +10811,36 @@ func (p PostPayoutUpdatedPayloadType) Ptr() *PostPayoutUpdatedPayloadType {
 
 var (
 	retrievePayoutsResponseFieldAmount              = big.NewInt(1 << 0)
-	retrievePayoutsResponseFieldCreatedAt           = big.NewInt(1 << 1)
-	retrievePayoutsResponseFieldCurrency            = big.NewInt(1 << 2)
-	retrievePayoutsResponseFieldDelayed             = big.NewInt(1 << 3)
-	retrievePayoutsResponseFieldDestinationAmount   = big.NewInt(1 << 4)
-	retrievePayoutsResponseFieldDestinationCurrency = big.NewInt(1 << 5)
-	retrievePayoutsResponseFieldEstimatedArrival    = big.NewInt(1 << 6)
-	retrievePayoutsResponseFieldEstimatedArrivalEnd = big.NewInt(1 << 7)
-	retrievePayoutsResponseFieldExchangeRate        = big.NewInt(1 << 8)
-	retrievePayoutsResponseFieldFailure             = big.NewInt(1 << 9)
-	retrievePayoutsResponseFieldFeeAmount           = big.NewInt(1 << 10)
-	retrievePayoutsResponseFieldFeePaidBy           = big.NewInt(1 << 11)
-	retrievePayoutsResponseFieldID                  = big.NewInt(1 << 12)
-	retrievePayoutsResponseFieldMarkupFee           = big.NewInt(1 << 13)
-	retrievePayoutsResponseFieldMetadata            = big.NewInt(1 << 14)
-	retrievePayoutsResponseFieldNetAmount           = big.NewInt(1 << 15)
-	retrievePayoutsResponseFieldNotes               = big.NewInt(1 << 16)
-	retrievePayoutsResponseFieldObject              = big.NewInt(1 << 17)
-	retrievePayoutsResponseFieldPayerName           = big.NewInt(1 << 18)
-	retrievePayoutsResponseFieldPayoutMethod        = big.NewInt(1 << 19)
-	retrievePayoutsResponseFieldPayoutRequestID     = big.NewInt(1 << 20)
-	retrievePayoutsResponseFieldRecipientName       = big.NewInt(1 << 21)
-	retrievePayoutsResponseFieldSenderName          = big.NewInt(1 << 22)
-	retrievePayoutsResponseFieldSource              = big.NewInt(1 << 23)
-	retrievePayoutsResponseFieldSpeed               = big.NewInt(1 << 24)
-	retrievePayoutsResponseFieldStatementDescriptor = big.NewInt(1 << 25)
-	retrievePayoutsResponseFieldStatus              = big.NewInt(1 << 26)
-	retrievePayoutsResponseFieldStatusDetail        = big.NewInt(1 << 27)
-	retrievePayoutsResponseFieldTimeline            = big.NewInt(1 << 28)
-	retrievePayoutsResponseFieldTraceCode           = big.NewInt(1 << 29)
+	retrievePayoutsResponseFieldCancelable          = big.NewInt(1 << 1)
+	retrievePayoutsResponseFieldCreatedAt           = big.NewInt(1 << 2)
+	retrievePayoutsResponseFieldCurrency            = big.NewInt(1 << 3)
+	retrievePayoutsResponseFieldDelayed             = big.NewInt(1 << 4)
+	retrievePayoutsResponseFieldDestinationAmount   = big.NewInt(1 << 5)
+	retrievePayoutsResponseFieldDestinationCurrency = big.NewInt(1 << 6)
+	retrievePayoutsResponseFieldEstimatedArrival    = big.NewInt(1 << 7)
+	retrievePayoutsResponseFieldEstimatedArrivalEnd = big.NewInt(1 << 8)
+	retrievePayoutsResponseFieldExchangeRate        = big.NewInt(1 << 9)
+	retrievePayoutsResponseFieldFailure             = big.NewInt(1 << 10)
+	retrievePayoutsResponseFieldFeeAmount           = big.NewInt(1 << 11)
+	retrievePayoutsResponseFieldFeePaidBy           = big.NewInt(1 << 12)
+	retrievePayoutsResponseFieldID                  = big.NewInt(1 << 13)
+	retrievePayoutsResponseFieldMarkupFee           = big.NewInt(1 << 14)
+	retrievePayoutsResponseFieldMetadata            = big.NewInt(1 << 15)
+	retrievePayoutsResponseFieldNetAmount           = big.NewInt(1 << 16)
+	retrievePayoutsResponseFieldNotes               = big.NewInt(1 << 17)
+	retrievePayoutsResponseFieldObject              = big.NewInt(1 << 18)
+	retrievePayoutsResponseFieldPayerName           = big.NewInt(1 << 19)
+	retrievePayoutsResponseFieldPayoutMethod        = big.NewInt(1 << 20)
+	retrievePayoutsResponseFieldPayoutRequestID     = big.NewInt(1 << 21)
+	retrievePayoutsResponseFieldRecipientName       = big.NewInt(1 << 22)
+	retrievePayoutsResponseFieldSenderName          = big.NewInt(1 << 23)
+	retrievePayoutsResponseFieldSource              = big.NewInt(1 << 24)
+	retrievePayoutsResponseFieldSpeed               = big.NewInt(1 << 25)
+	retrievePayoutsResponseFieldStatementDescriptor = big.NewInt(1 << 26)
+	retrievePayoutsResponseFieldStatus              = big.NewInt(1 << 27)
+	retrievePayoutsResponseFieldStatusDetail        = big.NewInt(1 << 28)
+	retrievePayoutsResponseFieldTimeline            = big.NewInt(1 << 29)
+	retrievePayoutsResponseFieldTraceCode           = big.NewInt(1 << 30)
 )
 
 // retrievePayoutsResponseNullableFields maps the wire names of RetrievePayoutsResponse's nullable fields (required or optional) to their field bits.
@@ -10762,6 +10865,8 @@ var retrievePayoutsResponseNullableFields = map[string]*big.Int{
 type RetrievePayoutsResponse struct {
 	// The payout amount in whole currency units, as a decimal string. Only returned to callers with payout:withdrawal:read on the owning ledger.
 	Amount *string `json:"amount,omitempty" url:"amount,omitempty"`
+	// Whether `POST /payouts/{id}/cancel` would act on this payout right now: `true` while it is `in_review`, while it is `processing` with nothing yet submitted to the payout provider, or while a submitted payout can still be asked to cancel at the provider. `false` once the money has arrived or the payout has already ended. Only returned to callers with payout:withdrawal:read on the owning ledger.
+	Cancelable *bool `json:"cancelable,omitempty" url:"cancelable,omitempty"`
 	// When the payout was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
 	// Payout currency.
@@ -10832,6 +10937,13 @@ func (r *RetrievePayoutsResponse) GetAmount() *string {
 		return nil
 	}
 	return r.Amount
+}
+
+func (r *RetrievePayoutsResponse) GetCancelable() *bool {
+	if r == nil {
+		return nil
+	}
+	return r.Cancelable
 }
 
 func (r *RetrievePayoutsResponse) GetCreatedAt() time.Time {
@@ -11058,6 +11170,13 @@ func (r *RetrievePayoutsResponse) require(field *big.Int) {
 func (r *RetrievePayoutsResponse) SetAmount(amount *string) {
 	r.Amount = amount
 	r.require(retrievePayoutsResponseFieldAmount)
+}
+
+// SetCancelable sets the Cancelable field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePayoutsResponse) SetCancelable(cancelable *bool) {
+	r.Cancelable = cancelable
+	r.require(retrievePayoutsResponseFieldCancelable)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
