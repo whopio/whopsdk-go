@@ -10,6 +10,7 @@ import (
 	core "github.com/whopio/whopsdk-go/v2/core"
 	internal "github.com/whopio/whopsdk-go/v2/internal"
 	option "github.com/whopio/whopsdk-go/v2/option"
+	fees "github.com/whopio/whopsdk-go/v2/users/fees"
 	oauthgrants "github.com/whopio/whopsdk-go/v2/users/oauthgrants"
 	passkeys "github.com/whopio/whopsdk-go/v2/users/passkeys"
 	client "github.com/whopio/whopsdk-go/v2/users/preferences/client"
@@ -20,6 +21,7 @@ type Client struct {
 	OauthGrants     *oauthgrants.Client
 	Passkeys        *passkeys.Client
 	Preferences     *client.Client
+	Fees            *fees.Client
 
 	options *core.RequestOptions
 	baseURL string
@@ -35,6 +37,7 @@ func NewClient(options *core.RequestOptions) *Client {
 		OauthGrants:     oauthgrants.NewClient(options),
 		Passkeys:        passkeys.NewClient(options),
 		Preferences:     client.NewClient(options),
+		Fees:            fees.NewClient(options),
 		WithRawResponse: NewRawClient(options),
 		options:         options,
 		baseURL:         options.BaseURL,
