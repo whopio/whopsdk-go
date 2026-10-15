@@ -766,10 +766,11 @@ var (
 	accountFieldTrading                             = big.NewInt(0).Lsh(big.NewInt(1), 67)
 	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(0).Lsh(big.NewInt(1), 68)
 	accountFieldVerification                        = big.NewInt(0).Lsh(big.NewInt(1), 69)
-	accountFieldVolumeUsd                           = big.NewInt(0).Lsh(big.NewInt(1), 70)
-	accountFieldWallet                              = big.NewInt(0).Lsh(big.NewInt(1), 71)
-	accountFieldWebsite                             = big.NewInt(0).Lsh(big.NewInt(1), 72)
-	accountFieldWhopPartnerEnabledAt                = big.NewInt(0).Lsh(big.NewInt(1), 73)
+	accountFieldVolumeL30DUsd                       = big.NewInt(0).Lsh(big.NewInt(1), 70)
+	accountFieldVolumeUsd                           = big.NewInt(0).Lsh(big.NewInt(1), 71)
+	accountFieldWallet                              = big.NewInt(0).Lsh(big.NewInt(1), 72)
+	accountFieldWebsite                             = big.NewInt(0).Lsh(big.NewInt(1), 73)
+	accountFieldWhopPartnerEnabledAt                = big.NewInt(0).Lsh(big.NewInt(1), 74)
 )
 
 // accountNullableFields maps the wire names of Account's nullable fields (required or optional) to their field bits.
@@ -815,6 +816,7 @@ var accountNullableFields = map[string]*big.Int{
 	"total_earned_usd":           accountFieldTotalEarnedUsd,
 	"total_usd":                  accountFieldTotalUsd,
 	"trading":                    accountFieldTrading,
+	"volume_l30d_usd":            accountFieldVolumeL30DUsd,
 	"volume_usd":                 accountFieldVolumeUsd,
 	"wallet":                     accountFieldWallet,
 	"website":                    accountFieldWebsite,
@@ -954,6 +956,8 @@ type Account struct {
 	UseLogoAsOpengraphImageFallback bool `json:"use_logo_as_opengraph_image_fallback" url:"use_logo_as_opengraph_image_fallback"`
 	// Account identity verification status for the `individual` (KYC) and `business` (KYB) profiles. Each is `null` until created, otherwise a `status` of `not_started`, `pending`, `manual_review`, `approved`, or `rejected`.
 	Verification map[string]any `json:"verification" url:"verification"`
+	// Volume through the account in the last 30 days (GMV from paid receipts), normalized to USD. Computed only on `list` for callers with `stats:read` on the account; `null` otherwise.
+	VolumeL30DUsd *float64 `json:"volume_l30d_usd,omitempty" url:"volume_l30d_usd,omitempty"`
 	// Lifetime volume through the account — sales plus transfers received — normalized to USD. Computed only on `list` for callers with `stats:read` on the account; `null` otherwise.
 	VolumeUsd *float64 `json:"volume_usd,omitempty" url:"volume_usd,omitempty"`
 	// Account primary crypto wallet, or `null` if none has been provisioned.
@@ -1458,6 +1462,13 @@ func (a *Account) GetVerification() map[string]any {
 		return nil
 	}
 	return a.Verification
+}
+
+func (a *Account) GetVolumeL30DUsd() *float64 {
+	if a == nil {
+		return nil
+	}
+	return a.VolumeL30DUsd
 }
 
 func (a *Account) GetVolumeUsd() *float64 {
@@ -1992,6 +2003,13 @@ func (a *Account) SetUseLogoAsOpengraphImageFallback(useLogoAsOpengraphImageFall
 func (a *Account) SetVerification(verification map[string]any) {
 	a.Verification = verification
 	a.require(accountFieldVerification)
+}
+
+// SetVolumeL30DUsd sets the VolumeL30DUsd field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetVolumeL30DUsd(volumeL30DUsd *float64) {
+	a.VolumeL30DUsd = volumeL30DUsd
+	a.require(accountFieldVolumeL30DUsd)
 }
 
 // SetVolumeUsd sets the VolumeUsd field and marks it as non-optional;

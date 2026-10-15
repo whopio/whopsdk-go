@@ -2419,6 +2419,14 @@ func TestSettersAccount(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetVolumeL30DUsd", func(t *testing.T) {
+		obj := &Account{}
+		var fernTestValueVolumeL30DUsd *float64
+		obj.SetVolumeL30DUsd(fernTestValueVolumeL30DUsd)
+		assert.Equal(t, fernTestValueVolumeL30DUsd, obj.VolumeL30DUsd)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetVolumeUsd", func(t *testing.T) {
 		obj := &Account{}
 		var fernTestValueVolumeUsd *float64
@@ -4602,6 +4610,39 @@ func TestGettersAccount(t *testing.T) {
 			}
 		}()
 		_ = obj.GetVerification() // Should return zero value
+	})
+
+	t.Run("GetVolumeL30DUsd", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Account{}
+		var expected *float64
+		obj.VolumeL30DUsd = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetVolumeL30DUsd(), "getter should return the property value")
+	})
+
+	t.Run("GetVolumeL30DUsd_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Account{}
+		obj.VolumeL30DUsd = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetVolumeL30DUsd(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetVolumeL30DUsd_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Account
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetVolumeL30DUsd() // Should return zero value
 	})
 
 	t.Run("GetVolumeUsd", func(t *testing.T) {
@@ -6886,6 +6927,37 @@ func TestSettersMarkExplicitAccount(t *testing.T) {
 
 		// Act
 		obj.SetVerification(fernTestValueVerification)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetVolumeL30DUsd_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Account{}
+		var fernTestValueVolumeL30DUsd *float64
+
+		// Act
+		obj.SetVolumeL30DUsd(fernTestValueVolumeL30DUsd)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -21753,6 +21825,7 @@ func TestRequiredNullableRoundTripAccount(t *testing.T) {
 		"total_earned_usd",
 		"total_usd",
 		"trading",
+		"volume_l30d_usd",
 		"volume_usd",
 		"wallet",
 		"website",
@@ -21768,7 +21841,7 @@ func TestRequiredNullableRoundTripAccount(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Account
-		require.NoError(t, json.Unmarshal([]byte(`{"ads_spend_usd":null,"banner_image_url":null,"business_address":null,"business_name":null,"business_type":null,"cancellation_policy":null,"capabilities":null,"cards":null,"country":null,"description":null,"email":null,"eula":null,"financing":null,"industry_type":null,"invoice_prefix":null,"level":null,"logo_url":null,"onboarding_type":null,"opengraph_image_url":null,"opengraph_image_variant":null,"other_business_description":null,"other_industry_description":null,"parent_account":null,"payment_controls":null,"privacy_policy":null,"product_tax_code":null,"recommended_actions":null,"required_actions":null,"return_policy":null,"shipping_policy":null,"status":null,"status_reason":null,"target_audience":null,"tax_remitted_by":null,"tax_type":null,"terms_of_service":null,"three_ds_level":null,"total_earned_usd":null,"total_usd":null,"trading":null,"volume_usd":null,"wallet":null,"website":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"ads_spend_usd":null,"banner_image_url":null,"business_address":null,"business_name":null,"business_type":null,"cancellation_policy":null,"capabilities":null,"cards":null,"country":null,"description":null,"email":null,"eula":null,"financing":null,"industry_type":null,"invoice_prefix":null,"level":null,"logo_url":null,"onboarding_type":null,"opengraph_image_url":null,"opengraph_image_variant":null,"other_business_description":null,"other_industry_description":null,"parent_account":null,"payment_controls":null,"privacy_policy":null,"product_tax_code":null,"recommended_actions":null,"required_actions":null,"return_policy":null,"shipping_policy":null,"status":null,"status_reason":null,"target_audience":null,"tax_remitted_by":null,"tax_type":null,"terms_of_service":null,"three_ds_level":null,"total_earned_usd":null,"total_usd":null,"trading":null,"volume_l30d_usd":null,"volume_usd":null,"wallet":null,"website":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
