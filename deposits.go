@@ -82,16 +82,14 @@ func (c *CreateDepositsRequest) MarshalJSON() ([]byte, error) {
 var (
 	createDepositsResponseFieldAccountID = big.NewInt(1 << 0)
 	createDepositsResponseFieldAmount    = big.NewInt(1 << 1)
-	createDepositsResponseFieldCard      = big.NewInt(1 << 2)
-	createDepositsResponseFieldHostedURL = big.NewInt(1 << 3)
-	createDepositsResponseFieldMethods   = big.NewInt(1 << 4)
-	createDepositsResponseFieldObject    = big.NewInt(1 << 5)
+	createDepositsResponseFieldHostedURL = big.NewInt(1 << 2)
+	createDepositsResponseFieldMethods   = big.NewInt(1 << 3)
+	createDepositsResponseFieldObject    = big.NewInt(1 << 4)
 )
 
 // createDepositsResponseNullableFields maps the wire names of CreateDepositsResponse's nullable fields (required or optional) to their field bits.
 var createDepositsResponseNullableFields = map[string]*big.Int{
 	"account_id": createDepositsResponseFieldAccountID,
-	"card":       createDepositsResponseFieldCard,
 	"hosted_url": createDepositsResponseFieldHostedURL,
 }
 
@@ -100,8 +98,6 @@ type CreateDepositsResponse struct {
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
 	// Requested deposit amount.
 	Amount *string `json:"amount,omitempty" url:"amount,omitempty"`
-	// The charge to a saved payment method. Null unless `payment_method_id` was passed.
-	Card *CreateDepositsResponseCard `json:"card,omitempty" url:"card,omitempty"`
 	// URL of the hosted deposit page. Only present for business destinations.
 	HostedURL *string `json:"hosted_url,omitempty" url:"hosted_url,omitempty"`
 	// Available deposit methods for destination.
@@ -127,13 +123,6 @@ func (c *CreateDepositsResponse) GetAmount() *string {
 		return nil
 	}
 	return c.Amount
-}
-
-func (c *CreateDepositsResponse) GetCard() *CreateDepositsResponseCard {
-	if c == nil {
-		return nil
-	}
-	return c.Card
 }
 
 func (c *CreateDepositsResponse) GetHostedURL() *string {
@@ -185,13 +174,6 @@ func (c *CreateDepositsResponse) SetAccountID(accountID *string) {
 func (c *CreateDepositsResponse) SetAmount(amount *string) {
 	c.Amount = amount
 	c.require(createDepositsResponseFieldAmount)
-}
-
-// SetCard sets the Card field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateDepositsResponse) SetCard(card *CreateDepositsResponseCard) {
-	c.Card = card
-	c.require(createDepositsResponseFieldCard)
 }
 
 // SetHostedURL sets the HostedURL field and marks it as non-optional;
@@ -265,124 +247,23 @@ func (c *CreateDepositsResponse) String() string {
 }
 
 var (
-	createDepositsResponseCardFieldPaymentID       = big.NewInt(1 << 0)
-	createDepositsResponseCardFieldPaymentMethodID = big.NewInt(1 << 1)
-)
-
-// The charge to a saved payment method. Null unless `payment_method_id` was passed.
-type CreateDepositsResponseCard struct {
-	// The payment the charge created, prefixed `pay_`. Retrieve it, or listen for `payment.succeeded`, to confirm the funds landed.
-	PaymentID string `json:"payment_id" url:"payment_id"`
-	// The saved payment method that was charged, prefixed `payt_`.
-	PaymentMethodID string `json:"payment_method_id" url:"payment_method_id"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateDepositsResponseCard) GetPaymentID() string {
-	if c == nil {
-		return ""
-	}
-	return c.PaymentID
-}
-
-func (c *CreateDepositsResponseCard) GetPaymentMethodID() string {
-	if c == nil {
-		return ""
-	}
-	return c.PaymentMethodID
-}
-
-func (c *CreateDepositsResponseCard) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateDepositsResponseCard) require(field *big.Int) {
-	next := new(big.Int)
-	if c.explicitFields != nil {
-		next.Set(c.explicitFields)
-	}
-	next.Or(next, field)
-	c.explicitFields = next
-}
-
-// SetPaymentID sets the PaymentID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateDepositsResponseCard) SetPaymentID(paymentID string) {
-	c.PaymentID = paymentID
-	c.require(createDepositsResponseCardFieldPaymentID)
-}
-
-// SetPaymentMethodID sets the PaymentMethodID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateDepositsResponseCard) SetPaymentMethodID(paymentMethodID string) {
-	c.PaymentMethodID = paymentMethodID
-	c.require(createDepositsResponseCardFieldPaymentMethodID)
-}
-
-func (c *CreateDepositsResponseCard) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateDepositsResponseCard
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreateDepositsResponseCard(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateDepositsResponseCard) MarshalJSON() ([]byte, error) {
-	type embed CreateDepositsResponseCard
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateDepositsResponseCard) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-var (
 	createDepositsResponseMethodsFieldBank   = big.NewInt(1 << 0)
-	createDepositsResponseMethodsFieldCrypto = big.NewInt(1 << 1)
+	createDepositsResponseMethodsFieldCard   = big.NewInt(1 << 1)
+	createDepositsResponseMethodsFieldCrypto = big.NewInt(1 << 2)
 )
 
 // createDepositsResponseMethodsNullableFields maps the wire names of CreateDepositsResponseMethods's nullable fields (required or optional) to their field bits.
 var createDepositsResponseMethodsNullableFields = map[string]*big.Int{
 	"bank": createDepositsResponseMethodsFieldBank,
+	"card": createDepositsResponseMethodsFieldCard,
 }
 
 // Available deposit methods for destination.
 type CreateDepositsResponseMethods struct {
 	// Bank deposit details. Only present when bank deposits are active for the destination account.
 	Bank *CreateDepositsResponseMethodsBank `json:"bank,omitempty" url:"bank,omitempty"`
+	// The charge to a saved payment method. Null unless `payment_method_id` was passed.
+	Card *CreateDepositsResponseMethodsCard `json:"card,omitempty" url:"card,omitempty"`
 	// Crypto networks available for this deposit, each with its on-chain deposit address and the tokens accepted on that network. Crypto deposits require a $10 minimum.
 	Crypto []*CreateDepositsResponseMethodsCryptoItem `json:"crypto" url:"crypto"`
 
@@ -398,6 +279,13 @@ func (c *CreateDepositsResponseMethods) GetBank() *CreateDepositsResponseMethods
 		return nil
 	}
 	return c.Bank
+}
+
+func (c *CreateDepositsResponseMethods) GetCard() *CreateDepositsResponseMethodsCard {
+	if c == nil {
+		return nil
+	}
+	return c.Card
 }
 
 func (c *CreateDepositsResponseMethods) GetCrypto() []*CreateDepositsResponseMethodsCryptoItem {
@@ -428,6 +316,13 @@ func (c *CreateDepositsResponseMethods) require(field *big.Int) {
 func (c *CreateDepositsResponseMethods) SetBank(bank *CreateDepositsResponseMethodsBank) {
 	c.Bank = bank
 	c.require(createDepositsResponseMethodsFieldBank)
+}
+
+// SetCard sets the Card field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDepositsResponseMethods) SetCard(card *CreateDepositsResponseMethodsCard) {
+	c.Card = card
+	c.require(createDepositsResponseMethodsFieldCard)
 }
 
 // SetCrypto sets the Crypto field and marks it as non-optional;
@@ -844,6 +739,111 @@ func NewCreateDepositsResponseMethodsBankCurrenciesItemRailsItemFromString(s str
 
 func (c CreateDepositsResponseMethodsBankCurrenciesItemRailsItem) Ptr() *CreateDepositsResponseMethodsBankCurrenciesItemRailsItem {
 	return &c
+}
+
+var (
+	createDepositsResponseMethodsCardFieldPaymentID       = big.NewInt(1 << 0)
+	createDepositsResponseMethodsCardFieldPaymentMethodID = big.NewInt(1 << 1)
+)
+
+// The charge to a saved payment method. Null unless `payment_method_id` was passed.
+type CreateDepositsResponseMethodsCard struct {
+	// The payment the charge created, prefixed `pay_`. Retrieve it, or listen for `payment.succeeded`, to confirm the funds landed.
+	PaymentID string `json:"payment_id" url:"payment_id"`
+	// The saved payment method that was charged, prefixed `payt_`.
+	PaymentMethodID string `json:"payment_method_id" url:"payment_method_id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateDepositsResponseMethodsCard) GetPaymentID() string {
+	if c == nil {
+		return ""
+	}
+	return c.PaymentID
+}
+
+func (c *CreateDepositsResponseMethodsCard) GetPaymentMethodID() string {
+	if c == nil {
+		return ""
+	}
+	return c.PaymentMethodID
+}
+
+func (c *CreateDepositsResponseMethodsCard) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateDepositsResponseMethodsCard) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetPaymentID sets the PaymentID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDepositsResponseMethodsCard) SetPaymentID(paymentID string) {
+	c.PaymentID = paymentID
+	c.require(createDepositsResponseMethodsCardFieldPaymentID)
+}
+
+// SetPaymentMethodID sets the PaymentMethodID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDepositsResponseMethodsCard) SetPaymentMethodID(paymentMethodID string) {
+	c.PaymentMethodID = paymentMethodID
+	c.require(createDepositsResponseMethodsCardFieldPaymentMethodID)
+}
+
+func (c *CreateDepositsResponseMethodsCard) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateDepositsResponseMethodsCard
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateDepositsResponseMethodsCard(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateDepositsResponseMethodsCard) MarshalJSON() ([]byte, error) {
+	type embed CreateDepositsResponseMethodsCard
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateDepositsResponseMethodsCard) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
 }
 
 var (
