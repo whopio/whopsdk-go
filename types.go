@@ -4994,6 +4994,7 @@ const (
 	AccountRequiredActionActionAddVatRegistration              AccountRequiredActionAction = "add_vat_registration"
 	AccountRequiredActionActionAcceptPayoutTerms               AccountRequiredActionAction = "accept_payout_terms"
 	AccountRequiredActionActionEnableTwoFactorAuthentication   AccountRequiredActionAction = "enable_two_factor_authentication"
+	AccountRequiredActionActionRespondToAbuseReport            AccountRequiredActionAction = "respond_to_abuse_report"
 )
 
 func NewAccountRequiredActionActionFromString(s string) (AccountRequiredActionAction, error) {
@@ -5028,6 +5029,8 @@ func NewAccountRequiredActionActionFromString(s string) (AccountRequiredActionAc
 		return AccountRequiredActionActionAcceptPayoutTerms, nil
 	case "enable_two_factor_authentication":
 		return AccountRequiredActionActionEnableTwoFactorAuthentication, nil
+	case "respond_to_abuse_report":
+		return AccountRequiredActionActionRespondToAbuseReport, nil
 	}
 	var t AccountRequiredActionAction
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
