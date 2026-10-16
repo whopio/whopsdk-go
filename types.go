@@ -28862,29 +28862,33 @@ func (p *Pagination) String() string {
 }
 
 var (
-	partnerAdvanceFieldActivity60Day                  = big.NewInt(1 << 0)
-	partnerAdvanceFieldAmount                         = big.NewInt(1 << 1)
-	partnerAdvanceFieldAnnualProcessing               = big.NewInt(1 << 2)
-	partnerAdvanceFieldClawedBackAt                   = big.NewInt(1 << 3)
-	partnerAdvanceFieldDeadlineAt                     = big.NewInt(1 << 4)
-	partnerAdvanceFieldFundedAt                       = big.NewInt(1 << 5)
-	partnerAdvanceFieldOfferToken                     = big.NewInt(1 << 6)
-	partnerAdvanceFieldProcessingTarget               = big.NewInt(1 << 7)
-	partnerAdvanceFieldProjected60DayActivity         = big.NewInt(1 << 8)
-	partnerAdvanceFieldProjectedCommissions           = big.NewInt(1 << 9)
-	partnerAdvanceFieldProjectedProcessingCommissions = big.NewInt(1 << 10)
-	partnerAdvanceFieldQualifiedAt                    = big.NewInt(1 << 11)
-	partnerAdvanceFieldRecoveryThreshold              = big.NewInt(1 << 12)
-	partnerAdvanceFieldStatus                         = big.NewInt(1 << 13)
-	partnerAdvanceFieldTermsVersion                   = big.NewInt(1 << 14)
+	partnerAdvanceFieldActivity30Day                  = big.NewInt(1 << 0)
+	partnerAdvanceFieldActivity60Day                  = big.NewInt(1 << 1)
+	partnerAdvanceFieldAmount                         = big.NewInt(1 << 2)
+	partnerAdvanceFieldAnnualProcessing               = big.NewInt(1 << 3)
+	partnerAdvanceFieldClawedBackAt                   = big.NewInt(1 << 4)
+	partnerAdvanceFieldDeadlineAt                     = big.NewInt(1 << 5)
+	partnerAdvanceFieldEstimatedAmount                = big.NewInt(1 << 6)
+	partnerAdvanceFieldFundedAt                       = big.NewInt(1 << 7)
+	partnerAdvanceFieldOfferToken                     = big.NewInt(1 << 8)
+	partnerAdvanceFieldProcessingTarget               = big.NewInt(1 << 9)
+	partnerAdvanceFieldProjected60DayActivity         = big.NewInt(1 << 10)
+	partnerAdvanceFieldProjectedCommissions           = big.NewInt(1 << 11)
+	partnerAdvanceFieldProjectedProcessingCommissions = big.NewInt(1 << 12)
+	partnerAdvanceFieldQualifiedAt                    = big.NewInt(1 << 13)
+	partnerAdvanceFieldRecoveryThreshold              = big.NewInt(1 << 14)
+	partnerAdvanceFieldStatus                         = big.NewInt(1 << 15)
+	partnerAdvanceFieldTermsVersion                   = big.NewInt(1 << 16)
 )
 
 // partnerAdvanceNullableFields maps the wire names of PartnerAdvance's nullable fields (required or optional) to their field bits.
 var partnerAdvanceNullableFields = map[string]*big.Int{
+	"activity_30_day":                  partnerAdvanceFieldActivity30Day,
 	"activity_60_day":                  partnerAdvanceFieldActivity60Day,
 	"amount":                           partnerAdvanceFieldAmount,
 	"clawed_back_at":                   partnerAdvanceFieldClawedBackAt,
 	"deadline_at":                      partnerAdvanceFieldDeadlineAt,
+	"estimated_amount":                 partnerAdvanceFieldEstimatedAmount,
 	"funded_at":                        partnerAdvanceFieldFundedAt,
 	"offer_token":                      partnerAdvanceFieldOfferToken,
 	"projected_60_day_activity":        partnerAdvanceFieldProjected60DayActivity,
@@ -28896,6 +28900,8 @@ var partnerAdvanceNullableFields = map[string]*big.Int{
 }
 
 type PartnerAdvance struct {
+	// Qualifying card and BNPL payment volume in the preceding 30 days, in USD. Available on business detail responses before acceptance.
+	Activity30Day *Money `json:"activity_30_day,omitempty" url:"activity_30_day,omitempty"`
 	// Actual payment volume (cards and BNPL) in the preceding 60 days, in USD. Null when unavailable.
 	Activity60Day *Money `json:"activity_60_day,omitempty" url:"activity_60_day,omitempty"`
 	// The offered or accepted upfront CPA payment in USD.
@@ -28906,6 +28912,8 @@ type PartnerAdvance struct {
 	ClawedBackAt *string `json:"clawed_back_at,omitempty" url:"clawed_back_at,omitempty"`
 	// End of the nine-month CPA term. Normal commissions resume prospectively without backfill.
 	DeadlineAt *string `json:"deadline_at,omitempty" url:"deadline_at,omitempty"`
+	// Estimated advance using the current CPA formula and observed payout rates. Available for unqualified projections on business detail responses.
+	EstimatedAmount *Money `json:"estimated_amount,omitempty" url:"estimated_amount,omitempty"`
 	// When the CPA payment was funded.
 	FundedAt *string `json:"funded_at,omitempty" url:"funded_at,omitempty"`
 	// Signed offer valid for 15 minutes. Submit unchanged when accepting. Null unless the caller may accept this offer.
@@ -28932,6 +28940,13 @@ type PartnerAdvance struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (p *PartnerAdvance) GetActivity30Day() *Money {
+	if p == nil {
+		return nil
+	}
+	return p.Activity30Day
 }
 
 func (p *PartnerAdvance) GetActivity60Day() *Money {
@@ -28967,6 +28982,13 @@ func (p *PartnerAdvance) GetDeadlineAt() *string {
 		return nil
 	}
 	return p.DeadlineAt
+}
+
+func (p *PartnerAdvance) GetEstimatedAmount() *Money {
+	if p == nil {
+		return nil
+	}
+	return p.EstimatedAmount
 }
 
 func (p *PartnerAdvance) GetFundedAt() *string {
@@ -29055,6 +29077,13 @@ func (p *PartnerAdvance) require(field *big.Int) {
 	p.explicitFields = next
 }
 
+// SetActivity30Day sets the Activity30Day field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerAdvance) SetActivity30Day(activity30Day *Money) {
+	p.Activity30Day = activity30Day
+	p.require(partnerAdvanceFieldActivity30Day)
+}
+
 // SetActivity60Day sets the Activity60Day field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *PartnerAdvance) SetActivity60Day(activity60Day *Money) {
@@ -29088,6 +29117,13 @@ func (p *PartnerAdvance) SetClawedBackAt(clawedBackAt *string) {
 func (p *PartnerAdvance) SetDeadlineAt(deadlineAt *string) {
 	p.DeadlineAt = deadlineAt
 	p.require(partnerAdvanceFieldDeadlineAt)
+}
+
+// SetEstimatedAmount sets the EstimatedAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerAdvance) SetEstimatedAmount(estimatedAmount *Money) {
+	p.EstimatedAmount = estimatedAmount
+	p.require(partnerAdvanceFieldEstimatedAmount)
 }
 
 // SetFundedAt sets the FundedAt field and marks it as non-optional;
@@ -29220,6 +29256,7 @@ const (
 	PartnerAdvanceStatusClawedBack PartnerAdvanceStatus = "clawed_back"
 	PartnerAdvanceStatusCompleted  PartnerAdvanceStatus = "completed"
 	PartnerAdvanceStatusExpired    PartnerAdvanceStatus = "expired"
+	PartnerAdvanceStatusWithdrawn  PartnerAdvanceStatus = "withdrawn"
 )
 
 func NewPartnerAdvanceStatusFromString(s string) (PartnerAdvanceStatus, error) {
@@ -29238,6 +29275,8 @@ func NewPartnerAdvanceStatusFromString(s string) (PartnerAdvanceStatus, error) {
 		return PartnerAdvanceStatusCompleted, nil
 	case "expired":
 		return PartnerAdvanceStatusExpired, nil
+	case "withdrawn":
+		return PartnerAdvanceStatusWithdrawn, nil
 	}
 	var t PartnerAdvanceStatus
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

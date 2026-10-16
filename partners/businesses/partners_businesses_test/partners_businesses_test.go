@@ -139,8 +139,7 @@ func TestPartnersBusinessesUpdateWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &partners.UpdateBusinessesRequest{
-		ID:                  "id",
-		AnnualProcessingUsd: "1200000",
+		ID: "id",
 	}
 	_, invocationErr := client.Partners.Businesses.Update(
 		context.TODO(),
