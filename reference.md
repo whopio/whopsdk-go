@@ -521,6 +521,114 @@ client.Accounts.Me(
 </dl>
 </details>
 
+<details><summary><code>client.Accounts.Search() -> *whopsdk.SearchAccountsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Finds accounts by name among the accounts the credential can list. Support searches cover every company and return only the 50 best matches.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.SearchAccountsRequest{
+    Query: "query",
+}
+client.Accounts.Search(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**first:** `*int` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `*int` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**query:** `string` — The account name to search for.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order:** `*whopsdk.SearchAccountsRequestOrder` — Sort field. Without it, support searches return the best match first and other searches return the newest account first.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `*whopsdk.SearchAccountsRequestDirection` — Sort direction.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Accounts.Retrieve(ID) -> *whopsdk.Account</code></summary>
 <dl>
 <dd>

@@ -589,6 +589,94 @@ func (r *RetryAdsPaymentAccountsRequest) SetID(id string) {
 }
 
 var (
+	searchAccountsRequestFieldFirst     = big.NewInt(1 << 0)
+	searchAccountsRequestFieldAfter     = big.NewInt(1 << 1)
+	searchAccountsRequestFieldLast      = big.NewInt(1 << 2)
+	searchAccountsRequestFieldBefore    = big.NewInt(1 << 3)
+	searchAccountsRequestFieldQuery     = big.NewInt(1 << 4)
+	searchAccountsRequestFieldOrder     = big.NewInt(1 << 5)
+	searchAccountsRequestFieldDirection = big.NewInt(1 << 6)
+)
+
+type SearchAccountsRequest struct {
+	// Number of results to return from the start of the range.
+	First *int `json:"-" url:"first,omitempty"`
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+	After *string `json:"-" url:"after,omitempty"`
+	// Number of results to return from the end of the range.
+	Last *int `json:"-" url:"last,omitempty"`
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+	Before *string `json:"-" url:"before,omitempty"`
+	// The account name to search for.
+	Query string `json:"-" url:"query"`
+	// Sort field. Without it, support searches return the best match first and other searches return the newest account first.
+	Order *SearchAccountsRequestOrder `json:"-" url:"order,omitempty"`
+	// Sort direction.
+	Direction *SearchAccountsRequestDirection `json:"-" url:"direction,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (s *SearchAccountsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
+	}
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetFirst sets the First field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SearchAccountsRequest) SetFirst(first *int) {
+	s.First = first
+	s.require(searchAccountsRequestFieldFirst)
+}
+
+// SetAfter sets the After field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SearchAccountsRequest) SetAfter(after *string) {
+	s.After = after
+	s.require(searchAccountsRequestFieldAfter)
+}
+
+// SetLast sets the Last field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SearchAccountsRequest) SetLast(last *int) {
+	s.Last = last
+	s.require(searchAccountsRequestFieldLast)
+}
+
+// SetBefore sets the Before field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SearchAccountsRequest) SetBefore(before *string) {
+	s.Before = before
+	s.require(searchAccountsRequestFieldBefore)
+}
+
+// SetQuery sets the Query field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SearchAccountsRequest) SetQuery(query string) {
+	s.Query = query
+	s.require(searchAccountsRequestFieldQuery)
+}
+
+// SetOrder sets the Order field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SearchAccountsRequest) SetOrder(order *SearchAccountsRequestOrder) {
+	s.Order = order
+	s.require(searchAccountsRequestFieldOrder)
+}
+
+// SetDirection sets the Direction field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SearchAccountsRequest) SetDirection(direction *SearchAccountsRequestDirection) {
+	s.Direction = direction
+	s.require(searchAccountsRequestFieldDirection)
+}
+
+var (
 	suspendAccountsRequestFieldID = big.NewInt(1 << 0)
 )
 
@@ -4333,6 +4421,144 @@ func (a *AccountResolutionCenterAutoRefundControl) MarshalJSON() ([]byte, error)
 }
 
 func (a *AccountResolutionCenterAutoRefundControl) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+var (
+	accountSearchResultFieldCreatedAt = big.NewInt(1 << 0)
+	accountSearchResultFieldID        = big.NewInt(1 << 1)
+	accountSearchResultFieldRoute     = big.NewInt(1 << 2)
+	accountSearchResultFieldTitle     = big.NewInt(1 << 3)
+)
+
+type AccountSearchResult struct {
+	// When the account was created, as an ISO 8601 timestamp.
+	CreatedAt string `json:"created_at" url:"created_at"`
+	// Account ID, prefixed `biz_`.
+	ID string `json:"id" url:"id"`
+	// Account public route identifier.
+	Route string `json:"route" url:"route"`
+	// Account display name.
+	Title string `json:"title" url:"title"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AccountSearchResult) GetCreatedAt() string {
+	if a == nil {
+		return ""
+	}
+	return a.CreatedAt
+}
+
+func (a *AccountSearchResult) GetID() string {
+	if a == nil {
+		return ""
+	}
+	return a.ID
+}
+
+func (a *AccountSearchResult) GetRoute() string {
+	if a == nil {
+		return ""
+	}
+	return a.Route
+}
+
+func (a *AccountSearchResult) GetTitle() string {
+	if a == nil {
+		return ""
+	}
+	return a.Title
+}
+
+func (a *AccountSearchResult) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AccountSearchResult) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountSearchResult) SetCreatedAt(createdAt string) {
+	a.CreatedAt = createdAt
+	a.require(accountSearchResultFieldCreatedAt)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountSearchResult) SetID(id string) {
+	a.ID = id
+	a.require(accountSearchResultFieldID)
+}
+
+// SetRoute sets the Route field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountSearchResult) SetRoute(route string) {
+	a.Route = route
+	a.require(accountSearchResultFieldRoute)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountSearchResult) SetTitle(title string) {
+	a.Title = title
+	a.require(accountSearchResultFieldTitle)
+}
+
+func (a *AccountSearchResult) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccountSearchResult
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccountSearchResult(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccountSearchResult) MarshalJSON() ([]byte, error) {
+	type embed AccountSearchResult
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AccountSearchResult) String() string {
 	if a == nil {
 		return "<nil>"
 	}
@@ -8388,6 +8614,296 @@ func (r *RetryAdsPaymentAccountsResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", r)
+}
+
+type SearchAccountsRequestDirection string
+
+const (
+	SearchAccountsRequestDirectionAsc  SearchAccountsRequestDirection = "asc"
+	SearchAccountsRequestDirectionDesc SearchAccountsRequestDirection = "desc"
+)
+
+func NewSearchAccountsRequestDirectionFromString(s string) (SearchAccountsRequestDirection, error) {
+	switch s {
+	case "asc":
+		return SearchAccountsRequestDirectionAsc, nil
+	case "desc":
+		return SearchAccountsRequestDirectionDesc, nil
+	}
+	var t SearchAccountsRequestDirection
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SearchAccountsRequestDirection) Ptr() *SearchAccountsRequestDirection {
+	return &s
+}
+
+type SearchAccountsRequestOrder string
+
+const (
+	SearchAccountsRequestOrderCreatedAt SearchAccountsRequestOrder = "created_at"
+)
+
+func NewSearchAccountsRequestOrderFromString(s string) (SearchAccountsRequestOrder, error) {
+	switch s {
+	case "created_at":
+		return SearchAccountsRequestOrderCreatedAt, nil
+	}
+	var t SearchAccountsRequestOrder
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SearchAccountsRequestOrder) Ptr() *SearchAccountsRequestOrder {
+	return &s
+}
+
+var (
+	searchAccountsResponseFieldData     = big.NewInt(1 << 0)
+	searchAccountsResponseFieldPageInfo = big.NewInt(1 << 1)
+)
+
+type SearchAccountsResponse struct {
+	Data     []*AccountSearchResult          `json:"data" url:"data"`
+	PageInfo *SearchAccountsResponsePageInfo `json:"page_info" url:"page_info"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SearchAccountsResponse) GetData() []*AccountSearchResult {
+	if s == nil {
+		return nil
+	}
+	return s.Data
+}
+
+func (s *SearchAccountsResponse) GetPageInfo() *SearchAccountsResponsePageInfo {
+	if s == nil {
+		return nil
+	}
+	return s.PageInfo
+}
+
+func (s *SearchAccountsResponse) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SearchAccountsResponse) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
+	}
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SearchAccountsResponse) SetData(data []*AccountSearchResult) {
+	s.Data = data
+	s.require(searchAccountsResponseFieldData)
+}
+
+// SetPageInfo sets the PageInfo field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SearchAccountsResponse) SetPageInfo(pageInfo *SearchAccountsResponsePageInfo) {
+	s.PageInfo = pageInfo
+	s.require(searchAccountsResponseFieldPageInfo)
+}
+
+func (s *SearchAccountsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler SearchAccountsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SearchAccountsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SearchAccountsResponse) MarshalJSON() ([]byte, error) {
+	type embed SearchAccountsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SearchAccountsResponse) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	searchAccountsResponsePageInfoFieldEndCursor       = big.NewInt(1 << 0)
+	searchAccountsResponsePageInfoFieldHasNextPage     = big.NewInt(1 << 1)
+	searchAccountsResponsePageInfoFieldHasPreviousPage = big.NewInt(1 << 2)
+	searchAccountsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
+)
+
+// searchAccountsResponsePageInfoNullableFields maps the wire names of SearchAccountsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var searchAccountsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   searchAccountsResponsePageInfoFieldEndCursor,
+	"start_cursor": searchAccountsResponsePageInfoFieldStartCursor,
+}
+
+type SearchAccountsResponsePageInfo struct {
+	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
+	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
+	HasPreviousPage bool    `json:"has_previous_page" url:"has_previous_page"`
+	StartCursor     *string `json:"start_cursor,omitempty" url:"start_cursor,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SearchAccountsResponsePageInfo) GetEndCursor() *string {
+	if s == nil {
+		return nil
+	}
+	return s.EndCursor
+}
+
+func (s *SearchAccountsResponsePageInfo) GetHasNextPage() bool {
+	if s == nil {
+		return false
+	}
+	return s.HasNextPage
+}
+
+func (s *SearchAccountsResponsePageInfo) GetHasPreviousPage() bool {
+	if s == nil {
+		return false
+	}
+	return s.HasPreviousPage
+}
+
+func (s *SearchAccountsResponsePageInfo) GetStartCursor() *string {
+	if s == nil {
+		return nil
+	}
+	return s.StartCursor
+}
+
+func (s *SearchAccountsResponsePageInfo) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SearchAccountsResponsePageInfo) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
+	}
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetEndCursor sets the EndCursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SearchAccountsResponsePageInfo) SetEndCursor(endCursor *string) {
+	s.EndCursor = endCursor
+	s.require(searchAccountsResponsePageInfoFieldEndCursor)
+}
+
+// SetHasNextPage sets the HasNextPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SearchAccountsResponsePageInfo) SetHasNextPage(hasNextPage bool) {
+	s.HasNextPage = hasNextPage
+	s.require(searchAccountsResponsePageInfoFieldHasNextPage)
+}
+
+// SetHasPreviousPage sets the HasPreviousPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SearchAccountsResponsePageInfo) SetHasPreviousPage(hasPreviousPage bool) {
+	s.HasPreviousPage = hasPreviousPage
+	s.require(searchAccountsResponsePageInfoFieldHasPreviousPage)
+}
+
+// SetStartCursor sets the StartCursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SearchAccountsResponsePageInfo) SetStartCursor(startCursor *string) {
+	s.StartCursor = startCursor
+	s.require(searchAccountsResponsePageInfoFieldStartCursor)
+}
+
+func (s *SearchAccountsResponsePageInfo) UnmarshalJSON(data []byte) error {
+	type unmarshaler SearchAccountsResponsePageInfo
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SearchAccountsResponsePageInfo(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, searchAccountsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		s.require(presentFields)
+	}
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SearchAccountsResponsePageInfo) MarshalJSON() ([]byte, error) {
+	type embed SearchAccountsResponsePageInfo
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SearchAccountsResponsePageInfo) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
 }
 
 var (

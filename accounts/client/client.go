@@ -181,6 +181,88 @@ func (c *Client) Me(
 	return response.Body, nil
 }
 
+// Finds accounts by name among the accounts the credential can list. Support searches cover every company and return only the 50 best matches.
+//
+// Example:
+//
+//	request := &whopsdk.SearchAccountsRequest{
+//	    Query: "query",
+//	}
+//	client.Accounts.Search(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Search(
+	ctx context.Context,
+	request *whopsdk.SearchAccountsRequest,
+	opts ...option.RequestOption,
+) (*core.Page[*string, *whopsdk.AccountSearchResult, *whopsdk.SearchAccountsResponse], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
+		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
+		"https://api.whop.com/api/v1",
+	)
+	endpointURL := baseURL + "/accounts/search"
+	queryParams, err := internal.QueryValues(request)
+	if err != nil {
+		return nil, err
+	}
+	headers := internal.MergeHeaders(
+		c.options.ToHeader(),
+		options.ToHeader(),
+	)
+	prepareCall := func(pageRequest *core.PageRequest[*string]) *internal.CallParams {
+		if pageRequest.Cursor != nil {
+			queryParams.Set("after", *pageRequest.Cursor)
+		}
+		nextURL := endpointURL
+		if len(queryParams) > 0 {
+			nextURL += "?" + queryParams.Encode()
+		}
+		return &internal.CallParams{
+			URL:             nextURL,
+			Method:          http.MethodGet,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Response:        pageRequest.Response,
+			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
+		}
+	}
+	readPageResponse := func(response *whopsdk.SearchAccountsResponse) *core.PageResponse[*string, *whopsdk.AccountSearchResult, *whopsdk.SearchAccountsResponse] {
+		var zeroValue *string
+		var next *string
+		if response.PageInfo != nil {
+			next = response.PageInfo.EndCursor
+		}
+		results := response.GetData()
+		return &core.PageResponse[*string, *whopsdk.AccountSearchResult, *whopsdk.SearchAccountsResponse]{
+			Results:  results,
+			Response: response,
+			Next:     next,
+			Done:     next == zeroValue || *next == "",
+		}
+	}
+	pager := internal.NewCursorPager(
+		c.caller,
+		prepareCall,
+		readPageResponse,
+	)
+	return pager.GetPage(ctx, request.After)
+}
+
 // Retrieves an account visible to the credential by ID or public route, including its crypto wallet.
 //
 // Example:
