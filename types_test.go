@@ -97413,6 +97413,14 @@ func TestSettersRefundLegacy(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetMetadata", func(t *testing.T) {
+		obj := &RefundLegacy{}
+		var fernTestValueMetadata map[string]any
+		obj.SetMetadata(fernTestValueMetadata)
+		assert.Equal(t, fernTestValueMetadata, obj.Metadata)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetPayment", func(t *testing.T) {
 		obj := &RefundLegacy{}
 		var fernTestValuePayment *RefundLegacyPayment
@@ -97562,6 +97570,39 @@ func TestGettersRefundLegacy(t *testing.T) {
 			}
 		}()
 		_ = obj.GetID() // Should return zero value
+	})
+
+	t.Run("GetMetadata", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RefundLegacy{}
+		var expected map[string]any
+		obj.Metadata = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetMetadata(), "getter should return the property value")
+	})
+
+	t.Run("GetMetadata_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RefundLegacy{}
+		obj.Metadata = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetMetadata(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetMetadata_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RefundLegacy
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetMetadata() // Should return zero value
 	})
 
 	t.Run("GetPayment", func(t *testing.T) {
@@ -97879,6 +97920,37 @@ func TestSettersMarkExplicitRefundLegacy(t *testing.T) {
 
 		// Act
 		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetMetadata_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RefundLegacy{}
+		var fernTestValueMetadata map[string]any
+
+		// Act
+		obj.SetMetadata(fernTestValueMetadata)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -100484,6 +100556,14 @@ func TestSettersRefundListItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetMetadata", func(t *testing.T) {
+		obj := &RefundListItem{}
+		var fernTestValueMetadata map[string]any
+		obj.SetMetadata(fernTestValueMetadata)
+		assert.Equal(t, fernTestValueMetadata, obj.Metadata)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetPayment", func(t *testing.T) {
 		obj := &RefundListItem{}
 		var fernTestValuePayment *RefundListItemPayment
@@ -100633,6 +100713,39 @@ func TestGettersRefundListItem(t *testing.T) {
 			}
 		}()
 		_ = obj.GetID() // Should return zero value
+	})
+
+	t.Run("GetMetadata", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RefundListItem{}
+		var expected map[string]any
+		obj.Metadata = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetMetadata(), "getter should return the property value")
+	})
+
+	t.Run("GetMetadata_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RefundListItem{}
+		obj.Metadata = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetMetadata(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetMetadata_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RefundListItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetMetadata() // Should return zero value
 	})
 
 	t.Run("GetPayment", func(t *testing.T) {
@@ -100950,6 +101063,37 @@ func TestSettersMarkExplicitRefundListItem(t *testing.T) {
 
 		// Act
 		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetMetadata_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RefundListItem{}
+		var fernTestValueMetadata map[string]any
+
+		// Act
+		obj.SetMetadata(fernTestValueMetadata)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -139826,6 +139970,7 @@ func TestRequiredNullableRoundTripReceiptLineItem(t *testing.T) {
 
 func TestRequiredNullableRoundTripRefundLegacy(t *testing.T) {
 	requiredNullableKeys := []string{
+		"metadata",
 		"payment",
 		"provider_created_at",
 		"reference_status",
@@ -139843,7 +139988,7 @@ func TestRequiredNullableRoundTripRefundLegacy(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj RefundLegacy
-		require.NoError(t, json.Unmarshal([]byte(`{"payment":null,"provider_created_at":null,"reference_status":null,"reference_type":null,"reference_value":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"metadata":null,"payment":null,"provider_created_at":null,"reference_status":null,"reference_type":null,"reference_value":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -140106,6 +140251,7 @@ func TestRequiredNullableRoundTripRefundLegacyPaymentUser(t *testing.T) {
 
 func TestRequiredNullableRoundTripRefundListItem(t *testing.T) {
 	requiredNullableKeys := []string{
+		"metadata",
 		"payment",
 		"provider_created_at",
 		"reference_status",
@@ -140123,7 +140269,7 @@ func TestRequiredNullableRoundTripRefundListItem(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj RefundListItem
-		require.NoError(t, json.Unmarshal([]byte(`{"payment":null,"provider_created_at":null,"reference_status":null,"reference_type":null,"reference_value":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"metadata":null,"payment":null,"provider_created_at":null,"reference_status":null,"reference_type":null,"reference_value":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]

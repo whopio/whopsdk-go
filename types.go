@@ -48457,17 +48457,19 @@ var (
 	refundLegacyFieldCreatedAt         = big.NewInt(1 << 1)
 	refundLegacyFieldCurrency          = big.NewInt(1 << 2)
 	refundLegacyFieldID                = big.NewInt(1 << 3)
-	refundLegacyFieldPayment           = big.NewInt(1 << 4)
-	refundLegacyFieldProvider          = big.NewInt(1 << 5)
-	refundLegacyFieldProviderCreatedAt = big.NewInt(1 << 6)
-	refundLegacyFieldReferenceStatus   = big.NewInt(1 << 7)
-	refundLegacyFieldReferenceType     = big.NewInt(1 << 8)
-	refundLegacyFieldReferenceValue    = big.NewInt(1 << 9)
-	refundLegacyFieldStatus            = big.NewInt(1 << 10)
+	refundLegacyFieldMetadata          = big.NewInt(1 << 4)
+	refundLegacyFieldPayment           = big.NewInt(1 << 5)
+	refundLegacyFieldProvider          = big.NewInt(1 << 6)
+	refundLegacyFieldProviderCreatedAt = big.NewInt(1 << 7)
+	refundLegacyFieldReferenceStatus   = big.NewInt(1 << 8)
+	refundLegacyFieldReferenceType     = big.NewInt(1 << 9)
+	refundLegacyFieldReferenceValue    = big.NewInt(1 << 10)
+	refundLegacyFieldStatus            = big.NewInt(1 << 11)
 )
 
 // refundLegacyNullableFields maps the wire names of RefundLegacy's nullable fields (required or optional) to their field bits.
 var refundLegacyNullableFields = map[string]*big.Int{
+	"metadata":            refundLegacyFieldMetadata,
 	"payment":             refundLegacyFieldPayment,
 	"provider_created_at": refundLegacyFieldProviderCreatedAt,
 	"reference_status":    refundLegacyFieldReferenceStatus,
@@ -48485,6 +48487,8 @@ type RefundLegacy struct {
 	Currency Currencies `json:"currency" url:"currency"`
 	// The unique identifier for the refund.
 	ID string `json:"id" url:"id"`
+	// The custom metadata attached when this refund was requested.
+	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// The original payment that this refund was issued against. Null if the payment is no longer available.
 	Payment *RefundLegacyPayment `json:"payment,omitempty" url:"payment,omitempty"`
 	// The payment provider that processed the refund.
@@ -48533,6 +48537,13 @@ func (r *RefundLegacy) GetID() string {
 		return ""
 	}
 	return r.ID
+}
+
+func (r *RefundLegacy) GetMetadata() map[string]any {
+	if r == nil {
+		return nil
+	}
+	return r.Metadata
 }
 
 func (r *RefundLegacy) GetPayment() *RefundLegacyPayment {
@@ -48626,6 +48637,13 @@ func (r *RefundLegacy) SetCurrency(currency Currencies) {
 func (r *RefundLegacy) SetID(id string) {
 	r.ID = id
 	r.require(refundLegacyFieldID)
+}
+
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RefundLegacy) SetMetadata(metadata map[string]any) {
+	r.Metadata = metadata
+	r.require(refundLegacyFieldMetadata)
 }
 
 // SetPayment sets the Payment field and marks it as non-optional;
@@ -49824,17 +49842,19 @@ var (
 	refundListItemFieldCreatedAt         = big.NewInt(1 << 1)
 	refundListItemFieldCurrency          = big.NewInt(1 << 2)
 	refundListItemFieldID                = big.NewInt(1 << 3)
-	refundListItemFieldPayment           = big.NewInt(1 << 4)
-	refundListItemFieldProvider          = big.NewInt(1 << 5)
-	refundListItemFieldProviderCreatedAt = big.NewInt(1 << 6)
-	refundListItemFieldReferenceStatus   = big.NewInt(1 << 7)
-	refundListItemFieldReferenceType     = big.NewInt(1 << 8)
-	refundListItemFieldReferenceValue    = big.NewInt(1 << 9)
-	refundListItemFieldStatus            = big.NewInt(1 << 10)
+	refundListItemFieldMetadata          = big.NewInt(1 << 4)
+	refundListItemFieldPayment           = big.NewInt(1 << 5)
+	refundListItemFieldProvider          = big.NewInt(1 << 6)
+	refundListItemFieldProviderCreatedAt = big.NewInt(1 << 7)
+	refundListItemFieldReferenceStatus   = big.NewInt(1 << 8)
+	refundListItemFieldReferenceType     = big.NewInt(1 << 9)
+	refundListItemFieldReferenceValue    = big.NewInt(1 << 10)
+	refundListItemFieldStatus            = big.NewInt(1 << 11)
 )
 
 // refundListItemNullableFields maps the wire names of RefundListItem's nullable fields (required or optional) to their field bits.
 var refundListItemNullableFields = map[string]*big.Int{
+	"metadata":            refundListItemFieldMetadata,
 	"payment":             refundListItemFieldPayment,
 	"provider_created_at": refundListItemFieldProviderCreatedAt,
 	"reference_status":    refundListItemFieldReferenceStatus,
@@ -49852,6 +49872,8 @@ type RefundListItem struct {
 	Currency Currencies `json:"currency" url:"currency"`
 	// The unique identifier for the refund.
 	ID string `json:"id" url:"id"`
+	// The custom metadata attached when this refund was requested.
+	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// The original payment that this refund was issued against. Null if the payment is no longer available.
 	Payment *RefundListItemPayment `json:"payment,omitempty" url:"payment,omitempty"`
 	// The payment provider that processed the refund.
@@ -49900,6 +49922,13 @@ func (r *RefundListItem) GetID() string {
 		return ""
 	}
 	return r.ID
+}
+
+func (r *RefundListItem) GetMetadata() map[string]any {
+	if r == nil {
+		return nil
+	}
+	return r.Metadata
 }
 
 func (r *RefundListItem) GetPayment() *RefundListItemPayment {
@@ -49993,6 +50022,13 @@ func (r *RefundListItem) SetCurrency(currency Currencies) {
 func (r *RefundListItem) SetID(id string) {
 	r.ID = id
 	r.require(refundListItemFieldID)
+}
+
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RefundListItem) SetMetadata(metadata map[string]any) {
+	r.Metadata = metadata
+	r.require(refundListItemFieldMetadata)
 }
 
 // SetPayment sets the Payment field and marks it as non-optional;
