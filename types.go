@@ -4989,7 +4989,6 @@ const (
 	AccountRequiredActionActionVerifyIdentity                  AccountRequiredActionAction = "verify_identity"
 	AccountRequiredActionActionScaleAccountSetup               AccountRequiredActionAction = "scale_account_setup"
 	AccountRequiredActionActionSignFormationDocuments          AccountRequiredActionAction = "sign_formation_documents"
-	AccountRequiredActionActionSetupApplePayDomains            AccountRequiredActionAction = "setup_apple_pay_domains"
 	AccountRequiredActionActionConfigureTaxRemitter            AccountRequiredActionAction = "configure_tax_remitter"
 	AccountRequiredActionActionAddVatRegistration              AccountRequiredActionAction = "add_vat_registration"
 	AccountRequiredActionActionAcceptPayoutTerms               AccountRequiredActionAction = "accept_payout_terms"
@@ -5019,8 +5018,6 @@ func NewAccountRequiredActionActionFromString(s string) (AccountRequiredActionAc
 		return AccountRequiredActionActionScaleAccountSetup, nil
 	case "sign_formation_documents":
 		return AccountRequiredActionActionSignFormationDocuments, nil
-	case "setup_apple_pay_domains":
-		return AccountRequiredActionActionSetupApplePayDomains, nil
 	case "configure_tax_remitter":
 		return AccountRequiredActionActionConfigureTaxRemitter, nil
 	case "add_vat_registration":
