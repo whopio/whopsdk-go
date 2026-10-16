@@ -55785,6 +55785,14 @@ func TestSettersMarkExplicitPagination(t *testing.T) {
 }
 
 func TestSettersPartnerAdvance(t *testing.T) {
+	t.Run("SetActivity30Day", func(t *testing.T) {
+		obj := &PartnerAdvance{}
+		var fernTestValueActivity30Day *Money
+		obj.SetActivity30Day(fernTestValueActivity30Day)
+		assert.Equal(t, fernTestValueActivity30Day, obj.Activity30Day)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetActivity60Day", func(t *testing.T) {
 		obj := &PartnerAdvance{}
 		var fernTestValueActivity60Day *Money
@@ -55822,6 +55830,14 @@ func TestSettersPartnerAdvance(t *testing.T) {
 		var fernTestValueDeadlineAt *string
 		obj.SetDeadlineAt(fernTestValueDeadlineAt)
 		assert.Equal(t, fernTestValueDeadlineAt, obj.DeadlineAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetEstimatedAmount", func(t *testing.T) {
+		obj := &PartnerAdvance{}
+		var fernTestValueEstimatedAmount *Money
+		obj.SetEstimatedAmount(fernTestValueEstimatedAmount)
+		assert.Equal(t, fernTestValueEstimatedAmount, obj.EstimatedAmount)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -55908,6 +55924,39 @@ func TestSettersPartnerAdvance(t *testing.T) {
 }
 
 func TestGettersPartnerAdvance(t *testing.T) {
+	t.Run("GetActivity30Day", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PartnerAdvance{}
+		var expected *Money
+		obj.Activity30Day = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetActivity30Day(), "getter should return the property value")
+	})
+
+	t.Run("GetActivity30Day_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PartnerAdvance{}
+		obj.Activity30Day = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetActivity30Day(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetActivity30Day_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PartnerAdvance
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetActivity30Day() // Should return zero value
+	})
+
 	t.Run("GetActivity60Day", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -56071,6 +56120,39 @@ func TestGettersPartnerAdvance(t *testing.T) {
 			}
 		}()
 		_ = obj.GetDeadlineAt() // Should return zero value
+	})
+
+	t.Run("GetEstimatedAmount", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PartnerAdvance{}
+		var expected *Money
+		obj.EstimatedAmount = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEstimatedAmount(), "getter should return the property value")
+	})
+
+	t.Run("GetEstimatedAmount_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PartnerAdvance{}
+		obj.EstimatedAmount = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetEstimatedAmount(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetEstimatedAmount_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PartnerAdvance
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEstimatedAmount() // Should return zero value
 	})
 
 	t.Run("GetFundedAt", func(t *testing.T) {
@@ -56396,6 +56478,37 @@ func TestGettersPartnerAdvance(t *testing.T) {
 }
 
 func TestSettersMarkExplicitPartnerAdvance(t *testing.T) {
+	t.Run("SetActivity30Day_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PartnerAdvance{}
+		var fernTestValueActivity30Day *Money
+
+		// Act
+		obj.SetActivity30Day(fernTestValueActivity30Day)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetActivity60Day_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -56528,6 +56641,37 @@ func TestSettersMarkExplicitPartnerAdvance(t *testing.T) {
 
 		// Act
 		obj.SetDeadlineAt(fernTestValueDeadlineAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetEstimatedAmount_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PartnerAdvance{}
+		var fernTestValueEstimatedAmount *Money
+
+		// Act
+		obj.SetEstimatedAmount(fernTestValueEstimatedAmount)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -137729,10 +137873,12 @@ func TestRequiredNullableRoundTripPagination(t *testing.T) {
 
 func TestRequiredNullableRoundTripPartnerAdvance(t *testing.T) {
 	requiredNullableKeys := []string{
+		"activity_30_day",
 		"activity_60_day",
 		"amount",
 		"clawed_back_at",
 		"deadline_at",
+		"estimated_amount",
 		"funded_at",
 		"offer_token",
 		"projected_60_day_activity",
@@ -137753,7 +137899,7 @@ func TestRequiredNullableRoundTripPartnerAdvance(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj PartnerAdvance
-		require.NoError(t, json.Unmarshal([]byte(`{"activity_60_day":null,"amount":null,"clawed_back_at":null,"deadline_at":null,"funded_at":null,"offer_token":null,"projected_60_day_activity":null,"projected_commissions":null,"projected_processing_commissions":null,"qualified_at":null,"recovery_threshold":null,"terms_version":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"activity_30_day":null,"activity_60_day":null,"amount":null,"clawed_back_at":null,"deadline_at":null,"estimated_amount":null,"funded_at":null,"offer_token":null,"projected_60_day_activity":null,"projected_commissions":null,"projected_processing_commissions":null,"qualified_at":null,"recovery_threshold":null,"terms_version":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -153738,6 +153884,13 @@ func TestEnumPartnerAdvanceStatus(t *testing.T) {
 		val, err := NewPartnerAdvanceStatusFromString("expired")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, PartnerAdvanceStatus("expired"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_withdrawn", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPartnerAdvanceStatusFromString("withdrawn")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PartnerAdvanceStatus("withdrawn"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {

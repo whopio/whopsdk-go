@@ -502,6 +502,7 @@ const (
 	ListBusinessesRequestAdvanceStatusClawedBack ListBusinessesRequestAdvanceStatus = "clawed_back"
 	ListBusinessesRequestAdvanceStatusCompleted  ListBusinessesRequestAdvanceStatus = "completed"
 	ListBusinessesRequestAdvanceStatusExpired    ListBusinessesRequestAdvanceStatus = "expired"
+	ListBusinessesRequestAdvanceStatusWithdrawn  ListBusinessesRequestAdvanceStatus = "withdrawn"
 	ListBusinessesRequestAdvanceStatusOffered    ListBusinessesRequestAdvanceStatus = "offered"
 )
 
@@ -521,6 +522,8 @@ func NewListBusinessesRequestAdvanceStatusFromString(s string) (ListBusinessesRe
 		return ListBusinessesRequestAdvanceStatusCompleted, nil
 	case "expired":
 		return ListBusinessesRequestAdvanceStatusExpired, nil
+	case "withdrawn":
+		return ListBusinessesRequestAdvanceStatusWithdrawn, nil
 	case "offered":
 		return ListBusinessesRequestAdvanceStatusOffered, nil
 	}
@@ -7330,13 +7333,16 @@ func (u *UpdateBusinessesResponse) String() string {
 var (
 	updateBusinessesRequestFieldID                  = big.NewInt(1 << 0)
 	updateBusinessesRequestFieldAnnualProcessingUsd = big.NewInt(1 << 1)
+	updateBusinessesRequestFieldWithdrawProjections = big.NewInt(1 << 2)
 )
 
 type UpdateBusinessesRequest struct {
 	// The partner business ID (a coma_ identifier).
 	ID string `json:"-" url:"-"`
-	// Annual projected card and BNPL payment volume on Whop in USD.
-	AnnualProcessingUsd string `json:"annual_processing_usd" url:"-"`
+	// Annual projected card and BNPL processing combined, in USD.
+	AnnualProcessingUsd *string `json:"annual_processing_usd,omitempty" url:"-"`
+	// Remove unaccepted projections and invalidate the offer. The original CPA term is retained if projections are later added again.
+	WithdrawProjections *bool `json:"withdraw_projections,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -7360,9 +7366,16 @@ func (u *UpdateBusinessesRequest) SetID(id string) {
 
 // SetAnnualProcessingUsd sets the AnnualProcessingUsd field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateBusinessesRequest) SetAnnualProcessingUsd(annualProcessingUsd string) {
+func (u *UpdateBusinessesRequest) SetAnnualProcessingUsd(annualProcessingUsd *string) {
 	u.AnnualProcessingUsd = annualProcessingUsd
 	u.require(updateBusinessesRequestFieldAnnualProcessingUsd)
+}
+
+// SetWithdrawProjections sets the WithdrawProjections field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateBusinessesRequest) SetWithdrawProjections(withdrawProjections *bool) {
+	u.WithdrawProjections = withdrawProjections
+	u.require(updateBusinessesRequestFieldWithdrawProjections)
 }
 
 func (u *UpdateBusinessesRequest) UnmarshalJSON(data []byte) error {
