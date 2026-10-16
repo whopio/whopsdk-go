@@ -149,6 +149,32 @@ func TestAccountsMeWithWireMock(
 	VerifyRequestCount(t, "TestAccountsMeWithWireMock", "GET", "/accounts/me", nil, 1)
 }
 
+func TestAccountsSearchWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.SearchAccountsRequest{
+		Query: "query",
+	}
+	_, invocationErr := client.Accounts.Search(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestAccountsSearchWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestAccountsSearchWithWireMock", "GET", "/accounts/search", map[string]interface{}{"query": "query"}, 1)
+}
+
 func TestAccountsRetrieveWithWireMock(
 	t *testing.T,
 ) {
