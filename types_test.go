@@ -148847,13 +148847,6 @@ func TestEnumAccountRequiredActionAction(t *testing.T) {
 		assert.Equal(t, AccountRequiredActionAction("sign_formation_documents"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_setup_apple_pay_domains", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewAccountRequiredActionActionFromString("setup_apple_pay_domains")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, AccountRequiredActionAction("setup_apple_pay_domains"), val, "enum value should match expected wire value")
-	})
-
 	t.Run("NewFromString_configure_tax_remitter", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewAccountRequiredActionActionFromString("configure_tax_remitter")
