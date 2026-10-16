@@ -173,17 +173,18 @@ var (
 	refundFieldFailureMessage    = big.NewInt(1 << 3)
 	refundFieldFailureReason     = big.NewInt(1 << 4)
 	refundFieldID                = big.NewInt(1 << 5)
-	refundFieldOriginalAmount    = big.NewInt(1 << 6)
-	refundFieldPaymentID         = big.NewInt(1 << 7)
-	refundFieldProvider          = big.NewInt(1 << 8)
-	refundFieldProviderCreatedAt = big.NewInt(1 << 9)
-	refundFieldReason            = big.NewInt(1 << 10)
-	refundFieldReferenceStatus   = big.NewInt(1 << 11)
-	refundFieldReferenceType     = big.NewInt(1 << 12)
-	refundFieldReferenceValue    = big.NewInt(1 << 13)
-	refundFieldStatus            = big.NewInt(1 << 14)
-	refundFieldUpdatedAt         = big.NewInt(1 << 15)
-	refundFieldVisaRdr           = big.NewInt(1 << 16)
+	refundFieldMetadata          = big.NewInt(1 << 6)
+	refundFieldOriginalAmount    = big.NewInt(1 << 7)
+	refundFieldPaymentID         = big.NewInt(1 << 8)
+	refundFieldProvider          = big.NewInt(1 << 9)
+	refundFieldProviderCreatedAt = big.NewInt(1 << 10)
+	refundFieldReason            = big.NewInt(1 << 11)
+	refundFieldReferenceStatus   = big.NewInt(1 << 12)
+	refundFieldReferenceType     = big.NewInt(1 << 13)
+	refundFieldReferenceValue    = big.NewInt(1 << 14)
+	refundFieldStatus            = big.NewInt(1 << 15)
+	refundFieldUpdatedAt         = big.NewInt(1 << 16)
+	refundFieldVisaRdr           = big.NewInt(1 << 17)
 )
 
 // refundNullableFields maps the wire names of Refund's nullable fields (required or optional) to their field bits.
@@ -192,6 +193,7 @@ var refundNullableFields = map[string]*big.Int{
 	"amount":              refundFieldAmount,
 	"failure_message":     refundFieldFailureMessage,
 	"failure_reason":      refundFieldFailureReason,
+	"metadata":            refundFieldMetadata,
 	"provider_created_at": refundFieldProviderCreatedAt,
 	"reason":              refundFieldReason,
 	"reference_status":    refundFieldReferenceStatus,
@@ -212,6 +214,8 @@ type Refund struct {
 	FailureReason *RefundFailureReason `json:"failure_reason,omitempty" url:"failure_reason,omitempty"`
 	// Refund ID, prefixed `rf_`.
 	ID string `json:"id" url:"id"`
+	// Your own key-value data attached when the refund was requested.
+	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// The refunded amount in the currency the processor moved.
 	OriginalAmount *Money `json:"original_amount" url:"original_amount"`
 	// The payment this refund reverses, prefixed `pay_`.
@@ -282,6 +286,13 @@ func (r *Refund) GetID() string {
 		return ""
 	}
 	return r.ID
+}
+
+func (r *Refund) GetMetadata() map[string]any {
+	if r == nil {
+		return nil
+	}
+	return r.Metadata
 }
 
 func (r *Refund) GetOriginalAmount() *Money {
@@ -417,6 +428,13 @@ func (r *Refund) SetFailureReason(failureReason *RefundFailureReason) {
 func (r *Refund) SetID(id string) {
 	r.ID = id
 	r.require(refundFieldID)
+}
+
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *Refund) SetMetadata(metadata map[string]any) {
+	r.Metadata = metadata
+	r.require(refundFieldMetadata)
 }
 
 // SetOriginalAmount sets the OriginalAmount field and marks it as non-optional;

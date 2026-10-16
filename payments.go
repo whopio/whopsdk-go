@@ -513,12 +513,15 @@ func (l *ListFeesPaymentsRequest) SetID(id string) {
 
 var (
 	refundPaymentsRequestFieldID            = big.NewInt(1 << 0)
-	refundPaymentsRequestFieldPartialAmount = big.NewInt(1 << 1)
+	refundPaymentsRequestFieldMetadata      = big.NewInt(1 << 1)
+	refundPaymentsRequestFieldPartialAmount = big.NewInt(1 << 2)
 )
 
 type RefundPaymentsRequest struct {
 	// The payment to refund, prefixed `pay_`.
 	ID string `json:"-" url:"-"`
+	// Your own key-value data to attach to the refund, returned on it and on its `refund.created` and `refund.updated` webhooks. At most 50 keys; keys up to 100 characters and values up to 500.
+	Metadata map[string]*string `json:"metadata,omitempty" url:"-"`
 	// The amount to refund, stated in this payment's `currency` like every other amount on it. When the buyer was billed in a different currency, it is converted at the payment's own exchange rate before the refund is issued. An amount that covers everything still refundable refunds the rest of the payment — omit it to refund the rest without having to work out what that is.
 	PartialAmount *float64 `json:"partial_amount,omitempty" url:"-"`
 
@@ -540,6 +543,13 @@ func (r *RefundPaymentsRequest) require(field *big.Int) {
 func (r *RefundPaymentsRequest) SetID(id string) {
 	r.ID = id
 	r.require(refundPaymentsRequestFieldID)
+}
+
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RefundPaymentsRequest) SetMetadata(metadata map[string]*string) {
+	r.Metadata = metadata
+	r.require(refundPaymentsRequestFieldMetadata)
 }
 
 // SetPartialAmount sets the PartialAmount field and marks it as non-optional;
