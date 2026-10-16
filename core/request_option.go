@@ -75,8 +75,8 @@ func (r *RequestOptions) cloneHeader() http.Header {
 	headers := r.HTTPHeader.Clone()
 	headers.Set("X-Fern-Language", "Go")
 	headers.Set("X-Fern-SDK-Name", "github.com/whopio/whopsdk-go/v2")
-	headers.Set("X-Fern-SDK-Version", "v2.5.0")
-	headers.Set("User-Agent", "github.com/whopio/whopsdk-go/v2/2.5.0")
+	headers.Set("X-Fern-SDK-Version", "v2.6.0")
+	headers.Set("User-Agent", "github.com/whopio/whopsdk-go/v2/2.6.0")
 	return headers
 }
 
