@@ -1815,7 +1815,7 @@ Creates an ad campaign in `draft` status for an account. Nothing runs until you 
 ```go
 request := &whopsdk.CreateAdCampaignsRequest{
     Objective: whopsdk.CreateAdCampaignsRequestObjectiveAwareness,
-    Platform: whopsdk.CreateAdCampaignsRequestPlatformMeta,
+    Platform: whopsdk.CreateAdCampaignsRequestPlatformWhop,
     Title: "Now hiring mobile detailers — Austin",
 }
 client.AdCampaigns.Create(

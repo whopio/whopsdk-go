@@ -114,7 +114,7 @@ func TestAdCampaignsCreateWithWireMock(
 	)
 	request := &whopsdk.CreateAdCampaignsRequest{
 		Objective: whopsdk.CreateAdCampaignsRequestObjectiveAwareness,
-		Platform:  whopsdk.CreateAdCampaignsRequestPlatformMeta,
+		Platform:  whopsdk.CreateAdCampaignsRequestPlatformWhop,
 		Title:     "Now hiring mobile detailers — Austin",
 	}
 	_, invocationErr := client.AdCampaigns.Create(

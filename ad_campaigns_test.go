@@ -12839,11 +12839,11 @@ func TestEnumCreateAdCampaignsRequestObjective(t *testing.T) {
 }
 
 func TestEnumCreateAdCampaignsRequestPlatform(t *testing.T) {
-	t.Run("NewFromString_meta", func(t *testing.T) {
+	t.Run("NewFromString_whop", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewCreateAdCampaignsRequestPlatformFromString("meta")
+		val, err := NewCreateAdCampaignsRequestPlatformFromString("whop")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateAdCampaignsRequestPlatform("meta"), val, "enum value should match expected wire value")
+		assert.Equal(t, CreateAdCampaignsRequestPlatform("whop"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -12852,7 +12852,7 @@ func TestEnumCreateAdCampaignsRequestPlatform(t *testing.T) {
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewCreateAdCampaignsRequestPlatformFromString("meta")
+		val, err := NewCreateAdCampaignsRequestPlatformFromString("whop")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
