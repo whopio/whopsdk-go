@@ -125,7 +125,7 @@ func (c *Client) List(
 //
 //	request := &whopsdk.CreateAdCampaignsRequest{
 //	    Objective: whopsdk.CreateAdCampaignsRequestObjectiveAwareness,
-//	    Platform: whopsdk.CreateAdCampaignsRequestPlatformMeta,
+//	    Platform: whopsdk.CreateAdCampaignsRequestPlatformWhop,
 //	    Title: "Now hiring mobile detailers — Austin",
 //	}
 //	client.AdCampaigns.Create(

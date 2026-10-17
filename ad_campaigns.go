@@ -2259,13 +2259,13 @@ func (c CreateAdCampaignsRequestObjective) Ptr() *CreateAdCampaignsRequestObject
 type CreateAdCampaignsRequestPlatform string
 
 const (
-	CreateAdCampaignsRequestPlatformMeta CreateAdCampaignsRequestPlatform = "meta"
+	CreateAdCampaignsRequestPlatformWhop CreateAdCampaignsRequestPlatform = "whop"
 )
 
 func NewCreateAdCampaignsRequestPlatformFromString(s string) (CreateAdCampaignsRequestPlatform, error) {
 	switch s {
-	case "meta":
-		return CreateAdCampaignsRequestPlatformMeta, nil
+	case "whop":
+		return CreateAdCampaignsRequestPlatformWhop, nil
 	}
 	var t CreateAdCampaignsRequestPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
