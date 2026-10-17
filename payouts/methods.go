@@ -296,14 +296,17 @@ func (l *ListMethodsRequest) SetBefore(before *string) {
 }
 
 var (
-	createMethodsRequestRecipientFieldCountry   = big.NewInt(1 << 0)
-	createMethodsRequestRecipientFieldEmail     = big.NewInt(1 << 1)
-	createMethodsRequestRecipientFieldFirstName = big.NewInt(1 << 2)
-	createMethodsRequestRecipientFieldLastName  = big.NewInt(1 << 3)
+	createMethodsRequestRecipientFieldAddress   = big.NewInt(1 << 0)
+	createMethodsRequestRecipientFieldCountry   = big.NewInt(1 << 1)
+	createMethodsRequestRecipientFieldEmail     = big.NewInt(1 << 2)
+	createMethodsRequestRecipientFieldFirstName = big.NewInt(1 << 3)
+	createMethodsRequestRecipientFieldLastName  = big.NewInt(1 << 4)
 )
 
 // Creates a recipient payout account linked to the funding ledger as a non-default account, then saves the bank method on it. No Whop user, company, or recipient ledger is created. A valid recipient email is required. Recipient methods cannot be default or recurring methods and cannot use Plaid.
 type CreateMethodsRequestRecipient struct {
+	// The recipient's address in recipient.country. Saved on the recipient payout account and supplied to bank methods that require address fields. Omit to retain the existing address when reusing a recipient.
+	Address *CreateMethodsRequestRecipientAddress `json:"address,omitempty" url:"address,omitempty"`
 	// ISO 3166-1 alpha-2 or alpha-3 country code.
 	Country string `json:"country" url:"country"`
 	// Required email for the recipient's MassPay payout account. Trimmed and lowercased.
@@ -318,6 +321,13 @@ type CreateMethodsRequestRecipient struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (c *CreateMethodsRequestRecipient) GetAddress() *CreateMethodsRequestRecipientAddress {
+	if c == nil {
+		return nil
+	}
+	return c.Address
 }
 
 func (c *CreateMethodsRequestRecipient) GetCountry() string {
@@ -362,6 +372,13 @@ func (c *CreateMethodsRequestRecipient) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	c.explicitFields = next
+}
+
+// SetAddress sets the Address field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMethodsRequestRecipient) SetAddress(address *CreateMethodsRequestRecipientAddress) {
+	c.Address = address
+	c.require(createMethodsRequestRecipientFieldAddress)
 }
 
 // SetCountry sets the Country field and marks it as non-optional;
@@ -420,6 +437,162 @@ func (c *CreateMethodsRequestRecipient) MarshalJSON() ([]byte, error) {
 }
 
 func (c *CreateMethodsRequestRecipient) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createMethodsRequestRecipientAddressFieldCity       = big.NewInt(1 << 0)
+	createMethodsRequestRecipientAddressFieldLine1      = big.NewInt(1 << 1)
+	createMethodsRequestRecipientAddressFieldLine2      = big.NewInt(1 << 2)
+	createMethodsRequestRecipientAddressFieldPostalCode = big.NewInt(1 << 3)
+	createMethodsRequestRecipientAddressFieldState      = big.NewInt(1 << 4)
+)
+
+// The recipient's address in recipient.country. Saved on the recipient payout account and supplied to bank methods that require address fields. Omit to retain the existing address when reusing a recipient.
+type CreateMethodsRequestRecipientAddress struct {
+	// The recipient's city.
+	City string `json:"city" url:"city"`
+	// The recipient's street address.
+	Line1 string `json:"line1" url:"line1"`
+	// Apartment, suite or unit.
+	Line2 *string `json:"line2,omitempty" url:"line2,omitempty"`
+	// The recipient's postal or ZIP code.
+	PostalCode *string `json:"postal_code,omitempty" url:"postal_code,omitempty"`
+	// The recipient's state, province or region.
+	State *string `json:"state,omitempty" url:"state,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateMethodsRequestRecipientAddress) GetCity() string {
+	if c == nil {
+		return ""
+	}
+	return c.City
+}
+
+func (c *CreateMethodsRequestRecipientAddress) GetLine1() string {
+	if c == nil {
+		return ""
+	}
+	return c.Line1
+}
+
+func (c *CreateMethodsRequestRecipientAddress) GetLine2() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Line2
+}
+
+func (c *CreateMethodsRequestRecipientAddress) GetPostalCode() *string {
+	if c == nil {
+		return nil
+	}
+	return c.PostalCode
+}
+
+func (c *CreateMethodsRequestRecipientAddress) GetState() *string {
+	if c == nil {
+		return nil
+	}
+	return c.State
+}
+
+func (c *CreateMethodsRequestRecipientAddress) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateMethodsRequestRecipientAddress) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetCity sets the City field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMethodsRequestRecipientAddress) SetCity(city string) {
+	c.City = city
+	c.require(createMethodsRequestRecipientAddressFieldCity)
+}
+
+// SetLine1 sets the Line1 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMethodsRequestRecipientAddress) SetLine1(line1 string) {
+	c.Line1 = line1
+	c.require(createMethodsRequestRecipientAddressFieldLine1)
+}
+
+// SetLine2 sets the Line2 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMethodsRequestRecipientAddress) SetLine2(line2 *string) {
+	c.Line2 = line2
+	c.require(createMethodsRequestRecipientAddressFieldLine2)
+}
+
+// SetPostalCode sets the PostalCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMethodsRequestRecipientAddress) SetPostalCode(postalCode *string) {
+	c.PostalCode = postalCode
+	c.require(createMethodsRequestRecipientAddressFieldPostalCode)
+}
+
+// SetState sets the State field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMethodsRequestRecipientAddress) SetState(state *string) {
+	c.State = state
+	c.require(createMethodsRequestRecipientAddressFieldState)
+}
+
+func (c *CreateMethodsRequestRecipientAddress) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateMethodsRequestRecipientAddress
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateMethodsRequestRecipientAddress(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateMethodsRequestRecipientAddress) MarshalJSON() ([]byte, error) {
+	type embed CreateMethodsRequestRecipientAddress
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateMethodsRequestRecipientAddress) String() string {
 	if c == nil {
 		return "<nil>"
 	}
