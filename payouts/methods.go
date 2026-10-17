@@ -4162,6 +4162,162 @@ func (l *ListMethodsResponsePageInfo) String() string {
 }
 
 var (
+	updateMethodsRequestAddressFieldCity       = big.NewInt(1 << 0)
+	updateMethodsRequestAddressFieldLine1      = big.NewInt(1 << 1)
+	updateMethodsRequestAddressFieldLine2      = big.NewInt(1 << 2)
+	updateMethodsRequestAddressFieldPostalCode = big.NewInt(1 << 3)
+	updateMethodsRequestAddressFieldState      = big.NewInt(1 << 4)
+)
+
+// The payout address to keep on file for this payout method. Only the fields you send are changed; blank fields are ignored.
+type UpdateMethodsRequestAddress struct {
+	// The city.
+	City *string `json:"city,omitempty" url:"city,omitempty"`
+	// The first line of the street address.
+	Line1 *string `json:"line1,omitempty" url:"line1,omitempty"`
+	// The second line of the street address, such as an apartment or suite number.
+	Line2 *string `json:"line2,omitempty" url:"line2,omitempty"`
+	// The postal or ZIP code.
+	PostalCode *string `json:"postal_code,omitempty" url:"postal_code,omitempty"`
+	// The state, province, or region.
+	State *string `json:"state,omitempty" url:"state,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateMethodsRequestAddress) GetCity() *string {
+	if u == nil {
+		return nil
+	}
+	return u.City
+}
+
+func (u *UpdateMethodsRequestAddress) GetLine1() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Line1
+}
+
+func (u *UpdateMethodsRequestAddress) GetLine2() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Line2
+}
+
+func (u *UpdateMethodsRequestAddress) GetPostalCode() *string {
+	if u == nil {
+		return nil
+	}
+	return u.PostalCode
+}
+
+func (u *UpdateMethodsRequestAddress) GetState() *string {
+	if u == nil {
+		return nil
+	}
+	return u.State
+}
+
+func (u *UpdateMethodsRequestAddress) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateMethodsRequestAddress) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetCity sets the City field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMethodsRequestAddress) SetCity(city *string) {
+	u.City = city
+	u.require(updateMethodsRequestAddressFieldCity)
+}
+
+// SetLine1 sets the Line1 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMethodsRequestAddress) SetLine1(line1 *string) {
+	u.Line1 = line1
+	u.require(updateMethodsRequestAddressFieldLine1)
+}
+
+// SetLine2 sets the Line2 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMethodsRequestAddress) SetLine2(line2 *string) {
+	u.Line2 = line2
+	u.require(updateMethodsRequestAddressFieldLine2)
+}
+
+// SetPostalCode sets the PostalCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMethodsRequestAddress) SetPostalCode(postalCode *string) {
+	u.PostalCode = postalCode
+	u.require(updateMethodsRequestAddressFieldPostalCode)
+}
+
+// SetState sets the State field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMethodsRequestAddress) SetState(state *string) {
+	u.State = state
+	u.require(updateMethodsRequestAddressFieldState)
+}
+
+func (u *UpdateMethodsRequestAddress) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateMethodsRequestAddress
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateMethodsRequestAddress(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateMethodsRequestAddress) MarshalJSON() ([]byte, error) {
+	type embed UpdateMethodsRequestAddress
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateMethodsRequestAddress) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
 	updateMethodsResponseFieldAccountReference      = big.NewInt(1 << 0)
 	updateMethodsResponseFieldBankVerificationState = big.NewInt(1 << 1)
 	updateMethodsResponseFieldCreatedAt             = big.NewInt(1 << 2)
@@ -5111,13 +5267,16 @@ func (u UpdateMethodsResponseUnavailableReason) Ptr() *UpdateMethodsResponseUnav
 
 var (
 	updateMethodsRequestFieldID        = big.NewInt(1 << 0)
-	updateMethodsRequestFieldIsDefault = big.NewInt(1 << 1)
-	updateMethodsRequestFieldNickname  = big.NewInt(1 << 2)
+	updateMethodsRequestFieldAddress   = big.NewInt(1 << 1)
+	updateMethodsRequestFieldIsDefault = big.NewInt(1 << 2)
+	updateMethodsRequestFieldNickname  = big.NewInt(1 << 3)
 )
 
 type UpdateMethodsRequest struct {
 	// Payout method ID, prefixed `potk_`.
 	ID string `json:"-" url:"-"`
+	// The payout address to keep on file for this payout method. Only the fields you send are changed; blank fields are ignored.
+	Address *UpdateMethodsRequestAddress `json:"address,omitempty" url:"-"`
 	// Set to `true` to make this the account's default payout method. `false` is not accepted.
 	IsDefault *bool `json:"is_default,omitempty" url:"-"`
 	// New label for the payout method, with at least one non-whitespace character and a maximum of 100 characters.
@@ -5141,6 +5300,13 @@ func (u *UpdateMethodsRequest) require(field *big.Int) {
 func (u *UpdateMethodsRequest) SetID(id string) {
 	u.ID = id
 	u.require(updateMethodsRequestFieldID)
+}
+
+// SetAddress sets the Address field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMethodsRequest) SetAddress(address *UpdateMethodsRequestAddress) {
+	u.Address = address
+	u.require(updateMethodsRequestFieldAddress)
 }
 
 // SetIsDefault sets the IsDefault field and marks it as non-optional;
