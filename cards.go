@@ -13,11 +13,13 @@ import (
 var (
 	createCardsRequestFieldAccountID           = big.NewInt(1 << 0)
 	createCardsRequestFieldAssignedUserID      = big.NewInt(1 << 1)
-	createCardsRequestFieldName                = big.NewInt(1 << 2)
-	createCardsRequestFieldSpendLimit          = big.NewInt(1 << 3)
-	createCardsRequestFieldSpendLimitFrequency = big.NewInt(1 << 4)
-	createCardsRequestFieldTransactionLimit    = big.NewInt(1 << 5)
-	createCardsRequestFieldUserID              = big.NewInt(1 << 6)
+	createCardsRequestFieldBilling             = big.NewInt(1 << 2)
+	createCardsRequestFieldCardholder          = big.NewInt(1 << 3)
+	createCardsRequestFieldName                = big.NewInt(1 << 4)
+	createCardsRequestFieldSpendLimit          = big.NewInt(1 << 5)
+	createCardsRequestFieldSpendLimitFrequency = big.NewInt(1 << 6)
+	createCardsRequestFieldTransactionLimit    = big.NewInt(1 << 7)
+	createCardsRequestFieldUserID              = big.NewInt(1 << 8)
 )
 
 type CreateCardsRequest struct {
@@ -25,6 +27,10 @@ type CreateCardsRequest struct {
 	AccountID *string `json:"account_id,omitempty" url:"-"`
 	// The account member (a user_ identifier) to assign the card to. Required for business card issuing accounts, and whenever a company API key files an account's first card application.
 	AssignedUserID *string `json:"assigned_user_id,omitempty" url:"-"`
+	// The card's initial billing address. On a company card it also registers the assigned member as a cardholder if they are not one yet. For an individual card, region is also required.
+	Billing *CreateCardsRequestBilling `json:"billing,omitempty" url:"-"`
+	// Details for a company card's assigned member when they are not registered as a cardholder yet. Send with billing to register them and start provisioning in one call instead of sending them an onboarding invitation. The legal name comes from the member's approved identity verification when they have one, and from these fields when they do not.
+	Cardholder *CreateCardsRequestCardholder `json:"cardholder,omitempty" url:"-"`
 	// A display name for the card.
 	Name *string `json:"name,omitempty" url:"-"`
 	// Spending limit amount, in dollars.
@@ -61,6 +67,20 @@ func (c *CreateCardsRequest) SetAccountID(accountID *string) {
 func (c *CreateCardsRequest) SetAssignedUserID(assignedUserID *string) {
 	c.AssignedUserID = assignedUserID
 	c.require(createCardsRequestFieldAssignedUserID)
+}
+
+// SetBilling sets the Billing field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateCardsRequest) SetBilling(billing *CreateCardsRequestBilling) {
+	c.Billing = billing
+	c.require(createCardsRequestFieldBilling)
+}
+
+// SetCardholder sets the Cardholder field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateCardsRequest) SetCardholder(cardholder *CreateCardsRequestCardholder) {
+	c.Cardholder = cardholder
+	c.require(createCardsRequestFieldCardholder)
 }
 
 // SetName sets the Name field and marks it as non-optional;
@@ -203,6 +223,318 @@ func (r *RetrieveCardsRequest) SetAccountID(accountID *string) {
 func (r *RetrieveCardsRequest) SetUserID(userID *string) {
 	r.UserID = userID
 	r.require(retrieveCardsRequestFieldUserID)
+}
+
+var (
+	createCardsRequestBillingFieldCity        = big.NewInt(1 << 0)
+	createCardsRequestBillingFieldCountryCode = big.NewInt(1 << 1)
+	createCardsRequestBillingFieldLine1       = big.NewInt(1 << 2)
+	createCardsRequestBillingFieldLine2       = big.NewInt(1 << 3)
+	createCardsRequestBillingFieldPostalCode  = big.NewInt(1 << 4)
+	createCardsRequestBillingFieldRegion      = big.NewInt(1 << 5)
+)
+
+// The card's initial billing address. On a company card it also registers the assigned member as a cardholder if they are not one yet. For an individual card, region is also required.
+type CreateCardsRequestBilling struct {
+	// Billing city.
+	City string `json:"city" url:"city"`
+	// Billing country code, ISO 3166-1 alpha-2.
+	CountryCode string `json:"country_code" url:"country_code"`
+	// Street address line 1.
+	Line1 string `json:"line1" url:"line1"`
+	// Street address line 2.
+	Line2 *string `json:"line2,omitempty" url:"line2,omitempty"`
+	// Billing postal code.
+	PostalCode string `json:"postal_code" url:"postal_code"`
+	// Billing region or state. Required for an individual card.
+	Region *string `json:"region,omitempty" url:"region,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateCardsRequestBilling) GetCity() string {
+	if c == nil {
+		return ""
+	}
+	return c.City
+}
+
+func (c *CreateCardsRequestBilling) GetCountryCode() string {
+	if c == nil {
+		return ""
+	}
+	return c.CountryCode
+}
+
+func (c *CreateCardsRequestBilling) GetLine1() string {
+	if c == nil {
+		return ""
+	}
+	return c.Line1
+}
+
+func (c *CreateCardsRequestBilling) GetLine2() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Line2
+}
+
+func (c *CreateCardsRequestBilling) GetPostalCode() string {
+	if c == nil {
+		return ""
+	}
+	return c.PostalCode
+}
+
+func (c *CreateCardsRequestBilling) GetRegion() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Region
+}
+
+func (c *CreateCardsRequestBilling) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateCardsRequestBilling) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetCity sets the City field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateCardsRequestBilling) SetCity(city string) {
+	c.City = city
+	c.require(createCardsRequestBillingFieldCity)
+}
+
+// SetCountryCode sets the CountryCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateCardsRequestBilling) SetCountryCode(countryCode string) {
+	c.CountryCode = countryCode
+	c.require(createCardsRequestBillingFieldCountryCode)
+}
+
+// SetLine1 sets the Line1 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateCardsRequestBilling) SetLine1(line1 string) {
+	c.Line1 = line1
+	c.require(createCardsRequestBillingFieldLine1)
+}
+
+// SetLine2 sets the Line2 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateCardsRequestBilling) SetLine2(line2 *string) {
+	c.Line2 = line2
+	c.require(createCardsRequestBillingFieldLine2)
+}
+
+// SetPostalCode sets the PostalCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateCardsRequestBilling) SetPostalCode(postalCode string) {
+	c.PostalCode = postalCode
+	c.require(createCardsRequestBillingFieldPostalCode)
+}
+
+// SetRegion sets the Region field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateCardsRequestBilling) SetRegion(region *string) {
+	c.Region = region
+	c.require(createCardsRequestBillingFieldRegion)
+}
+
+func (c *CreateCardsRequestBilling) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateCardsRequestBilling
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateCardsRequestBilling(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateCardsRequestBilling) MarshalJSON() ([]byte, error) {
+	type embed CreateCardsRequestBilling
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateCardsRequestBilling) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createCardsRequestCardholderFieldEmail     = big.NewInt(1 << 0)
+	createCardsRequestCardholderFieldFirstName = big.NewInt(1 << 1)
+	createCardsRequestCardholderFieldLastName  = big.NewInt(1 << 2)
+	createCardsRequestCardholderFieldPhone     = big.NewInt(1 << 3)
+)
+
+// Details for a company card's assigned member when they are not registered as a cardholder yet. Send with billing to register them and start provisioning in one call instead of sending them an onboarding invitation. The legal name comes from the member's approved identity verification when they have one, and from these fields when they do not.
+type CreateCardsRequestCardholder struct {
+	// The member's email address. Defaults to the email on their user.
+	Email *string `json:"email,omitempty" url:"email,omitempty"`
+	// The member's legal first name.
+	FirstName *string `json:"first_name,omitempty" url:"first_name,omitempty"`
+	// The member's legal last name.
+	LastName *string `json:"last_name,omitempty" url:"last_name,omitempty"`
+	// The member's phone number.
+	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateCardsRequestCardholder) GetEmail() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Email
+}
+
+func (c *CreateCardsRequestCardholder) GetFirstName() *string {
+	if c == nil {
+		return nil
+	}
+	return c.FirstName
+}
+
+func (c *CreateCardsRequestCardholder) GetLastName() *string {
+	if c == nil {
+		return nil
+	}
+	return c.LastName
+}
+
+func (c *CreateCardsRequestCardholder) GetPhone() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Phone
+}
+
+func (c *CreateCardsRequestCardholder) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateCardsRequestCardholder) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateCardsRequestCardholder) SetEmail(email *string) {
+	c.Email = email
+	c.require(createCardsRequestCardholderFieldEmail)
+}
+
+// SetFirstName sets the FirstName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateCardsRequestCardholder) SetFirstName(firstName *string) {
+	c.FirstName = firstName
+	c.require(createCardsRequestCardholderFieldFirstName)
+}
+
+// SetLastName sets the LastName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateCardsRequestCardholder) SetLastName(lastName *string) {
+	c.LastName = lastName
+	c.require(createCardsRequestCardholderFieldLastName)
+}
+
+// SetPhone sets the Phone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateCardsRequestCardholder) SetPhone(phone *string) {
+	c.Phone = phone
+	c.require(createCardsRequestCardholderFieldPhone)
+}
+
+func (c *CreateCardsRequestCardholder) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateCardsRequestCardholder
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateCardsRequestCardholder(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateCardsRequestCardholder) MarshalJSON() ([]byte, error) {
+	type embed CreateCardsRequestCardholder
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateCardsRequestCardholder) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
 }
 
 // The window the spend limit applies to.
