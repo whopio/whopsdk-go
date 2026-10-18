@@ -28909,7 +28909,7 @@ type PartnerAdvance struct {
 	ClawedBackAt *string `json:"clawed_back_at,omitempty" url:"clawed_back_at,omitempty"`
 	// End of the nine-month CPA term. Normal commissions resume prospectively without backfill.
 	DeadlineAt *string `json:"deadline_at,omitempty" url:"deadline_at,omitempty"`
-	// Estimated advance using the current CPA formula and observed payout rates. Available for unqualified projections on business detail responses.
+	// Estimated advance using the current CPA formula and observed payout rates, or current reference card pricing when qualifying payment history is unavailable. Available for unqualified projections on business detail responses; not a final offer.
 	EstimatedAmount *Money `json:"estimated_amount,omitempty" url:"estimated_amount,omitempty"`
 	// When the CPA payment was funded.
 	FundedAt *string `json:"funded_at,omitempty" url:"funded_at,omitempty"`
