@@ -1292,6 +1292,14 @@ func TestSettersListBusinessesResponseDataItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetCommissionAdvanceProjectionsAllowed", func(t *testing.T) {
+		obj := &ListBusinessesResponseDataItem{}
+		var fernTestValueCommissionAdvanceProjectionsAllowed *bool
+		obj.SetCommissionAdvanceProjectionsAllowed(fernTestValueCommissionAdvanceProjectionsAllowed)
+		assert.Equal(t, fernTestValueCommissionAdvanceProjectionsAllowed, obj.CommissionAdvanceProjectionsAllowed)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCreatedAt", func(t *testing.T) {
 		obj := &ListBusinessesResponseDataItem{}
 		var fernTestValueCreatedAt time.Time
@@ -1496,6 +1504,39 @@ func TestGettersListBusinessesResponseDataItem(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCommissionAdvance() // Should return zero value
+	})
+
+	t.Run("GetCommissionAdvanceProjectionsAllowed", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListBusinessesResponseDataItem{}
+		var expected *bool
+		obj.CommissionAdvanceProjectionsAllowed = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCommissionAdvanceProjectionsAllowed(), "getter should return the property value")
+	})
+
+	t.Run("GetCommissionAdvanceProjectionsAllowed_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListBusinessesResponseDataItem{}
+		obj.CommissionAdvanceProjectionsAllowed = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCommissionAdvanceProjectionsAllowed(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCommissionAdvanceProjectionsAllowed_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListBusinessesResponseDataItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCommissionAdvanceProjectionsAllowed() // Should return zero value
 	})
 
 	t.Run("GetCreatedAt", func(t *testing.T) {
@@ -1950,6 +1991,37 @@ func TestSettersMarkExplicitListBusinessesResponseDataItem(t *testing.T) {
 
 		// Act
 		obj.SetCommissionAdvance(fernTestValueCommissionAdvance)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetCommissionAdvanceProjectionsAllowed_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListBusinessesResponseDataItem{}
+		var fernTestValueCommissionAdvanceProjectionsAllowed *bool
+
+		// Act
+		obj.SetCommissionAdvanceProjectionsAllowed(fernTestValueCommissionAdvanceProjectionsAllowed)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -5222,6 +5294,14 @@ func TestSettersResendInviteBusinessesResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetCommissionAdvanceProjectionsAllowed", func(t *testing.T) {
+		obj := &ResendInviteBusinessesResponse{}
+		var fernTestValueCommissionAdvanceProjectionsAllowed *bool
+		obj.SetCommissionAdvanceProjectionsAllowed(fernTestValueCommissionAdvanceProjectionsAllowed)
+		assert.Equal(t, fernTestValueCommissionAdvanceProjectionsAllowed, obj.CommissionAdvanceProjectionsAllowed)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCreatedAt", func(t *testing.T) {
 		obj := &ResendInviteBusinessesResponse{}
 		var fernTestValueCreatedAt time.Time
@@ -5434,6 +5514,39 @@ func TestGettersResendInviteBusinessesResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCommissionAdvance() // Should return zero value
+	})
+
+	t.Run("GetCommissionAdvanceProjectionsAllowed", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ResendInviteBusinessesResponse{}
+		var expected *bool
+		obj.CommissionAdvanceProjectionsAllowed = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCommissionAdvanceProjectionsAllowed(), "getter should return the property value")
+	})
+
+	t.Run("GetCommissionAdvanceProjectionsAllowed_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ResendInviteBusinessesResponse{}
+		obj.CommissionAdvanceProjectionsAllowed = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCommissionAdvanceProjectionsAllowed(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCommissionAdvanceProjectionsAllowed_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ResendInviteBusinessesResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCommissionAdvanceProjectionsAllowed() // Should return zero value
 	})
 
 	t.Run("GetCreatedAt", func(t *testing.T) {
@@ -5921,6 +6034,37 @@ func TestSettersMarkExplicitResendInviteBusinessesResponse(t *testing.T) {
 
 		// Act
 		obj.SetCommissionAdvance(fernTestValueCommissionAdvance)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetCommissionAdvanceProjectionsAllowed_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ResendInviteBusinessesResponse{}
+		var fernTestValueCommissionAdvanceProjectionsAllowed *bool
+
+		// Act
+		obj.SetCommissionAdvanceProjectionsAllowed(fernTestValueCommissionAdvanceProjectionsAllowed)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -9296,6 +9440,22 @@ func TestSettersRetrieveBusinessesResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetCommissionAdvanceProjectionsAllowed", func(t *testing.T) {
+		obj := &RetrieveBusinessesResponse{}
+		var fernTestValueCommissionAdvanceProjectionsAllowed *bool
+		obj.SetCommissionAdvanceProjectionsAllowed(fernTestValueCommissionAdvanceProjectionsAllowed)
+		assert.Equal(t, fernTestValueCommissionAdvanceProjectionsAllowed, obj.CommissionAdvanceProjectionsAllowed)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetCommissionAdvanceRate", func(t *testing.T) {
+		obj := &RetrieveBusinessesResponse{}
+		var fernTestValueCommissionAdvanceRate *string
+		obj.SetCommissionAdvanceRate(fernTestValueCommissionAdvanceRate)
+		assert.Equal(t, fernTestValueCommissionAdvanceRate, obj.CommissionAdvanceRate)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCreatedAt", func(t *testing.T) {
 		obj := &RetrieveBusinessesResponse{}
 		var fernTestValueCreatedAt time.Time
@@ -9508,6 +9668,72 @@ func TestGettersRetrieveBusinessesResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCommissionAdvance() // Should return zero value
+	})
+
+	t.Run("GetCommissionAdvanceProjectionsAllowed", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveBusinessesResponse{}
+		var expected *bool
+		obj.CommissionAdvanceProjectionsAllowed = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCommissionAdvanceProjectionsAllowed(), "getter should return the property value")
+	})
+
+	t.Run("GetCommissionAdvanceProjectionsAllowed_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveBusinessesResponse{}
+		obj.CommissionAdvanceProjectionsAllowed = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCommissionAdvanceProjectionsAllowed(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCommissionAdvanceProjectionsAllowed_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrieveBusinessesResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCommissionAdvanceProjectionsAllowed() // Should return zero value
+	})
+
+	t.Run("GetCommissionAdvanceRate", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveBusinessesResponse{}
+		var expected *string
+		obj.CommissionAdvanceRate = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCommissionAdvanceRate(), "getter should return the property value")
+	})
+
+	t.Run("GetCommissionAdvanceRate_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveBusinessesResponse{}
+		obj.CommissionAdvanceRate = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCommissionAdvanceRate(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCommissionAdvanceRate_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrieveBusinessesResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCommissionAdvanceRate() // Should return zero value
 	})
 
 	t.Run("GetCreatedAt", func(t *testing.T) {
@@ -9995,6 +10221,68 @@ func TestSettersMarkExplicitRetrieveBusinessesResponse(t *testing.T) {
 
 		// Act
 		obj.SetCommissionAdvance(fernTestValueCommissionAdvance)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetCommissionAdvanceProjectionsAllowed_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveBusinessesResponse{}
+		var fernTestValueCommissionAdvanceProjectionsAllowed *bool
+
+		// Act
+		obj.SetCommissionAdvanceProjectionsAllowed(fernTestValueCommissionAdvanceProjectionsAllowed)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetCommissionAdvanceRate_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveBusinessesResponse{}
+		var fernTestValueCommissionAdvanceRate *string
+
+		// Act
+		obj.SetCommissionAdvanceRate(fernTestValueCommissionAdvanceRate)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -16166,6 +16454,7 @@ func TestOptionalNullableRoundTripResendInviteBusinessesResponse(t *testing.T) {
 func TestOptionalNullableRoundTripRetrieveBusinessesResponse(t *testing.T) {
 	optionalNullableKeys := []string{
 		"commission_advance",
+		"commission_advance_rate",
 	}
 	marshalToMap := func(t *testing.T, obj *RetrieveBusinessesResponse) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
@@ -16178,7 +16467,7 @@ func TestOptionalNullableRoundTripRetrieveBusinessesResponse(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj RetrieveBusinessesResponse
-		require.NoError(t, json.Unmarshal([]byte(`{"commission_advance":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"commission_advance":null,"commission_advance_rate":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range optionalNullableKeys {
 			value, ok := result[key]

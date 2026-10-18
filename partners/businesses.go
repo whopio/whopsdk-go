@@ -744,22 +744,23 @@ func (l *ListBusinessesResponse) String() string {
 }
 
 var (
-	listBusinessesResponseDataItemFieldAccount           = big.NewInt(1 << 0)
-	listBusinessesResponseDataItemFieldBlueprintPartner  = big.NewInt(1 << 1)
-	listBusinessesResponseDataItemFieldCommissionAdvance = big.NewInt(1 << 2)
-	listBusinessesResponseDataItemFieldCreatedAt         = big.NewInt(1 << 3)
-	listBusinessesResponseDataItemFieldEarningsUsd       = big.NewInt(1 << 4)
-	listBusinessesResponseDataItemFieldFirstTierPartner  = big.NewInt(1 << 5)
-	listBusinessesResponseDataItemFieldID                = big.NewInt(1 << 6)
-	listBusinessesResponseDataItemFieldMyPartnerTier     = big.NewInt(1 << 7)
-	listBusinessesResponseDataItemFieldObject            = big.NewInt(1 << 8)
-	listBusinessesResponseDataItemFieldOwner             = big.NewInt(1 << 9)
-	listBusinessesResponseDataItemFieldPayoutPercentages = big.NewInt(1 << 10)
-	listBusinessesResponseDataItemFieldReferralExpiresAt = big.NewInt(1 << 11)
-	listBusinessesResponseDataItemFieldReferralStartedAt = big.NewInt(1 << 12)
-	listBusinessesResponseDataItemFieldSecondTierPartner = big.NewInt(1 << 13)
-	listBusinessesResponseDataItemFieldStatus            = big.NewInt(1 << 14)
-	listBusinessesResponseDataItemFieldVolumeUsd         = big.NewInt(1 << 15)
+	listBusinessesResponseDataItemFieldAccount                             = big.NewInt(1 << 0)
+	listBusinessesResponseDataItemFieldBlueprintPartner                    = big.NewInt(1 << 1)
+	listBusinessesResponseDataItemFieldCommissionAdvance                   = big.NewInt(1 << 2)
+	listBusinessesResponseDataItemFieldCommissionAdvanceProjectionsAllowed = big.NewInt(1 << 3)
+	listBusinessesResponseDataItemFieldCreatedAt                           = big.NewInt(1 << 4)
+	listBusinessesResponseDataItemFieldEarningsUsd                         = big.NewInt(1 << 5)
+	listBusinessesResponseDataItemFieldFirstTierPartner                    = big.NewInt(1 << 6)
+	listBusinessesResponseDataItemFieldID                                  = big.NewInt(1 << 7)
+	listBusinessesResponseDataItemFieldMyPartnerTier                       = big.NewInt(1 << 8)
+	listBusinessesResponseDataItemFieldObject                              = big.NewInt(1 << 9)
+	listBusinessesResponseDataItemFieldOwner                               = big.NewInt(1 << 10)
+	listBusinessesResponseDataItemFieldPayoutPercentages                   = big.NewInt(1 << 11)
+	listBusinessesResponseDataItemFieldReferralExpiresAt                   = big.NewInt(1 << 12)
+	listBusinessesResponseDataItemFieldReferralStartedAt                   = big.NewInt(1 << 13)
+	listBusinessesResponseDataItemFieldSecondTierPartner                   = big.NewInt(1 << 14)
+	listBusinessesResponseDataItemFieldStatus                              = big.NewInt(1 << 15)
+	listBusinessesResponseDataItemFieldVolumeUsd                           = big.NewInt(1 << 16)
 )
 
 // listBusinessesResponseDataItemNullableFields maps the wire names of ListBusinessesResponseDataItem's nullable fields (required or optional) to their field bits.
@@ -781,6 +782,8 @@ type ListBusinessesResponseDataItem struct {
 	BlueprintPartner *ListBusinessesResponseDataItemBlueprintPartner `json:"blueprint_partner,omitempty" url:"blueprint_partner,omitempty"`
 	// CPA terms for the referring partner. Omitted for other callers. An offer token requires partner:commission_advance:accept permission.
 	CommissionAdvance *v2.PartnerAdvance `json:"commission_advance,omitempty" url:"commission_advance,omitempty"`
+	// Whether this referral meets the partner and ownership requirements for saving commission advance projections. Returned only to the referring partner; existing advance terms and update permissions still apply.
+	CommissionAdvanceProjectionsAllowed *bool `json:"commission_advance_projections_allowed,omitempty" url:"commission_advance_projections_allowed,omitempty"`
 	// When the partner business was created.
 	CreatedAt   time.Time                                  `json:"created_at" url:"created_at"`
 	EarningsUsd *ListBusinessesResponseDataItemEarningsUsd `json:"earnings_usd" url:"earnings_usd"`
@@ -831,6 +834,13 @@ func (l *ListBusinessesResponseDataItem) GetCommissionAdvance() *v2.PartnerAdvan
 		return nil
 	}
 	return l.CommissionAdvance
+}
+
+func (l *ListBusinessesResponseDataItem) GetCommissionAdvanceProjectionsAllowed() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.CommissionAdvanceProjectionsAllowed
 }
 
 func (l *ListBusinessesResponseDataItem) GetCreatedAt() time.Time {
@@ -959,6 +969,13 @@ func (l *ListBusinessesResponseDataItem) SetBlueprintPartner(blueprintPartner *L
 func (l *ListBusinessesResponseDataItem) SetCommissionAdvance(commissionAdvance *v2.PartnerAdvance) {
 	l.CommissionAdvance = commissionAdvance
 	l.require(listBusinessesResponseDataItemFieldCommissionAdvance)
+}
+
+// SetCommissionAdvanceProjectionsAllowed sets the CommissionAdvanceProjectionsAllowed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListBusinessesResponseDataItem) SetCommissionAdvanceProjectionsAllowed(commissionAdvanceProjectionsAllowed *bool) {
+	l.CommissionAdvanceProjectionsAllowed = commissionAdvanceProjectionsAllowed
+	l.require(listBusinessesResponseDataItemFieldCommissionAdvanceProjectionsAllowed)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -2888,23 +2905,24 @@ func (l *ListBusinessesResponsePageInfo) String() string {
 }
 
 var (
-	resendInviteBusinessesResponseFieldAccount             = big.NewInt(1 << 0)
-	resendInviteBusinessesResponseFieldBlueprintPartner    = big.NewInt(1 << 1)
-	resendInviteBusinessesResponseFieldCommissionAdvance   = big.NewInt(1 << 2)
-	resendInviteBusinessesResponseFieldCreatedAt           = big.NewInt(1 << 3)
-	resendInviteBusinessesResponseFieldEarningsUsd         = big.NewInt(1 << 4)
-	resendInviteBusinessesResponseFieldFirstTierPartner    = big.NewInt(1 << 5)
-	resendInviteBusinessesResponseFieldID                  = big.NewInt(1 << 6)
-	resendInviteBusinessesResponseFieldMyPartnerTier       = big.NewInt(1 << 7)
-	resendInviteBusinessesResponseFieldObject              = big.NewInt(1 << 8)
-	resendInviteBusinessesResponseFieldOwner               = big.NewInt(1 << 9)
-	resendInviteBusinessesResponseFieldPayoutPercentages   = big.NewInt(1 << 10)
-	resendInviteBusinessesResponseFieldPendingOwnerInvites = big.NewInt(1 << 11)
-	resendInviteBusinessesResponseFieldReferralExpiresAt   = big.NewInt(1 << 12)
-	resendInviteBusinessesResponseFieldReferralStartedAt   = big.NewInt(1 << 13)
-	resendInviteBusinessesResponseFieldSecondTierPartner   = big.NewInt(1 << 14)
-	resendInviteBusinessesResponseFieldStatus              = big.NewInt(1 << 15)
-	resendInviteBusinessesResponseFieldVolumeUsd           = big.NewInt(1 << 16)
+	resendInviteBusinessesResponseFieldAccount                             = big.NewInt(1 << 0)
+	resendInviteBusinessesResponseFieldBlueprintPartner                    = big.NewInt(1 << 1)
+	resendInviteBusinessesResponseFieldCommissionAdvance                   = big.NewInt(1 << 2)
+	resendInviteBusinessesResponseFieldCommissionAdvanceProjectionsAllowed = big.NewInt(1 << 3)
+	resendInviteBusinessesResponseFieldCreatedAt                           = big.NewInt(1 << 4)
+	resendInviteBusinessesResponseFieldEarningsUsd                         = big.NewInt(1 << 5)
+	resendInviteBusinessesResponseFieldFirstTierPartner                    = big.NewInt(1 << 6)
+	resendInviteBusinessesResponseFieldID                                  = big.NewInt(1 << 7)
+	resendInviteBusinessesResponseFieldMyPartnerTier                       = big.NewInt(1 << 8)
+	resendInviteBusinessesResponseFieldObject                              = big.NewInt(1 << 9)
+	resendInviteBusinessesResponseFieldOwner                               = big.NewInt(1 << 10)
+	resendInviteBusinessesResponseFieldPayoutPercentages                   = big.NewInt(1 << 11)
+	resendInviteBusinessesResponseFieldPendingOwnerInvites                 = big.NewInt(1 << 12)
+	resendInviteBusinessesResponseFieldReferralExpiresAt                   = big.NewInt(1 << 13)
+	resendInviteBusinessesResponseFieldReferralStartedAt                   = big.NewInt(1 << 14)
+	resendInviteBusinessesResponseFieldSecondTierPartner                   = big.NewInt(1 << 15)
+	resendInviteBusinessesResponseFieldStatus                              = big.NewInt(1 << 16)
+	resendInviteBusinessesResponseFieldVolumeUsd                           = big.NewInt(1 << 17)
 )
 
 // resendInviteBusinessesResponseNullableFields maps the wire names of ResendInviteBusinessesResponse's nullable fields (required or optional) to their field bits.
@@ -2926,6 +2944,8 @@ type ResendInviteBusinessesResponse struct {
 	BlueprintPartner *ResendInviteBusinessesResponseBlueprintPartner `json:"blueprint_partner,omitempty" url:"blueprint_partner,omitempty"`
 	// CPA terms for the referring partner. Omitted for other callers. An offer token requires partner:commission_advance:accept permission.
 	CommissionAdvance *v2.PartnerAdvance `json:"commission_advance,omitempty" url:"commission_advance,omitempty"`
+	// Whether this referral meets the partner and ownership requirements for saving commission advance projections. Returned only to the referring partner; existing advance terms and update permissions still apply.
+	CommissionAdvanceProjectionsAllowed *bool `json:"commission_advance_projections_allowed,omitempty" url:"commission_advance_projections_allowed,omitempty"`
 	// When the partner business was created.
 	CreatedAt   time.Time                                  `json:"created_at" url:"created_at"`
 	EarningsUsd *ResendInviteBusinessesResponseEarningsUsd `json:"earnings_usd" url:"earnings_usd"`
@@ -2978,6 +2998,13 @@ func (r *ResendInviteBusinessesResponse) GetCommissionAdvance() *v2.PartnerAdvan
 		return nil
 	}
 	return r.CommissionAdvance
+}
+
+func (r *ResendInviteBusinessesResponse) GetCommissionAdvanceProjectionsAllowed() *bool {
+	if r == nil {
+		return nil
+	}
+	return r.CommissionAdvanceProjectionsAllowed
 }
 
 func (r *ResendInviteBusinessesResponse) GetCreatedAt() time.Time {
@@ -3113,6 +3140,13 @@ func (r *ResendInviteBusinessesResponse) SetBlueprintPartner(blueprintPartner *R
 func (r *ResendInviteBusinessesResponse) SetCommissionAdvance(commissionAdvance *v2.PartnerAdvance) {
 	r.CommissionAdvance = commissionAdvance
 	r.require(resendInviteBusinessesResponseFieldCommissionAdvance)
+}
+
+// SetCommissionAdvanceProjectionsAllowed sets the CommissionAdvanceProjectionsAllowed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponse) SetCommissionAdvanceProjectionsAllowed(commissionAdvanceProjectionsAllowed *bool) {
+	r.CommissionAdvanceProjectionsAllowed = commissionAdvanceProjectionsAllowed
+	r.require(resendInviteBusinessesResponseFieldCommissionAdvanceProjectionsAllowed)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -5058,35 +5092,38 @@ func (r *ResendInviteBusinessesResponseVolumeUsd) String() string {
 }
 
 var (
-	retrieveBusinessesResponseFieldAccount             = big.NewInt(1 << 0)
-	retrieveBusinessesResponseFieldBlueprintPartner    = big.NewInt(1 << 1)
-	retrieveBusinessesResponseFieldCommissionAdvance   = big.NewInt(1 << 2)
-	retrieveBusinessesResponseFieldCreatedAt           = big.NewInt(1 << 3)
-	retrieveBusinessesResponseFieldEarningsUsd         = big.NewInt(1 << 4)
-	retrieveBusinessesResponseFieldFirstTierPartner    = big.NewInt(1 << 5)
-	retrieveBusinessesResponseFieldID                  = big.NewInt(1 << 6)
-	retrieveBusinessesResponseFieldMyPartnerTier       = big.NewInt(1 << 7)
-	retrieveBusinessesResponseFieldObject              = big.NewInt(1 << 8)
-	retrieveBusinessesResponseFieldOwner               = big.NewInt(1 << 9)
-	retrieveBusinessesResponseFieldPayoutPercentages   = big.NewInt(1 << 10)
-	retrieveBusinessesResponseFieldPendingOwnerInvites = big.NewInt(1 << 11)
-	retrieveBusinessesResponseFieldReferralExpiresAt   = big.NewInt(1 << 12)
-	retrieveBusinessesResponseFieldReferralStartedAt   = big.NewInt(1 << 13)
-	retrieveBusinessesResponseFieldSecondTierPartner   = big.NewInt(1 << 14)
-	retrieveBusinessesResponseFieldStatus              = big.NewInt(1 << 15)
-	retrieveBusinessesResponseFieldVolumeUsd           = big.NewInt(1 << 16)
+	retrieveBusinessesResponseFieldAccount                             = big.NewInt(1 << 0)
+	retrieveBusinessesResponseFieldBlueprintPartner                    = big.NewInt(1 << 1)
+	retrieveBusinessesResponseFieldCommissionAdvance                   = big.NewInt(1 << 2)
+	retrieveBusinessesResponseFieldCommissionAdvanceProjectionsAllowed = big.NewInt(1 << 3)
+	retrieveBusinessesResponseFieldCommissionAdvanceRate               = big.NewInt(1 << 4)
+	retrieveBusinessesResponseFieldCreatedAt                           = big.NewInt(1 << 5)
+	retrieveBusinessesResponseFieldEarningsUsd                         = big.NewInt(1 << 6)
+	retrieveBusinessesResponseFieldFirstTierPartner                    = big.NewInt(1 << 7)
+	retrieveBusinessesResponseFieldID                                  = big.NewInt(1 << 8)
+	retrieveBusinessesResponseFieldMyPartnerTier                       = big.NewInt(1 << 9)
+	retrieveBusinessesResponseFieldObject                              = big.NewInt(1 << 10)
+	retrieveBusinessesResponseFieldOwner                               = big.NewInt(1 << 11)
+	retrieveBusinessesResponseFieldPayoutPercentages                   = big.NewInt(1 << 12)
+	retrieveBusinessesResponseFieldPendingOwnerInvites                 = big.NewInt(1 << 13)
+	retrieveBusinessesResponseFieldReferralExpiresAt                   = big.NewInt(1 << 14)
+	retrieveBusinessesResponseFieldReferralStartedAt                   = big.NewInt(1 << 15)
+	retrieveBusinessesResponseFieldSecondTierPartner                   = big.NewInt(1 << 16)
+	retrieveBusinessesResponseFieldStatus                              = big.NewInt(1 << 17)
+	retrieveBusinessesResponseFieldVolumeUsd                           = big.NewInt(1 << 18)
 )
 
 // retrieveBusinessesResponseNullableFields maps the wire names of RetrieveBusinessesResponse's nullable fields (required or optional) to their field bits.
 var retrieveBusinessesResponseNullableFields = map[string]*big.Int{
-	"account":             retrieveBusinessesResponseFieldAccount,
-	"blueprint_partner":   retrieveBusinessesResponseFieldBlueprintPartner,
-	"commission_advance":  retrieveBusinessesResponseFieldCommissionAdvance,
-	"first_tier_partner":  retrieveBusinessesResponseFieldFirstTierPartner,
-	"owner":               retrieveBusinessesResponseFieldOwner,
-	"referral_expires_at": retrieveBusinessesResponseFieldReferralExpiresAt,
-	"referral_started_at": retrieveBusinessesResponseFieldReferralStartedAt,
-	"second_tier_partner": retrieveBusinessesResponseFieldSecondTierPartner,
+	"account":                 retrieveBusinessesResponseFieldAccount,
+	"blueprint_partner":       retrieveBusinessesResponseFieldBlueprintPartner,
+	"commission_advance":      retrieveBusinessesResponseFieldCommissionAdvance,
+	"commission_advance_rate": retrieveBusinessesResponseFieldCommissionAdvanceRate,
+	"first_tier_partner":      retrieveBusinessesResponseFieldFirstTierPartner,
+	"owner":                   retrieveBusinessesResponseFieldOwner,
+	"referral_expires_at":     retrieveBusinessesResponseFieldReferralExpiresAt,
+	"referral_started_at":     retrieveBusinessesResponseFieldReferralStartedAt,
+	"second_tier_partner":     retrieveBusinessesResponseFieldSecondTierPartner,
 }
 
 type RetrieveBusinessesResponse struct {
@@ -5096,6 +5133,10 @@ type RetrieveBusinessesResponse struct {
 	BlueprintPartner *RetrieveBusinessesResponseBlueprintPartner `json:"blueprint_partner,omitempty" url:"blueprint_partner,omitempty"`
 	// CPA terms for the referring partner. Omitted for other callers. An offer token requires partner:commission_advance:accept permission.
 	CommissionAdvance *v2.PartnerAdvance `json:"commission_advance,omitempty" url:"commission_advance,omitempty"`
+	// Whether this referral meets the partner and ownership requirements for saving commission advance projections. Returned only to the referring partner; existing advance terms and update permissions still apply.
+	CommissionAdvanceProjectionsAllowed *bool `json:"commission_advance_projections_allowed,omitempty" url:"commission_advance_projections_allowed,omitempty"`
+	// Estimated upfront commission advance per USD of annual projected card and BNPL payments, including the advance share and remaining term. Multiply annual payments by this decimal rate, cap at 2500 USD, and round down to cents. Null when projections are unavailable or qualifying payment history is missing. Returned only to the referring partner; the final offer is calculated separately.
+	CommissionAdvanceRate *string `json:"commission_advance_rate,omitempty" url:"commission_advance_rate,omitempty"`
 	// When the partner business was created.
 	CreatedAt   time.Time                              `json:"created_at" url:"created_at"`
 	EarningsUsd *RetrieveBusinessesResponseEarningsUsd `json:"earnings_usd" url:"earnings_usd"`
@@ -5148,6 +5189,20 @@ func (r *RetrieveBusinessesResponse) GetCommissionAdvance() *v2.PartnerAdvance {
 		return nil
 	}
 	return r.CommissionAdvance
+}
+
+func (r *RetrieveBusinessesResponse) GetCommissionAdvanceProjectionsAllowed() *bool {
+	if r == nil {
+		return nil
+	}
+	return r.CommissionAdvanceProjectionsAllowed
+}
+
+func (r *RetrieveBusinessesResponse) GetCommissionAdvanceRate() *string {
+	if r == nil {
+		return nil
+	}
+	return r.CommissionAdvanceRate
 }
 
 func (r *RetrieveBusinessesResponse) GetCreatedAt() time.Time {
@@ -5283,6 +5338,20 @@ func (r *RetrieveBusinessesResponse) SetBlueprintPartner(blueprintPartner *Retri
 func (r *RetrieveBusinessesResponse) SetCommissionAdvance(commissionAdvance *v2.PartnerAdvance) {
 	r.CommissionAdvance = commissionAdvance
 	r.require(retrieveBusinessesResponseFieldCommissionAdvance)
+}
+
+// SetCommissionAdvanceProjectionsAllowed sets the CommissionAdvanceProjectionsAllowed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBusinessesResponse) SetCommissionAdvanceProjectionsAllowed(commissionAdvanceProjectionsAllowed *bool) {
+	r.CommissionAdvanceProjectionsAllowed = commissionAdvanceProjectionsAllowed
+	r.require(retrieveBusinessesResponseFieldCommissionAdvanceProjectionsAllowed)
+}
+
+// SetCommissionAdvanceRate sets the CommissionAdvanceRate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBusinessesResponse) SetCommissionAdvanceRate(commissionAdvanceRate *string) {
+	r.CommissionAdvanceRate = commissionAdvanceRate
+	r.require(retrieveBusinessesResponseFieldCommissionAdvanceRate)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
