@@ -5135,7 +5135,7 @@ type RetrieveBusinessesResponse struct {
 	CommissionAdvance *v2.PartnerAdvance `json:"commission_advance,omitempty" url:"commission_advance,omitempty"`
 	// Whether this referral meets the partner and ownership requirements for saving commission advance projections. Returned only to the referring partner; existing advance terms and update permissions still apply.
 	CommissionAdvanceProjectionsAllowed *bool `json:"commission_advance_projections_allowed,omitempty" url:"commission_advance_projections_allowed,omitempty"`
-	// Estimated upfront commission advance per USD of annual projected card and BNPL payments, including the advance share and remaining term. Multiply annual payments by this decimal rate, cap at 2500 USD, and round down to cents. Null when projections are unavailable or qualifying payment history is missing. Returned only to the referring partner; the final offer is calculated separately.
+	// Estimated upfront advance per USD of annual card and BNPL payments, including advance share and remaining term. Multiply annual payments by this rate, cap at 2500 USD, and round down to cents. Uses observed commissions or, without history, reference US card fees minus estimated percentage costs times the partner share. Null when projections or pricing are unavailable. Only returned to the referring partner. Qualification and final offers use actual activity.
 	CommissionAdvanceRate *string `json:"commission_advance_rate,omitempty" url:"commission_advance_rate,omitempty"`
 	// When the partner business was created.
 	CreatedAt   time.Time                              `json:"created_at" url:"created_at"`
