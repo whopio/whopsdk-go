@@ -6034,6 +6034,13 @@ func TestEnumRetrieveStatsRequestSnapshotWindow(t *testing.T) {
 		assert.Equal(t, RetrieveStatsRequestSnapshotWindow("7d"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_14d", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveStatsRequestSnapshotWindowFromString("14d")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveStatsRequestSnapshotWindow("14d"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_28d", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewRetrieveStatsRequestSnapshotWindowFromString("28d")
@@ -6046,6 +6053,13 @@ func TestEnumRetrieveStatsRequestSnapshotWindow(t *testing.T) {
 		val, err := NewRetrieveStatsRequestSnapshotWindowFromString("30d")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, RetrieveStatsRequestSnapshotWindow("30d"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_56d", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveStatsRequestSnapshotWindowFromString("56d")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveStatsRequestSnapshotWindow("56d"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {

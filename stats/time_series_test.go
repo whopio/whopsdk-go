@@ -5257,6 +5257,13 @@ func TestEnumRetrieveTimeSeriesRequestSnapshotWindow(t *testing.T) {
 		assert.Equal(t, RetrieveTimeSeriesRequestSnapshotWindow("7d"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_14d", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveTimeSeriesRequestSnapshotWindowFromString("14d")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveTimeSeriesRequestSnapshotWindow("14d"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_28d", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewRetrieveTimeSeriesRequestSnapshotWindowFromString("28d")
@@ -5269,6 +5276,13 @@ func TestEnumRetrieveTimeSeriesRequestSnapshotWindow(t *testing.T) {
 		val, err := NewRetrieveTimeSeriesRequestSnapshotWindowFromString("30d")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, RetrieveTimeSeriesRequestSnapshotWindow("30d"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_56d", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveTimeSeriesRequestSnapshotWindowFromString("56d")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveTimeSeriesRequestSnapshotWindow("56d"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {

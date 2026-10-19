@@ -36556,7 +36556,7 @@ client.Stats.Retrieve(
 <dl>
 <dd>
 
-**snapshotWindow:** `*whopsdk.RetrieveStatsRequestSnapshotWindow` — Window used by a snapshot metric. Ordinary snapshots accept 30d as their trailing activity window. Cohorted dispute metrics accept 7d or 28d as the sales-transaction pool; their attribution window is fixed in the metric name. Each metric lists its accepted values in the catalog.
+**snapshotWindow:** `*whopsdk.RetrieveStatsRequestSnapshotWindow` — Window used by a snapshot metric. Ordinary snapshots accept 30d as their trailing activity window. Cohorted dispute metrics accept 7d or 28d as the sales-transaction pool; their attribution window is fixed in the metric name. Card network program metrics accept 7d, 14d, 28d, or 56d. Each metric lists its accepted values in the catalog.
     
 </dd>
 </dl>
@@ -46683,7 +46683,7 @@ client.Stats.TimeSeries.Retrieve(
 <dl>
 <dd>
 
-**snapshotWindow:** `*stats.RetrieveTimeSeriesRequestSnapshotWindow` — Window used by a snapshot metric. Ordinary snapshots accept 30d as their trailing activity window. Cohorted dispute metrics accept 7d or 28d as the sales-transaction pool; their attribution window is fixed in the metric name. Each metric lists its accepted values in the catalog.
+**snapshotWindow:** `*stats.RetrieveTimeSeriesRequestSnapshotWindow` — Window used by a snapshot metric. Ordinary snapshots accept 30d as their trailing activity window. Cohorted dispute metrics accept 7d or 28d as the sales-transaction pool; their attribution window is fixed in the metric name. Card network program metrics accept 7d, 14d, 28d, or 56d. Each metric lists its accepted values in the catalog.
     
 </dd>
 </dl>
