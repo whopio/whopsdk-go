@@ -41,11 +41,12 @@ var (
 	createDomainsRequestFieldAccountID    = big.NewInt(1 << 0)
 	createDomainsRequestFieldApplePay     = big.NewInt(1 << 1)
 	createDomainsRequestFieldDomain       = big.NewInt(1 << 2)
-	createDomainsRequestFieldMetadata     = big.NewInt(1 << 3)
-	createDomainsRequestFieldPixel        = big.NewInt(1 << 4)
-	createDomainsRequestFieldRegistration = big.NewInt(1 << 5)
-	createDomainsRequestFieldVerification = big.NewInt(1 << 6)
-	createDomainsRequestFieldWebsite      = big.NewInt(1 << 7)
+	createDomainsRequestFieldEmail        = big.NewInt(1 << 3)
+	createDomainsRequestFieldMetadata     = big.NewInt(1 << 4)
+	createDomainsRequestFieldPixel        = big.NewInt(1 << 5)
+	createDomainsRequestFieldRegistration = big.NewInt(1 << 6)
+	createDomainsRequestFieldVerification = big.NewInt(1 << 7)
+	createDomainsRequestFieldWebsite      = big.NewInt(1 << 8)
 )
 
 type CreateDomainsRequest struct {
@@ -55,6 +56,8 @@ type CreateDomainsRequest struct {
 	ApplePay *CreateDomainsRequestApplePay `json:"apple_pay,omitempty" url:"-"`
 	// Bare hostname, such as example.com or checkout.example.com. A bought domain must be a root domain. Wildcards, paths, schemes, and ports are not accepted.
 	Domain string `json:"domain" url:"-"`
+	// Send and receive email on the domain. Only a domain bought through Whop, or a subdomain of one in the same account, can have it. Whop publishes the DNS records and stays `pending` until its email provider verifies them, then turns `ready`. Pass `null` to remove email.
+	Email *CreateDomainsRequestEmail `json:"email,omitempty" url:"-"`
 	// Custom string keys and values.
 	Metadata map[string]string `json:"metadata,omitempty" url:"-"`
 	// Track page views on the domain with the Whop pixel. It needs no other capability: it stays `pending` until the pixel records a page view, and turns `action_required` if it goes 7 days without one. Pass `null` to stop tracking.
@@ -98,6 +101,13 @@ func (c *CreateDomainsRequest) SetApplePay(applePay *CreateDomainsRequestApplePa
 func (c *CreateDomainsRequest) SetDomain(domain string) {
 	c.Domain = domain
 	c.require(createDomainsRequestFieldDomain)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDomainsRequest) SetEmail(email *CreateDomainsRequestEmail) {
+	c.Email = email
+	c.require(createDomainsRequestFieldEmail)
 }
 
 // SetMetadata sets the Metadata field and marks it as non-optional;
@@ -203,6 +213,7 @@ var (
 	listDomainsRequestFieldWebsite      = big.NewInt(1 << 15)
 	listDomainsRequestFieldApplePay     = big.NewInt(1 << 16)
 	listDomainsRequestFieldPixel        = big.NewInt(1 << 17)
+	listDomainsRequestFieldEmail        = big.NewInt(1 << 18)
 )
 
 type ListDomainsRequest struct {
@@ -242,6 +253,8 @@ type ListDomainsRequest struct {
 	ApplePay *ListDomainsRequestApplePay `json:"-" url:"apple_pay,omitempty"`
 	// Only domains with pixel in this state, such as `ready`, or `any` for every domain that has pixel.
 	Pixel *ListDomainsRequestPixel `json:"-" url:"pixel,omitempty"`
+	// Only domains with email in this state, such as `ready`, or `any` for every domain that has email.
+	Email *ListDomainsRequestEmail `json:"-" url:"email,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -382,6 +395,13 @@ func (l *ListDomainsRequest) SetPixel(pixel *ListDomainsRequestPixel) {
 	l.require(listDomainsRequestFieldPixel)
 }
 
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListDomainsRequest) SetEmail(email *ListDomainsRequestEmail) {
+	l.Email = email
+	l.require(listDomainsRequestFieldEmail)
+}
+
 var (
 	retrieveDomainsRequestFieldID = big.NewInt(1 << 0)
 )
@@ -416,19 +436,20 @@ var (
 	domainFieldAvailability = big.NewInt(1 << 2)
 	domainFieldCreatedAt    = big.NewInt(1 << 3)
 	domainFieldDomain       = big.NewInt(1 << 4)
-	domainFieldID           = big.NewInt(1 << 5)
-	domainFieldIssues       = big.NewInt(1 << 6)
-	domainFieldMetadata     = big.NewInt(1 << 7)
-	domainFieldOwnedBy      = big.NewInt(1 << 8)
-	domainFieldPixel        = big.NewInt(1 << 9)
-	domainFieldPlatform     = big.NewInt(1 << 10)
-	domainFieldPublicRecord = big.NewInt(1 << 11)
-	domainFieldRegistration = big.NewInt(1 << 12)
-	domainFieldStats        = big.NewInt(1 << 13)
-	domainFieldStatus       = big.NewInt(1 << 14)
-	domainFieldUpdatedAt    = big.NewInt(1 << 15)
-	domainFieldVerification = big.NewInt(1 << 16)
-	domainFieldWebsite      = big.NewInt(1 << 17)
+	domainFieldEmail        = big.NewInt(1 << 5)
+	domainFieldID           = big.NewInt(1 << 6)
+	domainFieldIssues       = big.NewInt(1 << 7)
+	domainFieldMetadata     = big.NewInt(1 << 8)
+	domainFieldOwnedBy      = big.NewInt(1 << 9)
+	domainFieldPixel        = big.NewInt(1 << 10)
+	domainFieldPlatform     = big.NewInt(1 << 11)
+	domainFieldPublicRecord = big.NewInt(1 << 12)
+	domainFieldRegistration = big.NewInt(1 << 13)
+	domainFieldStats        = big.NewInt(1 << 14)
+	domainFieldStatus       = big.NewInt(1 << 15)
+	domainFieldUpdatedAt    = big.NewInt(1 << 16)
+	domainFieldVerification = big.NewInt(1 << 17)
+	domainFieldWebsite      = big.NewInt(1 << 18)
 )
 
 // domainNullableFields maps the wire names of Domain's nullable fields (required or optional) to their field bits.
@@ -437,6 +458,7 @@ var domainNullableFields = map[string]*big.Int{
 	"apple_pay":     domainFieldApplePay,
 	"availability":  domainFieldAvailability,
 	"created_at":    domainFieldCreatedAt,
+	"email":         domainFieldEmail,
 	"id":            domainFieldID,
 	"owned_by":      domainFieldOwnedBy,
 	"pixel":         domainFieldPixel,
@@ -461,6 +483,8 @@ type Domain struct {
 	CreatedAt *string `json:"created_at,omitempty" url:"created_at,omitempty"`
 	// Normalized hostname, such as checkout.example.com.
 	Domain string `json:"domain" url:"domain"`
+	// Sending and receiving email on the domain through Whop. `null` when not wanted, or when the domain belongs to an account you can't read.
+	Email *DomainEmail `json:"email,omitempty" url:"email,omitempty"`
 	// Domain ID, prefixed `dom_`. `null` when no domain on Whop has this hostname.
 	ID     *string        `json:"id,omitempty" url:"id,omitempty"`
 	Issues []*DomainIssue `json:"issues" url:"issues"`
@@ -527,6 +551,13 @@ func (d *Domain) GetDomain() string {
 		return ""
 	}
 	return d.Domain
+}
+
+func (d *Domain) GetEmail() *DomainEmail {
+	if d == nil {
+		return nil
+	}
+	return d.Email
 }
 
 func (d *Domain) GetID() *string {
@@ -669,6 +700,13 @@ func (d *Domain) SetCreatedAt(createdAt *string) {
 func (d *Domain) SetDomain(domain string) {
 	d.Domain = domain
 	d.require(domainFieldDomain)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *Domain) SetEmail(email *DomainEmail) {
+	d.Email = email
+	d.require(domainFieldEmail)
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1264,6 +1302,122 @@ func (d DomainDNSRecordType) Ptr() *DomainDNSRecordType {
 }
 
 var (
+	domainEmailFieldState = big.NewInt(1 << 0)
+)
+
+type DomainEmail struct {
+	// `pending` while Whop sets the domain up with its email provider and publishes its DNS records, `ready` once the provider verified them, and `action_required` when it couldn't; its issue says what happens next. `releasing` while Whop removes email from the domain.
+	State DomainEmailState `json:"state" url:"state"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DomainEmail) GetState() DomainEmailState {
+	if d == nil {
+		return ""
+	}
+	return d.State
+}
+
+func (d *DomainEmail) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DomainEmail) require(field *big.Int) {
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
+	}
+	next.Or(next, field)
+	d.explicitFields = next
+}
+
+// SetState sets the State field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainEmail) SetState(state DomainEmailState) {
+	d.State = state
+	d.require(domainEmailFieldState)
+}
+
+func (d *DomainEmail) UnmarshalJSON(data []byte) error {
+	type unmarshaler DomainEmail
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DomainEmail(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DomainEmail) MarshalJSON() ([]byte, error) {
+	type embed DomainEmail
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DomainEmail) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+// `pending` while Whop sets the domain up with its email provider and publishes its DNS records, `ready` once the provider verified them, and `action_required` when it couldn't; its issue says what happens next. `releasing` while Whop removes email from the domain.
+type DomainEmailState string
+
+const (
+	DomainEmailStatePending        DomainEmailState = "pending"
+	DomainEmailStateReady          DomainEmailState = "ready"
+	DomainEmailStateActionRequired DomainEmailState = "action_required"
+	DomainEmailStateReleasing      DomainEmailState = "releasing"
+)
+
+func NewDomainEmailStateFromString(s string) (DomainEmailState, error) {
+	switch s {
+	case "pending":
+		return DomainEmailStatePending, nil
+	case "ready":
+		return DomainEmailStateReady, nil
+	case "action_required":
+		return DomainEmailStateActionRequired, nil
+	case "releasing":
+		return DomainEmailStateReleasing, nil
+	}
+	var t DomainEmailState
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (d DomainEmailState) Ptr() *DomainEmailState {
+	return &d
+}
+
+var (
 	domainIssueFieldCapability = big.NewInt(1 << 0)
 	domainIssueFieldCode       = big.NewInt(1 << 1)
 	domainIssueFieldCodeBlock  = big.NewInt(1 << 2)
@@ -1439,6 +1593,7 @@ const (
 	DomainIssueCapabilityWebsite      DomainIssueCapability = "website"
 	DomainIssueCapabilityApplePay     DomainIssueCapability = "apple_pay"
 	DomainIssueCapabilityPixel        DomainIssueCapability = "pixel"
+	DomainIssueCapabilityEmail        DomainIssueCapability = "email"
 )
 
 func NewDomainIssueCapabilityFromString(s string) (DomainIssueCapability, error) {
@@ -1455,6 +1610,8 @@ func NewDomainIssueCapabilityFromString(s string) (DomainIssueCapability, error)
 		return DomainIssueCapabilityApplePay, nil
 	case "pixel":
 		return DomainIssueCapabilityPixel, nil
+	case "email":
+		return DomainIssueCapabilityEmail, nil
 	}
 	var t DomainIssueCapability
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1491,6 +1648,10 @@ const (
 	DomainIssueCodePixelWaiting            DomainIssueCode = "pixel_waiting"
 	DomainIssueCodePixelUnreachable        DomainIssueCode = "pixel_unreachable"
 	DomainIssueCodePixelQuiet              DomainIssueCode = "pixel_quiet"
+	DomainIssueCodeEmailNeedsWhopDNS       DomainIssueCode = "email_needs_whop_dns"
+	DomainIssueCodeEmailUnreachable        DomainIssueCode = "email_unreachable"
+	DomainIssueCodeEmailIdentityInUse      DomainIssueCode = "email_identity_in_use"
+	DomainIssueCodeEmailVerificationFailed DomainIssueCode = "email_verification_failed"
 )
 
 func NewDomainIssueCodeFromString(s string) (DomainIssueCode, error) {
@@ -1541,6 +1702,14 @@ func NewDomainIssueCodeFromString(s string) (DomainIssueCode, error) {
 		return DomainIssueCodePixelUnreachable, nil
 	case "pixel_quiet":
 		return DomainIssueCodePixelQuiet, nil
+	case "email_needs_whop_dns":
+		return DomainIssueCodeEmailNeedsWhopDNS, nil
+	case "email_unreachable":
+		return DomainIssueCodeEmailUnreachable, nil
+	case "email_identity_in_use":
+		return DomainIssueCodeEmailIdentityInUse, nil
+	case "email_verification_failed":
+		return DomainIssueCodeEmailVerificationFailed, nil
 	}
 	var t DomainIssueCode
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1556,18 +1725,19 @@ var (
 	domainListItemFieldAvailability = big.NewInt(1 << 2)
 	domainListItemFieldCreatedAt    = big.NewInt(1 << 3)
 	domainListItemFieldDomain       = big.NewInt(1 << 4)
-	domainListItemFieldID           = big.NewInt(1 << 5)
-	domainListItemFieldIssues       = big.NewInt(1 << 6)
-	domainListItemFieldMetadata     = big.NewInt(1 << 7)
-	domainListItemFieldOwnedBy      = big.NewInt(1 << 8)
-	domainListItemFieldPixel        = big.NewInt(1 << 9)
-	domainListItemFieldPlatform     = big.NewInt(1 << 10)
-	domainListItemFieldRegistration = big.NewInt(1 << 11)
-	domainListItemFieldStats        = big.NewInt(1 << 12)
-	domainListItemFieldStatus       = big.NewInt(1 << 13)
-	domainListItemFieldUpdatedAt    = big.NewInt(1 << 14)
-	domainListItemFieldVerification = big.NewInt(1 << 15)
-	domainListItemFieldWebsite      = big.NewInt(1 << 16)
+	domainListItemFieldEmail        = big.NewInt(1 << 5)
+	domainListItemFieldID           = big.NewInt(1 << 6)
+	domainListItemFieldIssues       = big.NewInt(1 << 7)
+	domainListItemFieldMetadata     = big.NewInt(1 << 8)
+	domainListItemFieldOwnedBy      = big.NewInt(1 << 9)
+	domainListItemFieldPixel        = big.NewInt(1 << 10)
+	domainListItemFieldPlatform     = big.NewInt(1 << 11)
+	domainListItemFieldRegistration = big.NewInt(1 << 12)
+	domainListItemFieldStats        = big.NewInt(1 << 13)
+	domainListItemFieldStatus       = big.NewInt(1 << 14)
+	domainListItemFieldUpdatedAt    = big.NewInt(1 << 15)
+	domainListItemFieldVerification = big.NewInt(1 << 16)
+	domainListItemFieldWebsite      = big.NewInt(1 << 17)
 )
 
 // domainListItemNullableFields maps the wire names of DomainListItem's nullable fields (required or optional) to their field bits.
@@ -1576,6 +1746,7 @@ var domainListItemNullableFields = map[string]*big.Int{
 	"apple_pay":    domainListItemFieldApplePay,
 	"availability": domainListItemFieldAvailability,
 	"created_at":   domainListItemFieldCreatedAt,
+	"email":        domainListItemFieldEmail,
 	"id":           domainListItemFieldID,
 	"owned_by":     domainListItemFieldOwnedBy,
 	"pixel":        domainListItemFieldPixel,
@@ -1599,6 +1770,8 @@ type DomainListItem struct {
 	CreatedAt *string `json:"created_at,omitempty" url:"created_at,omitempty"`
 	// Normalized hostname, such as checkout.example.com.
 	Domain string `json:"domain" url:"domain"`
+	// Sending and receiving email on the domain through Whop. `null` when not wanted, or when the domain belongs to an account you can't read.
+	Email *DomainEmail `json:"email,omitempty" url:"email,omitempty"`
 	// Domain ID, prefixed `dom_`. `null` when no domain on Whop has this hostname.
 	ID     *string        `json:"id,omitempty" url:"id,omitempty"`
 	Issues []*DomainIssue `json:"issues" url:"issues"`
@@ -1663,6 +1836,13 @@ func (d *DomainListItem) GetDomain() string {
 		return ""
 	}
 	return d.Domain
+}
+
+func (d *DomainListItem) GetEmail() *DomainEmail {
+	if d == nil {
+		return nil
+	}
+	return d.Email
 }
 
 func (d *DomainListItem) GetID() *string {
@@ -1798,6 +1978,13 @@ func (d *DomainListItem) SetCreatedAt(createdAt *string) {
 func (d *DomainListItem) SetDomain(domain string) {
 	d.Domain = domain
 	d.require(domainListItemFieldDomain)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainListItem) SetEmail(email *DomainEmail) {
+	d.Email = email
+	d.require(domainListItemFieldEmail)
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -3770,6 +3957,74 @@ func (c *CreateDomainsRequestApplePay) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
+// Send and receive email on the domain. Only a domain bought through Whop, or a subdomain of one in the same account, can have it. Whop publishes the DNS records and stays `pending` until its email provider verifies them, then turns `ready`. Pass `null` to remove email.
+type CreateDomainsRequestEmail struct {
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateDomainsRequestEmail) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateDomainsRequestEmail) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+func (c *CreateDomainsRequestEmail) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateDomainsRequestEmail
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateDomainsRequestEmail(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateDomainsRequestEmail) MarshalJSON() ([]byte, error) {
+	type embed CreateDomainsRequestEmail
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateDomainsRequestEmail) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
 // Track page views on the domain with the Whop pixel. It needs no other capability: it stays `pending` until the pixel records a page view, and turns `action_required` if it goes 7 days without one. Pass `null` to stop tracking.
 type CreateDomainsRequestPixel struct {
 
@@ -4173,6 +4428,37 @@ func NewListDomainsRequestDirectionFromString(s string) (ListDomainsRequestDirec
 }
 
 func (l ListDomainsRequestDirection) Ptr() *ListDomainsRequestDirection {
+	return &l
+}
+
+type ListDomainsRequestEmail string
+
+const (
+	ListDomainsRequestEmailPending        ListDomainsRequestEmail = "pending"
+	ListDomainsRequestEmailReady          ListDomainsRequestEmail = "ready"
+	ListDomainsRequestEmailActionRequired ListDomainsRequestEmail = "action_required"
+	ListDomainsRequestEmailReleasing      ListDomainsRequestEmail = "releasing"
+	ListDomainsRequestEmailAny            ListDomainsRequestEmail = "any"
+)
+
+func NewListDomainsRequestEmailFromString(s string) (ListDomainsRequestEmail, error) {
+	switch s {
+	case "pending":
+		return ListDomainsRequestEmailPending, nil
+	case "ready":
+		return ListDomainsRequestEmailReady, nil
+	case "action_required":
+		return ListDomainsRequestEmailActionRequired, nil
+	case "releasing":
+		return ListDomainsRequestEmailReleasing, nil
+	case "any":
+		return ListDomainsRequestEmailAny, nil
+	}
+	var t ListDomainsRequestEmail
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListDomainsRequestEmail) Ptr() *ListDomainsRequestEmail {
 	return &l
 }
 
@@ -4707,6 +4993,74 @@ func (u *UpdateDomainsRequestApplePay) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
+// Send and receive email on the domain. Only a domain bought through Whop, or a subdomain of one in the same account, can have it. Whop publishes the DNS records and stays `pending` until its email provider verifies them, then turns `ready`. Pass `null` to remove email.
+type UpdateDomainsRequestEmail struct {
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateDomainsRequestEmail) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateDomainsRequestEmail) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+func (u *UpdateDomainsRequestEmail) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateDomainsRequestEmail
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateDomainsRequestEmail(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateDomainsRequestEmail) MarshalJSON() ([]byte, error) {
+	type embed UpdateDomainsRequestEmail
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateDomainsRequestEmail) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
 // Track page views on the domain with the Whop pixel. It needs no other capability: it stays `pending` until the pixel records a page view, and turns `action_required` if it goes 7 days without one. Pass `null` to stop tracking.
 type UpdateDomainsRequestPixel struct {
 
@@ -5063,11 +5417,12 @@ func (u *UpdateDomainsRequestWebsite) String() string {
 var (
 	updateDomainsRequestFieldID           = big.NewInt(1 << 0)
 	updateDomainsRequestFieldApplePay     = big.NewInt(1 << 1)
-	updateDomainsRequestFieldMetadata     = big.NewInt(1 << 2)
-	updateDomainsRequestFieldPixel        = big.NewInt(1 << 3)
-	updateDomainsRequestFieldRegistration = big.NewInt(1 << 4)
-	updateDomainsRequestFieldVerification = big.NewInt(1 << 5)
-	updateDomainsRequestFieldWebsite      = big.NewInt(1 << 6)
+	updateDomainsRequestFieldEmail        = big.NewInt(1 << 2)
+	updateDomainsRequestFieldMetadata     = big.NewInt(1 << 3)
+	updateDomainsRequestFieldPixel        = big.NewInt(1 << 4)
+	updateDomainsRequestFieldRegistration = big.NewInt(1 << 5)
+	updateDomainsRequestFieldVerification = big.NewInt(1 << 6)
+	updateDomainsRequestFieldWebsite      = big.NewInt(1 << 7)
 )
 
 type UpdateDomainsRequest struct {
@@ -5075,6 +5430,8 @@ type UpdateDomainsRequest struct {
 	ID string `json:"-" url:"-"`
 	// Accept Apple Pay at checkout on the domain. It needs no other capability. Whop registers the domain with Apple: it stays `pending` until Apple answers, then turns `ready`, or `action_required` when Apple couldn't fetch the domain association file. Serve the file, then check the domain to register it again. Pass `null` to turn Apple Pay off: Whop removes the domain from Apple, and the domain stays, like releasing any other capability.
 	ApplePay *UpdateDomainsRequestApplePay `json:"apple_pay,omitempty" url:"-"`
+	// Send and receive email on the domain. Only a domain bought through Whop, or a subdomain of one in the same account, can have it. Whop publishes the DNS records and stays `pending` until its email provider verifies them, then turns `ready`. Pass `null` to remove email.
+	Email *UpdateDomainsRequestEmail `json:"email,omitempty" url:"-"`
 	// Replacement custom string keys and values.
 	Metadata map[string]string `json:"metadata,omitempty" url:"-"`
 	// Track page views on the domain with the Whop pixel. It needs no other capability: it stays `pending` until the pixel records a page view, and turns `action_required` if it goes 7 days without one. Pass `null` to stop tracking.
@@ -5111,6 +5468,13 @@ func (u *UpdateDomainsRequest) SetID(id string) {
 func (u *UpdateDomainsRequest) SetApplePay(applePay *UpdateDomainsRequestApplePay) {
 	u.ApplePay = applePay
 	u.require(updateDomainsRequestFieldApplePay)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateDomainsRequest) SetEmail(email *UpdateDomainsRequestEmail) {
+	u.Email = email
+	u.require(updateDomainsRequestFieldEmail)
 }
 
 // SetMetadata sets the Metadata field and marks it as non-optional;
