@@ -256,13 +256,12 @@ var (
 	partnerReferralRequestFieldCreatedAt        = big.NewInt(1 << 3)
 	partnerReferralRequestFieldID               = big.NewInt(1 << 4)
 	partnerReferralRequestFieldMaxRedemptions   = big.NewInt(1 << 5)
-	partnerReferralRequestFieldMemberID         = big.NewInt(1 << 6)
-	partnerReferralRequestFieldPartner          = big.NewInt(1 << 7)
-	partnerReferralRequestFieldRequestType      = big.NewInt(1 << 8)
-	partnerReferralRequestFieldRewards          = big.NewInt(1 << 9)
-	partnerReferralRequestFieldStatus           = big.NewInt(1 << 10)
-	partnerReferralRequestFieldUpdatedAt        = big.NewInt(1 << 11)
-	partnerReferralRequestFieldUser             = big.NewInt(1 << 12)
+	partnerReferralRequestFieldPartner          = big.NewInt(1 << 6)
+	partnerReferralRequestFieldRequestType      = big.NewInt(1 << 7)
+	partnerReferralRequestFieldRewards          = big.NewInt(1 << 8)
+	partnerReferralRequestFieldStatus           = big.NewInt(1 << 9)
+	partnerReferralRequestFieldUpdatedAt        = big.NewInt(1 << 10)
+	partnerReferralRequestFieldUser             = big.NewInt(1 << 11)
 )
 
 // partnerReferralRequestNullableFields maps the wire names of PartnerReferralRequest's nullable fields (required or optional) to their field bits.
@@ -271,7 +270,6 @@ var partnerReferralRequestNullableFields = map[string]*big.Int{
 	"authorized_user_id": partnerReferralRequestFieldAuthorizedUserID,
 	"code":               partnerReferralRequestFieldCode,
 	"max_redemptions":    partnerReferralRequestFieldMaxRedemptions,
-	"member_id":          partnerReferralRequestFieldMemberID,
 	"status":             partnerReferralRequestFieldStatus,
 	"user":               partnerReferralRequestFieldUser,
 }
@@ -289,8 +287,6 @@ type PartnerReferralRequest struct {
 	ID string `json:"id" url:"id"`
 	// Maximum permitted redemptions, when limited.
 	MaxRedemptions *int `json:"max_redemptions,omitempty" url:"max_redemptions,omitempty"`
-	// The partner's member record this referral was created for, prefixed `mber_`, when their role on that business is held on their member record. `null` otherwise.
-	MemberID *string `json:"member_id,omitempty" url:"member_id,omitempty"`
 	// Public profile of the requesting partner.
 	Partner *UserSummary `json:"partner" url:"partner"`
 	// How the referral request was initiated.
@@ -350,13 +346,6 @@ func (p *PartnerReferralRequest) GetMaxRedemptions() *int {
 		return nil
 	}
 	return p.MaxRedemptions
-}
-
-func (p *PartnerReferralRequest) GetMemberID() *string {
-	if p == nil {
-		return nil
-	}
-	return p.MemberID
 }
 
 func (p *PartnerReferralRequest) GetPartner() *UserSummary {
@@ -457,13 +446,6 @@ func (p *PartnerReferralRequest) SetID(id string) {
 func (p *PartnerReferralRequest) SetMaxRedemptions(maxRedemptions *int) {
 	p.MaxRedemptions = maxRedemptions
 	p.require(partnerReferralRequestFieldMaxRedemptions)
-}
-
-// SetMemberID sets the MemberID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PartnerReferralRequest) SetMemberID(memberID *string) {
-	p.MemberID = memberID
-	p.require(partnerReferralRequestFieldMemberID)
 }
 
 // SetPartner sets the Partner field and marks it as non-optional;
@@ -899,7 +881,7 @@ func (c *CreatePartnerReferralRequestsRequestBody) GetCreatePartnerReferralReque
 }
 
 func (c *CreatePartnerReferralRequestsRequestBody) UnmarshalJSON(data []byte) error {
-	if internal.MatchesObjectKeys(data, []string{"account_id", "authorized_user_id", "member_id"}, []string{"account_id"}) {
+	if internal.MatchesObjectKeys(data, []string{"account_id", "authorized_user_id"}, []string{"account_id"}) {
 		valueCreatePartnerReferralRequestsRequestBodyAccountID := new(CreatePartnerReferralRequestsRequestBodyAccountID)
 		if err := json.Unmarshal(data, &valueCreatePartnerReferralRequestsRequestBodyAccountID); err == nil {
 			c.typ = "CreatePartnerReferralRequestsRequestBodyAccountID"
@@ -907,7 +889,7 @@ func (c *CreatePartnerReferralRequestsRequestBody) UnmarshalJSON(data []byte) er
 			return nil
 		}
 	}
-	if internal.MatchesObjectKeys(data, []string{"account_url", "authorized_user_id", "member_id"}, []string{"account_url"}) {
+	if internal.MatchesObjectKeys(data, []string{"account_url", "authorized_user_id"}, []string{"account_url"}) {
 		valueCreatePartnerReferralRequestsRequestBodyAccountURL := new(CreatePartnerReferralRequestsRequestBodyAccountURL)
 		if err := json.Unmarshal(data, &valueCreatePartnerReferralRequestsRequestBodyAccountURL); err == nil {
 			c.typ = "CreatePartnerReferralRequestsRequestBodyAccountURL"
@@ -915,7 +897,7 @@ func (c *CreatePartnerReferralRequestsRequestBody) UnmarshalJSON(data []byte) er
 			return nil
 		}
 	}
-	if internal.MatchesObjectKeys(data, []string{"authorized_user_id", "member_id", "target_user_id"}, []string{"target_user_id"}) {
+	if internal.MatchesObjectKeys(data, []string{"authorized_user_id", "target_user_id"}, []string{"target_user_id"}) {
 		valueCreatePartnerReferralRequestsRequestBodyTargetUserID := new(CreatePartnerReferralRequestsRequestBodyTargetUserID)
 		if err := json.Unmarshal(data, &valueCreatePartnerReferralRequestsRequestBodyTargetUserID); err == nil {
 			c.typ = "CreatePartnerReferralRequestsRequestBodyTargetUserID"
@@ -923,7 +905,7 @@ func (c *CreatePartnerReferralRequestsRequestBody) UnmarshalJSON(data []byte) er
 			return nil
 		}
 	}
-	if internal.MatchesObjectKeys(data, []string{"authorized_user_id", "member_id", "target_username"}, []string{"target_username"}) {
+	if internal.MatchesObjectKeys(data, []string{"authorized_user_id", "target_username"}, []string{"target_username"}) {
 		valueCreatePartnerReferralRequestsRequestBodyTargetUsername := new(CreatePartnerReferralRequestsRequestBodyTargetUsername)
 		if err := json.Unmarshal(data, &valueCreatePartnerReferralRequestsRequestBodyTargetUsername); err == nil {
 			c.typ = "CreatePartnerReferralRequestsRequestBodyTargetUsername"
@@ -931,7 +913,7 @@ func (c *CreatePartnerReferralRequestsRequestBody) UnmarshalJSON(data []byte) er
 			return nil
 		}
 	}
-	if internal.MatchesObjectKeys(data, []string{"authorized_user_id", "member_id", "target_email"}, []string{"target_email"}) {
+	if internal.MatchesObjectKeys(data, []string{"authorized_user_id", "target_email"}, []string{"target_email"}) {
 		valueCreatePartnerReferralRequestsRequestBodyTargetEmail := new(CreatePartnerReferralRequestsRequestBodyTargetEmail)
 		if err := json.Unmarshal(data, &valueCreatePartnerReferralRequestsRequestBodyTargetEmail); err == nil {
 			c.typ = "CreatePartnerReferralRequestsRequestBodyTargetEmail"
@@ -939,7 +921,7 @@ func (c *CreatePartnerReferralRequestsRequestBody) UnmarshalJSON(data []byte) er
 			return nil
 		}
 	}
-	if internal.MatchesObjectKeys(data, []string{"authorized_user_id", "code", "max_redemptions", "member_id", "partner_id", "request_type"}, []string{"request_type"}) {
+	if internal.MatchesObjectKeys(data, []string{"authorized_user_id", "code", "max_redemptions", "partner_id", "request_type"}, []string{"request_type"}) {
 		valueCreatePartnerReferralRequestsRequestBodyCode := new(CreatePartnerReferralRequestsRequestBodyCode)
 		if err := json.Unmarshal(data, &valueCreatePartnerReferralRequestsRequestBodyCode); err == nil {
 			c.typ = "CreatePartnerReferralRequestsRequestBodyCode"
@@ -1090,7 +1072,6 @@ func (c *CreatePartnerReferralRequestsRequestBody) Accept(visitor CreatePartnerR
 var (
 	createPartnerReferralRequestsRequestBodyAccountIDFieldAccountID        = big.NewInt(1 << 0)
 	createPartnerReferralRequestsRequestBodyAccountIDFieldAuthorizedUserID = big.NewInt(1 << 1)
-	createPartnerReferralRequestsRequestBodyAccountIDFieldMemberID         = big.NewInt(1 << 2)
 )
 
 type CreatePartnerReferralRequestsRequestBodyAccountID struct {
@@ -1098,8 +1079,6 @@ type CreatePartnerReferralRequestsRequestBodyAccountID struct {
 	AccountID string `json:"account_id" url:"account_id"`
 	// Your team membership on the business this referral is made for, prefixed `ausr_`. Omit for a personal referral.
 	AuthorizedUserID *string `json:"authorized_user_id,omitempty" url:"authorized_user_id,omitempty"`
-	// Your member record on the business this referral is made for, prefixed `mber_`, when your role there is held on your member record. Send this or `authorized_user_id`, not both.
-	MemberID *string `json:"member_id,omitempty" url:"member_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1120,13 +1099,6 @@ func (c *CreatePartnerReferralRequestsRequestBodyAccountID) GetAuthorizedUserID(
 		return nil
 	}
 	return c.AuthorizedUserID
-}
-
-func (c *CreatePartnerReferralRequestsRequestBodyAccountID) GetMemberID() *string {
-	if c == nil {
-		return nil
-	}
-	return c.MemberID
 }
 
 func (c *CreatePartnerReferralRequestsRequestBodyAccountID) GetExtraProperties() map[string]interface{} {
@@ -1157,13 +1129,6 @@ func (c *CreatePartnerReferralRequestsRequestBodyAccountID) SetAccountID(account
 func (c *CreatePartnerReferralRequestsRequestBodyAccountID) SetAuthorizedUserID(authorizedUserID *string) {
 	c.AuthorizedUserID = authorizedUserID
 	c.require(createPartnerReferralRequestsRequestBodyAccountIDFieldAuthorizedUserID)
-}
-
-// SetMemberID sets the MemberID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePartnerReferralRequestsRequestBodyAccountID) SetMemberID(memberID *string) {
-	c.MemberID = memberID
-	c.require(createPartnerReferralRequestsRequestBodyAccountIDFieldMemberID)
 }
 
 func (c *CreatePartnerReferralRequestsRequestBodyAccountID) UnmarshalJSON(data []byte) error {
@@ -1211,7 +1176,6 @@ func (c *CreatePartnerReferralRequestsRequestBodyAccountID) String() string {
 var (
 	createPartnerReferralRequestsRequestBodyAccountURLFieldAccountURL       = big.NewInt(1 << 0)
 	createPartnerReferralRequestsRequestBodyAccountURLFieldAuthorizedUserID = big.NewInt(1 << 1)
-	createPartnerReferralRequestsRequestBodyAccountURLFieldMemberID         = big.NewInt(1 << 2)
 )
 
 type CreatePartnerReferralRequestsRequestBodyAccountURL struct {
@@ -1219,8 +1183,6 @@ type CreatePartnerReferralRequestsRequestBodyAccountURL struct {
 	AccountURL string `json:"account_url" url:"account_url"`
 	// Your team membership on the business this referral is made for, prefixed `ausr_`. Omit for a personal referral.
 	AuthorizedUserID *string `json:"authorized_user_id,omitempty" url:"authorized_user_id,omitempty"`
-	// Your member record on the business this referral is made for, prefixed `mber_`, when your role there is held on your member record. Send this or `authorized_user_id`, not both.
-	MemberID *string `json:"member_id,omitempty" url:"member_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1241,13 +1203,6 @@ func (c *CreatePartnerReferralRequestsRequestBodyAccountURL) GetAuthorizedUserID
 		return nil
 	}
 	return c.AuthorizedUserID
-}
-
-func (c *CreatePartnerReferralRequestsRequestBodyAccountURL) GetMemberID() *string {
-	if c == nil {
-		return nil
-	}
-	return c.MemberID
 }
 
 func (c *CreatePartnerReferralRequestsRequestBodyAccountURL) GetExtraProperties() map[string]interface{} {
@@ -1278,13 +1233,6 @@ func (c *CreatePartnerReferralRequestsRequestBodyAccountURL) SetAccountURL(accou
 func (c *CreatePartnerReferralRequestsRequestBodyAccountURL) SetAuthorizedUserID(authorizedUserID *string) {
 	c.AuthorizedUserID = authorizedUserID
 	c.require(createPartnerReferralRequestsRequestBodyAccountURLFieldAuthorizedUserID)
-}
-
-// SetMemberID sets the MemberID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePartnerReferralRequestsRequestBodyAccountURL) SetMemberID(memberID *string) {
-	c.MemberID = memberID
-	c.require(createPartnerReferralRequestsRequestBodyAccountURLFieldMemberID)
 }
 
 func (c *CreatePartnerReferralRequestsRequestBodyAccountURL) UnmarshalJSON(data []byte) error {
@@ -1333,9 +1281,8 @@ var (
 	createPartnerReferralRequestsRequestBodyCodeFieldAuthorizedUserID = big.NewInt(1 << 0)
 	createPartnerReferralRequestsRequestBodyCodeFieldCode             = big.NewInt(1 << 1)
 	createPartnerReferralRequestsRequestBodyCodeFieldMaxRedemptions   = big.NewInt(1 << 2)
-	createPartnerReferralRequestsRequestBodyCodeFieldMemberID         = big.NewInt(1 << 3)
-	createPartnerReferralRequestsRequestBodyCodeFieldPartnerID        = big.NewInt(1 << 4)
-	createPartnerReferralRequestsRequestBodyCodeFieldRequestType      = big.NewInt(1 << 5)
+	createPartnerReferralRequestsRequestBodyCodeFieldPartnerID        = big.NewInt(1 << 3)
+	createPartnerReferralRequestsRequestBodyCodeFieldRequestType      = big.NewInt(1 << 4)
 )
 
 // createPartnerReferralRequestsRequestBodyCodeNullableFields maps the wire names of CreatePartnerReferralRequestsRequestBodyCode's nullable fields (required or optional) to their field bits.
@@ -1351,8 +1298,6 @@ type CreatePartnerReferralRequestsRequestBodyCode struct {
 	Code *string `json:"code,omitempty" url:"code,omitempty"`
 	// Maximum permitted redemptions, or null for no configured limit.
 	MaxRedemptions *int `json:"max_redemptions,omitempty" url:"max_redemptions,omitempty"`
-	// The partner's member record on the business this link is made for, prefixed `mber_`, when their role there is held on their member record. Send this or `authorized_user_id`, not both.
-	MemberID *string `json:"member_id,omitempty" url:"member_id,omitempty"`
 	// Optional. Your own partner ID, prefixed `user_`; you cannot create a link for another partner.
 	PartnerID *string `json:"partner_id,omitempty" url:"partner_id,omitempty"`
 	// Create or retrieve a reusable referral link without requesting attribution for an existing business.
@@ -1384,13 +1329,6 @@ func (c *CreatePartnerReferralRequestsRequestBodyCode) GetMaxRedemptions() *int 
 		return nil
 	}
 	return c.MaxRedemptions
-}
-
-func (c *CreatePartnerReferralRequestsRequestBodyCode) GetMemberID() *string {
-	if c == nil {
-		return nil
-	}
-	return c.MemberID
 }
 
 func (c *CreatePartnerReferralRequestsRequestBodyCode) GetPartnerID() *string {
@@ -1442,13 +1380,6 @@ func (c *CreatePartnerReferralRequestsRequestBodyCode) SetCode(code *string) {
 func (c *CreatePartnerReferralRequestsRequestBodyCode) SetMaxRedemptions(maxRedemptions *int) {
 	c.MaxRedemptions = maxRedemptions
 	c.require(createPartnerReferralRequestsRequestBodyCodeFieldMaxRedemptions)
-}
-
-// SetMemberID sets the MemberID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePartnerReferralRequestsRequestBodyCode) SetMemberID(memberID *string) {
-	c.MemberID = memberID
-	c.require(createPartnerReferralRequestsRequestBodyCodeFieldMemberID)
 }
 
 // SetPartnerID sets the PartnerID field and marks it as non-optional;
@@ -1536,15 +1467,12 @@ func (c CreatePartnerReferralRequestsRequestBodyCodeRequestType) Ptr() *CreatePa
 
 var (
 	createPartnerReferralRequestsRequestBodyTargetEmailFieldAuthorizedUserID = big.NewInt(1 << 0)
-	createPartnerReferralRequestsRequestBodyTargetEmailFieldMemberID         = big.NewInt(1 << 1)
-	createPartnerReferralRequestsRequestBodyTargetEmailFieldTargetEmail      = big.NewInt(1 << 2)
+	createPartnerReferralRequestsRequestBodyTargetEmailFieldTargetEmail      = big.NewInt(1 << 1)
 )
 
 type CreatePartnerReferralRequestsRequestBodyTargetEmail struct {
 	// Your team membership on the business this referral is made for, prefixed `ausr_`. Omit for a personal referral.
 	AuthorizedUserID *string `json:"authorized_user_id,omitempty" url:"authorized_user_id,omitempty"`
-	// Your member record on the business this referral is made for, prefixed `mber_`, when your role there is held on your member record. Send this or `authorized_user_id`, not both.
-	MemberID *string `json:"member_id,omitempty" url:"member_id,omitempty"`
 	// Email address on an existing user's account. Matching is case-insensitive. The user does not need to be enrolled in the partner program.
 	TargetEmail string `json:"target_email" url:"target_email"`
 
@@ -1560,13 +1488,6 @@ func (c *CreatePartnerReferralRequestsRequestBodyTargetEmail) GetAuthorizedUserI
 		return nil
 	}
 	return c.AuthorizedUserID
-}
-
-func (c *CreatePartnerReferralRequestsRequestBodyTargetEmail) GetMemberID() *string {
-	if c == nil {
-		return nil
-	}
-	return c.MemberID
 }
 
 func (c *CreatePartnerReferralRequestsRequestBodyTargetEmail) GetTargetEmail() string {
@@ -1597,13 +1518,6 @@ func (c *CreatePartnerReferralRequestsRequestBodyTargetEmail) require(field *big
 func (c *CreatePartnerReferralRequestsRequestBodyTargetEmail) SetAuthorizedUserID(authorizedUserID *string) {
 	c.AuthorizedUserID = authorizedUserID
 	c.require(createPartnerReferralRequestsRequestBodyTargetEmailFieldAuthorizedUserID)
-}
-
-// SetMemberID sets the MemberID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePartnerReferralRequestsRequestBodyTargetEmail) SetMemberID(memberID *string) {
-	c.MemberID = memberID
-	c.require(createPartnerReferralRequestsRequestBodyTargetEmailFieldMemberID)
 }
 
 // SetTargetEmail sets the TargetEmail field and marks it as non-optional;
@@ -1657,15 +1571,12 @@ func (c *CreatePartnerReferralRequestsRequestBodyTargetEmail) String() string {
 
 var (
 	createPartnerReferralRequestsRequestBodyTargetUserIDFieldAuthorizedUserID = big.NewInt(1 << 0)
-	createPartnerReferralRequestsRequestBodyTargetUserIDFieldMemberID         = big.NewInt(1 << 1)
-	createPartnerReferralRequestsRequestBodyTargetUserIDFieldTargetUserID     = big.NewInt(1 << 2)
+	createPartnerReferralRequestsRequestBodyTargetUserIDFieldTargetUserID     = big.NewInt(1 << 1)
 )
 
 type CreatePartnerReferralRequestsRequestBodyTargetUserID struct {
 	// Your team membership on the business this referral is made for, prefixed `ausr_`. Omit for a personal referral.
 	AuthorizedUserID *string `json:"authorized_user_id,omitempty" url:"authorized_user_id,omitempty"`
-	// Your member record on the business this referral is made for, prefixed `mber_`, when your role there is held on your member record. Send this or `authorized_user_id`, not both.
-	MemberID *string `json:"member_id,omitempty" url:"member_id,omitempty"`
 	// User to request attribution for, prefixed `user_`.
 	TargetUserID string `json:"target_user_id" url:"target_user_id"`
 
@@ -1681,13 +1592,6 @@ func (c *CreatePartnerReferralRequestsRequestBodyTargetUserID) GetAuthorizedUser
 		return nil
 	}
 	return c.AuthorizedUserID
-}
-
-func (c *CreatePartnerReferralRequestsRequestBodyTargetUserID) GetMemberID() *string {
-	if c == nil {
-		return nil
-	}
-	return c.MemberID
 }
 
 func (c *CreatePartnerReferralRequestsRequestBodyTargetUserID) GetTargetUserID() string {
@@ -1718,13 +1622,6 @@ func (c *CreatePartnerReferralRequestsRequestBodyTargetUserID) require(field *bi
 func (c *CreatePartnerReferralRequestsRequestBodyTargetUserID) SetAuthorizedUserID(authorizedUserID *string) {
 	c.AuthorizedUserID = authorizedUserID
 	c.require(createPartnerReferralRequestsRequestBodyTargetUserIDFieldAuthorizedUserID)
-}
-
-// SetMemberID sets the MemberID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePartnerReferralRequestsRequestBodyTargetUserID) SetMemberID(memberID *string) {
-	c.MemberID = memberID
-	c.require(createPartnerReferralRequestsRequestBodyTargetUserIDFieldMemberID)
 }
 
 // SetTargetUserID sets the TargetUserID field and marks it as non-optional;
@@ -1778,15 +1675,12 @@ func (c *CreatePartnerReferralRequestsRequestBodyTargetUserID) String() string {
 
 var (
 	createPartnerReferralRequestsRequestBodyTargetUsernameFieldAuthorizedUserID = big.NewInt(1 << 0)
-	createPartnerReferralRequestsRequestBodyTargetUsernameFieldMemberID         = big.NewInt(1 << 1)
-	createPartnerReferralRequestsRequestBodyTargetUsernameFieldTargetUsername   = big.NewInt(1 << 2)
+	createPartnerReferralRequestsRequestBodyTargetUsernameFieldTargetUsername   = big.NewInt(1 << 1)
 )
 
 type CreatePartnerReferralRequestsRequestBodyTargetUsername struct {
 	// Your team membership on the business this referral is made for, prefixed `ausr_`. Omit for a personal referral.
 	AuthorizedUserID *string `json:"authorized_user_id,omitempty" url:"authorized_user_id,omitempty"`
-	// Your member record on the business this referral is made for, prefixed `mber_`, when your role there is held on your member record. Send this or `authorized_user_id`, not both.
-	MemberID *string `json:"member_id,omitempty" url:"member_id,omitempty"`
 	// Username of the user to request attribution for, with or without a leading @.
 	TargetUsername string `json:"target_username" url:"target_username"`
 
@@ -1802,13 +1696,6 @@ func (c *CreatePartnerReferralRequestsRequestBodyTargetUsername) GetAuthorizedUs
 		return nil
 	}
 	return c.AuthorizedUserID
-}
-
-func (c *CreatePartnerReferralRequestsRequestBodyTargetUsername) GetMemberID() *string {
-	if c == nil {
-		return nil
-	}
-	return c.MemberID
 }
 
 func (c *CreatePartnerReferralRequestsRequestBodyTargetUsername) GetTargetUsername() string {
@@ -1839,13 +1726,6 @@ func (c *CreatePartnerReferralRequestsRequestBodyTargetUsername) require(field *
 func (c *CreatePartnerReferralRequestsRequestBodyTargetUsername) SetAuthorizedUserID(authorizedUserID *string) {
 	c.AuthorizedUserID = authorizedUserID
 	c.require(createPartnerReferralRequestsRequestBodyTargetUsernameFieldAuthorizedUserID)
-}
-
-// SetMemberID sets the MemberID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePartnerReferralRequestsRequestBodyTargetUsername) SetMemberID(memberID *string) {
-	c.MemberID = memberID
-	c.require(createPartnerReferralRequestsRequestBodyTargetUsernameFieldMemberID)
 }
 
 // SetTargetUsername sets the TargetUsername field and marks it as non-optional;
