@@ -3074,6 +3074,14 @@ func TestSettersPlatformTrendsReportsResponseDataReportsItemRowsItem(t *testing.
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetProducts", func(t *testing.T) {
+		obj := &PlatformTrendsReportsResponseDataReportsItemRowsItem{}
+		var fernTestValueProducts *int
+		obj.SetProducts(fernTestValueProducts)
+		assert.Equal(t, fernTestValueProducts, obj.Products)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetRepeatRate", func(t *testing.T) {
 		obj := &PlatformTrendsReportsResponseDataReportsItemRowsItem{}
 		var fernTestValueRepeatRate *float64
@@ -3580,6 +3588,39 @@ func TestGettersPlatformTrendsReportsResponseDataReportsItemRowsItem(t *testing.
 		_ = obj.GetProductCategory() // Should return zero value
 	})
 
+	t.Run("GetProducts", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PlatformTrendsReportsResponseDataReportsItemRowsItem{}
+		var expected *int
+		obj.Products = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetProducts(), "getter should return the property value")
+	})
+
+	t.Run("GetProducts_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PlatformTrendsReportsResponseDataReportsItemRowsItem{}
+		obj.Products = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetProducts(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetProducts_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PlatformTrendsReportsResponseDataReportsItemRowsItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetProducts() // Should return zero value
+	})
+
 	t.Run("GetRepeatRate", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -4058,6 +4099,37 @@ func TestSettersMarkExplicitPlatformTrendsReportsResponseDataReportsItemRowsItem
 
 		// Act
 		obj.SetProductCategory(fernTestValueProductCategory)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetProducts_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PlatformTrendsReportsResponseDataReportsItemRowsItem{}
+		var fernTestValueProducts *int
+
+		// Act
+		obj.SetProducts(fernTestValueProducts)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -6242,6 +6314,7 @@ func TestOptionalNullableRoundTripPlatformTrendsReportsResponseDataReportsItemRo
 		"new_businesses",
 		"payments",
 		"product_category",
+		"products",
 		"repeat_rate",
 	}
 	marshalToMap := func(t *testing.T, obj *PlatformTrendsReportsResponseDataReportsItemRowsItem) map[string]json.RawMessage {
@@ -6255,7 +6328,7 @@ func TestOptionalNullableRoundTripPlatformTrendsReportsResponseDataReportsItemRo
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj PlatformTrendsReportsResponseDataReportsItemRowsItem
-		require.NoError(t, json.Unmarshal([]byte(`{"account_country":null,"aov":null,"avg_business_age":null,"avg_customer_age":null,"avg_owner_age":null,"business_type":null,"businesses":null,"customer_country":null,"customers":null,"gross_revenue":null,"industry_type":null,"median_gross_revenue":null,"new_businesses":null,"payments":null,"product_category":null,"repeat_rate":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account_country":null,"aov":null,"avg_business_age":null,"avg_customer_age":null,"avg_owner_age":null,"business_type":null,"businesses":null,"customer_country":null,"customers":null,"gross_revenue":null,"industry_type":null,"median_gross_revenue":null,"new_businesses":null,"payments":null,"product_category":null,"products":null,"repeat_rate":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range optionalNullableKeys {
 			value, ok := result[key]
@@ -6788,6 +6861,13 @@ func TestEnumPlatformTrendsReportsRequestOrder(t *testing.T) {
 		val, err := NewPlatformTrendsReportsRequestOrderFromString("businesses")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, PlatformTrendsReportsRequestOrder("businesses"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_products", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPlatformTrendsReportsRequestOrderFromString("products")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PlatformTrendsReportsRequestOrder("products"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_payments", func(t *testing.T) {

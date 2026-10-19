@@ -911,6 +911,7 @@ type PlatformTrendsReportsRequestOrder string
 const (
 	PlatformTrendsReportsRequestOrderGrossRevenue       PlatformTrendsReportsRequestOrder = "gross_revenue"
 	PlatformTrendsReportsRequestOrderBusinesses         PlatformTrendsReportsRequestOrder = "businesses"
+	PlatformTrendsReportsRequestOrderProducts           PlatformTrendsReportsRequestOrder = "products"
 	PlatformTrendsReportsRequestOrderPayments           PlatformTrendsReportsRequestOrder = "payments"
 	PlatformTrendsReportsRequestOrderCustomers          PlatformTrendsReportsRequestOrder = "customers"
 	PlatformTrendsReportsRequestOrderAov                PlatformTrendsReportsRequestOrder = "aov"
@@ -928,6 +929,8 @@ func NewPlatformTrendsReportsRequestOrderFromString(s string) (PlatformTrendsRep
 		return PlatformTrendsReportsRequestOrderGrossRevenue, nil
 	case "businesses":
 		return PlatformTrendsReportsRequestOrderBusinesses, nil
+	case "products":
+		return PlatformTrendsReportsRequestOrderProducts, nil
 	case "payments":
 		return PlatformTrendsReportsRequestOrderPayments, nil
 	case "customers":
@@ -1608,7 +1611,8 @@ var (
 	platformTrendsReportsResponseDataReportsItemRowsItemFieldNewBusinesses      = big.NewInt(1 << 12)
 	platformTrendsReportsResponseDataReportsItemRowsItemFieldPayments           = big.NewInt(1 << 13)
 	platformTrendsReportsResponseDataReportsItemRowsItemFieldProductCategory    = big.NewInt(1 << 14)
-	platformTrendsReportsResponseDataReportsItemRowsItemFieldRepeatRate         = big.NewInt(1 << 15)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldProducts           = big.NewInt(1 << 15)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldRepeatRate         = big.NewInt(1 << 16)
 )
 
 // platformTrendsReportsResponseDataReportsItemRowsItemNullableFields maps the wire names of PlatformTrendsReportsResponseDataReportsItemRowsItem's nullable fields (required or optional) to their field bits.
@@ -1628,6 +1632,7 @@ var platformTrendsReportsResponseDataReportsItemRowsItemNullableFields = map[str
 	"new_businesses":       platformTrendsReportsResponseDataReportsItemRowsItemFieldNewBusinesses,
 	"payments":             platformTrendsReportsResponseDataReportsItemRowsItemFieldPayments,
 	"product_category":     platformTrendsReportsResponseDataReportsItemRowsItemFieldProductCategory,
+	"products":             platformTrendsReportsResponseDataReportsItemRowsItemFieldProducts,
 	"repeat_rate":          platformTrendsReportsResponseDataReportsItemRowsItemFieldRepeatRate,
 }
 
@@ -1657,6 +1662,8 @@ type PlatformTrendsReportsResponseDataReportsItemRowsItem struct {
 	// Paid payments.
 	Payments        *int                                                                 `json:"payments,omitempty" url:"payments,omitempty"`
 	ProductCategory *PlatformTrendsReportsResponseDataReportsItemRowsItemProductCategory `json:"product_category,omitempty" url:"product_category,omitempty"`
+	// Products with a paid payment.
+	Products *int `json:"products,omitempty" url:"products,omitempty"`
 	// Share of customers who paid more than once, as a fraction.
 	RepeatRate *float64 `json:"repeat_rate,omitempty" url:"repeat_rate,omitempty"`
 
@@ -1770,6 +1777,13 @@ func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) GetProductCategor
 		return nil
 	}
 	return p.ProductCategory
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) GetProducts() *int {
+	if p == nil {
+		return nil
+	}
+	return p.Products
 }
 
 func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) GetRepeatRate() *float64 {
@@ -1898,6 +1912,13 @@ func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) SetPayments(payme
 func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) SetProductCategory(productCategory *PlatformTrendsReportsResponseDataReportsItemRowsItemProductCategory) {
 	p.ProductCategory = productCategory
 	p.require(platformTrendsReportsResponseDataReportsItemRowsItemFieldProductCategory)
+}
+
+// SetProducts sets the Products field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) SetProducts(products *int) {
+	p.Products = products
+	p.require(platformTrendsReportsResponseDataReportsItemRowsItemFieldProducts)
 }
 
 // SetRepeatRate sets the RepeatRate field and marks it as non-optional;
