@@ -2826,6 +2826,20 @@ func TestEnumRetrieveFinancialReportsRequestLineTypesItem(t *testing.T) {
 		assert.Equal(t, RetrieveFinancialReportsRequestLineTypesItem("onchain_internal_transfer_outgoing"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_onchain_platform_transfer_incoming", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsRequestLineTypesItemFromString("onchain_platform_transfer_incoming")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsRequestLineTypesItem("onchain_platform_transfer_incoming"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_onchain_platform_transfer_outgoing", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsRequestLineTypesItemFromString("onchain_platform_transfer_outgoing")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsRequestLineTypesItem("onchain_platform_transfer_outgoing"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_onchain_swap_source", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewRetrieveFinancialReportsRequestLineTypesItemFromString("onchain_swap_source")
@@ -4544,6 +4558,20 @@ func TestEnumRetrieveFinancialReportsResponseRowsItemLineCategory(t *testing.T) 
 		val, err := NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString("onchain_internal_transfer_outgoing")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemLineCategory("onchain_internal_transfer_outgoing"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_onchain_platform_transfer_incoming", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString("onchain_platform_transfer_incoming")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemLineCategory("onchain_platform_transfer_incoming"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_onchain_platform_transfer_outgoing", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString("onchain_platform_transfer_outgoing")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemLineCategory("onchain_platform_transfer_outgoing"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_onchain_swap_offset", func(t *testing.T) {

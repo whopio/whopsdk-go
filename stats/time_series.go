@@ -153,7 +153,7 @@ type RetrieveTimeSeriesRequest struct {
 	AdGroupIDs []*string `json:"-" url:"ad_group_ids,omitempty"`
 	// Ad ids (ad_...) to scope the report to; stats are summed across them. Available on metrics that list ad_ids.
 	AdIDs []*string `json:"-" url:"ad_ids,omitempty"`
-	// Window used by a snapshot metric. Ordinary snapshots accept 30d as their trailing activity window. Cohorted dispute metrics accept 7d or 28d as the sales-transaction pool; their attribution window is fixed in the metric name. Each metric lists its accepted values in the catalog.
+	// Window used by a snapshot metric. Ordinary snapshots accept 30d as their trailing activity window. Cohorted dispute metrics accept 7d or 28d as the sales-transaction pool; their attribution window is fixed in the metric name. Card network program metrics accept 7d, 14d, 28d, or 56d. Each metric lists its accepted values in the catalog.
 	SnapshotWindow *RetrieveTimeSeriesRequestSnapshotWindow `json:"-" url:"snapshot_window,omitempty"`
 	// Filter the events metric to one or more full event names, for example payment.completed or pixel.lead. Comma-separated names match any listed event. Use group_by=event for separate groups. Available on metrics that list event.
 	Event *string `json:"-" url:"event,omitempty"`
@@ -1120,18 +1120,24 @@ type RetrieveTimeSeriesRequestSnapshotWindow string
 
 const (
 	RetrieveTimeSeriesRequestSnapshotWindowSevenD       RetrieveTimeSeriesRequestSnapshotWindow = "7d"
+	RetrieveTimeSeriesRequestSnapshotWindowFourteenD    RetrieveTimeSeriesRequestSnapshotWindow = "14d"
 	RetrieveTimeSeriesRequestSnapshotWindowTwentyEightD RetrieveTimeSeriesRequestSnapshotWindow = "28d"
 	RetrieveTimeSeriesRequestSnapshotWindowThirtyD      RetrieveTimeSeriesRequestSnapshotWindow = "30d"
+	RetrieveTimeSeriesRequestSnapshotWindowFiftySixD    RetrieveTimeSeriesRequestSnapshotWindow = "56d"
 )
 
 func NewRetrieveTimeSeriesRequestSnapshotWindowFromString(s string) (RetrieveTimeSeriesRequestSnapshotWindow, error) {
 	switch s {
 	case "7d":
 		return RetrieveTimeSeriesRequestSnapshotWindowSevenD, nil
+	case "14d":
+		return RetrieveTimeSeriesRequestSnapshotWindowFourteenD, nil
 	case "28d":
 		return RetrieveTimeSeriesRequestSnapshotWindowTwentyEightD, nil
 	case "30d":
 		return RetrieveTimeSeriesRequestSnapshotWindowThirtyD, nil
+	case "56d":
+		return RetrieveTimeSeriesRequestSnapshotWindowFiftySixD, nil
 	}
 	var t RetrieveTimeSeriesRequestSnapshotWindow
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

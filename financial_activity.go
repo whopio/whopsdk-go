@@ -1302,6 +1302,8 @@ const (
 	LedgerActivityLineTypeTradingAccountDepositOffset               LedgerActivityLineType = "trading_account_deposit_offset"
 	LedgerActivityLineTypeOnchainWalletTransferOutgoing             LedgerActivityLineType = "onchain_wallet_transfer_outgoing"
 	LedgerActivityLineTypeOnchainWalletTransferIncoming             LedgerActivityLineType = "onchain_wallet_transfer_incoming"
+	LedgerActivityLineTypeOnchainPlatformTransferOutgoing           LedgerActivityLineType = "onchain_platform_transfer_outgoing"
+	LedgerActivityLineTypeOnchainPlatformTransferIncoming           LedgerActivityLineType = "onchain_platform_transfer_incoming"
 	LedgerActivityLineTypeOnchainInternalTransferOutgoing           LedgerActivityLineType = "onchain_internal_transfer_outgoing"
 	LedgerActivityLineTypeOnchainInternalTransferIncoming           LedgerActivityLineType = "onchain_internal_transfer_incoming"
 	LedgerActivityLineTypeOnchainSwapSource                         LedgerActivityLineType = "onchain_swap_source"
@@ -1692,6 +1694,10 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypeOnchainWalletTransferOutgoing, nil
 	case "onchain_wallet_transfer_incoming":
 		return LedgerActivityLineTypeOnchainWalletTransferIncoming, nil
+	case "onchain_platform_transfer_outgoing":
+		return LedgerActivityLineTypeOnchainPlatformTransferOutgoing, nil
+	case "onchain_platform_transfer_incoming":
+		return LedgerActivityLineTypeOnchainPlatformTransferIncoming, nil
 	case "onchain_internal_transfer_outgoing":
 		return LedgerActivityLineTypeOnchainInternalTransferOutgoing, nil
 	case "onchain_internal_transfer_incoming":
@@ -6286,6 +6292,8 @@ const (
 	ListFinancialActivityRequestLineTypesItemOnchainDeposit                            ListFinancialActivityRequestLineTypesItem = "onchain_deposit"
 	ListFinancialActivityRequestLineTypesItemOnchainInternalTransferIncoming           ListFinancialActivityRequestLineTypesItem = "onchain_internal_transfer_incoming"
 	ListFinancialActivityRequestLineTypesItemOnchainInternalTransferOutgoing           ListFinancialActivityRequestLineTypesItem = "onchain_internal_transfer_outgoing"
+	ListFinancialActivityRequestLineTypesItemOnchainPlatformTransferIncoming           ListFinancialActivityRequestLineTypesItem = "onchain_platform_transfer_incoming"
+	ListFinancialActivityRequestLineTypesItemOnchainPlatformTransferOutgoing           ListFinancialActivityRequestLineTypesItem = "onchain_platform_transfer_outgoing"
 	ListFinancialActivityRequestLineTypesItemOnchainSwapSource                         ListFinancialActivityRequestLineTypesItem = "onchain_swap_source"
 	ListFinancialActivityRequestLineTypesItemOnchainSwapTarget                         ListFinancialActivityRequestLineTypesItem = "onchain_swap_target"
 	ListFinancialActivityRequestLineTypesItemOnchainWalletTransferIncoming             ListFinancialActivityRequestLineTypesItem = "onchain_wallet_transfer_incoming"
@@ -6504,6 +6512,10 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemOnchainInternalTransferIncoming, nil
 	case "onchain_internal_transfer_outgoing":
 		return ListFinancialActivityRequestLineTypesItemOnchainInternalTransferOutgoing, nil
+	case "onchain_platform_transfer_incoming":
+		return ListFinancialActivityRequestLineTypesItemOnchainPlatformTransferIncoming, nil
+	case "onchain_platform_transfer_outgoing":
+		return ListFinancialActivityRequestLineTypesItemOnchainPlatformTransferOutgoing, nil
 	case "onchain_swap_source":
 		return ListFinancialActivityRequestLineTypesItemOnchainSwapSource, nil
 	case "onchain_swap_target":

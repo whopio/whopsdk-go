@@ -293,6 +293,8 @@ const (
 	RetrieveFinancialReportsRequestLineTypesItemOnchainDeposit                            RetrieveFinancialReportsRequestLineTypesItem = "onchain_deposit"
 	RetrieveFinancialReportsRequestLineTypesItemOnchainInternalTransferIncoming           RetrieveFinancialReportsRequestLineTypesItem = "onchain_internal_transfer_incoming"
 	RetrieveFinancialReportsRequestLineTypesItemOnchainInternalTransferOutgoing           RetrieveFinancialReportsRequestLineTypesItem = "onchain_internal_transfer_outgoing"
+	RetrieveFinancialReportsRequestLineTypesItemOnchainPlatformTransferIncoming           RetrieveFinancialReportsRequestLineTypesItem = "onchain_platform_transfer_incoming"
+	RetrieveFinancialReportsRequestLineTypesItemOnchainPlatformTransferOutgoing           RetrieveFinancialReportsRequestLineTypesItem = "onchain_platform_transfer_outgoing"
 	RetrieveFinancialReportsRequestLineTypesItemOnchainSwapSource                         RetrieveFinancialReportsRequestLineTypesItem = "onchain_swap_source"
 	RetrieveFinancialReportsRequestLineTypesItemOnchainSwapTarget                         RetrieveFinancialReportsRequestLineTypesItem = "onchain_swap_target"
 	RetrieveFinancialReportsRequestLineTypesItemOnchainWalletTransferIncoming             RetrieveFinancialReportsRequestLineTypesItem = "onchain_wallet_transfer_incoming"
@@ -511,6 +513,10 @@ func NewRetrieveFinancialReportsRequestLineTypesItemFromString(s string) (Retrie
 		return RetrieveFinancialReportsRequestLineTypesItemOnchainInternalTransferIncoming, nil
 	case "onchain_internal_transfer_outgoing":
 		return RetrieveFinancialReportsRequestLineTypesItemOnchainInternalTransferOutgoing, nil
+	case "onchain_platform_transfer_incoming":
+		return RetrieveFinancialReportsRequestLineTypesItemOnchainPlatformTransferIncoming, nil
+	case "onchain_platform_transfer_outgoing":
+		return RetrieveFinancialReportsRequestLineTypesItemOnchainPlatformTransferOutgoing, nil
 	case "onchain_swap_source":
 		return RetrieveFinancialReportsRequestLineTypesItemOnchainSwapSource, nil
 	case "onchain_swap_target":
@@ -1562,6 +1568,8 @@ const (
 	RetrieveFinancialReportsResponseRowsItemLineCategoryOnchainDepositOffset                      RetrieveFinancialReportsResponseRowsItemLineCategory = "onchain_deposit_offset"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryOnchainInternalTransferIncoming           RetrieveFinancialReportsResponseRowsItemLineCategory = "onchain_internal_transfer_incoming"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryOnchainInternalTransferOutgoing           RetrieveFinancialReportsResponseRowsItemLineCategory = "onchain_internal_transfer_outgoing"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryOnchainPlatformTransferIncoming           RetrieveFinancialReportsResponseRowsItemLineCategory = "onchain_platform_transfer_incoming"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryOnchainPlatformTransferOutgoing           RetrieveFinancialReportsResponseRowsItemLineCategory = "onchain_platform_transfer_outgoing"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryOnchainSwapOffset                         RetrieveFinancialReportsResponseRowsItemLineCategory = "onchain_swap_offset"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryOnchainSwapSource                         RetrieveFinancialReportsResponseRowsItemLineCategory = "onchain_swap_source"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryOnchainSwapTarget                         RetrieveFinancialReportsResponseRowsItemLineCategory = "onchain_swap_target"
@@ -1995,6 +2003,10 @@ func NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString(s string)
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryOnchainInternalTransferIncoming, nil
 	case "onchain_internal_transfer_outgoing":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryOnchainInternalTransferOutgoing, nil
+	case "onchain_platform_transfer_incoming":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryOnchainPlatformTransferIncoming, nil
+	case "onchain_platform_transfer_outgoing":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryOnchainPlatformTransferOutgoing, nil
 	case "onchain_swap_offset":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryOnchainSwapOffset, nil
 	case "onchain_swap_source":
