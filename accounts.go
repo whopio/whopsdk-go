@@ -709,7 +709,8 @@ var (
 	transferOwnershipAccountsRequestFieldAsPartner        = big.NewInt(1 << 1)
 	transferOwnershipAccountsRequestFieldAuthorizedUserID = big.NewInt(1 << 2)
 	transferOwnershipAccountsRequestFieldIdentifier       = big.NewInt(1 << 3)
-	transferOwnershipAccountsRequestFieldMessage          = big.NewInt(1 << 4)
+	transferOwnershipAccountsRequestFieldMemberID         = big.NewInt(1 << 4)
+	transferOwnershipAccountsRequestFieldMessage          = big.NewInt(1 << 5)
 )
 
 type TransferOwnershipAccountsRequest struct {
@@ -721,6 +722,8 @@ type TransferOwnershipAccountsRequest struct {
 	AuthorizedUserID *string `json:"authorized_user_id,omitempty" url:"-"`
 	// The user to transfer ownership to: a user ID (`user_*`) or an email address. An email address with no Whop account yet is sent an invite to create one.
 	Identifier string `json:"identifier" url:"-"`
+	// Your member record on the business this referral is made for, prefixed `mber_`, when your role there is held on your member record. Send this or `authorized_user_id`, not both. Requires `as_partner`.
+	MemberID *string `json:"member_id,omitempty" url:"-"`
 	// A note from the partner, shown as a quote in the invite email and signed with their name. Requires `as_partner`; sending it on an ordinary transfer is a 400. Omit it and the email sends without a note.
 	Message *string `json:"message,omitempty" url:"-"`
 
@@ -763,6 +766,13 @@ func (t *TransferOwnershipAccountsRequest) SetAuthorizedUserID(authorizedUserID 
 func (t *TransferOwnershipAccountsRequest) SetIdentifier(identifier string) {
 	t.Identifier = identifier
 	t.require(transferOwnershipAccountsRequestFieldIdentifier)
+}
+
+// SetMemberID sets the MemberID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TransferOwnershipAccountsRequest) SetMemberID(memberID *string) {
+	t.MemberID = memberID
+	t.require(transferOwnershipAccountsRequestFieldMemberID)
 }
 
 // SetMessage sets the Message field and marks it as non-optional;
