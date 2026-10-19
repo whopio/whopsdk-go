@@ -357,11 +357,11 @@ type TeamMember struct {
 	DirectReportsCount *int `json:"direct_reports_count,omitempty" url:"direct_reports_count,omitempty"`
 	// The member's email address. For accepted members, `null` unless the caller holds the `company:authorized_user:email:read` scope; for invites, the invited address.
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
-	// Team member ID — `ausr_` for accepted members, `mber_` for members whose role is held on their member record, `ausri_` for pending invites.
+	// Team member ID — `ausr_` for accepted members, `ausri_` for pending invites.
 	ID string `json:"id" url:"id"`
 	// Whether this member is an agent (app-controlled account) rather than a human team member. Always `false` for invites.
 	IsAgent bool `json:"is_agent" url:"is_agent"`
-	// The team member this member reports to, prefixed `ausr_`, or `mber_` when that manager's role is held on their member record. `null` when the member reports to the business directly, and for invites.
+	// The team member this member reports to, prefixed `ausr_`. `null` when the member reports to the business directly, and for invites.
 	ReportsToID *string `json:"reports_to_id,omitempty" url:"reports_to_id,omitempty"`
 	// The member's role on the account. `custom` means a bespoke dashboard-managed role; the API can read but not grant it.
 	Role TeamMemberRole `json:"role" url:"role"`
