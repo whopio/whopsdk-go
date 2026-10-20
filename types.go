@@ -20943,6 +20943,973 @@ func (f FinancingApplicationStatus) Ptr() *FinancingApplicationStatus {
 }
 
 var (
+	financingProviderFieldAction             = big.NewInt(1 << 0)
+	financingProviderFieldCurrencies         = big.NewInt(1 << 1)
+	financingProviderFieldDetails            = big.NewInt(1 << 2)
+	financingProviderFieldProvider           = big.NewInt(1 << 3)
+	financingProviderFieldProviderReviewedAt = big.NewInt(1 << 4)
+	financingProviderFieldReason             = big.NewInt(1 << 5)
+	financingProviderFieldStatus             = big.NewInt(1 << 6)
+)
+
+// financingProviderNullableFields maps the wire names of FinancingProvider's nullable fields (required or optional) to their field bits.
+var financingProviderNullableFields = map[string]*big.Int{
+	"action":               financingProviderFieldAction,
+	"details":              financingProviderFieldDetails,
+	"provider_reviewed_at": financingProviderFieldProviderReviewedAt,
+	"reason":               financingProviderFieldReason,
+}
+
+type FinancingProvider struct {
+	// The merchant action that turns this provider on when `status` is `needs_action`; `null` otherwise.
+	Action     *FinancingProviderAction     `json:"action,omitempty" url:"action,omitempty"`
+	Currencies []*FinancingProviderCurrency `json:"currencies" url:"currencies"`
+	// The dispute rates behind a `dispute_rate_near_limit` or `dispute_rate_exceeded` reason; `null` for every other reason.
+	Details *FinancingProviderDetails `json:"details,omitempty" url:"details,omitempty"`
+	// The financing provider.
+	Provider FinancingProviderProvider `json:"provider" url:"provider"`
+	// When the provider received or decided on this account, as an ISO 8601 timestamp. Set only for providers that review merchants themselves (Splitit); `null` otherwise.
+	ProviderReviewedAt *string `json:"provider_reviewed_at,omitempty" url:"provider_reviewed_at,omitempty"`
+	// Why the provider has this status, when known. On `active` it is `dispute_rate_near_limit` when the provider is close to being turned off. On `inactive` it names what keeps it off, including `not_included` when the account's approval doesn't cover it, `turned_off` when it was switched off after setup, `setup_failed`, and `declined` when the provider turned the account down without a reason Whop recognizes. More reasons may be added.
+	Reason *FinancingProviderReason `json:"reason,omitempty" url:"reason,omitempty"`
+	// Where the provider stands for this account: `eligible` (included if the account applies), `needs_action` (waiting on the merchant, see `action`), `in_review` (waiting on Whop's review, or on the provider's own when `reason` is `provider_review`), `active` (offered at checkout), or `inactive` (not offered, see `reason`).
+	Status FinancingProviderStatus `json:"status" url:"status"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *FinancingProvider) GetAction() *FinancingProviderAction {
+	if f == nil {
+		return nil
+	}
+	return f.Action
+}
+
+func (f *FinancingProvider) GetCurrencies() []*FinancingProviderCurrency {
+	if f == nil {
+		return nil
+	}
+	return f.Currencies
+}
+
+func (f *FinancingProvider) GetDetails() *FinancingProviderDetails {
+	if f == nil {
+		return nil
+	}
+	return f.Details
+}
+
+func (f *FinancingProvider) GetProvider() FinancingProviderProvider {
+	if f == nil {
+		return ""
+	}
+	return f.Provider
+}
+
+func (f *FinancingProvider) GetProviderReviewedAt() *string {
+	if f == nil {
+		return nil
+	}
+	return f.ProviderReviewedAt
+}
+
+func (f *FinancingProvider) GetReason() *FinancingProviderReason {
+	if f == nil {
+		return nil
+	}
+	return f.Reason
+}
+
+func (f *FinancingProvider) GetStatus() FinancingProviderStatus {
+	if f == nil {
+		return ""
+	}
+	return f.Status
+}
+
+func (f *FinancingProvider) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *FinancingProvider) require(field *big.Int) {
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
+	}
+	next.Or(next, field)
+	f.explicitFields = next
+}
+
+// SetAction sets the Action field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingProvider) SetAction(action *FinancingProviderAction) {
+	f.Action = action
+	f.require(financingProviderFieldAction)
+}
+
+// SetCurrencies sets the Currencies field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingProvider) SetCurrencies(currencies []*FinancingProviderCurrency) {
+	f.Currencies = currencies
+	f.require(financingProviderFieldCurrencies)
+}
+
+// SetDetails sets the Details field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingProvider) SetDetails(details *FinancingProviderDetails) {
+	f.Details = details
+	f.require(financingProviderFieldDetails)
+}
+
+// SetProvider sets the Provider field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingProvider) SetProvider(provider FinancingProviderProvider) {
+	f.Provider = provider
+	f.require(financingProviderFieldProvider)
+}
+
+// SetProviderReviewedAt sets the ProviderReviewedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingProvider) SetProviderReviewedAt(providerReviewedAt *string) {
+	f.ProviderReviewedAt = providerReviewedAt
+	f.require(financingProviderFieldProviderReviewedAt)
+}
+
+// SetReason sets the Reason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingProvider) SetReason(reason *FinancingProviderReason) {
+	f.Reason = reason
+	f.require(financingProviderFieldReason)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingProvider) SetStatus(status FinancingProviderStatus) {
+	f.Status = status
+	f.require(financingProviderFieldStatus)
+}
+
+func (f *FinancingProvider) UnmarshalJSON(data []byte) error {
+	type unmarshaler FinancingProvider
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FinancingProvider(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, financingProviderNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		f.require(presentFields)
+	}
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FinancingProvider) MarshalJSON() ([]byte, error) {
+	type embed FinancingProvider
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *FinancingProvider) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+// The merchant action that turns this provider on when `status` is `needs_action`; `null` otherwise.
+type FinancingProviderAction string
+
+const (
+	FinancingProviderActionVerifyBusiness   FinancingProviderAction = "verify_business"
+	FinancingProviderActionAddPayoutAccount FinancingProviderAction = "add_payout_account"
+)
+
+func NewFinancingProviderActionFromString(s string) (FinancingProviderAction, error) {
+	switch s {
+	case "verify_business":
+		return FinancingProviderActionVerifyBusiness, nil
+	case "add_payout_account":
+		return FinancingProviderActionAddPayoutAccount, nil
+	}
+	var t FinancingProviderAction
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FinancingProviderAction) Ptr() *FinancingProviderAction {
+	return &f
+}
+
+var (
+	financingProviderCurrencyFieldCurrency  = big.NewInt(1 << 0)
+	financingProviderCurrencyFieldMaxAmount = big.NewInt(1 << 1)
+)
+
+// financingProviderCurrencyNullableFields maps the wire names of FinancingProviderCurrency's nullable fields (required or optional) to their field bits.
+var financingProviderCurrencyNullableFields = map[string]*big.Int{
+	"max_amount": financingProviderCurrencyFieldMaxAmount,
+}
+
+type FinancingProviderCurrency struct {
+	// A currency checkout charges this provider in, lowercase ISO 4217.
+	Currency FinancingProviderCurrencyCurrency `json:"currency" url:"currency"`
+	// The largest payment checkout offers this provider for in this currency. Null when checkout sets no maximum, or when the provider sets each merchant's limit itself (Splitit).
+	MaxAmount *Money `json:"max_amount,omitempty" url:"max_amount,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *FinancingProviderCurrency) GetCurrency() FinancingProviderCurrencyCurrency {
+	if f == nil {
+		return ""
+	}
+	return f.Currency
+}
+
+func (f *FinancingProviderCurrency) GetMaxAmount() *Money {
+	if f == nil {
+		return nil
+	}
+	return f.MaxAmount
+}
+
+func (f *FinancingProviderCurrency) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *FinancingProviderCurrency) require(field *big.Int) {
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
+	}
+	next.Or(next, field)
+	f.explicitFields = next
+}
+
+// SetCurrency sets the Currency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingProviderCurrency) SetCurrency(currency FinancingProviderCurrencyCurrency) {
+	f.Currency = currency
+	f.require(financingProviderCurrencyFieldCurrency)
+}
+
+// SetMaxAmount sets the MaxAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingProviderCurrency) SetMaxAmount(maxAmount *Money) {
+	f.MaxAmount = maxAmount
+	f.require(financingProviderCurrencyFieldMaxAmount)
+}
+
+func (f *FinancingProviderCurrency) UnmarshalJSON(data []byte) error {
+	type unmarshaler FinancingProviderCurrency
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FinancingProviderCurrency(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, financingProviderCurrencyNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		f.require(presentFields)
+	}
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FinancingProviderCurrency) MarshalJSON() ([]byte, error) {
+	type embed FinancingProviderCurrency
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *FinancingProviderCurrency) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+// A currency checkout charges this provider in, lowercase ISO 4217.
+type FinancingProviderCurrencyCurrency string
+
+const (
+	FinancingProviderCurrencyCurrencyUsd     FinancingProviderCurrencyCurrency = "usd"
+	FinancingProviderCurrencyCurrencySgd     FinancingProviderCurrencyCurrency = "sgd"
+	FinancingProviderCurrencyCurrencyInr     FinancingProviderCurrencyCurrency = "inr"
+	FinancingProviderCurrencyCurrencyAud     FinancingProviderCurrencyCurrency = "aud"
+	FinancingProviderCurrencyCurrencyBrl     FinancingProviderCurrencyCurrency = "brl"
+	FinancingProviderCurrencyCurrencyCad     FinancingProviderCurrencyCurrency = "cad"
+	FinancingProviderCurrencyCurrencyDkk     FinancingProviderCurrencyCurrency = "dkk"
+	FinancingProviderCurrencyCurrencyEur     FinancingProviderCurrencyCurrency = "eur"
+	FinancingProviderCurrencyCurrencyNok     FinancingProviderCurrencyCurrency = "nok"
+	FinancingProviderCurrencyCurrencyGbp     FinancingProviderCurrencyCurrency = "gbp"
+	FinancingProviderCurrencyCurrencySek     FinancingProviderCurrencyCurrency = "sek"
+	FinancingProviderCurrencyCurrencyChf     FinancingProviderCurrencyCurrency = "chf"
+	FinancingProviderCurrencyCurrencyHkd     FinancingProviderCurrencyCurrency = "hkd"
+	FinancingProviderCurrencyCurrencyHuf     FinancingProviderCurrencyCurrency = "huf"
+	FinancingProviderCurrencyCurrencyJpy     FinancingProviderCurrencyCurrency = "jpy"
+	FinancingProviderCurrencyCurrencyMxn     FinancingProviderCurrencyCurrency = "mxn"
+	FinancingProviderCurrencyCurrencyMyr     FinancingProviderCurrencyCurrency = "myr"
+	FinancingProviderCurrencyCurrencyPln     FinancingProviderCurrencyCurrency = "pln"
+	FinancingProviderCurrencyCurrencyCzk     FinancingProviderCurrencyCurrency = "czk"
+	FinancingProviderCurrencyCurrencyNzd     FinancingProviderCurrencyCurrency = "nzd"
+	FinancingProviderCurrencyCurrencyAed     FinancingProviderCurrencyCurrency = "aed"
+	FinancingProviderCurrencyCurrencyEth     FinancingProviderCurrencyCurrency = "eth"
+	FinancingProviderCurrencyCurrencyApe     FinancingProviderCurrencyCurrency = "ape"
+	FinancingProviderCurrencyCurrencyCop     FinancingProviderCurrencyCurrency = "cop"
+	FinancingProviderCurrencyCurrencyRon     FinancingProviderCurrencyCurrency = "ron"
+	FinancingProviderCurrencyCurrencyThb     FinancingProviderCurrencyCurrency = "thb"
+	FinancingProviderCurrencyCurrencyBgn     FinancingProviderCurrencyCurrency = "bgn"
+	FinancingProviderCurrencyCurrencyIdr     FinancingProviderCurrencyCurrency = "idr"
+	FinancingProviderCurrencyCurrencyDop     FinancingProviderCurrencyCurrency = "dop"
+	FinancingProviderCurrencyCurrencyPhp     FinancingProviderCurrencyCurrency = "php"
+	FinancingProviderCurrencyCurrencyTry     FinancingProviderCurrencyCurrency = "try"
+	FinancingProviderCurrencyCurrencyKrw     FinancingProviderCurrencyCurrency = "krw"
+	FinancingProviderCurrencyCurrencyTwd     FinancingProviderCurrencyCurrency = "twd"
+	FinancingProviderCurrencyCurrencyVnd     FinancingProviderCurrencyCurrency = "vnd"
+	FinancingProviderCurrencyCurrencyPkr     FinancingProviderCurrencyCurrency = "pkr"
+	FinancingProviderCurrencyCurrencyClp     FinancingProviderCurrencyCurrency = "clp"
+	FinancingProviderCurrencyCurrencyUyu     FinancingProviderCurrencyCurrency = "uyu"
+	FinancingProviderCurrencyCurrencyArs     FinancingProviderCurrencyCurrency = "ars"
+	FinancingProviderCurrencyCurrencyZar     FinancingProviderCurrencyCurrency = "zar"
+	FinancingProviderCurrencyCurrencyDzd     FinancingProviderCurrencyCurrency = "dzd"
+	FinancingProviderCurrencyCurrencyTnd     FinancingProviderCurrencyCurrency = "tnd"
+	FinancingProviderCurrencyCurrencyMad     FinancingProviderCurrencyCurrency = "mad"
+	FinancingProviderCurrencyCurrencyKes     FinancingProviderCurrencyCurrency = "kes"
+	FinancingProviderCurrencyCurrencyKwd     FinancingProviderCurrencyCurrency = "kwd"
+	FinancingProviderCurrencyCurrencyJod     FinancingProviderCurrencyCurrency = "jod"
+	FinancingProviderCurrencyCurrencyAll     FinancingProviderCurrencyCurrency = "all"
+	FinancingProviderCurrencyCurrencyXcd     FinancingProviderCurrencyCurrency = "xcd"
+	FinancingProviderCurrencyCurrencyAmd     FinancingProviderCurrencyCurrency = "amd"
+	FinancingProviderCurrencyCurrencyBsd     FinancingProviderCurrencyCurrency = "bsd"
+	FinancingProviderCurrencyCurrencyBhd     FinancingProviderCurrencyCurrency = "bhd"
+	FinancingProviderCurrencyCurrencyBob     FinancingProviderCurrencyCurrency = "bob"
+	FinancingProviderCurrencyCurrencyBam     FinancingProviderCurrencyCurrency = "bam"
+	FinancingProviderCurrencyCurrencyKhr     FinancingProviderCurrencyCurrency = "khr"
+	FinancingProviderCurrencyCurrencyCrc     FinancingProviderCurrencyCurrency = "crc"
+	FinancingProviderCurrencyCurrencyXof     FinancingProviderCurrencyCurrency = "xof"
+	FinancingProviderCurrencyCurrencyEgp     FinancingProviderCurrencyCurrency = "egp"
+	FinancingProviderCurrencyCurrencyEtb     FinancingProviderCurrencyCurrency = "etb"
+	FinancingProviderCurrencyCurrencyGmd     FinancingProviderCurrencyCurrency = "gmd"
+	FinancingProviderCurrencyCurrencyGhs     FinancingProviderCurrencyCurrency = "ghs"
+	FinancingProviderCurrencyCurrencyGtq     FinancingProviderCurrencyCurrency = "gtq"
+	FinancingProviderCurrencyCurrencyGyd     FinancingProviderCurrencyCurrency = "gyd"
+	FinancingProviderCurrencyCurrencyIls     FinancingProviderCurrencyCurrency = "ils"
+	FinancingProviderCurrencyCurrencyJmd     FinancingProviderCurrencyCurrency = "jmd"
+	FinancingProviderCurrencyCurrencyMop     FinancingProviderCurrencyCurrency = "mop"
+	FinancingProviderCurrencyCurrencyMga     FinancingProviderCurrencyCurrency = "mga"
+	FinancingProviderCurrencyCurrencyMur     FinancingProviderCurrencyCurrency = "mur"
+	FinancingProviderCurrencyCurrencyMdl     FinancingProviderCurrencyCurrency = "mdl"
+	FinancingProviderCurrencyCurrencyMnt     FinancingProviderCurrencyCurrency = "mnt"
+	FinancingProviderCurrencyCurrencyNad     FinancingProviderCurrencyCurrency = "nad"
+	FinancingProviderCurrencyCurrencyNgn     FinancingProviderCurrencyCurrency = "ngn"
+	FinancingProviderCurrencyCurrencyMkd     FinancingProviderCurrencyCurrency = "mkd"
+	FinancingProviderCurrencyCurrencyOmr     FinancingProviderCurrencyCurrency = "omr"
+	FinancingProviderCurrencyCurrencyPyg     FinancingProviderCurrencyCurrency = "pyg"
+	FinancingProviderCurrencyCurrencyPen     FinancingProviderCurrencyCurrency = "pen"
+	FinancingProviderCurrencyCurrencyQar     FinancingProviderCurrencyCurrency = "qar"
+	FinancingProviderCurrencyCurrencyRwf     FinancingProviderCurrencyCurrency = "rwf"
+	FinancingProviderCurrencyCurrencySar     FinancingProviderCurrencyCurrency = "sar"
+	FinancingProviderCurrencyCurrencyRsd     FinancingProviderCurrencyCurrency = "rsd"
+	FinancingProviderCurrencyCurrencyLkr     FinancingProviderCurrencyCurrency = "lkr"
+	FinancingProviderCurrencyCurrencyTzs     FinancingProviderCurrencyCurrency = "tzs"
+	FinancingProviderCurrencyCurrencyTtd     FinancingProviderCurrencyCurrency = "ttd"
+	FinancingProviderCurrencyCurrencyUzs     FinancingProviderCurrencyCurrency = "uzs"
+	FinancingProviderCurrencyCurrencyRub     FinancingProviderCurrencyCurrency = "rub"
+	FinancingProviderCurrencyCurrencyBtc     FinancingProviderCurrencyCurrency = "btc"
+	FinancingProviderCurrencyCurrencyCny     FinancingProviderCurrencyCurrency = "cny"
+	FinancingProviderCurrencyCurrencyUsdt    FinancingProviderCurrencyCurrency = "usdt"
+	FinancingProviderCurrencyCurrencyKzt     FinancingProviderCurrencyCurrency = "kzt"
+	FinancingProviderCurrencyCurrencyAwg     FinancingProviderCurrencyCurrency = "awg"
+	FinancingProviderCurrencyCurrencyWhopUsd FinancingProviderCurrencyCurrency = "whop_usd"
+	FinancingProviderCurrencyCurrencyXau     FinancingProviderCurrencyCurrency = "xau"
+)
+
+func NewFinancingProviderCurrencyCurrencyFromString(s string) (FinancingProviderCurrencyCurrency, error) {
+	switch s {
+	case "usd":
+		return FinancingProviderCurrencyCurrencyUsd, nil
+	case "sgd":
+		return FinancingProviderCurrencyCurrencySgd, nil
+	case "inr":
+		return FinancingProviderCurrencyCurrencyInr, nil
+	case "aud":
+		return FinancingProviderCurrencyCurrencyAud, nil
+	case "brl":
+		return FinancingProviderCurrencyCurrencyBrl, nil
+	case "cad":
+		return FinancingProviderCurrencyCurrencyCad, nil
+	case "dkk":
+		return FinancingProviderCurrencyCurrencyDkk, nil
+	case "eur":
+		return FinancingProviderCurrencyCurrencyEur, nil
+	case "nok":
+		return FinancingProviderCurrencyCurrencyNok, nil
+	case "gbp":
+		return FinancingProviderCurrencyCurrencyGbp, nil
+	case "sek":
+		return FinancingProviderCurrencyCurrencySek, nil
+	case "chf":
+		return FinancingProviderCurrencyCurrencyChf, nil
+	case "hkd":
+		return FinancingProviderCurrencyCurrencyHkd, nil
+	case "huf":
+		return FinancingProviderCurrencyCurrencyHuf, nil
+	case "jpy":
+		return FinancingProviderCurrencyCurrencyJpy, nil
+	case "mxn":
+		return FinancingProviderCurrencyCurrencyMxn, nil
+	case "myr":
+		return FinancingProviderCurrencyCurrencyMyr, nil
+	case "pln":
+		return FinancingProviderCurrencyCurrencyPln, nil
+	case "czk":
+		return FinancingProviderCurrencyCurrencyCzk, nil
+	case "nzd":
+		return FinancingProviderCurrencyCurrencyNzd, nil
+	case "aed":
+		return FinancingProviderCurrencyCurrencyAed, nil
+	case "eth":
+		return FinancingProviderCurrencyCurrencyEth, nil
+	case "ape":
+		return FinancingProviderCurrencyCurrencyApe, nil
+	case "cop":
+		return FinancingProviderCurrencyCurrencyCop, nil
+	case "ron":
+		return FinancingProviderCurrencyCurrencyRon, nil
+	case "thb":
+		return FinancingProviderCurrencyCurrencyThb, nil
+	case "bgn":
+		return FinancingProviderCurrencyCurrencyBgn, nil
+	case "idr":
+		return FinancingProviderCurrencyCurrencyIdr, nil
+	case "dop":
+		return FinancingProviderCurrencyCurrencyDop, nil
+	case "php":
+		return FinancingProviderCurrencyCurrencyPhp, nil
+	case "try":
+		return FinancingProviderCurrencyCurrencyTry, nil
+	case "krw":
+		return FinancingProviderCurrencyCurrencyKrw, nil
+	case "twd":
+		return FinancingProviderCurrencyCurrencyTwd, nil
+	case "vnd":
+		return FinancingProviderCurrencyCurrencyVnd, nil
+	case "pkr":
+		return FinancingProviderCurrencyCurrencyPkr, nil
+	case "clp":
+		return FinancingProviderCurrencyCurrencyClp, nil
+	case "uyu":
+		return FinancingProviderCurrencyCurrencyUyu, nil
+	case "ars":
+		return FinancingProviderCurrencyCurrencyArs, nil
+	case "zar":
+		return FinancingProviderCurrencyCurrencyZar, nil
+	case "dzd":
+		return FinancingProviderCurrencyCurrencyDzd, nil
+	case "tnd":
+		return FinancingProviderCurrencyCurrencyTnd, nil
+	case "mad":
+		return FinancingProviderCurrencyCurrencyMad, nil
+	case "kes":
+		return FinancingProviderCurrencyCurrencyKes, nil
+	case "kwd":
+		return FinancingProviderCurrencyCurrencyKwd, nil
+	case "jod":
+		return FinancingProviderCurrencyCurrencyJod, nil
+	case "all":
+		return FinancingProviderCurrencyCurrencyAll, nil
+	case "xcd":
+		return FinancingProviderCurrencyCurrencyXcd, nil
+	case "amd":
+		return FinancingProviderCurrencyCurrencyAmd, nil
+	case "bsd":
+		return FinancingProviderCurrencyCurrencyBsd, nil
+	case "bhd":
+		return FinancingProviderCurrencyCurrencyBhd, nil
+	case "bob":
+		return FinancingProviderCurrencyCurrencyBob, nil
+	case "bam":
+		return FinancingProviderCurrencyCurrencyBam, nil
+	case "khr":
+		return FinancingProviderCurrencyCurrencyKhr, nil
+	case "crc":
+		return FinancingProviderCurrencyCurrencyCrc, nil
+	case "xof":
+		return FinancingProviderCurrencyCurrencyXof, nil
+	case "egp":
+		return FinancingProviderCurrencyCurrencyEgp, nil
+	case "etb":
+		return FinancingProviderCurrencyCurrencyEtb, nil
+	case "gmd":
+		return FinancingProviderCurrencyCurrencyGmd, nil
+	case "ghs":
+		return FinancingProviderCurrencyCurrencyGhs, nil
+	case "gtq":
+		return FinancingProviderCurrencyCurrencyGtq, nil
+	case "gyd":
+		return FinancingProviderCurrencyCurrencyGyd, nil
+	case "ils":
+		return FinancingProviderCurrencyCurrencyIls, nil
+	case "jmd":
+		return FinancingProviderCurrencyCurrencyJmd, nil
+	case "mop":
+		return FinancingProviderCurrencyCurrencyMop, nil
+	case "mga":
+		return FinancingProviderCurrencyCurrencyMga, nil
+	case "mur":
+		return FinancingProviderCurrencyCurrencyMur, nil
+	case "mdl":
+		return FinancingProviderCurrencyCurrencyMdl, nil
+	case "mnt":
+		return FinancingProviderCurrencyCurrencyMnt, nil
+	case "nad":
+		return FinancingProviderCurrencyCurrencyNad, nil
+	case "ngn":
+		return FinancingProviderCurrencyCurrencyNgn, nil
+	case "mkd":
+		return FinancingProviderCurrencyCurrencyMkd, nil
+	case "omr":
+		return FinancingProviderCurrencyCurrencyOmr, nil
+	case "pyg":
+		return FinancingProviderCurrencyCurrencyPyg, nil
+	case "pen":
+		return FinancingProviderCurrencyCurrencyPen, nil
+	case "qar":
+		return FinancingProviderCurrencyCurrencyQar, nil
+	case "rwf":
+		return FinancingProviderCurrencyCurrencyRwf, nil
+	case "sar":
+		return FinancingProviderCurrencyCurrencySar, nil
+	case "rsd":
+		return FinancingProviderCurrencyCurrencyRsd, nil
+	case "lkr":
+		return FinancingProviderCurrencyCurrencyLkr, nil
+	case "tzs":
+		return FinancingProviderCurrencyCurrencyTzs, nil
+	case "ttd":
+		return FinancingProviderCurrencyCurrencyTtd, nil
+	case "uzs":
+		return FinancingProviderCurrencyCurrencyUzs, nil
+	case "rub":
+		return FinancingProviderCurrencyCurrencyRub, nil
+	case "btc":
+		return FinancingProviderCurrencyCurrencyBtc, nil
+	case "cny":
+		return FinancingProviderCurrencyCurrencyCny, nil
+	case "usdt":
+		return FinancingProviderCurrencyCurrencyUsdt, nil
+	case "kzt":
+		return FinancingProviderCurrencyCurrencyKzt, nil
+	case "awg":
+		return FinancingProviderCurrencyCurrencyAwg, nil
+	case "whop_usd":
+		return FinancingProviderCurrencyCurrencyWhopUsd, nil
+	case "xau":
+		return FinancingProviderCurrencyCurrencyXau, nil
+	}
+	var t FinancingProviderCurrencyCurrency
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FinancingProviderCurrencyCurrency) Ptr() *FinancingProviderCurrencyCurrency {
+	return &f
+}
+
+var (
+	financingProviderDetailsFieldDisputeRate      = big.NewInt(1 << 0)
+	financingProviderDetailsFieldDisputeRateLimit = big.NewInt(1 << 1)
+	financingProviderDetailsFieldSourceProvider   = big.NewInt(1 << 2)
+)
+
+// financingProviderDetailsNullableFields maps the wire names of FinancingProviderDetails's nullable fields (required or optional) to their field bits.
+var financingProviderDetailsNullableFields = map[string]*big.Int{
+	"dispute_rate":       financingProviderDetailsFieldDisputeRate,
+	"dispute_rate_limit": financingProviderDetailsFieldDisputeRateLimit,
+	"source_provider":    financingProviderDetailsFieldSourceProvider,
+}
+
+type FinancingProviderDetails struct {
+	// The account's dispute rate as a fraction, for example 0.012 for 1.2%.
+	DisputeRate *float64 `json:"dispute_rate,omitempty" url:"dispute_rate,omitempty"`
+	// The dispute rate, as a fraction, at which the provider is turned off or held back.
+	DisputeRateLimit *float64 `json:"dispute_rate_limit,omitempty" url:"dispute_rate_limit,omitempty"`
+	// The provider whose dispute rate caused this change, or `null` when it was this provider's own rate.
+	SourceProvider *FinancingProviderDetailsSourceProvider `json:"source_provider,omitempty" url:"source_provider,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *FinancingProviderDetails) GetDisputeRate() *float64 {
+	if f == nil {
+		return nil
+	}
+	return f.DisputeRate
+}
+
+func (f *FinancingProviderDetails) GetDisputeRateLimit() *float64 {
+	if f == nil {
+		return nil
+	}
+	return f.DisputeRateLimit
+}
+
+func (f *FinancingProviderDetails) GetSourceProvider() *FinancingProviderDetailsSourceProvider {
+	if f == nil {
+		return nil
+	}
+	return f.SourceProvider
+}
+
+func (f *FinancingProviderDetails) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *FinancingProviderDetails) require(field *big.Int) {
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
+	}
+	next.Or(next, field)
+	f.explicitFields = next
+}
+
+// SetDisputeRate sets the DisputeRate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingProviderDetails) SetDisputeRate(disputeRate *float64) {
+	f.DisputeRate = disputeRate
+	f.require(financingProviderDetailsFieldDisputeRate)
+}
+
+// SetDisputeRateLimit sets the DisputeRateLimit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingProviderDetails) SetDisputeRateLimit(disputeRateLimit *float64) {
+	f.DisputeRateLimit = disputeRateLimit
+	f.require(financingProviderDetailsFieldDisputeRateLimit)
+}
+
+// SetSourceProvider sets the SourceProvider field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingProviderDetails) SetSourceProvider(sourceProvider *FinancingProviderDetailsSourceProvider) {
+	f.SourceProvider = sourceProvider
+	f.require(financingProviderDetailsFieldSourceProvider)
+}
+
+func (f *FinancingProviderDetails) UnmarshalJSON(data []byte) error {
+	type unmarshaler FinancingProviderDetails
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FinancingProviderDetails(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, financingProviderDetailsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		f.require(presentFields)
+	}
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FinancingProviderDetails) MarshalJSON() ([]byte, error) {
+	type embed FinancingProviderDetails
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *FinancingProviderDetails) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+// The provider whose dispute rate caused this change, or `null` when it was this provider's own rate.
+type FinancingProviderDetailsSourceProvider string
+
+const (
+	FinancingProviderDetailsSourceProviderKlarna           FinancingProviderDetailsSourceProvider = "klarna"
+	FinancingProviderDetailsSourceProviderSplitit          FinancingProviderDetailsSourceProvider = "splitit"
+	FinancingProviderDetailsSourceProviderAfterpayClearpay FinancingProviderDetailsSourceProvider = "afterpay_clearpay"
+	FinancingProviderDetailsSourceProviderZip              FinancingProviderDetailsSourceProvider = "zip"
+	FinancingProviderDetailsSourceProviderSezzle           FinancingProviderDetailsSourceProvider = "sezzle"
+)
+
+func NewFinancingProviderDetailsSourceProviderFromString(s string) (FinancingProviderDetailsSourceProvider, error) {
+	switch s {
+	case "klarna":
+		return FinancingProviderDetailsSourceProviderKlarna, nil
+	case "splitit":
+		return FinancingProviderDetailsSourceProviderSplitit, nil
+	case "afterpay_clearpay":
+		return FinancingProviderDetailsSourceProviderAfterpayClearpay, nil
+	case "zip":
+		return FinancingProviderDetailsSourceProviderZip, nil
+	case "sezzle":
+		return FinancingProviderDetailsSourceProviderSezzle, nil
+	}
+	var t FinancingProviderDetailsSourceProvider
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FinancingProviderDetailsSourceProvider) Ptr() *FinancingProviderDetailsSourceProvider {
+	return &f
+}
+
+// The financing provider.
+type FinancingProviderProvider string
+
+const (
+	FinancingProviderProviderAfterpayClearpay FinancingProviderProvider = "afterpay_clearpay"
+	FinancingProviderProviderZip              FinancingProviderProvider = "zip"
+	FinancingProviderProviderSezzle           FinancingProviderProvider = "sezzle"
+	FinancingProviderProviderTabby            FinancingProviderProvider = "tabby"
+	FinancingProviderProviderTamara           FinancingProviderProvider = "tamara"
+	FinancingProviderProviderKueski           FinancingProviderProvider = "kueski"
+	FinancingProviderProviderAddi             FinancingProviderProvider = "addi"
+	FinancingProviderProviderKlarna           FinancingProviderProvider = "klarna"
+	FinancingProviderProviderOney             FinancingProviderProvider = "oney"
+	FinancingProviderProviderSplitit          FinancingProviderProvider = "splitit"
+	FinancingProviderProviderClaritypay       FinancingProviderProvider = "claritypay"
+	FinancingProviderProviderFlexPay          FinancingProviderProvider = "flex_pay"
+)
+
+func NewFinancingProviderProviderFromString(s string) (FinancingProviderProvider, error) {
+	switch s {
+	case "afterpay_clearpay":
+		return FinancingProviderProviderAfterpayClearpay, nil
+	case "zip":
+		return FinancingProviderProviderZip, nil
+	case "sezzle":
+		return FinancingProviderProviderSezzle, nil
+	case "tabby":
+		return FinancingProviderProviderTabby, nil
+	case "tamara":
+		return FinancingProviderProviderTamara, nil
+	case "kueski":
+		return FinancingProviderProviderKueski, nil
+	case "addi":
+		return FinancingProviderProviderAddi, nil
+	case "klarna":
+		return FinancingProviderProviderKlarna, nil
+	case "oney":
+		return FinancingProviderProviderOney, nil
+	case "splitit":
+		return FinancingProviderProviderSplitit, nil
+	case "claritypay":
+		return FinancingProviderProviderClaritypay, nil
+	case "flex_pay":
+		return FinancingProviderProviderFlexPay, nil
+	}
+	var t FinancingProviderProvider
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FinancingProviderProvider) Ptr() *FinancingProviderProvider {
+	return &f
+}
+
+// Why the provider has this status, when known. On `active` it is `dispute_rate_near_limit` when the provider is close to being turned off. On `inactive` it names what keeps it off, including `not_included` when the account's approval doesn't cover it, `turned_off` when it was switched off after setup, `setup_failed`, and `declined` when the provider turned the account down without a reason Whop recognizes. More reasons may be added.
+type FinancingProviderReason string
+
+const (
+	FinancingProviderReasonAccountNotSupported             FinancingProviderReason = "account_not_supported"
+	FinancingProviderReasonPayinAccountRequired            FinancingProviderReason = "payin_account_required"
+	FinancingProviderReasonPaymentAccountRequired          FinancingProviderReason = "payment_account_required"
+	FinancingProviderReasonProcessorConnectionRequired     FinancingProviderReason = "processor_connection_required"
+	FinancingProviderReasonMinimumVolumeNotMet             FinancingProviderReason = "minimum_volume_not_met"
+	FinancingProviderReasonTurnedOffInCheckoutSettings     FinancingProviderReason = "turned_off_in_checkout_settings"
+	FinancingProviderReasonProviderReview                  FinancingProviderReason = "provider_review"
+	FinancingProviderReasonDisputeRateNearLimit            FinancingProviderReason = "dispute_rate_near_limit"
+	FinancingProviderReasonDisputeRateExceeded             FinancingProviderReason = "dispute_rate_exceeded"
+	FinancingProviderReasonWhopRiskControl                 FinancingProviderReason = "whop_risk_control"
+	FinancingProviderReasonNotIncluded                     FinancingProviderReason = "not_included"
+	FinancingProviderReasonTurnedOff                       FinancingProviderReason = "turned_off"
+	FinancingProviderReasonDeclined                        FinancingProviderReason = "declined"
+	FinancingProviderReasonSetupFailed                     FinancingProviderReason = "setup_failed"
+	FinancingProviderReasonPayoutAccountCountryUnsupported FinancingProviderReason = "payout_account_country_unsupported"
+	FinancingProviderReasonSellerCountryUnsupported        FinancingProviderReason = "seller_country_unsupported"
+	FinancingProviderReasonApprovedDisputeRateTooHigh      FinancingProviderReason = "approved_dispute_rate_too_high"
+	FinancingProviderReasonRestrictedIndustry              FinancingProviderReason = "restricted_industry"
+	FinancingProviderReasonIncomeClaims                    FinancingProviderReason = "income_claims"
+	FinancingProviderReasonMissingStoreDetails             FinancingProviderReason = "missing_store_details"
+	FinancingProviderReasonDuplicateAccount                FinancingProviderReason = "duplicate_account"
+	FinancingProviderReasonInvalidWebsite                  FinancingProviderReason = "invalid_website"
+	FinancingProviderReasonUnspecified                     FinancingProviderReason = "unspecified"
+)
+
+func NewFinancingProviderReasonFromString(s string) (FinancingProviderReason, error) {
+	switch s {
+	case "account_not_supported":
+		return FinancingProviderReasonAccountNotSupported, nil
+	case "payin_account_required":
+		return FinancingProviderReasonPayinAccountRequired, nil
+	case "payment_account_required":
+		return FinancingProviderReasonPaymentAccountRequired, nil
+	case "processor_connection_required":
+		return FinancingProviderReasonProcessorConnectionRequired, nil
+	case "minimum_volume_not_met":
+		return FinancingProviderReasonMinimumVolumeNotMet, nil
+	case "turned_off_in_checkout_settings":
+		return FinancingProviderReasonTurnedOffInCheckoutSettings, nil
+	case "provider_review":
+		return FinancingProviderReasonProviderReview, nil
+	case "dispute_rate_near_limit":
+		return FinancingProviderReasonDisputeRateNearLimit, nil
+	case "dispute_rate_exceeded":
+		return FinancingProviderReasonDisputeRateExceeded, nil
+	case "whop_risk_control":
+		return FinancingProviderReasonWhopRiskControl, nil
+	case "not_included":
+		return FinancingProviderReasonNotIncluded, nil
+	case "turned_off":
+		return FinancingProviderReasonTurnedOff, nil
+	case "declined":
+		return FinancingProviderReasonDeclined, nil
+	case "setup_failed":
+		return FinancingProviderReasonSetupFailed, nil
+	case "payout_account_country_unsupported":
+		return FinancingProviderReasonPayoutAccountCountryUnsupported, nil
+	case "seller_country_unsupported":
+		return FinancingProviderReasonSellerCountryUnsupported, nil
+	case "approved_dispute_rate_too_high":
+		return FinancingProviderReasonApprovedDisputeRateTooHigh, nil
+	case "restricted_industry":
+		return FinancingProviderReasonRestrictedIndustry, nil
+	case "income_claims":
+		return FinancingProviderReasonIncomeClaims, nil
+	case "missing_store_details":
+		return FinancingProviderReasonMissingStoreDetails, nil
+	case "duplicate_account":
+		return FinancingProviderReasonDuplicateAccount, nil
+	case "invalid_website":
+		return FinancingProviderReasonInvalidWebsite, nil
+	case "unspecified":
+		return FinancingProviderReasonUnspecified, nil
+	}
+	var t FinancingProviderReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FinancingProviderReason) Ptr() *FinancingProviderReason {
+	return &f
+}
+
+// Where the provider stands for this account: `eligible` (included if the account applies), `needs_action` (waiting on the merchant, see `action`), `in_review` (waiting on Whop's review, or on the provider's own when `reason` is `provider_review`), `active` (offered at checkout), or `inactive` (not offered, see `reason`).
+type FinancingProviderStatus string
+
+const (
+	FinancingProviderStatusEligible    FinancingProviderStatus = "eligible"
+	FinancingProviderStatusNeedsAction FinancingProviderStatus = "needs_action"
+	FinancingProviderStatusInReview    FinancingProviderStatus = "in_review"
+	FinancingProviderStatusActive      FinancingProviderStatus = "active"
+	FinancingProviderStatusInactive    FinancingProviderStatus = "inactive"
+)
+
+func NewFinancingProviderStatusFromString(s string) (FinancingProviderStatus, error) {
+	switch s {
+	case "eligible":
+		return FinancingProviderStatusEligible, nil
+	case "needs_action":
+		return FinancingProviderStatusNeedsAction, nil
+	case "in_review":
+		return FinancingProviderStatusInReview, nil
+	case "active":
+		return FinancingProviderStatusActive, nil
+	case "inactive":
+		return FinancingProviderStatusInactive, nil
+	}
+	var t FinancingProviderStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FinancingProviderStatus) Ptr() *FinancingProviderStatus {
+	return &f
+}
+
+var (
 	financingRequirementFieldAcceptedFileFormats = big.NewInt(1 << 0)
 	financingRequirementFieldField               = big.NewInt(1 << 1)
 	financingRequirementFieldFileCollectionType  = big.NewInt(1 << 2)

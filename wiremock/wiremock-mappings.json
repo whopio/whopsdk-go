@@ -15679,6 +15679,42 @@
       }
     },
     {
+      "id": "8fc151c5-61a1-4a73-b412-beb8a38decc5",
+      "name": "List Financing Providers - default",
+      "request": {
+        "urlPathTemplate": "/accounts/{account_id}/financing_providers",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "account_id": {
+            "equalTo": "account_id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"data\": [\n    {\n      \"action\": \"verify_business\",\n      \"currencies\": [\n        {\n          \"currency\": \"usd\",\n          \"max_amount\": {\n            \"amount\": \"-1234.56\",\n            \"currency\": \"usd\",\n            \"decimals\": 2,\n            \"display_decimals\": 2\n          }\n        }\n      ],\n      \"details\": {\n        \"dispute_rate\": null,\n        \"dispute_rate_limit\": null,\n        \"source_provider\": null\n      },\n      \"provider\": \"afterpay_clearpay\",\n      \"provider_reviewed_at\": \"provider_reviewed_at\",\n      \"reason\": \"account_not_supported\",\n      \"status\": \"eligible\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"MQ\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "8fc151c5-61a1-4a73-b412-beb8a38decc5",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "d091f464-557f-4bf9-8296-ece9ac820a6c",
       "name": "Retrieve Account Preferences - default",
       "request": {
@@ -17465,6 +17501,6 @@
     }
   ],
   "meta": {
-    "total": 487
+    "total": 488
   }
 }
