@@ -29628,76 +29628,85 @@ func (p *Passkey) String() string {
 var (
 	paymentFieldAccountID                  = big.NewInt(1 << 0)
 	paymentFieldAmountAfterFees            = big.NewInt(1 << 1)
-	paymentFieldAutoRefunded               = big.NewInt(1 << 2)
-	paymentFieldBillingAddress             = big.NewInt(1 << 3)
-	paymentFieldBillingReason              = big.NewInt(1 << 4)
-	paymentFieldCheckoutConfigurationID    = big.NewInt(1 << 5)
-	paymentFieldClientSecret               = big.NewInt(1 << 6)
-	paymentFieldCreatedAt                  = big.NewInt(1 << 7)
-	paymentFieldCurrency                   = big.NewInt(1 << 8)
-	paymentFieldCustomerEmail              = big.NewInt(1 << 9)
-	paymentFieldCustomerPhone              = big.NewInt(1 << 10)
-	paymentFieldDeclineCode                = big.NewInt(1 << 11)
-	paymentFieldDisputeAlertedAt           = big.NewInt(1 << 12)
-	paymentFieldFailureMessage             = big.NewInt(1 << 13)
-	paymentFieldFinancingInstallmentsCount = big.NewInt(1 << 14)
-	paymentFieldHolds                      = big.NewInt(1 << 15)
-	paymentFieldID                         = big.NewInt(1 << 16)
-	paymentFieldIPAddress                  = big.NewInt(1 << 17)
-	paymentFieldLastPaymentAttemptAt       = big.NewInt(1 << 18)
-	paymentFieldLineItems                  = big.NewInt(1 << 19)
-	paymentFieldMemberID                   = big.NewInt(1 << 20)
-	paymentFieldMembershipID               = big.NewInt(1 << 21)
-	paymentFieldMetadata                   = big.NewInt(1 << 22)
-	paymentFieldNeedsTracking              = big.NewInt(1 << 23)
-	paymentFieldNextPaymentAttemptAt       = big.NewInt(1 << 24)
-	paymentFieldPaidAt                     = big.NewInt(1 << 25)
-	paymentFieldPaymentInstrument          = big.NewInt(1 << 26)
-	paymentFieldPaymentMethodID            = big.NewInt(1 << 27)
-	paymentFieldPaymentMethodType          = big.NewInt(1 << 28)
-	paymentFieldPaymentRuleMatches         = big.NewInt(1 << 29)
-	paymentFieldPaymentsFailed             = big.NewInt(1 << 30)
-	paymentFieldPlanID                     = big.NewInt(1 << 31)
-	paymentFieldPresentmentTotal           = big.NewInt(1 << 32)
-	paymentFieldProductID                  = big.NewInt(1 << 33)
-	paymentFieldPromoCodeID                = big.NewInt(1 << 34)
-	paymentFieldQuoteID                    = big.NewInt(1 << 35)
-	paymentFieldRecoveryURL                = big.NewInt(1 << 36)
-	paymentFieldRefundable                 = big.NewInt(1 << 37)
-	paymentFieldRefundedAmount             = big.NewInt(1 << 38)
-	paymentFieldRefundedAt                 = big.NewInt(1 << 39)
-	paymentFieldRetryable                  = big.NewInt(1 << 40)
-	paymentFieldRiskScore                  = big.NewInt(1 << 41)
-	paymentFieldRiskSignals                = big.NewInt(1 << 42)
-	paymentFieldSettlementTimeAt           = big.NewInt(1 << 43)
-	paymentFieldShipmentID                 = big.NewInt(1 << 44)
-	paymentFieldShippingAddress            = big.NewInt(1 << 45)
-	paymentFieldStatus                     = big.NewInt(1 << 46)
-	paymentFieldSubstatus                  = big.NewInt(1 << 47)
-	paymentFieldSubtotal                   = big.NewInt(1 << 48)
-	paymentFieldTaxAmount                  = big.NewInt(1 << 49)
-	paymentFieldTaxBehavior                = big.NewInt(1 << 50)
-	paymentFieldTaxRefundedAmount          = big.NewInt(1 << 51)
-	paymentFieldThreeDsVerified            = big.NewInt(1 << 52)
-	paymentFieldTotal                      = big.NewInt(1 << 53)
-	paymentFieldUpdatedAt                  = big.NewInt(1 << 54)
-	paymentFieldUsdTotal                   = big.NewInt(1 << 55)
-	paymentFieldUser                       = big.NewInt(1 << 56)
-	paymentFieldVerificationChecks         = big.NewInt(1 << 57)
-	paymentFieldVoidable                   = big.NewInt(1 << 58)
+	paymentFieldAutoCaptureAt              = big.NewInt(1 << 2)
+	paymentFieldAutoRefunded               = big.NewInt(1 << 3)
+	paymentFieldBillingAddress             = big.NewInt(1 << 4)
+	paymentFieldBillingReason              = big.NewInt(1 << 5)
+	paymentFieldCaptureExpiresAt           = big.NewInt(1 << 6)
+	paymentFieldCheckoutConfigurationID    = big.NewInt(1 << 7)
+	paymentFieldClientSecret               = big.NewInt(1 << 8)
+	paymentFieldCreatedAt                  = big.NewInt(1 << 9)
+	paymentFieldCurrency                   = big.NewInt(1 << 10)
+	paymentFieldCustomerEmail              = big.NewInt(1 << 11)
+	paymentFieldCustomerPhone              = big.NewInt(1 << 12)
+	paymentFieldDeclineCode                = big.NewInt(1 << 13)
+	paymentFieldDisputeAlertedAt           = big.NewInt(1 << 14)
+	paymentFieldDisputeCreatedAt           = big.NewInt(1 << 15)
+	paymentFieldFailureMessage             = big.NewInt(1 << 16)
+	paymentFieldFinancingInstallmentsCount = big.NewInt(1 << 17)
+	paymentFieldHolds                      = big.NewInt(1 << 18)
+	paymentFieldID                         = big.NewInt(1 << 19)
+	paymentFieldIPAddress                  = big.NewInt(1 << 20)
+	paymentFieldLastPaymentAttemptAt       = big.NewInt(1 << 21)
+	paymentFieldLineItems                  = big.NewInt(1 << 22)
+	paymentFieldMemberID                   = big.NewInt(1 << 23)
+	paymentFieldMembershipID               = big.NewInt(1 << 24)
+	paymentFieldMetadata                   = big.NewInt(1 << 25)
+	paymentFieldNeedsTracking              = big.NewInt(1 << 26)
+	paymentFieldNextPaymentAttemptAt       = big.NewInt(1 << 27)
+	paymentFieldPaidAt                     = big.NewInt(1 << 28)
+	paymentFieldPaymentInstrument          = big.NewInt(1 << 29)
+	paymentFieldPaymentMethodID            = big.NewInt(1 << 30)
+	paymentFieldPaymentMethodType          = big.NewInt(1 << 31)
+	paymentFieldPaymentRuleMatches         = big.NewInt(1 << 32)
+	paymentFieldPaymentsFailed             = big.NewInt(1 << 33)
+	paymentFieldPlanID                     = big.NewInt(1 << 34)
+	paymentFieldPresentmentRefundedAmount  = big.NewInt(1 << 35)
+	paymentFieldPresentmentTaxAmount       = big.NewInt(1 << 36)
+	paymentFieldPresentmentTotal           = big.NewInt(1 << 37)
+	paymentFieldProductID                  = big.NewInt(1 << 38)
+	paymentFieldPromoCodeID                = big.NewInt(1 << 39)
+	paymentFieldQuoteID                    = big.NewInt(1 << 40)
+	paymentFieldRecoveryURL                = big.NewInt(1 << 41)
+	paymentFieldRefundable                 = big.NewInt(1 << 42)
+	paymentFieldRefundedAmount             = big.NewInt(1 << 43)
+	paymentFieldRefundedAt                 = big.NewInt(1 << 44)
+	paymentFieldResponseDueAt              = big.NewInt(1 << 45)
+	paymentFieldRetryable                  = big.NewInt(1 << 46)
+	paymentFieldRiskScore                  = big.NewInt(1 << 47)
+	paymentFieldRiskSignals                = big.NewInt(1 << 48)
+	paymentFieldSettlementTimeAt           = big.NewInt(1 << 49)
+	paymentFieldShipmentID                 = big.NewInt(1 << 50)
+	paymentFieldShippingAddress            = big.NewInt(1 << 51)
+	paymentFieldStatus                     = big.NewInt(1 << 52)
+	paymentFieldSubstatus                  = big.NewInt(1 << 53)
+	paymentFieldSubtotal                   = big.NewInt(1 << 54)
+	paymentFieldTaxAmount                  = big.NewInt(1 << 55)
+	paymentFieldTaxBehavior                = big.NewInt(1 << 56)
+	paymentFieldTaxRefundedAmount          = big.NewInt(1 << 57)
+	paymentFieldThreeDsVerified            = big.NewInt(1 << 58)
+	paymentFieldTotal                      = big.NewInt(1 << 59)
+	paymentFieldUpdatedAt                  = big.NewInt(1 << 60)
+	paymentFieldUsdTotal                   = big.NewInt(1 << 61)
+	paymentFieldUser                       = big.NewInt(1 << 62)
+	paymentFieldVerificationChecks         = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	paymentFieldVoidable                   = big.NewInt(0).Lsh(big.NewInt(1), 64)
 )
 
 // paymentNullableFields maps the wire names of Payment's nullable fields (required or optional) to their field bits.
 var paymentNullableFields = map[string]*big.Int{
 	"account_id":                   paymentFieldAccountID,
+	"auto_capture_at":              paymentFieldAutoCaptureAt,
 	"billing_address":              paymentFieldBillingAddress,
 	"billing_reason":               paymentFieldBillingReason,
+	"capture_expires_at":           paymentFieldCaptureExpiresAt,
 	"checkout_configuration_id":    paymentFieldCheckoutConfigurationID,
 	"client_secret":                paymentFieldClientSecret,
 	"customer_email":               paymentFieldCustomerEmail,
 	"customer_phone":               paymentFieldCustomerPhone,
 	"decline_code":                 paymentFieldDeclineCode,
 	"dispute_alerted_at":           paymentFieldDisputeAlertedAt,
+	"dispute_created_at":           paymentFieldDisputeCreatedAt,
 	"failure_message":              paymentFieldFailureMessage,
 	"financing_installments_count": paymentFieldFinancingInstallmentsCount,
 	"ip_address":                   paymentFieldIPAddress,
@@ -29712,6 +29721,8 @@ var paymentNullableFields = map[string]*big.Int{
 	"payment_method_id":            paymentFieldPaymentMethodID,
 	"payment_method_type":          paymentFieldPaymentMethodType,
 	"plan_id":                      paymentFieldPlanID,
+	"presentment_refunded_amount":  paymentFieldPresentmentRefundedAmount,
+	"presentment_tax_amount":       paymentFieldPresentmentTaxAmount,
 	"presentment_total":            paymentFieldPresentmentTotal,
 	"product_id":                   paymentFieldProductID,
 	"promo_code_id":                paymentFieldPromoCodeID,
@@ -29719,6 +29730,7 @@ var paymentNullableFields = map[string]*big.Int{
 	"recovery_url":                 paymentFieldRecoveryURL,
 	"refunded_amount":              paymentFieldRefundedAmount,
 	"refunded_at":                  paymentFieldRefundedAt,
+	"response_due_at":              paymentFieldResponseDueAt,
 	"risk_score":                   paymentFieldRiskScore,
 	"risk_signals":                 paymentFieldRiskSignals,
 	"settlement_time_at":           paymentFieldSettlementTimeAt,
@@ -29738,12 +29750,16 @@ type Payment struct {
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
 	// What the account keeps: the total less Whop's fees.
 	AmountAfterFees *Money `json:"amount_after_fees" url:"amount_after_fees"`
+	// When Whop will capture this authorized card payment automatically unless it is voided first, as an ISO 8601 timestamp. Null when no automatic capture was requested.
+	AutoCaptureAt *string `json:"auto_capture_at,omitempty" url:"auto_capture_at,omitempty"`
 	// True when Whop refunded the payment automatically, for example on a dispute alert.
 	AutoRefunded bool `json:"auto_refunded" url:"auto_refunded"`
 	// The billing address the buyer entered, or null.
 	BillingAddress *PaymentAddress `json:"billing_address,omitempty" url:"billing_address,omitempty"`
 	// Why the charge was created: a first purchase, a renewal, a one-time payment, or a manual charge.
 	BillingReason *BillingReasons `json:"billing_reason,omitempty" url:"billing_reason,omitempty"`
+	// When the hold on this authorized card payment expires if it is not captured first, as an ISO 8601 timestamp. Null when the payment was not created for later capture.
+	CaptureExpiresAt *string `json:"capture_expires_at,omitempty" url:"capture_expires_at,omitempty"`
 	// The checkout configuration the buyer paid through, prefixed `ch_`, or null.
 	CheckoutConfigurationID *string `json:"checkout_configuration_id,omitempty" url:"checkout_configuration_id,omitempty"`
 	// The credential a buyer's surface presents to poll this payment, set its return URL and resume it when the bank asked the customer to authenticate. Only on payments created from a confirmation token or waiting on that authentication, and always null in list responses — retrieve the payment for it.
@@ -29760,6 +29776,8 @@ type Payment struct {
 	DeclineCode *PaymentDeclineCodes `json:"decline_code,omitempty" url:"decline_code,omitempty"`
 	// When an issuer warned that this payment will be disputed, or null.
 	DisputeAlertedAt *string `json:"dispute_alerted_at,omitempty" url:"dispute_alerted_at,omitempty"`
+	// When the most recent dispute on this payment was opened, as an ISO 8601 timestamp. Null when the payment was never disputed, or without the payment:dispute:read permission.
+	DisputeCreatedAt *string `json:"dispute_created_at,omitempty" url:"dispute_created_at,omitempty"`
 	// Why the most recent attempt failed, in plain words, or null.
 	FailureMessage *string `json:"failure_message,omitempty" url:"failure_message,omitempty"`
 	// For installment methods, how many payments the charge splits into.
@@ -29795,6 +29813,10 @@ type Payment struct {
 	PaymentsFailed float64 `json:"payments_failed" url:"payments_failed"`
 	// The variant that was charged, prefixed `plan_`.
 	PlanID *string `json:"plan_id,omitempty" url:"plan_id,omitempty"`
+	// How much has been refunded so far, in the currency presented to the buyer. Zero when nothing has been refunded.
+	PresentmentRefundedAmount *Money `json:"presentment_refunded_amount,omitempty" url:"presentment_refunded_amount,omitempty"`
+	// The sales tax or VAT collected, in the currency presented to the buyer. Null when no tax applied.
+	PresentmentTaxAmount *Money `json:"presentment_tax_amount,omitempty" url:"presentment_tax_amount,omitempty"`
 	// The account-facing total in the currency presented to the buyer, before conversion into the settlement currency. Excludes buyer fees.
 	PresentmentTotal *Money `json:"presentment_total,omitempty" url:"presentment_total,omitempty"`
 	// The product the variant belongs to, prefixed `prod_`. Null for a variant with no product.
@@ -29811,6 +29833,8 @@ type Payment struct {
 	RefundedAmount *Money `json:"refunded_amount,omitempty" url:"refunded_amount,omitempty"`
 	// When the payment was refunded, or null.
 	RefundedAt *string `json:"refunded_at,omitempty" url:"refunded_at,omitempty"`
+	// When the earliest response is due on a dispute or Resolution Center case awaiting the account's response, as an ISO 8601 timestamp. Null when nothing awaits a response, or without the permission to read that dispute or case.
+	ResponseDueAt *string `json:"response_due_at,omitempty" url:"response_due_at,omitempty"`
 	// True when the payment is `open` and Whop can attempt the charge again — see `POST /payments/{id}/retry`.
 	Retryable bool `json:"retryable" url:"retryable"`
 	// Whop's published risk index from 0 (lowest) to 100 (highest), including enforced decision floors. This is not a fraud probability. Null when no score is available.
@@ -29872,6 +29896,13 @@ func (p *Payment) GetAmountAfterFees() *Money {
 	return p.AmountAfterFees
 }
 
+func (p *Payment) GetAutoCaptureAt() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AutoCaptureAt
+}
+
 func (p *Payment) GetAutoRefunded() bool {
 	if p == nil {
 		return false
@@ -29891,6 +29922,13 @@ func (p *Payment) GetBillingReason() *BillingReasons {
 		return nil
 	}
 	return p.BillingReason
+}
+
+func (p *Payment) GetCaptureExpiresAt() *string {
+	if p == nil {
+		return nil
+	}
+	return p.CaptureExpiresAt
 }
 
 func (p *Payment) GetCheckoutConfigurationID() *string {
@@ -29947,6 +29985,13 @@ func (p *Payment) GetDisputeAlertedAt() *string {
 		return nil
 	}
 	return p.DisputeAlertedAt
+}
+
+func (p *Payment) GetDisputeCreatedAt() *string {
+	if p == nil {
+		return nil
+	}
+	return p.DisputeCreatedAt
 }
 
 func (p *Payment) GetFailureMessage() *string {
@@ -30082,6 +30127,20 @@ func (p *Payment) GetPlanID() *string {
 	return p.PlanID
 }
 
+func (p *Payment) GetPresentmentRefundedAmount() *Money {
+	if p == nil {
+		return nil
+	}
+	return p.PresentmentRefundedAmount
+}
+
+func (p *Payment) GetPresentmentTaxAmount() *Money {
+	if p == nil {
+		return nil
+	}
+	return p.PresentmentTaxAmount
+}
+
 func (p *Payment) GetPresentmentTotal() *Money {
 	if p == nil {
 		return nil
@@ -30136,6 +30195,13 @@ func (p *Payment) GetRefundedAt() *string {
 		return nil
 	}
 	return p.RefundedAt
+}
+
+func (p *Payment) GetResponseDueAt() *string {
+	if p == nil {
+		return nil
+	}
+	return p.ResponseDueAt
 }
 
 func (p *Payment) GetRetryable() bool {
@@ -30301,6 +30367,13 @@ func (p *Payment) SetAmountAfterFees(amountAfterFees *Money) {
 	p.require(paymentFieldAmountAfterFees)
 }
 
+// SetAutoCaptureAt sets the AutoCaptureAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Payment) SetAutoCaptureAt(autoCaptureAt *string) {
+	p.AutoCaptureAt = autoCaptureAt
+	p.require(paymentFieldAutoCaptureAt)
+}
+
 // SetAutoRefunded sets the AutoRefunded field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *Payment) SetAutoRefunded(autoRefunded bool) {
@@ -30320,6 +30393,13 @@ func (p *Payment) SetBillingAddress(billingAddress *PaymentAddress) {
 func (p *Payment) SetBillingReason(billingReason *BillingReasons) {
 	p.BillingReason = billingReason
 	p.require(paymentFieldBillingReason)
+}
+
+// SetCaptureExpiresAt sets the CaptureExpiresAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Payment) SetCaptureExpiresAt(captureExpiresAt *string) {
+	p.CaptureExpiresAt = captureExpiresAt
+	p.require(paymentFieldCaptureExpiresAt)
 }
 
 // SetCheckoutConfigurationID sets the CheckoutConfigurationID field and marks it as non-optional;
@@ -30376,6 +30456,13 @@ func (p *Payment) SetDeclineCode(declineCode *PaymentDeclineCodes) {
 func (p *Payment) SetDisputeAlertedAt(disputeAlertedAt *string) {
 	p.DisputeAlertedAt = disputeAlertedAt
 	p.require(paymentFieldDisputeAlertedAt)
+}
+
+// SetDisputeCreatedAt sets the DisputeCreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Payment) SetDisputeCreatedAt(disputeCreatedAt *string) {
+	p.DisputeCreatedAt = disputeCreatedAt
+	p.require(paymentFieldDisputeCreatedAt)
 }
 
 // SetFailureMessage sets the FailureMessage field and marks it as non-optional;
@@ -30511,6 +30598,20 @@ func (p *Payment) SetPlanID(planID *string) {
 	p.require(paymentFieldPlanID)
 }
 
+// SetPresentmentRefundedAmount sets the PresentmentRefundedAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Payment) SetPresentmentRefundedAmount(presentmentRefundedAmount *Money) {
+	p.PresentmentRefundedAmount = presentmentRefundedAmount
+	p.require(paymentFieldPresentmentRefundedAmount)
+}
+
+// SetPresentmentTaxAmount sets the PresentmentTaxAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Payment) SetPresentmentTaxAmount(presentmentTaxAmount *Money) {
+	p.PresentmentTaxAmount = presentmentTaxAmount
+	p.require(paymentFieldPresentmentTaxAmount)
+}
+
 // SetPresentmentTotal sets the PresentmentTotal field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *Payment) SetPresentmentTotal(presentmentTotal *Money) {
@@ -30565,6 +30666,13 @@ func (p *Payment) SetRefundedAmount(refundedAmount *Money) {
 func (p *Payment) SetRefundedAt(refundedAt *string) {
 	p.RefundedAt = refundedAt
 	p.require(paymentFieldRefundedAt)
+}
+
+// SetResponseDueAt sets the ResponseDueAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Payment) SetResponseDueAt(responseDueAt *string) {
+	p.ResponseDueAt = responseDueAt
+	p.require(paymentFieldResponseDueAt)
 }
 
 // SetRetryable sets the Retryable field and marks it as non-optional;
