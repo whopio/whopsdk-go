@@ -10933,6 +10933,29 @@
           "Authorization": {
             "matches": "Bearer .+"
           }
+        },
+        "queryParameters": {
+          "currencies": {
+            "hasExactly": [
+              {
+                "equalTo": "eur"
+              }
+            ]
+          },
+          "plan_ids": {
+            "hasExactly": [
+              {
+                "equalTo": "plan_xxxxxxxxxxxxx"
+              }
+            ]
+          },
+          "product_ids": {
+            "hasExactly": [
+              {
+                "equalTo": "prod_xxxxxxxxxxxxx"
+              }
+            ]
+          }
         }
       },
       "response": {
@@ -10985,6 +11008,61 @@
           }
         }
       }
+    },
+    {
+      "id": "f2e8f461-81c7-4341-8ff5-bba343f87f17",
+      "name": "Retrieve Payment Summary - default",
+      "request": {
+        "urlPathTemplate": "/payments/summary",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "queryParameters": {
+          "currencies": {
+            "hasExactly": [
+              {
+                "equalTo": "usd"
+              }
+            ]
+          },
+          "plan_ids": {
+            "hasExactly": [
+              {
+                "equalTo": "plan_xxxxxxxxxxxxx"
+              }
+            ]
+          },
+          "product_ids": {
+            "hasExactly": [
+              {
+                "equalTo": "prod_xxxxxxxxxxxxx"
+              }
+            ]
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"groups\": {\n    \"currency\": {\n      \"usd\": 1\n    },\n    \"substatus\": {\n      \"auto_refunded\": 0,\n      \"blocked\": 0,\n      \"canceled\": 0,\n      \"dispute_closed\": 0,\n      \"dispute_lost\": 0,\n      \"dispute_needs_response\": 0,\n      \"dispute_under_review\": 0,\n      \"dispute_warning\": 0,\n      \"dispute_warning_closed\": 0,\n      \"dispute_warning_needs_response\": 0,\n      \"dispute_warning_under_review\": 0,\n      \"dispute_won\": 0,\n      \"drafted\": 0,\n      \"failed\": 0,\n      \"incomplete\": 1,\n      \"partially_refunded\": 0,\n      \"past_due\": 0,\n      \"pending\": 0,\n      \"price_too_low\": 0,\n      \"refunded\": 0,\n      \"requires_capture\": 0,\n      \"resolution_lost\": 0,\n      \"resolution_needs_response\": 0,\n      \"resolution_under_review\": 0,\n      \"resolution_won\": 0,\n      \"succeeded\": 0,\n      \"uncollectible\": 0,\n      \"unresolved\": 0\n    }\n  },\n  \"total\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "f2e8f461-81c7-4341-8ff5-bba343f87f17",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
     },
     {
       "id": "26a78586-aa37-4097-9ebc-dfba7fc53d63",
@@ -17726,6 +17804,6 @@
     }
   ],
   "meta": {
-    "total": 495
+    "total": 496
   }
 }

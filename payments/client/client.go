@@ -46,7 +46,23 @@ func NewClient(options *core.RequestOptions) *Client {
 //
 // Example:
 //
-//	request := &whopsdk.ListPaymentsRequest{}
+//	request := &whopsdk.ListPaymentsRequest{
+//	    Currencies: []*string{
+//	        whopsdk.String(
+//	            "eur",
+//	        ),
+//	    },
+//	    PlanIDs: []*string{
+//	        whopsdk.String(
+//	            "plan_xxxxxxxxxxxxx",
+//	        ),
+//	    },
+//	    ProductIDs: []*string{
+//	        whopsdk.String(
+//	            "prod_xxxxxxxxxxxxx",
+//	        ),
+//	    },
+//	}
 //	client.Payments.List(
 //	    context.TODO(),
 //	    request,
@@ -139,6 +155,47 @@ func (c *Client) Create(
 	opts ...option.RequestOption,
 ) (*whopsdk.Payment, error) {
 	response, err := c.WithRawResponse.Create(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Totals up the same payments the list returns, so you can build status tabs and filter options without paging through them. Takes the same filters as List Payments.
+//
+// Example:
+//
+//	request := &whopsdk.SummaryPaymentsRequest{
+//	    Currencies: []*string{
+//	        whopsdk.String(
+//	            "usd",
+//	        ),
+//	    },
+//	    PlanIDs: []*string{
+//	        whopsdk.String(
+//	            "plan_xxxxxxxxxxxxx",
+//	        ),
+//	    },
+//	    ProductIDs: []*string{
+//	        whopsdk.String(
+//	            "prod_xxxxxxxxxxxxx",
+//	        ),
+//	    },
+//	}
+//	client.Payments.Summary(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Summary(
+	ctx context.Context,
+	request *whopsdk.SummaryPaymentsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.SummaryPaymentsResponse, error) {
+	response, err := c.WithRawResponse.Summary(
 		ctx,
 		request,
 		opts...,

@@ -88,7 +88,23 @@ func TestPaymentsListWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &whopsdk.ListPaymentsRequest{}
+	request := &whopsdk.ListPaymentsRequest{
+		Currencies: []*string{
+			whopsdk.String(
+				"eur",
+			),
+		},
+		PlanIDs: []*string{
+			whopsdk.String(
+				"plan_xxxxxxxxxxxxx",
+			),
+		},
+		ProductIDs: []*string{
+			whopsdk.String(
+				"prod_xxxxxxxxxxxxx",
+			),
+		},
+	}
 	_, invocationErr := client.Payments.List(
 		context.TODO(),
 		request,
@@ -98,7 +114,7 @@ func TestPaymentsListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestPaymentsListWithWireMock", "GET", "/payments", nil, 1)
+	VerifyRequestCount(t, "TestPaymentsListWithWireMock", "GET", "/payments", map[string]interface{}{"currencies": "eur", "plan_ids": "plan_xxxxxxxxxxxxx", "product_ids": "prod_xxxxxxxxxxxxx"}, 1)
 }
 
 func TestPaymentsCreateWithWireMock(
@@ -125,6 +141,46 @@ func TestPaymentsCreateWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestPaymentsCreateWithWireMock", "POST", "/payments", nil, 1)
+}
+
+func TestPaymentsSummaryWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.SummaryPaymentsRequest{
+		Currencies: []*string{
+			whopsdk.String(
+				"usd",
+			),
+		},
+		PlanIDs: []*string{
+			whopsdk.String(
+				"plan_xxxxxxxxxxxxx",
+			),
+		},
+		ProductIDs: []*string{
+			whopsdk.String(
+				"prod_xxxxxxxxxxxxx",
+			),
+		},
+	}
+	_, invocationErr := client.Payments.Summary(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestPaymentsSummaryWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestPaymentsSummaryWithWireMock", "GET", "/payments/summary", map[string]interface{}{"currencies": "usd", "plan_ids": "plan_xxxxxxxxxxxxx", "product_ids": "prod_xxxxxxxxxxxxx"}, 1)
 }
 
 func TestPaymentsRetrieveWithWireMock(

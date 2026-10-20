@@ -276,25 +276,39 @@ func (g *GeneratePdfPaymentsRequest) SetID(id string) {
 }
 
 var (
-	listPaymentsRequestFieldMode          = big.NewInt(1 << 0)
-	listPaymentsRequestFieldAccountID     = big.NewInt(1 << 1)
-	listPaymentsRequestFieldStatus        = big.NewInt(1 << 2)
-	listPaymentsRequestFieldBillingReason = big.NewInt(1 << 3)
-	listPaymentsRequestFieldCurrency      = big.NewInt(1 << 4)
-	listPaymentsRequestFieldUserID        = big.NewInt(1 << 5)
-	listPaymentsRequestFieldQuery         = big.NewInt(1 << 6)
-	listPaymentsRequestFieldMemberID      = big.NewInt(1 << 7)
-	listPaymentsRequestFieldMembershipID  = big.NewInt(1 << 8)
-	listPaymentsRequestFieldProductID     = big.NewInt(1 << 9)
-	listPaymentsRequestFieldPlanID        = big.NewInt(1 << 10)
-	listPaymentsRequestFieldCreatedBefore = big.NewInt(1 << 11)
-	listPaymentsRequestFieldCreatedAfter  = big.NewInt(1 << 12)
-	listPaymentsRequestFieldOrder         = big.NewInt(1 << 13)
-	listPaymentsRequestFieldDirection     = big.NewInt(1 << 14)
-	listPaymentsRequestFieldFirst         = big.NewInt(1 << 15)
-	listPaymentsRequestFieldAfter         = big.NewInt(1 << 16)
-	listPaymentsRequestFieldLast          = big.NewInt(1 << 17)
-	listPaymentsRequestFieldBefore        = big.NewInt(1 << 18)
+	listPaymentsRequestFieldMode                 = big.NewInt(1 << 0)
+	listPaymentsRequestFieldAccountID            = big.NewInt(1 << 1)
+	listPaymentsRequestFieldStatus               = big.NewInt(1 << 2)
+	listPaymentsRequestFieldBillingReason        = big.NewInt(1 << 3)
+	listPaymentsRequestFieldCurrency             = big.NewInt(1 << 4)
+	listPaymentsRequestFieldUserID               = big.NewInt(1 << 5)
+	listPaymentsRequestFieldQuery                = big.NewInt(1 << 6)
+	listPaymentsRequestFieldMemberID             = big.NewInt(1 << 7)
+	listPaymentsRequestFieldMembershipID         = big.NewInt(1 << 8)
+	listPaymentsRequestFieldProductID            = big.NewInt(1 << 9)
+	listPaymentsRequestFieldPlanID               = big.NewInt(1 << 10)
+	listPaymentsRequestFieldCreatedBefore        = big.NewInt(1 << 11)
+	listPaymentsRequestFieldCreatedAfter         = big.NewInt(1 << 12)
+	listPaymentsRequestFieldStatuses             = big.NewInt(1 << 13)
+	listPaymentsRequestFieldSubstatuses          = big.NewInt(1 << 14)
+	listPaymentsRequestFieldBillingReasons       = big.NewInt(1 << 15)
+	listPaymentsRequestFieldCurrencies           = big.NewInt(1 << 16)
+	listPaymentsRequestFieldPlanIDs              = big.NewInt(1 << 17)
+	listPaymentsRequestFieldProductIDs           = big.NewInt(1 << 18)
+	listPaymentsRequestFieldPaymentMethods       = big.NewInt(1 << 19)
+	listPaymentsRequestFieldTrackingStates       = big.NewInt(1 << 20)
+	listPaymentsRequestFieldRefundedAfter        = big.NewInt(1 << 21)
+	listPaymentsRequestFieldRefundedBefore       = big.NewInt(1 << 22)
+	listPaymentsRequestFieldDisputeAlertedAfter  = big.NewInt(1 << 23)
+	listPaymentsRequestFieldDisputeAlertedBefore = big.NewInt(1 << 24)
+	listPaymentsRequestFieldDisputeCreatedAfter  = big.NewInt(1 << 25)
+	listPaymentsRequestFieldDisputeCreatedBefore = big.NewInt(1 << 26)
+	listPaymentsRequestFieldOrder                = big.NewInt(1 << 27)
+	listPaymentsRequestFieldDirection            = big.NewInt(1 << 28)
+	listPaymentsRequestFieldFirst                = big.NewInt(1 << 29)
+	listPaymentsRequestFieldAfter                = big.NewInt(1 << 30)
+	listPaymentsRequestFieldLast                 = big.NewInt(1 << 31)
+	listPaymentsRequestFieldBefore               = big.NewInt(1 << 32)
 )
 
 type ListPaymentsRequest struct {
@@ -324,7 +338,35 @@ type ListPaymentsRequest struct {
 	CreatedBefore *time.Time `json:"-" url:"created_before,omitempty"`
 	// Only payments created after this ISO 8601 timestamp.
 	CreatedAfter *time.Time `json:"-" url:"created_after,omitempty"`
-	// The field to sort by.
+	// Only payments in any of these lifecycle states, with the same meanings as `status`. Repeat the parameter to pass several. Combined with `status` when both are sent.
+	Statuses []*ListPaymentsRequestStatusesItem `json:"-" url:"statuses,omitempty"`
+	// Only payments whose `substatus` is any of these. Repeat the parameter to pass several. `incomplete` also matches payments that report `incomplete` because no finer status was recorded.
+	Substatuses []*ListPaymentsRequestSubstatusesItem `json:"-" url:"substatuses,omitempty"`
+	// Only payments charged for any of these reasons, with the same meanings as `billing_reason`. Repeat the parameter to pass several. Combined with `billing_reason` when both are sent.
+	BillingReasons []*ListPaymentsRequestBillingReasonsItem `json:"-" url:"billing_reasons,omitempty"`
+	// Only payments presented in any of these three-letter currencies. Repeat the parameter to pass several. Combined with `currency` when both are sent.
+	Currencies []*string `json:"-" url:"currencies,omitempty"`
+	// Only payments priced by any of these variants, each prefixed `plan_`. Repeat the parameter to pass several. Combined with `plan_id` when both are sent.
+	PlanIDs []*string `json:"-" url:"plan_ids,omitempty"`
+	// Only payments for any of these products, each prefixed `prod_`. Repeat the parameter to pass several. Combined with `product_id` when both are sent.
+	ProductIDs []*string `json:"-" url:"product_ids,omitempty"`
+	// Only payments paid with any of these methods: a card brand such as `amex`, a wallet such as `apple_pay`, or a payment method type such as `paypal`. Repeat the parameter to pass several.
+	PaymentMethods []*ListPaymentsRequestPaymentMethodsItem `json:"-" url:"payment_methods,omitempty"`
+	// Only payments whose shipment is in any of these tracking states, or that still need a tracking number (`needs_tracking`). Repeat the parameter to pass several. Requires `account_id` and the shipment:basic:read permission.
+	TrackingStates []*ListPaymentsRequestTrackingStatesItem `json:"-" url:"tracking_states,omitempty"`
+	// Only payments refunded after this ISO 8601 timestamp.
+	RefundedAfter *time.Time `json:"-" url:"refunded_after,omitempty"`
+	// Only payments refunded before this ISO 8601 timestamp.
+	RefundedBefore *time.Time `json:"-" url:"refunded_before,omitempty"`
+	// Only payments with a dispute alert after this ISO 8601 timestamp.
+	DisputeAlertedAfter *time.Time `json:"-" url:"dispute_alerted_after,omitempty"`
+	// Only payments with a dispute alert before this ISO 8601 timestamp.
+	DisputeAlertedBefore *time.Time `json:"-" url:"dispute_alerted_before,omitempty"`
+	// Only payments with a dispute opened after this ISO 8601 timestamp.
+	DisputeCreatedAfter *time.Time `json:"-" url:"dispute_created_after,omitempty"`
+	// Only payments with a dispute opened before this ISO 8601 timestamp.
+	DisputeCreatedBefore *time.Time `json:"-" url:"dispute_created_before,omitempty"`
+	// The field to sort by. `amount` sorts by the amount charged, in the currency it was charged in.
 	Order *ListPaymentsRequestOrder `json:"-" url:"order,omitempty"`
 	// The sort direction.
 	Direction *ListPaymentsRequestDirection `json:"-" url:"direction,omitempty"`
@@ -439,6 +481,104 @@ func (l *ListPaymentsRequest) SetCreatedBefore(createdBefore *time.Time) {
 func (l *ListPaymentsRequest) SetCreatedAfter(createdAfter *time.Time) {
 	l.CreatedAfter = createdAfter
 	l.require(listPaymentsRequestFieldCreatedAfter)
+}
+
+// SetStatuses sets the Statuses field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetStatuses(statuses []*ListPaymentsRequestStatusesItem) {
+	l.Statuses = statuses
+	l.require(listPaymentsRequestFieldStatuses)
+}
+
+// SetSubstatuses sets the Substatuses field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetSubstatuses(substatuses []*ListPaymentsRequestSubstatusesItem) {
+	l.Substatuses = substatuses
+	l.require(listPaymentsRequestFieldSubstatuses)
+}
+
+// SetBillingReasons sets the BillingReasons field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetBillingReasons(billingReasons []*ListPaymentsRequestBillingReasonsItem) {
+	l.BillingReasons = billingReasons
+	l.require(listPaymentsRequestFieldBillingReasons)
+}
+
+// SetCurrencies sets the Currencies field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetCurrencies(currencies []*string) {
+	l.Currencies = currencies
+	l.require(listPaymentsRequestFieldCurrencies)
+}
+
+// SetPlanIDs sets the PlanIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetPlanIDs(planIDs []*string) {
+	l.PlanIDs = planIDs
+	l.require(listPaymentsRequestFieldPlanIDs)
+}
+
+// SetProductIDs sets the ProductIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetProductIDs(productIDs []*string) {
+	l.ProductIDs = productIDs
+	l.require(listPaymentsRequestFieldProductIDs)
+}
+
+// SetPaymentMethods sets the PaymentMethods field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetPaymentMethods(paymentMethods []*ListPaymentsRequestPaymentMethodsItem) {
+	l.PaymentMethods = paymentMethods
+	l.require(listPaymentsRequestFieldPaymentMethods)
+}
+
+// SetTrackingStates sets the TrackingStates field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetTrackingStates(trackingStates []*ListPaymentsRequestTrackingStatesItem) {
+	l.TrackingStates = trackingStates
+	l.require(listPaymentsRequestFieldTrackingStates)
+}
+
+// SetRefundedAfter sets the RefundedAfter field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetRefundedAfter(refundedAfter *time.Time) {
+	l.RefundedAfter = refundedAfter
+	l.require(listPaymentsRequestFieldRefundedAfter)
+}
+
+// SetRefundedBefore sets the RefundedBefore field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetRefundedBefore(refundedBefore *time.Time) {
+	l.RefundedBefore = refundedBefore
+	l.require(listPaymentsRequestFieldRefundedBefore)
+}
+
+// SetDisputeAlertedAfter sets the DisputeAlertedAfter field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetDisputeAlertedAfter(disputeAlertedAfter *time.Time) {
+	l.DisputeAlertedAfter = disputeAlertedAfter
+	l.require(listPaymentsRequestFieldDisputeAlertedAfter)
+}
+
+// SetDisputeAlertedBefore sets the DisputeAlertedBefore field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetDisputeAlertedBefore(disputeAlertedBefore *time.Time) {
+	l.DisputeAlertedBefore = disputeAlertedBefore
+	l.require(listPaymentsRequestFieldDisputeAlertedBefore)
+}
+
+// SetDisputeCreatedAfter sets the DisputeCreatedAfter field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetDisputeCreatedAfter(disputeCreatedAfter *time.Time) {
+	l.DisputeCreatedAfter = disputeCreatedAfter
+	l.require(listPaymentsRequestFieldDisputeCreatedAfter)
+}
+
+// SetDisputeCreatedBefore sets the DisputeCreatedBefore field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetDisputeCreatedBefore(disputeCreatedBefore *time.Time) {
+	l.DisputeCreatedBefore = disputeCreatedBefore
+	l.require(listPaymentsRequestFieldDisputeCreatedBefore)
 }
 
 // SetOrder sets the Order field and marks it as non-optional;
@@ -721,6 +861,154 @@ func (r *RetryPaymentsRequest) require(field *big.Int) {
 func (r *RetryPaymentsRequest) SetID(id string) {
 	r.ID = id
 	r.require(retryPaymentsRequestFieldID)
+}
+
+var (
+	summaryPaymentsRequestFieldGroups         = big.NewInt(1 << 0)
+	summaryPaymentsRequestFieldAccountID      = big.NewInt(1 << 1)
+	summaryPaymentsRequestFieldStatuses       = big.NewInt(1 << 2)
+	summaryPaymentsRequestFieldSubstatuses    = big.NewInt(1 << 3)
+	summaryPaymentsRequestFieldBillingReasons = big.NewInt(1 << 4)
+	summaryPaymentsRequestFieldCurrencies     = big.NewInt(1 << 5)
+	summaryPaymentsRequestFieldPlanIDs        = big.NewInt(1 << 6)
+	summaryPaymentsRequestFieldProductIDs     = big.NewInt(1 << 7)
+	summaryPaymentsRequestFieldPaymentMethods = big.NewInt(1 << 8)
+	summaryPaymentsRequestFieldTrackingStates = big.NewInt(1 << 9)
+	summaryPaymentsRequestFieldCreatedAfter   = big.NewInt(1 << 10)
+	summaryPaymentsRequestFieldCreatedBefore  = big.NewInt(1 << 11)
+	summaryPaymentsRequestFieldQuery          = big.NewInt(1 << 12)
+)
+
+type SummaryPaymentsRequest struct {
+	// Which breakdowns to return, keyed by these names under `groups`. Repeat the parameter to ask for several; omit it for all of them.
+	Groups []*SummaryPaymentsRequestGroupsItem `json:"-" url:"groups,omitempty"`
+	// Only payments charged by this account, prefixed `biz_`.
+	AccountID *string `json:"-" url:"account_id,omitempty"`
+	// Only payments in any of these lifecycle states. Repeat the parameter to pass several.
+	Statuses []*SummaryPaymentsRequestStatusesItem `json:"-" url:"statuses,omitempty"`
+	// Only payments whose `substatus` is any of these. Repeat the parameter to pass several.
+	Substatuses []*SummaryPaymentsRequestSubstatusesItem `json:"-" url:"substatuses,omitempty"`
+	// Only payments charged for any of these reasons. Repeat the parameter to pass several.
+	BillingReasons []*SummaryPaymentsRequestBillingReasonsItem `json:"-" url:"billing_reasons,omitempty"`
+	// Only payments presented in any of these three-letter currencies. Repeat the parameter to pass several.
+	Currencies []*string `json:"-" url:"currencies,omitempty"`
+	// Only payments priced by any of these variants, each prefixed `plan_`. Repeat the parameter to pass several.
+	PlanIDs []*string `json:"-" url:"plan_ids,omitempty"`
+	// Only payments for any of these products, each prefixed `prod_`. Repeat the parameter to pass several.
+	ProductIDs []*string `json:"-" url:"product_ids,omitempty"`
+	// Only payments paid with any of these methods. Repeat the parameter to pass several.
+	PaymentMethods []*SummaryPaymentsRequestPaymentMethodsItem `json:"-" url:"payment_methods,omitempty"`
+	// Only payments in any of these tracking states. Requires `account_id` and the shipment:basic:read permission.
+	TrackingStates []*SummaryPaymentsRequestTrackingStatesItem `json:"-" url:"tracking_states,omitempty"`
+	// Only payments created after this ISO 8601 timestamp.
+	CreatedAfter *time.Time `json:"-" url:"created_after,omitempty"`
+	// Only payments created before this ISO 8601 timestamp.
+	CreatedBefore *time.Time `json:"-" url:"created_before,omitempty"`
+	// Search payments by user ID, membership ID, user email, name, or username.
+	Query *string `json:"-" url:"query,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (s *SummaryPaymentsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
+	}
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetGroups sets the Groups field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetGroups(groups []*SummaryPaymentsRequestGroupsItem) {
+	s.Groups = groups
+	s.require(summaryPaymentsRequestFieldGroups)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetAccountID(accountID *string) {
+	s.AccountID = accountID
+	s.require(summaryPaymentsRequestFieldAccountID)
+}
+
+// SetStatuses sets the Statuses field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetStatuses(statuses []*SummaryPaymentsRequestStatusesItem) {
+	s.Statuses = statuses
+	s.require(summaryPaymentsRequestFieldStatuses)
+}
+
+// SetSubstatuses sets the Substatuses field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetSubstatuses(substatuses []*SummaryPaymentsRequestSubstatusesItem) {
+	s.Substatuses = substatuses
+	s.require(summaryPaymentsRequestFieldSubstatuses)
+}
+
+// SetBillingReasons sets the BillingReasons field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetBillingReasons(billingReasons []*SummaryPaymentsRequestBillingReasonsItem) {
+	s.BillingReasons = billingReasons
+	s.require(summaryPaymentsRequestFieldBillingReasons)
+}
+
+// SetCurrencies sets the Currencies field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetCurrencies(currencies []*string) {
+	s.Currencies = currencies
+	s.require(summaryPaymentsRequestFieldCurrencies)
+}
+
+// SetPlanIDs sets the PlanIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetPlanIDs(planIDs []*string) {
+	s.PlanIDs = planIDs
+	s.require(summaryPaymentsRequestFieldPlanIDs)
+}
+
+// SetProductIDs sets the ProductIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetProductIDs(productIDs []*string) {
+	s.ProductIDs = productIDs
+	s.require(summaryPaymentsRequestFieldProductIDs)
+}
+
+// SetPaymentMethods sets the PaymentMethods field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetPaymentMethods(paymentMethods []*SummaryPaymentsRequestPaymentMethodsItem) {
+	s.PaymentMethods = paymentMethods
+	s.require(summaryPaymentsRequestFieldPaymentMethods)
+}
+
+// SetTrackingStates sets the TrackingStates field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetTrackingStates(trackingStates []*SummaryPaymentsRequestTrackingStatesItem) {
+	s.TrackingStates = trackingStates
+	s.require(summaryPaymentsRequestFieldTrackingStates)
+}
+
+// SetCreatedAfter sets the CreatedAfter field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetCreatedAfter(createdAfter *time.Time) {
+	s.CreatedAfter = createdAfter
+	s.require(summaryPaymentsRequestFieldCreatedAfter)
+}
+
+// SetCreatedBefore sets the CreatedBefore field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetCreatedBefore(createdBefore *time.Time) {
+	s.CreatedBefore = createdBefore
+	s.require(summaryPaymentsRequestFieldCreatedBefore)
+}
+
+// SetQuery sets the Query field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetQuery(query *string) {
+	s.Query = query
+	s.require(summaryPaymentsRequestFieldQuery)
 }
 
 var (
@@ -3852,6 +4140,40 @@ func (l ListPaymentsRequestBillingReason) Ptr() *ListPaymentsRequestBillingReaso
 	return &l
 }
 
+type ListPaymentsRequestBillingReasonsItem string
+
+const (
+	ListPaymentsRequestBillingReasonsItemSubscriptionCreate ListPaymentsRequestBillingReasonsItem = "subscription_create"
+	ListPaymentsRequestBillingReasonsItemSubscriptionCycle  ListPaymentsRequestBillingReasonsItem = "subscription_cycle"
+	ListPaymentsRequestBillingReasonsItemSubscriptionUpdate ListPaymentsRequestBillingReasonsItem = "subscription_update"
+	ListPaymentsRequestBillingReasonsItemOneTime            ListPaymentsRequestBillingReasonsItem = "one_time"
+	ListPaymentsRequestBillingReasonsItemManual             ListPaymentsRequestBillingReasonsItem = "manual"
+	ListPaymentsRequestBillingReasonsItemSubscription       ListPaymentsRequestBillingReasonsItem = "subscription"
+)
+
+func NewListPaymentsRequestBillingReasonsItemFromString(s string) (ListPaymentsRequestBillingReasonsItem, error) {
+	switch s {
+	case "subscription_create":
+		return ListPaymentsRequestBillingReasonsItemSubscriptionCreate, nil
+	case "subscription_cycle":
+		return ListPaymentsRequestBillingReasonsItemSubscriptionCycle, nil
+	case "subscription_update":
+		return ListPaymentsRequestBillingReasonsItemSubscriptionUpdate, nil
+	case "one_time":
+		return ListPaymentsRequestBillingReasonsItemOneTime, nil
+	case "manual":
+		return ListPaymentsRequestBillingReasonsItemManual, nil
+	case "subscription":
+		return ListPaymentsRequestBillingReasonsItemSubscription, nil
+	}
+	var t ListPaymentsRequestBillingReasonsItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListPaymentsRequestBillingReasonsItem) Ptr() *ListPaymentsRequestBillingReasonsItem {
+	return &l
+}
+
 type ListPaymentsRequestDirection string
 
 const (
@@ -3901,6 +4223,7 @@ type ListPaymentsRequestOrder string
 const (
 	ListPaymentsRequestOrderCreatedAt ListPaymentsRequestOrder = "created_at"
 	ListPaymentsRequestOrderPaidAt    ListPaymentsRequestOrder = "paid_at"
+	ListPaymentsRequestOrderAmount    ListPaymentsRequestOrder = "amount"
 )
 
 func NewListPaymentsRequestOrderFromString(s string) (ListPaymentsRequestOrder, error) {
@@ -3909,12 +4232,570 @@ func NewListPaymentsRequestOrderFromString(s string) (ListPaymentsRequestOrder, 
 		return ListPaymentsRequestOrderCreatedAt, nil
 	case "paid_at":
 		return ListPaymentsRequestOrderPaidAt, nil
+	case "amount":
+		return ListPaymentsRequestOrderAmount, nil
 	}
 	var t ListPaymentsRequestOrder
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
 func (l ListPaymentsRequestOrder) Ptr() *ListPaymentsRequestOrder {
+	return &l
+}
+
+type ListPaymentsRequestPaymentMethodsItem string
+
+const (
+	ListPaymentsRequestPaymentMethodsItemMastercard             ListPaymentsRequestPaymentMethodsItem = "mastercard"
+	ListPaymentsRequestPaymentMethodsItemVisa                   ListPaymentsRequestPaymentMethodsItem = "visa"
+	ListPaymentsRequestPaymentMethodsItemAmex                   ListPaymentsRequestPaymentMethodsItem = "amex"
+	ListPaymentsRequestPaymentMethodsItemDiscover               ListPaymentsRequestPaymentMethodsItem = "discover"
+	ListPaymentsRequestPaymentMethodsItemUnionpay               ListPaymentsRequestPaymentMethodsItem = "unionpay"
+	ListPaymentsRequestPaymentMethodsItemJcb                    ListPaymentsRequestPaymentMethodsItem = "jcb"
+	ListPaymentsRequestPaymentMethodsItemDiners                 ListPaymentsRequestPaymentMethodsItem = "diners"
+	ListPaymentsRequestPaymentMethodsItemLink                   ListPaymentsRequestPaymentMethodsItem = "link"
+	ListPaymentsRequestPaymentMethodsItemTroy                   ListPaymentsRequestPaymentMethodsItem = "troy"
+	ListPaymentsRequestPaymentMethodsItemVisadankort            ListPaymentsRequestPaymentMethodsItem = "visadankort"
+	ListPaymentsRequestPaymentMethodsItemVisabancontact         ListPaymentsRequestPaymentMethodsItem = "visabancontact"
+	ListPaymentsRequestPaymentMethodsItemChinaUnionPay          ListPaymentsRequestPaymentMethodsItem = "china_union_pay"
+	ListPaymentsRequestPaymentMethodsItemRupay                  ListPaymentsRequestPaymentMethodsItem = "rupay"
+	ListPaymentsRequestPaymentMethodsItemJcbrupay               ListPaymentsRequestPaymentMethodsItem = "jcbrupay"
+	ListPaymentsRequestPaymentMethodsItemElo                    ListPaymentsRequestPaymentMethodsItem = "elo"
+	ListPaymentsRequestPaymentMethodsItemMaestro                ListPaymentsRequestPaymentMethodsItem = "maestro"
+	ListPaymentsRequestPaymentMethodsItemTarjetaNaranja         ListPaymentsRequestPaymentMethodsItem = "tarjeta_naranja"
+	ListPaymentsRequestPaymentMethodsItemCirrus                 ListPaymentsRequestPaymentMethodsItem = "cirrus"
+	ListPaymentsRequestPaymentMethodsItemNspkMir                ListPaymentsRequestPaymentMethodsItem = "nspk_mir"
+	ListPaymentsRequestPaymentMethodsItemVerve                  ListPaymentsRequestPaymentMethodsItem = "verve"
+	ListPaymentsRequestPaymentMethodsItemEbt                    ListPaymentsRequestPaymentMethodsItem = "ebt"
+	ListPaymentsRequestPaymentMethodsItemPrivateLabel           ListPaymentsRequestPaymentMethodsItem = "private_label"
+	ListPaymentsRequestPaymentMethodsItemLocalBrand             ListPaymentsRequestPaymentMethodsItem = "local_brand"
+	ListPaymentsRequestPaymentMethodsItemUatp                   ListPaymentsRequestPaymentMethodsItem = "uatp"
+	ListPaymentsRequestPaymentMethodsItemWexcard                ListPaymentsRequestPaymentMethodsItem = "wexcard"
+	ListPaymentsRequestPaymentMethodsItemUzcard                 ListPaymentsRequestPaymentMethodsItem = "uzcard"
+	ListPaymentsRequestPaymentMethodsItemMeeza                  ListPaymentsRequestPaymentMethodsItem = "meeza"
+	ListPaymentsRequestPaymentMethodsItemHrgStoreCard           ListPaymentsRequestPaymentMethodsItem = "hrg_store_card"
+	ListPaymentsRequestPaymentMethodsItemGirocard               ListPaymentsRequestPaymentMethodsItem = "girocard"
+	ListPaymentsRequestPaymentMethodsItemFuelCard               ListPaymentsRequestPaymentMethodsItem = "fuel_card"
+	ListPaymentsRequestPaymentMethodsItemDankort                ListPaymentsRequestPaymentMethodsItem = "dankort"
+	ListPaymentsRequestPaymentMethodsItemCarnet                 ListPaymentsRequestPaymentMethodsItem = "carnet"
+	ListPaymentsRequestPaymentMethodsItemAtmCard                ListPaymentsRequestPaymentMethodsItem = "atm_card"
+	ListPaymentsRequestPaymentMethodsItemChinaUnionPayuzcard    ListPaymentsRequestPaymentMethodsItem = "china_union_payuzcard"
+	ListPaymentsRequestPaymentMethodsItemCodensa                ListPaymentsRequestPaymentMethodsItem = "codensa"
+	ListPaymentsRequestPaymentMethodsItemCabal                  ListPaymentsRequestPaymentMethodsItem = "cabal"
+	ListPaymentsRequestPaymentMethodsItemHipercard              ListPaymentsRequestPaymentMethodsItem = "hipercard"
+	ListPaymentsRequestPaymentMethodsItemJcblankapay            ListPaymentsRequestPaymentMethodsItem = "jcblankapay"
+	ListPaymentsRequestPaymentMethodsItemCmi                    ListPaymentsRequestPaymentMethodsItem = "cmi"
+	ListPaymentsRequestPaymentMethodsItemAura                   ListPaymentsRequestPaymentMethodsItem = "aura"
+	ListPaymentsRequestPaymentMethodsItemAccel                  ListPaymentsRequestPaymentMethodsItem = "accel"
+	ListPaymentsRequestPaymentMethodsItemCuliance               ListPaymentsRequestPaymentMethodsItem = "culiance"
+	ListPaymentsRequestPaymentMethodsItemNyce                   ListPaymentsRequestPaymentMethodsItem = "nyce"
+	ListPaymentsRequestPaymentMethodsItemPulse                  ListPaymentsRequestPaymentMethodsItem = "pulse"
+	ListPaymentsRequestPaymentMethodsItemStar                   ListPaymentsRequestPaymentMethodsItem = "star"
+	ListPaymentsRequestPaymentMethodsItemUnknown                ListPaymentsRequestPaymentMethodsItem = "unknown"
+	ListPaymentsRequestPaymentMethodsItemAcssDebit              ListPaymentsRequestPaymentMethodsItem = "acss_debit"
+	ListPaymentsRequestPaymentMethodsItemAddi                   ListPaymentsRequestPaymentMethodsItem = "addi"
+	ListPaymentsRequestPaymentMethodsItemAffirm                 ListPaymentsRequestPaymentMethodsItem = "affirm"
+	ListPaymentsRequestPaymentMethodsItemAfterpayClearpay       ListPaymentsRequestPaymentMethodsItem = "afterpay_clearpay"
+	ListPaymentsRequestPaymentMethodsItemAlipay                 ListPaymentsRequestPaymentMethodsItem = "alipay"
+	ListPaymentsRequestPaymentMethodsItemAlipayhk               ListPaymentsRequestPaymentMethodsItem = "alipayhk"
+	ListPaymentsRequestPaymentMethodsItemAlma                   ListPaymentsRequestPaymentMethodsItem = "alma"
+	ListPaymentsRequestPaymentMethodsItemAmazonPay              ListPaymentsRequestPaymentMethodsItem = "amazon_pay"
+	ListPaymentsRequestPaymentMethodsItemApple                  ListPaymentsRequestPaymentMethodsItem = "apple"
+	ListPaymentsRequestPaymentMethodsItemApplePay               ListPaymentsRequestPaymentMethodsItem = "apple_pay"
+	ListPaymentsRequestPaymentMethodsItemAuBankTransfer         ListPaymentsRequestPaymentMethodsItem = "au_bank_transfer"
+	ListPaymentsRequestPaymentMethodsItemAuBecsDebit            ListPaymentsRequestPaymentMethodsItem = "au_becs_debit"
+	ListPaymentsRequestPaymentMethodsItemBacsDebit              ListPaymentsRequestPaymentMethodsItem = "bacs_debit"
+	ListPaymentsRequestPaymentMethodsItemBancolombia            ListPaymentsRequestPaymentMethodsItem = "bancolombia"
+	ListPaymentsRequestPaymentMethodsItemBancontact             ListPaymentsRequestPaymentMethodsItem = "bancontact"
+	ListPaymentsRequestPaymentMethodsItemBankWire               ListPaymentsRequestPaymentMethodsItem = "bank_wire"
+	ListPaymentsRequestPaymentMethodsItemBillie                 ListPaymentsRequestPaymentMethodsItem = "billie"
+	ListPaymentsRequestPaymentMethodsItemBlik                   ListPaymentsRequestPaymentMethodsItem = "blik"
+	ListPaymentsRequestPaymentMethodsItemBoleto                 ListPaymentsRequestPaymentMethodsItem = "boleto"
+	ListPaymentsRequestPaymentMethodsItemBreB                   ListPaymentsRequestPaymentMethodsItem = "bre_b"
+	ListPaymentsRequestPaymentMethodsItemCaBankTransfer         ListPaymentsRequestPaymentMethodsItem = "ca_bank_transfer"
+	ListPaymentsRequestPaymentMethodsItemCapchasePay            ListPaymentsRequestPaymentMethodsItem = "capchase_pay"
+	ListPaymentsRequestPaymentMethodsItemCard                   ListPaymentsRequestPaymentMethodsItem = "card"
+	ListPaymentsRequestPaymentMethodsItemCardPresent            ListPaymentsRequestPaymentMethodsItem = "card_present"
+	ListPaymentsRequestPaymentMethodsItemCardInstallmentsThree  ListPaymentsRequestPaymentMethodsItem = "card_installments_three"
+	ListPaymentsRequestPaymentMethodsItemCardInstallmentsSix    ListPaymentsRequestPaymentMethodsItem = "card_installments_six"
+	ListPaymentsRequestPaymentMethodsItemCardInstallmentsTwelve ListPaymentsRequestPaymentMethodsItem = "card_installments_twelve"
+	ListPaymentsRequestPaymentMethodsItemCashapp                ListPaymentsRequestPaymentMethodsItem = "cashapp"
+	ListPaymentsRequestPaymentMethodsItemClaritypay             ListPaymentsRequestPaymentMethodsItem = "claritypay"
+	ListPaymentsRequestPaymentMethodsItemCoinbase               ListPaymentsRequestPaymentMethodsItem = "coinbase"
+	ListPaymentsRequestPaymentMethodsItemCrypto                 ListPaymentsRequestPaymentMethodsItem = "crypto"
+	ListPaymentsRequestPaymentMethodsItemCustom                 ListPaymentsRequestPaymentMethodsItem = "custom"
+	ListPaymentsRequestPaymentMethodsItemCustomerBalance        ListPaymentsRequestPaymentMethodsItem = "customer_balance"
+	ListPaymentsRequestPaymentMethodsItemDemoPay                ListPaymentsRequestPaymentMethodsItem = "demo_pay"
+	ListPaymentsRequestPaymentMethodsItemDuitnowQr              ListPaymentsRequestPaymentMethodsItem = "duitnow_qr"
+	ListPaymentsRequestPaymentMethodsItemEfecty                 ListPaymentsRequestPaymentMethodsItem = "efecty"
+	ListPaymentsRequestPaymentMethodsItemEps                    ListPaymentsRequestPaymentMethodsItem = "eps"
+	ListPaymentsRequestPaymentMethodsItemEuBankTransfer         ListPaymentsRequestPaymentMethodsItem = "eu_bank_transfer"
+	ListPaymentsRequestPaymentMethodsItemFpx                    ListPaymentsRequestPaymentMethodsItem = "fpx"
+	ListPaymentsRequestPaymentMethodsItemFlexPay                ListPaymentsRequestPaymentMethodsItem = "flex_pay"
+	ListPaymentsRequestPaymentMethodsItemGbBankTransfer         ListPaymentsRequestPaymentMethodsItem = "gb_bank_transfer"
+	ListPaymentsRequestPaymentMethodsItemGcash                  ListPaymentsRequestPaymentMethodsItem = "gcash"
+	ListPaymentsRequestPaymentMethodsItemGiropay                ListPaymentsRequestPaymentMethodsItem = "giropay"
+	ListPaymentsRequestPaymentMethodsItemGooglePay              ListPaymentsRequestPaymentMethodsItem = "google_pay"
+	ListPaymentsRequestPaymentMethodsItemGopay                  ListPaymentsRequestPaymentMethodsItem = "gopay"
+	ListPaymentsRequestPaymentMethodsItemGrabpay                ListPaymentsRequestPaymentMethodsItem = "grabpay"
+	ListPaymentsRequestPaymentMethodsItemIDBankTransfer         ListPaymentsRequestPaymentMethodsItem = "id_bank_transfer"
+	ListPaymentsRequestPaymentMethodsItemIdeal                  ListPaymentsRequestPaymentMethodsItem = "ideal"
+	ListPaymentsRequestPaymentMethodsItemInterac                ListPaymentsRequestPaymentMethodsItem = "interac"
+	ListPaymentsRequestPaymentMethodsItemKakaoPay               ListPaymentsRequestPaymentMethodsItem = "kakao_pay"
+	ListPaymentsRequestPaymentMethodsItemKlarna                 ListPaymentsRequestPaymentMethodsItem = "klarna"
+	ListPaymentsRequestPaymentMethodsItemKlarnaPayNow           ListPaymentsRequestPaymentMethodsItem = "klarna_pay_now"
+	ListPaymentsRequestPaymentMethodsItemKonbini                ListPaymentsRequestPaymentMethodsItem = "konbini"
+	ListPaymentsRequestPaymentMethodsItemKrCard                 ListPaymentsRequestPaymentMethodsItem = "kr_card"
+	ListPaymentsRequestPaymentMethodsItemKrMarket               ListPaymentsRequestPaymentMethodsItem = "kr_market"
+	ListPaymentsRequestPaymentMethodsItemKriya                  ListPaymentsRequestPaymentMethodsItem = "kriya"
+	ListPaymentsRequestPaymentMethodsItemKueski                 ListPaymentsRequestPaymentMethodsItem = "kueski"
+	ListPaymentsRequestPaymentMethodsItemMbWay                  ListPaymentsRequestPaymentMethodsItem = "mb_way"
+	ListPaymentsRequestPaymentMethodsItemMPesa                  ListPaymentsRequestPaymentMethodsItem = "m_pesa"
+	ListPaymentsRequestPaymentMethodsItemMercadoPago            ListPaymentsRequestPaymentMethodsItem = "mercado_pago"
+	ListPaymentsRequestPaymentMethodsItemMercadoPagoAr          ListPaymentsRequestPaymentMethodsItem = "mercado_pago_ar"
+	ListPaymentsRequestPaymentMethodsItemMercadoPagoMx          ListPaymentsRequestPaymentMethodsItem = "mercado_pago_mx"
+	ListPaymentsRequestPaymentMethodsItemMobilepay              ListPaymentsRequestPaymentMethodsItem = "mobilepay"
+	ListPaymentsRequestPaymentMethodsItemModo                   ListPaymentsRequestPaymentMethodsItem = "modo"
+	ListPaymentsRequestPaymentMethodsItemMondu                  ListPaymentsRequestPaymentMethodsItem = "mondu"
+	ListPaymentsRequestPaymentMethodsItemMultibanco             ListPaymentsRequestPaymentMethodsItem = "multibanco"
+	ListPaymentsRequestPaymentMethodsItemNaverPay               ListPaymentsRequestPaymentMethodsItem = "naver_pay"
+	ListPaymentsRequestPaymentMethodsItemNequi                  ListPaymentsRequestPaymentMethodsItem = "nequi"
+	ListPaymentsRequestPaymentMethodsItemNetbanking             ListPaymentsRequestPaymentMethodsItem = "netbanking"
+	ListPaymentsRequestPaymentMethodsItemNgBank                 ListPaymentsRequestPaymentMethodsItem = "ng_bank"
+	ListPaymentsRequestPaymentMethodsItemNgBankTransfer         ListPaymentsRequestPaymentMethodsItem = "ng_bank_transfer"
+	ListPaymentsRequestPaymentMethodsItemNgCard                 ListPaymentsRequestPaymentMethodsItem = "ng_card"
+	ListPaymentsRequestPaymentMethodsItemNgMarket               ListPaymentsRequestPaymentMethodsItem = "ng_market"
+	ListPaymentsRequestPaymentMethodsItemNgUssd                 ListPaymentsRequestPaymentMethodsItem = "ng_ussd"
+	ListPaymentsRequestPaymentMethodsItemNgWallet               ListPaymentsRequestPaymentMethodsItem = "ng_wallet"
+	ListPaymentsRequestPaymentMethodsItemNupay                  ListPaymentsRequestPaymentMethodsItem = "nupay"
+	ListPaymentsRequestPaymentMethodsItemNzBankAccount          ListPaymentsRequestPaymentMethodsItem = "nz_bank_account"
+	ListPaymentsRequestPaymentMethodsItemOney                   ListPaymentsRequestPaymentMethodsItem = "oney"
+	ListPaymentsRequestPaymentMethodsItemOney3X                 ListPaymentsRequestPaymentMethodsItem = "oney_3x"
+	ListPaymentsRequestPaymentMethodsItemOney4X                 ListPaymentsRequestPaymentMethodsItem = "oney_4x"
+	ListPaymentsRequestPaymentMethodsItemOpay                   ListPaymentsRequestPaymentMethodsItem = "opay"
+	ListPaymentsRequestPaymentMethodsItemOxxo                   ListPaymentsRequestPaymentMethodsItem = "oxxo"
+	ListPaymentsRequestPaymentMethodsItemP24                    ListPaymentsRequestPaymentMethodsItem = "p24"
+	ListPaymentsRequestPaymentMethodsItemPagoEfectivo           ListPaymentsRequestPaymentMethodsItem = "pago_efectivo"
+	ListPaymentsRequestPaymentMethodsItemPse                    ListPaymentsRequestPaymentMethodsItem = "pse"
+	ListPaymentsRequestPaymentMethodsItemPayByBank              ListPaymentsRequestPaymentMethodsItem = "pay_by_bank"
+	ListPaymentsRequestPaymentMethodsItemPayco                  ListPaymentsRequestPaymentMethodsItem = "payco"
+	ListPaymentsRequestPaymentMethodsItemPaynow                 ListPaymentsRequestPaymentMethodsItem = "paynow"
+	ListPaymentsRequestPaymentMethodsItemPaypal                 ListPaymentsRequestPaymentMethodsItem = "paypal"
+	ListPaymentsRequestPaymentMethodsItemPaypalExpress          ListPaymentsRequestPaymentMethodsItem = "paypal_express"
+	ListPaymentsRequestPaymentMethodsItemPaypay                 ListPaymentsRequestPaymentMethodsItem = "paypay"
+	ListPaymentsRequestPaymentMethodsItemPayto                  ListPaymentsRequestPaymentMethodsItem = "payto"
+	ListPaymentsRequestPaymentMethodsItemPaytoEmail             ListPaymentsRequestPaymentMethodsItem = "payto_email"
+	ListPaymentsRequestPaymentMethodsItemPaytoPhone             ListPaymentsRequestPaymentMethodsItem = "payto_phone"
+	ListPaymentsRequestPaymentMethodsItemPaytoBankAccount       ListPaymentsRequestPaymentMethodsItem = "payto_bank_account"
+	ListPaymentsRequestPaymentMethodsItemPix                    ListPaymentsRequestPaymentMethodsItem = "pix"
+	ListPaymentsRequestPaymentMethodsItemPlatformBalance        ListPaymentsRequestPaymentMethodsItem = "platform_balance"
+	ListPaymentsRequestPaymentMethodsItemPromptpay              ListPaymentsRequestPaymentMethodsItem = "promptpay"
+	ListPaymentsRequestPaymentMethodsItemQris                   ListPaymentsRequestPaymentMethodsItem = "qris"
+	ListPaymentsRequestPaymentMethodsItemRapipago               ListPaymentsRequestPaymentMethodsItem = "rapipago"
+	ListPaymentsRequestPaymentMethodsItemRechnung               ListPaymentsRequestPaymentMethodsItem = "rechnung"
+	ListPaymentsRequestPaymentMethodsItemRevolutPay             ListPaymentsRequestPaymentMethodsItem = "revolut_pay"
+	ListPaymentsRequestPaymentMethodsItemSamsungPay             ListPaymentsRequestPaymentMethodsItem = "samsung_pay"
+	ListPaymentsRequestPaymentMethodsItemSatispay               ListPaymentsRequestPaymentMethodsItem = "satispay"
+	ListPaymentsRequestPaymentMethodsItemScalapay               ListPaymentsRequestPaymentMethodsItem = "scalapay"
+	ListPaymentsRequestPaymentMethodsItemSencillito             ListPaymentsRequestPaymentMethodsItem = "sencillito"
+	ListPaymentsRequestPaymentMethodsItemSepaDebit              ListPaymentsRequestPaymentMethodsItem = "sepa_debit"
+	ListPaymentsRequestPaymentMethodsItemSequra                 ListPaymentsRequestPaymentMethodsItem = "sequra"
+	ListPaymentsRequestPaymentMethodsItemServipag               ListPaymentsRequestPaymentMethodsItem = "servipag"
+	ListPaymentsRequestPaymentMethodsItemSezzle                 ListPaymentsRequestPaymentMethodsItem = "sezzle"
+	ListPaymentsRequestPaymentMethodsItemShopPay                ListPaymentsRequestPaymentMethodsItem = "shop_pay"
+	ListPaymentsRequestPaymentMethodsItemShopeepay              ListPaymentsRequestPaymentMethodsItem = "shopeepay"
+	ListPaymentsRequestPaymentMethodsItemSofort                 ListPaymentsRequestPaymentMethodsItem = "sofort"
+	ListPaymentsRequestPaymentMethodsItemSouthKoreaMarket       ListPaymentsRequestPaymentMethodsItem = "south_korea_market"
+	ListPaymentsRequestPaymentMethodsItemSpei                   ListPaymentsRequestPaymentMethodsItem = "spei"
+	ListPaymentsRequestPaymentMethodsItemSplitit                ListPaymentsRequestPaymentMethodsItem = "splitit"
+	ListPaymentsRequestPaymentMethodsItemSunbit                 ListPaymentsRequestPaymentMethodsItem = "sunbit"
+	ListPaymentsRequestPaymentMethodsItemSwish                  ListPaymentsRequestPaymentMethodsItem = "swish"
+	ListPaymentsRequestPaymentMethodsItemTabby                  ListPaymentsRequestPaymentMethodsItem = "tabby"
+	ListPaymentsRequestPaymentMethodsItemTamara                 ListPaymentsRequestPaymentMethodsItem = "tamara"
+	ListPaymentsRequestPaymentMethodsItemTouchNGo               ListPaymentsRequestPaymentMethodsItem = "touch_n_go"
+	ListPaymentsRequestPaymentMethodsItemTwint                  ListPaymentsRequestPaymentMethodsItem = "twint"
+	ListPaymentsRequestPaymentMethodsItemUpi                    ListPaymentsRequestPaymentMethodsItem = "upi"
+	ListPaymentsRequestPaymentMethodsItemUsBankAccount          ListPaymentsRequestPaymentMethodsItem = "us_bank_account"
+	ListPaymentsRequestPaymentMethodsItemUsBankTransfer         ListPaymentsRequestPaymentMethodsItem = "us_bank_transfer"
+	ListPaymentsRequestPaymentMethodsItemVenmo                  ListPaymentsRequestPaymentMethodsItem = "venmo"
+	ListPaymentsRequestPaymentMethodsItemVipps                  ListPaymentsRequestPaymentMethodsItem = "vipps"
+	ListPaymentsRequestPaymentMethodsItemWebpay                 ListPaymentsRequestPaymentMethodsItem = "webpay"
+	ListPaymentsRequestPaymentMethodsItemWechatPay              ListPaymentsRequestPaymentMethodsItem = "wechat_pay"
+	ListPaymentsRequestPaymentMethodsItemWhopPay                ListPaymentsRequestPaymentMethodsItem = "whop_pay"
+	ListPaymentsRequestPaymentMethodsItemYape                   ListPaymentsRequestPaymentMethodsItem = "yape"
+	ListPaymentsRequestPaymentMethodsItemZip                    ListPaymentsRequestPaymentMethodsItem = "zip"
+	ListPaymentsRequestPaymentMethodsItemCoinflow               ListPaymentsRequestPaymentMethodsItem = "coinflow"
+	ListPaymentsRequestPaymentMethodsItemTapToPay               ListPaymentsRequestPaymentMethodsItem = "tap_to_pay"
+)
+
+func NewListPaymentsRequestPaymentMethodsItemFromString(s string) (ListPaymentsRequestPaymentMethodsItem, error) {
+	switch s {
+	case "mastercard":
+		return ListPaymentsRequestPaymentMethodsItemMastercard, nil
+	case "visa":
+		return ListPaymentsRequestPaymentMethodsItemVisa, nil
+	case "amex":
+		return ListPaymentsRequestPaymentMethodsItemAmex, nil
+	case "discover":
+		return ListPaymentsRequestPaymentMethodsItemDiscover, nil
+	case "unionpay":
+		return ListPaymentsRequestPaymentMethodsItemUnionpay, nil
+	case "jcb":
+		return ListPaymentsRequestPaymentMethodsItemJcb, nil
+	case "diners":
+		return ListPaymentsRequestPaymentMethodsItemDiners, nil
+	case "link":
+		return ListPaymentsRequestPaymentMethodsItemLink, nil
+	case "troy":
+		return ListPaymentsRequestPaymentMethodsItemTroy, nil
+	case "visadankort":
+		return ListPaymentsRequestPaymentMethodsItemVisadankort, nil
+	case "visabancontact":
+		return ListPaymentsRequestPaymentMethodsItemVisabancontact, nil
+	case "china_union_pay":
+		return ListPaymentsRequestPaymentMethodsItemChinaUnionPay, nil
+	case "rupay":
+		return ListPaymentsRequestPaymentMethodsItemRupay, nil
+	case "jcbrupay":
+		return ListPaymentsRequestPaymentMethodsItemJcbrupay, nil
+	case "elo":
+		return ListPaymentsRequestPaymentMethodsItemElo, nil
+	case "maestro":
+		return ListPaymentsRequestPaymentMethodsItemMaestro, nil
+	case "tarjeta_naranja":
+		return ListPaymentsRequestPaymentMethodsItemTarjetaNaranja, nil
+	case "cirrus":
+		return ListPaymentsRequestPaymentMethodsItemCirrus, nil
+	case "nspk_mir":
+		return ListPaymentsRequestPaymentMethodsItemNspkMir, nil
+	case "verve":
+		return ListPaymentsRequestPaymentMethodsItemVerve, nil
+	case "ebt":
+		return ListPaymentsRequestPaymentMethodsItemEbt, nil
+	case "private_label":
+		return ListPaymentsRequestPaymentMethodsItemPrivateLabel, nil
+	case "local_brand":
+		return ListPaymentsRequestPaymentMethodsItemLocalBrand, nil
+	case "uatp":
+		return ListPaymentsRequestPaymentMethodsItemUatp, nil
+	case "wexcard":
+		return ListPaymentsRequestPaymentMethodsItemWexcard, nil
+	case "uzcard":
+		return ListPaymentsRequestPaymentMethodsItemUzcard, nil
+	case "meeza":
+		return ListPaymentsRequestPaymentMethodsItemMeeza, nil
+	case "hrg_store_card":
+		return ListPaymentsRequestPaymentMethodsItemHrgStoreCard, nil
+	case "girocard":
+		return ListPaymentsRequestPaymentMethodsItemGirocard, nil
+	case "fuel_card":
+		return ListPaymentsRequestPaymentMethodsItemFuelCard, nil
+	case "dankort":
+		return ListPaymentsRequestPaymentMethodsItemDankort, nil
+	case "carnet":
+		return ListPaymentsRequestPaymentMethodsItemCarnet, nil
+	case "atm_card":
+		return ListPaymentsRequestPaymentMethodsItemAtmCard, nil
+	case "china_union_payuzcard":
+		return ListPaymentsRequestPaymentMethodsItemChinaUnionPayuzcard, nil
+	case "codensa":
+		return ListPaymentsRequestPaymentMethodsItemCodensa, nil
+	case "cabal":
+		return ListPaymentsRequestPaymentMethodsItemCabal, nil
+	case "hipercard":
+		return ListPaymentsRequestPaymentMethodsItemHipercard, nil
+	case "jcblankapay":
+		return ListPaymentsRequestPaymentMethodsItemJcblankapay, nil
+	case "cmi":
+		return ListPaymentsRequestPaymentMethodsItemCmi, nil
+	case "aura":
+		return ListPaymentsRequestPaymentMethodsItemAura, nil
+	case "accel":
+		return ListPaymentsRequestPaymentMethodsItemAccel, nil
+	case "culiance":
+		return ListPaymentsRequestPaymentMethodsItemCuliance, nil
+	case "nyce":
+		return ListPaymentsRequestPaymentMethodsItemNyce, nil
+	case "pulse":
+		return ListPaymentsRequestPaymentMethodsItemPulse, nil
+	case "star":
+		return ListPaymentsRequestPaymentMethodsItemStar, nil
+	case "unknown":
+		return ListPaymentsRequestPaymentMethodsItemUnknown, nil
+	case "acss_debit":
+		return ListPaymentsRequestPaymentMethodsItemAcssDebit, nil
+	case "addi":
+		return ListPaymentsRequestPaymentMethodsItemAddi, nil
+	case "affirm":
+		return ListPaymentsRequestPaymentMethodsItemAffirm, nil
+	case "afterpay_clearpay":
+		return ListPaymentsRequestPaymentMethodsItemAfterpayClearpay, nil
+	case "alipay":
+		return ListPaymentsRequestPaymentMethodsItemAlipay, nil
+	case "alipayhk":
+		return ListPaymentsRequestPaymentMethodsItemAlipayhk, nil
+	case "alma":
+		return ListPaymentsRequestPaymentMethodsItemAlma, nil
+	case "amazon_pay":
+		return ListPaymentsRequestPaymentMethodsItemAmazonPay, nil
+	case "apple":
+		return ListPaymentsRequestPaymentMethodsItemApple, nil
+	case "apple_pay":
+		return ListPaymentsRequestPaymentMethodsItemApplePay, nil
+	case "au_bank_transfer":
+		return ListPaymentsRequestPaymentMethodsItemAuBankTransfer, nil
+	case "au_becs_debit":
+		return ListPaymentsRequestPaymentMethodsItemAuBecsDebit, nil
+	case "bacs_debit":
+		return ListPaymentsRequestPaymentMethodsItemBacsDebit, nil
+	case "bancolombia":
+		return ListPaymentsRequestPaymentMethodsItemBancolombia, nil
+	case "bancontact":
+		return ListPaymentsRequestPaymentMethodsItemBancontact, nil
+	case "bank_wire":
+		return ListPaymentsRequestPaymentMethodsItemBankWire, nil
+	case "billie":
+		return ListPaymentsRequestPaymentMethodsItemBillie, nil
+	case "blik":
+		return ListPaymentsRequestPaymentMethodsItemBlik, nil
+	case "boleto":
+		return ListPaymentsRequestPaymentMethodsItemBoleto, nil
+	case "bre_b":
+		return ListPaymentsRequestPaymentMethodsItemBreB, nil
+	case "ca_bank_transfer":
+		return ListPaymentsRequestPaymentMethodsItemCaBankTransfer, nil
+	case "capchase_pay":
+		return ListPaymentsRequestPaymentMethodsItemCapchasePay, nil
+	case "card":
+		return ListPaymentsRequestPaymentMethodsItemCard, nil
+	case "card_present":
+		return ListPaymentsRequestPaymentMethodsItemCardPresent, nil
+	case "card_installments_three":
+		return ListPaymentsRequestPaymentMethodsItemCardInstallmentsThree, nil
+	case "card_installments_six":
+		return ListPaymentsRequestPaymentMethodsItemCardInstallmentsSix, nil
+	case "card_installments_twelve":
+		return ListPaymentsRequestPaymentMethodsItemCardInstallmentsTwelve, nil
+	case "cashapp":
+		return ListPaymentsRequestPaymentMethodsItemCashapp, nil
+	case "claritypay":
+		return ListPaymentsRequestPaymentMethodsItemClaritypay, nil
+	case "coinbase":
+		return ListPaymentsRequestPaymentMethodsItemCoinbase, nil
+	case "crypto":
+		return ListPaymentsRequestPaymentMethodsItemCrypto, nil
+	case "custom":
+		return ListPaymentsRequestPaymentMethodsItemCustom, nil
+	case "customer_balance":
+		return ListPaymentsRequestPaymentMethodsItemCustomerBalance, nil
+	case "demo_pay":
+		return ListPaymentsRequestPaymentMethodsItemDemoPay, nil
+	case "duitnow_qr":
+		return ListPaymentsRequestPaymentMethodsItemDuitnowQr, nil
+	case "efecty":
+		return ListPaymentsRequestPaymentMethodsItemEfecty, nil
+	case "eps":
+		return ListPaymentsRequestPaymentMethodsItemEps, nil
+	case "eu_bank_transfer":
+		return ListPaymentsRequestPaymentMethodsItemEuBankTransfer, nil
+	case "fpx":
+		return ListPaymentsRequestPaymentMethodsItemFpx, nil
+	case "flex_pay":
+		return ListPaymentsRequestPaymentMethodsItemFlexPay, nil
+	case "gb_bank_transfer":
+		return ListPaymentsRequestPaymentMethodsItemGbBankTransfer, nil
+	case "gcash":
+		return ListPaymentsRequestPaymentMethodsItemGcash, nil
+	case "giropay":
+		return ListPaymentsRequestPaymentMethodsItemGiropay, nil
+	case "google_pay":
+		return ListPaymentsRequestPaymentMethodsItemGooglePay, nil
+	case "gopay":
+		return ListPaymentsRequestPaymentMethodsItemGopay, nil
+	case "grabpay":
+		return ListPaymentsRequestPaymentMethodsItemGrabpay, nil
+	case "id_bank_transfer":
+		return ListPaymentsRequestPaymentMethodsItemIDBankTransfer, nil
+	case "ideal":
+		return ListPaymentsRequestPaymentMethodsItemIdeal, nil
+	case "interac":
+		return ListPaymentsRequestPaymentMethodsItemInterac, nil
+	case "kakao_pay":
+		return ListPaymentsRequestPaymentMethodsItemKakaoPay, nil
+	case "klarna":
+		return ListPaymentsRequestPaymentMethodsItemKlarna, nil
+	case "klarna_pay_now":
+		return ListPaymentsRequestPaymentMethodsItemKlarnaPayNow, nil
+	case "konbini":
+		return ListPaymentsRequestPaymentMethodsItemKonbini, nil
+	case "kr_card":
+		return ListPaymentsRequestPaymentMethodsItemKrCard, nil
+	case "kr_market":
+		return ListPaymentsRequestPaymentMethodsItemKrMarket, nil
+	case "kriya":
+		return ListPaymentsRequestPaymentMethodsItemKriya, nil
+	case "kueski":
+		return ListPaymentsRequestPaymentMethodsItemKueski, nil
+	case "mb_way":
+		return ListPaymentsRequestPaymentMethodsItemMbWay, nil
+	case "m_pesa":
+		return ListPaymentsRequestPaymentMethodsItemMPesa, nil
+	case "mercado_pago":
+		return ListPaymentsRequestPaymentMethodsItemMercadoPago, nil
+	case "mercado_pago_ar":
+		return ListPaymentsRequestPaymentMethodsItemMercadoPagoAr, nil
+	case "mercado_pago_mx":
+		return ListPaymentsRequestPaymentMethodsItemMercadoPagoMx, nil
+	case "mobilepay":
+		return ListPaymentsRequestPaymentMethodsItemMobilepay, nil
+	case "modo":
+		return ListPaymentsRequestPaymentMethodsItemModo, nil
+	case "mondu":
+		return ListPaymentsRequestPaymentMethodsItemMondu, nil
+	case "multibanco":
+		return ListPaymentsRequestPaymentMethodsItemMultibanco, nil
+	case "naver_pay":
+		return ListPaymentsRequestPaymentMethodsItemNaverPay, nil
+	case "nequi":
+		return ListPaymentsRequestPaymentMethodsItemNequi, nil
+	case "netbanking":
+		return ListPaymentsRequestPaymentMethodsItemNetbanking, nil
+	case "ng_bank":
+		return ListPaymentsRequestPaymentMethodsItemNgBank, nil
+	case "ng_bank_transfer":
+		return ListPaymentsRequestPaymentMethodsItemNgBankTransfer, nil
+	case "ng_card":
+		return ListPaymentsRequestPaymentMethodsItemNgCard, nil
+	case "ng_market":
+		return ListPaymentsRequestPaymentMethodsItemNgMarket, nil
+	case "ng_ussd":
+		return ListPaymentsRequestPaymentMethodsItemNgUssd, nil
+	case "ng_wallet":
+		return ListPaymentsRequestPaymentMethodsItemNgWallet, nil
+	case "nupay":
+		return ListPaymentsRequestPaymentMethodsItemNupay, nil
+	case "nz_bank_account":
+		return ListPaymentsRequestPaymentMethodsItemNzBankAccount, nil
+	case "oney":
+		return ListPaymentsRequestPaymentMethodsItemOney, nil
+	case "oney_3x":
+		return ListPaymentsRequestPaymentMethodsItemOney3X, nil
+	case "oney_4x":
+		return ListPaymentsRequestPaymentMethodsItemOney4X, nil
+	case "opay":
+		return ListPaymentsRequestPaymentMethodsItemOpay, nil
+	case "oxxo":
+		return ListPaymentsRequestPaymentMethodsItemOxxo, nil
+	case "p24":
+		return ListPaymentsRequestPaymentMethodsItemP24, nil
+	case "pago_efectivo":
+		return ListPaymentsRequestPaymentMethodsItemPagoEfectivo, nil
+	case "pse":
+		return ListPaymentsRequestPaymentMethodsItemPse, nil
+	case "pay_by_bank":
+		return ListPaymentsRequestPaymentMethodsItemPayByBank, nil
+	case "payco":
+		return ListPaymentsRequestPaymentMethodsItemPayco, nil
+	case "paynow":
+		return ListPaymentsRequestPaymentMethodsItemPaynow, nil
+	case "paypal":
+		return ListPaymentsRequestPaymentMethodsItemPaypal, nil
+	case "paypal_express":
+		return ListPaymentsRequestPaymentMethodsItemPaypalExpress, nil
+	case "paypay":
+		return ListPaymentsRequestPaymentMethodsItemPaypay, nil
+	case "payto":
+		return ListPaymentsRequestPaymentMethodsItemPayto, nil
+	case "payto_email":
+		return ListPaymentsRequestPaymentMethodsItemPaytoEmail, nil
+	case "payto_phone":
+		return ListPaymentsRequestPaymentMethodsItemPaytoPhone, nil
+	case "payto_bank_account":
+		return ListPaymentsRequestPaymentMethodsItemPaytoBankAccount, nil
+	case "pix":
+		return ListPaymentsRequestPaymentMethodsItemPix, nil
+	case "platform_balance":
+		return ListPaymentsRequestPaymentMethodsItemPlatformBalance, nil
+	case "promptpay":
+		return ListPaymentsRequestPaymentMethodsItemPromptpay, nil
+	case "qris":
+		return ListPaymentsRequestPaymentMethodsItemQris, nil
+	case "rapipago":
+		return ListPaymentsRequestPaymentMethodsItemRapipago, nil
+	case "rechnung":
+		return ListPaymentsRequestPaymentMethodsItemRechnung, nil
+	case "revolut_pay":
+		return ListPaymentsRequestPaymentMethodsItemRevolutPay, nil
+	case "samsung_pay":
+		return ListPaymentsRequestPaymentMethodsItemSamsungPay, nil
+	case "satispay":
+		return ListPaymentsRequestPaymentMethodsItemSatispay, nil
+	case "scalapay":
+		return ListPaymentsRequestPaymentMethodsItemScalapay, nil
+	case "sencillito":
+		return ListPaymentsRequestPaymentMethodsItemSencillito, nil
+	case "sepa_debit":
+		return ListPaymentsRequestPaymentMethodsItemSepaDebit, nil
+	case "sequra":
+		return ListPaymentsRequestPaymentMethodsItemSequra, nil
+	case "servipag":
+		return ListPaymentsRequestPaymentMethodsItemServipag, nil
+	case "sezzle":
+		return ListPaymentsRequestPaymentMethodsItemSezzle, nil
+	case "shop_pay":
+		return ListPaymentsRequestPaymentMethodsItemShopPay, nil
+	case "shopeepay":
+		return ListPaymentsRequestPaymentMethodsItemShopeepay, nil
+	case "sofort":
+		return ListPaymentsRequestPaymentMethodsItemSofort, nil
+	case "south_korea_market":
+		return ListPaymentsRequestPaymentMethodsItemSouthKoreaMarket, nil
+	case "spei":
+		return ListPaymentsRequestPaymentMethodsItemSpei, nil
+	case "splitit":
+		return ListPaymentsRequestPaymentMethodsItemSplitit, nil
+	case "sunbit":
+		return ListPaymentsRequestPaymentMethodsItemSunbit, nil
+	case "swish":
+		return ListPaymentsRequestPaymentMethodsItemSwish, nil
+	case "tabby":
+		return ListPaymentsRequestPaymentMethodsItemTabby, nil
+	case "tamara":
+		return ListPaymentsRequestPaymentMethodsItemTamara, nil
+	case "touch_n_go":
+		return ListPaymentsRequestPaymentMethodsItemTouchNGo, nil
+	case "twint":
+		return ListPaymentsRequestPaymentMethodsItemTwint, nil
+	case "upi":
+		return ListPaymentsRequestPaymentMethodsItemUpi, nil
+	case "us_bank_account":
+		return ListPaymentsRequestPaymentMethodsItemUsBankAccount, nil
+	case "us_bank_transfer":
+		return ListPaymentsRequestPaymentMethodsItemUsBankTransfer, nil
+	case "venmo":
+		return ListPaymentsRequestPaymentMethodsItemVenmo, nil
+	case "vipps":
+		return ListPaymentsRequestPaymentMethodsItemVipps, nil
+	case "webpay":
+		return ListPaymentsRequestPaymentMethodsItemWebpay, nil
+	case "wechat_pay":
+		return ListPaymentsRequestPaymentMethodsItemWechatPay, nil
+	case "whop_pay":
+		return ListPaymentsRequestPaymentMethodsItemWhopPay, nil
+	case "yape":
+		return ListPaymentsRequestPaymentMethodsItemYape, nil
+	case "zip":
+		return ListPaymentsRequestPaymentMethodsItemZip, nil
+	case "coinflow":
+		return ListPaymentsRequestPaymentMethodsItemCoinflow, nil
+	case "tap_to_pay":
+		return ListPaymentsRequestPaymentMethodsItemTapToPay, nil
+	}
+	var t ListPaymentsRequestPaymentMethodsItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListPaymentsRequestPaymentMethodsItem) Ptr() *ListPaymentsRequestPaymentMethodsItem {
 	return &l
 }
 
@@ -3952,6 +4833,192 @@ func NewListPaymentsRequestStatusFromString(s string) (ListPaymentsRequestStatus
 }
 
 func (l ListPaymentsRequestStatus) Ptr() *ListPaymentsRequestStatus {
+	return &l
+}
+
+type ListPaymentsRequestStatusesItem string
+
+const (
+	ListPaymentsRequestStatusesItemOpen          ListPaymentsRequestStatusesItem = "open"
+	ListPaymentsRequestStatusesItemAuthorized    ListPaymentsRequestStatusesItem = "authorized"
+	ListPaymentsRequestStatusesItemPaid          ListPaymentsRequestStatusesItem = "paid"
+	ListPaymentsRequestStatusesItemPending       ListPaymentsRequestStatusesItem = "pending"
+	ListPaymentsRequestStatusesItemUncollectible ListPaymentsRequestStatusesItem = "uncollectible"
+	ListPaymentsRequestStatusesItemUnresolved    ListPaymentsRequestStatusesItem = "unresolved"
+	ListPaymentsRequestStatusesItemVoid          ListPaymentsRequestStatusesItem = "void"
+)
+
+func NewListPaymentsRequestStatusesItemFromString(s string) (ListPaymentsRequestStatusesItem, error) {
+	switch s {
+	case "open":
+		return ListPaymentsRequestStatusesItemOpen, nil
+	case "authorized":
+		return ListPaymentsRequestStatusesItemAuthorized, nil
+	case "paid":
+		return ListPaymentsRequestStatusesItemPaid, nil
+	case "pending":
+		return ListPaymentsRequestStatusesItemPending, nil
+	case "uncollectible":
+		return ListPaymentsRequestStatusesItemUncollectible, nil
+	case "unresolved":
+		return ListPaymentsRequestStatusesItemUnresolved, nil
+	case "void":
+		return ListPaymentsRequestStatusesItemVoid, nil
+	}
+	var t ListPaymentsRequestStatusesItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListPaymentsRequestStatusesItem) Ptr() *ListPaymentsRequestStatusesItem {
+	return &l
+}
+
+type ListPaymentsRequestSubstatusesItem string
+
+const (
+	ListPaymentsRequestSubstatusesItemSucceeded                   ListPaymentsRequestSubstatusesItem = "succeeded"
+	ListPaymentsRequestSubstatusesItemRequiresCapture             ListPaymentsRequestSubstatusesItem = "requires_capture"
+	ListPaymentsRequestSubstatusesItemPending                     ListPaymentsRequestSubstatusesItem = "pending"
+	ListPaymentsRequestSubstatusesItemFailed                      ListPaymentsRequestSubstatusesItem = "failed"
+	ListPaymentsRequestSubstatusesItemBlocked                     ListPaymentsRequestSubstatusesItem = "blocked"
+	ListPaymentsRequestSubstatusesItemPastDue                     ListPaymentsRequestSubstatusesItem = "past_due"
+	ListPaymentsRequestSubstatusesItemCanceled                    ListPaymentsRequestSubstatusesItem = "canceled"
+	ListPaymentsRequestSubstatusesItemPriceTooLow                 ListPaymentsRequestSubstatusesItem = "price_too_low"
+	ListPaymentsRequestSubstatusesItemUncollectible               ListPaymentsRequestSubstatusesItem = "uncollectible"
+	ListPaymentsRequestSubstatusesItemRefunded                    ListPaymentsRequestSubstatusesItem = "refunded"
+	ListPaymentsRequestSubstatusesItemAutoRefunded                ListPaymentsRequestSubstatusesItem = "auto_refunded"
+	ListPaymentsRequestSubstatusesItemPartiallyRefunded           ListPaymentsRequestSubstatusesItem = "partially_refunded"
+	ListPaymentsRequestSubstatusesItemDisputeWarning              ListPaymentsRequestSubstatusesItem = "dispute_warning"
+	ListPaymentsRequestSubstatusesItemDisputeNeedsResponse        ListPaymentsRequestSubstatusesItem = "dispute_needs_response"
+	ListPaymentsRequestSubstatusesItemDisputeWarningNeedsResponse ListPaymentsRequestSubstatusesItem = "dispute_warning_needs_response"
+	ListPaymentsRequestSubstatusesItemResolutionNeedsResponse     ListPaymentsRequestSubstatusesItem = "resolution_needs_response"
+	ListPaymentsRequestSubstatusesItemDisputeUnderReview          ListPaymentsRequestSubstatusesItem = "dispute_under_review"
+	ListPaymentsRequestSubstatusesItemDisputeWarningUnderReview   ListPaymentsRequestSubstatusesItem = "dispute_warning_under_review"
+	ListPaymentsRequestSubstatusesItemResolutionUnderReview       ListPaymentsRequestSubstatusesItem = "resolution_under_review"
+	ListPaymentsRequestSubstatusesItemDisputeWon                  ListPaymentsRequestSubstatusesItem = "dispute_won"
+	ListPaymentsRequestSubstatusesItemDisputeWarningClosed        ListPaymentsRequestSubstatusesItem = "dispute_warning_closed"
+	ListPaymentsRequestSubstatusesItemResolutionWon               ListPaymentsRequestSubstatusesItem = "resolution_won"
+	ListPaymentsRequestSubstatusesItemDisputeLost                 ListPaymentsRequestSubstatusesItem = "dispute_lost"
+	ListPaymentsRequestSubstatusesItemDisputeClosed               ListPaymentsRequestSubstatusesItem = "dispute_closed"
+	ListPaymentsRequestSubstatusesItemResolutionLost              ListPaymentsRequestSubstatusesItem = "resolution_lost"
+	ListPaymentsRequestSubstatusesItemDrafted                     ListPaymentsRequestSubstatusesItem = "drafted"
+	ListPaymentsRequestSubstatusesItemIncomplete                  ListPaymentsRequestSubstatusesItem = "incomplete"
+	ListPaymentsRequestSubstatusesItemUnresolved                  ListPaymentsRequestSubstatusesItem = "unresolved"
+)
+
+func NewListPaymentsRequestSubstatusesItemFromString(s string) (ListPaymentsRequestSubstatusesItem, error) {
+	switch s {
+	case "succeeded":
+		return ListPaymentsRequestSubstatusesItemSucceeded, nil
+	case "requires_capture":
+		return ListPaymentsRequestSubstatusesItemRequiresCapture, nil
+	case "pending":
+		return ListPaymentsRequestSubstatusesItemPending, nil
+	case "failed":
+		return ListPaymentsRequestSubstatusesItemFailed, nil
+	case "blocked":
+		return ListPaymentsRequestSubstatusesItemBlocked, nil
+	case "past_due":
+		return ListPaymentsRequestSubstatusesItemPastDue, nil
+	case "canceled":
+		return ListPaymentsRequestSubstatusesItemCanceled, nil
+	case "price_too_low":
+		return ListPaymentsRequestSubstatusesItemPriceTooLow, nil
+	case "uncollectible":
+		return ListPaymentsRequestSubstatusesItemUncollectible, nil
+	case "refunded":
+		return ListPaymentsRequestSubstatusesItemRefunded, nil
+	case "auto_refunded":
+		return ListPaymentsRequestSubstatusesItemAutoRefunded, nil
+	case "partially_refunded":
+		return ListPaymentsRequestSubstatusesItemPartiallyRefunded, nil
+	case "dispute_warning":
+		return ListPaymentsRequestSubstatusesItemDisputeWarning, nil
+	case "dispute_needs_response":
+		return ListPaymentsRequestSubstatusesItemDisputeNeedsResponse, nil
+	case "dispute_warning_needs_response":
+		return ListPaymentsRequestSubstatusesItemDisputeWarningNeedsResponse, nil
+	case "resolution_needs_response":
+		return ListPaymentsRequestSubstatusesItemResolutionNeedsResponse, nil
+	case "dispute_under_review":
+		return ListPaymentsRequestSubstatusesItemDisputeUnderReview, nil
+	case "dispute_warning_under_review":
+		return ListPaymentsRequestSubstatusesItemDisputeWarningUnderReview, nil
+	case "resolution_under_review":
+		return ListPaymentsRequestSubstatusesItemResolutionUnderReview, nil
+	case "dispute_won":
+		return ListPaymentsRequestSubstatusesItemDisputeWon, nil
+	case "dispute_warning_closed":
+		return ListPaymentsRequestSubstatusesItemDisputeWarningClosed, nil
+	case "resolution_won":
+		return ListPaymentsRequestSubstatusesItemResolutionWon, nil
+	case "dispute_lost":
+		return ListPaymentsRequestSubstatusesItemDisputeLost, nil
+	case "dispute_closed":
+		return ListPaymentsRequestSubstatusesItemDisputeClosed, nil
+	case "resolution_lost":
+		return ListPaymentsRequestSubstatusesItemResolutionLost, nil
+	case "drafted":
+		return ListPaymentsRequestSubstatusesItemDrafted, nil
+	case "incomplete":
+		return ListPaymentsRequestSubstatusesItemIncomplete, nil
+	case "unresolved":
+		return ListPaymentsRequestSubstatusesItemUnresolved, nil
+	}
+	var t ListPaymentsRequestSubstatusesItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListPaymentsRequestSubstatusesItem) Ptr() *ListPaymentsRequestSubstatusesItem {
+	return &l
+}
+
+type ListPaymentsRequestTrackingStatesItem string
+
+const (
+	ListPaymentsRequestTrackingStatesItemUnknown            ListPaymentsRequestTrackingStatesItem = "unknown"
+	ListPaymentsRequestTrackingStatesItemPreTransit         ListPaymentsRequestTrackingStatesItem = "pre_transit"
+	ListPaymentsRequestTrackingStatesItemInTransit          ListPaymentsRequestTrackingStatesItem = "in_transit"
+	ListPaymentsRequestTrackingStatesItemOutForDelivery     ListPaymentsRequestTrackingStatesItem = "out_for_delivery"
+	ListPaymentsRequestTrackingStatesItemDelivered          ListPaymentsRequestTrackingStatesItem = "delivered"
+	ListPaymentsRequestTrackingStatesItemAvailableForPickup ListPaymentsRequestTrackingStatesItem = "available_for_pickup"
+	ListPaymentsRequestTrackingStatesItemReturnToSender     ListPaymentsRequestTrackingStatesItem = "return_to_sender"
+	ListPaymentsRequestTrackingStatesItemFailure            ListPaymentsRequestTrackingStatesItem = "failure"
+	ListPaymentsRequestTrackingStatesItemCancelled          ListPaymentsRequestTrackingStatesItem = "cancelled"
+	ListPaymentsRequestTrackingStatesItemError              ListPaymentsRequestTrackingStatesItem = "error"
+	ListPaymentsRequestTrackingStatesItemNeedsTracking      ListPaymentsRequestTrackingStatesItem = "needs_tracking"
+)
+
+func NewListPaymentsRequestTrackingStatesItemFromString(s string) (ListPaymentsRequestTrackingStatesItem, error) {
+	switch s {
+	case "unknown":
+		return ListPaymentsRequestTrackingStatesItemUnknown, nil
+	case "pre_transit":
+		return ListPaymentsRequestTrackingStatesItemPreTransit, nil
+	case "in_transit":
+		return ListPaymentsRequestTrackingStatesItemInTransit, nil
+	case "out_for_delivery":
+		return ListPaymentsRequestTrackingStatesItemOutForDelivery, nil
+	case "delivered":
+		return ListPaymentsRequestTrackingStatesItemDelivered, nil
+	case "available_for_pickup":
+		return ListPaymentsRequestTrackingStatesItemAvailableForPickup, nil
+	case "return_to_sender":
+		return ListPaymentsRequestTrackingStatesItemReturnToSender, nil
+	case "failure":
+		return ListPaymentsRequestTrackingStatesItemFailure, nil
+	case "cancelled":
+		return ListPaymentsRequestTrackingStatesItemCancelled, nil
+	case "error":
+		return ListPaymentsRequestTrackingStatesItemError, nil
+	case "needs_tracking":
+		return ListPaymentsRequestTrackingStatesItemNeedsTracking, nil
+	}
+	var t ListPaymentsRequestTrackingStatesItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListPaymentsRequestTrackingStatesItem) Ptr() *ListPaymentsRequestTrackingStatesItem {
 	return &l
 }
 
@@ -6064,6 +7131,1532 @@ func NewPostPaymentSucceededPayloadTypeFromString(s string) (PostPaymentSucceede
 
 func (p PostPaymentSucceededPayloadType) Ptr() *PostPaymentSucceededPayloadType {
 	return &p
+}
+
+type SummaryPaymentsRequestBillingReasonsItem string
+
+const (
+	SummaryPaymentsRequestBillingReasonsItemSubscriptionCreate SummaryPaymentsRequestBillingReasonsItem = "subscription_create"
+	SummaryPaymentsRequestBillingReasonsItemSubscriptionCycle  SummaryPaymentsRequestBillingReasonsItem = "subscription_cycle"
+	SummaryPaymentsRequestBillingReasonsItemSubscriptionUpdate SummaryPaymentsRequestBillingReasonsItem = "subscription_update"
+	SummaryPaymentsRequestBillingReasonsItemOneTime            SummaryPaymentsRequestBillingReasonsItem = "one_time"
+	SummaryPaymentsRequestBillingReasonsItemManual             SummaryPaymentsRequestBillingReasonsItem = "manual"
+	SummaryPaymentsRequestBillingReasonsItemSubscription       SummaryPaymentsRequestBillingReasonsItem = "subscription"
+)
+
+func NewSummaryPaymentsRequestBillingReasonsItemFromString(s string) (SummaryPaymentsRequestBillingReasonsItem, error) {
+	switch s {
+	case "subscription_create":
+		return SummaryPaymentsRequestBillingReasonsItemSubscriptionCreate, nil
+	case "subscription_cycle":
+		return SummaryPaymentsRequestBillingReasonsItemSubscriptionCycle, nil
+	case "subscription_update":
+		return SummaryPaymentsRequestBillingReasonsItemSubscriptionUpdate, nil
+	case "one_time":
+		return SummaryPaymentsRequestBillingReasonsItemOneTime, nil
+	case "manual":
+		return SummaryPaymentsRequestBillingReasonsItemManual, nil
+	case "subscription":
+		return SummaryPaymentsRequestBillingReasonsItemSubscription, nil
+	}
+	var t SummaryPaymentsRequestBillingReasonsItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SummaryPaymentsRequestBillingReasonsItem) Ptr() *SummaryPaymentsRequestBillingReasonsItem {
+	return &s
+}
+
+type SummaryPaymentsRequestGroupsItem string
+
+const (
+	SummaryPaymentsRequestGroupsItemSubstatus SummaryPaymentsRequestGroupsItem = "substatus"
+	SummaryPaymentsRequestGroupsItemCurrency  SummaryPaymentsRequestGroupsItem = "currency"
+)
+
+func NewSummaryPaymentsRequestGroupsItemFromString(s string) (SummaryPaymentsRequestGroupsItem, error) {
+	switch s {
+	case "substatus":
+		return SummaryPaymentsRequestGroupsItemSubstatus, nil
+	case "currency":
+		return SummaryPaymentsRequestGroupsItemCurrency, nil
+	}
+	var t SummaryPaymentsRequestGroupsItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SummaryPaymentsRequestGroupsItem) Ptr() *SummaryPaymentsRequestGroupsItem {
+	return &s
+}
+
+type SummaryPaymentsRequestPaymentMethodsItem string
+
+const (
+	SummaryPaymentsRequestPaymentMethodsItemMastercard             SummaryPaymentsRequestPaymentMethodsItem = "mastercard"
+	SummaryPaymentsRequestPaymentMethodsItemVisa                   SummaryPaymentsRequestPaymentMethodsItem = "visa"
+	SummaryPaymentsRequestPaymentMethodsItemAmex                   SummaryPaymentsRequestPaymentMethodsItem = "amex"
+	SummaryPaymentsRequestPaymentMethodsItemDiscover               SummaryPaymentsRequestPaymentMethodsItem = "discover"
+	SummaryPaymentsRequestPaymentMethodsItemUnionpay               SummaryPaymentsRequestPaymentMethodsItem = "unionpay"
+	SummaryPaymentsRequestPaymentMethodsItemJcb                    SummaryPaymentsRequestPaymentMethodsItem = "jcb"
+	SummaryPaymentsRequestPaymentMethodsItemDiners                 SummaryPaymentsRequestPaymentMethodsItem = "diners"
+	SummaryPaymentsRequestPaymentMethodsItemLink                   SummaryPaymentsRequestPaymentMethodsItem = "link"
+	SummaryPaymentsRequestPaymentMethodsItemTroy                   SummaryPaymentsRequestPaymentMethodsItem = "troy"
+	SummaryPaymentsRequestPaymentMethodsItemVisadankort            SummaryPaymentsRequestPaymentMethodsItem = "visadankort"
+	SummaryPaymentsRequestPaymentMethodsItemVisabancontact         SummaryPaymentsRequestPaymentMethodsItem = "visabancontact"
+	SummaryPaymentsRequestPaymentMethodsItemChinaUnionPay          SummaryPaymentsRequestPaymentMethodsItem = "china_union_pay"
+	SummaryPaymentsRequestPaymentMethodsItemRupay                  SummaryPaymentsRequestPaymentMethodsItem = "rupay"
+	SummaryPaymentsRequestPaymentMethodsItemJcbrupay               SummaryPaymentsRequestPaymentMethodsItem = "jcbrupay"
+	SummaryPaymentsRequestPaymentMethodsItemElo                    SummaryPaymentsRequestPaymentMethodsItem = "elo"
+	SummaryPaymentsRequestPaymentMethodsItemMaestro                SummaryPaymentsRequestPaymentMethodsItem = "maestro"
+	SummaryPaymentsRequestPaymentMethodsItemTarjetaNaranja         SummaryPaymentsRequestPaymentMethodsItem = "tarjeta_naranja"
+	SummaryPaymentsRequestPaymentMethodsItemCirrus                 SummaryPaymentsRequestPaymentMethodsItem = "cirrus"
+	SummaryPaymentsRequestPaymentMethodsItemNspkMir                SummaryPaymentsRequestPaymentMethodsItem = "nspk_mir"
+	SummaryPaymentsRequestPaymentMethodsItemVerve                  SummaryPaymentsRequestPaymentMethodsItem = "verve"
+	SummaryPaymentsRequestPaymentMethodsItemEbt                    SummaryPaymentsRequestPaymentMethodsItem = "ebt"
+	SummaryPaymentsRequestPaymentMethodsItemPrivateLabel           SummaryPaymentsRequestPaymentMethodsItem = "private_label"
+	SummaryPaymentsRequestPaymentMethodsItemLocalBrand             SummaryPaymentsRequestPaymentMethodsItem = "local_brand"
+	SummaryPaymentsRequestPaymentMethodsItemUatp                   SummaryPaymentsRequestPaymentMethodsItem = "uatp"
+	SummaryPaymentsRequestPaymentMethodsItemWexcard                SummaryPaymentsRequestPaymentMethodsItem = "wexcard"
+	SummaryPaymentsRequestPaymentMethodsItemUzcard                 SummaryPaymentsRequestPaymentMethodsItem = "uzcard"
+	SummaryPaymentsRequestPaymentMethodsItemMeeza                  SummaryPaymentsRequestPaymentMethodsItem = "meeza"
+	SummaryPaymentsRequestPaymentMethodsItemHrgStoreCard           SummaryPaymentsRequestPaymentMethodsItem = "hrg_store_card"
+	SummaryPaymentsRequestPaymentMethodsItemGirocard               SummaryPaymentsRequestPaymentMethodsItem = "girocard"
+	SummaryPaymentsRequestPaymentMethodsItemFuelCard               SummaryPaymentsRequestPaymentMethodsItem = "fuel_card"
+	SummaryPaymentsRequestPaymentMethodsItemDankort                SummaryPaymentsRequestPaymentMethodsItem = "dankort"
+	SummaryPaymentsRequestPaymentMethodsItemCarnet                 SummaryPaymentsRequestPaymentMethodsItem = "carnet"
+	SummaryPaymentsRequestPaymentMethodsItemAtmCard                SummaryPaymentsRequestPaymentMethodsItem = "atm_card"
+	SummaryPaymentsRequestPaymentMethodsItemChinaUnionPayuzcard    SummaryPaymentsRequestPaymentMethodsItem = "china_union_payuzcard"
+	SummaryPaymentsRequestPaymentMethodsItemCodensa                SummaryPaymentsRequestPaymentMethodsItem = "codensa"
+	SummaryPaymentsRequestPaymentMethodsItemCabal                  SummaryPaymentsRequestPaymentMethodsItem = "cabal"
+	SummaryPaymentsRequestPaymentMethodsItemHipercard              SummaryPaymentsRequestPaymentMethodsItem = "hipercard"
+	SummaryPaymentsRequestPaymentMethodsItemJcblankapay            SummaryPaymentsRequestPaymentMethodsItem = "jcblankapay"
+	SummaryPaymentsRequestPaymentMethodsItemCmi                    SummaryPaymentsRequestPaymentMethodsItem = "cmi"
+	SummaryPaymentsRequestPaymentMethodsItemAura                   SummaryPaymentsRequestPaymentMethodsItem = "aura"
+	SummaryPaymentsRequestPaymentMethodsItemAccel                  SummaryPaymentsRequestPaymentMethodsItem = "accel"
+	SummaryPaymentsRequestPaymentMethodsItemCuliance               SummaryPaymentsRequestPaymentMethodsItem = "culiance"
+	SummaryPaymentsRequestPaymentMethodsItemNyce                   SummaryPaymentsRequestPaymentMethodsItem = "nyce"
+	SummaryPaymentsRequestPaymentMethodsItemPulse                  SummaryPaymentsRequestPaymentMethodsItem = "pulse"
+	SummaryPaymentsRequestPaymentMethodsItemStar                   SummaryPaymentsRequestPaymentMethodsItem = "star"
+	SummaryPaymentsRequestPaymentMethodsItemUnknown                SummaryPaymentsRequestPaymentMethodsItem = "unknown"
+	SummaryPaymentsRequestPaymentMethodsItemAcssDebit              SummaryPaymentsRequestPaymentMethodsItem = "acss_debit"
+	SummaryPaymentsRequestPaymentMethodsItemAddi                   SummaryPaymentsRequestPaymentMethodsItem = "addi"
+	SummaryPaymentsRequestPaymentMethodsItemAffirm                 SummaryPaymentsRequestPaymentMethodsItem = "affirm"
+	SummaryPaymentsRequestPaymentMethodsItemAfterpayClearpay       SummaryPaymentsRequestPaymentMethodsItem = "afterpay_clearpay"
+	SummaryPaymentsRequestPaymentMethodsItemAlipay                 SummaryPaymentsRequestPaymentMethodsItem = "alipay"
+	SummaryPaymentsRequestPaymentMethodsItemAlipayhk               SummaryPaymentsRequestPaymentMethodsItem = "alipayhk"
+	SummaryPaymentsRequestPaymentMethodsItemAlma                   SummaryPaymentsRequestPaymentMethodsItem = "alma"
+	SummaryPaymentsRequestPaymentMethodsItemAmazonPay              SummaryPaymentsRequestPaymentMethodsItem = "amazon_pay"
+	SummaryPaymentsRequestPaymentMethodsItemApple                  SummaryPaymentsRequestPaymentMethodsItem = "apple"
+	SummaryPaymentsRequestPaymentMethodsItemApplePay               SummaryPaymentsRequestPaymentMethodsItem = "apple_pay"
+	SummaryPaymentsRequestPaymentMethodsItemAuBankTransfer         SummaryPaymentsRequestPaymentMethodsItem = "au_bank_transfer"
+	SummaryPaymentsRequestPaymentMethodsItemAuBecsDebit            SummaryPaymentsRequestPaymentMethodsItem = "au_becs_debit"
+	SummaryPaymentsRequestPaymentMethodsItemBacsDebit              SummaryPaymentsRequestPaymentMethodsItem = "bacs_debit"
+	SummaryPaymentsRequestPaymentMethodsItemBancolombia            SummaryPaymentsRequestPaymentMethodsItem = "bancolombia"
+	SummaryPaymentsRequestPaymentMethodsItemBancontact             SummaryPaymentsRequestPaymentMethodsItem = "bancontact"
+	SummaryPaymentsRequestPaymentMethodsItemBankWire               SummaryPaymentsRequestPaymentMethodsItem = "bank_wire"
+	SummaryPaymentsRequestPaymentMethodsItemBillie                 SummaryPaymentsRequestPaymentMethodsItem = "billie"
+	SummaryPaymentsRequestPaymentMethodsItemBlik                   SummaryPaymentsRequestPaymentMethodsItem = "blik"
+	SummaryPaymentsRequestPaymentMethodsItemBoleto                 SummaryPaymentsRequestPaymentMethodsItem = "boleto"
+	SummaryPaymentsRequestPaymentMethodsItemBreB                   SummaryPaymentsRequestPaymentMethodsItem = "bre_b"
+	SummaryPaymentsRequestPaymentMethodsItemCaBankTransfer         SummaryPaymentsRequestPaymentMethodsItem = "ca_bank_transfer"
+	SummaryPaymentsRequestPaymentMethodsItemCapchasePay            SummaryPaymentsRequestPaymentMethodsItem = "capchase_pay"
+	SummaryPaymentsRequestPaymentMethodsItemCard                   SummaryPaymentsRequestPaymentMethodsItem = "card"
+	SummaryPaymentsRequestPaymentMethodsItemCardPresent            SummaryPaymentsRequestPaymentMethodsItem = "card_present"
+	SummaryPaymentsRequestPaymentMethodsItemCardInstallmentsThree  SummaryPaymentsRequestPaymentMethodsItem = "card_installments_three"
+	SummaryPaymentsRequestPaymentMethodsItemCardInstallmentsSix    SummaryPaymentsRequestPaymentMethodsItem = "card_installments_six"
+	SummaryPaymentsRequestPaymentMethodsItemCardInstallmentsTwelve SummaryPaymentsRequestPaymentMethodsItem = "card_installments_twelve"
+	SummaryPaymentsRequestPaymentMethodsItemCashapp                SummaryPaymentsRequestPaymentMethodsItem = "cashapp"
+	SummaryPaymentsRequestPaymentMethodsItemClaritypay             SummaryPaymentsRequestPaymentMethodsItem = "claritypay"
+	SummaryPaymentsRequestPaymentMethodsItemCoinbase               SummaryPaymentsRequestPaymentMethodsItem = "coinbase"
+	SummaryPaymentsRequestPaymentMethodsItemCrypto                 SummaryPaymentsRequestPaymentMethodsItem = "crypto"
+	SummaryPaymentsRequestPaymentMethodsItemCustom                 SummaryPaymentsRequestPaymentMethodsItem = "custom"
+	SummaryPaymentsRequestPaymentMethodsItemCustomerBalance        SummaryPaymentsRequestPaymentMethodsItem = "customer_balance"
+	SummaryPaymentsRequestPaymentMethodsItemDemoPay                SummaryPaymentsRequestPaymentMethodsItem = "demo_pay"
+	SummaryPaymentsRequestPaymentMethodsItemDuitnowQr              SummaryPaymentsRequestPaymentMethodsItem = "duitnow_qr"
+	SummaryPaymentsRequestPaymentMethodsItemEfecty                 SummaryPaymentsRequestPaymentMethodsItem = "efecty"
+	SummaryPaymentsRequestPaymentMethodsItemEps                    SummaryPaymentsRequestPaymentMethodsItem = "eps"
+	SummaryPaymentsRequestPaymentMethodsItemEuBankTransfer         SummaryPaymentsRequestPaymentMethodsItem = "eu_bank_transfer"
+	SummaryPaymentsRequestPaymentMethodsItemFpx                    SummaryPaymentsRequestPaymentMethodsItem = "fpx"
+	SummaryPaymentsRequestPaymentMethodsItemFlexPay                SummaryPaymentsRequestPaymentMethodsItem = "flex_pay"
+	SummaryPaymentsRequestPaymentMethodsItemGbBankTransfer         SummaryPaymentsRequestPaymentMethodsItem = "gb_bank_transfer"
+	SummaryPaymentsRequestPaymentMethodsItemGcash                  SummaryPaymentsRequestPaymentMethodsItem = "gcash"
+	SummaryPaymentsRequestPaymentMethodsItemGiropay                SummaryPaymentsRequestPaymentMethodsItem = "giropay"
+	SummaryPaymentsRequestPaymentMethodsItemGooglePay              SummaryPaymentsRequestPaymentMethodsItem = "google_pay"
+	SummaryPaymentsRequestPaymentMethodsItemGopay                  SummaryPaymentsRequestPaymentMethodsItem = "gopay"
+	SummaryPaymentsRequestPaymentMethodsItemGrabpay                SummaryPaymentsRequestPaymentMethodsItem = "grabpay"
+	SummaryPaymentsRequestPaymentMethodsItemIDBankTransfer         SummaryPaymentsRequestPaymentMethodsItem = "id_bank_transfer"
+	SummaryPaymentsRequestPaymentMethodsItemIdeal                  SummaryPaymentsRequestPaymentMethodsItem = "ideal"
+	SummaryPaymentsRequestPaymentMethodsItemInterac                SummaryPaymentsRequestPaymentMethodsItem = "interac"
+	SummaryPaymentsRequestPaymentMethodsItemKakaoPay               SummaryPaymentsRequestPaymentMethodsItem = "kakao_pay"
+	SummaryPaymentsRequestPaymentMethodsItemKlarna                 SummaryPaymentsRequestPaymentMethodsItem = "klarna"
+	SummaryPaymentsRequestPaymentMethodsItemKlarnaPayNow           SummaryPaymentsRequestPaymentMethodsItem = "klarna_pay_now"
+	SummaryPaymentsRequestPaymentMethodsItemKonbini                SummaryPaymentsRequestPaymentMethodsItem = "konbini"
+	SummaryPaymentsRequestPaymentMethodsItemKrCard                 SummaryPaymentsRequestPaymentMethodsItem = "kr_card"
+	SummaryPaymentsRequestPaymentMethodsItemKrMarket               SummaryPaymentsRequestPaymentMethodsItem = "kr_market"
+	SummaryPaymentsRequestPaymentMethodsItemKriya                  SummaryPaymentsRequestPaymentMethodsItem = "kriya"
+	SummaryPaymentsRequestPaymentMethodsItemKueski                 SummaryPaymentsRequestPaymentMethodsItem = "kueski"
+	SummaryPaymentsRequestPaymentMethodsItemMbWay                  SummaryPaymentsRequestPaymentMethodsItem = "mb_way"
+	SummaryPaymentsRequestPaymentMethodsItemMPesa                  SummaryPaymentsRequestPaymentMethodsItem = "m_pesa"
+	SummaryPaymentsRequestPaymentMethodsItemMercadoPago            SummaryPaymentsRequestPaymentMethodsItem = "mercado_pago"
+	SummaryPaymentsRequestPaymentMethodsItemMercadoPagoAr          SummaryPaymentsRequestPaymentMethodsItem = "mercado_pago_ar"
+	SummaryPaymentsRequestPaymentMethodsItemMercadoPagoMx          SummaryPaymentsRequestPaymentMethodsItem = "mercado_pago_mx"
+	SummaryPaymentsRequestPaymentMethodsItemMobilepay              SummaryPaymentsRequestPaymentMethodsItem = "mobilepay"
+	SummaryPaymentsRequestPaymentMethodsItemModo                   SummaryPaymentsRequestPaymentMethodsItem = "modo"
+	SummaryPaymentsRequestPaymentMethodsItemMondu                  SummaryPaymentsRequestPaymentMethodsItem = "mondu"
+	SummaryPaymentsRequestPaymentMethodsItemMultibanco             SummaryPaymentsRequestPaymentMethodsItem = "multibanco"
+	SummaryPaymentsRequestPaymentMethodsItemNaverPay               SummaryPaymentsRequestPaymentMethodsItem = "naver_pay"
+	SummaryPaymentsRequestPaymentMethodsItemNequi                  SummaryPaymentsRequestPaymentMethodsItem = "nequi"
+	SummaryPaymentsRequestPaymentMethodsItemNetbanking             SummaryPaymentsRequestPaymentMethodsItem = "netbanking"
+	SummaryPaymentsRequestPaymentMethodsItemNgBank                 SummaryPaymentsRequestPaymentMethodsItem = "ng_bank"
+	SummaryPaymentsRequestPaymentMethodsItemNgBankTransfer         SummaryPaymentsRequestPaymentMethodsItem = "ng_bank_transfer"
+	SummaryPaymentsRequestPaymentMethodsItemNgCard                 SummaryPaymentsRequestPaymentMethodsItem = "ng_card"
+	SummaryPaymentsRequestPaymentMethodsItemNgMarket               SummaryPaymentsRequestPaymentMethodsItem = "ng_market"
+	SummaryPaymentsRequestPaymentMethodsItemNgUssd                 SummaryPaymentsRequestPaymentMethodsItem = "ng_ussd"
+	SummaryPaymentsRequestPaymentMethodsItemNgWallet               SummaryPaymentsRequestPaymentMethodsItem = "ng_wallet"
+	SummaryPaymentsRequestPaymentMethodsItemNupay                  SummaryPaymentsRequestPaymentMethodsItem = "nupay"
+	SummaryPaymentsRequestPaymentMethodsItemNzBankAccount          SummaryPaymentsRequestPaymentMethodsItem = "nz_bank_account"
+	SummaryPaymentsRequestPaymentMethodsItemOney                   SummaryPaymentsRequestPaymentMethodsItem = "oney"
+	SummaryPaymentsRequestPaymentMethodsItemOney3X                 SummaryPaymentsRequestPaymentMethodsItem = "oney_3x"
+	SummaryPaymentsRequestPaymentMethodsItemOney4X                 SummaryPaymentsRequestPaymentMethodsItem = "oney_4x"
+	SummaryPaymentsRequestPaymentMethodsItemOpay                   SummaryPaymentsRequestPaymentMethodsItem = "opay"
+	SummaryPaymentsRequestPaymentMethodsItemOxxo                   SummaryPaymentsRequestPaymentMethodsItem = "oxxo"
+	SummaryPaymentsRequestPaymentMethodsItemP24                    SummaryPaymentsRequestPaymentMethodsItem = "p24"
+	SummaryPaymentsRequestPaymentMethodsItemPagoEfectivo           SummaryPaymentsRequestPaymentMethodsItem = "pago_efectivo"
+	SummaryPaymentsRequestPaymentMethodsItemPse                    SummaryPaymentsRequestPaymentMethodsItem = "pse"
+	SummaryPaymentsRequestPaymentMethodsItemPayByBank              SummaryPaymentsRequestPaymentMethodsItem = "pay_by_bank"
+	SummaryPaymentsRequestPaymentMethodsItemPayco                  SummaryPaymentsRequestPaymentMethodsItem = "payco"
+	SummaryPaymentsRequestPaymentMethodsItemPaynow                 SummaryPaymentsRequestPaymentMethodsItem = "paynow"
+	SummaryPaymentsRequestPaymentMethodsItemPaypal                 SummaryPaymentsRequestPaymentMethodsItem = "paypal"
+	SummaryPaymentsRequestPaymentMethodsItemPaypalExpress          SummaryPaymentsRequestPaymentMethodsItem = "paypal_express"
+	SummaryPaymentsRequestPaymentMethodsItemPaypay                 SummaryPaymentsRequestPaymentMethodsItem = "paypay"
+	SummaryPaymentsRequestPaymentMethodsItemPayto                  SummaryPaymentsRequestPaymentMethodsItem = "payto"
+	SummaryPaymentsRequestPaymentMethodsItemPaytoEmail             SummaryPaymentsRequestPaymentMethodsItem = "payto_email"
+	SummaryPaymentsRequestPaymentMethodsItemPaytoPhone             SummaryPaymentsRequestPaymentMethodsItem = "payto_phone"
+	SummaryPaymentsRequestPaymentMethodsItemPaytoBankAccount       SummaryPaymentsRequestPaymentMethodsItem = "payto_bank_account"
+	SummaryPaymentsRequestPaymentMethodsItemPix                    SummaryPaymentsRequestPaymentMethodsItem = "pix"
+	SummaryPaymentsRequestPaymentMethodsItemPlatformBalance        SummaryPaymentsRequestPaymentMethodsItem = "platform_balance"
+	SummaryPaymentsRequestPaymentMethodsItemPromptpay              SummaryPaymentsRequestPaymentMethodsItem = "promptpay"
+	SummaryPaymentsRequestPaymentMethodsItemQris                   SummaryPaymentsRequestPaymentMethodsItem = "qris"
+	SummaryPaymentsRequestPaymentMethodsItemRapipago               SummaryPaymentsRequestPaymentMethodsItem = "rapipago"
+	SummaryPaymentsRequestPaymentMethodsItemRechnung               SummaryPaymentsRequestPaymentMethodsItem = "rechnung"
+	SummaryPaymentsRequestPaymentMethodsItemRevolutPay             SummaryPaymentsRequestPaymentMethodsItem = "revolut_pay"
+	SummaryPaymentsRequestPaymentMethodsItemSamsungPay             SummaryPaymentsRequestPaymentMethodsItem = "samsung_pay"
+	SummaryPaymentsRequestPaymentMethodsItemSatispay               SummaryPaymentsRequestPaymentMethodsItem = "satispay"
+	SummaryPaymentsRequestPaymentMethodsItemScalapay               SummaryPaymentsRequestPaymentMethodsItem = "scalapay"
+	SummaryPaymentsRequestPaymentMethodsItemSencillito             SummaryPaymentsRequestPaymentMethodsItem = "sencillito"
+	SummaryPaymentsRequestPaymentMethodsItemSepaDebit              SummaryPaymentsRequestPaymentMethodsItem = "sepa_debit"
+	SummaryPaymentsRequestPaymentMethodsItemSequra                 SummaryPaymentsRequestPaymentMethodsItem = "sequra"
+	SummaryPaymentsRequestPaymentMethodsItemServipag               SummaryPaymentsRequestPaymentMethodsItem = "servipag"
+	SummaryPaymentsRequestPaymentMethodsItemSezzle                 SummaryPaymentsRequestPaymentMethodsItem = "sezzle"
+	SummaryPaymentsRequestPaymentMethodsItemShopPay                SummaryPaymentsRequestPaymentMethodsItem = "shop_pay"
+	SummaryPaymentsRequestPaymentMethodsItemShopeepay              SummaryPaymentsRequestPaymentMethodsItem = "shopeepay"
+	SummaryPaymentsRequestPaymentMethodsItemSofort                 SummaryPaymentsRequestPaymentMethodsItem = "sofort"
+	SummaryPaymentsRequestPaymentMethodsItemSouthKoreaMarket       SummaryPaymentsRequestPaymentMethodsItem = "south_korea_market"
+	SummaryPaymentsRequestPaymentMethodsItemSpei                   SummaryPaymentsRequestPaymentMethodsItem = "spei"
+	SummaryPaymentsRequestPaymentMethodsItemSplitit                SummaryPaymentsRequestPaymentMethodsItem = "splitit"
+	SummaryPaymentsRequestPaymentMethodsItemSunbit                 SummaryPaymentsRequestPaymentMethodsItem = "sunbit"
+	SummaryPaymentsRequestPaymentMethodsItemSwish                  SummaryPaymentsRequestPaymentMethodsItem = "swish"
+	SummaryPaymentsRequestPaymentMethodsItemTabby                  SummaryPaymentsRequestPaymentMethodsItem = "tabby"
+	SummaryPaymentsRequestPaymentMethodsItemTamara                 SummaryPaymentsRequestPaymentMethodsItem = "tamara"
+	SummaryPaymentsRequestPaymentMethodsItemTouchNGo               SummaryPaymentsRequestPaymentMethodsItem = "touch_n_go"
+	SummaryPaymentsRequestPaymentMethodsItemTwint                  SummaryPaymentsRequestPaymentMethodsItem = "twint"
+	SummaryPaymentsRequestPaymentMethodsItemUpi                    SummaryPaymentsRequestPaymentMethodsItem = "upi"
+	SummaryPaymentsRequestPaymentMethodsItemUsBankAccount          SummaryPaymentsRequestPaymentMethodsItem = "us_bank_account"
+	SummaryPaymentsRequestPaymentMethodsItemUsBankTransfer         SummaryPaymentsRequestPaymentMethodsItem = "us_bank_transfer"
+	SummaryPaymentsRequestPaymentMethodsItemVenmo                  SummaryPaymentsRequestPaymentMethodsItem = "venmo"
+	SummaryPaymentsRequestPaymentMethodsItemVipps                  SummaryPaymentsRequestPaymentMethodsItem = "vipps"
+	SummaryPaymentsRequestPaymentMethodsItemWebpay                 SummaryPaymentsRequestPaymentMethodsItem = "webpay"
+	SummaryPaymentsRequestPaymentMethodsItemWechatPay              SummaryPaymentsRequestPaymentMethodsItem = "wechat_pay"
+	SummaryPaymentsRequestPaymentMethodsItemWhopPay                SummaryPaymentsRequestPaymentMethodsItem = "whop_pay"
+	SummaryPaymentsRequestPaymentMethodsItemYape                   SummaryPaymentsRequestPaymentMethodsItem = "yape"
+	SummaryPaymentsRequestPaymentMethodsItemZip                    SummaryPaymentsRequestPaymentMethodsItem = "zip"
+	SummaryPaymentsRequestPaymentMethodsItemCoinflow               SummaryPaymentsRequestPaymentMethodsItem = "coinflow"
+	SummaryPaymentsRequestPaymentMethodsItemTapToPay               SummaryPaymentsRequestPaymentMethodsItem = "tap_to_pay"
+)
+
+func NewSummaryPaymentsRequestPaymentMethodsItemFromString(s string) (SummaryPaymentsRequestPaymentMethodsItem, error) {
+	switch s {
+	case "mastercard":
+		return SummaryPaymentsRequestPaymentMethodsItemMastercard, nil
+	case "visa":
+		return SummaryPaymentsRequestPaymentMethodsItemVisa, nil
+	case "amex":
+		return SummaryPaymentsRequestPaymentMethodsItemAmex, nil
+	case "discover":
+		return SummaryPaymentsRequestPaymentMethodsItemDiscover, nil
+	case "unionpay":
+		return SummaryPaymentsRequestPaymentMethodsItemUnionpay, nil
+	case "jcb":
+		return SummaryPaymentsRequestPaymentMethodsItemJcb, nil
+	case "diners":
+		return SummaryPaymentsRequestPaymentMethodsItemDiners, nil
+	case "link":
+		return SummaryPaymentsRequestPaymentMethodsItemLink, nil
+	case "troy":
+		return SummaryPaymentsRequestPaymentMethodsItemTroy, nil
+	case "visadankort":
+		return SummaryPaymentsRequestPaymentMethodsItemVisadankort, nil
+	case "visabancontact":
+		return SummaryPaymentsRequestPaymentMethodsItemVisabancontact, nil
+	case "china_union_pay":
+		return SummaryPaymentsRequestPaymentMethodsItemChinaUnionPay, nil
+	case "rupay":
+		return SummaryPaymentsRequestPaymentMethodsItemRupay, nil
+	case "jcbrupay":
+		return SummaryPaymentsRequestPaymentMethodsItemJcbrupay, nil
+	case "elo":
+		return SummaryPaymentsRequestPaymentMethodsItemElo, nil
+	case "maestro":
+		return SummaryPaymentsRequestPaymentMethodsItemMaestro, nil
+	case "tarjeta_naranja":
+		return SummaryPaymentsRequestPaymentMethodsItemTarjetaNaranja, nil
+	case "cirrus":
+		return SummaryPaymentsRequestPaymentMethodsItemCirrus, nil
+	case "nspk_mir":
+		return SummaryPaymentsRequestPaymentMethodsItemNspkMir, nil
+	case "verve":
+		return SummaryPaymentsRequestPaymentMethodsItemVerve, nil
+	case "ebt":
+		return SummaryPaymentsRequestPaymentMethodsItemEbt, nil
+	case "private_label":
+		return SummaryPaymentsRequestPaymentMethodsItemPrivateLabel, nil
+	case "local_brand":
+		return SummaryPaymentsRequestPaymentMethodsItemLocalBrand, nil
+	case "uatp":
+		return SummaryPaymentsRequestPaymentMethodsItemUatp, nil
+	case "wexcard":
+		return SummaryPaymentsRequestPaymentMethodsItemWexcard, nil
+	case "uzcard":
+		return SummaryPaymentsRequestPaymentMethodsItemUzcard, nil
+	case "meeza":
+		return SummaryPaymentsRequestPaymentMethodsItemMeeza, nil
+	case "hrg_store_card":
+		return SummaryPaymentsRequestPaymentMethodsItemHrgStoreCard, nil
+	case "girocard":
+		return SummaryPaymentsRequestPaymentMethodsItemGirocard, nil
+	case "fuel_card":
+		return SummaryPaymentsRequestPaymentMethodsItemFuelCard, nil
+	case "dankort":
+		return SummaryPaymentsRequestPaymentMethodsItemDankort, nil
+	case "carnet":
+		return SummaryPaymentsRequestPaymentMethodsItemCarnet, nil
+	case "atm_card":
+		return SummaryPaymentsRequestPaymentMethodsItemAtmCard, nil
+	case "china_union_payuzcard":
+		return SummaryPaymentsRequestPaymentMethodsItemChinaUnionPayuzcard, nil
+	case "codensa":
+		return SummaryPaymentsRequestPaymentMethodsItemCodensa, nil
+	case "cabal":
+		return SummaryPaymentsRequestPaymentMethodsItemCabal, nil
+	case "hipercard":
+		return SummaryPaymentsRequestPaymentMethodsItemHipercard, nil
+	case "jcblankapay":
+		return SummaryPaymentsRequestPaymentMethodsItemJcblankapay, nil
+	case "cmi":
+		return SummaryPaymentsRequestPaymentMethodsItemCmi, nil
+	case "aura":
+		return SummaryPaymentsRequestPaymentMethodsItemAura, nil
+	case "accel":
+		return SummaryPaymentsRequestPaymentMethodsItemAccel, nil
+	case "culiance":
+		return SummaryPaymentsRequestPaymentMethodsItemCuliance, nil
+	case "nyce":
+		return SummaryPaymentsRequestPaymentMethodsItemNyce, nil
+	case "pulse":
+		return SummaryPaymentsRequestPaymentMethodsItemPulse, nil
+	case "star":
+		return SummaryPaymentsRequestPaymentMethodsItemStar, nil
+	case "unknown":
+		return SummaryPaymentsRequestPaymentMethodsItemUnknown, nil
+	case "acss_debit":
+		return SummaryPaymentsRequestPaymentMethodsItemAcssDebit, nil
+	case "addi":
+		return SummaryPaymentsRequestPaymentMethodsItemAddi, nil
+	case "affirm":
+		return SummaryPaymentsRequestPaymentMethodsItemAffirm, nil
+	case "afterpay_clearpay":
+		return SummaryPaymentsRequestPaymentMethodsItemAfterpayClearpay, nil
+	case "alipay":
+		return SummaryPaymentsRequestPaymentMethodsItemAlipay, nil
+	case "alipayhk":
+		return SummaryPaymentsRequestPaymentMethodsItemAlipayhk, nil
+	case "alma":
+		return SummaryPaymentsRequestPaymentMethodsItemAlma, nil
+	case "amazon_pay":
+		return SummaryPaymentsRequestPaymentMethodsItemAmazonPay, nil
+	case "apple":
+		return SummaryPaymentsRequestPaymentMethodsItemApple, nil
+	case "apple_pay":
+		return SummaryPaymentsRequestPaymentMethodsItemApplePay, nil
+	case "au_bank_transfer":
+		return SummaryPaymentsRequestPaymentMethodsItemAuBankTransfer, nil
+	case "au_becs_debit":
+		return SummaryPaymentsRequestPaymentMethodsItemAuBecsDebit, nil
+	case "bacs_debit":
+		return SummaryPaymentsRequestPaymentMethodsItemBacsDebit, nil
+	case "bancolombia":
+		return SummaryPaymentsRequestPaymentMethodsItemBancolombia, nil
+	case "bancontact":
+		return SummaryPaymentsRequestPaymentMethodsItemBancontact, nil
+	case "bank_wire":
+		return SummaryPaymentsRequestPaymentMethodsItemBankWire, nil
+	case "billie":
+		return SummaryPaymentsRequestPaymentMethodsItemBillie, nil
+	case "blik":
+		return SummaryPaymentsRequestPaymentMethodsItemBlik, nil
+	case "boleto":
+		return SummaryPaymentsRequestPaymentMethodsItemBoleto, nil
+	case "bre_b":
+		return SummaryPaymentsRequestPaymentMethodsItemBreB, nil
+	case "ca_bank_transfer":
+		return SummaryPaymentsRequestPaymentMethodsItemCaBankTransfer, nil
+	case "capchase_pay":
+		return SummaryPaymentsRequestPaymentMethodsItemCapchasePay, nil
+	case "card":
+		return SummaryPaymentsRequestPaymentMethodsItemCard, nil
+	case "card_present":
+		return SummaryPaymentsRequestPaymentMethodsItemCardPresent, nil
+	case "card_installments_three":
+		return SummaryPaymentsRequestPaymentMethodsItemCardInstallmentsThree, nil
+	case "card_installments_six":
+		return SummaryPaymentsRequestPaymentMethodsItemCardInstallmentsSix, nil
+	case "card_installments_twelve":
+		return SummaryPaymentsRequestPaymentMethodsItemCardInstallmentsTwelve, nil
+	case "cashapp":
+		return SummaryPaymentsRequestPaymentMethodsItemCashapp, nil
+	case "claritypay":
+		return SummaryPaymentsRequestPaymentMethodsItemClaritypay, nil
+	case "coinbase":
+		return SummaryPaymentsRequestPaymentMethodsItemCoinbase, nil
+	case "crypto":
+		return SummaryPaymentsRequestPaymentMethodsItemCrypto, nil
+	case "custom":
+		return SummaryPaymentsRequestPaymentMethodsItemCustom, nil
+	case "customer_balance":
+		return SummaryPaymentsRequestPaymentMethodsItemCustomerBalance, nil
+	case "demo_pay":
+		return SummaryPaymentsRequestPaymentMethodsItemDemoPay, nil
+	case "duitnow_qr":
+		return SummaryPaymentsRequestPaymentMethodsItemDuitnowQr, nil
+	case "efecty":
+		return SummaryPaymentsRequestPaymentMethodsItemEfecty, nil
+	case "eps":
+		return SummaryPaymentsRequestPaymentMethodsItemEps, nil
+	case "eu_bank_transfer":
+		return SummaryPaymentsRequestPaymentMethodsItemEuBankTransfer, nil
+	case "fpx":
+		return SummaryPaymentsRequestPaymentMethodsItemFpx, nil
+	case "flex_pay":
+		return SummaryPaymentsRequestPaymentMethodsItemFlexPay, nil
+	case "gb_bank_transfer":
+		return SummaryPaymentsRequestPaymentMethodsItemGbBankTransfer, nil
+	case "gcash":
+		return SummaryPaymentsRequestPaymentMethodsItemGcash, nil
+	case "giropay":
+		return SummaryPaymentsRequestPaymentMethodsItemGiropay, nil
+	case "google_pay":
+		return SummaryPaymentsRequestPaymentMethodsItemGooglePay, nil
+	case "gopay":
+		return SummaryPaymentsRequestPaymentMethodsItemGopay, nil
+	case "grabpay":
+		return SummaryPaymentsRequestPaymentMethodsItemGrabpay, nil
+	case "id_bank_transfer":
+		return SummaryPaymentsRequestPaymentMethodsItemIDBankTransfer, nil
+	case "ideal":
+		return SummaryPaymentsRequestPaymentMethodsItemIdeal, nil
+	case "interac":
+		return SummaryPaymentsRequestPaymentMethodsItemInterac, nil
+	case "kakao_pay":
+		return SummaryPaymentsRequestPaymentMethodsItemKakaoPay, nil
+	case "klarna":
+		return SummaryPaymentsRequestPaymentMethodsItemKlarna, nil
+	case "klarna_pay_now":
+		return SummaryPaymentsRequestPaymentMethodsItemKlarnaPayNow, nil
+	case "konbini":
+		return SummaryPaymentsRequestPaymentMethodsItemKonbini, nil
+	case "kr_card":
+		return SummaryPaymentsRequestPaymentMethodsItemKrCard, nil
+	case "kr_market":
+		return SummaryPaymentsRequestPaymentMethodsItemKrMarket, nil
+	case "kriya":
+		return SummaryPaymentsRequestPaymentMethodsItemKriya, nil
+	case "kueski":
+		return SummaryPaymentsRequestPaymentMethodsItemKueski, nil
+	case "mb_way":
+		return SummaryPaymentsRequestPaymentMethodsItemMbWay, nil
+	case "m_pesa":
+		return SummaryPaymentsRequestPaymentMethodsItemMPesa, nil
+	case "mercado_pago":
+		return SummaryPaymentsRequestPaymentMethodsItemMercadoPago, nil
+	case "mercado_pago_ar":
+		return SummaryPaymentsRequestPaymentMethodsItemMercadoPagoAr, nil
+	case "mercado_pago_mx":
+		return SummaryPaymentsRequestPaymentMethodsItemMercadoPagoMx, nil
+	case "mobilepay":
+		return SummaryPaymentsRequestPaymentMethodsItemMobilepay, nil
+	case "modo":
+		return SummaryPaymentsRequestPaymentMethodsItemModo, nil
+	case "mondu":
+		return SummaryPaymentsRequestPaymentMethodsItemMondu, nil
+	case "multibanco":
+		return SummaryPaymentsRequestPaymentMethodsItemMultibanco, nil
+	case "naver_pay":
+		return SummaryPaymentsRequestPaymentMethodsItemNaverPay, nil
+	case "nequi":
+		return SummaryPaymentsRequestPaymentMethodsItemNequi, nil
+	case "netbanking":
+		return SummaryPaymentsRequestPaymentMethodsItemNetbanking, nil
+	case "ng_bank":
+		return SummaryPaymentsRequestPaymentMethodsItemNgBank, nil
+	case "ng_bank_transfer":
+		return SummaryPaymentsRequestPaymentMethodsItemNgBankTransfer, nil
+	case "ng_card":
+		return SummaryPaymentsRequestPaymentMethodsItemNgCard, nil
+	case "ng_market":
+		return SummaryPaymentsRequestPaymentMethodsItemNgMarket, nil
+	case "ng_ussd":
+		return SummaryPaymentsRequestPaymentMethodsItemNgUssd, nil
+	case "ng_wallet":
+		return SummaryPaymentsRequestPaymentMethodsItemNgWallet, nil
+	case "nupay":
+		return SummaryPaymentsRequestPaymentMethodsItemNupay, nil
+	case "nz_bank_account":
+		return SummaryPaymentsRequestPaymentMethodsItemNzBankAccount, nil
+	case "oney":
+		return SummaryPaymentsRequestPaymentMethodsItemOney, nil
+	case "oney_3x":
+		return SummaryPaymentsRequestPaymentMethodsItemOney3X, nil
+	case "oney_4x":
+		return SummaryPaymentsRequestPaymentMethodsItemOney4X, nil
+	case "opay":
+		return SummaryPaymentsRequestPaymentMethodsItemOpay, nil
+	case "oxxo":
+		return SummaryPaymentsRequestPaymentMethodsItemOxxo, nil
+	case "p24":
+		return SummaryPaymentsRequestPaymentMethodsItemP24, nil
+	case "pago_efectivo":
+		return SummaryPaymentsRequestPaymentMethodsItemPagoEfectivo, nil
+	case "pse":
+		return SummaryPaymentsRequestPaymentMethodsItemPse, nil
+	case "pay_by_bank":
+		return SummaryPaymentsRequestPaymentMethodsItemPayByBank, nil
+	case "payco":
+		return SummaryPaymentsRequestPaymentMethodsItemPayco, nil
+	case "paynow":
+		return SummaryPaymentsRequestPaymentMethodsItemPaynow, nil
+	case "paypal":
+		return SummaryPaymentsRequestPaymentMethodsItemPaypal, nil
+	case "paypal_express":
+		return SummaryPaymentsRequestPaymentMethodsItemPaypalExpress, nil
+	case "paypay":
+		return SummaryPaymentsRequestPaymentMethodsItemPaypay, nil
+	case "payto":
+		return SummaryPaymentsRequestPaymentMethodsItemPayto, nil
+	case "payto_email":
+		return SummaryPaymentsRequestPaymentMethodsItemPaytoEmail, nil
+	case "payto_phone":
+		return SummaryPaymentsRequestPaymentMethodsItemPaytoPhone, nil
+	case "payto_bank_account":
+		return SummaryPaymentsRequestPaymentMethodsItemPaytoBankAccount, nil
+	case "pix":
+		return SummaryPaymentsRequestPaymentMethodsItemPix, nil
+	case "platform_balance":
+		return SummaryPaymentsRequestPaymentMethodsItemPlatformBalance, nil
+	case "promptpay":
+		return SummaryPaymentsRequestPaymentMethodsItemPromptpay, nil
+	case "qris":
+		return SummaryPaymentsRequestPaymentMethodsItemQris, nil
+	case "rapipago":
+		return SummaryPaymentsRequestPaymentMethodsItemRapipago, nil
+	case "rechnung":
+		return SummaryPaymentsRequestPaymentMethodsItemRechnung, nil
+	case "revolut_pay":
+		return SummaryPaymentsRequestPaymentMethodsItemRevolutPay, nil
+	case "samsung_pay":
+		return SummaryPaymentsRequestPaymentMethodsItemSamsungPay, nil
+	case "satispay":
+		return SummaryPaymentsRequestPaymentMethodsItemSatispay, nil
+	case "scalapay":
+		return SummaryPaymentsRequestPaymentMethodsItemScalapay, nil
+	case "sencillito":
+		return SummaryPaymentsRequestPaymentMethodsItemSencillito, nil
+	case "sepa_debit":
+		return SummaryPaymentsRequestPaymentMethodsItemSepaDebit, nil
+	case "sequra":
+		return SummaryPaymentsRequestPaymentMethodsItemSequra, nil
+	case "servipag":
+		return SummaryPaymentsRequestPaymentMethodsItemServipag, nil
+	case "sezzle":
+		return SummaryPaymentsRequestPaymentMethodsItemSezzle, nil
+	case "shop_pay":
+		return SummaryPaymentsRequestPaymentMethodsItemShopPay, nil
+	case "shopeepay":
+		return SummaryPaymentsRequestPaymentMethodsItemShopeepay, nil
+	case "sofort":
+		return SummaryPaymentsRequestPaymentMethodsItemSofort, nil
+	case "south_korea_market":
+		return SummaryPaymentsRequestPaymentMethodsItemSouthKoreaMarket, nil
+	case "spei":
+		return SummaryPaymentsRequestPaymentMethodsItemSpei, nil
+	case "splitit":
+		return SummaryPaymentsRequestPaymentMethodsItemSplitit, nil
+	case "sunbit":
+		return SummaryPaymentsRequestPaymentMethodsItemSunbit, nil
+	case "swish":
+		return SummaryPaymentsRequestPaymentMethodsItemSwish, nil
+	case "tabby":
+		return SummaryPaymentsRequestPaymentMethodsItemTabby, nil
+	case "tamara":
+		return SummaryPaymentsRequestPaymentMethodsItemTamara, nil
+	case "touch_n_go":
+		return SummaryPaymentsRequestPaymentMethodsItemTouchNGo, nil
+	case "twint":
+		return SummaryPaymentsRequestPaymentMethodsItemTwint, nil
+	case "upi":
+		return SummaryPaymentsRequestPaymentMethodsItemUpi, nil
+	case "us_bank_account":
+		return SummaryPaymentsRequestPaymentMethodsItemUsBankAccount, nil
+	case "us_bank_transfer":
+		return SummaryPaymentsRequestPaymentMethodsItemUsBankTransfer, nil
+	case "venmo":
+		return SummaryPaymentsRequestPaymentMethodsItemVenmo, nil
+	case "vipps":
+		return SummaryPaymentsRequestPaymentMethodsItemVipps, nil
+	case "webpay":
+		return SummaryPaymentsRequestPaymentMethodsItemWebpay, nil
+	case "wechat_pay":
+		return SummaryPaymentsRequestPaymentMethodsItemWechatPay, nil
+	case "whop_pay":
+		return SummaryPaymentsRequestPaymentMethodsItemWhopPay, nil
+	case "yape":
+		return SummaryPaymentsRequestPaymentMethodsItemYape, nil
+	case "zip":
+		return SummaryPaymentsRequestPaymentMethodsItemZip, nil
+	case "coinflow":
+		return SummaryPaymentsRequestPaymentMethodsItemCoinflow, nil
+	case "tap_to_pay":
+		return SummaryPaymentsRequestPaymentMethodsItemTapToPay, nil
+	}
+	var t SummaryPaymentsRequestPaymentMethodsItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SummaryPaymentsRequestPaymentMethodsItem) Ptr() *SummaryPaymentsRequestPaymentMethodsItem {
+	return &s
+}
+
+type SummaryPaymentsRequestStatusesItem string
+
+const (
+	SummaryPaymentsRequestStatusesItemOpen          SummaryPaymentsRequestStatusesItem = "open"
+	SummaryPaymentsRequestStatusesItemAuthorized    SummaryPaymentsRequestStatusesItem = "authorized"
+	SummaryPaymentsRequestStatusesItemPaid          SummaryPaymentsRequestStatusesItem = "paid"
+	SummaryPaymentsRequestStatusesItemPending       SummaryPaymentsRequestStatusesItem = "pending"
+	SummaryPaymentsRequestStatusesItemUncollectible SummaryPaymentsRequestStatusesItem = "uncollectible"
+	SummaryPaymentsRequestStatusesItemUnresolved    SummaryPaymentsRequestStatusesItem = "unresolved"
+	SummaryPaymentsRequestStatusesItemVoid          SummaryPaymentsRequestStatusesItem = "void"
+)
+
+func NewSummaryPaymentsRequestStatusesItemFromString(s string) (SummaryPaymentsRequestStatusesItem, error) {
+	switch s {
+	case "open":
+		return SummaryPaymentsRequestStatusesItemOpen, nil
+	case "authorized":
+		return SummaryPaymentsRequestStatusesItemAuthorized, nil
+	case "paid":
+		return SummaryPaymentsRequestStatusesItemPaid, nil
+	case "pending":
+		return SummaryPaymentsRequestStatusesItemPending, nil
+	case "uncollectible":
+		return SummaryPaymentsRequestStatusesItemUncollectible, nil
+	case "unresolved":
+		return SummaryPaymentsRequestStatusesItemUnresolved, nil
+	case "void":
+		return SummaryPaymentsRequestStatusesItemVoid, nil
+	}
+	var t SummaryPaymentsRequestStatusesItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SummaryPaymentsRequestStatusesItem) Ptr() *SummaryPaymentsRequestStatusesItem {
+	return &s
+}
+
+type SummaryPaymentsRequestSubstatusesItem string
+
+const (
+	SummaryPaymentsRequestSubstatusesItemSucceeded                   SummaryPaymentsRequestSubstatusesItem = "succeeded"
+	SummaryPaymentsRequestSubstatusesItemRequiresCapture             SummaryPaymentsRequestSubstatusesItem = "requires_capture"
+	SummaryPaymentsRequestSubstatusesItemPending                     SummaryPaymentsRequestSubstatusesItem = "pending"
+	SummaryPaymentsRequestSubstatusesItemFailed                      SummaryPaymentsRequestSubstatusesItem = "failed"
+	SummaryPaymentsRequestSubstatusesItemBlocked                     SummaryPaymentsRequestSubstatusesItem = "blocked"
+	SummaryPaymentsRequestSubstatusesItemPastDue                     SummaryPaymentsRequestSubstatusesItem = "past_due"
+	SummaryPaymentsRequestSubstatusesItemCanceled                    SummaryPaymentsRequestSubstatusesItem = "canceled"
+	SummaryPaymentsRequestSubstatusesItemPriceTooLow                 SummaryPaymentsRequestSubstatusesItem = "price_too_low"
+	SummaryPaymentsRequestSubstatusesItemUncollectible               SummaryPaymentsRequestSubstatusesItem = "uncollectible"
+	SummaryPaymentsRequestSubstatusesItemRefunded                    SummaryPaymentsRequestSubstatusesItem = "refunded"
+	SummaryPaymentsRequestSubstatusesItemAutoRefunded                SummaryPaymentsRequestSubstatusesItem = "auto_refunded"
+	SummaryPaymentsRequestSubstatusesItemPartiallyRefunded           SummaryPaymentsRequestSubstatusesItem = "partially_refunded"
+	SummaryPaymentsRequestSubstatusesItemDisputeWarning              SummaryPaymentsRequestSubstatusesItem = "dispute_warning"
+	SummaryPaymentsRequestSubstatusesItemDisputeNeedsResponse        SummaryPaymentsRequestSubstatusesItem = "dispute_needs_response"
+	SummaryPaymentsRequestSubstatusesItemDisputeWarningNeedsResponse SummaryPaymentsRequestSubstatusesItem = "dispute_warning_needs_response"
+	SummaryPaymentsRequestSubstatusesItemResolutionNeedsResponse     SummaryPaymentsRequestSubstatusesItem = "resolution_needs_response"
+	SummaryPaymentsRequestSubstatusesItemDisputeUnderReview          SummaryPaymentsRequestSubstatusesItem = "dispute_under_review"
+	SummaryPaymentsRequestSubstatusesItemDisputeWarningUnderReview   SummaryPaymentsRequestSubstatusesItem = "dispute_warning_under_review"
+	SummaryPaymentsRequestSubstatusesItemResolutionUnderReview       SummaryPaymentsRequestSubstatusesItem = "resolution_under_review"
+	SummaryPaymentsRequestSubstatusesItemDisputeWon                  SummaryPaymentsRequestSubstatusesItem = "dispute_won"
+	SummaryPaymentsRequestSubstatusesItemDisputeWarningClosed        SummaryPaymentsRequestSubstatusesItem = "dispute_warning_closed"
+	SummaryPaymentsRequestSubstatusesItemResolutionWon               SummaryPaymentsRequestSubstatusesItem = "resolution_won"
+	SummaryPaymentsRequestSubstatusesItemDisputeLost                 SummaryPaymentsRequestSubstatusesItem = "dispute_lost"
+	SummaryPaymentsRequestSubstatusesItemDisputeClosed               SummaryPaymentsRequestSubstatusesItem = "dispute_closed"
+	SummaryPaymentsRequestSubstatusesItemResolutionLost              SummaryPaymentsRequestSubstatusesItem = "resolution_lost"
+	SummaryPaymentsRequestSubstatusesItemDrafted                     SummaryPaymentsRequestSubstatusesItem = "drafted"
+	SummaryPaymentsRequestSubstatusesItemIncomplete                  SummaryPaymentsRequestSubstatusesItem = "incomplete"
+	SummaryPaymentsRequestSubstatusesItemUnresolved                  SummaryPaymentsRequestSubstatusesItem = "unresolved"
+)
+
+func NewSummaryPaymentsRequestSubstatusesItemFromString(s string) (SummaryPaymentsRequestSubstatusesItem, error) {
+	switch s {
+	case "succeeded":
+		return SummaryPaymentsRequestSubstatusesItemSucceeded, nil
+	case "requires_capture":
+		return SummaryPaymentsRequestSubstatusesItemRequiresCapture, nil
+	case "pending":
+		return SummaryPaymentsRequestSubstatusesItemPending, nil
+	case "failed":
+		return SummaryPaymentsRequestSubstatusesItemFailed, nil
+	case "blocked":
+		return SummaryPaymentsRequestSubstatusesItemBlocked, nil
+	case "past_due":
+		return SummaryPaymentsRequestSubstatusesItemPastDue, nil
+	case "canceled":
+		return SummaryPaymentsRequestSubstatusesItemCanceled, nil
+	case "price_too_low":
+		return SummaryPaymentsRequestSubstatusesItemPriceTooLow, nil
+	case "uncollectible":
+		return SummaryPaymentsRequestSubstatusesItemUncollectible, nil
+	case "refunded":
+		return SummaryPaymentsRequestSubstatusesItemRefunded, nil
+	case "auto_refunded":
+		return SummaryPaymentsRequestSubstatusesItemAutoRefunded, nil
+	case "partially_refunded":
+		return SummaryPaymentsRequestSubstatusesItemPartiallyRefunded, nil
+	case "dispute_warning":
+		return SummaryPaymentsRequestSubstatusesItemDisputeWarning, nil
+	case "dispute_needs_response":
+		return SummaryPaymentsRequestSubstatusesItemDisputeNeedsResponse, nil
+	case "dispute_warning_needs_response":
+		return SummaryPaymentsRequestSubstatusesItemDisputeWarningNeedsResponse, nil
+	case "resolution_needs_response":
+		return SummaryPaymentsRequestSubstatusesItemResolutionNeedsResponse, nil
+	case "dispute_under_review":
+		return SummaryPaymentsRequestSubstatusesItemDisputeUnderReview, nil
+	case "dispute_warning_under_review":
+		return SummaryPaymentsRequestSubstatusesItemDisputeWarningUnderReview, nil
+	case "resolution_under_review":
+		return SummaryPaymentsRequestSubstatusesItemResolutionUnderReview, nil
+	case "dispute_won":
+		return SummaryPaymentsRequestSubstatusesItemDisputeWon, nil
+	case "dispute_warning_closed":
+		return SummaryPaymentsRequestSubstatusesItemDisputeWarningClosed, nil
+	case "resolution_won":
+		return SummaryPaymentsRequestSubstatusesItemResolutionWon, nil
+	case "dispute_lost":
+		return SummaryPaymentsRequestSubstatusesItemDisputeLost, nil
+	case "dispute_closed":
+		return SummaryPaymentsRequestSubstatusesItemDisputeClosed, nil
+	case "resolution_lost":
+		return SummaryPaymentsRequestSubstatusesItemResolutionLost, nil
+	case "drafted":
+		return SummaryPaymentsRequestSubstatusesItemDrafted, nil
+	case "incomplete":
+		return SummaryPaymentsRequestSubstatusesItemIncomplete, nil
+	case "unresolved":
+		return SummaryPaymentsRequestSubstatusesItemUnresolved, nil
+	}
+	var t SummaryPaymentsRequestSubstatusesItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SummaryPaymentsRequestSubstatusesItem) Ptr() *SummaryPaymentsRequestSubstatusesItem {
+	return &s
+}
+
+type SummaryPaymentsRequestTrackingStatesItem string
+
+const (
+	SummaryPaymentsRequestTrackingStatesItemUnknown            SummaryPaymentsRequestTrackingStatesItem = "unknown"
+	SummaryPaymentsRequestTrackingStatesItemPreTransit         SummaryPaymentsRequestTrackingStatesItem = "pre_transit"
+	SummaryPaymentsRequestTrackingStatesItemInTransit          SummaryPaymentsRequestTrackingStatesItem = "in_transit"
+	SummaryPaymentsRequestTrackingStatesItemOutForDelivery     SummaryPaymentsRequestTrackingStatesItem = "out_for_delivery"
+	SummaryPaymentsRequestTrackingStatesItemDelivered          SummaryPaymentsRequestTrackingStatesItem = "delivered"
+	SummaryPaymentsRequestTrackingStatesItemAvailableForPickup SummaryPaymentsRequestTrackingStatesItem = "available_for_pickup"
+	SummaryPaymentsRequestTrackingStatesItemReturnToSender     SummaryPaymentsRequestTrackingStatesItem = "return_to_sender"
+	SummaryPaymentsRequestTrackingStatesItemFailure            SummaryPaymentsRequestTrackingStatesItem = "failure"
+	SummaryPaymentsRequestTrackingStatesItemCancelled          SummaryPaymentsRequestTrackingStatesItem = "cancelled"
+	SummaryPaymentsRequestTrackingStatesItemError              SummaryPaymentsRequestTrackingStatesItem = "error"
+	SummaryPaymentsRequestTrackingStatesItemNeedsTracking      SummaryPaymentsRequestTrackingStatesItem = "needs_tracking"
+)
+
+func NewSummaryPaymentsRequestTrackingStatesItemFromString(s string) (SummaryPaymentsRequestTrackingStatesItem, error) {
+	switch s {
+	case "unknown":
+		return SummaryPaymentsRequestTrackingStatesItemUnknown, nil
+	case "pre_transit":
+		return SummaryPaymentsRequestTrackingStatesItemPreTransit, nil
+	case "in_transit":
+		return SummaryPaymentsRequestTrackingStatesItemInTransit, nil
+	case "out_for_delivery":
+		return SummaryPaymentsRequestTrackingStatesItemOutForDelivery, nil
+	case "delivered":
+		return SummaryPaymentsRequestTrackingStatesItemDelivered, nil
+	case "available_for_pickup":
+		return SummaryPaymentsRequestTrackingStatesItemAvailableForPickup, nil
+	case "return_to_sender":
+		return SummaryPaymentsRequestTrackingStatesItemReturnToSender, nil
+	case "failure":
+		return SummaryPaymentsRequestTrackingStatesItemFailure, nil
+	case "cancelled":
+		return SummaryPaymentsRequestTrackingStatesItemCancelled, nil
+	case "error":
+		return SummaryPaymentsRequestTrackingStatesItemError, nil
+	case "needs_tracking":
+		return SummaryPaymentsRequestTrackingStatesItemNeedsTracking, nil
+	}
+	var t SummaryPaymentsRequestTrackingStatesItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SummaryPaymentsRequestTrackingStatesItem) Ptr() *SummaryPaymentsRequestTrackingStatesItem {
+	return &s
+}
+
+var (
+	summaryPaymentsResponseFieldGroups = big.NewInt(1 << 0)
+	summaryPaymentsResponseFieldTotal  = big.NewInt(1 << 1)
+)
+
+type SummaryPaymentsResponse struct {
+	// One entry per requested breakdown, keyed by the field it groups on. A field you did not ask for is absent.
+	Groups *SummaryPaymentsResponseGroups `json:"groups" url:"groups"`
+	// How many payments match the filters.
+	Total int `json:"total" url:"total"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SummaryPaymentsResponse) GetGroups() *SummaryPaymentsResponseGroups {
+	if s == nil {
+		return nil
+	}
+	return s.Groups
+}
+
+func (s *SummaryPaymentsResponse) GetTotal() int {
+	if s == nil {
+		return 0
+	}
+	return s.Total
+}
+
+func (s *SummaryPaymentsResponse) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SummaryPaymentsResponse) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
+	}
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetGroups sets the Groups field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponse) SetGroups(groups *SummaryPaymentsResponseGroups) {
+	s.Groups = groups
+	s.require(summaryPaymentsResponseFieldGroups)
+}
+
+// SetTotal sets the Total field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponse) SetTotal(total int) {
+	s.Total = total
+	s.require(summaryPaymentsResponseFieldTotal)
+}
+
+func (s *SummaryPaymentsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler SummaryPaymentsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SummaryPaymentsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SummaryPaymentsResponse) MarshalJSON() ([]byte, error) {
+	type embed SummaryPaymentsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SummaryPaymentsResponse) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	summaryPaymentsResponseGroupsFieldCurrency  = big.NewInt(1 << 0)
+	summaryPaymentsResponseGroupsFieldSubstatus = big.NewInt(1 << 1)
+)
+
+// One entry per requested breakdown, keyed by the field it groups on. A field you did not ask for is absent.
+type SummaryPaymentsResponseGroups struct {
+	// How many of the matching payments are in each currency, keyed by three-letter code. Only currencies with at least one payment are present.
+	Currency map[string]int `json:"currency,omitempty" url:"currency,omitempty"`
+	// How many of the matching payments are in each substatus. Every substatus is present, including those with a count of zero.
+	Substatus *SummaryPaymentsResponseGroupsSubstatus `json:"substatus,omitempty" url:"substatus,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SummaryPaymentsResponseGroups) GetCurrency() map[string]int {
+	if s == nil {
+		return nil
+	}
+	return s.Currency
+}
+
+func (s *SummaryPaymentsResponseGroups) GetSubstatus() *SummaryPaymentsResponseGroupsSubstatus {
+	if s == nil {
+		return nil
+	}
+	return s.Substatus
+}
+
+func (s *SummaryPaymentsResponseGroups) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SummaryPaymentsResponseGroups) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
+	}
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetCurrency sets the Currency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroups) SetCurrency(currency map[string]int) {
+	s.Currency = currency
+	s.require(summaryPaymentsResponseGroupsFieldCurrency)
+}
+
+// SetSubstatus sets the Substatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroups) SetSubstatus(substatus *SummaryPaymentsResponseGroupsSubstatus) {
+	s.Substatus = substatus
+	s.require(summaryPaymentsResponseGroupsFieldSubstatus)
+}
+
+func (s *SummaryPaymentsResponseGroups) UnmarshalJSON(data []byte) error {
+	type unmarshaler SummaryPaymentsResponseGroups
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SummaryPaymentsResponseGroups(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SummaryPaymentsResponseGroups) MarshalJSON() ([]byte, error) {
+	type embed SummaryPaymentsResponseGroups
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SummaryPaymentsResponseGroups) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	summaryPaymentsResponseGroupsSubstatusFieldAutoRefunded                = big.NewInt(1 << 0)
+	summaryPaymentsResponseGroupsSubstatusFieldBlocked                     = big.NewInt(1 << 1)
+	summaryPaymentsResponseGroupsSubstatusFieldCanceled                    = big.NewInt(1 << 2)
+	summaryPaymentsResponseGroupsSubstatusFieldDisputeClosed               = big.NewInt(1 << 3)
+	summaryPaymentsResponseGroupsSubstatusFieldDisputeLost                 = big.NewInt(1 << 4)
+	summaryPaymentsResponseGroupsSubstatusFieldDisputeNeedsResponse        = big.NewInt(1 << 5)
+	summaryPaymentsResponseGroupsSubstatusFieldDisputeUnderReview          = big.NewInt(1 << 6)
+	summaryPaymentsResponseGroupsSubstatusFieldDisputeWarning              = big.NewInt(1 << 7)
+	summaryPaymentsResponseGroupsSubstatusFieldDisputeWarningClosed        = big.NewInt(1 << 8)
+	summaryPaymentsResponseGroupsSubstatusFieldDisputeWarningNeedsResponse = big.NewInt(1 << 9)
+	summaryPaymentsResponseGroupsSubstatusFieldDisputeWarningUnderReview   = big.NewInt(1 << 10)
+	summaryPaymentsResponseGroupsSubstatusFieldDisputeWon                  = big.NewInt(1 << 11)
+	summaryPaymentsResponseGroupsSubstatusFieldDrafted                     = big.NewInt(1 << 12)
+	summaryPaymentsResponseGroupsSubstatusFieldFailed                      = big.NewInt(1 << 13)
+	summaryPaymentsResponseGroupsSubstatusFieldIncomplete                  = big.NewInt(1 << 14)
+	summaryPaymentsResponseGroupsSubstatusFieldPartiallyRefunded           = big.NewInt(1 << 15)
+	summaryPaymentsResponseGroupsSubstatusFieldPastDue                     = big.NewInt(1 << 16)
+	summaryPaymentsResponseGroupsSubstatusFieldPending                     = big.NewInt(1 << 17)
+	summaryPaymentsResponseGroupsSubstatusFieldPriceTooLow                 = big.NewInt(1 << 18)
+	summaryPaymentsResponseGroupsSubstatusFieldRefunded                    = big.NewInt(1 << 19)
+	summaryPaymentsResponseGroupsSubstatusFieldRequiresCapture             = big.NewInt(1 << 20)
+	summaryPaymentsResponseGroupsSubstatusFieldResolutionLost              = big.NewInt(1 << 21)
+	summaryPaymentsResponseGroupsSubstatusFieldResolutionNeedsResponse     = big.NewInt(1 << 22)
+	summaryPaymentsResponseGroupsSubstatusFieldResolutionUnderReview       = big.NewInt(1 << 23)
+	summaryPaymentsResponseGroupsSubstatusFieldResolutionWon               = big.NewInt(1 << 24)
+	summaryPaymentsResponseGroupsSubstatusFieldSucceeded                   = big.NewInt(1 << 25)
+	summaryPaymentsResponseGroupsSubstatusFieldUncollectible               = big.NewInt(1 << 26)
+	summaryPaymentsResponseGroupsSubstatusFieldUnresolved                  = big.NewInt(1 << 27)
+)
+
+// How many of the matching payments are in each substatus. Every substatus is present, including those with a count of zero.
+type SummaryPaymentsResponseGroupsSubstatus struct {
+	AutoRefunded                int `json:"auto_refunded" url:"auto_refunded"`
+	Blocked                     int `json:"blocked" url:"blocked"`
+	Canceled                    int `json:"canceled" url:"canceled"`
+	DisputeClosed               int `json:"dispute_closed" url:"dispute_closed"`
+	DisputeLost                 int `json:"dispute_lost" url:"dispute_lost"`
+	DisputeNeedsResponse        int `json:"dispute_needs_response" url:"dispute_needs_response"`
+	DisputeUnderReview          int `json:"dispute_under_review" url:"dispute_under_review"`
+	DisputeWarning              int `json:"dispute_warning" url:"dispute_warning"`
+	DisputeWarningClosed        int `json:"dispute_warning_closed" url:"dispute_warning_closed"`
+	DisputeWarningNeedsResponse int `json:"dispute_warning_needs_response" url:"dispute_warning_needs_response"`
+	DisputeWarningUnderReview   int `json:"dispute_warning_under_review" url:"dispute_warning_under_review"`
+	DisputeWon                  int `json:"dispute_won" url:"dispute_won"`
+	Drafted                     int `json:"drafted" url:"drafted"`
+	Failed                      int `json:"failed" url:"failed"`
+	Incomplete                  int `json:"incomplete" url:"incomplete"`
+	PartiallyRefunded           int `json:"partially_refunded" url:"partially_refunded"`
+	PastDue                     int `json:"past_due" url:"past_due"`
+	Pending                     int `json:"pending" url:"pending"`
+	PriceTooLow                 int `json:"price_too_low" url:"price_too_low"`
+	Refunded                    int `json:"refunded" url:"refunded"`
+	RequiresCapture             int `json:"requires_capture" url:"requires_capture"`
+	ResolutionLost              int `json:"resolution_lost" url:"resolution_lost"`
+	ResolutionNeedsResponse     int `json:"resolution_needs_response" url:"resolution_needs_response"`
+	ResolutionUnderReview       int `json:"resolution_under_review" url:"resolution_under_review"`
+	ResolutionWon               int `json:"resolution_won" url:"resolution_won"`
+	Succeeded                   int `json:"succeeded" url:"succeeded"`
+	Uncollectible               int `json:"uncollectible" url:"uncollectible"`
+	Unresolved                  int `json:"unresolved" url:"unresolved"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetAutoRefunded() int {
+	if s == nil {
+		return 0
+	}
+	return s.AutoRefunded
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetBlocked() int {
+	if s == nil {
+		return 0
+	}
+	return s.Blocked
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetCanceled() int {
+	if s == nil {
+		return 0
+	}
+	return s.Canceled
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetDisputeClosed() int {
+	if s == nil {
+		return 0
+	}
+	return s.DisputeClosed
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetDisputeLost() int {
+	if s == nil {
+		return 0
+	}
+	return s.DisputeLost
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetDisputeNeedsResponse() int {
+	if s == nil {
+		return 0
+	}
+	return s.DisputeNeedsResponse
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetDisputeUnderReview() int {
+	if s == nil {
+		return 0
+	}
+	return s.DisputeUnderReview
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetDisputeWarning() int {
+	if s == nil {
+		return 0
+	}
+	return s.DisputeWarning
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetDisputeWarningClosed() int {
+	if s == nil {
+		return 0
+	}
+	return s.DisputeWarningClosed
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetDisputeWarningNeedsResponse() int {
+	if s == nil {
+		return 0
+	}
+	return s.DisputeWarningNeedsResponse
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetDisputeWarningUnderReview() int {
+	if s == nil {
+		return 0
+	}
+	return s.DisputeWarningUnderReview
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetDisputeWon() int {
+	if s == nil {
+		return 0
+	}
+	return s.DisputeWon
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetDrafted() int {
+	if s == nil {
+		return 0
+	}
+	return s.Drafted
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetFailed() int {
+	if s == nil {
+		return 0
+	}
+	return s.Failed
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetIncomplete() int {
+	if s == nil {
+		return 0
+	}
+	return s.Incomplete
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetPartiallyRefunded() int {
+	if s == nil {
+		return 0
+	}
+	return s.PartiallyRefunded
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetPastDue() int {
+	if s == nil {
+		return 0
+	}
+	return s.PastDue
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetPending() int {
+	if s == nil {
+		return 0
+	}
+	return s.Pending
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetPriceTooLow() int {
+	if s == nil {
+		return 0
+	}
+	return s.PriceTooLow
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetRefunded() int {
+	if s == nil {
+		return 0
+	}
+	return s.Refunded
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetRequiresCapture() int {
+	if s == nil {
+		return 0
+	}
+	return s.RequiresCapture
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetResolutionLost() int {
+	if s == nil {
+		return 0
+	}
+	return s.ResolutionLost
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetResolutionNeedsResponse() int {
+	if s == nil {
+		return 0
+	}
+	return s.ResolutionNeedsResponse
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetResolutionUnderReview() int {
+	if s == nil {
+		return 0
+	}
+	return s.ResolutionUnderReview
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetResolutionWon() int {
+	if s == nil {
+		return 0
+	}
+	return s.ResolutionWon
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetSucceeded() int {
+	if s == nil {
+		return 0
+	}
+	return s.Succeeded
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetUncollectible() int {
+	if s == nil {
+		return 0
+	}
+	return s.Uncollectible
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetUnresolved() int {
+	if s == nil {
+		return 0
+	}
+	return s.Unresolved
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
+	}
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetAutoRefunded sets the AutoRefunded field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetAutoRefunded(autoRefunded int) {
+	s.AutoRefunded = autoRefunded
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldAutoRefunded)
+}
+
+// SetBlocked sets the Blocked field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetBlocked(blocked int) {
+	s.Blocked = blocked
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldBlocked)
+}
+
+// SetCanceled sets the Canceled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetCanceled(canceled int) {
+	s.Canceled = canceled
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldCanceled)
+}
+
+// SetDisputeClosed sets the DisputeClosed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetDisputeClosed(disputeClosed int) {
+	s.DisputeClosed = disputeClosed
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldDisputeClosed)
+}
+
+// SetDisputeLost sets the DisputeLost field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetDisputeLost(disputeLost int) {
+	s.DisputeLost = disputeLost
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldDisputeLost)
+}
+
+// SetDisputeNeedsResponse sets the DisputeNeedsResponse field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetDisputeNeedsResponse(disputeNeedsResponse int) {
+	s.DisputeNeedsResponse = disputeNeedsResponse
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldDisputeNeedsResponse)
+}
+
+// SetDisputeUnderReview sets the DisputeUnderReview field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetDisputeUnderReview(disputeUnderReview int) {
+	s.DisputeUnderReview = disputeUnderReview
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldDisputeUnderReview)
+}
+
+// SetDisputeWarning sets the DisputeWarning field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetDisputeWarning(disputeWarning int) {
+	s.DisputeWarning = disputeWarning
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldDisputeWarning)
+}
+
+// SetDisputeWarningClosed sets the DisputeWarningClosed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetDisputeWarningClosed(disputeWarningClosed int) {
+	s.DisputeWarningClosed = disputeWarningClosed
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldDisputeWarningClosed)
+}
+
+// SetDisputeWarningNeedsResponse sets the DisputeWarningNeedsResponse field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetDisputeWarningNeedsResponse(disputeWarningNeedsResponse int) {
+	s.DisputeWarningNeedsResponse = disputeWarningNeedsResponse
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldDisputeWarningNeedsResponse)
+}
+
+// SetDisputeWarningUnderReview sets the DisputeWarningUnderReview field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetDisputeWarningUnderReview(disputeWarningUnderReview int) {
+	s.DisputeWarningUnderReview = disputeWarningUnderReview
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldDisputeWarningUnderReview)
+}
+
+// SetDisputeWon sets the DisputeWon field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetDisputeWon(disputeWon int) {
+	s.DisputeWon = disputeWon
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldDisputeWon)
+}
+
+// SetDrafted sets the Drafted field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetDrafted(drafted int) {
+	s.Drafted = drafted
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldDrafted)
+}
+
+// SetFailed sets the Failed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetFailed(failed int) {
+	s.Failed = failed
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldFailed)
+}
+
+// SetIncomplete sets the Incomplete field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetIncomplete(incomplete int) {
+	s.Incomplete = incomplete
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldIncomplete)
+}
+
+// SetPartiallyRefunded sets the PartiallyRefunded field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetPartiallyRefunded(partiallyRefunded int) {
+	s.PartiallyRefunded = partiallyRefunded
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldPartiallyRefunded)
+}
+
+// SetPastDue sets the PastDue field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetPastDue(pastDue int) {
+	s.PastDue = pastDue
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldPastDue)
+}
+
+// SetPending sets the Pending field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetPending(pending int) {
+	s.Pending = pending
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldPending)
+}
+
+// SetPriceTooLow sets the PriceTooLow field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetPriceTooLow(priceTooLow int) {
+	s.PriceTooLow = priceTooLow
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldPriceTooLow)
+}
+
+// SetRefunded sets the Refunded field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetRefunded(refunded int) {
+	s.Refunded = refunded
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldRefunded)
+}
+
+// SetRequiresCapture sets the RequiresCapture field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetRequiresCapture(requiresCapture int) {
+	s.RequiresCapture = requiresCapture
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldRequiresCapture)
+}
+
+// SetResolutionLost sets the ResolutionLost field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetResolutionLost(resolutionLost int) {
+	s.ResolutionLost = resolutionLost
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldResolutionLost)
+}
+
+// SetResolutionNeedsResponse sets the ResolutionNeedsResponse field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetResolutionNeedsResponse(resolutionNeedsResponse int) {
+	s.ResolutionNeedsResponse = resolutionNeedsResponse
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldResolutionNeedsResponse)
+}
+
+// SetResolutionUnderReview sets the ResolutionUnderReview field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetResolutionUnderReview(resolutionUnderReview int) {
+	s.ResolutionUnderReview = resolutionUnderReview
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldResolutionUnderReview)
+}
+
+// SetResolutionWon sets the ResolutionWon field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetResolutionWon(resolutionWon int) {
+	s.ResolutionWon = resolutionWon
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldResolutionWon)
+}
+
+// SetSucceeded sets the Succeeded field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetSucceeded(succeeded int) {
+	s.Succeeded = succeeded
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldSucceeded)
+}
+
+// SetUncollectible sets the Uncollectible field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetUncollectible(uncollectible int) {
+	s.Uncollectible = uncollectible
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldUncollectible)
+}
+
+// SetUnresolved sets the Unresolved field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetUnresolved(unresolved int) {
+	s.Unresolved = unresolved
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldUnresolved)
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) UnmarshalJSON(data []byte) error {
+	type unmarshaler SummaryPaymentsResponseGroupsSubstatus
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SummaryPaymentsResponseGroupsSubstatus(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) MarshalJSON() ([]byte, error) {
+	type embed SummaryPaymentsResponseGroupsSubstatus
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
 }
 
 var (
