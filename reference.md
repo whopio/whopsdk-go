@@ -37821,6 +37821,14 @@ client.Stats.Retrieve(
 <dl>
 <dd>
 
+**accountCountry:** `*string` — Filter to accounts located in one country, as an ISO 3166-1 alpha-2 code such as `US`. Pair with `breakdown_by=account_country` to split by account country. Available on metrics that list `account_country`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **issuer:** `*string` — Filter to one card-issuing bank, named as the processor reports it, for example JPMORGAN CHASE BANK N A, or unknown for payments with no reported bank. Available on metrics that list issuer.
     
 </dd>
@@ -47625,6 +47633,14 @@ client.Stats.TimeSeries.Retrieve(
 <dd>
 
 **productCategory:** `*string` — Filter to one product category, for example `algo_trading_course`. Pair with `breakdown_by=product_category` to split by product category. Available on metrics that list `product_category`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**accountCountry:** `*string` — Filter to accounts located in one country, as an ISO 3166-1 alpha-2 code such as `US`. Pair with `breakdown_by=account_country` to split by account country. Available on metrics that list `account_country`.
     
 </dd>
 </dl>
