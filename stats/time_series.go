@@ -50,40 +50,41 @@ var (
 	retrieveTimeSeriesRequestFieldBusinessType        = big.NewInt(1 << 35)
 	retrieveTimeSeriesRequestFieldIndustryType        = big.NewInt(1 << 36)
 	retrieveTimeSeriesRequestFieldProductCategory     = big.NewInt(1 << 37)
-	retrieveTimeSeriesRequestFieldIssuer              = big.NewInt(1 << 38)
-	retrieveTimeSeriesRequestFieldConversionWindow    = big.NewInt(1 << 39)
-	retrieveTimeSeriesRequestFieldMatureOnly          = big.NewInt(1 << 40)
-	retrieveTimeSeriesRequestFieldSteps               = big.NewInt(1 << 41)
-	retrieveTimeSeriesRequestFieldCompareTo           = big.NewInt(1 << 42)
-	retrieveTimeSeriesRequestFieldConfidenceLevel     = big.NewInt(1 << 43)
-	retrieveTimeSeriesRequestFieldContactable         = big.NewInt(1 << 44)
-	retrieveTimeSeriesRequestFieldHasPurchased        = big.NewInt(1 << 45)
-	retrieveTimeSeriesRequestFieldFirstSeenAfter      = big.NewInt(1 << 46)
-	retrieveTimeSeriesRequestFieldFirstSeenBefore     = big.NewInt(1 << 47)
-	retrieveTimeSeriesRequestFieldLastSeenAfter       = big.NewInt(1 << 48)
-	retrieveTimeSeriesRequestFieldLastSeenBefore      = big.NewInt(1 << 49)
-	retrieveTimeSeriesRequestFieldFirstSeenWithinDays = big.NewInt(1 << 50)
-	retrieveTimeSeriesRequestFieldLastSeenWithinDays  = big.NewInt(1 << 51)
-	retrieveTimeSeriesRequestFieldKnown               = big.NewInt(1 << 52)
-	retrieveTimeSeriesRequestFieldHasEmail            = big.NewInt(1 << 53)
-	retrieveTimeSeriesRequestFieldHasPhone            = big.NewInt(1 << 54)
-	retrieveTimeSeriesRequestFieldLtvGt               = big.NewInt(1 << 55)
-	retrieveTimeSeriesRequestFieldLtvGte              = big.NewInt(1 << 56)
-	retrieveTimeSeriesRequestFieldLtvLt               = big.NewInt(1 << 57)
-	retrieveTimeSeriesRequestFieldLtvLte              = big.NewInt(1 << 58)
-	retrieveTimeSeriesRequestFieldAovGt               = big.NewInt(1 << 59)
-	retrieveTimeSeriesRequestFieldAovGte              = big.NewInt(1 << 60)
-	retrieveTimeSeriesRequestFieldAovLt               = big.NewInt(1 << 61)
-	retrieveTimeSeriesRequestFieldAovLte              = big.NewInt(1 << 62)
-	retrieveTimeSeriesRequestFieldPurchaseCountGt     = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	retrieveTimeSeriesRequestFieldPurchaseCountGte    = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	retrieveTimeSeriesRequestFieldPurchaseCountLt     = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	retrieveTimeSeriesRequestFieldPurchaseCountLte    = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	retrieveTimeSeriesRequestFieldEventCountGt        = big.NewInt(0).Lsh(big.NewInt(1), 67)
-	retrieveTimeSeriesRequestFieldEventCountGte       = big.NewInt(0).Lsh(big.NewInt(1), 68)
-	retrieveTimeSeriesRequestFieldEventCountLt        = big.NewInt(0).Lsh(big.NewInt(1), 69)
-	retrieveTimeSeriesRequestFieldEventCountLte       = big.NewInt(0).Lsh(big.NewInt(1), 70)
-	retrieveTimeSeriesRequestFieldReferringAccountID  = big.NewInt(0).Lsh(big.NewInt(1), 71)
+	retrieveTimeSeriesRequestFieldAccountCountry      = big.NewInt(1 << 38)
+	retrieveTimeSeriesRequestFieldIssuer              = big.NewInt(1 << 39)
+	retrieveTimeSeriesRequestFieldConversionWindow    = big.NewInt(1 << 40)
+	retrieveTimeSeriesRequestFieldMatureOnly          = big.NewInt(1 << 41)
+	retrieveTimeSeriesRequestFieldSteps               = big.NewInt(1 << 42)
+	retrieveTimeSeriesRequestFieldCompareTo           = big.NewInt(1 << 43)
+	retrieveTimeSeriesRequestFieldConfidenceLevel     = big.NewInt(1 << 44)
+	retrieveTimeSeriesRequestFieldContactable         = big.NewInt(1 << 45)
+	retrieveTimeSeriesRequestFieldHasPurchased        = big.NewInt(1 << 46)
+	retrieveTimeSeriesRequestFieldFirstSeenAfter      = big.NewInt(1 << 47)
+	retrieveTimeSeriesRequestFieldFirstSeenBefore     = big.NewInt(1 << 48)
+	retrieveTimeSeriesRequestFieldLastSeenAfter       = big.NewInt(1 << 49)
+	retrieveTimeSeriesRequestFieldLastSeenBefore      = big.NewInt(1 << 50)
+	retrieveTimeSeriesRequestFieldFirstSeenWithinDays = big.NewInt(1 << 51)
+	retrieveTimeSeriesRequestFieldLastSeenWithinDays  = big.NewInt(1 << 52)
+	retrieveTimeSeriesRequestFieldKnown               = big.NewInt(1 << 53)
+	retrieveTimeSeriesRequestFieldHasEmail            = big.NewInt(1 << 54)
+	retrieveTimeSeriesRequestFieldHasPhone            = big.NewInt(1 << 55)
+	retrieveTimeSeriesRequestFieldLtvGt               = big.NewInt(1 << 56)
+	retrieveTimeSeriesRequestFieldLtvGte              = big.NewInt(1 << 57)
+	retrieveTimeSeriesRequestFieldLtvLt               = big.NewInt(1 << 58)
+	retrieveTimeSeriesRequestFieldLtvLte              = big.NewInt(1 << 59)
+	retrieveTimeSeriesRequestFieldAovGt               = big.NewInt(1 << 60)
+	retrieveTimeSeriesRequestFieldAovGte              = big.NewInt(1 << 61)
+	retrieveTimeSeriesRequestFieldAovLt               = big.NewInt(1 << 62)
+	retrieveTimeSeriesRequestFieldAovLte              = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	retrieveTimeSeriesRequestFieldPurchaseCountGt     = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	retrieveTimeSeriesRequestFieldPurchaseCountGte    = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	retrieveTimeSeriesRequestFieldPurchaseCountLt     = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	retrieveTimeSeriesRequestFieldPurchaseCountLte    = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	retrieveTimeSeriesRequestFieldEventCountGt        = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	retrieveTimeSeriesRequestFieldEventCountGte       = big.NewInt(0).Lsh(big.NewInt(1), 69)
+	retrieveTimeSeriesRequestFieldEventCountLt        = big.NewInt(0).Lsh(big.NewInt(1), 70)
+	retrieveTimeSeriesRequestFieldEventCountLte       = big.NewInt(0).Lsh(big.NewInt(1), 71)
+	retrieveTimeSeriesRequestFieldReferringAccountID  = big.NewInt(0).Lsh(big.NewInt(1), 72)
 )
 
 type RetrieveTimeSeriesRequest struct {
@@ -163,6 +164,8 @@ type RetrieveTimeSeriesRequest struct {
 	IndustryType *string `json:"-" url:"industry_type,omitempty"`
 	// Filter to one product category, for example `algo_trading_course`. Pair with `breakdown_by=product_category` to split by product category. Available on metrics that list `product_category`.
 	ProductCategory *string `json:"-" url:"product_category,omitempty"`
+	// Filter to accounts located in one country, as an ISO 3166-1 alpha-2 code such as `US`. Pair with `breakdown_by=account_country` to split by account country. Available on metrics that list `account_country`.
+	AccountCountry *string `json:"-" url:"account_country,omitempty"`
 	// Filter to one card-issuing bank, named as the processor reports it, for example JPMORGAN CHASE BANK N A, or unknown for payments with no reported bank. Available on metrics that list issuer.
 	Issuer *string `json:"-" url:"issuer,omitempty"`
 	// Funnel only. Time allowed from the first event to the final event: integer minutes, hours, or days, up to 30d.
@@ -509,6 +512,13 @@ func (r *RetrieveTimeSeriesRequest) SetIndustryType(industryType *string) {
 func (r *RetrieveTimeSeriesRequest) SetProductCategory(productCategory *string) {
 	r.ProductCategory = productCategory
 	r.require(retrieveTimeSeriesRequestFieldProductCategory)
+}
+
+// SetAccountCountry sets the AccountCountry field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveTimeSeriesRequest) SetAccountCountry(accountCountry *string) {
+	r.AccountCountry = accountCountry
+	r.require(retrieveTimeSeriesRequestFieldAccountCountry)
 }
 
 // SetIssuer sets the Issuer field and marks it as non-optional;
