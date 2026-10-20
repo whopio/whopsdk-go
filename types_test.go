@@ -40049,6 +40049,867 @@ func TestSettersMarkExplicitFinancingApplication(t *testing.T) {
 
 }
 
+func TestSettersFinancingProvider(t *testing.T) {
+	t.Run("SetAction", func(t *testing.T) {
+		obj := &FinancingProvider{}
+		var fernTestValueAction *FinancingProviderAction
+		obj.SetAction(fernTestValueAction)
+		assert.Equal(t, fernTestValueAction, obj.Action)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetCurrencies", func(t *testing.T) {
+		obj := &FinancingProvider{}
+		var fernTestValueCurrencies []*FinancingProviderCurrency
+		obj.SetCurrencies(fernTestValueCurrencies)
+		assert.Equal(t, fernTestValueCurrencies, obj.Currencies)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetDetails", func(t *testing.T) {
+		obj := &FinancingProvider{}
+		var fernTestValueDetails *FinancingProviderDetails
+		obj.SetDetails(fernTestValueDetails)
+		assert.Equal(t, fernTestValueDetails, obj.Details)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetProvider", func(t *testing.T) {
+		obj := &FinancingProvider{}
+		var fernTestValueProvider FinancingProviderProvider
+		obj.SetProvider(fernTestValueProvider)
+		assert.Equal(t, fernTestValueProvider, obj.Provider)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetProviderReviewedAt", func(t *testing.T) {
+		obj := &FinancingProvider{}
+		var fernTestValueProviderReviewedAt *string
+		obj.SetProviderReviewedAt(fernTestValueProviderReviewedAt)
+		assert.Equal(t, fernTestValueProviderReviewedAt, obj.ProviderReviewedAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetReason", func(t *testing.T) {
+		obj := &FinancingProvider{}
+		var fernTestValueReason *FinancingProviderReason
+		obj.SetReason(fernTestValueReason)
+		assert.Equal(t, fernTestValueReason, obj.Reason)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetStatus", func(t *testing.T) {
+		obj := &FinancingProvider{}
+		var fernTestValueStatus FinancingProviderStatus
+		obj.SetStatus(fernTestValueStatus)
+		assert.Equal(t, fernTestValueStatus, obj.Status)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersFinancingProvider(t *testing.T) {
+	t.Run("GetAction", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProvider{}
+		var expected *FinancingProviderAction
+		obj.Action = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAction(), "getter should return the property value")
+	})
+
+	t.Run("GetAction_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProvider{}
+		obj.Action = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAction(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAction_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *FinancingProvider
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAction() // Should return zero value
+	})
+
+	t.Run("GetCurrencies", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProvider{}
+		var expected []*FinancingProviderCurrency
+		obj.Currencies = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCurrencies(), "getter should return the property value")
+	})
+
+	t.Run("GetCurrencies_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProvider{}
+		obj.Currencies = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCurrencies(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCurrencies_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *FinancingProvider
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCurrencies() // Should return zero value
+	})
+
+	t.Run("GetDetails", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProvider{}
+		var expected *FinancingProviderDetails
+		obj.Details = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDetails(), "getter should return the property value")
+	})
+
+	t.Run("GetDetails_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProvider{}
+		obj.Details = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDetails(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDetails_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *FinancingProvider
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDetails() // Should return zero value
+	})
+
+	t.Run("GetProvider", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProvider{}
+		var expected FinancingProviderProvider
+		obj.Provider = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetProvider(), "getter should return the property value")
+	})
+
+	t.Run("GetProvider_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *FinancingProvider
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetProvider() // Should return zero value
+	})
+
+	t.Run("GetProviderReviewedAt", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProvider{}
+		var expected *string
+		obj.ProviderReviewedAt = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetProviderReviewedAt(), "getter should return the property value")
+	})
+
+	t.Run("GetProviderReviewedAt_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProvider{}
+		obj.ProviderReviewedAt = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetProviderReviewedAt(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetProviderReviewedAt_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *FinancingProvider
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetProviderReviewedAt() // Should return zero value
+	})
+
+	t.Run("GetReason", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProvider{}
+		var expected *FinancingProviderReason
+		obj.Reason = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetReason(), "getter should return the property value")
+	})
+
+	t.Run("GetReason_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProvider{}
+		obj.Reason = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetReason(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetReason_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *FinancingProvider
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetReason() // Should return zero value
+	})
+
+	t.Run("GetStatus", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProvider{}
+		var expected FinancingProviderStatus
+		obj.Status = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetStatus(), "getter should return the property value")
+	})
+
+	t.Run("GetStatus_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *FinancingProvider
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetStatus() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitFinancingProvider(t *testing.T) {
+	t.Run("SetAction_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProvider{}
+		var fernTestValueAction *FinancingProviderAction
+
+		// Act
+		obj.SetAction(fernTestValueAction)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetCurrencies_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProvider{}
+		var fernTestValueCurrencies []*FinancingProviderCurrency
+
+		// Act
+		obj.SetCurrencies(fernTestValueCurrencies)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDetails_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProvider{}
+		var fernTestValueDetails *FinancingProviderDetails
+
+		// Act
+		obj.SetDetails(fernTestValueDetails)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetProvider_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProvider{}
+		var fernTestValueProvider FinancingProviderProvider
+
+		// Act
+		obj.SetProvider(fernTestValueProvider)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetProviderReviewedAt_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProvider{}
+		var fernTestValueProviderReviewedAt *string
+
+		// Act
+		obj.SetProviderReviewedAt(fernTestValueProviderReviewedAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetReason_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProvider{}
+		var fernTestValueReason *FinancingProviderReason
+
+		// Act
+		obj.SetReason(fernTestValueReason)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetStatus_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProvider{}
+		var fernTestValueStatus FinancingProviderStatus
+
+		// Act
+		obj.SetStatus(fernTestValueStatus)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersFinancingProviderCurrency(t *testing.T) {
+	t.Run("SetCurrency", func(t *testing.T) {
+		obj := &FinancingProviderCurrency{}
+		var fernTestValueCurrency FinancingProviderCurrencyCurrency
+		obj.SetCurrency(fernTestValueCurrency)
+		assert.Equal(t, fernTestValueCurrency, obj.Currency)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetMaxAmount", func(t *testing.T) {
+		obj := &FinancingProviderCurrency{}
+		var fernTestValueMaxAmount *Money
+		obj.SetMaxAmount(fernTestValueMaxAmount)
+		assert.Equal(t, fernTestValueMaxAmount, obj.MaxAmount)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersFinancingProviderCurrency(t *testing.T) {
+	t.Run("GetCurrency", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProviderCurrency{}
+		var expected FinancingProviderCurrencyCurrency
+		obj.Currency = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCurrency(), "getter should return the property value")
+	})
+
+	t.Run("GetCurrency_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *FinancingProviderCurrency
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCurrency() // Should return zero value
+	})
+
+	t.Run("GetMaxAmount", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProviderCurrency{}
+		var expected *Money
+		obj.MaxAmount = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetMaxAmount(), "getter should return the property value")
+	})
+
+	t.Run("GetMaxAmount_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProviderCurrency{}
+		obj.MaxAmount = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetMaxAmount(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetMaxAmount_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *FinancingProviderCurrency
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetMaxAmount() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitFinancingProviderCurrency(t *testing.T) {
+	t.Run("SetCurrency_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProviderCurrency{}
+		var fernTestValueCurrency FinancingProviderCurrencyCurrency
+
+		// Act
+		obj.SetCurrency(fernTestValueCurrency)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetMaxAmount_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProviderCurrency{}
+		var fernTestValueMaxAmount *Money
+
+		// Act
+		obj.SetMaxAmount(fernTestValueMaxAmount)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersFinancingProviderDetails(t *testing.T) {
+	t.Run("SetDisputeRate", func(t *testing.T) {
+		obj := &FinancingProviderDetails{}
+		var fernTestValueDisputeRate *float64
+		obj.SetDisputeRate(fernTestValueDisputeRate)
+		assert.Equal(t, fernTestValueDisputeRate, obj.DisputeRate)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetDisputeRateLimit", func(t *testing.T) {
+		obj := &FinancingProviderDetails{}
+		var fernTestValueDisputeRateLimit *float64
+		obj.SetDisputeRateLimit(fernTestValueDisputeRateLimit)
+		assert.Equal(t, fernTestValueDisputeRateLimit, obj.DisputeRateLimit)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetSourceProvider", func(t *testing.T) {
+		obj := &FinancingProviderDetails{}
+		var fernTestValueSourceProvider *FinancingProviderDetailsSourceProvider
+		obj.SetSourceProvider(fernTestValueSourceProvider)
+		assert.Equal(t, fernTestValueSourceProvider, obj.SourceProvider)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersFinancingProviderDetails(t *testing.T) {
+	t.Run("GetDisputeRate", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProviderDetails{}
+		var expected *float64
+		obj.DisputeRate = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDisputeRate(), "getter should return the property value")
+	})
+
+	t.Run("GetDisputeRate_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProviderDetails{}
+		obj.DisputeRate = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDisputeRate(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDisputeRate_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *FinancingProviderDetails
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDisputeRate() // Should return zero value
+	})
+
+	t.Run("GetDisputeRateLimit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProviderDetails{}
+		var expected *float64
+		obj.DisputeRateLimit = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDisputeRateLimit(), "getter should return the property value")
+	})
+
+	t.Run("GetDisputeRateLimit_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProviderDetails{}
+		obj.DisputeRateLimit = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDisputeRateLimit(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDisputeRateLimit_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *FinancingProviderDetails
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDisputeRateLimit() // Should return zero value
+	})
+
+	t.Run("GetSourceProvider", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProviderDetails{}
+		var expected *FinancingProviderDetailsSourceProvider
+		obj.SourceProvider = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSourceProvider(), "getter should return the property value")
+	})
+
+	t.Run("GetSourceProvider_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProviderDetails{}
+		obj.SourceProvider = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSourceProvider(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSourceProvider_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *FinancingProviderDetails
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSourceProvider() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitFinancingProviderDetails(t *testing.T) {
+	t.Run("SetDisputeRate_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProviderDetails{}
+		var fernTestValueDisputeRate *float64
+
+		// Act
+		obj.SetDisputeRate(fernTestValueDisputeRate)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDisputeRateLimit_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProviderDetails{}
+		var fernTestValueDisputeRateLimit *float64
+
+		// Act
+		obj.SetDisputeRateLimit(fernTestValueDisputeRateLimit)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSourceProvider_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProviderDetails{}
+		var fernTestValueSourceProvider *FinancingProviderDetailsSourceProvider
+
+		// Act
+		obj.SetSourceProvider(fernTestValueSourceProvider)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersFinancingRequirement(t *testing.T) {
 	t.Run("SetAcceptedFileFormats", func(t *testing.T) {
 		obj := &FinancingRequirement{}
@@ -127726,6 +128587,105 @@ func TestJSONMarshalingFinancingApplication(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingFinancingProvider(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProvider{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled FinancingProvider
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj FinancingProvider
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj FinancingProvider
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingFinancingProviderCurrency(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProviderCurrency{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled FinancingProviderCurrency
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj FinancingProviderCurrency
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj FinancingProviderCurrency
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingFinancingProviderDetails(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FinancingProviderDetails{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled FinancingProviderDetails
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj FinancingProviderDetails
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj FinancingProviderDetails
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingFinancingRequirement(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -136873,6 +137833,140 @@ func TestRequiredNullableRoundTripFile(t *testing.T) {
 	})
 }
 
+func TestRequiredNullableRoundTripFinancingProvider(t *testing.T) {
+	requiredNullableKeys := []string{
+		"action",
+		"details",
+		"provider_reviewed_at",
+		"reason",
+	}
+	marshalToMap := func(t *testing.T, obj *FinancingProvider) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj FinancingProvider
+		require.NoError(t, json.Unmarshal([]byte(`{"action":null,"details":null,"provider_reviewed_at":null,"reason":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj FinancingProvider
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &FinancingProvider{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestRequiredNullableRoundTripFinancingProviderCurrency(t *testing.T) {
+	requiredNullableKeys := []string{
+		"max_amount",
+	}
+	marshalToMap := func(t *testing.T, obj *FinancingProviderCurrency) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj FinancingProviderCurrency
+		require.NoError(t, json.Unmarshal([]byte(`{"max_amount":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj FinancingProviderCurrency
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &FinancingProviderCurrency{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestRequiredNullableRoundTripFinancingProviderDetails(t *testing.T) {
+	requiredNullableKeys := []string{
+		"dispute_rate",
+		"dispute_rate_limit",
+		"source_provider",
+	}
+	marshalToMap := func(t *testing.T, obj *FinancingProviderDetails) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj FinancingProviderDetails
+		require.NoError(t, json.Unmarshal([]byte(`{"dispute_rate":null,"dispute_rate_limit":null,"source_provider":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj FinancingProviderDetails
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &FinancingProviderDetails{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
 func TestRequiredNullableRoundTripFinancingRequirement(t *testing.T) {
 	requiredNullableKeys := []string{
 		"minimum_length",
@@ -144137,6 +145231,54 @@ func TestStringFinancingApplication(t *testing.T) {
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *FinancingApplication
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringFinancingProvider(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &FinancingProvider{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *FinancingProvider
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringFinancingProviderCurrency(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &FinancingProviderCurrency{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *FinancingProviderCurrency
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringFinancingProviderDetails(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &FinancingProviderDetails{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *FinancingProviderDetails
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -152924,6 +154066,1055 @@ func TestEnumFinancingApplicationStatus(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewFinancingApplicationStatusFromString("requires_collection")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumFinancingProviderAction(t *testing.T) {
+	t.Run("NewFromString_verify_business", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderActionFromString("verify_business")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderAction("verify_business"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_add_payout_account", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderActionFromString("add_payout_account")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderAction("add_payout_account"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewFinancingProviderActionFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewFinancingProviderActionFromString("verify_business")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumFinancingProviderCurrencyCurrency(t *testing.T) {
+	t.Run("NewFromString_usd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("usd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("usd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_sgd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("sgd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("sgd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_inr", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("inr")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("inr"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_aud", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("aud")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("aud"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_brl", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("brl")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("brl"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_cad", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("cad")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("cad"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_dkk", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("dkk")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("dkk"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_eur", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("eur")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("eur"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_nok", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("nok")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("nok"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_gbp", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("gbp")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("gbp"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_sek", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("sek")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("sek"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_chf", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("chf")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("chf"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_hkd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("hkd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("hkd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_huf", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("huf")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("huf"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_jpy", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("jpy")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("jpy"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mxn", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("mxn")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("mxn"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_myr", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("myr")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("myr"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pln", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("pln")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("pln"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_czk", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("czk")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("czk"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_nzd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("nzd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("nzd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_aed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("aed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("aed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_eth", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("eth")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("eth"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ape", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("ape")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("ape"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_cop", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("cop")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("cop"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ron", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("ron")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("ron"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_thb", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("thb")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("thb"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_bgn", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("bgn")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("bgn"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_idr", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("idr")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("idr"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_dop", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("dop")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("dop"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_php", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("php")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("php"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_try", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("try")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("try"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_krw", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("krw")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("krw"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_twd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("twd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("twd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_vnd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("vnd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("vnd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pkr", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("pkr")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("pkr"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_clp", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("clp")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("clp"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_uyu", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("uyu")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("uyu"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ars", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("ars")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("ars"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_zar", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("zar")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("zar"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_dzd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("dzd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("dzd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_tnd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("tnd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("tnd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mad", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("mad")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("mad"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_kes", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("kes")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("kes"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_kwd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("kwd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("kwd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_jod", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("jod")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("jod"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_all", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("all")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("all"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_xcd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("xcd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("xcd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_amd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("amd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("amd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_bsd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("bsd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("bsd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_bhd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("bhd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("bhd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_bob", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("bob")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("bob"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_bam", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("bam")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("bam"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_khr", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("khr")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("khr"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_crc", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("crc")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("crc"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_xof", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("xof")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("xof"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_egp", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("egp")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("egp"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_etb", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("etb")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("etb"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_gmd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("gmd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("gmd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ghs", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("ghs")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("ghs"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_gtq", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("gtq")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("gtq"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_gyd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("gyd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("gyd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ils", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("ils")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("ils"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_jmd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("jmd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("jmd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mop", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("mop")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("mop"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mga", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("mga")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("mga"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mur", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("mur")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("mur"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mdl", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("mdl")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("mdl"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mnt", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("mnt")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("mnt"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_nad", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("nad")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("nad"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ngn", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("ngn")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("ngn"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mkd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("mkd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("mkd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_omr", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("omr")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("omr"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pyg", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("pyg")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("pyg"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pen", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("pen")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("pen"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_qar", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("qar")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("qar"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_rwf", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("rwf")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("rwf"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_sar", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("sar")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("sar"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_rsd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("rsd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("rsd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_lkr", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("lkr")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("lkr"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_tzs", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("tzs")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("tzs"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ttd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("ttd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("ttd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_uzs", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("uzs")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("uzs"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_rub", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("rub")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("rub"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_btc", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("btc")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("btc"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_cny", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("cny")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("cny"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_usdt", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("usdt")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("usdt"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_kzt", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("kzt")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("kzt"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_awg", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("awg")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("awg"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_whop_usd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("whop_usd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("whop_usd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_xau", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("xau")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("xau"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewFinancingProviderCurrencyCurrencyFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("usd")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumFinancingProviderDetailsSourceProvider(t *testing.T) {
+	t.Run("NewFromString_klarna", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderDetailsSourceProviderFromString("klarna")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderDetailsSourceProvider("klarna"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_splitit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderDetailsSourceProviderFromString("splitit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderDetailsSourceProvider("splitit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_afterpay_clearpay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderDetailsSourceProviderFromString("afterpay_clearpay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderDetailsSourceProvider("afterpay_clearpay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_zip", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderDetailsSourceProviderFromString("zip")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderDetailsSourceProvider("zip"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_sezzle", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderDetailsSourceProviderFromString("sezzle")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderDetailsSourceProvider("sezzle"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewFinancingProviderDetailsSourceProviderFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewFinancingProviderDetailsSourceProviderFromString("klarna")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumFinancingProviderProvider(t *testing.T) {
+	t.Run("NewFromString_afterpay_clearpay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderProviderFromString("afterpay_clearpay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderProvider("afterpay_clearpay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_zip", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderProviderFromString("zip")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderProvider("zip"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_sezzle", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderProviderFromString("sezzle")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderProvider("sezzle"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_tabby", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderProviderFromString("tabby")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderProvider("tabby"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_tamara", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderProviderFromString("tamara")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderProvider("tamara"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_kueski", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderProviderFromString("kueski")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderProvider("kueski"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_addi", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderProviderFromString("addi")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderProvider("addi"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_klarna", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderProviderFromString("klarna")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderProvider("klarna"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_oney", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderProviderFromString("oney")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderProvider("oney"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_splitit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderProviderFromString("splitit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderProvider("splitit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_claritypay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderProviderFromString("claritypay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderProvider("claritypay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_flex_pay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderProviderFromString("flex_pay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderProvider("flex_pay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewFinancingProviderProviderFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewFinancingProviderProviderFromString("afterpay_clearpay")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumFinancingProviderReason(t *testing.T) {
+	t.Run("NewFromString_account_not_supported", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderReasonFromString("account_not_supported")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderReason("account_not_supported"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payin_account_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderReasonFromString("payin_account_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderReason("payin_account_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payment_account_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderReasonFromString("payment_account_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderReason("payment_account_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_processor_connection_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderReasonFromString("processor_connection_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderReason("processor_connection_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_minimum_volume_not_met", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderReasonFromString("minimum_volume_not_met")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderReason("minimum_volume_not_met"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_turned_off_in_checkout_settings", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderReasonFromString("turned_off_in_checkout_settings")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderReason("turned_off_in_checkout_settings"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_provider_review", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderReasonFromString("provider_review")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderReason("provider_review"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_dispute_rate_near_limit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderReasonFromString("dispute_rate_near_limit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderReason("dispute_rate_near_limit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_dispute_rate_exceeded", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderReasonFromString("dispute_rate_exceeded")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderReason("dispute_rate_exceeded"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_whop_risk_control", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderReasonFromString("whop_risk_control")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderReason("whop_risk_control"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_not_included", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderReasonFromString("not_included")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderReason("not_included"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_turned_off", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderReasonFromString("turned_off")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderReason("turned_off"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_declined", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderReasonFromString("declined")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderReason("declined"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_setup_failed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderReasonFromString("setup_failed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderReason("setup_failed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payout_account_country_unsupported", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderReasonFromString("payout_account_country_unsupported")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderReason("payout_account_country_unsupported"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_seller_country_unsupported", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderReasonFromString("seller_country_unsupported")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderReason("seller_country_unsupported"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_approved_dispute_rate_too_high", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderReasonFromString("approved_dispute_rate_too_high")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderReason("approved_dispute_rate_too_high"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_restricted_industry", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderReasonFromString("restricted_industry")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderReason("restricted_industry"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_income_claims", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderReasonFromString("income_claims")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderReason("income_claims"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_missing_store_details", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderReasonFromString("missing_store_details")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderReason("missing_store_details"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_duplicate_account", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderReasonFromString("duplicate_account")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderReason("duplicate_account"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_invalid_website", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderReasonFromString("invalid_website")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderReason("invalid_website"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_unspecified", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderReasonFromString("unspecified")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderReason("unspecified"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewFinancingProviderReasonFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewFinancingProviderReasonFromString("account_not_supported")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumFinancingProviderStatus(t *testing.T) {
+	t.Run("NewFromString_eligible", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderStatusFromString("eligible")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderStatus("eligible"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_needs_action", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderStatusFromString("needs_action")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderStatus("needs_action"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_in_review", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderStatusFromString("in_review")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderStatus("in_review"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_active", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderStatusFromString("active")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderStatus("active"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_inactive", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderStatusFromString("inactive")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderStatus("inactive"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewFinancingProviderStatusFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewFinancingProviderStatusFromString("eligible")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -162418,6 +164609,75 @@ func TestExtraPropertiesFinancingApplication(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *FinancingApplication
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesFinancingProvider(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &FinancingProvider{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *FinancingProvider
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesFinancingProviderCurrency(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &FinancingProviderCurrency{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *FinancingProviderCurrency
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesFinancingProviderDetails(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &FinancingProviderDetails{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *FinancingProviderDetails
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

@@ -9,6 +9,7 @@ import (
 	whopsdk "github.com/whopio/whopsdk-go/v2"
 	fees "github.com/whopio/whopsdk-go/v2/accounts/fees"
 	financingapplications "github.com/whopio/whopsdk-go/v2/accounts/financingapplications"
+	financingproviders "github.com/whopio/whopsdk-go/v2/accounts/financingproviders"
 	preferences "github.com/whopio/whopsdk-go/v2/accounts/preferences"
 	reserves "github.com/whopio/whopsdk-go/v2/accounts/reserves"
 	core "github.com/whopio/whopsdk-go/v2/core"
@@ -20,6 +21,7 @@ type Client struct {
 	WithRawResponse       *RawClient
 	Fees                  *fees.Client
 	FinancingApplications *financingapplications.Client
+	FinancingProviders    *financingproviders.Client
 	Preferences           *preferences.Client
 	Reserves              *reserves.Client
 
@@ -36,6 +38,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	return &Client{
 		Fees:                  fees.NewClient(options),
 		FinancingApplications: financingapplications.NewClient(options),
+		FinancingProviders:    financingproviders.NewClient(options),
 		Preferences:           preferences.NewClient(options),
 		Reserves:              reserves.NewClient(options),
 		WithRawResponse:       NewRawClient(options),
