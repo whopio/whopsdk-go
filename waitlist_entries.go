@@ -125,12 +125,15 @@ func (c *CancelWaitlistEntriesRequest) SetID(id string) {
 }
 
 var (
-	createWaitlistEntriesRequestFieldCustomFieldResponses = big.NewInt(1 << 0)
-	createWaitlistEntriesRequestFieldMetadata             = big.NewInt(1 << 1)
-	createWaitlistEntriesRequestFieldPlanID               = big.NewInt(1 << 2)
+	createWaitlistEntriesRequestFieldBuyerAccountID       = big.NewInt(1 << 0)
+	createWaitlistEntriesRequestFieldCustomFieldResponses = big.NewInt(1 << 1)
+	createWaitlistEntriesRequestFieldMetadata             = big.NewInt(1 << 2)
+	createWaitlistEntriesRequestFieldPlanID               = big.NewInt(1 << 3)
 )
 
 type CreateWaitlistEntriesRequest struct {
+	// The account to join on behalf of, prefixed `biz_`. Leave it out to join as yourself. Required with an account credential, which passes its own account and records the account's owner as the user who joined.
+	BuyerAccountID *string `json:"buyer_account_id,omitempty" url:"-"`
 	// Answers to the variant's checkout questions. Every required question must be answered.
 	CustomFieldResponses []*CreateWaitlistEntriesRequestCustomFieldResponsesItem `json:"custom_field_responses,omitempty" url:"-"`
 	// Custom key-value pairs to store on the signup. Max 50 keys, 100 chars per key, 500 chars per string value. Ignored when the request returns an existing signup.
@@ -149,6 +152,13 @@ func (c *CreateWaitlistEntriesRequest) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	c.explicitFields = next
+}
+
+// SetBuyerAccountID sets the BuyerAccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateWaitlistEntriesRequest) SetBuyerAccountID(buyerAccountID *string) {
+	c.BuyerAccountID = buyerAccountID
+	c.require(createWaitlistEntriesRequestFieldBuyerAccountID)
 }
 
 // SetCustomFieldResponses sets the CustomFieldResponses field and marks it as non-optional;
@@ -222,18 +232,19 @@ func (d *DenyWaitlistEntriesRequest) SetID(id string) {
 }
 
 var (
-	listWaitlistEntriesRequestFieldFirst         = big.NewInt(1 << 0)
-	listWaitlistEntriesRequestFieldAfter         = big.NewInt(1 << 1)
-	listWaitlistEntriesRequestFieldLast          = big.NewInt(1 << 2)
-	listWaitlistEntriesRequestFieldBefore        = big.NewInt(1 << 3)
-	listWaitlistEntriesRequestFieldPlanID        = big.NewInt(1 << 4)
-	listWaitlistEntriesRequestFieldAccountID     = big.NewInt(1 << 5)
-	listWaitlistEntriesRequestFieldProductID     = big.NewInt(1 << 6)
-	listWaitlistEntriesRequestFieldStatus        = big.NewInt(1 << 7)
-	listWaitlistEntriesRequestFieldCreatedBefore = big.NewInt(1 << 8)
-	listWaitlistEntriesRequestFieldCreatedAfter  = big.NewInt(1 << 9)
-	listWaitlistEntriesRequestFieldOrder         = big.NewInt(1 << 10)
-	listWaitlistEntriesRequestFieldDirection     = big.NewInt(1 << 11)
+	listWaitlistEntriesRequestFieldFirst          = big.NewInt(1 << 0)
+	listWaitlistEntriesRequestFieldAfter          = big.NewInt(1 << 1)
+	listWaitlistEntriesRequestFieldLast           = big.NewInt(1 << 2)
+	listWaitlistEntriesRequestFieldBefore         = big.NewInt(1 << 3)
+	listWaitlistEntriesRequestFieldPlanID         = big.NewInt(1 << 4)
+	listWaitlistEntriesRequestFieldAccountID      = big.NewInt(1 << 5)
+	listWaitlistEntriesRequestFieldProductID      = big.NewInt(1 << 6)
+	listWaitlistEntriesRequestFieldBuyerAccountID = big.NewInt(1 << 7)
+	listWaitlistEntriesRequestFieldStatus         = big.NewInt(1 << 8)
+	listWaitlistEntriesRequestFieldCreatedBefore  = big.NewInt(1 << 9)
+	listWaitlistEntriesRequestFieldCreatedAfter   = big.NewInt(1 << 10)
+	listWaitlistEntriesRequestFieldOrder          = big.NewInt(1 << 11)
+	listWaitlistEntriesRequestFieldDirection      = big.NewInt(1 << 12)
 )
 
 type ListWaitlistEntriesRequest struct {
@@ -251,6 +262,8 @@ type ListWaitlistEntriesRequest struct {
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// Only return signups for variants on this product, prefixed `prod_`.
 	ProductID *string `json:"-" url:"product_id,omitempty"`
+	// List the signups submitted on behalf of this account, prefixed `biz_`, instead of your own and seller signups. Requires `waitlist_entry:read` on the account. The other filters still apply.
+	BuyerAccountID *string `json:"-" url:"buyer_account_id,omitempty"`
 	// Only return signups in this state. Canceled signups are returned only when `status` is `canceled`.
 	Status *ListWaitlistEntriesRequestStatus `json:"-" url:"status,omitempty"`
 	// Only return signups submitted at or before this ISO 8601 timestamp.
@@ -322,6 +335,13 @@ func (l *ListWaitlistEntriesRequest) SetAccountID(accountID *string) {
 func (l *ListWaitlistEntriesRequest) SetProductID(productID *string) {
 	l.ProductID = productID
 	l.require(listWaitlistEntriesRequestFieldProductID)
+}
+
+// SetBuyerAccountID sets the BuyerAccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListWaitlistEntriesRequest) SetBuyerAccountID(buyerAccountID *string) {
+	l.BuyerAccountID = buyerAccountID
+	l.require(listWaitlistEntriesRequestFieldBuyerAccountID)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -435,7 +455,7 @@ type WaitlistEntry struct {
 	Status WaitlistEntryStatus `json:"status" url:"status"`
 	// When this signup last changed, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
-	// The user who submitted this signup, prefixed `user_`.
+	// The user who submitted this signup, prefixed `user_`. For a signup an account's own credential submitted, the account's owner.
 	UserID string `json:"user_id" url:"user_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

@@ -1498,7 +1498,7 @@ var (
 )
 
 type PlatformTrendsReportsResponseDataReportsItem struct {
-	// The page of rows. Only the requested columns are present. A breakdown value with fewer than three businesses behind it is left out, and a filtered total that small comes back with every metric `null`.
+	// The page of rows. Only the requested columns are present. Every breakdown value with a sale is listed, down to a single business.
 	Rows   []*PlatformTrendsReportsResponseDataReportsItemRowsItem `json:"rows" url:"rows"`
 	Window *PlatformTrendsReportsResponseDataReportsItemWindow     `json:"window" url:"window"`
 
