@@ -3,6 +3,4 @@
 // An Account represents a person or business on Whop that can have its own profile, wallet, and account-scoped settings. Use accounts for customers, creators, merchants, sellers, or connected businesses your integration supports.
 //
 // Use the Accounts API to create accounts, list accounts visible to your credentials, retrieve or update an account, suspend or delete a connected account managed by your platform, and retrieve the account associated with the current API key.
-//
-// To accept payment-financing methods, an account applies through a financing application: a request to review the account for payment financing, not a loan or business capital. Create an application, save answers to its requirements, then submit it for review. You can manage applications for your own account and its direct connected accounts.
 package accounts

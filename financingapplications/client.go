@@ -7,7 +7,6 @@ import (
 	http "net/http"
 
 	whopsdk "github.com/whopio/whopsdk-go/v2"
-	accounts "github.com/whopio/whopsdk-go/v2/accounts"
 	core "github.com/whopio/whopsdk-go/v2/core"
 	internal "github.com/whopio/whopsdk-go/v2/internal"
 	option "github.com/whopio/whopsdk-go/v2/option"
@@ -40,22 +39,20 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Lists payment-financing applications for an account. Account credentials can list their own account and its direct connected accounts, but not deeper descendants; user credentials need read access to the account.
+// Lists payment-financing applications. Without `account_id`, an account credential lists its own account and its direct connected accounts, but not deeper descendants, and a user credential lists every account it can read applications for.
 //
 // Example:
 //
-//	request := &accounts.ListFinancingApplicationsRequest{
-//	    AccountID: "account_id",
-//	}
-//	client.Accounts.FinancingApplications.List(
+//	request := &whopsdk.ListFinancingApplicationsRequest{}
+//	client.FinancingApplications.List(
 //	    context.TODO(),
 //	    request,
 //	)
 func (c *Client) List(
 	ctx context.Context,
-	request *accounts.ListFinancingApplicationsRequest,
+	request *whopsdk.ListFinancingApplicationsRequest,
 	opts ...option.RequestOption,
-) (*core.Page[*string, *whopsdk.FinancingApplication, *accounts.ListFinancingApplicationsResponse], error) {
+) (*core.Page[*string, *whopsdk.FinancingApplication, *whopsdk.ListFinancingApplicationsResponse], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -70,10 +67,7 @@ func (c *Client) List(
 		),
 		"https://api.whop.com/api/v1",
 	)
-	endpointURL := internal.EncodeURL(
-		baseURL+"/accounts/%v/financing_applications",
-		request.AccountID,
-	)
+	endpointURL := baseURL + "/financing_applications"
 	queryParams, err := internal.QueryValues(request)
 	if err != nil {
 		return nil, err
@@ -103,14 +97,14 @@ func (c *Client) List(
 			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
 		}
 	}
-	readPageResponse := func(response *accounts.ListFinancingApplicationsResponse) *core.PageResponse[*string, *whopsdk.FinancingApplication, *accounts.ListFinancingApplicationsResponse] {
+	readPageResponse := func(response *whopsdk.ListFinancingApplicationsResponse) *core.PageResponse[*string, *whopsdk.FinancingApplication, *whopsdk.ListFinancingApplicationsResponse] {
 		var zeroValue *string
 		var next *string
 		if response.PageInfo != nil {
 			next = response.PageInfo.EndCursor
 		}
 		results := response.GetData()
-		return &core.PageResponse[*string, *whopsdk.FinancingApplication, *accounts.ListFinancingApplicationsResponse]{
+		return &core.PageResponse[*string, *whopsdk.FinancingApplication, *whopsdk.ListFinancingApplicationsResponse]{
 			Results:  results,
 			Response: response,
 			Next:     next,
@@ -129,16 +123,14 @@ func (c *Client) List(
 //
 // Example:
 //
-//	request := &accounts.CreateFinancingApplicationsRequest{
-//	    AccountID: "account_id",
-//	}
-//	client.Accounts.FinancingApplications.Create(
+//	request := &whopsdk.CreateFinancingApplicationsRequest{}
+//	client.FinancingApplications.Create(
 //	    context.TODO(),
 //	    request,
 //	)
 func (c *Client) Create(
 	ctx context.Context,
-	request *accounts.CreateFinancingApplicationsRequest,
+	request *whopsdk.CreateFinancingApplicationsRequest,
 	opts ...option.RequestOption,
 ) (*whopsdk.FinancingApplication, error) {
 	response, err := c.WithRawResponse.Create(
@@ -156,17 +148,16 @@ func (c *Client) Create(
 //
 // Example:
 //
-//	request := &accounts.RetrieveFinancingApplicationsRequest{
-//	    AccountID: "account_id",
+//	request := &whopsdk.RetrieveFinancingApplicationsRequest{
 //	    ID: "id",
 //	}
-//	client.Accounts.FinancingApplications.Retrieve(
+//	client.FinancingApplications.Retrieve(
 //	    context.TODO(),
 //	    request,
 //	)
 func (c *Client) Retrieve(
 	ctx context.Context,
-	request *accounts.RetrieveFinancingApplicationsRequest,
+	request *whopsdk.RetrieveFinancingApplicationsRequest,
 	opts ...option.RequestOption,
 ) (*whopsdk.FinancingApplication, error) {
 	response, err := c.WithRawResponse.Retrieve(
@@ -184,22 +175,21 @@ func (c *Client) Retrieve(
 //
 // Example:
 //
-//	request := &accounts.UpdateFinancingApplicationsRequest{
-//	    AccountID: "account_id",
+//	request := &whopsdk.UpdateFinancingApplicationsRequest{
 //	    ID: "id",
-//	    Answers: []*accounts.UpdateFinancingApplicationsRequestAnswersItem{
-//	        &accounts.UpdateFinancingApplicationsRequestAnswersItem{
+//	    Answers: []*whopsdk.UpdateFinancingApplicationsRequestAnswersItem{
+//	        &whopsdk.UpdateFinancingApplicationsRequestAnswersItem{
 //	            RequirementID: "inrqi_xxxxxxxxxxxxxx",
 //	        },
 //	    },
 //	}
-//	client.Accounts.FinancingApplications.Update(
+//	client.FinancingApplications.Update(
 //	    context.TODO(),
 //	    request,
 //	)
 func (c *Client) Update(
 	ctx context.Context,
-	request *accounts.UpdateFinancingApplicationsRequest,
+	request *whopsdk.UpdateFinancingApplicationsRequest,
 	opts ...option.RequestOption,
 ) (*whopsdk.FinancingApplication, error) {
 	response, err := c.WithRawResponse.Update(
@@ -217,21 +207,20 @@ func (c *Client) Update(
 //
 // Example:
 //
-//	request := &accounts.SubmitFinancingApplicationsRequest{
-//	    AccountID: "account_id",
+//	request := &whopsdk.SubmitFinancingApplicationsRequest{
 //	    ID: "id",
-//	    MerchantAcceptance: &accounts.SubmitFinancingApplicationsRequestMerchantAcceptance{
+//	    MerchantAcceptance: &whopsdk.SubmitFinancingApplicationsRequestMerchantAcceptance{
 //	        Accepted: true,
 //	        TermsVersion: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 //	    },
 //	}
-//	client.Accounts.FinancingApplications.Submit(
+//	client.FinancingApplications.Submit(
 //	    context.TODO(),
 //	    request,
 //	)
 func (c *Client) Submit(
 	ctx context.Context,
-	request *accounts.SubmitFinancingApplicationsRequest,
+	request *whopsdk.SubmitFinancingApplicationsRequest,
 	opts ...option.RequestOption,
 ) (*whopsdk.FinancingApplication, error) {
 	response, err := c.WithRawResponse.Submit(
