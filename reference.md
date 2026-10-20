@@ -20079,7 +20079,7 @@ Starts an OAuth connection flow and returns an `authorize_url` to send the user 
 ```go
 request := &whopsdk.ConnectExternalAccountsRequest{
     Platform: whopsdk.ConnectExternalAccountsRequestPlatformMetaBusiness,
-    RedirectURL: "https://example.com/settings/social-accounts",
+    RedirectURL: "https://whop.com/dashboard/biz_xxxxxxxxxxxxxx/ads/settings",
 }
 client.ExternalAccounts.Connect(
     context.TODO(),
@@ -20115,7 +20115,7 @@ client.ExternalAccounts.Connect(
 <dl>
 <dd>
 
-**redirectURL:** `string` — Where to send the user once they finish connecting their accounts. Any `http` or `https` URL. On success, the user is redirected with an `external_account_connected` query param naming the platform; if the connection fails, with an `external_account_error` query param instead. The same values also arrive as `social_account_connected` / `social_account_error`.
+**redirectURL:** `string` — Where to send the user once they finish connecting their accounts. Must be an `https` URL on whop.com; any other host is rejected. On success, the user is redirected with an `external_account_connected` query param naming the platform; if the connection fails, with an `external_account_error` query param instead. The same values also arrive as `social_account_connected` / `social_account_error`.
     
 </dd>
 </dl>
@@ -36512,7 +36512,7 @@ Deprecated compatibility endpoint. Connect external accounts with `POST /externa
 ```go
 request := &whopsdk.ConnectSocialAccountsRequest{
     Platform: whopsdk.ConnectSocialAccountsRequestPlatformMetaBusiness,
-    RedirectURL: "https://example.com/settings/social-accounts",
+    RedirectURL: "https://whop.com/dashboard/biz_xxxxxxxxxxxxxx/ads/settings",
 }
 client.SocialAccounts.Connect(
     context.TODO(),
@@ -36548,7 +36548,7 @@ client.SocialAccounts.Connect(
 <dl>
 <dd>
 
-**redirectURL:** `string` — Where to send the user once they finish connecting their accounts. Any `http` or `https` URL. On success, the user is redirected with an `external_account_connected` query param naming the platform; if the connection fails, with an `external_account_error` query param instead. The same values also arrive as `social_account_connected` / `social_account_error`.
+**redirectURL:** `string` — Where to send the user once they finish connecting their accounts. Must be an `https` URL on whop.com; any other host is rejected. On success, the user is redirected with an `external_account_connected` query param naming the platform; if the connection fails, with an `external_account_error` query param instead. The same values also arrive as `social_account_connected` / `social_account_error`.
     
 </dd>
 </dl>
