@@ -221,20 +221,23 @@ var (
 	createQuotePayoutsRequestFieldAccountID           = big.NewInt(1 << 0)
 	createQuotePayoutsRequestFieldAmount              = big.NewInt(1 << 1)
 	createQuotePayoutsRequestFieldCurrency            = big.NewInt(1 << 2)
-	createQuotePayoutsRequestFieldPayoutMethodID      = big.NewInt(1 << 3)
-	createQuotePayoutsRequestFieldPlatformCoversFees  = big.NewInt(1 << 4)
-	createQuotePayoutsRequestFieldSpeed               = big.NewInt(1 << 5)
-	createQuotePayoutsRequestFieldStatementDescriptor = big.NewInt(1 << 6)
-	createQuotePayoutsRequestFieldUserID              = big.NewInt(1 << 7)
+	createQuotePayoutsRequestFieldPaymentMethodID     = big.NewInt(1 << 3)
+	createQuotePayoutsRequestFieldPayoutMethodID      = big.NewInt(1 << 4)
+	createQuotePayoutsRequestFieldPlatformCoversFees  = big.NewInt(1 << 5)
+	createQuotePayoutsRequestFieldSpeed               = big.NewInt(1 << 6)
+	createQuotePayoutsRequestFieldStatementDescriptor = big.NewInt(1 << 7)
+	createQuotePayoutsRequestFieldUserID              = big.NewInt(1 << 8)
 )
 
 type CreateQuotePayoutsRequest struct {
 	// Account to pay out from, prefixed `biz_`. Provide exactly one of `account_id` or `user_id`.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
-	// The amount to pay out in the specified currency.
+	// The amount to pay out in the specified currency. With `payment_method_id`, the amount to charge the card.
 	Amount float64 `json:"amount" url:"-"`
 	// The currency to pay out. When omitted, uses `usd` if that balance can cover a withdrawal, otherwise the account's only other funded currency.
 	Currency *string `json:"currency,omitempty" url:"-"`
+	// A saved card of the account, prefixed `payt_`, to quote paying this payout from. The quote's `amount` is the card charge, `fee` adds the estimated card fees to the payout fee, and `net_amount` is what the recipient receives.
+	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
 	// The saved payout method to quote (a potk_ identifier).
 	PayoutMethodID string `json:"payout_method_id" url:"-"`
 	// Whether the parent platform covers the payout fee instead of the account being paid out.
@@ -278,6 +281,13 @@ func (c *CreateQuotePayoutsRequest) SetAmount(amount float64) {
 func (c *CreateQuotePayoutsRequest) SetCurrency(currency *string) {
 	c.Currency = currency
 	c.require(createQuotePayoutsRequestFieldCurrency)
+}
+
+// SetPaymentMethodID sets the PaymentMethodID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsRequest) SetPaymentMethodID(paymentMethodID *string) {
+	c.PaymentMethodID = paymentMethodID
+	c.require(createQuotePayoutsRequestFieldPaymentMethodID)
 }
 
 // SetPayoutMethodID sets the PayoutMethodID field and marks it as non-optional;
