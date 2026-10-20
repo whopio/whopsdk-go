@@ -1595,6 +1595,14 @@ client.Accounts.TransferOwnership(
 <dl>
 <dd>
 
+**memberID:** `*string` — Your member record on the business this referral is made for, prefixed `mber_`, when your role there is held on your member record. Send this or `authorized_user_id`, not both. Requires `as_partner`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **message:** `*string` — A note from the partner, shown as a quote in the invite email and signed with their name. Requires `as_partner`; sending it on an ordinary transfer is a 400. Omit it and the email sends without a note.
     
 </dd>
@@ -41931,7 +41939,7 @@ client.Verifications.Update(
 <dl>
 <dd>
 
-Lists the waitlist signups you can see. `waitlist_entry:read` returns the user's own signups and `plan:waitlist:read` returns signups to the seller accounts they are authorized on; with both, you get both sets. Account credentials see only their own account's signups.
+Lists the waitlist signups you can see. `waitlist_entry:read` returns your own signups, and `plan:waitlist:read` returns signups to the seller accounts you are authorized on; with both, you get both sets. Signups submitted on behalf of an account are not in this list; pass `buyer_account_id` to list them instead, which needs `waitlist_entry:read` on that account. Account credentials see the signups submitted to their own account, and pass their own account as `buyer_account_id` to see the ones it submitted.
 </dd>
 </dl>
 </dd>
@@ -42021,6 +42029,14 @@ client.WaitlistEntries.List(
 <dl>
 <dd>
 
+**buyerAccountID:** `*string` — List the signups submitted on behalf of this account, prefixed `biz_`, instead of your own and seller signups. Requires `waitlist_entry:read` on the account. The other filters still apply.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **status:** `*whopsdk.ListWaitlistEntriesRequestStatus` — Only return signups in this state. Canceled signups are returned only when `status` is `canceled`.
     
 </dd>
@@ -42077,7 +42093,7 @@ client.WaitlistEntries.List(
 <dl>
 <dd>
 
-Joins a free waitlist variant as the authenticated user. Requires `waitlist_entry:create`. Joining again returns the existing pending signup, or the approved one while its membership is valid. Paid variants are rejected; joining collects no payment method and grants no membership.
+Joins a free waitlist variant as the authenticated user, or on behalf of an account with `buyer_account_id`. Requires `waitlist_entry:create`, on that account when one is given. Joining again returns the existing pending signup, or the approved one while its membership is valid. Paid variants are rejected; joining collects no payment method and grants no membership.
 </dd>
 </dl>
 </dd>
@@ -42109,6 +42125,14 @@ client.WaitlistEntries.Create(
 
 <dl>
 <dd>
+
+<dl>
+<dd>
+
+**buyerAccountID:** `*string` — The account to join on behalf of, prefixed `biz_`. Leave it out to join as yourself. Required with an account credential, which passes its own account and records the account's owner as the user who joined.
+    
+</dd>
+</dl>
 
 <dl>
 <dd>
@@ -42221,7 +42245,7 @@ client.WaitlistEntries.ApproveAll(
 <dl>
 <dd>
 
-Retrieves a signup the caller owns, with `waitlist_entry:read`, or one submitted to an account they can read, with `plan:waitlist:read`.
+Retrieves your own signup or one submitted on behalf of an account you hold `waitlist_entry:read` on, or one submitted to an account you can read, with `plan:waitlist:read`.
 </dd>
 </dl>
 </dd>
@@ -42341,7 +42365,7 @@ client.WaitlistEntries.Approve(
 <dl>
 <dd>
 
-Withdraws the caller's own pending signup. Requires `waitlist_entry:cancel`. Does not cancel an approved membership.
+Withdraws a pending signup: your own, or one submitted on behalf of an account you hold `waitlist_entry:cancel` on. Requires `waitlist_entry:cancel`, on that account for an account's signup. Does not cancel an approved membership.
 </dd>
 </dl>
 </dd>
