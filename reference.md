@@ -28856,7 +28856,23 @@ Lists payments, newest first. By default, returns sales for the accounts your cr
 <dd>
 
 ```go
-request := &whopsdk.ListPaymentsRequest{}
+request := &whopsdk.ListPaymentsRequest{
+    Currencies: []*string{
+        whopsdk.String(
+            "eur",
+        ),
+    },
+    PlanIDs: []*string{
+        whopsdk.String(
+            "plan_xxxxxxxxxxxxx",
+        ),
+    },
+    ProductIDs: []*string{
+        whopsdk.String(
+            "prod_xxxxxxxxxxxxx",
+        ),
+    },
+}
 client.Payments.List(
     context.TODO(),
     request,
@@ -28979,7 +28995,119 @@ client.Payments.List(
 <dl>
 <dd>
 
-**order:** `*whopsdk.ListPaymentsRequestOrder` — The field to sort by.
+**statuses:** `*whopsdk.ListPaymentsRequestStatusesItem` — Only payments in any of these lifecycle states, with the same meanings as `status`. Repeat the parameter to pass several. Combined with `status` when both are sent.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**substatuses:** `*whopsdk.ListPaymentsRequestSubstatusesItem` — Only payments whose `substatus` is any of these. Repeat the parameter to pass several. `incomplete` also matches payments that report `incomplete` because no finer status was recorded.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**billingReasons:** `*whopsdk.ListPaymentsRequestBillingReasonsItem` — Only payments charged for any of these reasons, with the same meanings as `billing_reason`. Repeat the parameter to pass several. Combined with `billing_reason` when both are sent.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**currencies:** `*string` — Only payments presented in any of these three-letter currencies. Repeat the parameter to pass several. Combined with `currency` when both are sent.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**planIDs:** `*string` — Only payments priced by any of these variants, each prefixed `plan_`. Repeat the parameter to pass several. Combined with `plan_id` when both are sent.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**productIDs:** `*string` — Only payments for any of these products, each prefixed `prod_`. Repeat the parameter to pass several. Combined with `product_id` when both are sent.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**paymentMethods:** `*whopsdk.ListPaymentsRequestPaymentMethodsItem` — Only payments paid with any of these methods: a card brand such as `amex`, a wallet such as `apple_pay`, or a payment method type such as `paypal`. Repeat the parameter to pass several.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**trackingStates:** `*whopsdk.ListPaymentsRequestTrackingStatesItem` — Only payments whose shipment is in any of these tracking states, or that still need a tracking number (`needs_tracking`). Repeat the parameter to pass several. Requires `account_id` and the shipment:basic:read permission.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**refundedAfter:** `*time.Time` — Only payments refunded after this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**refundedBefore:** `*time.Time` — Only payments refunded before this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**disputeAlertedAfter:** `*time.Time` — Only payments with a dispute alert after this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**disputeAlertedBefore:** `*time.Time` — Only payments with a dispute alert before this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**disputeCreatedAfter:** `*time.Time` — Only payments with a dispute opened after this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**disputeCreatedBefore:** `*time.Time` — Only payments with a dispute opened before this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order:** `*whopsdk.ListPaymentsRequestOrder` — The field to sort by. `amount` sorts by the amount charged, in the currency it was charged in.
     
 </dd>
 </dl>
@@ -29200,6 +29328,176 @@ client.Payments.Create(
 <dd>
 
 **statementDescriptor:** `*string` — Overrides the text on the buyer's card statement for this payment only. Takes precedence over the product's and account's custom descriptors, and changes neither. Must start with `WHOP*` unless the business processes as the merchant of record. For businesses processing as the merchant of record, omit the `WHOP*` prefix; the descriptor appears as provided. Must be 5-22 characters, contain at least one letter, and use only Latin letters, numbers, spaces, underscores, hyphens, or asterisks.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Payments.Summary() -> *whopsdk.SummaryPaymentsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Totals up the same payments the list returns, so you can build status tabs and filter options without paging through them. Takes the same filters as List Payments.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.SummaryPaymentsRequest{
+    Currencies: []*string{
+        whopsdk.String(
+            "usd",
+        ),
+    },
+    PlanIDs: []*string{
+        whopsdk.String(
+            "plan_xxxxxxxxxxxxx",
+        ),
+    },
+    ProductIDs: []*string{
+        whopsdk.String(
+            "prod_xxxxxxxxxxxxx",
+        ),
+    },
+}
+client.Payments.Summary(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**groups:** `*whopsdk.SummaryPaymentsRequestGroupsItem` — Which breakdowns to return, keyed by these names under `groups`. Repeat the parameter to ask for several; omit it for all of them.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — Only payments charged by this account, prefixed `biz_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**statuses:** `*whopsdk.SummaryPaymentsRequestStatusesItem` — Only payments in any of these lifecycle states. Repeat the parameter to pass several.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**substatuses:** `*whopsdk.SummaryPaymentsRequestSubstatusesItem` — Only payments whose `substatus` is any of these. Repeat the parameter to pass several.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**billingReasons:** `*whopsdk.SummaryPaymentsRequestBillingReasonsItem` — Only payments charged for any of these reasons. Repeat the parameter to pass several.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**currencies:** `*string` — Only payments presented in any of these three-letter currencies. Repeat the parameter to pass several.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**planIDs:** `*string` — Only payments priced by any of these variants, each prefixed `plan_`. Repeat the parameter to pass several.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**productIDs:** `*string` — Only payments for any of these products, each prefixed `prod_`. Repeat the parameter to pass several.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**paymentMethods:** `*whopsdk.SummaryPaymentsRequestPaymentMethodsItem` — Only payments paid with any of these methods. Repeat the parameter to pass several.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**trackingStates:** `*whopsdk.SummaryPaymentsRequestTrackingStatesItem` — Only payments in any of these tracking states. Requires `account_id` and the shipment:basic:read permission.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**createdAfter:** `*time.Time` — Only payments created after this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**createdBefore:** `*time.Time` — Only payments created before this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**query:** `*string` — Search payments by user ID, membership ID, user email, name, or username.
     
 </dd>
 </dl>
