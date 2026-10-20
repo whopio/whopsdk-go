@@ -62,7 +62,7 @@ type CreateDomainsRequest struct {
 	Metadata map[string]string `json:"metadata,omitempty" url:"-"`
 	// Track page views on the domain with the Whop pixel. It needs no other capability: it stays `pending` until the pixel records a page view, and turns `action_required` if it goes 7 days without one. Pass `null` to stop tracking.
 	Pixel *CreateDomainsRequestPixel `json:"pixel,omitempty" url:"-"`
-	// Buy the domain through Whop, renew it every year, and let Whop run its DNS. Pass `null` to release an unpaid or failed purchase.
+	// Buy the domain through Whop, or transfer in a domain you own elsewhere with `auth_code`, then renew it every year and let Whop run its DNS. Pass `null` to release an unpaid or failed purchase, or to cancel a transfer while its current registrar can still stop it.
 	Registration *CreateDomainsRequestRegistration `json:"registration,omitempty" url:"-"`
 	// Prove you control the domain's DNS: Whop returns a TXT record to publish in `issues`, and whoever publishes it owns the domain on Whop. Pass `null` to release it. Can't be combined with `registration`.
 	Verification *CreateDomainsRequestVerification `json:"verification,omitempty" url:"-"`
@@ -992,7 +992,7 @@ type DomainAvailability struct {
 	RenewalPrice *Money `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
 	// How desirable the domain is, from 0 to 100. Short, real-word names on well-known extensions score highest.
 	Score int `json:"score" url:"score"`
-	// What moving the domain to Whop costs if you own it elsewhere, including a year of registration. `null` when it's available or can't be transferred.
+	// What moving the domain to Whop costs if it's registered elsewhere. `null` when it's available or can't be transferred.
 	TransferPrice *Money `json:"transfer_price,omitempty" url:"transfer_price,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1625,33 +1625,42 @@ func (d DomainIssueCapability) Ptr() *DomainIssueCapability {
 type DomainIssueCode string
 
 const (
-	DomainIssueCodeVerificationRequired    DomainIssueCode = "verification_required"
-	DomainIssueCodeVerificationExpired     DomainIssueCode = "verification_expired"
-	DomainIssueCodeOwnershipConflict       DomainIssueCode = "ownership_conflict"
-	DomainIssueCodeOwnershipLost           DomainIssueCode = "ownership_lost"
-	DomainIssueCodeDNSRequired             DomainIssueCode = "dns_required"
-	DomainIssueCodeProviderValidation      DomainIssueCode = "provider_validation"
-	DomainIssueCodeCertificatePending      DomainIssueCode = "certificate_pending"
-	DomainIssueCodeExpiringSoon            DomainIssueCode = "expiring_soon"
-	DomainIssueCodeAccountUnavailable      DomainIssueCode = "account_unavailable"
-	DomainIssueCodeCheckFailed             DomainIssueCode = "check_failed"
-	DomainIssueCodePurchaseExpired         DomainIssueCode = "purchase_expired"
-	DomainIssueCodeDomainUnavailable       DomainIssueCode = "domain_unavailable"
-	DomainIssueCodeUnsupportedTld          DomainIssueCode = "unsupported_tld"
-	DomainIssueCodeRegistrationUnavailable DomainIssueCode = "registration_unavailable"
-	DomainIssueCodeRegistrationFailed      DomainIssueCode = "registration_failed"
-	DomainIssueCodeRenewalFailed           DomainIssueCode = "renewal_failed"
-	DomainIssueCodePaymentActionRequired   DomainIssueCode = "payment_action_required"
-	DomainIssueCodeApplePayUnverified      DomainIssueCode = "apple_pay_unverified"
-	DomainIssueCodePixelNotSeen            DomainIssueCode = "pixel_not_seen"
-	DomainIssueCodePixelNotInstalled       DomainIssueCode = "pixel_not_installed"
-	DomainIssueCodePixelWaiting            DomainIssueCode = "pixel_waiting"
-	DomainIssueCodePixelUnreachable        DomainIssueCode = "pixel_unreachable"
-	DomainIssueCodePixelQuiet              DomainIssueCode = "pixel_quiet"
-	DomainIssueCodeEmailNeedsWhopDNS       DomainIssueCode = "email_needs_whop_dns"
-	DomainIssueCodeEmailUnreachable        DomainIssueCode = "email_unreachable"
-	DomainIssueCodeEmailIdentityInUse      DomainIssueCode = "email_identity_in_use"
-	DomainIssueCodeEmailVerificationFailed DomainIssueCode = "email_verification_failed"
+	DomainIssueCodeVerificationRequired      DomainIssueCode = "verification_required"
+	DomainIssueCodeVerificationExpired       DomainIssueCode = "verification_expired"
+	DomainIssueCodeOwnershipConflict         DomainIssueCode = "ownership_conflict"
+	DomainIssueCodeOwnershipLost             DomainIssueCode = "ownership_lost"
+	DomainIssueCodeDNSRequired               DomainIssueCode = "dns_required"
+	DomainIssueCodeProviderValidation        DomainIssueCode = "provider_validation"
+	DomainIssueCodeCertificatePending        DomainIssueCode = "certificate_pending"
+	DomainIssueCodeExpiringSoon              DomainIssueCode = "expiring_soon"
+	DomainIssueCodeAccountUnavailable        DomainIssueCode = "account_unavailable"
+	DomainIssueCodeCheckFailed               DomainIssueCode = "check_failed"
+	DomainIssueCodePurchaseExpired           DomainIssueCode = "purchase_expired"
+	DomainIssueCodeDomainUnavailable         DomainIssueCode = "domain_unavailable"
+	DomainIssueCodeUnsupportedTld            DomainIssueCode = "unsupported_tld"
+	DomainIssueCodeRegistrationUnavailable   DomainIssueCode = "registration_unavailable"
+	DomainIssueCodeRegistrationFailed        DomainIssueCode = "registration_failed"
+	DomainIssueCodeRenewalFailed             DomainIssueCode = "renewal_failed"
+	DomainIssueCodePaymentActionRequired     DomainIssueCode = "payment_action_required"
+	DomainIssueCodeDomainOnWhop              DomainIssueCode = "domain_on_whop"
+	DomainIssueCodeTransferPaymentExpired    DomainIssueCode = "transfer_payment_expired"
+	DomainIssueCodeDomainTransferUnavailable DomainIssueCode = "domain_transfer_unavailable"
+	DomainIssueCodeTransferLocked            DomainIssueCode = "transfer_locked"
+	DomainIssueCodeTransferAuthCodeRejected  DomainIssueCode = "transfer_auth_code_rejected"
+	DomainIssueCodeTransferApprovalPending   DomainIssueCode = "transfer_approval_pending"
+	DomainIssueCodeTransferRejected          DomainIssueCode = "transfer_rejected"
+	DomainIssueCodeTransferNotCancellable    DomainIssueCode = "transfer_not_cancellable"
+	DomainIssueCodeDomainTransferFailed      DomainIssueCode = "domain_transfer_failed"
+	DomainIssueCodeApplePayUnverified        DomainIssueCode = "apple_pay_unverified"
+	DomainIssueCodePixelNotSeen              DomainIssueCode = "pixel_not_seen"
+	DomainIssueCodePixelNotInstalled         DomainIssueCode = "pixel_not_installed"
+	DomainIssueCodePixelWaiting              DomainIssueCode = "pixel_waiting"
+	DomainIssueCodePixelUnreachable          DomainIssueCode = "pixel_unreachable"
+	DomainIssueCodePixelQuiet                DomainIssueCode = "pixel_quiet"
+	DomainIssueCodeEmailNeedsWhopDNS         DomainIssueCode = "email_needs_whop_dns"
+	DomainIssueCodeEmailUnreachable          DomainIssueCode = "email_unreachable"
+	DomainIssueCodeEmailIdentityInUse        DomainIssueCode = "email_identity_in_use"
+	DomainIssueCodeEmailVerificationFailed   DomainIssueCode = "email_verification_failed"
 )
 
 func NewDomainIssueCodeFromString(s string) (DomainIssueCode, error) {
@@ -1690,6 +1699,24 @@ func NewDomainIssueCodeFromString(s string) (DomainIssueCode, error) {
 		return DomainIssueCodeRenewalFailed, nil
 	case "payment_action_required":
 		return DomainIssueCodePaymentActionRequired, nil
+	case "domain_on_whop":
+		return DomainIssueCodeDomainOnWhop, nil
+	case "transfer_payment_expired":
+		return DomainIssueCodeTransferPaymentExpired, nil
+	case "domain_transfer_unavailable":
+		return DomainIssueCodeDomainTransferUnavailable, nil
+	case "transfer_locked":
+		return DomainIssueCodeTransferLocked, nil
+	case "transfer_auth_code_rejected":
+		return DomainIssueCodeTransferAuthCodeRejected, nil
+	case "transfer_approval_pending":
+		return DomainIssueCodeTransferApprovalPending, nil
+	case "transfer_rejected":
+		return DomainIssueCodeTransferRejected, nil
+	case "transfer_not_cancellable":
+		return DomainIssueCodeTransferNotCancellable, nil
+	case "domain_transfer_failed":
+		return DomainIssueCodeDomainTransferFailed, nil
 	case "apple_pay_unverified":
 		return DomainIssueCodeApplePayUnverified, nil
 	case "pixel_not_seen":
@@ -3097,10 +3124,11 @@ var (
 	domainRegistrationFieldAmountDue       = big.NewInt(1 << 0)
 	domainRegistrationFieldAutoRenew       = big.NewInt(1 << 1)
 	domainRegistrationFieldExpiresAt       = big.NewInt(1 << 2)
-	domainRegistrationFieldPaymentMethodID = big.NewInt(1 << 3)
-	domainRegistrationFieldPhase           = big.NewInt(1 << 4)
-	domainRegistrationFieldPurchaseURL     = big.NewInt(1 << 5)
-	domainRegistrationFieldState           = big.NewInt(1 << 6)
+	domainRegistrationFieldMethod          = big.NewInt(1 << 3)
+	domainRegistrationFieldPaymentMethodID = big.NewInt(1 << 4)
+	domainRegistrationFieldPhase           = big.NewInt(1 << 5)
+	domainRegistrationFieldPurchaseURL     = big.NewInt(1 << 6)
+	domainRegistrationFieldState           = big.NewInt(1 << 7)
 )
 
 // domainRegistrationNullableFields maps the wire names of DomainRegistration's nullable fields (required or optional) to their field bits.
@@ -3118,11 +3146,13 @@ type DomainRegistration struct {
 	AutoRenew bool `json:"auto_renew" url:"auto_renew"`
 	// When the registration expires unless renewed, as an ISO 8601 timestamp. `null` until it's registered.
 	ExpiresAt *string `json:"expires_at,omitempty" url:"expires_at,omitempty"`
+	// How the domain came to Whop: `registration` when it was bought through Whop, `transfer` when it was moved from another registrar.
+	Method DomainRegistrationMethod `json:"method" url:"method"`
 	// ID of the saved card charged for the domain, prefixed `payt_`. `null` when none is set.
 	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"payment_method_id,omitempty"`
-	// Where the registration is: awaiting payment, ordering at the registrar, delegating DNS to Whop, held, expired, or releasing.
+	// Where the registration is: awaiting payment, ordering at the registrar, transferring from another registrar, delegating DNS to Whop, held, expired, or releasing.
 	Phase DomainRegistrationPhase `json:"phase" url:"phase"`
-	// Link to pay what the domain owes now: its registration, or a yearly renewal. `null` when nothing is owed.
+	// Link to pay what the domain owes now: its registration or transfer, or a yearly renewal. `null` when nothing is owed.
 	PurchaseURL *string `json:"purchase_url,omitempty" url:"purchase_url,omitempty"`
 	// How far registering and keeping the domain has got.
 	State DomainRegistrationState `json:"state" url:"state"`
@@ -3153,6 +3183,13 @@ func (d *DomainRegistration) GetExpiresAt() *string {
 		return nil
 	}
 	return d.ExpiresAt
+}
+
+func (d *DomainRegistration) GetMethod() DomainRegistrationMethod {
+	if d == nil {
+		return ""
+	}
+	return d.Method
 }
 
 func (d *DomainRegistration) GetPaymentMethodID() *string {
@@ -3218,6 +3255,13 @@ func (d *DomainRegistration) SetAutoRenew(autoRenew bool) {
 func (d *DomainRegistration) SetExpiresAt(expiresAt *string) {
 	d.ExpiresAt = expiresAt
 	d.require(domainRegistrationFieldExpiresAt)
+}
+
+// SetMethod sets the Method field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainRegistration) SetMethod(method DomainRegistrationMethod) {
+	d.Method = method
+	d.require(domainRegistrationFieldMethod)
 }
 
 // SetPaymentMethodID sets the PaymentMethodID field and marks it as non-optional;
@@ -3297,12 +3341,36 @@ func (d *DomainRegistration) String() string {
 	return fmt.Sprintf("%#v", d)
 }
 
-// Where the registration is: awaiting payment, ordering at the registrar, delegating DNS to Whop, held, expired, or releasing.
+// How the domain came to Whop: `registration` when it was bought through Whop, `transfer` when it was moved from another registrar.
+type DomainRegistrationMethod string
+
+const (
+	DomainRegistrationMethodRegistration DomainRegistrationMethod = "registration"
+	DomainRegistrationMethodTransfer     DomainRegistrationMethod = "transfer"
+)
+
+func NewDomainRegistrationMethodFromString(s string) (DomainRegistrationMethod, error) {
+	switch s {
+	case "registration":
+		return DomainRegistrationMethodRegistration, nil
+	case "transfer":
+		return DomainRegistrationMethodTransfer, nil
+	}
+	var t DomainRegistrationMethod
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (d DomainRegistrationMethod) Ptr() *DomainRegistrationMethod {
+	return &d
+}
+
+// Where the registration is: awaiting payment, ordering at the registrar, transferring from another registrar, delegating DNS to Whop, held, expired, or releasing.
 type DomainRegistrationPhase string
 
 const (
 	DomainRegistrationPhaseAwaitingPayment DomainRegistrationPhase = "awaiting_payment"
 	DomainRegistrationPhaseOrdering        DomainRegistrationPhase = "ordering"
+	DomainRegistrationPhaseTransferring    DomainRegistrationPhase = "transferring"
 	DomainRegistrationPhaseDelegating      DomainRegistrationPhase = "delegating"
 	DomainRegistrationPhaseHeld            DomainRegistrationPhase = "held"
 	DomainRegistrationPhaseExpired         DomainRegistrationPhase = "expired"
@@ -3316,6 +3384,8 @@ func NewDomainRegistrationPhaseFromString(s string) (DomainRegistrationPhase, er
 		return DomainRegistrationPhaseAwaitingPayment, nil
 	case "ordering":
 		return DomainRegistrationPhaseOrdering, nil
+	case "transferring":
+		return DomainRegistrationPhaseTransferring, nil
 	case "delegating":
 		return DomainRegistrationPhaseDelegating, nil
 	case "held":
@@ -4094,8 +4164,9 @@ func (c *CreateDomainsRequestPixel) String() string {
 }
 
 var (
-	createDomainsRequestRegistrationFieldAutoRenew       = big.NewInt(1 << 0)
-	createDomainsRequestRegistrationFieldPaymentMethodID = big.NewInt(1 << 1)
+	createDomainsRequestRegistrationFieldAuthCode        = big.NewInt(1 << 0)
+	createDomainsRequestRegistrationFieldAutoRenew       = big.NewInt(1 << 1)
+	createDomainsRequestRegistrationFieldPaymentMethodID = big.NewInt(1 << 2)
 )
 
 // createDomainsRequestRegistrationNullableFields maps the wire names of CreateDomainsRequestRegistration's nullable fields (required or optional) to their field bits.
@@ -4103,8 +4174,10 @@ var createDomainsRequestRegistrationNullableFields = map[string]*big.Int{
 	"payment_method_id": createDomainsRequestRegistrationFieldPaymentMethodID,
 }
 
-// Buy the domain through Whop, renew it every year, and let Whop run its DNS. Pass `null` to release an unpaid or failed purchase.
+// Buy the domain through Whop, or transfer in a domain you own elsewhere with `auth_code`, then renew it every year and let Whop run its DNS. Pass `null` to release an unpaid or failed purchase, or to cancel a transfer while its current registrar can still stop it.
 type CreateDomainsRequestRegistration struct {
+	// Transfer the domain to Whop instead of buying it. This is the transfer authorization code (also called an EPP code) from the domain's current registrar, which you usually find in its domain settings after unlocking the domain. For a domain at name.com, unlock it and copy the code in that name.com account. Whop becomes the domain's registrant, and the domain moves to Whop DNS once the transfer completes, so its current DNS records, including email, stop working. After the transfer, the registry may lock the domain against another transfer for 60 days. While it's `transferring`, pass the same or a new code again to resubmit. Whop never returns the code.
+	AuthCode *string `json:"auth_code,omitempty" url:"auth_code,omitempty"`
 	// Whether Whop charges the saved card to renew the domain before it expires.
 	AutoRenew *bool `json:"auto_renew,omitempty" url:"auto_renew,omitempty"`
 	// Saved card to charge, prefixed `payt_`. It must belong to the signed-in user. Pass `null` to remove it.
@@ -4115,6 +4188,13 @@ type CreateDomainsRequestRegistration struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (c *CreateDomainsRequestRegistration) GetAuthCode() *string {
+	if c == nil {
+		return nil
+	}
+	return c.AuthCode
 }
 
 func (c *CreateDomainsRequestRegistration) GetAutoRenew() *bool {
@@ -4145,6 +4225,13 @@ func (c *CreateDomainsRequestRegistration) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	c.explicitFields = next
+}
+
+// SetAuthCode sets the AuthCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDomainsRequestRegistration) SetAuthCode(authCode *string) {
+	c.AuthCode = authCode
+	c.require(createDomainsRequestRegistrationFieldAuthCode)
 }
 
 // SetAutoRenew sets the AutoRenew field and marks it as non-optional;
@@ -5130,8 +5217,9 @@ func (u *UpdateDomainsRequestPixel) String() string {
 }
 
 var (
-	updateDomainsRequestRegistrationFieldAutoRenew       = big.NewInt(1 << 0)
-	updateDomainsRequestRegistrationFieldPaymentMethodID = big.NewInt(1 << 1)
+	updateDomainsRequestRegistrationFieldAuthCode        = big.NewInt(1 << 0)
+	updateDomainsRequestRegistrationFieldAutoRenew       = big.NewInt(1 << 1)
+	updateDomainsRequestRegistrationFieldPaymentMethodID = big.NewInt(1 << 2)
 )
 
 // updateDomainsRequestRegistrationNullableFields maps the wire names of UpdateDomainsRequestRegistration's nullable fields (required or optional) to their field bits.
@@ -5139,8 +5227,10 @@ var updateDomainsRequestRegistrationNullableFields = map[string]*big.Int{
 	"payment_method_id": updateDomainsRequestRegistrationFieldPaymentMethodID,
 }
 
-// Buy the domain through Whop, renew it every year, and let Whop run its DNS. Pass `null` to release an unpaid or failed purchase.
+// Buy the domain through Whop, or transfer in a domain you own elsewhere with `auth_code`, then renew it every year and let Whop run its DNS. Pass `null` to release an unpaid or failed purchase, or to cancel a transfer while its current registrar can still stop it.
 type UpdateDomainsRequestRegistration struct {
+	// Transfer the domain to Whop instead of buying it. This is the transfer authorization code (also called an EPP code) from the domain's current registrar, which you usually find in its domain settings after unlocking the domain. For a domain at name.com, unlock it and copy the code in that name.com account. Whop becomes the domain's registrant, and the domain moves to Whop DNS once the transfer completes, so its current DNS records, including email, stop working. After the transfer, the registry may lock the domain against another transfer for 60 days. While it's `transferring`, pass the same or a new code again to resubmit. Whop never returns the code.
+	AuthCode *string `json:"auth_code,omitempty" url:"auth_code,omitempty"`
 	// Whether Whop charges the saved card to renew the domain before it expires.
 	AutoRenew *bool `json:"auto_renew,omitempty" url:"auto_renew,omitempty"`
 	// Saved card to charge, prefixed `payt_`. It must belong to the signed-in user. Pass `null` to remove it.
@@ -5151,6 +5241,13 @@ type UpdateDomainsRequestRegistration struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (u *UpdateDomainsRequestRegistration) GetAuthCode() *string {
+	if u == nil {
+		return nil
+	}
+	return u.AuthCode
 }
 
 func (u *UpdateDomainsRequestRegistration) GetAutoRenew() *bool {
@@ -5181,6 +5278,13 @@ func (u *UpdateDomainsRequestRegistration) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	u.explicitFields = next
+}
+
+// SetAuthCode sets the AuthCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateDomainsRequestRegistration) SetAuthCode(authCode *string) {
+	u.AuthCode = authCode
+	u.require(updateDomainsRequestRegistrationFieldAuthCode)
 }
 
 // SetAutoRenew sets the AutoRenew field and marks it as non-optional;
@@ -5436,7 +5540,7 @@ type UpdateDomainsRequest struct {
 	Metadata map[string]string `json:"metadata,omitempty" url:"-"`
 	// Track page views on the domain with the Whop pixel. It needs no other capability: it stays `pending` until the pixel records a page view, and turns `action_required` if it goes 7 days without one. Pass `null` to stop tracking.
 	Pixel *UpdateDomainsRequestPixel `json:"pixel,omitempty" url:"-"`
-	// Buy the domain through Whop, renew it every year, and let Whop run its DNS. Pass `null` to release an unpaid or failed purchase.
+	// Buy the domain through Whop, or transfer in a domain you own elsewhere with `auth_code`, then renew it every year and let Whop run its DNS. Pass `null` to release an unpaid or failed purchase, or to cancel a transfer while its current registrar can still stop it.
 	Registration *UpdateDomainsRequestRegistration `json:"registration,omitempty" url:"-"`
 	// Prove you control the domain's DNS: Whop returns a TXT record to publish in `issues`, and whoever publishes it owns the domain on Whop. Pass `null` to release it. Can't be combined with `registration`.
 	Verification *UpdateDomainsRequestVerification `json:"verification,omitempty" url:"-"`
