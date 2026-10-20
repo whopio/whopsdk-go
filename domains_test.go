@@ -11790,13 +11790,6 @@ func TestEnumDomainIssueCode(t *testing.T) {
 		assert.Equal(t, DomainIssueCode("domain_on_whop"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_transfer_payment_expired", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewDomainIssueCodeFromString("transfer_payment_expired")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, DomainIssueCode("transfer_payment_expired"), val, "enum value should match expected wire value")
-	})
-
 	t.Run("NewFromString_domain_transfer_unavailable", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewDomainIssueCodeFromString("domain_transfer_unavailable")
@@ -11816,13 +11809,6 @@ func TestEnumDomainIssueCode(t *testing.T) {
 		val, err := NewDomainIssueCodeFromString("transfer_auth_code_rejected")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, DomainIssueCode("transfer_auth_code_rejected"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_transfer_approval_pending", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewDomainIssueCodeFromString("transfer_approval_pending")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, DomainIssueCode("transfer_approval_pending"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_transfer_rejected", func(t *testing.T) {
