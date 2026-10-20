@@ -208,7 +208,7 @@ type Refund struct {
 	Amount *Money `json:"amount,omitempty" url:"amount,omitempty"`
 	// When the refund was requested, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
-	// The provider's own explanation of the failure, or null.
+	// A merchant-facing explanation of why the refund failed, in the request's language. Null unless the refund failed or was canceled.
 	FailureMessage *string `json:"failure_message,omitempty" url:"failure_message,omitempty"`
 	// Why the refund failed, normalized across providers. Null unless the refund failed or was canceled.
 	FailureReason *RefundFailureReason `json:"failure_reason,omitempty" url:"failure_reason,omitempty"`
