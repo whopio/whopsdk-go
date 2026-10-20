@@ -42,6 +42,7 @@ import (
 	dmmembers "github.com/whopio/whopsdk-go/v2/dmmembers"
 	domains "github.com/whopio/whopsdk-go/v2/domains"
 	economicintelligence "github.com/whopio/whopsdk-go/v2/economicintelligence"
+	emailaddresses "github.com/whopio/whopsdk-go/v2/emailaddresses"
 	events "github.com/whopio/whopsdk-go/v2/events"
 	experiences "github.com/whopio/whopsdk-go/v2/experiences"
 	experiments "github.com/whopio/whopsdk-go/v2/experiments"
@@ -140,6 +141,7 @@ type Whop struct {
 	DmMembers                *dmmembers.Client
 	Domains                  *domains.Client
 	EconomicIntelligence     *economicintelligence.Client
+	EmailAddresses           *emailaddresses.Client
 	Events                   *events.Client
 	Experiences              *experiences.Client
 	Experiments              *experiments.Client
@@ -246,6 +248,7 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		DmMembers:                dmmembers.NewClient(options),
 		Domains:                  domains.NewClient(options),
 		EconomicIntelligence:     economicintelligence.NewClient(options),
+		EmailAddresses:           emailaddresses.NewClient(options),
 		Events:                   events.NewClient(options),
 		Experiences:              experiences.NewClient(options),
 		Experiments:              experiments.NewClient(options),

@@ -6183,6 +6183,249 @@
       }
     },
     {
+      "id": "185cf7b3-f718-4eca-a4e0-f86ea1cff2a8",
+      "name": "List Email Addresses - default",
+      "request": {
+        "urlPathTemplate": "/email_addresses",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"data\": [\n    {\n      \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"address\": \"marcus@shinetime.example\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"domain_id\": \"whopappdomain0000001\",\n      \"id\": \"emaddr_xxxxxxxxxxxxxx\",\n      \"password\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n      \"user_id\": \"user_xxxxxxxxxxxxxx\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "185cf7b3-f718-4eca-a4e0-f86ea1cff2a8",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "2f020e09-a474-4bb2-92bc-bed41a109cd3",
+      "name": "Create Email Address - default",
+      "request": {
+        "urlPathTemplate": "/email_addresses",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"address\": \"marcus@shinetime.example\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"domain_id\": \"whopappdomain0000001\",\n  \"id\": \"emaddr_xxxxxxxxxxxxxx\",\n  \"password\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"user_id\": \"user_xxxxxxxxxxxxxx\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "2f020e09-a474-4bb2-92bc-bed41a109cd3",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "6a7528d5-4061-454e-bebf-ff64b4d19bf7",
+      "name": "Retrieve Email Address - default",
+      "request": {
+        "urlPathTemplate": "/email_addresses/{id}",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"address\": \"marcus@shinetime.example\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"domain_id\": \"whopappdomain0000001\",\n  \"id\": \"emaddr_xxxxxxxxxxxxxx\",\n  \"password\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"user_id\": \"user_xxxxxxxxxxxxxx\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "6a7528d5-4061-454e-bebf-ff64b4d19bf7",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "d5d72162-8b31-4161-a9d5-6cf6cbc22164",
+      "name": "Delete Email Address - default",
+      "request": {
+        "urlPathTemplate": "/email_addresses/{id}",
+        "method": "DELETE",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"address\": \"marcus@shinetime.example\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"domain_id\": \"whopappdomain0000001\",\n  \"id\": \"emaddr_xxxxxxxxxxxxxx\",\n  \"password\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"user_id\": \"user_xxxxxxxxxxxxxx\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "d5d72162-8b31-4161-a9d5-6cf6cbc22164",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "cf78e7fb-fc5c-47b0-9c57-f53cd7f4cd70",
+      "name": "Update Email Address - default",
+      "request": {
+        "urlPathTemplate": "/email_addresses/{id}",
+        "method": "PATCH",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"address\": \"marcus@shinetime.example\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"domain_id\": \"whopappdomain0000001\",\n  \"id\": \"emaddr_xxxxxxxxxxxxxx\",\n  \"password\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"user_id\": \"user_xxxxxxxxxxxxxx\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "cf78e7fb-fc5c-47b0-9c57-f53cd7f4cd70",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "3b6fd687-7e16-4ad3-aff1-84224d34c3a5",
+      "name": "Download Email Address Configuration Profile - default",
+      "request": {
+        "urlPathTemplate": "/email_addresses/{id}/mobileconfig",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "base64Body": "JVBERi0xLjQKJeLjz9MKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCA2MTIgNzkyXSA+PgplbmRvYmoKeHJlZgowIDQKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDE1IDAwMDAwIG4gCjAwMDAwMDAwNjQgMDAwMDAgbiAKMDAwMDAwMDEyMSAwMDAwMCBuIAp0cmFpbGVyCjw8IC9TaXplIDQgL1Jvb3QgMSAwIFIgPj4Kc3RhcnR4cmVmCjE5MgolJUVPRgo=",
+        "headers": {
+          "Content-Type": "application/octet-stream"
+        }
+      },
+      "uuid": "3b6fd687-7e16-4ad3-aff1-84224d34c3a5",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "37d028bc-1c53-4508-96a3-b745e3146d18",
+      "name": "Reset Email Address Password - default",
+      "request": {
+        "urlPathTemplate": "/email_addresses/{id}/reset_password",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"address\": \"marcus@shinetime.example\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"domain_id\": \"whopappdomain0000001\",\n  \"id\": \"emaddr_xxxxxxxxxxxxxx\",\n  \"password\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"user_id\": \"user_xxxxxxxxxxxxxx\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "37d028bc-1c53-4508-96a3-b745e3146d18",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "10d9855c-f3f1-4c95-8347-32012fbf7f76",
       "name": "List Events - default",
       "request": {
@@ -17501,6 +17744,6 @@
     }
   ],
   "meta": {
-    "total": 488
+    "total": 495
   }
 }

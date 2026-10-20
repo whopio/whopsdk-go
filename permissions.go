@@ -59,6 +59,9 @@ const (
 	PermissionActionExperimentRead                    PermissionAction = "experiment:read"
 	PermissionActionDomainManage                      PermissionAction = "domain:manage"
 	PermissionActionDomainRead                        PermissionAction = "domain:read"
+	PermissionActionEmailManage                       PermissionAction = "email:manage"
+	PermissionActionEmailRead                         PermissionAction = "email:read"
+	PermissionActionEmailSend                         PermissionAction = "email:send"
 	PermissionActionAiPromptCreate                    PermissionAction = "ai_prompt:create"
 	PermissionActionAccessPassBasicExport             PermissionAction = "access_pass:basic:export"
 	PermissionActionAccessPassBasicRead               PermissionAction = "access_pass:basic:read"
@@ -354,6 +357,12 @@ func NewPermissionActionFromString(s string) (PermissionAction, error) {
 		return PermissionActionDomainManage, nil
 	case "domain:read":
 		return PermissionActionDomainRead, nil
+	case "email:manage":
+		return PermissionActionEmailManage, nil
+	case "email:read":
+		return PermissionActionEmailRead, nil
+	case "email:send":
+		return PermissionActionEmailSend, nil
 	case "ai_prompt:create":
 		return PermissionActionAiPromptCreate, nil
 	case "access_pass:basic:export":
