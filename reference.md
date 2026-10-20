@@ -30393,6 +30393,14 @@ client.Payouts.Create(
 <dl>
 <dd>
 
+**paymentMethodID:** `*string` — A saved card of the account, prefixed `payt_`, to charge for this payout instead of paying from the balance. Requires a `quote_token` from `POST /payouts/quotes` made with the same card and `amount`. Only for business accounts paying a saved recipient in `usd` at `standard` speed. The payout is returned under the card payment's `pay_` id until it is submitted, then `GET /payouts/{id}` returns the submitted payout.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **payoutMethodID:** `string` — The saved payout method to deliver to (a potk_ identifier).
     
 </dd>
@@ -30502,7 +30510,7 @@ client.Payouts.CreateQuote(
 <dl>
 <dd>
 
-**amount:** `float64` — The amount to pay out in the specified currency. With `payment_method_id`, the amount to charge the card.
+**amount:** `float64` — The amount to pay out in the specified currency.
     
 </dd>
 </dl>

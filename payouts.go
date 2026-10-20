@@ -65,12 +65,13 @@ var (
 	createPayoutsRequestFieldCurrency               = big.NewInt(1 << 3)
 	createPayoutsRequestFieldMetadata               = big.NewInt(1 << 4)
 	createPayoutsRequestFieldNotes                  = big.NewInt(1 << 5)
-	createPayoutsRequestFieldPayoutMethodID         = big.NewInt(1 << 6)
-	createPayoutsRequestFieldPlatformCoversFees     = big.NewInt(1 << 7)
-	createPayoutsRequestFieldQuoteToken             = big.NewInt(1 << 8)
-	createPayoutsRequestFieldSpeed                  = big.NewInt(1 << 9)
-	createPayoutsRequestFieldStatementDescriptor    = big.NewInt(1 << 10)
-	createPayoutsRequestFieldUserID                 = big.NewInt(1 << 11)
+	createPayoutsRequestFieldPaymentMethodID        = big.NewInt(1 << 6)
+	createPayoutsRequestFieldPayoutMethodID         = big.NewInt(1 << 7)
+	createPayoutsRequestFieldPlatformCoversFees     = big.NewInt(1 << 8)
+	createPayoutsRequestFieldQuoteToken             = big.NewInt(1 << 9)
+	createPayoutsRequestFieldSpeed                  = big.NewInt(1 << 10)
+	createPayoutsRequestFieldStatementDescriptor    = big.NewInt(1 << 11)
+	createPayoutsRequestFieldUserID                 = big.NewInt(1 << 12)
 )
 
 type CreatePayoutsRequest struct {
@@ -86,6 +87,8 @@ type CreatePayoutsRequest struct {
 	Metadata map[string]string `json:"metadata,omitempty" url:"-"`
 	// Free-form notes to attach to the payout, with a maximum of 255 characters. Omit or pass `null` for no notes.
 	Notes *string `json:"notes,omitempty" url:"-"`
+	// A saved card of the account, prefixed `payt_`, to charge for this payout instead of paying from the balance. Requires a `quote_token` from `POST /payouts/quotes` made with the same card and `amount`. Only for business accounts paying a saved recipient in `usd` at `standard` speed. The payout is returned under the card payment's `pay_` id until it is submitted, then `GET /payouts/{id}` returns the submitted payout.
+	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
 	// The saved payout method to deliver to (a potk_ identifier).
 	PayoutMethodID string `json:"payout_method_id" url:"-"`
 	// Whether the parent platform covers the payout fee instead of the account being paid out. Omit to use the platform's configured fee coverage policy; pass `false` to opt out of it. `true` is only accepted for accounts that belong to a platform, and requires the platform's policy to cover this payout method's category or a caller authorized to manage the platform's child account fees.
@@ -152,6 +155,13 @@ func (c *CreatePayoutsRequest) SetMetadata(metadata map[string]string) {
 func (c *CreatePayoutsRequest) SetNotes(notes *string) {
 	c.Notes = notes
 	c.require(createPayoutsRequestFieldNotes)
+}
+
+// SetPaymentMethodID sets the PaymentMethodID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePayoutsRequest) SetPaymentMethodID(paymentMethodID *string) {
+	c.PaymentMethodID = paymentMethodID
+	c.require(createPayoutsRequestFieldPaymentMethodID)
 }
 
 // SetPayoutMethodID sets the PayoutMethodID field and marks it as non-optional;
@@ -232,7 +242,7 @@ var (
 type CreateQuotePayoutsRequest struct {
 	// Account to pay out from, prefixed `biz_`. Provide exactly one of `account_id` or `user_id`.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
-	// The amount to pay out in the specified currency. With `payment_method_id`, the amount to charge the card.
+	// The amount to pay out in the specified currency.
 	Amount float64 `json:"amount" url:"-"`
 	// The currency to pay out. When omitted, uses `usd` if that balance can cover a withdrawal, otherwise the account's only other funded currency.
 	Currency *string `json:"currency,omitempty" url:"-"`
@@ -600,7 +610,7 @@ type CancelPayoutsResponse struct {
 	FeeAmount string `json:"fee_amount" url:"fee_amount"`
 	// Who bore the payout fee: the account itself, or its parent platform.
 	FeePaidBy CancelPayoutsResponseFeePaidBy `json:"fee_paid_by" url:"fee_paid_by"`
-	// Payout ID, prefixed `wdrl_` for a payout returned by `GET /payouts` or `cofr_` for a payout request returned by `POST /payouts`.
+	// Payout ID, prefixed `wdrl_` for a payout returned by `GET /payouts`, `cofr_` for a payout request returned by `POST /payouts`, or `pay_` for a payout funded by a card payment that has not been submitted yet.
 	ID string `json:"id" url:"id"`
 	// Whop's markup on the provider fee, in the payout currency, as a decimal string. `"0.0"` when none applies.
 	MarkupFee string `json:"markup_fee" url:"markup_fee"`
@@ -1742,7 +1752,7 @@ type CreatePayoutsResponse struct {
 	FeeAmount string `json:"fee_amount" url:"fee_amount"`
 	// Who bore the payout fee: the account itself, or its parent platform.
 	FeePaidBy CreatePayoutsResponseFeePaidBy `json:"fee_paid_by" url:"fee_paid_by"`
-	// Payout ID, prefixed `wdrl_` — the id POST returns is the id GET /payouts lists. Conversion requests created before this version keep answering under their `cofr_` id.
+	// Payout ID, prefixed `wdrl_` — the id POST returns is the id GET /payouts lists. Conversion requests created before this version keep answering under their `cofr_` id. A payout paid from a card with `payment_method_id` answers under its card payment's `pay_` id until it is submitted.
 	ID string `json:"id" url:"id"`
 	// Whop's markup on the provider fee, in the payout currency, as a decimal string. `"0.0"` when none applies.
 	MarkupFee string `json:"markup_fee" url:"markup_fee"`
@@ -10899,7 +10909,7 @@ type RetrievePayoutsResponse struct {
 	FeeAmount *string `json:"fee_amount,omitempty" url:"fee_amount,omitempty"`
 	// Who bore the payout fee: the account itself, or its parent platform. Only returned to callers with payout:withdrawal:read on the owning ledger.
 	FeePaidBy *RetrievePayoutsResponseFeePaidBy `json:"fee_paid_by,omitempty" url:"fee_paid_by,omitempty"`
-	// Payout ID, prefixed `wdrl_` for a payout returned by `GET /payouts` or `cofr_` for a payout request returned by `POST /payouts`.
+	// Payout ID, prefixed `wdrl_` for a payout returned by `GET /payouts`, `cofr_` for a payout request returned by `POST /payouts`, or `pay_` for a payout funded by a card payment that has not been submitted yet.
 	ID string `json:"id" url:"id"`
 	// Whop's markup on the provider fee, in the payout currency, as a decimal string. `"0.0"` when none applies. Only returned to callers with payout:withdrawal:read on the owning ledger.
 	MarkupFee *string `json:"markup_fee,omitempty" url:"markup_fee,omitempty"`
