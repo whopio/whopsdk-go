@@ -992,7 +992,7 @@ type DomainAvailability struct {
 	RenewalPrice *Money `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
 	// How desirable the domain is, from 0 to 100. Short, real-word names on well-known extensions score highest.
 	Score int `json:"score" url:"score"`
-	// What moving the domain to Whop costs if it's registered elsewhere. `null` when it's available or can't be transferred.
+	// What moving the domain to Whop costs if it's registered elsewhere, including the year it adds to the domain's registration. `null` when it's available or can't be transferred.
 	TransferPrice *Money `json:"transfer_price,omitempty" url:"transfer_price,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1643,11 +1643,9 @@ const (
 	DomainIssueCodeRenewalFailed             DomainIssueCode = "renewal_failed"
 	DomainIssueCodePaymentActionRequired     DomainIssueCode = "payment_action_required"
 	DomainIssueCodeDomainOnWhop              DomainIssueCode = "domain_on_whop"
-	DomainIssueCodeTransferPaymentExpired    DomainIssueCode = "transfer_payment_expired"
 	DomainIssueCodeDomainTransferUnavailable DomainIssueCode = "domain_transfer_unavailable"
 	DomainIssueCodeTransferLocked            DomainIssueCode = "transfer_locked"
 	DomainIssueCodeTransferAuthCodeRejected  DomainIssueCode = "transfer_auth_code_rejected"
-	DomainIssueCodeTransferApprovalPending   DomainIssueCode = "transfer_approval_pending"
 	DomainIssueCodeTransferRejected          DomainIssueCode = "transfer_rejected"
 	DomainIssueCodeTransferNotCancellable    DomainIssueCode = "transfer_not_cancellable"
 	DomainIssueCodeDomainTransferFailed      DomainIssueCode = "domain_transfer_failed"
@@ -1701,16 +1699,12 @@ func NewDomainIssueCodeFromString(s string) (DomainIssueCode, error) {
 		return DomainIssueCodePaymentActionRequired, nil
 	case "domain_on_whop":
 		return DomainIssueCodeDomainOnWhop, nil
-	case "transfer_payment_expired":
-		return DomainIssueCodeTransferPaymentExpired, nil
 	case "domain_transfer_unavailable":
 		return DomainIssueCodeDomainTransferUnavailable, nil
 	case "transfer_locked":
 		return DomainIssueCodeTransferLocked, nil
 	case "transfer_auth_code_rejected":
 		return DomainIssueCodeTransferAuthCodeRejected, nil
-	case "transfer_approval_pending":
-		return DomainIssueCodeTransferApprovalPending, nil
 	case "transfer_rejected":
 		return DomainIssueCodeTransferRejected, nil
 	case "transfer_not_cancellable":
