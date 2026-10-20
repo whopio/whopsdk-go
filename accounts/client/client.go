@@ -8,7 +8,6 @@ import (
 
 	whopsdk "github.com/whopio/whopsdk-go/v2"
 	fees "github.com/whopio/whopsdk-go/v2/accounts/fees"
-	financingapplications "github.com/whopio/whopsdk-go/v2/accounts/financingapplications"
 	financingproviders "github.com/whopio/whopsdk-go/v2/accounts/financingproviders"
 	preferences "github.com/whopio/whopsdk-go/v2/accounts/preferences"
 	reserves "github.com/whopio/whopsdk-go/v2/accounts/reserves"
@@ -18,12 +17,11 @@ import (
 )
 
 type Client struct {
-	WithRawResponse       *RawClient
-	Fees                  *fees.Client
-	FinancingApplications *financingapplications.Client
-	FinancingProviders    *financingproviders.Client
-	Preferences           *preferences.Client
-	Reserves              *reserves.Client
+	WithRawResponse    *RawClient
+	Fees               *fees.Client
+	FinancingProviders *financingproviders.Client
+	Preferences        *preferences.Client
+	Reserves           *reserves.Client
 
 	options *core.RequestOptions
 	baseURL string
@@ -36,14 +34,13 @@ func NewClient(options *core.RequestOptions) *Client {
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
-		Fees:                  fees.NewClient(options),
-		FinancingApplications: financingapplications.NewClient(options),
-		FinancingProviders:    financingproviders.NewClient(options),
-		Preferences:           preferences.NewClient(options),
-		Reserves:              reserves.NewClient(options),
-		WithRawResponse:       NewRawClient(options),
-		options:               options,
-		baseURL:               options.BaseURL,
+		Fees:               fees.NewClient(options),
+		FinancingProviders: financingproviders.NewClient(options),
+		Preferences:        preferences.NewClient(options),
+		Reserves:           reserves.NewClient(options),
+		WithRawResponse:    NewRawClient(options),
+		options:            options,
+		baseURL:            options.BaseURL,
 		caller: internal.NewCaller(
 			&internal.CallerParams{
 				Client:         options.HTTPClient,

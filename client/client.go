@@ -53,6 +53,7 @@ import (
 	files "github.com/whopio/whopsdk-go/v2/files"
 	financialactivity "github.com/whopio/whopsdk-go/v2/financialactivity"
 	financialreportsclient "github.com/whopio/whopsdk-go/v2/financialreports/client"
+	financingapplications "github.com/whopio/whopsdk-go/v2/financingapplications"
 	forumposts "github.com/whopio/whopsdk-go/v2/forumposts"
 	forums "github.com/whopio/whopsdk-go/v2/forums"
 	identityprofiles "github.com/whopio/whopsdk-go/v2/identityprofiles"
@@ -152,6 +153,7 @@ type Whop struct {
 	Files                    *files.Client
 	FinancialActivity        *financialactivity.Client
 	FinancialReports         *financialreportsclient.Client
+	FinancingApplications    *financingapplications.Client
 	ForumPosts               *forumposts.Client
 	Forums                   *forums.Client
 	IdentityProfiles         *identityprofiles.Client
@@ -259,6 +261,7 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		Files:                    files.NewClient(options),
 		FinancialActivity:        financialactivity.NewClient(options),
 		FinancialReports:         financialreportsclient.NewClient(options),
+		FinancingApplications:    financingapplications.NewClient(options),
 		ForumPosts:               forumposts.NewClient(options),
 		Forums:                   forums.NewClient(options),
 		IdentityProfiles:         identityprofiles.NewClient(options),

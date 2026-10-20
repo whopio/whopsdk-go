@@ -7,7 +7,6 @@ import (
 	http "net/http"
 
 	whopsdk "github.com/whopio/whopsdk-go/v2"
-	accounts "github.com/whopio/whopsdk-go/v2/accounts"
 	core "github.com/whopio/whopsdk-go/v2/core"
 	internal "github.com/whopio/whopsdk-go/v2/internal"
 	option "github.com/whopio/whopsdk-go/v2/option"
@@ -35,7 +34,7 @@ func NewRawClient(options *core.RequestOptions) *RawClient {
 
 func (r *RawClient) Create(
 	ctx context.Context,
-	request *accounts.CreateFinancingApplicationsRequest,
+	request *whopsdk.CreateFinancingApplicationsRequest,
 	opts ...option.RequestOption,
 ) (*core.Response[*whopsdk.FinancingApplication], error) {
 	options := core.NewRequestOptions(opts...)
@@ -52,10 +51,7 @@ func (r *RawClient) Create(
 		),
 		"https://api.whop.com/api/v1",
 	)
-	endpointURL := internal.EncodeURL(
-		baseURL+"/accounts/%v/financing_applications",
-		request.AccountID,
-	)
+	endpointURL := baseURL + "/financing_applications"
 	headers := internal.MergeHeaders(
 		r.options.ToHeader(),
 		options.ToHeader(),
@@ -75,7 +71,7 @@ func (r *RawClient) Create(
 			Client:          options.HTTPClient,
 			Request:         request,
 			Response:        &response,
-			ErrorDecoder:    internal.NewErrorDecoder(accounts.ErrorCodes),
+			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
 		},
 	)
 	if err != nil {
@@ -90,7 +86,7 @@ func (r *RawClient) Create(
 
 func (r *RawClient) Retrieve(
 	ctx context.Context,
-	request *accounts.RetrieveFinancingApplicationsRequest,
+	request *whopsdk.RetrieveFinancingApplicationsRequest,
 	opts ...option.RequestOption,
 ) (*core.Response[*whopsdk.FinancingApplication], error) {
 	options := core.NewRequestOptions(opts...)
@@ -108,8 +104,7 @@ func (r *RawClient) Retrieve(
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := internal.EncodeURL(
-		baseURL+"/accounts/%v/financing_applications/%v",
-		request.AccountID,
+		baseURL+"/financing_applications/%v",
 		request.ID,
 	)
 	headers := internal.MergeHeaders(
@@ -129,7 +124,7 @@ func (r *RawClient) Retrieve(
 			QueryParameters: options.QueryParameters,
 			Client:          options.HTTPClient,
 			Response:        &response,
-			ErrorDecoder:    internal.NewErrorDecoder(accounts.ErrorCodes),
+			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
 		},
 	)
 	if err != nil {
@@ -144,7 +139,7 @@ func (r *RawClient) Retrieve(
 
 func (r *RawClient) Update(
 	ctx context.Context,
-	request *accounts.UpdateFinancingApplicationsRequest,
+	request *whopsdk.UpdateFinancingApplicationsRequest,
 	opts ...option.RequestOption,
 ) (*core.Response[*whopsdk.FinancingApplication], error) {
 	options := core.NewRequestOptions(opts...)
@@ -162,8 +157,7 @@ func (r *RawClient) Update(
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := internal.EncodeURL(
-		baseURL+"/accounts/%v/financing_applications/%v",
-		request.AccountID,
+		baseURL+"/financing_applications/%v",
 		request.ID,
 	)
 	headers := internal.MergeHeaders(
@@ -185,7 +179,7 @@ func (r *RawClient) Update(
 			Client:          options.HTTPClient,
 			Request:         request,
 			Response:        &response,
-			ErrorDecoder:    internal.NewErrorDecoder(accounts.ErrorCodes),
+			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
 		},
 	)
 	if err != nil {
@@ -200,7 +194,7 @@ func (r *RawClient) Update(
 
 func (r *RawClient) Submit(
 	ctx context.Context,
-	request *accounts.SubmitFinancingApplicationsRequest,
+	request *whopsdk.SubmitFinancingApplicationsRequest,
 	opts ...option.RequestOption,
 ) (*core.Response[*whopsdk.FinancingApplication], error) {
 	options := core.NewRequestOptions(opts...)
@@ -218,8 +212,7 @@ func (r *RawClient) Submit(
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := internal.EncodeURL(
-		baseURL+"/accounts/%v/financing_applications/%v/submit",
-		request.AccountID,
+		baseURL+"/financing_applications/%v/submit",
 		request.ID,
 	)
 	headers := internal.MergeHeaders(
@@ -241,7 +234,7 @@ func (r *RawClient) Submit(
 			Client:          options.HTTPClient,
 			Request:         request,
 			Response:        &response,
-			ErrorDecoder:    internal.NewErrorDecoder(accounts.ErrorCodes),
+			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
 		},
 	)
 	if err != nil {
