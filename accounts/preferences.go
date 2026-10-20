@@ -46,23 +46,25 @@ var (
 	retrievePreferencesResponseFieldAdsTripleWhaleIntegration               = big.NewInt(1 << 5)
 	retrievePreferencesResponseFieldCardsAutoTopUp                          = big.NewInt(1 << 6)
 	retrievePreferencesResponseFieldCardsNotifications                      = big.NewInt(1 << 7)
-	retrievePreferencesResponseFieldDisputeFighterEnabled                   = big.NewInt(1 << 8)
-	retrievePreferencesResponseFieldEconomicIntelligence                    = big.NewInt(1 << 9)
-	retrievePreferencesResponseFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 10)
-	retrievePreferencesResponseFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 11)
-	retrievePreferencesResponseFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 12)
-	retrievePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 13)
-	retrievePreferencesResponseFieldEconomicIntelligenceOffers              = big.NewInt(1 << 14)
-	retrievePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 15)
-	retrievePreferencesResponseFieldFeedbackOptions                         = big.NewInt(1 << 16)
-	retrievePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 17)
-	retrievePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 18)
-	retrievePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 19)
+	retrievePreferencesResponseFieldCoversConnectedAccountNegativeBalances  = big.NewInt(1 << 8)
+	retrievePreferencesResponseFieldDisputeFighterEnabled                   = big.NewInt(1 << 9)
+	retrievePreferencesResponseFieldEconomicIntelligence                    = big.NewInt(1 << 10)
+	retrievePreferencesResponseFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 11)
+	retrievePreferencesResponseFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 12)
+	retrievePreferencesResponseFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 13)
+	retrievePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 14)
+	retrievePreferencesResponseFieldEconomicIntelligenceOffers              = big.NewInt(1 << 15)
+	retrievePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 16)
+	retrievePreferencesResponseFieldFeedbackOptions                         = big.NewInt(1 << 17)
+	retrievePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 18)
+	retrievePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 19)
+	retrievePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 20)
 )
 
 // retrievePreferencesResponseNullableFields maps the wire names of RetrievePreferencesResponse's nullable fields (required or optional) to their field bits.
 var retrievePreferencesResponseNullableFields = map[string]*big.Int{
 	"ads_payment_methods":                         retrievePreferencesResponseFieldAdsPaymentMethods,
+	"covers_connected_account_negative_balances":  retrievePreferencesResponseFieldCoversConnectedAccountNegativeBalances,
 	"economic_intelligence_ends_at":               retrievePreferencesResponseFieldEconomicIntelligenceEndsAt,
 	"economic_intelligence_fee_percentage":        retrievePreferencesResponseFieldEconomicIntelligenceFeePercentage,
 	"economic_intelligence_first_renewal_at":      retrievePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt,
@@ -88,6 +90,8 @@ type RetrievePreferencesResponse struct {
 	CardsAutoTopUp bool `json:"cards_auto_top_up" url:"cards_auto_top_up"`
 	// Whether Whop Card notifications reach this account's team. `true` by default, including when the account has no cards balance. Set it to `false` to stop every card email and push notification for the account — application status, verification and action-required alerts, card-ready alerts, declines, large charges, and cashback summaries. Cardholder onboarding invitations still send, because they carry the only link an invited cardholder can onboard with. Requesting a card is rejected while notifications are off, since the request reaches nobody. Cards on personal accounts are unaffected.
 	CardsNotifications bool `json:"cards_notifications" url:"cards_notifications"`
+	// Whether this account covers its connected accounts' negative balances. When a connected account's balance drops below zero (from refunds, disputes, or fees), this account's available balance in the same currency pays it back, up to what is available. Refunds on its connected accounts may also take them negative by up to this account's available balance. `null` when the account has no connected accounts.
+	CoversConnectedAccountNegativeBalances *bool `json:"covers_connected_account_negative_balances,omitempty" url:"covers_connected_account_negative_balances,omitempty"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins.
 	DisputeFighterEnabled bool `json:"dispute_fighter_enabled" url:"dispute_fighter_enabled"`
 	// Whether Economic Intelligence is on for the account. It turns off automatically at `economic_intelligence_ends_at`.
@@ -174,6 +178,13 @@ func (r *RetrievePreferencesResponse) GetCardsNotifications() bool {
 		return false
 	}
 	return r.CardsNotifications
+}
+
+func (r *RetrievePreferencesResponse) GetCoversConnectedAccountNegativeBalances() *bool {
+	if r == nil {
+		return nil
+	}
+	return r.CoversConnectedAccountNegativeBalances
 }
 
 func (r *RetrievePreferencesResponse) GetDisputeFighterEnabled() bool {
@@ -330,6 +341,13 @@ func (r *RetrievePreferencesResponse) SetCardsAutoTopUp(cardsAutoTopUp bool) {
 func (r *RetrievePreferencesResponse) SetCardsNotifications(cardsNotifications bool) {
 	r.CardsNotifications = cardsNotifications
 	r.require(retrievePreferencesResponseFieldCardsNotifications)
+}
+
+// SetCoversConnectedAccountNegativeBalances sets the CoversConnectedAccountNegativeBalances field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponse) SetCoversConnectedAccountNegativeBalances(coversConnectedAccountNegativeBalances *bool) {
+	r.CoversConnectedAccountNegativeBalances = coversConnectedAccountNegativeBalances
+	r.require(retrievePreferencesResponseFieldCoversConnectedAccountNegativeBalances)
 }
 
 // SetDisputeFighterEnabled sets the DisputeFighterEnabled field and marks it as non-optional;
@@ -3108,23 +3126,25 @@ var (
 	updatePreferencesResponseFieldAdsTripleWhaleIntegration               = big.NewInt(1 << 5)
 	updatePreferencesResponseFieldCardsAutoTopUp                          = big.NewInt(1 << 6)
 	updatePreferencesResponseFieldCardsNotifications                      = big.NewInt(1 << 7)
-	updatePreferencesResponseFieldDisputeFighterEnabled                   = big.NewInt(1 << 8)
-	updatePreferencesResponseFieldEconomicIntelligence                    = big.NewInt(1 << 9)
-	updatePreferencesResponseFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 10)
-	updatePreferencesResponseFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 11)
-	updatePreferencesResponseFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 12)
-	updatePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 13)
-	updatePreferencesResponseFieldEconomicIntelligenceOffers              = big.NewInt(1 << 14)
-	updatePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 15)
-	updatePreferencesResponseFieldFeedbackOptions                         = big.NewInt(1 << 16)
-	updatePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 17)
-	updatePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 18)
-	updatePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 19)
+	updatePreferencesResponseFieldCoversConnectedAccountNegativeBalances  = big.NewInt(1 << 8)
+	updatePreferencesResponseFieldDisputeFighterEnabled                   = big.NewInt(1 << 9)
+	updatePreferencesResponseFieldEconomicIntelligence                    = big.NewInt(1 << 10)
+	updatePreferencesResponseFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 11)
+	updatePreferencesResponseFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 12)
+	updatePreferencesResponseFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 13)
+	updatePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 14)
+	updatePreferencesResponseFieldEconomicIntelligenceOffers              = big.NewInt(1 << 15)
+	updatePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 16)
+	updatePreferencesResponseFieldFeedbackOptions                         = big.NewInt(1 << 17)
+	updatePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 18)
+	updatePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 19)
+	updatePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 20)
 )
 
 // updatePreferencesResponseNullableFields maps the wire names of UpdatePreferencesResponse's nullable fields (required or optional) to their field bits.
 var updatePreferencesResponseNullableFields = map[string]*big.Int{
 	"ads_payment_methods":                         updatePreferencesResponseFieldAdsPaymentMethods,
+	"covers_connected_account_negative_balances":  updatePreferencesResponseFieldCoversConnectedAccountNegativeBalances,
 	"economic_intelligence_ends_at":               updatePreferencesResponseFieldEconomicIntelligenceEndsAt,
 	"economic_intelligence_fee_percentage":        updatePreferencesResponseFieldEconomicIntelligenceFeePercentage,
 	"economic_intelligence_first_renewal_at":      updatePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt,
@@ -3150,6 +3170,8 @@ type UpdatePreferencesResponse struct {
 	CardsAutoTopUp bool `json:"cards_auto_top_up" url:"cards_auto_top_up"`
 	// Whether Whop Card notifications reach this account's team. `true` by default, including when the account has no cards balance. Set it to `false` to stop every card email and push notification for the account — application status, verification and action-required alerts, card-ready alerts, declines, large charges, and cashback summaries. Cardholder onboarding invitations still send, because they carry the only link an invited cardholder can onboard with. Requesting a card is rejected while notifications are off, since the request reaches nobody. Cards on personal accounts are unaffected.
 	CardsNotifications bool `json:"cards_notifications" url:"cards_notifications"`
+	// Whether this account covers its connected accounts' negative balances. When a connected account's balance drops below zero (from refunds, disputes, or fees), this account's available balance in the same currency pays it back, up to what is available. Refunds on its connected accounts may also take them negative by up to this account's available balance. `null` when the account has no connected accounts.
+	CoversConnectedAccountNegativeBalances *bool `json:"covers_connected_account_negative_balances,omitempty" url:"covers_connected_account_negative_balances,omitempty"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins.
 	DisputeFighterEnabled bool `json:"dispute_fighter_enabled" url:"dispute_fighter_enabled"`
 	// Whether Economic Intelligence is on for the account. It turns off automatically at `economic_intelligence_ends_at`.
@@ -3236,6 +3258,13 @@ func (u *UpdatePreferencesResponse) GetCardsNotifications() bool {
 		return false
 	}
 	return u.CardsNotifications
+}
+
+func (u *UpdatePreferencesResponse) GetCoversConnectedAccountNegativeBalances() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.CoversConnectedAccountNegativeBalances
 }
 
 func (u *UpdatePreferencesResponse) GetDisputeFighterEnabled() bool {
@@ -3392,6 +3421,13 @@ func (u *UpdatePreferencesResponse) SetCardsAutoTopUp(cardsAutoTopUp bool) {
 func (u *UpdatePreferencesResponse) SetCardsNotifications(cardsNotifications bool) {
 	u.CardsNotifications = cardsNotifications
 	u.require(updatePreferencesResponseFieldCardsNotifications)
+}
+
+// SetCoversConnectedAccountNegativeBalances sets the CoversConnectedAccountNegativeBalances field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponse) SetCoversConnectedAccountNegativeBalances(coversConnectedAccountNegativeBalances *bool) {
+	u.CoversConnectedAccountNegativeBalances = coversConnectedAccountNegativeBalances
+	u.require(updatePreferencesResponseFieldCoversConnectedAccountNegativeBalances)
 }
 
 // SetDisputeFighterEnabled sets the DisputeFighterEnabled field and marks it as non-optional;
@@ -5336,20 +5372,21 @@ func (u UpdatePreferencesResponseSubscriptionFailureBehavior) Ptr() *UpdatePrefe
 }
 
 var (
-	updatePreferencesRequestFieldAccountID                       = big.NewInt(1 << 0)
-	updatePreferencesRequestFieldAdsCertifications               = big.NewInt(1 << 1)
-	updatePreferencesRequestFieldAdsPaymentMethods               = big.NewInt(1 << 2)
-	updatePreferencesRequestFieldAdsReportingCurrency            = big.NewInt(1 << 3)
-	updatePreferencesRequestFieldAdsSchedulingTimezone           = big.NewInt(1 << 4)
-	updatePreferencesRequestFieldAdsTripleWhaleIntegration       = big.NewInt(1 << 5)
-	updatePreferencesRequestFieldCardsAutoTopUp                  = big.NewInt(1 << 6)
-	updatePreferencesRequestFieldCardsNotifications              = big.NewInt(1 << 7)
-	updatePreferencesRequestFieldDisputeFighterEnabled           = big.NewInt(1 << 8)
-	updatePreferencesRequestFieldEconomicIntelligenceAutoRenew   = big.NewInt(1 << 9)
-	updatePreferencesRequestFieldEconomicIntelligenceDurationKey = big.NewInt(1 << 10)
-	updatePreferencesRequestFieldFeedbackOptions                 = big.NewInt(1 << 11)
-	updatePreferencesRequestFieldPreferredSettlementCurrency     = big.NewInt(1 << 12)
-	updatePreferencesRequestFieldSubscriptionFailureBehavior     = big.NewInt(1 << 13)
+	updatePreferencesRequestFieldAccountID                              = big.NewInt(1 << 0)
+	updatePreferencesRequestFieldAdsCertifications                      = big.NewInt(1 << 1)
+	updatePreferencesRequestFieldAdsPaymentMethods                      = big.NewInt(1 << 2)
+	updatePreferencesRequestFieldAdsReportingCurrency                   = big.NewInt(1 << 3)
+	updatePreferencesRequestFieldAdsSchedulingTimezone                  = big.NewInt(1 << 4)
+	updatePreferencesRequestFieldAdsTripleWhaleIntegration              = big.NewInt(1 << 5)
+	updatePreferencesRequestFieldCardsAutoTopUp                         = big.NewInt(1 << 6)
+	updatePreferencesRequestFieldCardsNotifications                     = big.NewInt(1 << 7)
+	updatePreferencesRequestFieldCoversConnectedAccountNegativeBalances = big.NewInt(1 << 8)
+	updatePreferencesRequestFieldDisputeFighterEnabled                  = big.NewInt(1 << 9)
+	updatePreferencesRequestFieldEconomicIntelligenceAutoRenew          = big.NewInt(1 << 10)
+	updatePreferencesRequestFieldEconomicIntelligenceDurationKey        = big.NewInt(1 << 11)
+	updatePreferencesRequestFieldFeedbackOptions                        = big.NewInt(1 << 12)
+	updatePreferencesRequestFieldPreferredSettlementCurrency            = big.NewInt(1 << 13)
+	updatePreferencesRequestFieldSubscriptionFailureBehavior            = big.NewInt(1 << 14)
 )
 
 type UpdatePreferencesRequest struct {
@@ -5369,6 +5406,8 @@ type UpdatePreferencesRequest struct {
 	CardsAutoTopUp *bool `json:"cards_auto_top_up,omitempty" url:"-"`
 	// Whether Whop Card notifications reach this account's team. Set it to `false` to stop every card email and push notification for the account — application status, verification and action-required alerts, card-ready alerts, declines, large charges, and cashback summaries. Cardholder onboarding invitations still send, because they carry the only link an invited cardholder can onboard with. Requesting a card is rejected while notifications are off, since the request reaches nobody. Cards on personal accounts are unaffected. Requires a cards balance on the account and the `payout:account:update` scope on your API key.
 	CardsNotifications *bool `json:"cards_notifications,omitempty" url:"-"`
+	// Whether this account covers its connected accounts' negative balances. When a connected account's balance drops below zero (from refunds, disputes, or fees), this account's available balance in the same currency pays it back, up to what is available. Only accounts with connected accounts can set it. Requires the `payout:account:update` scope on your API key.
+	CoversConnectedAccountNegativeBalances *bool `json:"covers_connected_account_negative_balances,omitempty" url:"-"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins. Requires the `payment:dispute` scope on your API key.
 	DisputeFighterEnabled *bool `json:"dispute_fighter_enabled,omitempty" url:"-"`
 	// `false` stops renewing: Economic Intelligence stays on until the end of the current week, and stopping before the first renewal charges the rest of that week at the `7_days` offer's fee. `true` keeps it renewing again before then, or turns it on like the `weekly` offer. Can't be combined with `economic_intelligence_duration_key`. Requires the `company:update` scope on your API key.
@@ -5449,6 +5488,13 @@ func (u *UpdatePreferencesRequest) SetCardsAutoTopUp(cardsAutoTopUp *bool) {
 func (u *UpdatePreferencesRequest) SetCardsNotifications(cardsNotifications *bool) {
 	u.CardsNotifications = cardsNotifications
 	u.require(updatePreferencesRequestFieldCardsNotifications)
+}
+
+// SetCoversConnectedAccountNegativeBalances sets the CoversConnectedAccountNegativeBalances field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequest) SetCoversConnectedAccountNegativeBalances(coversConnectedAccountNegativeBalances *bool) {
+	u.CoversConnectedAccountNegativeBalances = coversConnectedAccountNegativeBalances
+	u.require(updatePreferencesRequestFieldCoversConnectedAccountNegativeBalances)
 }
 
 // SetDisputeFighterEnabled sets the DisputeFighterEnabled field and marks it as non-optional;
