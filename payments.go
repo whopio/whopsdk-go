@@ -886,8 +886,14 @@ var (
 	summaryPaymentsRequestFieldTrackingStates           = big.NewInt(1 << 9)
 	summaryPaymentsRequestFieldCreatedAfter             = big.NewInt(1 << 10)
 	summaryPaymentsRequestFieldCreatedBefore            = big.NewInt(1 << 11)
-	summaryPaymentsRequestFieldQuery                    = big.NewInt(1 << 12)
-	summaryPaymentsRequestFieldIncludeConnectedAccounts = big.NewInt(1 << 13)
+	summaryPaymentsRequestFieldRefundedAfter            = big.NewInt(1 << 12)
+	summaryPaymentsRequestFieldRefundedBefore           = big.NewInt(1 << 13)
+	summaryPaymentsRequestFieldDisputeAlertedAfter      = big.NewInt(1 << 14)
+	summaryPaymentsRequestFieldDisputeAlertedBefore     = big.NewInt(1 << 15)
+	summaryPaymentsRequestFieldDisputeCreatedAfter      = big.NewInt(1 << 16)
+	summaryPaymentsRequestFieldDisputeCreatedBefore     = big.NewInt(1 << 17)
+	summaryPaymentsRequestFieldQuery                    = big.NewInt(1 << 18)
+	summaryPaymentsRequestFieldIncludeConnectedAccounts = big.NewInt(1 << 19)
 )
 
 type SummaryPaymentsRequest struct {
@@ -915,6 +921,18 @@ type SummaryPaymentsRequest struct {
 	CreatedAfter *time.Time `json:"-" url:"created_after,omitempty"`
 	// Only payments created before this ISO 8601 timestamp.
 	CreatedBefore *time.Time `json:"-" url:"created_before,omitempty"`
+	// Only payments refunded after this ISO 8601 timestamp.
+	RefundedAfter *time.Time `json:"-" url:"refunded_after,omitempty"`
+	// Only payments refunded before this ISO 8601 timestamp.
+	RefundedBefore *time.Time `json:"-" url:"refunded_before,omitempty"`
+	// Only payments with a dispute alert after this ISO 8601 timestamp.
+	DisputeAlertedAfter *time.Time `json:"-" url:"dispute_alerted_after,omitempty"`
+	// Only payments with a dispute alert before this ISO 8601 timestamp.
+	DisputeAlertedBefore *time.Time `json:"-" url:"dispute_alerted_before,omitempty"`
+	// Only payments with a dispute opened after this ISO 8601 timestamp.
+	DisputeCreatedAfter *time.Time `json:"-" url:"dispute_created_after,omitempty"`
+	// Only payments with a dispute opened before this ISO 8601 timestamp.
+	DisputeCreatedBefore *time.Time `json:"-" url:"dispute_created_before,omitempty"`
 	// Search payments by user ID, membership ID, user email, name, or username.
 	Query *string `json:"-" url:"query,omitempty"`
 	// Only for searches: with `query`, also search the account's connected accounts. Requires `account_id` and `query`, and is a 400 without either; it never lists connected accounts' payments on its own. Matches on payment, user or membership ID, buyer email, or a card's first 6 or 8 digits and last 4 separated by a space or dash (`424242 4242`). Free-text queries such as a name search only the named account. Connected accounts' payments are returned only for connected accounts you can read payments on.
@@ -1015,6 +1033,48 @@ func (s *SummaryPaymentsRequest) SetCreatedAfter(createdAfter *time.Time) {
 func (s *SummaryPaymentsRequest) SetCreatedBefore(createdBefore *time.Time) {
 	s.CreatedBefore = createdBefore
 	s.require(summaryPaymentsRequestFieldCreatedBefore)
+}
+
+// SetRefundedAfter sets the RefundedAfter field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetRefundedAfter(refundedAfter *time.Time) {
+	s.RefundedAfter = refundedAfter
+	s.require(summaryPaymentsRequestFieldRefundedAfter)
+}
+
+// SetRefundedBefore sets the RefundedBefore field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetRefundedBefore(refundedBefore *time.Time) {
+	s.RefundedBefore = refundedBefore
+	s.require(summaryPaymentsRequestFieldRefundedBefore)
+}
+
+// SetDisputeAlertedAfter sets the DisputeAlertedAfter field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetDisputeAlertedAfter(disputeAlertedAfter *time.Time) {
+	s.DisputeAlertedAfter = disputeAlertedAfter
+	s.require(summaryPaymentsRequestFieldDisputeAlertedAfter)
+}
+
+// SetDisputeAlertedBefore sets the DisputeAlertedBefore field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetDisputeAlertedBefore(disputeAlertedBefore *time.Time) {
+	s.DisputeAlertedBefore = disputeAlertedBefore
+	s.require(summaryPaymentsRequestFieldDisputeAlertedBefore)
+}
+
+// SetDisputeCreatedAfter sets the DisputeCreatedAfter field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetDisputeCreatedAfter(disputeCreatedAfter *time.Time) {
+	s.DisputeCreatedAfter = disputeCreatedAfter
+	s.require(summaryPaymentsRequestFieldDisputeCreatedAfter)
+}
+
+// SetDisputeCreatedBefore sets the DisputeCreatedBefore field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetDisputeCreatedBefore(disputeCreatedBefore *time.Time) {
+	s.DisputeCreatedBefore = disputeCreatedBefore
+	s.require(summaryPaymentsRequestFieldDisputeCreatedBefore)
 }
 
 // SetQuery sets the Query field and marks it as non-optional;
