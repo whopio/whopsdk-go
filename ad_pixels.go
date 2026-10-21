@@ -17,11 +17,11 @@ var (
 )
 
 type CreateAdPixelsRequest struct {
-	// An access token that can send events to the pixel on the ad platform. Whop never returns it.
+	// An access token that can send events to the pixel on the ad platform: a Meta Conversions API access token or a TikTok Events API access token. Whop never returns it.
 	AccessToken string `json:"access_token" url:"-"`
 	// The business whose claimed campaigns send conversions to this pixel, prefixed `biz_`. You must have claimed at least one of its campaigns.
 	AccountID string `json:"account_id" url:"-"`
-	// The pixel's ID on the ad platform.
+	// The pixel's ID on the ad platform: the Meta pixel or dataset ID, or the TikTok pixel code.
 	ExternalID string `json:"external_id" url:"-"`
 	// The ad platform the pixel belongs to.
 	Platform CreateAdPixelsRequestPlatform `json:"platform" url:"-"`
@@ -127,7 +127,7 @@ var (
 )
 
 type ListAdPixelsRequest struct {
-	// Only return the pixel for this business, prefixed `biz_`.
+	// Only return the pixels for this business, prefixed `biz_`.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
@@ -255,7 +255,7 @@ type AdPixel struct {
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Why the ad platform rejected the last delivery. Null unless `status` is `errored`.
 	ErrorMessage *string `json:"error_message,omitempty" url:"error_message,omitempty"`
-	// The pixel's ID on the ad platform.
+	// The pixel's ID on the ad platform: the Meta pixel or dataset ID, or the TikTok pixel code.
 	ExternalID string `json:"external_id" url:"external_id"`
 	// Ad pixel ID, prefixed `adpx_`.
 	ID string `json:"id" url:"id"`
@@ -470,13 +470,16 @@ func (a *AdPixel) String() string {
 type AdPixelPlatform string
 
 const (
-	AdPixelPlatformMeta AdPixelPlatform = "meta"
+	AdPixelPlatformMeta   AdPixelPlatform = "meta"
+	AdPixelPlatformTiktok AdPixelPlatform = "tiktok"
 )
 
 func NewAdPixelPlatformFromString(s string) (AdPixelPlatform, error) {
 	switch s {
 	case "meta":
 		return AdPixelPlatformMeta, nil
+	case "tiktok":
+		return AdPixelPlatformTiktok, nil
 	}
 	var t AdPixelPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -516,13 +519,16 @@ func (a AdPixelStatus) Ptr() *AdPixelStatus {
 type CreateAdPixelsRequestPlatform string
 
 const (
-	CreateAdPixelsRequestPlatformMeta CreateAdPixelsRequestPlatform = "meta"
+	CreateAdPixelsRequestPlatformMeta   CreateAdPixelsRequestPlatform = "meta"
+	CreateAdPixelsRequestPlatformTiktok CreateAdPixelsRequestPlatform = "tiktok"
 )
 
 func NewCreateAdPixelsRequestPlatformFromString(s string) (CreateAdPixelsRequestPlatform, error) {
 	switch s {
 	case "meta":
 		return CreateAdPixelsRequestPlatformMeta, nil
+	case "tiktok":
+		return CreateAdPixelsRequestPlatformTiktok, nil
 	}
 	var t CreateAdPixelsRequestPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -932,7 +938,7 @@ var (
 type UpdateAdPixelsRequest struct {
 	// Ad pixel ID, prefixed `adpx_`.
 	ID string `json:"-" url:"-"`
-	// An access token that can send events to the pixel on the ad platform. Whop never returns it.
+	// An access token that can send events to the pixel on the ad platform: a Meta Conversions API access token or a TikTok Events API access token. Whop never returns it.
 	AccessToken string `json:"access_token" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

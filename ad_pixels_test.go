@@ -2066,6 +2066,13 @@ func TestEnumAdPixelPlatform(t *testing.T) {
 		assert.Equal(t, AdPixelPlatform("meta"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_tiktok", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAdPixelPlatformFromString("tiktok")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AdPixelPlatform("tiktok"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewAdPixelPlatformFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -2122,6 +2129,13 @@ func TestEnumCreateAdPixelsRequestPlatform(t *testing.T) {
 		val, err := NewCreateAdPixelsRequestPlatformFromString("meta")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, CreateAdPixelsRequestPlatform("meta"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_tiktok", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAdPixelsRequestPlatformFromString("tiktok")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAdPixelsRequestPlatform("tiktok"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
