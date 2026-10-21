@@ -2,5 +2,5 @@
 
 // An Ad Pixel connects a pixel you own on an ad platform to a business whose campaigns you claimed through the advertiser supplier program. Whop sends that pixel the conversions credited to your claimed campaigns for that business, using the access token you provide.
 //
-// Use the Ad Pixels API to add one pixel per business, list or retrieve your pixels, replace an access token the ad platform rejected, and remove a pixel to stop deliveries.
+// Use the Ad Pixels API to add one pixel per business on each ad platform, list or retrieve your pixels, replace an access token the ad platform rejected, and remove a pixel to stop deliveries.
 package adpixels
