@@ -3490,27 +3490,30 @@ func (c CreateVerificationsResponseOwnersItemStatus) Ptr() *CreateVerificationsR
 
 var (
 	createVerificationsResponseRequestedInformationItemFieldActionURL                         = big.NewInt(1 << 0)
-	createVerificationsResponseRequestedInformationItemFieldDetailsLabel                      = big.NewInt(1 << 1)
-	createVerificationsResponseRequestedInformationItemFieldDetailsRequired                   = big.NewInt(1 << 2)
-	createVerificationsResponseRequestedInformationItemFieldDetailsVisibleFor                 = big.NewInt(1 << 3)
-	createVerificationsResponseRequestedInformationItemFieldErrors                            = big.NewInt(1 << 4)
-	createVerificationsResponseRequestedInformationItemFieldID                                = big.NewInt(1 << 5)
-	createVerificationsResponseRequestedInformationItemFieldLabel                             = big.NewInt(1 << 6)
-	createVerificationsResponseRequestedInformationItemFieldOptional                          = big.NewInt(1 << 7)
-	createVerificationsResponseRequestedInformationItemFieldOptions                           = big.NewInt(1 << 8)
-	createVerificationsResponseRequestedInformationItemFieldRequirement                       = big.NewInt(1 << 9)
-	createVerificationsResponseRequestedInformationItemFieldResponseType                      = big.NewInt(1 << 10)
-	createVerificationsResponseRequestedInformationItemFieldSelectionMode                     = big.NewInt(1 << 11)
-	createVerificationsResponseRequestedInformationItemFieldSupportingDocuments               = big.NewInt(1 << 12)
-	createVerificationsResponseRequestedInformationItemFieldSupportingFilesExplanationAllowed = big.NewInt(1 << 13)
-	createVerificationsResponseRequestedInformationItemFieldSupportingFilesRequired           = big.NewInt(1 << 14)
-	createVerificationsResponseRequestedInformationItemFieldSupportingFilesVisibleFor         = big.NewInt(1 << 15)
-	createVerificationsResponseRequestedInformationItemFieldType                              = big.NewInt(1 << 16)
+	createVerificationsResponseRequestedInformationItemFieldAlternativeDocumentLabel          = big.NewInt(1 << 1)
+	createVerificationsResponseRequestedInformationItemFieldDetailsLabel                      = big.NewInt(1 << 2)
+	createVerificationsResponseRequestedInformationItemFieldDetailsRequired                   = big.NewInt(1 << 3)
+	createVerificationsResponseRequestedInformationItemFieldDetailsVisibleFor                 = big.NewInt(1 << 4)
+	createVerificationsResponseRequestedInformationItemFieldErrors                            = big.NewInt(1 << 5)
+	createVerificationsResponseRequestedInformationItemFieldID                                = big.NewInt(1 << 6)
+	createVerificationsResponseRequestedInformationItemFieldLabel                             = big.NewInt(1 << 7)
+	createVerificationsResponseRequestedInformationItemFieldOptional                          = big.NewInt(1 << 8)
+	createVerificationsResponseRequestedInformationItemFieldOptions                           = big.NewInt(1 << 9)
+	createVerificationsResponseRequestedInformationItemFieldRequirement                       = big.NewInt(1 << 10)
+	createVerificationsResponseRequestedInformationItemFieldResponseType                      = big.NewInt(1 << 11)
+	createVerificationsResponseRequestedInformationItemFieldSelectionMode                     = big.NewInt(1 << 12)
+	createVerificationsResponseRequestedInformationItemFieldSupportingDocuments               = big.NewInt(1 << 13)
+	createVerificationsResponseRequestedInformationItemFieldSupportingFilesExplanationAllowed = big.NewInt(1 << 14)
+	createVerificationsResponseRequestedInformationItemFieldSupportingFilesRequired           = big.NewInt(1 << 15)
+	createVerificationsResponseRequestedInformationItemFieldSupportingFilesVisibleFor         = big.NewInt(1 << 16)
+	createVerificationsResponseRequestedInformationItemFieldType                              = big.NewInt(1 << 17)
 )
 
 type CreateVerificationsResponseRequestedInformationItem struct {
 	// URL for a related action, such as completing liveness verification or viewing a payment. Absent when no action is available.
 	ActionURL *string `json:"action_url,omitempty" url:"action_url,omitempty"`
+	// A document that answers this item in place of `value`, such as an IRS EIN letter when the EIN could not be matched. Send its pages in `files`, with or without a corrected `value`. Absent when only `value` is accepted.
+	AlternativeDocumentLabel *string `json:"alternative_document_label,omitempty" url:"alternative_document_label,omitempty"`
 	// Follow-up prompt shown with this requirement.
 	DetailsLabel *string `json:"details_label,omitempty" url:"details_label,omitempty"`
 	// Whether the follow-up response is required when visible.
@@ -3556,6 +3559,13 @@ func (c *CreateVerificationsResponseRequestedInformationItem) GetActionURL() *st
 		return nil
 	}
 	return c.ActionURL
+}
+
+func (c *CreateVerificationsResponseRequestedInformationItem) GetAlternativeDocumentLabel() *string {
+	if c == nil {
+		return nil
+	}
+	return c.AlternativeDocumentLabel
 }
 
 func (c *CreateVerificationsResponseRequestedInformationItem) GetDetailsLabel() *string {
@@ -3691,6 +3701,13 @@ func (c *CreateVerificationsResponseRequestedInformationItem) require(field *big
 func (c *CreateVerificationsResponseRequestedInformationItem) SetActionURL(actionURL *string) {
 	c.ActionURL = actionURL
 	c.require(createVerificationsResponseRequestedInformationItemFieldActionURL)
+}
+
+// SetAlternativeDocumentLabel sets the AlternativeDocumentLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponseRequestedInformationItem) SetAlternativeDocumentLabel(alternativeDocumentLabel *string) {
+	c.AlternativeDocumentLabel = alternativeDocumentLabel
+	c.require(createVerificationsResponseRequestedInformationItemFieldAlternativeDocumentLabel)
 }
 
 // SetDetailsLabel sets the DetailsLabel field and marks it as non-optional;
@@ -5380,27 +5397,30 @@ func (l ListVerificationsResponseDataItemOwnersItemStatus) Ptr() *ListVerificati
 
 var (
 	listVerificationsResponseDataItemRequestedInformationItemFieldActionURL                         = big.NewInt(1 << 0)
-	listVerificationsResponseDataItemRequestedInformationItemFieldDetailsLabel                      = big.NewInt(1 << 1)
-	listVerificationsResponseDataItemRequestedInformationItemFieldDetailsRequired                   = big.NewInt(1 << 2)
-	listVerificationsResponseDataItemRequestedInformationItemFieldDetailsVisibleFor                 = big.NewInt(1 << 3)
-	listVerificationsResponseDataItemRequestedInformationItemFieldErrors                            = big.NewInt(1 << 4)
-	listVerificationsResponseDataItemRequestedInformationItemFieldID                                = big.NewInt(1 << 5)
-	listVerificationsResponseDataItemRequestedInformationItemFieldLabel                             = big.NewInt(1 << 6)
-	listVerificationsResponseDataItemRequestedInformationItemFieldOptional                          = big.NewInt(1 << 7)
-	listVerificationsResponseDataItemRequestedInformationItemFieldOptions                           = big.NewInt(1 << 8)
-	listVerificationsResponseDataItemRequestedInformationItemFieldRequirement                       = big.NewInt(1 << 9)
-	listVerificationsResponseDataItemRequestedInformationItemFieldResponseType                      = big.NewInt(1 << 10)
-	listVerificationsResponseDataItemRequestedInformationItemFieldSelectionMode                     = big.NewInt(1 << 11)
-	listVerificationsResponseDataItemRequestedInformationItemFieldSupportingDocuments               = big.NewInt(1 << 12)
-	listVerificationsResponseDataItemRequestedInformationItemFieldSupportingFilesExplanationAllowed = big.NewInt(1 << 13)
-	listVerificationsResponseDataItemRequestedInformationItemFieldSupportingFilesRequired           = big.NewInt(1 << 14)
-	listVerificationsResponseDataItemRequestedInformationItemFieldSupportingFilesVisibleFor         = big.NewInt(1 << 15)
-	listVerificationsResponseDataItemRequestedInformationItemFieldType                              = big.NewInt(1 << 16)
+	listVerificationsResponseDataItemRequestedInformationItemFieldAlternativeDocumentLabel          = big.NewInt(1 << 1)
+	listVerificationsResponseDataItemRequestedInformationItemFieldDetailsLabel                      = big.NewInt(1 << 2)
+	listVerificationsResponseDataItemRequestedInformationItemFieldDetailsRequired                   = big.NewInt(1 << 3)
+	listVerificationsResponseDataItemRequestedInformationItemFieldDetailsVisibleFor                 = big.NewInt(1 << 4)
+	listVerificationsResponseDataItemRequestedInformationItemFieldErrors                            = big.NewInt(1 << 5)
+	listVerificationsResponseDataItemRequestedInformationItemFieldID                                = big.NewInt(1 << 6)
+	listVerificationsResponseDataItemRequestedInformationItemFieldLabel                             = big.NewInt(1 << 7)
+	listVerificationsResponseDataItemRequestedInformationItemFieldOptional                          = big.NewInt(1 << 8)
+	listVerificationsResponseDataItemRequestedInformationItemFieldOptions                           = big.NewInt(1 << 9)
+	listVerificationsResponseDataItemRequestedInformationItemFieldRequirement                       = big.NewInt(1 << 10)
+	listVerificationsResponseDataItemRequestedInformationItemFieldResponseType                      = big.NewInt(1 << 11)
+	listVerificationsResponseDataItemRequestedInformationItemFieldSelectionMode                     = big.NewInt(1 << 12)
+	listVerificationsResponseDataItemRequestedInformationItemFieldSupportingDocuments               = big.NewInt(1 << 13)
+	listVerificationsResponseDataItemRequestedInformationItemFieldSupportingFilesExplanationAllowed = big.NewInt(1 << 14)
+	listVerificationsResponseDataItemRequestedInformationItemFieldSupportingFilesRequired           = big.NewInt(1 << 15)
+	listVerificationsResponseDataItemRequestedInformationItemFieldSupportingFilesVisibleFor         = big.NewInt(1 << 16)
+	listVerificationsResponseDataItemRequestedInformationItemFieldType                              = big.NewInt(1 << 17)
 )
 
 type ListVerificationsResponseDataItemRequestedInformationItem struct {
 	// URL for a related action, such as completing liveness verification or viewing a payment. Absent when no action is available.
 	ActionURL *string `json:"action_url,omitempty" url:"action_url,omitempty"`
+	// A document that answers this item in place of `value`, such as an IRS EIN letter when the EIN could not be matched. Send its pages in `files`, with or without a corrected `value`. Absent when only `value` is accepted.
+	AlternativeDocumentLabel *string `json:"alternative_document_label,omitempty" url:"alternative_document_label,omitempty"`
 	// Follow-up prompt shown with this requirement.
 	DetailsLabel *string `json:"details_label,omitempty" url:"details_label,omitempty"`
 	// Whether the follow-up response is required when visible.
@@ -5446,6 +5466,13 @@ func (l *ListVerificationsResponseDataItemRequestedInformationItem) GetActionURL
 		return nil
 	}
 	return l.ActionURL
+}
+
+func (l *ListVerificationsResponseDataItemRequestedInformationItem) GetAlternativeDocumentLabel() *string {
+	if l == nil {
+		return nil
+	}
+	return l.AlternativeDocumentLabel
 }
 
 func (l *ListVerificationsResponseDataItemRequestedInformationItem) GetDetailsLabel() *string {
@@ -5581,6 +5608,13 @@ func (l *ListVerificationsResponseDataItemRequestedInformationItem) require(fiel
 func (l *ListVerificationsResponseDataItemRequestedInformationItem) SetActionURL(actionURL *string) {
 	l.ActionURL = actionURL
 	l.require(listVerificationsResponseDataItemRequestedInformationItemFieldActionURL)
+}
+
+// SetAlternativeDocumentLabel sets the AlternativeDocumentLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItemRequestedInformationItem) SetAlternativeDocumentLabel(alternativeDocumentLabel *string) {
+	l.AlternativeDocumentLabel = alternativeDocumentLabel
+	l.require(listVerificationsResponseDataItemRequestedInformationItemFieldAlternativeDocumentLabel)
 }
 
 // SetDetailsLabel sets the DetailsLabel field and marks it as non-optional;
@@ -7759,27 +7793,30 @@ func (r RetrieveVerificationsResponseOwnersItemStatus) Ptr() *RetrieveVerificati
 
 var (
 	retrieveVerificationsResponseRequestedInformationItemFieldActionURL                         = big.NewInt(1 << 0)
-	retrieveVerificationsResponseRequestedInformationItemFieldDetailsLabel                      = big.NewInt(1 << 1)
-	retrieveVerificationsResponseRequestedInformationItemFieldDetailsRequired                   = big.NewInt(1 << 2)
-	retrieveVerificationsResponseRequestedInformationItemFieldDetailsVisibleFor                 = big.NewInt(1 << 3)
-	retrieveVerificationsResponseRequestedInformationItemFieldErrors                            = big.NewInt(1 << 4)
-	retrieveVerificationsResponseRequestedInformationItemFieldID                                = big.NewInt(1 << 5)
-	retrieveVerificationsResponseRequestedInformationItemFieldLabel                             = big.NewInt(1 << 6)
-	retrieveVerificationsResponseRequestedInformationItemFieldOptional                          = big.NewInt(1 << 7)
-	retrieveVerificationsResponseRequestedInformationItemFieldOptions                           = big.NewInt(1 << 8)
-	retrieveVerificationsResponseRequestedInformationItemFieldRequirement                       = big.NewInt(1 << 9)
-	retrieveVerificationsResponseRequestedInformationItemFieldResponseType                      = big.NewInt(1 << 10)
-	retrieveVerificationsResponseRequestedInformationItemFieldSelectionMode                     = big.NewInt(1 << 11)
-	retrieveVerificationsResponseRequestedInformationItemFieldSupportingDocuments               = big.NewInt(1 << 12)
-	retrieveVerificationsResponseRequestedInformationItemFieldSupportingFilesExplanationAllowed = big.NewInt(1 << 13)
-	retrieveVerificationsResponseRequestedInformationItemFieldSupportingFilesRequired           = big.NewInt(1 << 14)
-	retrieveVerificationsResponseRequestedInformationItemFieldSupportingFilesVisibleFor         = big.NewInt(1 << 15)
-	retrieveVerificationsResponseRequestedInformationItemFieldType                              = big.NewInt(1 << 16)
+	retrieveVerificationsResponseRequestedInformationItemFieldAlternativeDocumentLabel          = big.NewInt(1 << 1)
+	retrieveVerificationsResponseRequestedInformationItemFieldDetailsLabel                      = big.NewInt(1 << 2)
+	retrieveVerificationsResponseRequestedInformationItemFieldDetailsRequired                   = big.NewInt(1 << 3)
+	retrieveVerificationsResponseRequestedInformationItemFieldDetailsVisibleFor                 = big.NewInt(1 << 4)
+	retrieveVerificationsResponseRequestedInformationItemFieldErrors                            = big.NewInt(1 << 5)
+	retrieveVerificationsResponseRequestedInformationItemFieldID                                = big.NewInt(1 << 6)
+	retrieveVerificationsResponseRequestedInformationItemFieldLabel                             = big.NewInt(1 << 7)
+	retrieveVerificationsResponseRequestedInformationItemFieldOptional                          = big.NewInt(1 << 8)
+	retrieveVerificationsResponseRequestedInformationItemFieldOptions                           = big.NewInt(1 << 9)
+	retrieveVerificationsResponseRequestedInformationItemFieldRequirement                       = big.NewInt(1 << 10)
+	retrieveVerificationsResponseRequestedInformationItemFieldResponseType                      = big.NewInt(1 << 11)
+	retrieveVerificationsResponseRequestedInformationItemFieldSelectionMode                     = big.NewInt(1 << 12)
+	retrieveVerificationsResponseRequestedInformationItemFieldSupportingDocuments               = big.NewInt(1 << 13)
+	retrieveVerificationsResponseRequestedInformationItemFieldSupportingFilesExplanationAllowed = big.NewInt(1 << 14)
+	retrieveVerificationsResponseRequestedInformationItemFieldSupportingFilesRequired           = big.NewInt(1 << 15)
+	retrieveVerificationsResponseRequestedInformationItemFieldSupportingFilesVisibleFor         = big.NewInt(1 << 16)
+	retrieveVerificationsResponseRequestedInformationItemFieldType                              = big.NewInt(1 << 17)
 )
 
 type RetrieveVerificationsResponseRequestedInformationItem struct {
 	// URL for a related action, such as completing liveness verification or viewing a payment. Absent when no action is available.
 	ActionURL *string `json:"action_url,omitempty" url:"action_url,omitempty"`
+	// A document that answers this item in place of `value`, such as an IRS EIN letter when the EIN could not be matched. Send its pages in `files`, with or without a corrected `value`. Absent when only `value` is accepted.
+	AlternativeDocumentLabel *string `json:"alternative_document_label,omitempty" url:"alternative_document_label,omitempty"`
 	// Follow-up prompt shown with this requirement.
 	DetailsLabel *string `json:"details_label,omitempty" url:"details_label,omitempty"`
 	// Whether the follow-up response is required when visible.
@@ -7825,6 +7862,13 @@ func (r *RetrieveVerificationsResponseRequestedInformationItem) GetActionURL() *
 		return nil
 	}
 	return r.ActionURL
+}
+
+func (r *RetrieveVerificationsResponseRequestedInformationItem) GetAlternativeDocumentLabel() *string {
+	if r == nil {
+		return nil
+	}
+	return r.AlternativeDocumentLabel
 }
 
 func (r *RetrieveVerificationsResponseRequestedInformationItem) GetDetailsLabel() *string {
@@ -7960,6 +8004,13 @@ func (r *RetrieveVerificationsResponseRequestedInformationItem) require(field *b
 func (r *RetrieveVerificationsResponseRequestedInformationItem) SetActionURL(actionURL *string) {
 	r.ActionURL = actionURL
 	r.require(retrieveVerificationsResponseRequestedInformationItemFieldActionURL)
+}
+
+// SetAlternativeDocumentLabel sets the AlternativeDocumentLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponseRequestedInformationItem) SetAlternativeDocumentLabel(alternativeDocumentLabel *string) {
+	r.AlternativeDocumentLabel = alternativeDocumentLabel
+	r.require(retrieveVerificationsResponseRequestedInformationItemFieldAlternativeDocumentLabel)
 }
 
 // SetDetailsLabel sets the DetailsLabel field and marks it as non-optional;
@@ -9986,7 +10037,7 @@ type UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem struc
 	DocumentNumber *string `json:"document_number,omitempty" url:"document_number,omitempty"`
 	// Answer for an `id_document` item: the same slot keys Create Verification takes, so the key names both the document and the side. Send every slot for the ID you are uploading — `PASSPORT` is `passport_front`; `ID_CARD`, `DRIVERS` and `RESIDENCE_PERMIT` take a front and a back. Each value is a direct upload ID, or a `file_`-prefixed attachment ID to reuse an uploaded document.
 	Documents *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemDocuments `json:"documents,omitempty" url:"documents,omitempty"`
-	// Answer for a `files` item, or optional supporting documents for `text_with_files` — a list of pages, first page first. Each entry is a direct upload ID, or a `file_`-prefixed attachment ID to reuse an uploaded document.
+	// Answer for a `files` item, optional supporting documents for `text_with_files`, or the document an item's `alternative_document_label` names — a list of pages, first page first. Each entry is a direct upload ID, or a `file_`-prefixed attachment ID to reuse an uploaded document.
 	Files []string `json:"files,omitempty" url:"files,omitempty"`
 	// Item ID from `requested_information`.
 	ID string `json:"id" url:"id"`
@@ -11039,7 +11090,7 @@ type UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItem struc
 	DocumentNumber *string `json:"document_number,omitempty" url:"document_number,omitempty"`
 	// Answer for an `id_document` item: the same slot keys Create Verification takes, so the key names both the document and the side. Send every slot for the ID you are uploading — `PASSPORT` is `passport_front`; `ID_CARD`, `DRIVERS` and `RESIDENCE_PERMIT` take a front and a back. Each value is a direct upload ID, or a `file_`-prefixed attachment ID to reuse an uploaded document.
 	Documents *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItemDocuments `json:"documents,omitempty" url:"documents,omitempty"`
-	// Answer for a `files` item, or optional supporting documents for `text_with_files` — a list of pages, first page first. Each entry is a direct upload ID, or a `file_`-prefixed attachment ID to reuse an uploaded document.
+	// Answer for a `files` item, optional supporting documents for `text_with_files`, or the document an item's `alternative_document_label` names — a list of pages, first page first. Each entry is a direct upload ID, or a `file_`-prefixed attachment ID to reuse an uploaded document.
 	Files []string `json:"files,omitempty" url:"files,omitempty"`
 	// Item ID from `requested_information`.
 	ID string `json:"id" url:"id"`
@@ -12692,27 +12743,30 @@ func (u UpdateVerificationsResponseOwnersItemStatus) Ptr() *UpdateVerificationsR
 
 var (
 	updateVerificationsResponseRequestedInformationItemFieldActionURL                         = big.NewInt(1 << 0)
-	updateVerificationsResponseRequestedInformationItemFieldDetailsLabel                      = big.NewInt(1 << 1)
-	updateVerificationsResponseRequestedInformationItemFieldDetailsRequired                   = big.NewInt(1 << 2)
-	updateVerificationsResponseRequestedInformationItemFieldDetailsVisibleFor                 = big.NewInt(1 << 3)
-	updateVerificationsResponseRequestedInformationItemFieldErrors                            = big.NewInt(1 << 4)
-	updateVerificationsResponseRequestedInformationItemFieldID                                = big.NewInt(1 << 5)
-	updateVerificationsResponseRequestedInformationItemFieldLabel                             = big.NewInt(1 << 6)
-	updateVerificationsResponseRequestedInformationItemFieldOptional                          = big.NewInt(1 << 7)
-	updateVerificationsResponseRequestedInformationItemFieldOptions                           = big.NewInt(1 << 8)
-	updateVerificationsResponseRequestedInformationItemFieldRequirement                       = big.NewInt(1 << 9)
-	updateVerificationsResponseRequestedInformationItemFieldResponseType                      = big.NewInt(1 << 10)
-	updateVerificationsResponseRequestedInformationItemFieldSelectionMode                     = big.NewInt(1 << 11)
-	updateVerificationsResponseRequestedInformationItemFieldSupportingDocuments               = big.NewInt(1 << 12)
-	updateVerificationsResponseRequestedInformationItemFieldSupportingFilesExplanationAllowed = big.NewInt(1 << 13)
-	updateVerificationsResponseRequestedInformationItemFieldSupportingFilesRequired           = big.NewInt(1 << 14)
-	updateVerificationsResponseRequestedInformationItemFieldSupportingFilesVisibleFor         = big.NewInt(1 << 15)
-	updateVerificationsResponseRequestedInformationItemFieldType                              = big.NewInt(1 << 16)
+	updateVerificationsResponseRequestedInformationItemFieldAlternativeDocumentLabel          = big.NewInt(1 << 1)
+	updateVerificationsResponseRequestedInformationItemFieldDetailsLabel                      = big.NewInt(1 << 2)
+	updateVerificationsResponseRequestedInformationItemFieldDetailsRequired                   = big.NewInt(1 << 3)
+	updateVerificationsResponseRequestedInformationItemFieldDetailsVisibleFor                 = big.NewInt(1 << 4)
+	updateVerificationsResponseRequestedInformationItemFieldErrors                            = big.NewInt(1 << 5)
+	updateVerificationsResponseRequestedInformationItemFieldID                                = big.NewInt(1 << 6)
+	updateVerificationsResponseRequestedInformationItemFieldLabel                             = big.NewInt(1 << 7)
+	updateVerificationsResponseRequestedInformationItemFieldOptional                          = big.NewInt(1 << 8)
+	updateVerificationsResponseRequestedInformationItemFieldOptions                           = big.NewInt(1 << 9)
+	updateVerificationsResponseRequestedInformationItemFieldRequirement                       = big.NewInt(1 << 10)
+	updateVerificationsResponseRequestedInformationItemFieldResponseType                      = big.NewInt(1 << 11)
+	updateVerificationsResponseRequestedInformationItemFieldSelectionMode                     = big.NewInt(1 << 12)
+	updateVerificationsResponseRequestedInformationItemFieldSupportingDocuments               = big.NewInt(1 << 13)
+	updateVerificationsResponseRequestedInformationItemFieldSupportingFilesExplanationAllowed = big.NewInt(1 << 14)
+	updateVerificationsResponseRequestedInformationItemFieldSupportingFilesRequired           = big.NewInt(1 << 15)
+	updateVerificationsResponseRequestedInformationItemFieldSupportingFilesVisibleFor         = big.NewInt(1 << 16)
+	updateVerificationsResponseRequestedInformationItemFieldType                              = big.NewInt(1 << 17)
 )
 
 type UpdateVerificationsResponseRequestedInformationItem struct {
 	// URL for a related action, such as completing liveness verification or viewing a payment. Absent when no action is available.
 	ActionURL *string `json:"action_url,omitempty" url:"action_url,omitempty"`
+	// A document that answers this item in place of `value`, such as an IRS EIN letter when the EIN could not be matched. Send its pages in `files`, with or without a corrected `value`. Absent when only `value` is accepted.
+	AlternativeDocumentLabel *string `json:"alternative_document_label,omitempty" url:"alternative_document_label,omitempty"`
 	// Follow-up prompt shown with this requirement.
 	DetailsLabel *string `json:"details_label,omitempty" url:"details_label,omitempty"`
 	// Whether the follow-up response is required when visible.
@@ -12758,6 +12812,13 @@ func (u *UpdateVerificationsResponseRequestedInformationItem) GetActionURL() *st
 		return nil
 	}
 	return u.ActionURL
+}
+
+func (u *UpdateVerificationsResponseRequestedInformationItem) GetAlternativeDocumentLabel() *string {
+	if u == nil {
+		return nil
+	}
+	return u.AlternativeDocumentLabel
 }
 
 func (u *UpdateVerificationsResponseRequestedInformationItem) GetDetailsLabel() *string {
@@ -12893,6 +12954,13 @@ func (u *UpdateVerificationsResponseRequestedInformationItem) require(field *big
 func (u *UpdateVerificationsResponseRequestedInformationItem) SetActionURL(actionURL *string) {
 	u.ActionURL = actionURL
 	u.require(updateVerificationsResponseRequestedInformationItemFieldActionURL)
+}
+
+// SetAlternativeDocumentLabel sets the AlternativeDocumentLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponseRequestedInformationItem) SetAlternativeDocumentLabel(alternativeDocumentLabel *string) {
+	u.AlternativeDocumentLabel = alternativeDocumentLabel
+	u.require(updateVerificationsResponseRequestedInformationItemFieldAlternativeDocumentLabel)
 }
 
 // SetDetailsLabel sets the DetailsLabel field and marks it as non-optional;

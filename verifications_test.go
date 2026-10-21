@@ -8851,6 +8851,14 @@ func TestSettersCreateVerificationsResponseRequestedInformationItem(t *testing.T
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetAlternativeDocumentLabel", func(t *testing.T) {
+		obj := &CreateVerificationsResponseRequestedInformationItem{}
+		var fernTestValueAlternativeDocumentLabel *string
+		obj.SetAlternativeDocumentLabel(fernTestValueAlternativeDocumentLabel)
+		assert.Equal(t, fernTestValueAlternativeDocumentLabel, obj.AlternativeDocumentLabel)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetDetailsLabel", func(t *testing.T) {
 		obj := &CreateVerificationsResponseRequestedInformationItem{}
 		var fernTestValueDetailsLabel *string
@@ -9013,6 +9021,39 @@ func TestGettersCreateVerificationsResponseRequestedInformationItem(t *testing.T
 			}
 		}()
 		_ = obj.GetActionURL() // Should return zero value
+	})
+
+	t.Run("GetAlternativeDocumentLabel", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsResponseRequestedInformationItem{}
+		var expected *string
+		obj.AlternativeDocumentLabel = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAlternativeDocumentLabel(), "getter should return the property value")
+	})
+
+	t.Run("GetAlternativeDocumentLabel_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsResponseRequestedInformationItem{}
+		obj.AlternativeDocumentLabel = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAlternativeDocumentLabel(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAlternativeDocumentLabel_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateVerificationsResponseRequestedInformationItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAlternativeDocumentLabel() // Should return zero value
 	})
 
 	t.Run("GetDetailsLabel", func(t *testing.T) {
@@ -9514,6 +9555,37 @@ func TestSettersMarkExplicitCreateVerificationsResponseRequestedInformationItem(
 
 		// Act
 		obj.SetActionURL(fernTestValueActionURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetAlternativeDocumentLabel_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsResponseRequestedInformationItem{}
+		var fernTestValueAlternativeDocumentLabel *string
+
+		// Act
+		obj.SetAlternativeDocumentLabel(fernTestValueAlternativeDocumentLabel)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -13039,6 +13111,14 @@ func TestSettersListVerificationsResponseDataItemRequestedInformationItem(t *tes
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetAlternativeDocumentLabel", func(t *testing.T) {
+		obj := &ListVerificationsResponseDataItemRequestedInformationItem{}
+		var fernTestValueAlternativeDocumentLabel *string
+		obj.SetAlternativeDocumentLabel(fernTestValueAlternativeDocumentLabel)
+		assert.Equal(t, fernTestValueAlternativeDocumentLabel, obj.AlternativeDocumentLabel)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetDetailsLabel", func(t *testing.T) {
 		obj := &ListVerificationsResponseDataItemRequestedInformationItem{}
 		var fernTestValueDetailsLabel *string
@@ -13201,6 +13281,39 @@ func TestGettersListVerificationsResponseDataItemRequestedInformationItem(t *tes
 			}
 		}()
 		_ = obj.GetActionURL() // Should return zero value
+	})
+
+	t.Run("GetAlternativeDocumentLabel", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListVerificationsResponseDataItemRequestedInformationItem{}
+		var expected *string
+		obj.AlternativeDocumentLabel = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAlternativeDocumentLabel(), "getter should return the property value")
+	})
+
+	t.Run("GetAlternativeDocumentLabel_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListVerificationsResponseDataItemRequestedInformationItem{}
+		obj.AlternativeDocumentLabel = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAlternativeDocumentLabel(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAlternativeDocumentLabel_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListVerificationsResponseDataItemRequestedInformationItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAlternativeDocumentLabel() // Should return zero value
 	})
 
 	t.Run("GetDetailsLabel", func(t *testing.T) {
@@ -13702,6 +13815,37 @@ func TestSettersMarkExplicitListVerificationsResponseDataItemRequestedInformatio
 
 		// Act
 		obj.SetActionURL(fernTestValueActionURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetAlternativeDocumentLabel_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListVerificationsResponseDataItemRequestedInformationItem{}
+		var fernTestValueAlternativeDocumentLabel *string
+
+		// Act
+		obj.SetAlternativeDocumentLabel(fernTestValueAlternativeDocumentLabel)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -18307,6 +18451,14 @@ func TestSettersRetrieveVerificationsResponseRequestedInformationItem(t *testing
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetAlternativeDocumentLabel", func(t *testing.T) {
+		obj := &RetrieveVerificationsResponseRequestedInformationItem{}
+		var fernTestValueAlternativeDocumentLabel *string
+		obj.SetAlternativeDocumentLabel(fernTestValueAlternativeDocumentLabel)
+		assert.Equal(t, fernTestValueAlternativeDocumentLabel, obj.AlternativeDocumentLabel)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetDetailsLabel", func(t *testing.T) {
 		obj := &RetrieveVerificationsResponseRequestedInformationItem{}
 		var fernTestValueDetailsLabel *string
@@ -18469,6 +18621,39 @@ func TestGettersRetrieveVerificationsResponseRequestedInformationItem(t *testing
 			}
 		}()
 		_ = obj.GetActionURL() // Should return zero value
+	})
+
+	t.Run("GetAlternativeDocumentLabel", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveVerificationsResponseRequestedInformationItem{}
+		var expected *string
+		obj.AlternativeDocumentLabel = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAlternativeDocumentLabel(), "getter should return the property value")
+	})
+
+	t.Run("GetAlternativeDocumentLabel_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveVerificationsResponseRequestedInformationItem{}
+		obj.AlternativeDocumentLabel = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAlternativeDocumentLabel(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAlternativeDocumentLabel_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrieveVerificationsResponseRequestedInformationItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAlternativeDocumentLabel() // Should return zero value
 	})
 
 	t.Run("GetDetailsLabel", func(t *testing.T) {
@@ -18970,6 +19155,37 @@ func TestSettersMarkExplicitRetrieveVerificationsResponseRequestedInformationIte
 
 		// Act
 		obj.SetActionURL(fernTestValueActionURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetAlternativeDocumentLabel_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveVerificationsResponseRequestedInformationItem{}
+		var fernTestValueAlternativeDocumentLabel *string
+
+		// Act
+		obj.SetAlternativeDocumentLabel(fernTestValueAlternativeDocumentLabel)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -30653,6 +30869,14 @@ func TestSettersUpdateVerificationsResponseRequestedInformationItem(t *testing.T
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetAlternativeDocumentLabel", func(t *testing.T) {
+		obj := &UpdateVerificationsResponseRequestedInformationItem{}
+		var fernTestValueAlternativeDocumentLabel *string
+		obj.SetAlternativeDocumentLabel(fernTestValueAlternativeDocumentLabel)
+		assert.Equal(t, fernTestValueAlternativeDocumentLabel, obj.AlternativeDocumentLabel)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetDetailsLabel", func(t *testing.T) {
 		obj := &UpdateVerificationsResponseRequestedInformationItem{}
 		var fernTestValueDetailsLabel *string
@@ -30815,6 +31039,39 @@ func TestGettersUpdateVerificationsResponseRequestedInformationItem(t *testing.T
 			}
 		}()
 		_ = obj.GetActionURL() // Should return zero value
+	})
+
+	t.Run("GetAlternativeDocumentLabel", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateVerificationsResponseRequestedInformationItem{}
+		var expected *string
+		obj.AlternativeDocumentLabel = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAlternativeDocumentLabel(), "getter should return the property value")
+	})
+
+	t.Run("GetAlternativeDocumentLabel_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateVerificationsResponseRequestedInformationItem{}
+		obj.AlternativeDocumentLabel = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAlternativeDocumentLabel(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAlternativeDocumentLabel_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateVerificationsResponseRequestedInformationItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAlternativeDocumentLabel() // Should return zero value
 	})
 
 	t.Run("GetDetailsLabel", func(t *testing.T) {
@@ -31316,6 +31573,37 @@ func TestSettersMarkExplicitUpdateVerificationsResponseRequestedInformationItem(
 
 		// Act
 		obj.SetActionURL(fernTestValueActionURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetAlternativeDocumentLabel_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateVerificationsResponseRequestedInformationItem{}
+		var fernTestValueAlternativeDocumentLabel *string
+
+		// Act
+		obj.SetAlternativeDocumentLabel(fernTestValueAlternativeDocumentLabel)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
