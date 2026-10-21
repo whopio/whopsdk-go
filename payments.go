@@ -276,39 +276,40 @@ func (g *GeneratePdfPaymentsRequest) SetID(id string) {
 }
 
 var (
-	listPaymentsRequestFieldMode                 = big.NewInt(1 << 0)
-	listPaymentsRequestFieldAccountID            = big.NewInt(1 << 1)
-	listPaymentsRequestFieldStatus               = big.NewInt(1 << 2)
-	listPaymentsRequestFieldBillingReason        = big.NewInt(1 << 3)
-	listPaymentsRequestFieldCurrency             = big.NewInt(1 << 4)
-	listPaymentsRequestFieldUserID               = big.NewInt(1 << 5)
-	listPaymentsRequestFieldQuery                = big.NewInt(1 << 6)
-	listPaymentsRequestFieldMemberID             = big.NewInt(1 << 7)
-	listPaymentsRequestFieldMembershipID         = big.NewInt(1 << 8)
-	listPaymentsRequestFieldProductID            = big.NewInt(1 << 9)
-	listPaymentsRequestFieldPlanID               = big.NewInt(1 << 10)
-	listPaymentsRequestFieldCreatedBefore        = big.NewInt(1 << 11)
-	listPaymentsRequestFieldCreatedAfter         = big.NewInt(1 << 12)
-	listPaymentsRequestFieldStatuses             = big.NewInt(1 << 13)
-	listPaymentsRequestFieldSubstatuses          = big.NewInt(1 << 14)
-	listPaymentsRequestFieldBillingReasons       = big.NewInt(1 << 15)
-	listPaymentsRequestFieldCurrencies           = big.NewInt(1 << 16)
-	listPaymentsRequestFieldPlanIDs              = big.NewInt(1 << 17)
-	listPaymentsRequestFieldProductIDs           = big.NewInt(1 << 18)
-	listPaymentsRequestFieldPaymentMethods       = big.NewInt(1 << 19)
-	listPaymentsRequestFieldTrackingStates       = big.NewInt(1 << 20)
-	listPaymentsRequestFieldRefundedAfter        = big.NewInt(1 << 21)
-	listPaymentsRequestFieldRefundedBefore       = big.NewInt(1 << 22)
-	listPaymentsRequestFieldDisputeAlertedAfter  = big.NewInt(1 << 23)
-	listPaymentsRequestFieldDisputeAlertedBefore = big.NewInt(1 << 24)
-	listPaymentsRequestFieldDisputeCreatedAfter  = big.NewInt(1 << 25)
-	listPaymentsRequestFieldDisputeCreatedBefore = big.NewInt(1 << 26)
-	listPaymentsRequestFieldOrder                = big.NewInt(1 << 27)
-	listPaymentsRequestFieldDirection            = big.NewInt(1 << 28)
-	listPaymentsRequestFieldFirst                = big.NewInt(1 << 29)
-	listPaymentsRequestFieldAfter                = big.NewInt(1 << 30)
-	listPaymentsRequestFieldLast                 = big.NewInt(1 << 31)
-	listPaymentsRequestFieldBefore               = big.NewInt(1 << 32)
+	listPaymentsRequestFieldMode                     = big.NewInt(1 << 0)
+	listPaymentsRequestFieldAccountID                = big.NewInt(1 << 1)
+	listPaymentsRequestFieldStatus                   = big.NewInt(1 << 2)
+	listPaymentsRequestFieldBillingReason            = big.NewInt(1 << 3)
+	listPaymentsRequestFieldCurrency                 = big.NewInt(1 << 4)
+	listPaymentsRequestFieldUserID                   = big.NewInt(1 << 5)
+	listPaymentsRequestFieldQuery                    = big.NewInt(1 << 6)
+	listPaymentsRequestFieldIncludeConnectedAccounts = big.NewInt(1 << 7)
+	listPaymentsRequestFieldMemberID                 = big.NewInt(1 << 8)
+	listPaymentsRequestFieldMembershipID             = big.NewInt(1 << 9)
+	listPaymentsRequestFieldProductID                = big.NewInt(1 << 10)
+	listPaymentsRequestFieldPlanID                   = big.NewInt(1 << 11)
+	listPaymentsRequestFieldCreatedBefore            = big.NewInt(1 << 12)
+	listPaymentsRequestFieldCreatedAfter             = big.NewInt(1 << 13)
+	listPaymentsRequestFieldStatuses                 = big.NewInt(1 << 14)
+	listPaymentsRequestFieldSubstatuses              = big.NewInt(1 << 15)
+	listPaymentsRequestFieldBillingReasons           = big.NewInt(1 << 16)
+	listPaymentsRequestFieldCurrencies               = big.NewInt(1 << 17)
+	listPaymentsRequestFieldPlanIDs                  = big.NewInt(1 << 18)
+	listPaymentsRequestFieldProductIDs               = big.NewInt(1 << 19)
+	listPaymentsRequestFieldPaymentMethods           = big.NewInt(1 << 20)
+	listPaymentsRequestFieldTrackingStates           = big.NewInt(1 << 21)
+	listPaymentsRequestFieldRefundedAfter            = big.NewInt(1 << 22)
+	listPaymentsRequestFieldRefundedBefore           = big.NewInt(1 << 23)
+	listPaymentsRequestFieldDisputeAlertedAfter      = big.NewInt(1 << 24)
+	listPaymentsRequestFieldDisputeAlertedBefore     = big.NewInt(1 << 25)
+	listPaymentsRequestFieldDisputeCreatedAfter      = big.NewInt(1 << 26)
+	listPaymentsRequestFieldDisputeCreatedBefore     = big.NewInt(1 << 27)
+	listPaymentsRequestFieldOrder                    = big.NewInt(1 << 28)
+	listPaymentsRequestFieldDirection                = big.NewInt(1 << 29)
+	listPaymentsRequestFieldFirst                    = big.NewInt(1 << 30)
+	listPaymentsRequestFieldAfter                    = big.NewInt(1 << 31)
+	listPaymentsRequestFieldLast                     = big.NewInt(1 << 32)
+	listPaymentsRequestFieldBefore                   = big.NewInt(1 << 33)
 )
 
 type ListPaymentsRequest struct {
@@ -326,6 +327,8 @@ type ListPaymentsRequest struct {
 	UserID *string `json:"-" url:"user_id,omitempty"`
 	// Search payments by user ID, membership ID, user email, name, or username. Email filtering requires the member:email:read permission.
 	Query *string `json:"-" url:"query,omitempty"`
+	// Only for searches: with `query`, also search the account's connected accounts. Requires `account_id` and `query`, and is a 400 without either; it never lists connected accounts' payments on its own. Matches on payment, user or membership ID, buyer email, or a card's first 6 or 8 digits and last 4 separated by a space or dash (`424242 4242`). Free-text queries such as a name search only the named account. Connected accounts' payments are returned only for connected accounts you can read payments on.
+	IncludeConnectedAccounts *bool `json:"-" url:"include_connected_accounts,omitempty"`
 	// Only payments made by this member, prefixed `mber_`.
 	MemberID *string `json:"-" url:"member_id,omitempty"`
 	// Only payments billed under this membership, prefixed `mem_`.
@@ -439,6 +442,13 @@ func (l *ListPaymentsRequest) SetUserID(userID *string) {
 func (l *ListPaymentsRequest) SetQuery(query *string) {
 	l.Query = query
 	l.require(listPaymentsRequestFieldQuery)
+}
+
+// SetIncludeConnectedAccounts sets the IncludeConnectedAccounts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetIncludeConnectedAccounts(includeConnectedAccounts *bool) {
+	l.IncludeConnectedAccounts = includeConnectedAccounts
+	l.require(listPaymentsRequestFieldIncludeConnectedAccounts)
 }
 
 // SetMemberID sets the MemberID field and marks it as non-optional;
@@ -864,19 +874,20 @@ func (r *RetryPaymentsRequest) SetID(id string) {
 }
 
 var (
-	summaryPaymentsRequestFieldGroups         = big.NewInt(1 << 0)
-	summaryPaymentsRequestFieldAccountID      = big.NewInt(1 << 1)
-	summaryPaymentsRequestFieldStatuses       = big.NewInt(1 << 2)
-	summaryPaymentsRequestFieldSubstatuses    = big.NewInt(1 << 3)
-	summaryPaymentsRequestFieldBillingReasons = big.NewInt(1 << 4)
-	summaryPaymentsRequestFieldCurrencies     = big.NewInt(1 << 5)
-	summaryPaymentsRequestFieldPlanIDs        = big.NewInt(1 << 6)
-	summaryPaymentsRequestFieldProductIDs     = big.NewInt(1 << 7)
-	summaryPaymentsRequestFieldPaymentMethods = big.NewInt(1 << 8)
-	summaryPaymentsRequestFieldTrackingStates = big.NewInt(1 << 9)
-	summaryPaymentsRequestFieldCreatedAfter   = big.NewInt(1 << 10)
-	summaryPaymentsRequestFieldCreatedBefore  = big.NewInt(1 << 11)
-	summaryPaymentsRequestFieldQuery          = big.NewInt(1 << 12)
+	summaryPaymentsRequestFieldGroups                   = big.NewInt(1 << 0)
+	summaryPaymentsRequestFieldAccountID                = big.NewInt(1 << 1)
+	summaryPaymentsRequestFieldStatuses                 = big.NewInt(1 << 2)
+	summaryPaymentsRequestFieldSubstatuses              = big.NewInt(1 << 3)
+	summaryPaymentsRequestFieldBillingReasons           = big.NewInt(1 << 4)
+	summaryPaymentsRequestFieldCurrencies               = big.NewInt(1 << 5)
+	summaryPaymentsRequestFieldPlanIDs                  = big.NewInt(1 << 6)
+	summaryPaymentsRequestFieldProductIDs               = big.NewInt(1 << 7)
+	summaryPaymentsRequestFieldPaymentMethods           = big.NewInt(1 << 8)
+	summaryPaymentsRequestFieldTrackingStates           = big.NewInt(1 << 9)
+	summaryPaymentsRequestFieldCreatedAfter             = big.NewInt(1 << 10)
+	summaryPaymentsRequestFieldCreatedBefore            = big.NewInt(1 << 11)
+	summaryPaymentsRequestFieldQuery                    = big.NewInt(1 << 12)
+	summaryPaymentsRequestFieldIncludeConnectedAccounts = big.NewInt(1 << 13)
 )
 
 type SummaryPaymentsRequest struct {
@@ -906,6 +917,8 @@ type SummaryPaymentsRequest struct {
 	CreatedBefore *time.Time `json:"-" url:"created_before,omitempty"`
 	// Search payments by user ID, membership ID, user email, name, or username.
 	Query *string `json:"-" url:"query,omitempty"`
+	// Only for searches: with `query`, also search the account's connected accounts. Requires `account_id` and `query`, and is a 400 without either; it never lists connected accounts' payments on its own. Matches on payment, user or membership ID, buyer email, or a card's first 6 or 8 digits and last 4 separated by a space or dash (`424242 4242`). Free-text queries such as a name search only the named account. Connected accounts' payments are returned only for connected accounts you can read payments on.
+	IncludeConnectedAccounts *bool `json:"-" url:"include_connected_accounts,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1009,6 +1022,13 @@ func (s *SummaryPaymentsRequest) SetCreatedBefore(createdBefore *time.Time) {
 func (s *SummaryPaymentsRequest) SetQuery(query *string) {
 	s.Query = query
 	s.require(summaryPaymentsRequestFieldQuery)
+}
+
+// SetIncludeConnectedAccounts sets the IncludeConnectedAccounts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetIncludeConnectedAccounts(includeConnectedAccounts *bool) {
+	s.IncludeConnectedAccounts = includeConnectedAccounts
+	s.require(summaryPaymentsRequestFieldIncludeConnectedAccounts)
 }
 
 var (
