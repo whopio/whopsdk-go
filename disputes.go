@@ -50,6 +50,7 @@ var (
 	listDisputesRequestFieldCurrency      = big.NewInt(1 << 8)
 	listDisputesRequestFieldCreatedBefore = big.NewInt(1 << 9)
 	listDisputesRequestFieldCreatedAfter  = big.NewInt(1 << 10)
+	listDisputesRequestFieldQuery         = big.NewInt(1 << 11)
 )
 
 type ListDisputesRequest struct {
@@ -75,6 +76,8 @@ type ListDisputesRequest struct {
 	CreatedBefore *string `json:"-" url:"created_before,omitempty"`
 	// Only disputes opened after this ISO 8601 timestamp.
 	CreatedAfter *string `json:"-" url:"created_after,omitempty"`
+	// Search disputes by dispute ID, payment ID, user ID, membership ID, user email, name, or username. Email filtering requires the member:email:read permission.
+	Query *string `json:"-" url:"query,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -166,6 +169,13 @@ func (l *ListDisputesRequest) SetCreatedAfter(createdAfter *string) {
 	l.require(listDisputesRequestFieldCreatedAfter)
 }
 
+// SetQuery sets the Query field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListDisputesRequest) SetQuery(query *string) {
+	l.Query = query
+	l.require(listDisputesRequestFieldQuery)
+}
+
 var (
 	retrieveDisputesRequestFieldID = big.NewInt(1 << 0)
 )
@@ -229,6 +239,7 @@ var (
 	summaryDisputesRequestFieldCurrency      = big.NewInt(1 << 3)
 	summaryDisputesRequestFieldCreatedBefore = big.NewInt(1 << 4)
 	summaryDisputesRequestFieldCreatedAfter  = big.NewInt(1 << 5)
+	summaryDisputesRequestFieldQuery         = big.NewInt(1 << 6)
 )
 
 type SummaryDisputesRequest struct {
@@ -244,6 +255,8 @@ type SummaryDisputesRequest struct {
 	CreatedBefore *string `json:"-" url:"created_before,omitempty"`
 	// Only disputes opened after this ISO 8601 timestamp.
 	CreatedAfter *string `json:"-" url:"created_after,omitempty"`
+	// Search disputes by dispute ID, payment ID, user ID, membership ID, user email, name, or username. Email filtering requires the member:email:read permission.
+	Query *string `json:"-" url:"query,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -298,6 +311,13 @@ func (s *SummaryDisputesRequest) SetCreatedBefore(createdBefore *string) {
 func (s *SummaryDisputesRequest) SetCreatedAfter(createdAfter *string) {
 	s.CreatedAfter = createdAfter
 	s.require(summaryDisputesRequestFieldCreatedAfter)
+}
+
+// SetQuery sets the Query field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryDisputesRequest) SetQuery(query *string) {
+	s.Query = query
+	s.require(summaryDisputesRequestFieldQuery)
 }
 
 var (

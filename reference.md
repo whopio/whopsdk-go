@@ -14950,6 +14950,14 @@ client.Disputes.List(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**query:** `*string` — Search disputes by dispute ID, payment ID, user ID, membership ID, user email, name, or username. Email filtering requires the member:email:read permission.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
@@ -15045,6 +15053,14 @@ client.Disputes.Summary(
 <dd>
 
 **createdAfter:** `*string` — Only disputes opened after this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**query:** `*string` — Search disputes by dispute ID, payment ID, user ID, membership ID, user email, name, or username. Email filtering requires the member:email:read permission.
     
 </dd>
 </dl>
