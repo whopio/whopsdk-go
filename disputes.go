@@ -39,18 +39,19 @@ func (a *AcceptDisputesRequest) SetID(id string) {
 }
 
 var (
-	listDisputesRequestFieldAccountID     = big.NewInt(1 << 0)
-	listDisputesRequestFieldFirst         = big.NewInt(1 << 1)
-	listDisputesRequestFieldAfter         = big.NewInt(1 << 2)
-	listDisputesRequestFieldLast          = big.NewInt(1 << 3)
-	listDisputesRequestFieldBefore        = big.NewInt(1 << 4)
-	listDisputesRequestFieldOrder         = big.NewInt(1 << 5)
-	listDisputesRequestFieldDirection     = big.NewInt(1 << 6)
-	listDisputesRequestFieldStatus        = big.NewInt(1 << 7)
-	listDisputesRequestFieldCurrency      = big.NewInt(1 << 8)
-	listDisputesRequestFieldCreatedBefore = big.NewInt(1 << 9)
-	listDisputesRequestFieldCreatedAfter  = big.NewInt(1 << 10)
-	listDisputesRequestFieldQuery         = big.NewInt(1 << 11)
+	listDisputesRequestFieldAccountID                = big.NewInt(1 << 0)
+	listDisputesRequestFieldFirst                    = big.NewInt(1 << 1)
+	listDisputesRequestFieldAfter                    = big.NewInt(1 << 2)
+	listDisputesRequestFieldLast                     = big.NewInt(1 << 3)
+	listDisputesRequestFieldBefore                   = big.NewInt(1 << 4)
+	listDisputesRequestFieldOrder                    = big.NewInt(1 << 5)
+	listDisputesRequestFieldDirection                = big.NewInt(1 << 6)
+	listDisputesRequestFieldStatus                   = big.NewInt(1 << 7)
+	listDisputesRequestFieldCurrency                 = big.NewInt(1 << 8)
+	listDisputesRequestFieldCreatedBefore            = big.NewInt(1 << 9)
+	listDisputesRequestFieldCreatedAfter             = big.NewInt(1 << 10)
+	listDisputesRequestFieldQuery                    = big.NewInt(1 << 11)
+	listDisputesRequestFieldIncludeConnectedAccounts = big.NewInt(1 << 12)
 )
 
 type ListDisputesRequest struct {
@@ -78,6 +79,8 @@ type ListDisputesRequest struct {
 	CreatedAfter *string `json:"-" url:"created_after,omitempty"`
 	// Search disputes by dispute ID, payment ID, user ID, membership ID, user email, name, or username. Email filtering requires the member:email:read permission.
 	Query *string `json:"-" url:"query,omitempty"`
+	// Only for searches: with `query`, also search the account's connected accounts. Requires `account_id` and `query`, and is a 400 without either; it never lists connected accounts' disputes on its own. Matches on dispute, payment, user or membership ID, buyer email, or a card's first 6 or 8 digits and last 4 separated by a space or dash (`424242 4242`). Free-text queries such as a name search only the named account. Connected accounts' disputes are returned only for connected accounts you can read disputes on.
+	IncludeConnectedAccounts *bool `json:"-" url:"include_connected_accounts,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -176,6 +179,13 @@ func (l *ListDisputesRequest) SetQuery(query *string) {
 	l.require(listDisputesRequestFieldQuery)
 }
 
+// SetIncludeConnectedAccounts sets the IncludeConnectedAccounts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListDisputesRequest) SetIncludeConnectedAccounts(includeConnectedAccounts *bool) {
+	l.IncludeConnectedAccounts = includeConnectedAccounts
+	l.require(listDisputesRequestFieldIncludeConnectedAccounts)
+}
+
 var (
 	retrieveDisputesRequestFieldID = big.NewInt(1 << 0)
 )
@@ -233,13 +243,14 @@ func (s *SubmitDisputesRequest) SetID(id string) {
 }
 
 var (
-	summaryDisputesRequestFieldGroups        = big.NewInt(1 << 0)
-	summaryDisputesRequestFieldAccountID     = big.NewInt(1 << 1)
-	summaryDisputesRequestFieldStatus        = big.NewInt(1 << 2)
-	summaryDisputesRequestFieldCurrency      = big.NewInt(1 << 3)
-	summaryDisputesRequestFieldCreatedBefore = big.NewInt(1 << 4)
-	summaryDisputesRequestFieldCreatedAfter  = big.NewInt(1 << 5)
-	summaryDisputesRequestFieldQuery         = big.NewInt(1 << 6)
+	summaryDisputesRequestFieldGroups                   = big.NewInt(1 << 0)
+	summaryDisputesRequestFieldAccountID                = big.NewInt(1 << 1)
+	summaryDisputesRequestFieldStatus                   = big.NewInt(1 << 2)
+	summaryDisputesRequestFieldCurrency                 = big.NewInt(1 << 3)
+	summaryDisputesRequestFieldCreatedBefore            = big.NewInt(1 << 4)
+	summaryDisputesRequestFieldCreatedAfter             = big.NewInt(1 << 5)
+	summaryDisputesRequestFieldQuery                    = big.NewInt(1 << 6)
+	summaryDisputesRequestFieldIncludeConnectedAccounts = big.NewInt(1 << 7)
 )
 
 type SummaryDisputesRequest struct {
@@ -257,6 +268,8 @@ type SummaryDisputesRequest struct {
 	CreatedAfter *string `json:"-" url:"created_after,omitempty"`
 	// Search disputes by dispute ID, payment ID, user ID, membership ID, user email, name, or username. Email filtering requires the member:email:read permission.
 	Query *string `json:"-" url:"query,omitempty"`
+	// Only for searches: with `query`, also search the account's connected accounts. Requires `account_id` and `query`, and is a 400 without either; it never lists connected accounts' disputes on its own. Matches on dispute, payment, user or membership ID, buyer email, or a card's first 6 or 8 digits and last 4 separated by a space or dash (`424242 4242`). Free-text queries such as a name search only the named account. Connected accounts' disputes are returned only for connected accounts you can read disputes on.
+	IncludeConnectedAccounts *bool `json:"-" url:"include_connected_accounts,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -318,6 +331,13 @@ func (s *SummaryDisputesRequest) SetCreatedAfter(createdAfter *string) {
 func (s *SummaryDisputesRequest) SetQuery(query *string) {
 	s.Query = query
 	s.require(summaryDisputesRequestFieldQuery)
+}
+
+// SetIncludeConnectedAccounts sets the IncludeConnectedAccounts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryDisputesRequest) SetIncludeConnectedAccounts(includeConnectedAccounts *bool) {
+	s.IncludeConnectedAccounts = includeConnectedAccounts
+	s.require(summaryDisputesRequestFieldIncludeConnectedAccounts)
 }
 
 var (
