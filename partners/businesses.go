@@ -749,18 +749,19 @@ var (
 	listBusinessesResponseDataItemFieldCommissionAdvance                   = big.NewInt(1 << 2)
 	listBusinessesResponseDataItemFieldCommissionAdvanceProjectionsAllowed = big.NewInt(1 << 3)
 	listBusinessesResponseDataItemFieldCreatedAt                           = big.NewInt(1 << 4)
-	listBusinessesResponseDataItemFieldEarningsUsd                         = big.NewInt(1 << 5)
-	listBusinessesResponseDataItemFieldFirstTierPartner                    = big.NewInt(1 << 6)
-	listBusinessesResponseDataItemFieldID                                  = big.NewInt(1 << 7)
-	listBusinessesResponseDataItemFieldMyPartnerTier                       = big.NewInt(1 << 8)
-	listBusinessesResponseDataItemFieldObject                              = big.NewInt(1 << 9)
-	listBusinessesResponseDataItemFieldOwner                               = big.NewInt(1 << 10)
-	listBusinessesResponseDataItemFieldPayoutPercentages                   = big.NewInt(1 << 11)
-	listBusinessesResponseDataItemFieldReferralExpiresAt                   = big.NewInt(1 << 12)
-	listBusinessesResponseDataItemFieldReferralStartedAt                   = big.NewInt(1 << 13)
-	listBusinessesResponseDataItemFieldSecondTierPartner                   = big.NewInt(1 << 14)
-	listBusinessesResponseDataItemFieldStatus                              = big.NewInt(1 << 15)
-	listBusinessesResponseDataItemFieldVolumeUsd                           = big.NewInt(1 << 16)
+	listBusinessesResponseDataItemFieldDealClosedReason                    = big.NewInt(1 << 5)
+	listBusinessesResponseDataItemFieldEarningsUsd                         = big.NewInt(1 << 6)
+	listBusinessesResponseDataItemFieldFirstTierPartner                    = big.NewInt(1 << 7)
+	listBusinessesResponseDataItemFieldID                                  = big.NewInt(1 << 8)
+	listBusinessesResponseDataItemFieldMyPartnerTier                       = big.NewInt(1 << 9)
+	listBusinessesResponseDataItemFieldObject                              = big.NewInt(1 << 10)
+	listBusinessesResponseDataItemFieldOwner                               = big.NewInt(1 << 11)
+	listBusinessesResponseDataItemFieldPayoutPercentages                   = big.NewInt(1 << 12)
+	listBusinessesResponseDataItemFieldReferralExpiresAt                   = big.NewInt(1 << 13)
+	listBusinessesResponseDataItemFieldReferralStartedAt                   = big.NewInt(1 << 14)
+	listBusinessesResponseDataItemFieldSecondTierPartner                   = big.NewInt(1 << 15)
+	listBusinessesResponseDataItemFieldStatus                              = big.NewInt(1 << 16)
+	listBusinessesResponseDataItemFieldVolumeUsd                           = big.NewInt(1 << 17)
 )
 
 // listBusinessesResponseDataItemNullableFields maps the wire names of ListBusinessesResponseDataItem's nullable fields (required or optional) to their field bits.
@@ -768,6 +769,7 @@ var listBusinessesResponseDataItemNullableFields = map[string]*big.Int{
 	"account":             listBusinessesResponseDataItemFieldAccount,
 	"blueprint_partner":   listBusinessesResponseDataItemFieldBlueprintPartner,
 	"commission_advance":  listBusinessesResponseDataItemFieldCommissionAdvance,
+	"deal_closed_reason":  listBusinessesResponseDataItemFieldDealClosedReason,
 	"first_tier_partner":  listBusinessesResponseDataItemFieldFirstTierPartner,
 	"owner":               listBusinessesResponseDataItemFieldOwner,
 	"referral_expires_at": listBusinessesResponseDataItemFieldReferralExpiresAt,
@@ -785,8 +787,10 @@ type ListBusinessesResponseDataItem struct {
 	// Whether this referral meets the partner and ownership requirements for saving commission advance projections. Returned only to the referring partner; existing advance terms and update permissions still apply.
 	CommissionAdvanceProjectionsAllowed *bool `json:"commission_advance_projections_allowed,omitempty" url:"commission_advance_projections_allowed,omitempty"`
 	// When the partner business was created.
-	CreatedAt   time.Time                                  `json:"created_at" url:"created_at"`
-	EarningsUsd *ListBusinessesResponseDataItemEarningsUsd `json:"earnings_usd" url:"earnings_usd"`
+	CreatedAt time.Time `json:"created_at" url:"created_at"`
+	// How the partner closed this business, in their own words. Null until the partner saves one.
+	DealClosedReason *string                                    `json:"deal_closed_reason,omitempty" url:"deal_closed_reason,omitempty"`
+	EarningsUsd      *ListBusinessesResponseDataItemEarningsUsd `json:"earnings_usd" url:"earnings_usd"`
 	// The partner who referred the business owner onto Whop (first tier). Null if there is no active first-tier partner.
 	FirstTierPartner *ListBusinessesResponseDataItemFirstTierPartner `json:"first_tier_partner,omitempty" url:"first_tier_partner,omitempty"`
 	// Partner business ID.
@@ -848,6 +852,13 @@ func (l *ListBusinessesResponseDataItem) GetCreatedAt() time.Time {
 		return time.Time{}
 	}
 	return l.CreatedAt
+}
+
+func (l *ListBusinessesResponseDataItem) GetDealClosedReason() *string {
+	if l == nil {
+		return nil
+	}
+	return l.DealClosedReason
 }
 
 func (l *ListBusinessesResponseDataItem) GetEarningsUsd() *ListBusinessesResponseDataItemEarningsUsd {
@@ -983,6 +994,13 @@ func (l *ListBusinessesResponseDataItem) SetCommissionAdvanceProjectionsAllowed(
 func (l *ListBusinessesResponseDataItem) SetCreatedAt(createdAt time.Time) {
 	l.CreatedAt = createdAt
 	l.require(listBusinessesResponseDataItemFieldCreatedAt)
+}
+
+// SetDealClosedReason sets the DealClosedReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListBusinessesResponseDataItem) SetDealClosedReason(dealClosedReason *string) {
+	l.DealClosedReason = dealClosedReason
+	l.require(listBusinessesResponseDataItemFieldDealClosedReason)
 }
 
 // SetEarningsUsd sets the EarningsUsd field and marks it as non-optional;
@@ -2910,19 +2928,20 @@ var (
 	resendInviteBusinessesResponseFieldCommissionAdvance                   = big.NewInt(1 << 2)
 	resendInviteBusinessesResponseFieldCommissionAdvanceProjectionsAllowed = big.NewInt(1 << 3)
 	resendInviteBusinessesResponseFieldCreatedAt                           = big.NewInt(1 << 4)
-	resendInviteBusinessesResponseFieldEarningsUsd                         = big.NewInt(1 << 5)
-	resendInviteBusinessesResponseFieldFirstTierPartner                    = big.NewInt(1 << 6)
-	resendInviteBusinessesResponseFieldID                                  = big.NewInt(1 << 7)
-	resendInviteBusinessesResponseFieldMyPartnerTier                       = big.NewInt(1 << 8)
-	resendInviteBusinessesResponseFieldObject                              = big.NewInt(1 << 9)
-	resendInviteBusinessesResponseFieldOwner                               = big.NewInt(1 << 10)
-	resendInviteBusinessesResponseFieldPayoutPercentages                   = big.NewInt(1 << 11)
-	resendInviteBusinessesResponseFieldPendingOwnerInvites                 = big.NewInt(1 << 12)
-	resendInviteBusinessesResponseFieldReferralExpiresAt                   = big.NewInt(1 << 13)
-	resendInviteBusinessesResponseFieldReferralStartedAt                   = big.NewInt(1 << 14)
-	resendInviteBusinessesResponseFieldSecondTierPartner                   = big.NewInt(1 << 15)
-	resendInviteBusinessesResponseFieldStatus                              = big.NewInt(1 << 16)
-	resendInviteBusinessesResponseFieldVolumeUsd                           = big.NewInt(1 << 17)
+	resendInviteBusinessesResponseFieldDealClosedReason                    = big.NewInt(1 << 5)
+	resendInviteBusinessesResponseFieldEarningsUsd                         = big.NewInt(1 << 6)
+	resendInviteBusinessesResponseFieldFirstTierPartner                    = big.NewInt(1 << 7)
+	resendInviteBusinessesResponseFieldID                                  = big.NewInt(1 << 8)
+	resendInviteBusinessesResponseFieldMyPartnerTier                       = big.NewInt(1 << 9)
+	resendInviteBusinessesResponseFieldObject                              = big.NewInt(1 << 10)
+	resendInviteBusinessesResponseFieldOwner                               = big.NewInt(1 << 11)
+	resendInviteBusinessesResponseFieldPayoutPercentages                   = big.NewInt(1 << 12)
+	resendInviteBusinessesResponseFieldPendingOwnerInvites                 = big.NewInt(1 << 13)
+	resendInviteBusinessesResponseFieldReferralExpiresAt                   = big.NewInt(1 << 14)
+	resendInviteBusinessesResponseFieldReferralStartedAt                   = big.NewInt(1 << 15)
+	resendInviteBusinessesResponseFieldSecondTierPartner                   = big.NewInt(1 << 16)
+	resendInviteBusinessesResponseFieldStatus                              = big.NewInt(1 << 17)
+	resendInviteBusinessesResponseFieldVolumeUsd                           = big.NewInt(1 << 18)
 )
 
 // resendInviteBusinessesResponseNullableFields maps the wire names of ResendInviteBusinessesResponse's nullable fields (required or optional) to their field bits.
@@ -2930,6 +2949,7 @@ var resendInviteBusinessesResponseNullableFields = map[string]*big.Int{
 	"account":             resendInviteBusinessesResponseFieldAccount,
 	"blueprint_partner":   resendInviteBusinessesResponseFieldBlueprintPartner,
 	"commission_advance":  resendInviteBusinessesResponseFieldCommissionAdvance,
+	"deal_closed_reason":  resendInviteBusinessesResponseFieldDealClosedReason,
 	"first_tier_partner":  resendInviteBusinessesResponseFieldFirstTierPartner,
 	"owner":               resendInviteBusinessesResponseFieldOwner,
 	"referral_expires_at": resendInviteBusinessesResponseFieldReferralExpiresAt,
@@ -2947,8 +2967,10 @@ type ResendInviteBusinessesResponse struct {
 	// Whether this referral meets the partner and ownership requirements for saving commission advance projections. Returned only to the referring partner; existing advance terms and update permissions still apply.
 	CommissionAdvanceProjectionsAllowed *bool `json:"commission_advance_projections_allowed,omitempty" url:"commission_advance_projections_allowed,omitempty"`
 	// When the partner business was created.
-	CreatedAt   time.Time                                  `json:"created_at" url:"created_at"`
-	EarningsUsd *ResendInviteBusinessesResponseEarningsUsd `json:"earnings_usd" url:"earnings_usd"`
+	CreatedAt time.Time `json:"created_at" url:"created_at"`
+	// How the partner closed this business, in their own words. Null until the partner saves one.
+	DealClosedReason *string                                    `json:"deal_closed_reason,omitempty" url:"deal_closed_reason,omitempty"`
+	EarningsUsd      *ResendInviteBusinessesResponseEarningsUsd `json:"earnings_usd" url:"earnings_usd"`
 	// The partner who referred the business owner onto Whop (first tier). Null if there is no active first-tier partner.
 	FirstTierPartner *ResendInviteBusinessesResponseFirstTierPartner `json:"first_tier_partner,omitempty" url:"first_tier_partner,omitempty"`
 	// Partner business ID.
@@ -3012,6 +3034,13 @@ func (r *ResendInviteBusinessesResponse) GetCreatedAt() time.Time {
 		return time.Time{}
 	}
 	return r.CreatedAt
+}
+
+func (r *ResendInviteBusinessesResponse) GetDealClosedReason() *string {
+	if r == nil {
+		return nil
+	}
+	return r.DealClosedReason
 }
 
 func (r *ResendInviteBusinessesResponse) GetEarningsUsd() *ResendInviteBusinessesResponseEarningsUsd {
@@ -3154,6 +3183,13 @@ func (r *ResendInviteBusinessesResponse) SetCommissionAdvanceProjectionsAllowed(
 func (r *ResendInviteBusinessesResponse) SetCreatedAt(createdAt time.Time) {
 	r.CreatedAt = createdAt
 	r.require(resendInviteBusinessesResponseFieldCreatedAt)
+}
+
+// SetDealClosedReason sets the DealClosedReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponse) SetDealClosedReason(dealClosedReason *string) {
+	r.DealClosedReason = dealClosedReason
+	r.require(resendInviteBusinessesResponseFieldDealClosedReason)
 }
 
 // SetEarningsUsd sets the EarningsUsd field and marks it as non-optional;
@@ -5098,19 +5134,20 @@ var (
 	retrieveBusinessesResponseFieldCommissionAdvanceProjectionsAllowed = big.NewInt(1 << 3)
 	retrieveBusinessesResponseFieldCommissionAdvanceRate               = big.NewInt(1 << 4)
 	retrieveBusinessesResponseFieldCreatedAt                           = big.NewInt(1 << 5)
-	retrieveBusinessesResponseFieldEarningsUsd                         = big.NewInt(1 << 6)
-	retrieveBusinessesResponseFieldFirstTierPartner                    = big.NewInt(1 << 7)
-	retrieveBusinessesResponseFieldID                                  = big.NewInt(1 << 8)
-	retrieveBusinessesResponseFieldMyPartnerTier                       = big.NewInt(1 << 9)
-	retrieveBusinessesResponseFieldObject                              = big.NewInt(1 << 10)
-	retrieveBusinessesResponseFieldOwner                               = big.NewInt(1 << 11)
-	retrieveBusinessesResponseFieldPayoutPercentages                   = big.NewInt(1 << 12)
-	retrieveBusinessesResponseFieldPendingOwnerInvites                 = big.NewInt(1 << 13)
-	retrieveBusinessesResponseFieldReferralExpiresAt                   = big.NewInt(1 << 14)
-	retrieveBusinessesResponseFieldReferralStartedAt                   = big.NewInt(1 << 15)
-	retrieveBusinessesResponseFieldSecondTierPartner                   = big.NewInt(1 << 16)
-	retrieveBusinessesResponseFieldStatus                              = big.NewInt(1 << 17)
-	retrieveBusinessesResponseFieldVolumeUsd                           = big.NewInt(1 << 18)
+	retrieveBusinessesResponseFieldDealClosedReason                    = big.NewInt(1 << 6)
+	retrieveBusinessesResponseFieldEarningsUsd                         = big.NewInt(1 << 7)
+	retrieveBusinessesResponseFieldFirstTierPartner                    = big.NewInt(1 << 8)
+	retrieveBusinessesResponseFieldID                                  = big.NewInt(1 << 9)
+	retrieveBusinessesResponseFieldMyPartnerTier                       = big.NewInt(1 << 10)
+	retrieveBusinessesResponseFieldObject                              = big.NewInt(1 << 11)
+	retrieveBusinessesResponseFieldOwner                               = big.NewInt(1 << 12)
+	retrieveBusinessesResponseFieldPayoutPercentages                   = big.NewInt(1 << 13)
+	retrieveBusinessesResponseFieldPendingOwnerInvites                 = big.NewInt(1 << 14)
+	retrieveBusinessesResponseFieldReferralExpiresAt                   = big.NewInt(1 << 15)
+	retrieveBusinessesResponseFieldReferralStartedAt                   = big.NewInt(1 << 16)
+	retrieveBusinessesResponseFieldSecondTierPartner                   = big.NewInt(1 << 17)
+	retrieveBusinessesResponseFieldStatus                              = big.NewInt(1 << 18)
+	retrieveBusinessesResponseFieldVolumeUsd                           = big.NewInt(1 << 19)
 )
 
 // retrieveBusinessesResponseNullableFields maps the wire names of RetrieveBusinessesResponse's nullable fields (required or optional) to their field bits.
@@ -5119,6 +5156,7 @@ var retrieveBusinessesResponseNullableFields = map[string]*big.Int{
 	"blueprint_partner":       retrieveBusinessesResponseFieldBlueprintPartner,
 	"commission_advance":      retrieveBusinessesResponseFieldCommissionAdvance,
 	"commission_advance_rate": retrieveBusinessesResponseFieldCommissionAdvanceRate,
+	"deal_closed_reason":      retrieveBusinessesResponseFieldDealClosedReason,
 	"first_tier_partner":      retrieveBusinessesResponseFieldFirstTierPartner,
 	"owner":                   retrieveBusinessesResponseFieldOwner,
 	"referral_expires_at":     retrieveBusinessesResponseFieldReferralExpiresAt,
@@ -5138,8 +5176,10 @@ type RetrieveBusinessesResponse struct {
 	// Estimated upfront advance per USD of annual card and BNPL payments, including advance share and remaining term. Multiply annual payments by this rate, cap at 2500 USD, and round down to cents. Uses observed commissions or, without history, reference US card fees minus estimated percentage costs times the partner share. Null when projections or pricing are unavailable. Only returned to the referring partner. Qualification and final offers use actual activity.
 	CommissionAdvanceRate *string `json:"commission_advance_rate,omitempty" url:"commission_advance_rate,omitempty"`
 	// When the partner business was created.
-	CreatedAt   time.Time                              `json:"created_at" url:"created_at"`
-	EarningsUsd *RetrieveBusinessesResponseEarningsUsd `json:"earnings_usd" url:"earnings_usd"`
+	CreatedAt time.Time `json:"created_at" url:"created_at"`
+	// How the partner closed this business, in their own words. Null until the partner saves one.
+	DealClosedReason *string                                `json:"deal_closed_reason,omitempty" url:"deal_closed_reason,omitempty"`
+	EarningsUsd      *RetrieveBusinessesResponseEarningsUsd `json:"earnings_usd" url:"earnings_usd"`
 	// The partner who referred the business owner onto Whop (first tier). Null if there is no active first-tier partner.
 	FirstTierPartner *RetrieveBusinessesResponseFirstTierPartner `json:"first_tier_partner,omitempty" url:"first_tier_partner,omitempty"`
 	// Partner business ID.
@@ -5210,6 +5250,13 @@ func (r *RetrieveBusinessesResponse) GetCreatedAt() time.Time {
 		return time.Time{}
 	}
 	return r.CreatedAt
+}
+
+func (r *RetrieveBusinessesResponse) GetDealClosedReason() *string {
+	if r == nil {
+		return nil
+	}
+	return r.DealClosedReason
 }
 
 func (r *RetrieveBusinessesResponse) GetEarningsUsd() *RetrieveBusinessesResponseEarningsUsd {
@@ -5359,6 +5406,13 @@ func (r *RetrieveBusinessesResponse) SetCommissionAdvanceRate(commissionAdvanceR
 func (r *RetrieveBusinessesResponse) SetCreatedAt(createdAt time.Time) {
 	r.CreatedAt = createdAt
 	r.require(retrieveBusinessesResponseFieldCreatedAt)
+}
+
+// SetDealClosedReason sets the DealClosedReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBusinessesResponse) SetDealClosedReason(dealClosedReason *string) {
+	r.DealClosedReason = dealClosedReason
+	r.require(retrieveBusinessesResponseFieldDealClosedReason)
 }
 
 // SetEarningsUsd sets the EarningsUsd field and marks it as non-optional;
@@ -7402,7 +7456,8 @@ func (u *UpdateBusinessesResponse) String() string {
 var (
 	updateBusinessesRequestFieldID                  = big.NewInt(1 << 0)
 	updateBusinessesRequestFieldAnnualProcessingUsd = big.NewInt(1 << 1)
-	updateBusinessesRequestFieldWithdrawProjections = big.NewInt(1 << 2)
+	updateBusinessesRequestFieldDealClosedReason    = big.NewInt(1 << 2)
+	updateBusinessesRequestFieldWithdrawProjections = big.NewInt(1 << 3)
 )
 
 type UpdateBusinessesRequest struct {
@@ -7410,6 +7465,8 @@ type UpdateBusinessesRequest struct {
 	ID string `json:"-" url:"-"`
 	// Annual projected card and BNPL processing combined, in USD.
 	AnnualProcessingUsd *string `json:"annual_processing_usd,omitempty" url:"-"`
+	// How the partner closed this business. Send it on its own to save it; the response is then the business ID and the saved reason.
+	DealClosedReason *string `json:"deal_closed_reason,omitempty" url:"-"`
 	// Remove unaccepted projections and invalidate the offer. The original CPA term is retained if projections are later added again.
 	WithdrawProjections *bool `json:"withdraw_projections,omitempty" url:"-"`
 
@@ -7438,6 +7495,13 @@ func (u *UpdateBusinessesRequest) SetID(id string) {
 func (u *UpdateBusinessesRequest) SetAnnualProcessingUsd(annualProcessingUsd *string) {
 	u.AnnualProcessingUsd = annualProcessingUsd
 	u.require(updateBusinessesRequestFieldAnnualProcessingUsd)
+}
+
+// SetDealClosedReason sets the DealClosedReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateBusinessesRequest) SetDealClosedReason(dealClosedReason *string) {
+	u.DealClosedReason = dealClosedReason
+	u.require(updateBusinessesRequestFieldDealClosedReason)
 }
 
 // SetWithdrawProjections sets the WithdrawProjections field and marks it as non-optional;
