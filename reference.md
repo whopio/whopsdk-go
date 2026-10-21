@@ -29834,6 +29834,54 @@ client.Payments.Summary(
 <dl>
 <dd>
 
+**refundedAfter:** `*time.Time` — Only payments refunded after this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**refundedBefore:** `*time.Time` — Only payments refunded before this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**disputeAlertedAfter:** `*time.Time` — Only payments with a dispute alert after this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**disputeAlertedBefore:** `*time.Time` — Only payments with a dispute alert before this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**disputeCreatedAfter:** `*time.Time` — Only payments with a dispute opened after this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**disputeCreatedBefore:** `*time.Time` — Only payments with a dispute opened before this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **query:** `*string` — Search payments by user ID, membership ID, user email, name, or username.
     
 </dd>
