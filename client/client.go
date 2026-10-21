@@ -61,6 +61,7 @@ import (
 	invoices "github.com/whopio/whopsdk-go/v2/invoices"
 	leads "github.com/whopio/whopsdk-go/v2/leads"
 	ledgeraccounts "github.com/whopio/whopsdk-go/v2/ledgeraccounts"
+	livestreams "github.com/whopio/whopsdk-go/v2/livestreams"
 	media "github.com/whopio/whopsdk-go/v2/media"
 	membersclient "github.com/whopio/whopsdk-go/v2/members/client"
 	memberships "github.com/whopio/whopsdk-go/v2/memberships"
@@ -160,6 +161,7 @@ type Whop struct {
 	Invoices                 *invoices.Client
 	Leads                    *leads.Client
 	LedgerAccounts           *ledgeraccounts.Client
+	Livestreams              *livestreams.Client
 	Media                    *media.Client
 	Members                  *membersclient.Client
 	Memberships              *memberships.Client
@@ -268,6 +270,7 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		Invoices:                 invoices.NewClient(options),
 		Leads:                    leads.NewClient(options),
 		LedgerAccounts:           ledgeraccounts.NewClient(options),
+		Livestreams:              livestreams.NewClient(options),
 		Media:                    media.NewClient(options),
 		Members:                  membersclient.NewClient(options),
 		Memberships:              memberships.NewClient(options),
