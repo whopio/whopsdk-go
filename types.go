@@ -3999,7 +3999,7 @@ type AccountPreferences struct {
 	FeedbackOptions                    []*FeedbackOption                          `json:"feedback_options" url:"feedback_options"`
 	// Lowercase ISO currency code every new sale settles into, regardless of the plan's currency or what the buyer paid in. Sales converted this way carry an additional 0.5% FX fee. `null` when the account settles each sale in its plan's currency.
 	PreferredSettlementCurrency *AccountPreferencesPreferredSettlementCurrency `json:"preferred_settlement_currency,omitempty" url:"preferred_settlement_currency,omitempty"`
-	// When `preferred_settlement_currency` may next be changed or turned off, as an ISO 8601 timestamp. It can change at most once every 7 days. `null` when it may change now.
+	// When `preferred_settlement_currency` may next be changed or turned off, as an ISO 8601 timestamp. It can change at most once a day. `null` when it may change now.
 	PreferredSettlementCurrencyChangeableAt *string `json:"preferred_settlement_currency_changeable_at,omitempty" url:"preferred_settlement_currency_changeable_at,omitempty"`
 	// What happens to a subscription once every retry of a renewal payment has failed. `cancel` (the default) cancels it. `none` leaves it past due and keeps billing it each period; access follows the account's past-due access setting.
 	SubscriptionFailureBehavior AccountPreferencesSubscriptionFailureBehavior `json:"subscription_failure_behavior" url:"subscription_failure_behavior"`
