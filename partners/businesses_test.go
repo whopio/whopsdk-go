@@ -1308,6 +1308,14 @@ func TestSettersListBusinessesResponseDataItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetDealClosedReason", func(t *testing.T) {
+		obj := &ListBusinessesResponseDataItem{}
+		var fernTestValueDealClosedReason *string
+		obj.SetDealClosedReason(fernTestValueDealClosedReason)
+		assert.Equal(t, fernTestValueDealClosedReason, obj.DealClosedReason)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetEarningsUsd", func(t *testing.T) {
 		obj := &ListBusinessesResponseDataItem{}
 		var fernTestValueEarningsUsd *ListBusinessesResponseDataItemEarningsUsd
@@ -1560,6 +1568,39 @@ func TestGettersListBusinessesResponseDataItem(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCreatedAt() // Should return zero value
+	})
+
+	t.Run("GetDealClosedReason", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListBusinessesResponseDataItem{}
+		var expected *string
+		obj.DealClosedReason = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDealClosedReason(), "getter should return the property value")
+	})
+
+	t.Run("GetDealClosedReason_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListBusinessesResponseDataItem{}
+		obj.DealClosedReason = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDealClosedReason(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDealClosedReason_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListBusinessesResponseDataItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDealClosedReason() // Should return zero value
 	})
 
 	t.Run("GetEarningsUsd", func(t *testing.T) {
@@ -2053,6 +2094,37 @@ func TestSettersMarkExplicitListBusinessesResponseDataItem(t *testing.T) {
 
 		// Act
 		obj.SetCreatedAt(fernTestValueCreatedAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDealClosedReason_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListBusinessesResponseDataItem{}
+		var fernTestValueDealClosedReason *string
+
+		// Act
+		obj.SetDealClosedReason(fernTestValueDealClosedReason)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -5310,6 +5382,14 @@ func TestSettersResendInviteBusinessesResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetDealClosedReason", func(t *testing.T) {
+		obj := &ResendInviteBusinessesResponse{}
+		var fernTestValueDealClosedReason *string
+		obj.SetDealClosedReason(fernTestValueDealClosedReason)
+		assert.Equal(t, fernTestValueDealClosedReason, obj.DealClosedReason)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetEarningsUsd", func(t *testing.T) {
 		obj := &ResendInviteBusinessesResponse{}
 		var fernTestValueEarningsUsd *ResendInviteBusinessesResponseEarningsUsd
@@ -5570,6 +5650,39 @@ func TestGettersResendInviteBusinessesResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCreatedAt() // Should return zero value
+	})
+
+	t.Run("GetDealClosedReason", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ResendInviteBusinessesResponse{}
+		var expected *string
+		obj.DealClosedReason = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDealClosedReason(), "getter should return the property value")
+	})
+
+	t.Run("GetDealClosedReason_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ResendInviteBusinessesResponse{}
+		obj.DealClosedReason = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDealClosedReason(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDealClosedReason_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ResendInviteBusinessesResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDealClosedReason() // Should return zero value
 	})
 
 	t.Run("GetEarningsUsd", func(t *testing.T) {
@@ -6096,6 +6209,37 @@ func TestSettersMarkExplicitResendInviteBusinessesResponse(t *testing.T) {
 
 		// Act
 		obj.SetCreatedAt(fernTestValueCreatedAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDealClosedReason_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ResendInviteBusinessesResponse{}
+		var fernTestValueDealClosedReason *string
+
+		// Act
+		obj.SetDealClosedReason(fernTestValueDealClosedReason)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -9464,6 +9608,14 @@ func TestSettersRetrieveBusinessesResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetDealClosedReason", func(t *testing.T) {
+		obj := &RetrieveBusinessesResponse{}
+		var fernTestValueDealClosedReason *string
+		obj.SetDealClosedReason(fernTestValueDealClosedReason)
+		assert.Equal(t, fernTestValueDealClosedReason, obj.DealClosedReason)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetEarningsUsd", func(t *testing.T) {
 		obj := &RetrieveBusinessesResponse{}
 		var fernTestValueEarningsUsd *RetrieveBusinessesResponseEarningsUsd
@@ -9757,6 +9909,39 @@ func TestGettersRetrieveBusinessesResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCreatedAt() // Should return zero value
+	})
+
+	t.Run("GetDealClosedReason", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveBusinessesResponse{}
+		var expected *string
+		obj.DealClosedReason = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDealClosedReason(), "getter should return the property value")
+	})
+
+	t.Run("GetDealClosedReason_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveBusinessesResponse{}
+		obj.DealClosedReason = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDealClosedReason(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDealClosedReason_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrieveBusinessesResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDealClosedReason() // Should return zero value
 	})
 
 	t.Run("GetEarningsUsd", func(t *testing.T) {
@@ -10314,6 +10499,37 @@ func TestSettersMarkExplicitRetrieveBusinessesResponse(t *testing.T) {
 
 		// Act
 		obj.SetCreatedAt(fernTestValueCreatedAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDealClosedReason_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveBusinessesResponse{}
+		var fernTestValueDealClosedReason *string
+
+		// Act
+		obj.SetDealClosedReason(fernTestValueDealClosedReason)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -13793,6 +14009,14 @@ func TestSettersUpdateBusinessesRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetDealClosedReason", func(t *testing.T) {
+		obj := &UpdateBusinessesRequest{}
+		var fernTestValueDealClosedReason *string
+		obj.SetDealClosedReason(fernTestValueDealClosedReason)
+		assert.Equal(t, fernTestValueDealClosedReason, obj.DealClosedReason)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetWithdrawProjections", func(t *testing.T) {
 		obj := &UpdateBusinessesRequest{}
 		var fernTestValueWithdrawProjections *bool
@@ -13843,6 +14067,37 @@ func TestSettersMarkExplicitUpdateBusinessesRequest(t *testing.T) {
 
 		// Act
 		obj.SetAnnualProcessingUsd(fernTestValueAnnualProcessingUsd)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDealClosedReason_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateBusinessesRequest{}
+		var fernTestValueDealClosedReason *string
+
+		// Act
+		obj.SetDealClosedReason(fernTestValueDealClosedReason)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -15388,6 +15643,7 @@ func TestRequiredNullableRoundTripListBusinessesResponseDataItem(t *testing.T) {
 	requiredNullableKeys := []string{
 		"account",
 		"blueprint_partner",
+		"deal_closed_reason",
 		"first_tier_partner",
 		"owner",
 		"referral_expires_at",
@@ -15405,7 +15661,7 @@ func TestRequiredNullableRoundTripListBusinessesResponseDataItem(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj ListBusinessesResponseDataItem
-		require.NoError(t, json.Unmarshal([]byte(`{"account":null,"blueprint_partner":null,"first_tier_partner":null,"owner":null,"referral_expires_at":null,"referral_started_at":null,"second_tier_partner":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account":null,"blueprint_partner":null,"deal_closed_reason":null,"first_tier_partner":null,"owner":null,"referral_expires_at":null,"referral_started_at":null,"second_tier_partner":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -15743,6 +15999,7 @@ func TestRequiredNullableRoundTripResendInviteBusinessesResponse(t *testing.T) {
 	requiredNullableKeys := []string{
 		"account",
 		"blueprint_partner",
+		"deal_closed_reason",
 		"first_tier_partner",
 		"owner",
 		"referral_expires_at",
@@ -15760,7 +16017,7 @@ func TestRequiredNullableRoundTripResendInviteBusinessesResponse(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj ResendInviteBusinessesResponse
-		require.NoError(t, json.Unmarshal([]byte(`{"account":null,"blueprint_partner":null,"first_tier_partner":null,"owner":null,"referral_expires_at":null,"referral_started_at":null,"second_tier_partner":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account":null,"blueprint_partner":null,"deal_closed_reason":null,"first_tier_partner":null,"owner":null,"referral_expires_at":null,"referral_started_at":null,"second_tier_partner":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -16056,6 +16313,7 @@ func TestRequiredNullableRoundTripRetrieveBusinessesResponse(t *testing.T) {
 	requiredNullableKeys := []string{
 		"account",
 		"blueprint_partner",
+		"deal_closed_reason",
 		"first_tier_partner",
 		"owner",
 		"referral_expires_at",
@@ -16073,7 +16331,7 @@ func TestRequiredNullableRoundTripRetrieveBusinessesResponse(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj RetrieveBusinessesResponse
-		require.NoError(t, json.Unmarshal([]byte(`{"account":null,"blueprint_partner":null,"first_tier_partner":null,"owner":null,"referral_expires_at":null,"referral_started_at":null,"second_tier_partner":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account":null,"blueprint_partner":null,"deal_closed_reason":null,"first_tier_partner":null,"owner":null,"referral_expires_at":null,"referral_started_at":null,"second_tier_partner":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
