@@ -24104,6 +24104,295 @@ client.LedgerAccounts.Retrieve(
 </dl>
 </details>
 
+## Livestreams
+<details><summary><code>client.Livestreams.List() -> *whopsdk.ListLivestreamsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists the livestreams in an experience, live and ended, newest first.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.ListLivestreamsRequest{
+    ExperienceID: "experience_id",
+}
+client.Livestreams.List(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**experienceID:** `string` — ID of a livestreams experience, prefixed `exp_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**pinned:** `*bool` — When `true`, only pinned livestreams, most recently pinned first. When `false`, only livestreams that are not pinned.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**recorded:** `*bool` — When `true`, only ended livestreams that were recorded, including recordings still processing. `false` or omitted lists every livestream.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `*int` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `*int` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Livestreams.Retrieve(ID) -> *whopsdk.Livestream</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves a livestream by ID.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.RetrieveLivestreamsRequest{
+    ID: "id",
+}
+client.Livestreams.Retrieve(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Livestream ID, prefixed `lfeed_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Livestreams.Pin(ID) -> *whopsdk.Livestream</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Pins an ended livestream's recording so everyone in the experience sees it featured. Pinning it again keeps the original `pinned_at`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.PinLivestreamsRequest{
+    ID: "id",
+}
+client.Livestreams.Pin(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Livestream ID, prefixed `lfeed_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Livestreams.Unpin(ID) -> *whopsdk.Livestream</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Unpins a livestream's recording so it is no longer featured in the experience.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.UnpinLivestreamsRequest{
+    ID: "id",
+}
+client.Livestreams.Unpin(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Livestream ID, prefixed `lfeed_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Media
 <details><summary><code>client.Media.Generate(request) -> *whopsdk.MediaAsset</code></summary>
 <dl>

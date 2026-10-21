@@ -8865,6 +8865,151 @@
       }
     },
     {
+      "id": "cc33d450-17b0-4a54-b1f1-6be62b9e7084",
+      "name": "List Livestreams - default",
+      "request": {
+        "urlPathTemplate": "/livestreams",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "queryParameters": {
+          "experience_id": {
+            "equalTo": "experience_id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"data\": [\n    {\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n      \"id\": \"lfeed_xxxxxxxxxxxxxxxxxxxxxx\",\n      \"pinned_at\": \"2026-01-01T12:00:00.000Z\",\n      \"recording_started_at\": \"2026-01-01T12:00:00.000Z\",\n      \"recording_status\": \"recording\",\n      \"recording_url\": \"https://whop-livestreams-example.s3.amazonaws.com/room/lfeed_xxxxxxxxxxxxxxxxxxxxxx.mp4\",\n      \"started_at\": \"2026-01-01T12:00:00.000Z\",\n      \"thumbnail_url\": \"https://img.whop.com/livestreams/lfeed_xxxxxxxxxxxxxxxxxxxxxx.jpg\",\n      \"title\": \"Live edit: blue hour\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "cc33d450-17b0-4a54-b1f1-6be62b9e7084",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "e4a98a11-b2f0-45d2-918f-619b4b80e06e",
+      "name": "Retrieve Livestream - default",
+      "request": {
+        "urlPathTemplate": "/livestreams/{id}",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"lfeed_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"pinned_at\": \"2026-01-01T12:00:00.000Z\",\n  \"recording_started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"recording_status\": \"recording\",\n  \"recording_url\": \"https://whop-livestreams-example.s3.amazonaws.com/room/lfeed_xxxxxxxxxxxxxxxxxxxxxx.mp4\",\n  \"started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"thumbnail_url\": \"https://img.whop.com/livestreams/lfeed_xxxxxxxxxxxxxxxxxxxxxx.jpg\",\n  \"title\": \"Live edit: blue hour\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "e4a98a11-b2f0-45d2-918f-619b4b80e06e",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "2ee2a1fa-976c-4b26-8833-33bc694940ff",
+      "name": "Pin Livestream - default",
+      "request": {
+        "urlPathTemplate": "/livestreams/{id}/pin",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"lfeed_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"pinned_at\": \"2026-01-01T12:00:00.000Z\",\n  \"recording_started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"recording_status\": \"recording\",\n  \"recording_url\": \"https://whop-livestreams-example.s3.amazonaws.com/room/lfeed_xxxxxxxxxxxxxxxxxxxxxx.mp4\",\n  \"started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"thumbnail_url\": \"https://img.whop.com/livestreams/lfeed_xxxxxxxxxxxxxxxxxxxxxx.jpg\",\n  \"title\": \"Live edit: blue hour\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "2ee2a1fa-976c-4b26-8833-33bc694940ff",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "efa26701-5552-4561-a379-ae95a3f9c0fe",
+      "name": "Unpin Livestream - default",
+      "request": {
+        "urlPathTemplate": "/livestreams/{id}/unpin",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"lfeed_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"pinned_at\": \"2026-01-01T12:00:00.000Z\",\n  \"recording_started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"recording_status\": \"recording\",\n  \"recording_url\": \"https://whop-livestreams-example.s3.amazonaws.com/room/lfeed_xxxxxxxxxxxxxxxxxxxxxx.mp4\",\n  \"started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"thumbnail_url\": \"https://img.whop.com/livestreams/lfeed_xxxxxxxxxxxxxxxxxxxxxx.jpg\",\n  \"title\": \"Live edit: blue hour\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "efa26701-5552-4561-a379-ae95a3f9c0fe",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "cc1003e4-e7f3-4df5-b4a2-ee9d7ce9b5fd",
       "name": "Generate Media Asset - default",
       "request": {
@@ -17804,6 +17949,6 @@
     }
   ],
   "meta": {
-    "total": 496
+    "total": 500
   }
 }
