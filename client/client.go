@@ -16,6 +16,7 @@ import (
 	apikeys "github.com/whopio/whopsdk-go/v2/apikeys"
 	apilogs "github.com/whopio/whopsdk-go/v2/apilogs"
 	appbuilds "github.com/whopio/whopsdk-go/v2/appbuilds"
+	appinstallations "github.com/whopio/whopsdk-go/v2/appinstallations"
 	apps "github.com/whopio/whopsdk-go/v2/apps"
 	audiences "github.com/whopio/whopsdk-go/v2/audiences"
 	authorizedusers "github.com/whopio/whopsdk-go/v2/authorizedusers"
@@ -118,6 +119,7 @@ type Whop struct {
 	APIKeys                  *apikeys.Client
 	APILogs                  *apilogs.Client
 	AppBuilds                *appbuilds.Client
+	AppInstallations         *appinstallations.Client
 	Apps                     *apps.Client
 	Audiences                *audiences.Client
 	AuthorizedUsers          *authorizedusers.Client
@@ -227,6 +229,7 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		APIKeys:                  apikeys.NewClient(options),
 		APILogs:                  apilogs.NewClient(options),
 		AppBuilds:                appbuilds.NewClient(options),
+		AppInstallations:         appinstallations.NewClient(options),
 		Apps:                     apps.NewClient(options),
 		Audiences:                audiences.NewClient(options),
 		AuthorizedUsers:          authorizedusers.NewClient(options),

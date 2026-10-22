@@ -7645,6 +7645,289 @@ client.AppBuilds.Promote(
 </dl>
 </details>
 
+## App Installations
+<details><summary><code>client.AppInstallations.List() -> *whopsdk.ListAppInstallationsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists app installations, newest first. An app's API key lists the accounts that installed it. An account lists the apps installed on it; a user passes that account's `account_id`. The developer of an app lists every installation of it by passing `app_id`. Uninstalled apps, deleted apps and deleted accounts are left out.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.ListAppInstallationsRequest{}
+client.AppInstallations.List(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — Only return installations on this account, prefixed `biz_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**appID:** `*string` — Only return installations of this app, prefixed `app_`. Pass your own app's ID to list the accounts that installed it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**viewType:** `*whopsdk.ListAppInstallationsRequestViewType` — Only return installations of apps that have this view, such as `dashboard` for apps shown in a business's dashboard.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**externalID:** `*string` — Only return the installation with this `external_id`, the installed app's own identifier for it. Only the app and its developer can filter by it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**createdBefore:** `*string` — Only return installations created before this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**createdAfter:** `*string` — Only return installations created after this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `*int` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `*int` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order:** `*whopsdk.ListAppInstallationsRequestOrder` — Field to sort installations by. `name` sorts by app name, and only when listing the apps installed on one account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `*whopsdk.ListAppInstallationsRequestDirection` — Sort direction.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.AppInstallations.Retrieve(ID) -> *whopsdk.AppInstallation</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves an app installation, with the metadata the app stores on it. The app, its developer and the account it's installed on can retrieve it.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.RetrieveAppInstallationsRequest{
+    ID: "id",
+}
+client.AppInstallations.Retrieve(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — App installation ID, prefixed `aag_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.AppInstallations.Update(ID, request) -> *whopsdk.AppInstallation</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Updates the `metadata` and `external_id` your app keeps on an installation. Only the metadata keys you send change, so separate jobs can each keep their own keys.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.UpdateAppInstallationsRequest{
+    ID: "id",
+}
+client.AppInstallations.Update(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — App installation ID, prefixed `aag_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**externalID:** `*string` — Your app's own identifier for this installation, such as the ID of the linked account in another system, or `null` when none is set. At most 255 characters and unique across your app's installations, so you can find an installation with `GET /app_installations?external_id=`; setting one another installation already has returns a `409`. Only the app and its developer see it; for the account the app is installed on it is always `null`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `map[string]*string` — Metadata keys to set, as string values. A key set to `null` is removed and keys you leave out don't change; an empty object clears every key. At most 50 keys; keys are at most 100 characters and values at most 500.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Apps
 <details><summary><code>client.Apps.List() -> *whopsdk.ListAppsResponse</code></summary>
 <dl>
