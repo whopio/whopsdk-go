@@ -241,21 +241,23 @@ var (
 	memberFieldAccountID          = big.NewInt(1 << 1)
 	memberFieldCreatedAt          = big.NewInt(1 << 2)
 	memberFieldDisplayName        = big.NewInt(1 << 3)
-	memberFieldEmail              = big.NewInt(1 << 4)
-	memberFieldID                 = big.NewInt(1 << 5)
-	memberFieldJoinedAt           = big.NewInt(1 << 6)
-	memberFieldLastAccessedAt     = big.NewInt(1 << 7)
-	memberFieldMostRecentAction   = big.NewInt(1 << 8)
-	memberFieldMostRecentActionAt = big.NewInt(1 << 9)
-	memberFieldPhoneNumber        = big.NewInt(1 << 10)
-	memberFieldStatus             = big.NewInt(1 << 11)
-	memberFieldTokenBalance       = big.NewInt(1 << 12)
-	memberFieldUsdTotalSpent      = big.NewInt(1 << 13)
-	memberFieldUser               = big.NewInt(1 << 14)
+	memberFieldEarningsUsd        = big.NewInt(1 << 4)
+	memberFieldEmail              = big.NewInt(1 << 5)
+	memberFieldID                 = big.NewInt(1 << 6)
+	memberFieldJoinedAt           = big.NewInt(1 << 7)
+	memberFieldLastAccessedAt     = big.NewInt(1 << 8)
+	memberFieldMostRecentAction   = big.NewInt(1 << 9)
+	memberFieldMostRecentActionAt = big.NewInt(1 << 10)
+	memberFieldPhoneNumber        = big.NewInt(1 << 11)
+	memberFieldStatus             = big.NewInt(1 << 12)
+	memberFieldTokenBalance       = big.NewInt(1 << 13)
+	memberFieldUsdTotalSpent      = big.NewInt(1 << 14)
+	memberFieldUser               = big.NewInt(1 << 15)
 )
 
 // memberNullableFields maps the wire names of Member's nullable fields (required or optional) to their field bits.
 var memberNullableFields = map[string]*big.Int{
+	"earnings_usd":          memberFieldEarningsUsd,
 	"email":                 memberFieldEmail,
 	"last_accessed_at":      memberFieldLastAccessedAt,
 	"most_recent_action":    memberFieldMostRecentAction,
@@ -273,6 +275,8 @@ type Member struct {
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// The name to show for this member: the user's name, or their username when they have not set one. The buying business's name when `user` is `null`.
 	DisplayName string `json:"display_name" url:"display_name"`
+	// The user's gross income across Whop, in USD, refreshed periodically. `null` when the user hides their earnings or the buyer is another business.
+	EarningsUsd *UserEarningsAmount `json:"earnings_usd,omitempty" url:"earnings_usd,omitempty"`
 	// The user's email address. `null` without `member:email:read` on the account, when the buyer is another business, or when the user has no assigned email.
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
 	// Member ID, prefixed `mber_`.
@@ -329,6 +333,13 @@ func (m *Member) GetDisplayName() string {
 		return ""
 	}
 	return m.DisplayName
+}
+
+func (m *Member) GetEarningsUsd() *UserEarningsAmount {
+	if m == nil {
+		return nil
+	}
+	return m.EarningsUsd
 }
 
 func (m *Member) GetEmail() *string {
@@ -450,6 +461,13 @@ func (m *Member) SetCreatedAt(createdAt string) {
 func (m *Member) SetDisplayName(displayName string) {
 	m.DisplayName = displayName
 	m.require(memberFieldDisplayName)
+}
+
+// SetEarningsUsd sets the EarningsUsd field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Member) SetEarningsUsd(earningsUsd *UserEarningsAmount) {
+	m.EarningsUsd = earningsUsd
+	m.require(memberFieldEarningsUsd)
 }
 
 // SetEmail sets the Email field and marks it as non-optional;

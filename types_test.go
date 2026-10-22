@@ -117824,6 +117824,263 @@ func TestSettersMarkExplicitUnprocessableEntityErrorBodyError(t *testing.T) {
 
 }
 
+func TestSettersUserEarningsAmount(t *testing.T) {
+	t.Run("SetLast24Hours", func(t *testing.T) {
+		obj := &UserEarningsAmount{}
+		var fernTestValueLast24Hours string
+		obj.SetLast24Hours(fernTestValueLast24Hours)
+		assert.Equal(t, fernTestValueLast24Hours, obj.Last24Hours)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetLast30Days", func(t *testing.T) {
+		obj := &UserEarningsAmount{}
+		var fernTestValueLast30Days string
+		obj.SetLast30Days(fernTestValueLast30Days)
+		assert.Equal(t, fernTestValueLast30Days, obj.Last30Days)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetLast7Days", func(t *testing.T) {
+		obj := &UserEarningsAmount{}
+		var fernTestValueLast7Days string
+		obj.SetLast7Days(fernTestValueLast7Days)
+		assert.Equal(t, fernTestValueLast7Days, obj.Last7Days)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetLifetime", func(t *testing.T) {
+		obj := &UserEarningsAmount{}
+		var fernTestValueLifetime string
+		obj.SetLifetime(fernTestValueLifetime)
+		assert.Equal(t, fernTestValueLifetime, obj.Lifetime)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersUserEarningsAmount(t *testing.T) {
+	t.Run("GetLast24Hours", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UserEarningsAmount{}
+		var expected string
+		obj.Last24Hours = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetLast24Hours(), "getter should return the property value")
+	})
+
+	t.Run("GetLast24Hours_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UserEarningsAmount
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetLast24Hours() // Should return zero value
+	})
+
+	t.Run("GetLast30Days", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UserEarningsAmount{}
+		var expected string
+		obj.Last30Days = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetLast30Days(), "getter should return the property value")
+	})
+
+	t.Run("GetLast30Days_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UserEarningsAmount
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetLast30Days() // Should return zero value
+	})
+
+	t.Run("GetLast7Days", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UserEarningsAmount{}
+		var expected string
+		obj.Last7Days = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetLast7Days(), "getter should return the property value")
+	})
+
+	t.Run("GetLast7Days_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UserEarningsAmount
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetLast7Days() // Should return zero value
+	})
+
+	t.Run("GetLifetime", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UserEarningsAmount{}
+		var expected string
+		obj.Lifetime = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetLifetime(), "getter should return the property value")
+	})
+
+	t.Run("GetLifetime_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UserEarningsAmount
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetLifetime() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitUserEarningsAmount(t *testing.T) {
+	t.Run("SetLast24Hours_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UserEarningsAmount{}
+		var fernTestValueLast24Hours string
+
+		// Act
+		obj.SetLast24Hours(fernTestValueLast24Hours)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetLast30Days_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UserEarningsAmount{}
+		var fernTestValueLast30Days string
+
+		// Act
+		obj.SetLast30Days(fernTestValueLast30Days)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetLast7Days_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UserEarningsAmount{}
+		var fernTestValueLast7Days string
+
+		// Act
+		obj.SetLast7Days(fernTestValueLast7Days)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetLifetime_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UserEarningsAmount{}
+		var fernTestValueLifetime string
+
+		// Act
+		obj.SetLifetime(fernTestValueLifetime)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersUserFees(t *testing.T) {
 	t.Run("SetBankDeposit", func(t *testing.T) {
 		obj := &UserFees{}
@@ -133763,6 +134020,39 @@ func TestJSONMarshalingUnprocessableEntityErrorBodyError(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingUserEarningsAmount(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UserEarningsAmount{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled UserEarningsAmount
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj UserEarningsAmount
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj UserEarningsAmount
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingUserFees(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -146963,6 +147253,22 @@ func TestStringUnprocessableEntityErrorBodyError(t *testing.T) {
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *UnprocessableEntityErrorBodyError
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringUserEarningsAmount(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &UserEarningsAmount{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UserEarningsAmount
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -167481,6 +167787,29 @@ func TestExtraPropertiesUnprocessableEntityErrorBodyError(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *UnprocessableEntityErrorBodyError
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesUserEarningsAmount(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &UserEarningsAmount{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UserEarningsAmount
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
