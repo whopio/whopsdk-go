@@ -410,24 +410,30 @@ func (r *RetrieveWaitlistEntriesRequest) SetID(id string) {
 var (
 	waitlistEntryFieldAccountID             = big.NewInt(1 << 0)
 	waitlistEntryFieldApprovalFailureReason = big.NewInt(1 << 1)
-	waitlistEntryFieldBuyerAccountID        = big.NewInt(1 << 2)
-	waitlistEntryFieldCreatedAt             = big.NewInt(1 << 3)
-	waitlistEntryFieldCustomFieldResponses  = big.NewInt(1 << 4)
-	waitlistEntryFieldID                    = big.NewInt(1 << 5)
-	waitlistEntryFieldMembershipID          = big.NewInt(1 << 6)
-	waitlistEntryFieldMetadata              = big.NewInt(1 << 7)
-	waitlistEntryFieldPlanID                = big.NewInt(1 << 8)
-	waitlistEntryFieldProductID             = big.NewInt(1 << 9)
-	waitlistEntryFieldStatus                = big.NewInt(1 << 10)
-	waitlistEntryFieldUpdatedAt             = big.NewInt(1 << 11)
-	waitlistEntryFieldUserID                = big.NewInt(1 << 12)
+	waitlistEntryFieldBuyerAccount          = big.NewInt(1 << 2)
+	waitlistEntryFieldBuyerAccountID        = big.NewInt(1 << 3)
+	waitlistEntryFieldCreatedAt             = big.NewInt(1 << 4)
+	waitlistEntryFieldCustomFieldResponses  = big.NewInt(1 << 5)
+	waitlistEntryFieldID                    = big.NewInt(1 << 6)
+	waitlistEntryFieldMembershipID          = big.NewInt(1 << 7)
+	waitlistEntryFieldMetadata              = big.NewInt(1 << 8)
+	waitlistEntryFieldPlanID                = big.NewInt(1 << 9)
+	waitlistEntryFieldProduct               = big.NewInt(1 << 10)
+	waitlistEntryFieldProductID             = big.NewInt(1 << 11)
+	waitlistEntryFieldStatus                = big.NewInt(1 << 12)
+	waitlistEntryFieldUpdatedAt             = big.NewInt(1 << 13)
+	waitlistEntryFieldUser                  = big.NewInt(1 << 14)
+	waitlistEntryFieldUserID                = big.NewInt(1 << 15)
+	waitlistEntryFieldVariant               = big.NewInt(1 << 16)
 )
 
 // waitlistEntryNullableFields maps the wire names of WaitlistEntry's nullable fields (required or optional) to their field bits.
 var waitlistEntryNullableFields = map[string]*big.Int{
 	"approval_failure_reason": waitlistEntryFieldApprovalFailureReason,
+	"buyer_account":           waitlistEntryFieldBuyerAccount,
 	"buyer_account_id":        waitlistEntryFieldBuyerAccountID,
 	"membership_id":           waitlistEntryFieldMembershipID,
+	"product":                 waitlistEntryFieldProduct,
 	"product_id":              waitlistEntryFieldProductID,
 }
 
@@ -436,6 +442,8 @@ type WaitlistEntry struct {
 	AccountID string `json:"account_id" url:"account_id"`
 	// Why the last approval attempt failed, or `null` when none has. `plan_unavailable` — the variant, product, or seller account was deleted. `already_member` — the user already has a membership on a one-per-user product. `checkout_failed` — checkout failed, usually a declined payment, and the signup was denied. `unknown` — another failure; retry. Cleared when approval is requeued.
 	ApprovalFailureReason *WaitlistEntryApprovalFailureReason `json:"approval_failure_reason,omitempty" url:"approval_failure_reason,omitempty"`
+	// The account the signup was submitted on behalf of, or `null` when the user signed up for themselves.
+	BuyerAccount *StorefrontAccount `json:"buyer_account,omitempty" url:"buyer_account,omitempty"`
 	// The account the signup was submitted on behalf of, prefixed `biz_`, or `null` when the user signed up for themselves.
 	BuyerAccountID *string `json:"buyer_account_id,omitempty" url:"buyer_account_id,omitempty"`
 	// When this signup was submitted, as an ISO 8601 timestamp.
@@ -449,14 +457,20 @@ type WaitlistEntry struct {
 	Metadata map[string]any `json:"metadata" url:"metadata"`
 	// The variant this signup belongs to, prefixed `plan_`.
 	PlanID string `json:"plan_id" url:"plan_id"`
+	// The product this signup belongs to, or `null` when the variant has no product.
+	Product *WaitlistEntryProduct `json:"product,omitempty" url:"product,omitempty"`
 	// The product this signup belongs to, prefixed `prod_`, or `null` when the variant has no product.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// The signup's current state. Approval runs asynchronously, so a signup stays `pending` until processing completes. `approved` alone does not prove an active membership; check `membership_id`.
 	Status WaitlistEntryStatus `json:"status" url:"status"`
 	// When this signup last changed, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
+	// The user who submitted this signup. For a signup an account's own credential submitted, the account's owner.
+	User *UserSummary `json:"user" url:"user"`
 	// The user who submitted this signup, prefixed `user_`. For a signup an account's own credential submitted, the account's owner.
 	UserID string `json:"user_id" url:"user_id"`
+	// The variant this signup belongs to.
+	Variant *WaitlistEntryVariant `json:"variant" url:"variant"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -477,6 +491,13 @@ func (w *WaitlistEntry) GetApprovalFailureReason() *WaitlistEntryApprovalFailure
 		return nil
 	}
 	return w.ApprovalFailureReason
+}
+
+func (w *WaitlistEntry) GetBuyerAccount() *StorefrontAccount {
+	if w == nil {
+		return nil
+	}
+	return w.BuyerAccount
 }
 
 func (w *WaitlistEntry) GetBuyerAccountID() *string {
@@ -528,6 +549,13 @@ func (w *WaitlistEntry) GetPlanID() string {
 	return w.PlanID
 }
 
+func (w *WaitlistEntry) GetProduct() *WaitlistEntryProduct {
+	if w == nil {
+		return nil
+	}
+	return w.Product
+}
+
 func (w *WaitlistEntry) GetProductID() *string {
 	if w == nil {
 		return nil
@@ -549,11 +577,25 @@ func (w *WaitlistEntry) GetUpdatedAt() string {
 	return w.UpdatedAt
 }
 
+func (w *WaitlistEntry) GetUser() *UserSummary {
+	if w == nil {
+		return nil
+	}
+	return w.User
+}
+
 func (w *WaitlistEntry) GetUserID() string {
 	if w == nil {
 		return ""
 	}
 	return w.UserID
+}
+
+func (w *WaitlistEntry) GetVariant() *WaitlistEntryVariant {
+	if w == nil {
+		return nil
+	}
+	return w.Variant
 }
 
 func (w *WaitlistEntry) GetExtraProperties() map[string]interface{} {
@@ -584,6 +626,13 @@ func (w *WaitlistEntry) SetAccountID(accountID string) {
 func (w *WaitlistEntry) SetApprovalFailureReason(approvalFailureReason *WaitlistEntryApprovalFailureReason) {
 	w.ApprovalFailureReason = approvalFailureReason
 	w.require(waitlistEntryFieldApprovalFailureReason)
+}
+
+// SetBuyerAccount sets the BuyerAccount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WaitlistEntry) SetBuyerAccount(buyerAccount *StorefrontAccount) {
+	w.BuyerAccount = buyerAccount
+	w.require(waitlistEntryFieldBuyerAccount)
 }
 
 // SetBuyerAccountID sets the BuyerAccountID field and marks it as non-optional;
@@ -635,6 +684,13 @@ func (w *WaitlistEntry) SetPlanID(planID string) {
 	w.require(waitlistEntryFieldPlanID)
 }
 
+// SetProduct sets the Product field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WaitlistEntry) SetProduct(product *WaitlistEntryProduct) {
+	w.Product = product
+	w.require(waitlistEntryFieldProduct)
+}
+
 // SetProductID sets the ProductID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (w *WaitlistEntry) SetProductID(productID *string) {
@@ -656,11 +712,25 @@ func (w *WaitlistEntry) SetUpdatedAt(updatedAt string) {
 	w.require(waitlistEntryFieldUpdatedAt)
 }
 
+// SetUser sets the User field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WaitlistEntry) SetUser(user *UserSummary) {
+	w.User = user
+	w.require(waitlistEntryFieldUser)
+}
+
 // SetUserID sets the UserID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (w *WaitlistEntry) SetUserID(userID string) {
 	w.UserID = userID
 	w.require(waitlistEntryFieldUserID)
+}
+
+// SetVariant sets the Variant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WaitlistEntry) SetVariant(variant *WaitlistEntryVariant) {
+	w.Variant = variant
+	w.require(waitlistEntryFieldVariant)
 }
 
 func (w *WaitlistEntry) UnmarshalJSON(data []byte) error {
@@ -862,6 +932,110 @@ func (w *WaitlistEntryCustomFieldResponse) String() string {
 	return fmt.Sprintf("%#v", w)
 }
 
+var (
+	waitlistEntryProductFieldID    = big.NewInt(1 << 0)
+	waitlistEntryProductFieldTitle = big.NewInt(1 << 1)
+)
+
+type WaitlistEntryProduct struct {
+	// Product ID, prefixed `prod_`.
+	ID string `json:"id" url:"id"`
+	// Product display name.
+	Title string `json:"title" url:"title"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (w *WaitlistEntryProduct) GetID() string {
+	if w == nil {
+		return ""
+	}
+	return w.ID
+}
+
+func (w *WaitlistEntryProduct) GetTitle() string {
+	if w == nil {
+		return ""
+	}
+	return w.Title
+}
+
+func (w *WaitlistEntryProduct) GetExtraProperties() map[string]interface{} {
+	if w == nil {
+		return nil
+	}
+	return w.extraProperties
+}
+
+func (w *WaitlistEntryProduct) require(field *big.Int) {
+	next := new(big.Int)
+	if w.explicitFields != nil {
+		next.Set(w.explicitFields)
+	}
+	next.Or(next, field)
+	w.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WaitlistEntryProduct) SetID(id string) {
+	w.ID = id
+	w.require(waitlistEntryProductFieldID)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WaitlistEntryProduct) SetTitle(title string) {
+	w.Title = title
+	w.require(waitlistEntryProductFieldTitle)
+}
+
+func (w *WaitlistEntryProduct) UnmarshalJSON(data []byte) error {
+	type unmarshaler WaitlistEntryProduct
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*w = WaitlistEntryProduct(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *w)
+	if err != nil {
+		return err
+	}
+	w.extraProperties = extraProperties
+	w.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (w *WaitlistEntryProduct) MarshalJSON() ([]byte, error) {
+	type embed WaitlistEntryProduct
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*w),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, w.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (w *WaitlistEntryProduct) String() string {
+	if w == nil {
+		return "<nil>"
+	}
+	if len(w.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(w.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(w); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", w)
+}
+
 // The signup's current state. Approval runs asynchronously, so a signup stays `pending` until processing completes. `approved` alone does not prove an active membership; check `membership_id`.
 type WaitlistEntryStatus string
 
@@ -888,6 +1062,250 @@ func NewWaitlistEntryStatusFromString(s string) (WaitlistEntryStatus, error) {
 }
 
 func (w WaitlistEntryStatus) Ptr() *WaitlistEntryStatus {
+	return &w
+}
+
+var (
+	waitlistEntryVariantFieldBillingPeriod   = big.NewInt(1 << 0)
+	waitlistEntryVariantFieldDescription     = big.NewInt(1 << 1)
+	waitlistEntryVariantFieldID              = big.NewInt(1 << 2)
+	waitlistEntryVariantFieldInitialPrice    = big.NewInt(1 << 3)
+	waitlistEntryVariantFieldPlanType        = big.NewInt(1 << 4)
+	waitlistEntryVariantFieldRenewalPrice    = big.NewInt(1 << 5)
+	waitlistEntryVariantFieldTitle           = big.NewInt(1 << 6)
+	waitlistEntryVariantFieldTrialPeriodDays = big.NewInt(1 << 7)
+)
+
+// waitlistEntryVariantNullableFields maps the wire names of WaitlistEntryVariant's nullable fields (required or optional) to their field bits.
+var waitlistEntryVariantNullableFields = map[string]*big.Int{
+	"billing_period":    waitlistEntryVariantFieldBillingPeriod,
+	"description":       waitlistEntryVariantFieldDescription,
+	"title":             waitlistEntryVariantFieldTitle,
+	"trial_period_days": waitlistEntryVariantFieldTrialPeriodDays,
+}
+
+type WaitlistEntryVariant struct {
+	// Number of days between recurring charges, such as 30 for monthly or 365 for annual. `null` for one-time variants.
+	BillingPeriod *float64 `json:"billing_period,omitempty" url:"billing_period,omitempty"`
+	// Customer-visible variant description. Maximum 1000 characters. `null` if no description is set.
+	Description *string `json:"description,omitempty" url:"description,omitempty"`
+	// Variant ID, prefixed `plan_`.
+	ID string `json:"id" url:"id"`
+	// What checkout charges up front. `amount` is `"0.00"` when the first charge is free, such as a trial.
+	InitialPrice *Money `json:"initial_price" url:"initial_price"`
+	// Billing model for this variant: `one_time` or `renewal`.
+	PlanType WaitlistEntryVariantPlanType `json:"plan_type" url:"plan_type"`
+	// The recurring charge every `billing_period` days. `amount` is `"0.00"` for one-time variants.
+	RenewalPrice *Money `json:"renewal_price" url:"renewal_price"`
+	// Variant display name shown to customers. `null` if no title has been set.
+	Title *string `json:"title,omitempty" url:"title,omitempty"`
+	// Free trial days configured before the first renewal charge. `null` if no trial is configured.
+	TrialPeriodDays *float64 `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (w *WaitlistEntryVariant) GetBillingPeriod() *float64 {
+	if w == nil {
+		return nil
+	}
+	return w.BillingPeriod
+}
+
+func (w *WaitlistEntryVariant) GetDescription() *string {
+	if w == nil {
+		return nil
+	}
+	return w.Description
+}
+
+func (w *WaitlistEntryVariant) GetID() string {
+	if w == nil {
+		return ""
+	}
+	return w.ID
+}
+
+func (w *WaitlistEntryVariant) GetInitialPrice() *Money {
+	if w == nil {
+		return nil
+	}
+	return w.InitialPrice
+}
+
+func (w *WaitlistEntryVariant) GetPlanType() WaitlistEntryVariantPlanType {
+	if w == nil {
+		return ""
+	}
+	return w.PlanType
+}
+
+func (w *WaitlistEntryVariant) GetRenewalPrice() *Money {
+	if w == nil {
+		return nil
+	}
+	return w.RenewalPrice
+}
+
+func (w *WaitlistEntryVariant) GetTitle() *string {
+	if w == nil {
+		return nil
+	}
+	return w.Title
+}
+
+func (w *WaitlistEntryVariant) GetTrialPeriodDays() *float64 {
+	if w == nil {
+		return nil
+	}
+	return w.TrialPeriodDays
+}
+
+func (w *WaitlistEntryVariant) GetExtraProperties() map[string]interface{} {
+	if w == nil {
+		return nil
+	}
+	return w.extraProperties
+}
+
+func (w *WaitlistEntryVariant) require(field *big.Int) {
+	next := new(big.Int)
+	if w.explicitFields != nil {
+		next.Set(w.explicitFields)
+	}
+	next.Or(next, field)
+	w.explicitFields = next
+}
+
+// SetBillingPeriod sets the BillingPeriod field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WaitlistEntryVariant) SetBillingPeriod(billingPeriod *float64) {
+	w.BillingPeriod = billingPeriod
+	w.require(waitlistEntryVariantFieldBillingPeriod)
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WaitlistEntryVariant) SetDescription(description *string) {
+	w.Description = description
+	w.require(waitlistEntryVariantFieldDescription)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WaitlistEntryVariant) SetID(id string) {
+	w.ID = id
+	w.require(waitlistEntryVariantFieldID)
+}
+
+// SetInitialPrice sets the InitialPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WaitlistEntryVariant) SetInitialPrice(initialPrice *Money) {
+	w.InitialPrice = initialPrice
+	w.require(waitlistEntryVariantFieldInitialPrice)
+}
+
+// SetPlanType sets the PlanType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WaitlistEntryVariant) SetPlanType(planType WaitlistEntryVariantPlanType) {
+	w.PlanType = planType
+	w.require(waitlistEntryVariantFieldPlanType)
+}
+
+// SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WaitlistEntryVariant) SetRenewalPrice(renewalPrice *Money) {
+	w.RenewalPrice = renewalPrice
+	w.require(waitlistEntryVariantFieldRenewalPrice)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WaitlistEntryVariant) SetTitle(title *string) {
+	w.Title = title
+	w.require(waitlistEntryVariantFieldTitle)
+}
+
+// SetTrialPeriodDays sets the TrialPeriodDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WaitlistEntryVariant) SetTrialPeriodDays(trialPeriodDays *float64) {
+	w.TrialPeriodDays = trialPeriodDays
+	w.require(waitlistEntryVariantFieldTrialPeriodDays)
+}
+
+func (w *WaitlistEntryVariant) UnmarshalJSON(data []byte) error {
+	type unmarshaler WaitlistEntryVariant
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*w = WaitlistEntryVariant(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *w)
+	if err != nil {
+		return err
+	}
+	w.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, waitlistEntryVariantNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		w.require(presentFields)
+	}
+	w.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (w *WaitlistEntryVariant) MarshalJSON() ([]byte, error) {
+	type embed WaitlistEntryVariant
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*w),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, w.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (w *WaitlistEntryVariant) String() string {
+	if w == nil {
+		return "<nil>"
+	}
+	if len(w.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(w.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(w); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", w)
+}
+
+// Billing model for this variant: `one_time` or `renewal`.
+type WaitlistEntryVariantPlanType string
+
+const (
+	WaitlistEntryVariantPlanTypeRenewal WaitlistEntryVariantPlanType = "renewal"
+	WaitlistEntryVariantPlanTypeOneTime WaitlistEntryVariantPlanType = "one_time"
+)
+
+func NewWaitlistEntryVariantPlanTypeFromString(s string) (WaitlistEntryVariantPlanType, error) {
+	switch s {
+	case "renewal":
+		return WaitlistEntryVariantPlanTypeRenewal, nil
+	case "one_time":
+		return WaitlistEntryVariantPlanTypeOneTime, nil
+	}
+	var t WaitlistEntryVariantPlanType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (w WaitlistEntryVariantPlanType) Ptr() *WaitlistEntryVariantPlanType {
 	return &w
 }
 
