@@ -32178,6 +32178,34 @@ func TestEnumCardBrands(t *testing.T) {
 		assert.Equal(t, CardBrands("star"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_eftpos", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCardBrandsFromString("eftpos")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CardBrands("eftpos"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_alelo", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCardBrandsFromString("alelo")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CardBrands("alelo"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_edenred", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCardBrandsFromString("edenred")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CardBrands("edenred"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_sodexo", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCardBrandsFromString("sodexo")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CardBrands("sodexo"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_unknown", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewCardBrandsFromString("unknown")

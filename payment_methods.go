@@ -331,6 +331,10 @@ const (
 	CardBrandsNyce                CardBrands = "nyce"
 	CardBrandsPulse               CardBrands = "pulse"
 	CardBrandsStar                CardBrands = "star"
+	CardBrandsEftpos              CardBrands = "eftpos"
+	CardBrandsAlelo               CardBrands = "alelo"
+	CardBrandsEdenred             CardBrands = "edenred"
+	CardBrandsSodexo              CardBrands = "sodexo"
 	CardBrandsUnknown             CardBrands = "unknown"
 )
 
@@ -426,6 +430,14 @@ func NewCardBrandsFromString(s string) (CardBrands, error) {
 		return CardBrandsPulse, nil
 	case "star":
 		return CardBrandsStar, nil
+	case "eftpos":
+		return CardBrandsEftpos, nil
+	case "alelo":
+		return CardBrandsAlelo, nil
+	case "edenred":
+		return CardBrandsEdenred, nil
+	case "sodexo":
+		return CardBrandsSodexo, nil
 	case "unknown":
 		return CardBrandsUnknown, nil
 	}
