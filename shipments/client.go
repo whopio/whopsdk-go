@@ -153,6 +153,34 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
+// Finds the delivery for a purchase from an account with customer tracking turned on, using exactly one order or tracking number plus the buyer's current receipt email. No authentication is required and no sign-in or session is created. Email matching ignores case and surrounding whitespace, but dots and +tags must match. Every miss returns the same 404: an unknown account, tracking turned off, a wrong number or email, an unpaid order or a purchase with nothing to ship. `shipment` is `null` while a paid physical purchase has no tracking yet. Limited to 30 attempts per five minutes per client IP. Responses are never cached or replayed with Idempotency-Key.
+//
+// Example:
+//
+//	request := &whopsdk.LookupShipmentsRequest{
+//	    AccountID: "biz_xxxxxxxxxxxxxx",
+//	    Email: "marcus@shinetime.example",
+//	}
+//	client.Shipments.Lookup(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Lookup(
+	ctx context.Context,
+	request *whopsdk.LookupShipmentsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.ShipmentLookup, error) {
+	response, err := c.WithRawResponse.Lookup(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Retrieves a shipment by its ID, or by the ID of the payment it fulfills.
 //
 // Example:

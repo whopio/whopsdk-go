@@ -1494,6 +1494,249 @@ func (a *AccountCoveredPayoutFees) String() string {
 }
 
 var (
+	accountCustomerTrackingFieldAccentColor      = big.NewInt(1 << 0)
+	accountCustomerTrackingFieldBusinessName     = big.NewInt(1 << 1)
+	accountCustomerTrackingFieldButtonTextColor  = big.NewInt(1 << 2)
+	accountCustomerTrackingFieldLogoURL          = big.NewInt(1 << 3)
+	accountCustomerTrackingFieldShowBusinessName = big.NewInt(1 << 4)
+	accountCustomerTrackingFieldShowLogo         = big.NewInt(1 << 5)
+	accountCustomerTrackingFieldSupportEmail     = big.NewInt(1 << 6)
+	accountCustomerTrackingFieldSupportURL       = big.NewInt(1 << 7)
+)
+
+// accountCustomerTrackingNullableFields maps the wire names of AccountCustomerTracking's nullable fields (required or optional) to their field bits.
+var accountCustomerTrackingNullableFields = map[string]*big.Int{
+	"logo_url":      accountCustomerTrackingFieldLogoURL,
+	"support_email": accountCustomerTrackingFieldSupportEmail,
+	"support_url":   accountCustomerTrackingFieldSupportURL,
+}
+
+type AccountCustomerTracking struct {
+	// Accent color, as a `#rrggbb` hex color.
+	AccentColor string `json:"accent_color" url:"accent_color"`
+	// The business name shown on its customer tracking page.
+	BusinessName string `json:"business_name" url:"business_name"`
+	// `black` or `white`, whichever reads against the accent color.
+	ButtonTextColor AccountCustomerTrackingButtonTextColor `json:"button_text_color" url:"button_text_color"`
+	// The account logo image URL, or `null` when it has not uploaded one.
+	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
+	// Whether to display the business name on the tracking page and Element.
+	ShowBusinessName bool `json:"show_business_name" url:"show_business_name"`
+	// Whether to display the logo on the tracking page and Element.
+	ShowLogo bool `json:"show_logo" url:"show_logo"`
+	// Customer support email address, or `null` when not set.
+	SupportEmail *string `json:"support_email,omitempty" url:"support_email,omitempty"`
+	// HTTPS customer support URL, or `null` when not set.
+	SupportURL *string `json:"support_url,omitempty" url:"support_url,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AccountCustomerTracking) GetAccentColor() string {
+	if a == nil {
+		return ""
+	}
+	return a.AccentColor
+}
+
+func (a *AccountCustomerTracking) GetBusinessName() string {
+	if a == nil {
+		return ""
+	}
+	return a.BusinessName
+}
+
+func (a *AccountCustomerTracking) GetButtonTextColor() AccountCustomerTrackingButtonTextColor {
+	if a == nil {
+		return ""
+	}
+	return a.ButtonTextColor
+}
+
+func (a *AccountCustomerTracking) GetLogoURL() *string {
+	if a == nil {
+		return nil
+	}
+	return a.LogoURL
+}
+
+func (a *AccountCustomerTracking) GetShowBusinessName() bool {
+	if a == nil {
+		return false
+	}
+	return a.ShowBusinessName
+}
+
+func (a *AccountCustomerTracking) GetShowLogo() bool {
+	if a == nil {
+		return false
+	}
+	return a.ShowLogo
+}
+
+func (a *AccountCustomerTracking) GetSupportEmail() *string {
+	if a == nil {
+		return nil
+	}
+	return a.SupportEmail
+}
+
+func (a *AccountCustomerTracking) GetSupportURL() *string {
+	if a == nil {
+		return nil
+	}
+	return a.SupportURL
+}
+
+func (a *AccountCustomerTracking) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AccountCustomerTracking) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetAccentColor sets the AccentColor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountCustomerTracking) SetAccentColor(accentColor string) {
+	a.AccentColor = accentColor
+	a.require(accountCustomerTrackingFieldAccentColor)
+}
+
+// SetBusinessName sets the BusinessName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountCustomerTracking) SetBusinessName(businessName string) {
+	a.BusinessName = businessName
+	a.require(accountCustomerTrackingFieldBusinessName)
+}
+
+// SetButtonTextColor sets the ButtonTextColor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountCustomerTracking) SetButtonTextColor(buttonTextColor AccountCustomerTrackingButtonTextColor) {
+	a.ButtonTextColor = buttonTextColor
+	a.require(accountCustomerTrackingFieldButtonTextColor)
+}
+
+// SetLogoURL sets the LogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountCustomerTracking) SetLogoURL(logoURL *string) {
+	a.LogoURL = logoURL
+	a.require(accountCustomerTrackingFieldLogoURL)
+}
+
+// SetShowBusinessName sets the ShowBusinessName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountCustomerTracking) SetShowBusinessName(showBusinessName bool) {
+	a.ShowBusinessName = showBusinessName
+	a.require(accountCustomerTrackingFieldShowBusinessName)
+}
+
+// SetShowLogo sets the ShowLogo field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountCustomerTracking) SetShowLogo(showLogo bool) {
+	a.ShowLogo = showLogo
+	a.require(accountCustomerTrackingFieldShowLogo)
+}
+
+// SetSupportEmail sets the SupportEmail field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountCustomerTracking) SetSupportEmail(supportEmail *string) {
+	a.SupportEmail = supportEmail
+	a.require(accountCustomerTrackingFieldSupportEmail)
+}
+
+// SetSupportURL sets the SupportURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountCustomerTracking) SetSupportURL(supportURL *string) {
+	a.SupportURL = supportURL
+	a.require(accountCustomerTrackingFieldSupportURL)
+}
+
+func (a *AccountCustomerTracking) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccountCustomerTracking
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccountCustomerTracking(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, accountCustomerTrackingNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccountCustomerTracking) MarshalJSON() ([]byte, error) {
+	type embed AccountCustomerTracking
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AccountCustomerTracking) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+// `black` or `white`, whichever reads against the accent color.
+type AccountCustomerTrackingButtonTextColor string
+
+const (
+	AccountCustomerTrackingButtonTextColorBlack AccountCustomerTrackingButtonTextColor = "black"
+	AccountCustomerTrackingButtonTextColorWhite AccountCustomerTrackingButtonTextColor = "white"
+)
+
+func NewAccountCustomerTrackingButtonTextColorFromString(s string) (AccountCustomerTrackingButtonTextColor, error) {
+	switch s {
+	case "black":
+		return AccountCustomerTrackingButtonTextColorBlack, nil
+	case "white":
+		return AccountCustomerTrackingButtonTextColorWhite, nil
+	}
+	var t AccountCustomerTrackingButtonTextColor
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountCustomerTrackingButtonTextColor) Ptr() *AccountCustomerTrackingButtonTextColor {
+	return &a
+}
+
+var (
 	accountEconomicIntelligenceOfferFieldAutoRenew     = big.NewInt(1 << 0)
 	accountEconomicIntelligenceOfferFieldDuration      = big.NewInt(1 << 1)
 	accountEconomicIntelligenceOfferFieldDurationUnit  = big.NewInt(1 << 2)
@@ -3937,24 +4180,26 @@ var (
 	accountPreferencesFieldCardsAutoTopUp                          = big.NewInt(1 << 6)
 	accountPreferencesFieldCardsNotifications                      = big.NewInt(1 << 7)
 	accountPreferencesFieldCoversConnectedAccountNegativeBalances  = big.NewInt(1 << 8)
-	accountPreferencesFieldDisputeFighterEnabled                   = big.NewInt(1 << 9)
-	accountPreferencesFieldEconomicIntelligence                    = big.NewInt(1 << 10)
-	accountPreferencesFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 11)
-	accountPreferencesFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 12)
-	accountPreferencesFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 13)
-	accountPreferencesFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 14)
-	accountPreferencesFieldEconomicIntelligenceOffers              = big.NewInt(1 << 15)
-	accountPreferencesFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 16)
-	accountPreferencesFieldFeedbackOptions                         = big.NewInt(1 << 17)
-	accountPreferencesFieldPreferredSettlementCurrency             = big.NewInt(1 << 18)
-	accountPreferencesFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 19)
-	accountPreferencesFieldSubscriptionFailureBehavior             = big.NewInt(1 << 20)
+	accountPreferencesFieldCustomerTracking                        = big.NewInt(1 << 9)
+	accountPreferencesFieldDisputeFighterEnabled                   = big.NewInt(1 << 10)
+	accountPreferencesFieldEconomicIntelligence                    = big.NewInt(1 << 11)
+	accountPreferencesFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 12)
+	accountPreferencesFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 13)
+	accountPreferencesFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 14)
+	accountPreferencesFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 15)
+	accountPreferencesFieldEconomicIntelligenceOffers              = big.NewInt(1 << 16)
+	accountPreferencesFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 17)
+	accountPreferencesFieldFeedbackOptions                         = big.NewInt(1 << 18)
+	accountPreferencesFieldPreferredSettlementCurrency             = big.NewInt(1 << 19)
+	accountPreferencesFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 20)
+	accountPreferencesFieldSubscriptionFailureBehavior             = big.NewInt(1 << 21)
 )
 
 // accountPreferencesNullableFields maps the wire names of AccountPreferences's nullable fields (required or optional) to their field bits.
 var accountPreferencesNullableFields = map[string]*big.Int{
 	"ads_payment_methods":                         accountPreferencesFieldAdsPaymentMethods,
 	"covers_connected_account_negative_balances":  accountPreferencesFieldCoversConnectedAccountNegativeBalances,
+	"customer_tracking":                           accountPreferencesFieldCustomerTracking,
 	"economic_intelligence_ends_at":               accountPreferencesFieldEconomicIntelligenceEndsAt,
 	"economic_intelligence_fee_percentage":        accountPreferencesFieldEconomicIntelligenceFeePercentage,
 	"economic_intelligence_first_renewal_at":      accountPreferencesFieldEconomicIntelligenceFirstRenewalAt,
@@ -3981,6 +4226,8 @@ type AccountPreferences struct {
 	CardsNotifications bool `json:"cards_notifications" url:"cards_notifications"`
 	// Whether this account covers its connected accounts' negative balances. When a connected account's balance drops below zero (from refunds, disputes, or fees), this account's available balance in the same currency pays it back, up to what is available. Refunds on its connected accounts may also take them negative by up to this account's available balance. `null` when the account has no connected accounts.
 	CoversConnectedAccountNegativeBalances *bool `json:"covers_connected_account_negative_balances,omitempty" url:"covers_connected_account_negative_balances,omitempty"`
+	// The saved customer tracking settings for the hosted tracking page and Element, exactly as saved. `null` until set; tracking is off unless `enabled` is `true`.
+	CustomerTracking *CustomerTrackingPreferences `json:"customer_tracking,omitempty" url:"customer_tracking,omitempty"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins.
 	DisputeFighterEnabled bool `json:"dispute_fighter_enabled" url:"dispute_fighter_enabled"`
 	// Whether Economic Intelligence is on for the account. It turns off automatically at `economic_intelligence_ends_at`.
@@ -4072,6 +4319,13 @@ func (a *AccountPreferences) GetCoversConnectedAccountNegativeBalances() *bool {
 		return nil
 	}
 	return a.CoversConnectedAccountNegativeBalances
+}
+
+func (a *AccountPreferences) GetCustomerTracking() *CustomerTrackingPreferences {
+	if a == nil {
+		return nil
+	}
+	return a.CustomerTracking
 }
 
 func (a *AccountPreferences) GetDisputeFighterEnabled() bool {
@@ -4235,6 +4489,13 @@ func (a *AccountPreferences) SetCardsNotifications(cardsNotifications bool) {
 func (a *AccountPreferences) SetCoversConnectedAccountNegativeBalances(coversConnectedAccountNegativeBalances *bool) {
 	a.CoversConnectedAccountNegativeBalances = coversConnectedAccountNegativeBalances
 	a.require(accountPreferencesFieldCoversConnectedAccountNegativeBalances)
+}
+
+// SetCustomerTracking sets the CustomerTracking field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPreferences) SetCustomerTracking(customerTracking *CustomerTrackingPreferences) {
+	a.CustomerTracking = customerTracking
+	a.require(accountPreferencesFieldCustomerTracking)
 }
 
 // SetDisputeFighterEnabled sets the DisputeFighterEnabled field and marks it as non-optional;
@@ -11785,6 +12046,195 @@ func NewCustomCtasFromString(s string) (CustomCtas, error) {
 
 func (c CustomCtas) Ptr() *CustomCtas {
 	return &c
+}
+
+var (
+	customerTrackingPreferencesFieldAccentColor      = big.NewInt(1 << 0)
+	customerTrackingPreferencesFieldEnabled          = big.NewInt(1 << 1)
+	customerTrackingPreferencesFieldShowBusinessName = big.NewInt(1 << 2)
+	customerTrackingPreferencesFieldShowLogo         = big.NewInt(1 << 3)
+	customerTrackingPreferencesFieldSupportEmail     = big.NewInt(1 << 4)
+	customerTrackingPreferencesFieldSupportURL       = big.NewInt(1 << 5)
+)
+
+// customerTrackingPreferencesNullableFields maps the wire names of CustomerTrackingPreferences's nullable fields (required or optional) to their field bits.
+var customerTrackingPreferencesNullableFields = map[string]*big.Int{
+	"accent_color":       customerTrackingPreferencesFieldAccentColor,
+	"enabled":            customerTrackingPreferencesFieldEnabled,
+	"show_business_name": customerTrackingPreferencesFieldShowBusinessName,
+	"show_logo":          customerTrackingPreferencesFieldShowLogo,
+	"support_email":      customerTrackingPreferencesFieldSupportEmail,
+	"support_url":        customerTrackingPreferencesFieldSupportURL,
+}
+
+type CustomerTrackingPreferences struct {
+	// Accent color, as a `#rrggbb` hex color. `null` uses the default.
+	AccentColor *string `json:"accent_color,omitempty" url:"accent_color,omitempty"`
+	// Whether the public tracking page and guest lookup are available. `null` is off.
+	Enabled *bool `json:"enabled,omitempty" url:"enabled,omitempty"`
+	// Whether to display the business name on the tracking page and Element. `null` shows it.
+	ShowBusinessName *bool `json:"show_business_name,omitempty" url:"show_business_name,omitempty"`
+	// Whether to display the logo on the tracking page and Element. `null` shows it.
+	ShowLogo *bool `json:"show_logo,omitempty" url:"show_logo,omitempty"`
+	// Customer support email address.
+	SupportEmail *string `json:"support_email,omitempty" url:"support_email,omitempty"`
+	// HTTPS customer support URL.
+	SupportURL *string `json:"support_url,omitempty" url:"support_url,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CustomerTrackingPreferences) GetAccentColor() *string {
+	if c == nil {
+		return nil
+	}
+	return c.AccentColor
+}
+
+func (c *CustomerTrackingPreferences) GetEnabled() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.Enabled
+}
+
+func (c *CustomerTrackingPreferences) GetShowBusinessName() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.ShowBusinessName
+}
+
+func (c *CustomerTrackingPreferences) GetShowLogo() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.ShowLogo
+}
+
+func (c *CustomerTrackingPreferences) GetSupportEmail() *string {
+	if c == nil {
+		return nil
+	}
+	return c.SupportEmail
+}
+
+func (c *CustomerTrackingPreferences) GetSupportURL() *string {
+	if c == nil {
+		return nil
+	}
+	return c.SupportURL
+}
+
+func (c *CustomerTrackingPreferences) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CustomerTrackingPreferences) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetAccentColor sets the AccentColor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CustomerTrackingPreferences) SetAccentColor(accentColor *string) {
+	c.AccentColor = accentColor
+	c.require(customerTrackingPreferencesFieldAccentColor)
+}
+
+// SetEnabled sets the Enabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CustomerTrackingPreferences) SetEnabled(enabled *bool) {
+	c.Enabled = enabled
+	c.require(customerTrackingPreferencesFieldEnabled)
+}
+
+// SetShowBusinessName sets the ShowBusinessName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CustomerTrackingPreferences) SetShowBusinessName(showBusinessName *bool) {
+	c.ShowBusinessName = showBusinessName
+	c.require(customerTrackingPreferencesFieldShowBusinessName)
+}
+
+// SetShowLogo sets the ShowLogo field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CustomerTrackingPreferences) SetShowLogo(showLogo *bool) {
+	c.ShowLogo = showLogo
+	c.require(customerTrackingPreferencesFieldShowLogo)
+}
+
+// SetSupportEmail sets the SupportEmail field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CustomerTrackingPreferences) SetSupportEmail(supportEmail *string) {
+	c.SupportEmail = supportEmail
+	c.require(customerTrackingPreferencesFieldSupportEmail)
+}
+
+// SetSupportURL sets the SupportURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CustomerTrackingPreferences) SetSupportURL(supportURL *string) {
+	c.SupportURL = supportURL
+	c.require(customerTrackingPreferencesFieldSupportURL)
+}
+
+func (c *CustomerTrackingPreferences) UnmarshalJSON(data []byte) error {
+	type unmarshaler CustomerTrackingPreferences
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CustomerTrackingPreferences(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, customerTrackingPreferencesNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CustomerTrackingPreferences) MarshalJSON() ([]byte, error) {
+	type embed CustomerTrackingPreferences
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CustomerTrackingPreferences) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
 }
 
 // The direction of the sort.

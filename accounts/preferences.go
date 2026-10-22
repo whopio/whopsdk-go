@@ -5,6 +5,7 @@ package accounts
 import (
 	json "encoding/json"
 	fmt "fmt"
+	v2 "github.com/whopio/whopsdk-go/v2"
 	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 )
@@ -47,24 +48,26 @@ var (
 	retrievePreferencesResponseFieldCardsAutoTopUp                          = big.NewInt(1 << 6)
 	retrievePreferencesResponseFieldCardsNotifications                      = big.NewInt(1 << 7)
 	retrievePreferencesResponseFieldCoversConnectedAccountNegativeBalances  = big.NewInt(1 << 8)
-	retrievePreferencesResponseFieldDisputeFighterEnabled                   = big.NewInt(1 << 9)
-	retrievePreferencesResponseFieldEconomicIntelligence                    = big.NewInt(1 << 10)
-	retrievePreferencesResponseFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 11)
-	retrievePreferencesResponseFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 12)
-	retrievePreferencesResponseFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 13)
-	retrievePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 14)
-	retrievePreferencesResponseFieldEconomicIntelligenceOffers              = big.NewInt(1 << 15)
-	retrievePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 16)
-	retrievePreferencesResponseFieldFeedbackOptions                         = big.NewInt(1 << 17)
-	retrievePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 18)
-	retrievePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 19)
-	retrievePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 20)
+	retrievePreferencesResponseFieldCustomerTracking                        = big.NewInt(1 << 9)
+	retrievePreferencesResponseFieldDisputeFighterEnabled                   = big.NewInt(1 << 10)
+	retrievePreferencesResponseFieldEconomicIntelligence                    = big.NewInt(1 << 11)
+	retrievePreferencesResponseFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 12)
+	retrievePreferencesResponseFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 13)
+	retrievePreferencesResponseFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 14)
+	retrievePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 15)
+	retrievePreferencesResponseFieldEconomicIntelligenceOffers              = big.NewInt(1 << 16)
+	retrievePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 17)
+	retrievePreferencesResponseFieldFeedbackOptions                         = big.NewInt(1 << 18)
+	retrievePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 19)
+	retrievePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 20)
+	retrievePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 21)
 )
 
 // retrievePreferencesResponseNullableFields maps the wire names of RetrievePreferencesResponse's nullable fields (required or optional) to their field bits.
 var retrievePreferencesResponseNullableFields = map[string]*big.Int{
 	"ads_payment_methods":                         retrievePreferencesResponseFieldAdsPaymentMethods,
 	"covers_connected_account_negative_balances":  retrievePreferencesResponseFieldCoversConnectedAccountNegativeBalances,
+	"customer_tracking":                           retrievePreferencesResponseFieldCustomerTracking,
 	"economic_intelligence_ends_at":               retrievePreferencesResponseFieldEconomicIntelligenceEndsAt,
 	"economic_intelligence_fee_percentage":        retrievePreferencesResponseFieldEconomicIntelligenceFeePercentage,
 	"economic_intelligence_first_renewal_at":      retrievePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt,
@@ -92,6 +95,8 @@ type RetrievePreferencesResponse struct {
 	CardsNotifications bool `json:"cards_notifications" url:"cards_notifications"`
 	// Whether this account covers its connected accounts' negative balances. When a connected account's balance drops below zero (from refunds, disputes, or fees), this account's available balance in the same currency pays it back, up to what is available. Refunds on its connected accounts may also take them negative by up to this account's available balance. `null` when the account has no connected accounts.
 	CoversConnectedAccountNegativeBalances *bool `json:"covers_connected_account_negative_balances,omitempty" url:"covers_connected_account_negative_balances,omitempty"`
+	// The saved customer tracking settings for the hosted tracking page and Element, exactly as saved. `null` until set; tracking is off unless `enabled` is `true`.
+	CustomerTracking *v2.CustomerTrackingPreferences `json:"customer_tracking,omitempty" url:"customer_tracking,omitempty"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins.
 	DisputeFighterEnabled bool `json:"dispute_fighter_enabled" url:"dispute_fighter_enabled"`
 	// Whether Economic Intelligence is on for the account. It turns off automatically at `economic_intelligence_ends_at`.
@@ -185,6 +190,13 @@ func (r *RetrievePreferencesResponse) GetCoversConnectedAccountNegativeBalances(
 		return nil
 	}
 	return r.CoversConnectedAccountNegativeBalances
+}
+
+func (r *RetrievePreferencesResponse) GetCustomerTracking() *v2.CustomerTrackingPreferences {
+	if r == nil {
+		return nil
+	}
+	return r.CustomerTracking
 }
 
 func (r *RetrievePreferencesResponse) GetDisputeFighterEnabled() bool {
@@ -348,6 +360,13 @@ func (r *RetrievePreferencesResponse) SetCardsNotifications(cardsNotifications b
 func (r *RetrievePreferencesResponse) SetCoversConnectedAccountNegativeBalances(coversConnectedAccountNegativeBalances *bool) {
 	r.CoversConnectedAccountNegativeBalances = coversConnectedAccountNegativeBalances
 	r.require(retrievePreferencesResponseFieldCoversConnectedAccountNegativeBalances)
+}
+
+// SetCustomerTracking sets the CustomerTracking field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponse) SetCustomerTracking(customerTracking *v2.CustomerTrackingPreferences) {
+	r.CustomerTracking = customerTracking
+	r.require(retrievePreferencesResponseFieldCustomerTracking)
 }
 
 // SetDisputeFighterEnabled sets the DisputeFighterEnabled field and marks it as non-optional;
@@ -2874,6 +2893,196 @@ func (u *UpdatePreferencesRequestAdsTripleWhaleIntegration) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
+var (
+	updatePreferencesRequestCustomerTrackingFieldAccentColor      = big.NewInt(1 << 0)
+	updatePreferencesRequestCustomerTrackingFieldEnabled          = big.NewInt(1 << 1)
+	updatePreferencesRequestCustomerTrackingFieldShowBusinessName = big.NewInt(1 << 2)
+	updatePreferencesRequestCustomerTrackingFieldShowLogo         = big.NewInt(1 << 3)
+	updatePreferencesRequestCustomerTrackingFieldSupportEmail     = big.NewInt(1 << 4)
+	updatePreferencesRequestCustomerTrackingFieldSupportURL       = big.NewInt(1 << 5)
+)
+
+// updatePreferencesRequestCustomerTrackingNullableFields maps the wire names of UpdatePreferencesRequestCustomerTracking's nullable fields (required or optional) to their field bits.
+var updatePreferencesRequestCustomerTrackingNullableFields = map[string]*big.Int{
+	"accent_color":       updatePreferencesRequestCustomerTrackingFieldAccentColor,
+	"enabled":            updatePreferencesRequestCustomerTrackingFieldEnabled,
+	"show_business_name": updatePreferencesRequestCustomerTrackingFieldShowBusinessName,
+	"show_logo":          updatePreferencesRequestCustomerTrackingFieldShowLogo,
+	"support_email":      updatePreferencesRequestCustomerTrackingFieldSupportEmail,
+	"support_url":        updatePreferencesRequestCustomerTrackingFieldSupportURL,
+}
+
+// Customer tracking settings for the hosted tracking page and Element, replaced as a whole: fields left out are saved as unset. Pass null to clear them, which turns tracking off. Tracking is off unless `enabled` is `true`. Requires the `company:manage_checkout` scope on your API key.
+type UpdatePreferencesRequestCustomerTracking struct {
+	// Accent color, as a `#rrggbb` hex color. Unset uses the default.
+	AccentColor *string `json:"accent_color,omitempty" url:"accent_color,omitempty"`
+	// Turns the public tracking page and guest lookup on. Unset is off.
+	Enabled *bool `json:"enabled,omitempty" url:"enabled,omitempty"`
+	// Show the business name on the tracking page and Element. Unset shows it.
+	ShowBusinessName *bool `json:"show_business_name,omitempty" url:"show_business_name,omitempty"`
+	// Show the account logo on the tracking page and Element. Unset shows it.
+	ShowLogo *bool `json:"show_logo,omitempty" url:"show_logo,omitempty"`
+	// Customer support email address.
+	SupportEmail *string `json:"support_email,omitempty" url:"support_email,omitempty"`
+	// HTTPS customer support URL.
+	SupportURL *string `json:"support_url,omitempty" url:"support_url,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdatePreferencesRequestCustomerTracking) GetAccentColor() *string {
+	if u == nil {
+		return nil
+	}
+	return u.AccentColor
+}
+
+func (u *UpdatePreferencesRequestCustomerTracking) GetEnabled() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.Enabled
+}
+
+func (u *UpdatePreferencesRequestCustomerTracking) GetShowBusinessName() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.ShowBusinessName
+}
+
+func (u *UpdatePreferencesRequestCustomerTracking) GetShowLogo() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.ShowLogo
+}
+
+func (u *UpdatePreferencesRequestCustomerTracking) GetSupportEmail() *string {
+	if u == nil {
+		return nil
+	}
+	return u.SupportEmail
+}
+
+func (u *UpdatePreferencesRequestCustomerTracking) GetSupportURL() *string {
+	if u == nil {
+		return nil
+	}
+	return u.SupportURL
+}
+
+func (u *UpdatePreferencesRequestCustomerTracking) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdatePreferencesRequestCustomerTracking) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetAccentColor sets the AccentColor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestCustomerTracking) SetAccentColor(accentColor *string) {
+	u.AccentColor = accentColor
+	u.require(updatePreferencesRequestCustomerTrackingFieldAccentColor)
+}
+
+// SetEnabled sets the Enabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestCustomerTracking) SetEnabled(enabled *bool) {
+	u.Enabled = enabled
+	u.require(updatePreferencesRequestCustomerTrackingFieldEnabled)
+}
+
+// SetShowBusinessName sets the ShowBusinessName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestCustomerTracking) SetShowBusinessName(showBusinessName *bool) {
+	u.ShowBusinessName = showBusinessName
+	u.require(updatePreferencesRequestCustomerTrackingFieldShowBusinessName)
+}
+
+// SetShowLogo sets the ShowLogo field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestCustomerTracking) SetShowLogo(showLogo *bool) {
+	u.ShowLogo = showLogo
+	u.require(updatePreferencesRequestCustomerTrackingFieldShowLogo)
+}
+
+// SetSupportEmail sets the SupportEmail field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestCustomerTracking) SetSupportEmail(supportEmail *string) {
+	u.SupportEmail = supportEmail
+	u.require(updatePreferencesRequestCustomerTrackingFieldSupportEmail)
+}
+
+// SetSupportURL sets the SupportURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestCustomerTracking) SetSupportURL(supportURL *string) {
+	u.SupportURL = supportURL
+	u.require(updatePreferencesRequestCustomerTrackingFieldSupportURL)
+}
+
+func (u *UpdatePreferencesRequestCustomerTracking) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdatePreferencesRequestCustomerTracking
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdatePreferencesRequestCustomerTracking(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updatePreferencesRequestCustomerTrackingNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdatePreferencesRequestCustomerTracking) MarshalJSON() ([]byte, error) {
+	type embed UpdatePreferencesRequestCustomerTracking
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdatePreferencesRequestCustomerTracking) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
 // Turns on Economic Intelligence with the offer that has this `key` in `economic_intelligence_offers`, at that offer's fee. A committed duration can't be changed or turned off until `economic_intelligence_ends_at`, except to upgrade to `weekly`, which switches to auto-renew right away. Requires the `company:update` scope on your API key.
 type UpdatePreferencesRequestEconomicIntelligenceDurationKey string
 
@@ -3127,24 +3336,26 @@ var (
 	updatePreferencesResponseFieldCardsAutoTopUp                          = big.NewInt(1 << 6)
 	updatePreferencesResponseFieldCardsNotifications                      = big.NewInt(1 << 7)
 	updatePreferencesResponseFieldCoversConnectedAccountNegativeBalances  = big.NewInt(1 << 8)
-	updatePreferencesResponseFieldDisputeFighterEnabled                   = big.NewInt(1 << 9)
-	updatePreferencesResponseFieldEconomicIntelligence                    = big.NewInt(1 << 10)
-	updatePreferencesResponseFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 11)
-	updatePreferencesResponseFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 12)
-	updatePreferencesResponseFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 13)
-	updatePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 14)
-	updatePreferencesResponseFieldEconomicIntelligenceOffers              = big.NewInt(1 << 15)
-	updatePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 16)
-	updatePreferencesResponseFieldFeedbackOptions                         = big.NewInt(1 << 17)
-	updatePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 18)
-	updatePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 19)
-	updatePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 20)
+	updatePreferencesResponseFieldCustomerTracking                        = big.NewInt(1 << 9)
+	updatePreferencesResponseFieldDisputeFighterEnabled                   = big.NewInt(1 << 10)
+	updatePreferencesResponseFieldEconomicIntelligence                    = big.NewInt(1 << 11)
+	updatePreferencesResponseFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 12)
+	updatePreferencesResponseFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 13)
+	updatePreferencesResponseFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 14)
+	updatePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 15)
+	updatePreferencesResponseFieldEconomicIntelligenceOffers              = big.NewInt(1 << 16)
+	updatePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 17)
+	updatePreferencesResponseFieldFeedbackOptions                         = big.NewInt(1 << 18)
+	updatePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 19)
+	updatePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 20)
+	updatePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 21)
 )
 
 // updatePreferencesResponseNullableFields maps the wire names of UpdatePreferencesResponse's nullable fields (required or optional) to their field bits.
 var updatePreferencesResponseNullableFields = map[string]*big.Int{
 	"ads_payment_methods":                         updatePreferencesResponseFieldAdsPaymentMethods,
 	"covers_connected_account_negative_balances":  updatePreferencesResponseFieldCoversConnectedAccountNegativeBalances,
+	"customer_tracking":                           updatePreferencesResponseFieldCustomerTracking,
 	"economic_intelligence_ends_at":               updatePreferencesResponseFieldEconomicIntelligenceEndsAt,
 	"economic_intelligence_fee_percentage":        updatePreferencesResponseFieldEconomicIntelligenceFeePercentage,
 	"economic_intelligence_first_renewal_at":      updatePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt,
@@ -3172,6 +3383,8 @@ type UpdatePreferencesResponse struct {
 	CardsNotifications bool `json:"cards_notifications" url:"cards_notifications"`
 	// Whether this account covers its connected accounts' negative balances. When a connected account's balance drops below zero (from refunds, disputes, or fees), this account's available balance in the same currency pays it back, up to what is available. Refunds on its connected accounts may also take them negative by up to this account's available balance. `null` when the account has no connected accounts.
 	CoversConnectedAccountNegativeBalances *bool `json:"covers_connected_account_negative_balances,omitempty" url:"covers_connected_account_negative_balances,omitempty"`
+	// The saved customer tracking settings for the hosted tracking page and Element, exactly as saved. `null` until set; tracking is off unless `enabled` is `true`.
+	CustomerTracking *v2.CustomerTrackingPreferences `json:"customer_tracking,omitempty" url:"customer_tracking,omitempty"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins.
 	DisputeFighterEnabled bool `json:"dispute_fighter_enabled" url:"dispute_fighter_enabled"`
 	// Whether Economic Intelligence is on for the account. It turns off automatically at `economic_intelligence_ends_at`.
@@ -3265,6 +3478,13 @@ func (u *UpdatePreferencesResponse) GetCoversConnectedAccountNegativeBalances() 
 		return nil
 	}
 	return u.CoversConnectedAccountNegativeBalances
+}
+
+func (u *UpdatePreferencesResponse) GetCustomerTracking() *v2.CustomerTrackingPreferences {
+	if u == nil {
+		return nil
+	}
+	return u.CustomerTracking
 }
 
 func (u *UpdatePreferencesResponse) GetDisputeFighterEnabled() bool {
@@ -3428,6 +3648,13 @@ func (u *UpdatePreferencesResponse) SetCardsNotifications(cardsNotifications boo
 func (u *UpdatePreferencesResponse) SetCoversConnectedAccountNegativeBalances(coversConnectedAccountNegativeBalances *bool) {
 	u.CoversConnectedAccountNegativeBalances = coversConnectedAccountNegativeBalances
 	u.require(updatePreferencesResponseFieldCoversConnectedAccountNegativeBalances)
+}
+
+// SetCustomerTracking sets the CustomerTracking field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponse) SetCustomerTracking(customerTracking *v2.CustomerTrackingPreferences) {
+	u.CustomerTracking = customerTracking
+	u.require(updatePreferencesResponseFieldCustomerTracking)
 }
 
 // SetDisputeFighterEnabled sets the DisputeFighterEnabled field and marks it as non-optional;
@@ -5381,12 +5608,13 @@ var (
 	updatePreferencesRequestFieldCardsAutoTopUp                         = big.NewInt(1 << 6)
 	updatePreferencesRequestFieldCardsNotifications                     = big.NewInt(1 << 7)
 	updatePreferencesRequestFieldCoversConnectedAccountNegativeBalances = big.NewInt(1 << 8)
-	updatePreferencesRequestFieldDisputeFighterEnabled                  = big.NewInt(1 << 9)
-	updatePreferencesRequestFieldEconomicIntelligenceAutoRenew          = big.NewInt(1 << 10)
-	updatePreferencesRequestFieldEconomicIntelligenceDurationKey        = big.NewInt(1 << 11)
-	updatePreferencesRequestFieldFeedbackOptions                        = big.NewInt(1 << 12)
-	updatePreferencesRequestFieldPreferredSettlementCurrency            = big.NewInt(1 << 13)
-	updatePreferencesRequestFieldSubscriptionFailureBehavior            = big.NewInt(1 << 14)
+	updatePreferencesRequestFieldCustomerTracking                       = big.NewInt(1 << 9)
+	updatePreferencesRequestFieldDisputeFighterEnabled                  = big.NewInt(1 << 10)
+	updatePreferencesRequestFieldEconomicIntelligenceAutoRenew          = big.NewInt(1 << 11)
+	updatePreferencesRequestFieldEconomicIntelligenceDurationKey        = big.NewInt(1 << 12)
+	updatePreferencesRequestFieldFeedbackOptions                        = big.NewInt(1 << 13)
+	updatePreferencesRequestFieldPreferredSettlementCurrency            = big.NewInt(1 << 14)
+	updatePreferencesRequestFieldSubscriptionFailureBehavior            = big.NewInt(1 << 15)
 )
 
 type UpdatePreferencesRequest struct {
@@ -5408,6 +5636,8 @@ type UpdatePreferencesRequest struct {
 	CardsNotifications *bool `json:"cards_notifications,omitempty" url:"-"`
 	// Whether this account covers its connected accounts' negative balances. When a connected account's balance drops below zero (from refunds, disputes, or fees), this account's available balance in the same currency pays it back, up to what is available. Only accounts with connected accounts can set it. Requires the `payout:account:update` scope on your API key.
 	CoversConnectedAccountNegativeBalances *bool `json:"covers_connected_account_negative_balances,omitempty" url:"-"`
+	// Customer tracking settings for the hosted tracking page and Element, replaced as a whole: fields left out are saved as unset. Pass null to clear them, which turns tracking off. Tracking is off unless `enabled` is `true`. Requires the `company:manage_checkout` scope on your API key.
+	CustomerTracking *UpdatePreferencesRequestCustomerTracking `json:"customer_tracking,omitempty" url:"-"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins. Requires the `payment:dispute` scope on your API key.
 	DisputeFighterEnabled *bool `json:"dispute_fighter_enabled,omitempty" url:"-"`
 	// `false` stops renewing: Economic Intelligence stays on until the end of the current week, and stopping before the first renewal charges the rest of that week at the `7_days` offer's fee. `true` keeps it renewing again before then, or turns it on like the `weekly` offer. Can't be combined with `economic_intelligence_duration_key`. Requires the `company:update` scope on your API key.
@@ -5495,6 +5725,13 @@ func (u *UpdatePreferencesRequest) SetCardsNotifications(cardsNotifications *boo
 func (u *UpdatePreferencesRequest) SetCoversConnectedAccountNegativeBalances(coversConnectedAccountNegativeBalances *bool) {
 	u.CoversConnectedAccountNegativeBalances = coversConnectedAccountNegativeBalances
 	u.require(updatePreferencesRequestFieldCoversConnectedAccountNegativeBalances)
+}
+
+// SetCustomerTracking sets the CustomerTracking field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequest) SetCustomerTracking(customerTracking *UpdatePreferencesRequestCustomerTracking) {
+	u.CustomerTracking = customerTracking
+	u.require(updatePreferencesRequestFieldCustomerTracking)
 }
 
 // SetDisputeFighterEnabled sets the DisputeFighterEnabled field and marks it as non-optional;

@@ -37120,6 +37120,91 @@ client.Shipments.Create(
 </dl>
 </details>
 
+<details><summary><code>client.Shipments.Lookup(request) -> *whopsdk.ShipmentLookup</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Finds the delivery for a purchase from an account with customer tracking turned on, using exactly one order or tracking number plus the buyer's current receipt email. No authentication is required and no sign-in or session is created. Email matching ignores case and surrounding whitespace, but dots and +tags must match. Every miss returns the same 404: an unknown account, tracking turned off, a wrong number or email, an unpaid order or a purchase with nothing to ship. `shipment` is `null` while a paid physical purchase has no tracking yet. Limited to 30 attempts per five minutes per client IP. Responses are never cached or replayed with Idempotency-Key.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.LookupShipmentsRequest{
+    AccountID: "biz_xxxxxxxxxxxxxx",
+    Email: "marcus@shinetime.example",
+}
+client.Shipments.Lookup(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `string` — The selling account, prefixed `biz_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**email:** `string` — The buyer's current receipt email.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**orderNumber:** `*string` — The payment ID prefixed `pay_`, or the order number printed on the receipt (optional leading `#`). Supply this or `tracking_number`, not both.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**trackingNumber:** `*string` — The exact carrier tracking number. Supply this or `order_number`, not both.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Shipments.Retrieve(ID) -> *whopsdk.Shipment</code></summary>
 <dl>
 <dd>
@@ -43906,6 +43991,67 @@ client.Webhooks.Test(
 </dl>
 </details>
 
+## Accounts CustomerTracking
+<details><summary><code>client.Accounts.CustomerTracking.Retrieve(AccountID) -> *whopsdk.AccountCustomerTracking</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves the branding and support contacts the account's hosted customer tracking page and tracking Element display. Public by design, so no authentication is required. Returns 404 unless the account has turned customer tracking on in its preferences. Responses are never cached.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &accounts.RetrieveCustomerTrackingRequest{
+    AccountID: "account_id",
+}
+client.Accounts.CustomerTracking.Retrieve(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `string` — Account ID, prefixed `biz_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Accounts Fees
 <details><summary><code>client.Accounts.Fees.Retrieve(AccountID) -> *whopsdk.AccountFees</code></summary>
 <dl>
@@ -44451,7 +44597,7 @@ Required scopes depend on the preferences being updated:
 | `cards_auto_top_up`, `cards_notifications`, `covers_connected_account_negative_balances` | `payout:account:update` |
 | `dispute_fighter_enabled` | `payment:dispute` |
 | `economic_intelligence_duration_key`, `economic_intelligence_auto_renew` | `company:update` |
-| `feedback_options` | `company:manage_checkout` |
+| `feedback_options`, `customer_tracking` | `company:manage_checkout` |
 
 When updating preferences from multiple rows, all corresponding scopes are required for the account.
 </dd>
@@ -44554,6 +44700,14 @@ client.Accounts.Preferences.Update(
 <dd>
 
 **coversConnectedAccountNegativeBalances:** `*bool` — Whether this account covers its connected accounts' negative balances. When a connected account's balance drops below zero (from refunds, disputes, or fees), this account's available balance in the same currency pays it back, up to what is available. Only accounts with connected accounts can set it. Requires the `payout:account:update` scope on your API key.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**customerTracking:** `*accounts.UpdatePreferencesRequestCustomerTracking` — Customer tracking settings for the hosted tracking page and Element, replaced as a whole: fields left out are saved as unset. Pass null to clear them, which turns tracking off. Tracking is off unless `enabled` is `true`. Requires the `company:manage_checkout` scope on your API key.
     
 </dd>
 </dl>

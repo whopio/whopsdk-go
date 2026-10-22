@@ -9,13 +9,13 @@ import (
 )
 
 var ErrorCodes internal.ErrorCodes = internal.ErrorCodes{
-	401: func(apiError *core.APIError) error {
-		return &whopsdk.UnauthorizedError{
+	404: func(apiError *core.APIError) error {
+		return &whopsdk.NotFoundError{
 			APIError: apiError,
 		}
 	},
-	404: func(apiError *core.APIError) error {
-		return &whopsdk.NotFoundError{
+	401: func(apiError *core.APIError) error {
+		return &whopsdk.UnauthorizedError{
 			APIError: apiError,
 		}
 	},
