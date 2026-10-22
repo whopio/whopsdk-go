@@ -208,6 +208,85 @@ func (l *ListShipmentsRequest) SetBefore(before *string) {
 }
 
 var (
+	lookupShipmentsRequestFieldAccountID      = big.NewInt(1 << 0)
+	lookupShipmentsRequestFieldEmail          = big.NewInt(1 << 1)
+	lookupShipmentsRequestFieldOrderNumber    = big.NewInt(1 << 2)
+	lookupShipmentsRequestFieldTrackingNumber = big.NewInt(1 << 3)
+)
+
+type LookupShipmentsRequest struct {
+	// The selling account, prefixed `biz_`.
+	AccountID string `json:"account_id" url:"-"`
+	// The buyer's current receipt email.
+	Email string `json:"email" url:"-"`
+	// The payment ID prefixed `pay_`, or the order number printed on the receipt (optional leading `#`). Supply this or `tracking_number`, not both.
+	OrderNumber *string `json:"order_number,omitempty" url:"-"`
+	// The exact carrier tracking number. Supply this or `order_number`, not both.
+	TrackingNumber *string `json:"tracking_number,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (l *LookupShipmentsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LookupShipmentsRequest) SetAccountID(accountID string) {
+	l.AccountID = accountID
+	l.require(lookupShipmentsRequestFieldAccountID)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LookupShipmentsRequest) SetEmail(email string) {
+	l.Email = email
+	l.require(lookupShipmentsRequestFieldEmail)
+}
+
+// SetOrderNumber sets the OrderNumber field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LookupShipmentsRequest) SetOrderNumber(orderNumber *string) {
+	l.OrderNumber = orderNumber
+	l.require(lookupShipmentsRequestFieldOrderNumber)
+}
+
+// SetTrackingNumber sets the TrackingNumber field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LookupShipmentsRequest) SetTrackingNumber(trackingNumber *string) {
+	l.TrackingNumber = trackingNumber
+	l.require(lookupShipmentsRequestFieldTrackingNumber)
+}
+
+func (l *LookupShipmentsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler LookupShipmentsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*l = LookupShipmentsRequest(body)
+	return nil
+}
+
+func (l *LookupShipmentsRequest) MarshalJSON() ([]byte, error) {
+	type embed LookupShipmentsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	retrieveShipmentsRequestFieldID = big.NewInt(1 << 0)
 )
 
@@ -683,6 +762,122 @@ func NewShipmentCheckpointStatusFromString(s string) (ShipmentCheckpointStatus, 
 
 func (s ShipmentCheckpointStatus) Ptr() *ShipmentCheckpointStatus {
 	return &s
+}
+
+var (
+	shipmentLookupFieldPaymentID = big.NewInt(1 << 0)
+	shipmentLookupFieldShipment  = big.NewInt(1 << 1)
+)
+
+// shipmentLookupNullableFields maps the wire names of ShipmentLookup's nullable fields (required or optional) to their field bits.
+var shipmentLookupNullableFields = map[string]*big.Int{
+	"shipment": shipmentLookupFieldShipment,
+}
+
+type ShipmentLookup struct {
+	// The matching payment, prefixed `pay_`.
+	PaymentID string `json:"payment_id" url:"payment_id"`
+	// The payment's latest shipment, or `null` when a paid physical purchase has no tracking yet.
+	Shipment *Shipment `json:"shipment,omitempty" url:"shipment,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *ShipmentLookup) GetPaymentID() string {
+	if s == nil {
+		return ""
+	}
+	return s.PaymentID
+}
+
+func (s *ShipmentLookup) GetShipment() *Shipment {
+	if s == nil {
+		return nil
+	}
+	return s.Shipment
+}
+
+func (s *ShipmentLookup) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *ShipmentLookup) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
+	}
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetPaymentID sets the PaymentID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *ShipmentLookup) SetPaymentID(paymentID string) {
+	s.PaymentID = paymentID
+	s.require(shipmentLookupFieldPaymentID)
+}
+
+// SetShipment sets the Shipment field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *ShipmentLookup) SetShipment(shipment *Shipment) {
+	s.Shipment = shipment
+	s.require(shipmentLookupFieldShipment)
+}
+
+func (s *ShipmentLookup) UnmarshalJSON(data []byte) error {
+	type unmarshaler ShipmentLookup
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = ShipmentLookup(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, shipmentLookupNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		s.require(presentFields)
+	}
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *ShipmentLookup) MarshalJSON() ([]byte, error) {
+	type embed ShipmentLookup
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *ShipmentLookup) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
 }
 
 // The current delivery status of this shipment.
