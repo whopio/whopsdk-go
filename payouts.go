@@ -234,16 +234,17 @@ var (
 	createQuotePayoutsRequestFieldPaymentMethodID     = big.NewInt(1 << 3)
 	createQuotePayoutsRequestFieldPayoutMethodID      = big.NewInt(1 << 4)
 	createQuotePayoutsRequestFieldPlatformCoversFees  = big.NewInt(1 << 5)
-	createQuotePayoutsRequestFieldSpeed               = big.NewInt(1 << 6)
-	createQuotePayoutsRequestFieldStatementDescriptor = big.NewInt(1 << 7)
-	createQuotePayoutsRequestFieldUserID              = big.NewInt(1 << 8)
+	createQuotePayoutsRequestFieldRecipientAmount     = big.NewInt(1 << 6)
+	createQuotePayoutsRequestFieldSpeed               = big.NewInt(1 << 7)
+	createQuotePayoutsRequestFieldStatementDescriptor = big.NewInt(1 << 8)
+	createQuotePayoutsRequestFieldUserID              = big.NewInt(1 << 9)
 )
 
 type CreateQuotePayoutsRequest struct {
 	// Account to pay out from, prefixed `biz_`. Provide exactly one of `account_id` or `user_id`.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
-	// The amount to pay out in the specified currency.
-	Amount float64 `json:"amount" url:"-"`
+	// The amount to pay out in the specified currency, fees included. Provide exactly one of `amount` or `recipient_amount`.
+	Amount *float64 `json:"amount,omitempty" url:"-"`
 	// The currency to pay out. When omitted, uses `usd` if that balance can cover a withdrawal, otherwise the account's only other funded currency.
 	Currency *string `json:"currency,omitempty" url:"-"`
 	// A saved card of the account, prefixed `payt_`, to quote paying this payout from. The quote's `amount` is the card charge, `fee` adds the estimated card fees to the payout fee, and `net_amount` is what the recipient receives.
@@ -252,6 +253,8 @@ type CreateQuotePayoutsRequest struct {
 	PayoutMethodID string `json:"payout_method_id" url:"-"`
 	// Whether the parent platform covers the payout fee instead of the account being paid out.
 	PlatformCoversFees *bool `json:"platform_covers_fees,omitempty" url:"-"`
+	// The amount the recipient should receive, with fees added on top. When the payout method pays out in `currency`, the quote's `destination_amount` covers it; otherwise its `net_amount` does. Provide exactly one of `amount` or `recipient_amount`.
+	RecipientAmount *float64 `json:"recipient_amount,omitempty" url:"-"`
 	// How fast the funds should arrive.
 	Speed *CreateQuotePayoutsRequestSpeed `json:"speed,omitempty" url:"-"`
 	// Text that appears on the recipient's bank statement. Must be 5-22 alphanumeric characters (A-Z, a-z, 0-9). Omit or pass `null` to use the default descriptor.
@@ -281,7 +284,7 @@ func (c *CreateQuotePayoutsRequest) SetAccountID(accountID *string) {
 
 // SetAmount sets the Amount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateQuotePayoutsRequest) SetAmount(amount float64) {
+func (c *CreateQuotePayoutsRequest) SetAmount(amount *float64) {
 	c.Amount = amount
 	c.require(createQuotePayoutsRequestFieldAmount)
 }
@@ -312,6 +315,13 @@ func (c *CreateQuotePayoutsRequest) SetPayoutMethodID(payoutMethodID string) {
 func (c *CreateQuotePayoutsRequest) SetPlatformCoversFees(platformCoversFees *bool) {
 	c.PlatformCoversFees = platformCoversFees
 	c.require(createQuotePayoutsRequestFieldPlatformCoversFees)
+}
+
+// SetRecipientAmount sets the RecipientAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsRequest) SetRecipientAmount(recipientAmount *float64) {
+	c.RecipientAmount = recipientAmount
+	c.require(createQuotePayoutsRequestFieldRecipientAmount)
 }
 
 // SetSpeed sets the Speed field and marks it as non-optional;

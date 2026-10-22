@@ -657,7 +657,7 @@ func TestSettersCreateQuotePayoutsRequest(t *testing.T) {
 
 	t.Run("SetAmount", func(t *testing.T) {
 		obj := &CreateQuotePayoutsRequest{}
-		var fernTestValueAmount float64
+		var fernTestValueAmount *float64
 		obj.SetAmount(fernTestValueAmount)
 		assert.Equal(t, fernTestValueAmount, obj.Amount)
 		assert.NotNil(t, obj.explicitFields)
@@ -692,6 +692,14 @@ func TestSettersCreateQuotePayoutsRequest(t *testing.T) {
 		var fernTestValuePlatformCoversFees *bool
 		obj.SetPlatformCoversFees(fernTestValuePlatformCoversFees)
 		assert.Equal(t, fernTestValuePlatformCoversFees, obj.PlatformCoversFees)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetRecipientAmount", func(t *testing.T) {
+		obj := &CreateQuotePayoutsRequest{}
+		var fernTestValueRecipientAmount *float64
+		obj.SetRecipientAmount(fernTestValueRecipientAmount)
+		assert.Equal(t, fernTestValueRecipientAmount, obj.RecipientAmount)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -757,7 +765,7 @@ func TestSettersMarkExplicitCreateQuotePayoutsRequest(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateQuotePayoutsRequest{}
-		var fernTestValueAmount float64
+		var fernTestValueAmount *float64
 
 		// Act
 		obj.SetAmount(fernTestValueAmount)
@@ -885,6 +893,37 @@ func TestSettersMarkExplicitCreateQuotePayoutsRequest(t *testing.T) {
 
 		// Act
 		obj.SetPlatformCoversFees(fernTestValuePlatformCoversFees)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetRecipientAmount_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateQuotePayoutsRequest{}
+		var fernTestValueRecipientAmount *float64
+
+		// Act
+		obj.SetRecipientAmount(fernTestValueRecipientAmount)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

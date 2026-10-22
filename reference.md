@@ -31455,7 +31455,6 @@ Creates a short-lived, provider-backed quote of a payout's fee, exchange rate, a
 
 ```go
 request := &whopsdk.CreateQuotePayoutsRequest{
-    Amount: 6762.41,
     PayoutMethodID: "potk_xxxxxxxxxxxxxx",
 }
 client.Payouts.CreateQuote(
@@ -31484,7 +31483,7 @@ client.Payouts.CreateQuote(
 <dl>
 <dd>
 
-**amount:** `float64` — The amount to pay out in the specified currency.
+**amount:** `*float64` — The amount to pay out in the specified currency, fees included. Provide exactly one of `amount` or `recipient_amount`.
     
 </dd>
 </dl>
@@ -31517,6 +31516,14 @@ client.Payouts.CreateQuote(
 <dd>
 
 **platformCoversFees:** `*bool` — Whether the parent platform covers the payout fee instead of the account being paid out.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**recipientAmount:** `*float64` — The amount the recipient should receive, with fees added on top. When the payout method pays out in `currency`, the quote's `destination_amount` covers it; otherwise its `net_amount` does. Provide exactly one of `amount` or `recipient_amount`.
     
 </dd>
 </dl>

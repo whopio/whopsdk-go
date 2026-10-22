@@ -140,7 +140,6 @@ func TestPayoutsCreateQuoteWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.CreateQuotePayoutsRequest{
-		Amount:         6762.41,
 		PayoutMethodID: "potk_xxxxxxxxxxxxxx",
 	}
 	_, invocationErr := client.Payouts.CreateQuote(
