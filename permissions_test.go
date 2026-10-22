@@ -1134,6 +1134,20 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("developer:manage_builds"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_developer_app_installation_read", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("developer:app_installation:read")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("developer:app_installation:read"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_developer_app_installation_update", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("developer:app_installation:update")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("developer:app_installation:update"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_developer_update_app", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewPermissionActionFromString("developer:update_app")

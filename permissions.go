@@ -155,6 +155,8 @@ const (
 	PermissionActionDeveloperManageWebhook            PermissionAction = "developer:manage_webhook"
 	PermissionActionDeveloperLogsRead                 PermissionAction = "developer:logs:read"
 	PermissionActionDeveloperManageBuilds             PermissionAction = "developer:manage_builds"
+	PermissionActionDeveloperAppInstallationRead      PermissionAction = "developer:app_installation:read"
+	PermissionActionDeveloperAppInstallationUpdate    PermissionAction = "developer:app_installation:update"
 	PermissionActionDeveloperUpdateApp                PermissionAction = "developer:update_app"
 	PermissionActionDeveloperUpdateAppAuthorization   PermissionAction = "developer:update_app_authorization"
 	PermissionActionEventCreate                       PermissionAction = "event:create"
@@ -549,6 +551,10 @@ func NewPermissionActionFromString(s string) (PermissionAction, error) {
 		return PermissionActionDeveloperLogsRead, nil
 	case "developer:manage_builds":
 		return PermissionActionDeveloperManageBuilds, nil
+	case "developer:app_installation:read":
+		return PermissionActionDeveloperAppInstallationRead, nil
+	case "developer:app_installation:update":
+		return PermissionActionDeveloperAppInstallationUpdate, nil
 	case "developer:update_app":
 		return PermissionActionDeveloperUpdateApp, nil
 	case "developer:update_app_authorization":
