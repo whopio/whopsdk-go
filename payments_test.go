@@ -755,6 +755,14 @@ func TestSettersListPaymentsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetTrackingStatus", func(t *testing.T) {
+		obj := &ListPaymentsRequest{}
+		var fernTestValueTrackingStatus *ListPaymentsRequestTrackingStatus
+		obj.SetTrackingStatus(fernTestValueTrackingStatus)
+		assert.Equal(t, fernTestValueTrackingStatus, obj.TrackingStatus)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetBillingReason", func(t *testing.T) {
 		obj := &ListPaymentsRequest{}
 		var fernTestValueBillingReason *ListPaymentsRequestBillingReason
@@ -1076,6 +1084,37 @@ func TestSettersMarkExplicitListPaymentsRequest(t *testing.T) {
 
 		// Act
 		obj.SetStatus(fernTestValueStatus)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetTrackingStatus_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListPaymentsRequest{}
+		var fernTestValueTrackingStatus *ListPaymentsRequestTrackingStatus
+
+		// Act
+		obj.SetTrackingStatus(fernTestValueTrackingStatus)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -20273,6 +20312,13 @@ func TestEnumListPaymentsRequestTrackingStatesItem(t *testing.T) {
 		assert.Equal(t, ListPaymentsRequestTrackingStatesItem("needs_tracking"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_missing_tracking", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListPaymentsRequestTrackingStatesItemFromString("missing_tracking")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListPaymentsRequestTrackingStatesItem("missing_tracking"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewListPaymentsRequestTrackingStatesItemFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -20280,6 +20326,105 @@ func TestEnumListPaymentsRequestTrackingStatesItem(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewListPaymentsRequestTrackingStatesItemFromString("unknown")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumListPaymentsRequestTrackingStatus(t *testing.T) {
+	t.Run("NewFromString_unknown", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListPaymentsRequestTrackingStatusFromString("unknown")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListPaymentsRequestTrackingStatus("unknown"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pre_transit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListPaymentsRequestTrackingStatusFromString("pre_transit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListPaymentsRequestTrackingStatus("pre_transit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_in_transit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListPaymentsRequestTrackingStatusFromString("in_transit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListPaymentsRequestTrackingStatus("in_transit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_out_for_delivery", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListPaymentsRequestTrackingStatusFromString("out_for_delivery")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListPaymentsRequestTrackingStatus("out_for_delivery"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_delivered", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListPaymentsRequestTrackingStatusFromString("delivered")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListPaymentsRequestTrackingStatus("delivered"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_available_for_pickup", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListPaymentsRequestTrackingStatusFromString("available_for_pickup")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListPaymentsRequestTrackingStatus("available_for_pickup"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_return_to_sender", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListPaymentsRequestTrackingStatusFromString("return_to_sender")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListPaymentsRequestTrackingStatus("return_to_sender"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_failure", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListPaymentsRequestTrackingStatusFromString("failure")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListPaymentsRequestTrackingStatus("failure"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_cancelled", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListPaymentsRequestTrackingStatusFromString("cancelled")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListPaymentsRequestTrackingStatus("cancelled"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_error", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListPaymentsRequestTrackingStatusFromString("error")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListPaymentsRequestTrackingStatus("error"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_needs_tracking", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListPaymentsRequestTrackingStatusFromString("needs_tracking")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListPaymentsRequestTrackingStatus("needs_tracking"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_missing_tracking", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListPaymentsRequestTrackingStatusFromString("missing_tracking")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListPaymentsRequestTrackingStatus("missing_tracking"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewListPaymentsRequestTrackingStatusFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewListPaymentsRequestTrackingStatusFromString("unknown")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -23319,6 +23464,13 @@ func TestEnumSummaryPaymentsRequestTrackingStatesItem(t *testing.T) {
 		val, err := NewSummaryPaymentsRequestTrackingStatesItemFromString("needs_tracking")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, SummaryPaymentsRequestTrackingStatesItem("needs_tracking"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_missing_tracking", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSummaryPaymentsRequestTrackingStatesItemFromString("missing_tracking")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SummaryPaymentsRequestTrackingStatesItem("missing_tracking"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {

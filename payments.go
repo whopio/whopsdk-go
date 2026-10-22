@@ -279,37 +279,38 @@ var (
 	listPaymentsRequestFieldMode                     = big.NewInt(1 << 0)
 	listPaymentsRequestFieldAccountID                = big.NewInt(1 << 1)
 	listPaymentsRequestFieldStatus                   = big.NewInt(1 << 2)
-	listPaymentsRequestFieldBillingReason            = big.NewInt(1 << 3)
-	listPaymentsRequestFieldCurrency                 = big.NewInt(1 << 4)
-	listPaymentsRequestFieldUserID                   = big.NewInt(1 << 5)
-	listPaymentsRequestFieldQuery                    = big.NewInt(1 << 6)
-	listPaymentsRequestFieldIncludeConnectedAccounts = big.NewInt(1 << 7)
-	listPaymentsRequestFieldMemberID                 = big.NewInt(1 << 8)
-	listPaymentsRequestFieldMembershipID             = big.NewInt(1 << 9)
-	listPaymentsRequestFieldProductID                = big.NewInt(1 << 10)
-	listPaymentsRequestFieldPlanID                   = big.NewInt(1 << 11)
-	listPaymentsRequestFieldCreatedBefore            = big.NewInt(1 << 12)
-	listPaymentsRequestFieldCreatedAfter             = big.NewInt(1 << 13)
-	listPaymentsRequestFieldStatuses                 = big.NewInt(1 << 14)
-	listPaymentsRequestFieldSubstatuses              = big.NewInt(1 << 15)
-	listPaymentsRequestFieldBillingReasons           = big.NewInt(1 << 16)
-	listPaymentsRequestFieldCurrencies               = big.NewInt(1 << 17)
-	listPaymentsRequestFieldPlanIDs                  = big.NewInt(1 << 18)
-	listPaymentsRequestFieldProductIDs               = big.NewInt(1 << 19)
-	listPaymentsRequestFieldPaymentMethods           = big.NewInt(1 << 20)
-	listPaymentsRequestFieldTrackingStates           = big.NewInt(1 << 21)
-	listPaymentsRequestFieldRefundedAfter            = big.NewInt(1 << 22)
-	listPaymentsRequestFieldRefundedBefore           = big.NewInt(1 << 23)
-	listPaymentsRequestFieldDisputeAlertedAfter      = big.NewInt(1 << 24)
-	listPaymentsRequestFieldDisputeAlertedBefore     = big.NewInt(1 << 25)
-	listPaymentsRequestFieldDisputeCreatedAfter      = big.NewInt(1 << 26)
-	listPaymentsRequestFieldDisputeCreatedBefore     = big.NewInt(1 << 27)
-	listPaymentsRequestFieldOrder                    = big.NewInt(1 << 28)
-	listPaymentsRequestFieldDirection                = big.NewInt(1 << 29)
-	listPaymentsRequestFieldFirst                    = big.NewInt(1 << 30)
-	listPaymentsRequestFieldAfter                    = big.NewInt(1 << 31)
-	listPaymentsRequestFieldLast                     = big.NewInt(1 << 32)
-	listPaymentsRequestFieldBefore                   = big.NewInt(1 << 33)
+	listPaymentsRequestFieldTrackingStatus           = big.NewInt(1 << 3)
+	listPaymentsRequestFieldBillingReason            = big.NewInt(1 << 4)
+	listPaymentsRequestFieldCurrency                 = big.NewInt(1 << 5)
+	listPaymentsRequestFieldUserID                   = big.NewInt(1 << 6)
+	listPaymentsRequestFieldQuery                    = big.NewInt(1 << 7)
+	listPaymentsRequestFieldIncludeConnectedAccounts = big.NewInt(1 << 8)
+	listPaymentsRequestFieldMemberID                 = big.NewInt(1 << 9)
+	listPaymentsRequestFieldMembershipID             = big.NewInt(1 << 10)
+	listPaymentsRequestFieldProductID                = big.NewInt(1 << 11)
+	listPaymentsRequestFieldPlanID                   = big.NewInt(1 << 12)
+	listPaymentsRequestFieldCreatedBefore            = big.NewInt(1 << 13)
+	listPaymentsRequestFieldCreatedAfter             = big.NewInt(1 << 14)
+	listPaymentsRequestFieldStatuses                 = big.NewInt(1 << 15)
+	listPaymentsRequestFieldSubstatuses              = big.NewInt(1 << 16)
+	listPaymentsRequestFieldBillingReasons           = big.NewInt(1 << 17)
+	listPaymentsRequestFieldCurrencies               = big.NewInt(1 << 18)
+	listPaymentsRequestFieldPlanIDs                  = big.NewInt(1 << 19)
+	listPaymentsRequestFieldProductIDs               = big.NewInt(1 << 20)
+	listPaymentsRequestFieldPaymentMethods           = big.NewInt(1 << 21)
+	listPaymentsRequestFieldTrackingStates           = big.NewInt(1 << 22)
+	listPaymentsRequestFieldRefundedAfter            = big.NewInt(1 << 23)
+	listPaymentsRequestFieldRefundedBefore           = big.NewInt(1 << 24)
+	listPaymentsRequestFieldDisputeAlertedAfter      = big.NewInt(1 << 25)
+	listPaymentsRequestFieldDisputeAlertedBefore     = big.NewInt(1 << 26)
+	listPaymentsRequestFieldDisputeCreatedAfter      = big.NewInt(1 << 27)
+	listPaymentsRequestFieldDisputeCreatedBefore     = big.NewInt(1 << 28)
+	listPaymentsRequestFieldOrder                    = big.NewInt(1 << 29)
+	listPaymentsRequestFieldDirection                = big.NewInt(1 << 30)
+	listPaymentsRequestFieldFirst                    = big.NewInt(1 << 31)
+	listPaymentsRequestFieldAfter                    = big.NewInt(1 << 32)
+	listPaymentsRequestFieldLast                     = big.NewInt(1 << 33)
+	listPaymentsRequestFieldBefore                   = big.NewInt(1 << 34)
 )
 
 type ListPaymentsRequest struct {
@@ -319,6 +320,8 @@ type ListPaymentsRequest struct {
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// Only payments in this lifecycle state.
 	Status *ListPaymentsRequestStatus `json:"-" url:"status,omitempty"`
+	// Only payments whose most recently attached kept shipment is in this tracking state. `missing_tracking` selects paid payments with a captured shipping address and no kept shipment, excluding fully refunded payments. `needs_tracking` selects payments with an open pre-shipment funds hold and no kept shipment. Shipment states do not imply a payment or refund state. Requires `shipment:basic:read` as well as `payment:basic:read`; user-wide lists include only accounts readable under both scopes. Only supported with `mode=account_sales`.
+	TrackingStatus *ListPaymentsRequestTrackingStatus `json:"-" url:"tracking_status,omitempty"`
 	// Only payments charged for this reason. `subscription_cycle` also matches renewals recorded as `subscription_update`.
 	BillingReason *ListPaymentsRequestBillingReason `json:"-" url:"billing_reason,omitempty"`
 	// Only payments presented in this three-letter currency, such as `usd`.
@@ -414,6 +417,13 @@ func (l *ListPaymentsRequest) SetAccountID(accountID *string) {
 func (l *ListPaymentsRequest) SetStatus(status *ListPaymentsRequestStatus) {
 	l.Status = status
 	l.require(listPaymentsRequestFieldStatus)
+}
+
+// SetTrackingStatus sets the TrackingStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetTrackingStatus(trackingStatus *ListPaymentsRequestTrackingStatus) {
+	l.TrackingStatus = trackingStatus
+	l.require(listPaymentsRequestFieldTrackingStatus)
 }
 
 // SetBillingReason sets the BillingReason field and marks it as non-optional;
@@ -5079,6 +5089,7 @@ const (
 	ListPaymentsRequestTrackingStatesItemCancelled          ListPaymentsRequestTrackingStatesItem = "cancelled"
 	ListPaymentsRequestTrackingStatesItemError              ListPaymentsRequestTrackingStatesItem = "error"
 	ListPaymentsRequestTrackingStatesItemNeedsTracking      ListPaymentsRequestTrackingStatesItem = "needs_tracking"
+	ListPaymentsRequestTrackingStatesItemMissingTracking    ListPaymentsRequestTrackingStatesItem = "missing_tracking"
 )
 
 func NewListPaymentsRequestTrackingStatesItemFromString(s string) (ListPaymentsRequestTrackingStatesItem, error) {
@@ -5105,12 +5116,66 @@ func NewListPaymentsRequestTrackingStatesItemFromString(s string) (ListPaymentsR
 		return ListPaymentsRequestTrackingStatesItemError, nil
 	case "needs_tracking":
 		return ListPaymentsRequestTrackingStatesItemNeedsTracking, nil
+	case "missing_tracking":
+		return ListPaymentsRequestTrackingStatesItemMissingTracking, nil
 	}
 	var t ListPaymentsRequestTrackingStatesItem
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
 func (l ListPaymentsRequestTrackingStatesItem) Ptr() *ListPaymentsRequestTrackingStatesItem {
+	return &l
+}
+
+type ListPaymentsRequestTrackingStatus string
+
+const (
+	ListPaymentsRequestTrackingStatusUnknown            ListPaymentsRequestTrackingStatus = "unknown"
+	ListPaymentsRequestTrackingStatusPreTransit         ListPaymentsRequestTrackingStatus = "pre_transit"
+	ListPaymentsRequestTrackingStatusInTransit          ListPaymentsRequestTrackingStatus = "in_transit"
+	ListPaymentsRequestTrackingStatusOutForDelivery     ListPaymentsRequestTrackingStatus = "out_for_delivery"
+	ListPaymentsRequestTrackingStatusDelivered          ListPaymentsRequestTrackingStatus = "delivered"
+	ListPaymentsRequestTrackingStatusAvailableForPickup ListPaymentsRequestTrackingStatus = "available_for_pickup"
+	ListPaymentsRequestTrackingStatusReturnToSender     ListPaymentsRequestTrackingStatus = "return_to_sender"
+	ListPaymentsRequestTrackingStatusFailure            ListPaymentsRequestTrackingStatus = "failure"
+	ListPaymentsRequestTrackingStatusCancelled          ListPaymentsRequestTrackingStatus = "cancelled"
+	ListPaymentsRequestTrackingStatusError              ListPaymentsRequestTrackingStatus = "error"
+	ListPaymentsRequestTrackingStatusNeedsTracking      ListPaymentsRequestTrackingStatus = "needs_tracking"
+	ListPaymentsRequestTrackingStatusMissingTracking    ListPaymentsRequestTrackingStatus = "missing_tracking"
+)
+
+func NewListPaymentsRequestTrackingStatusFromString(s string) (ListPaymentsRequestTrackingStatus, error) {
+	switch s {
+	case "unknown":
+		return ListPaymentsRequestTrackingStatusUnknown, nil
+	case "pre_transit":
+		return ListPaymentsRequestTrackingStatusPreTransit, nil
+	case "in_transit":
+		return ListPaymentsRequestTrackingStatusInTransit, nil
+	case "out_for_delivery":
+		return ListPaymentsRequestTrackingStatusOutForDelivery, nil
+	case "delivered":
+		return ListPaymentsRequestTrackingStatusDelivered, nil
+	case "available_for_pickup":
+		return ListPaymentsRequestTrackingStatusAvailableForPickup, nil
+	case "return_to_sender":
+		return ListPaymentsRequestTrackingStatusReturnToSender, nil
+	case "failure":
+		return ListPaymentsRequestTrackingStatusFailure, nil
+	case "cancelled":
+		return ListPaymentsRequestTrackingStatusCancelled, nil
+	case "error":
+		return ListPaymentsRequestTrackingStatusError, nil
+	case "needs_tracking":
+		return ListPaymentsRequestTrackingStatusNeedsTracking, nil
+	case "missing_tracking":
+		return ListPaymentsRequestTrackingStatusMissingTracking, nil
+	}
+	var t ListPaymentsRequestTrackingStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListPaymentsRequestTrackingStatus) Ptr() *ListPaymentsRequestTrackingStatus {
 	return &l
 }
 
@@ -8000,6 +8065,7 @@ const (
 	SummaryPaymentsRequestTrackingStatesItemCancelled          SummaryPaymentsRequestTrackingStatesItem = "cancelled"
 	SummaryPaymentsRequestTrackingStatesItemError              SummaryPaymentsRequestTrackingStatesItem = "error"
 	SummaryPaymentsRequestTrackingStatesItemNeedsTracking      SummaryPaymentsRequestTrackingStatesItem = "needs_tracking"
+	SummaryPaymentsRequestTrackingStatesItemMissingTracking    SummaryPaymentsRequestTrackingStatesItem = "missing_tracking"
 )
 
 func NewSummaryPaymentsRequestTrackingStatesItemFromString(s string) (SummaryPaymentsRequestTrackingStatesItem, error) {
@@ -8026,6 +8092,8 @@ func NewSummaryPaymentsRequestTrackingStatesItemFromString(s string) (SummaryPay
 		return SummaryPaymentsRequestTrackingStatesItemError, nil
 	case "needs_tracking":
 		return SummaryPaymentsRequestTrackingStatesItemNeedsTracking, nil
+	case "missing_tracking":
+		return SummaryPaymentsRequestTrackingStatesItemMissingTracking, nil
 	}
 	var t SummaryPaymentsRequestTrackingStatesItem
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
