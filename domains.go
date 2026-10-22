@@ -3122,7 +3122,8 @@ var (
 	domainRegistrationFieldPaymentMethodID = big.NewInt(1 << 4)
 	domainRegistrationFieldPhase           = big.NewInt(1 << 5)
 	domainRegistrationFieldPurchaseURL     = big.NewInt(1 << 6)
-	domainRegistrationFieldState           = big.NewInt(1 << 7)
+	domainRegistrationFieldRenewalPrice    = big.NewInt(1 << 7)
+	domainRegistrationFieldState           = big.NewInt(1 << 8)
 )
 
 // domainRegistrationNullableFields maps the wire names of DomainRegistration's nullable fields (required or optional) to their field bits.
@@ -3131,6 +3132,7 @@ var domainRegistrationNullableFields = map[string]*big.Int{
 	"expires_at":        domainRegistrationFieldExpiresAt,
 	"payment_method_id": domainRegistrationFieldPaymentMethodID,
 	"purchase_url":      domainRegistrationFieldPurchaseURL,
+	"renewal_price":     domainRegistrationFieldRenewalPrice,
 }
 
 type DomainRegistration struct {
@@ -3148,6 +3150,8 @@ type DomainRegistration struct {
 	Phase DomainRegistrationPhase `json:"phase" url:"phase"`
 	// Link to pay what the domain owes now: its registration or transfer, or a yearly renewal. `null` when nothing is owed.
 	PurchaseURL *string `json:"purchase_url,omitempty" url:"purchase_url,omitempty"`
+	// What each yearly renewal costs at the registrar's current price. Set when the response is a single domain; `null` in lists, while the domain is being released, or when the price can't be read right now.
+	RenewalPrice *Money `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
 	// How far registering and keeping the domain has got.
 	State DomainRegistrationState `json:"state" url:"state"`
 
@@ -3205,6 +3209,13 @@ func (d *DomainRegistration) GetPurchaseURL() *string {
 		return nil
 	}
 	return d.PurchaseURL
+}
+
+func (d *DomainRegistration) GetRenewalPrice() *Money {
+	if d == nil {
+		return nil
+	}
+	return d.RenewalPrice
 }
 
 func (d *DomainRegistration) GetState() DomainRegistrationState {
@@ -3277,6 +3288,13 @@ func (d *DomainRegistration) SetPhase(phase DomainRegistrationPhase) {
 func (d *DomainRegistration) SetPurchaseURL(purchaseURL *string) {
 	d.PurchaseURL = purchaseURL
 	d.require(domainRegistrationFieldPurchaseURL)
+}
+
+// SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainRegistration) SetRenewalPrice(renewalPrice *Money) {
+	d.RenewalPrice = renewalPrice
+	d.require(domainRegistrationFieldRenewalPrice)
 }
 
 // SetState sets the State field and marks it as non-optional;

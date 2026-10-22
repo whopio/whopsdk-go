@@ -6776,6 +6776,14 @@ func TestSettersDomainRegistration(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetRenewalPrice", func(t *testing.T) {
+		obj := &DomainRegistration{}
+		var fernTestValueRenewalPrice *Money
+		obj.SetRenewalPrice(fernTestValueRenewalPrice)
+		assert.Equal(t, fernTestValueRenewalPrice, obj.RenewalPrice)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetState", func(t *testing.T) {
 		obj := &DomainRegistration{}
 		var fernTestValueState DomainRegistrationState
@@ -6986,6 +6994,39 @@ func TestGettersDomainRegistration(t *testing.T) {
 			}
 		}()
 		_ = obj.GetPurchaseURL() // Should return zero value
+	})
+
+	t.Run("GetRenewalPrice", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DomainRegistration{}
+		var expected *Money
+		obj.RenewalPrice = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetRenewalPrice(), "getter should return the property value")
+	})
+
+	t.Run("GetRenewalPrice_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DomainRegistration{}
+		obj.RenewalPrice = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetRenewalPrice(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetRenewalPrice_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *DomainRegistration
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetRenewalPrice() // Should return zero value
 	})
 
 	t.Run("GetState", func(t *testing.T) {
@@ -7208,6 +7249,37 @@ func TestSettersMarkExplicitDomainRegistration(t *testing.T) {
 
 		// Act
 		obj.SetPurchaseURL(fernTestValuePurchaseURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetRenewalPrice_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DomainRegistration{}
+		var fernTestValueRenewalPrice *Money
+
+		// Act
+		obj.SetRenewalPrice(fernTestValueRenewalPrice)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -10573,6 +10645,7 @@ func TestRequiredNullableRoundTripDomainRegistration(t *testing.T) {
 		"expires_at",
 		"payment_method_id",
 		"purchase_url",
+		"renewal_price",
 	}
 	marshalToMap := func(t *testing.T, obj *DomainRegistration) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
@@ -10585,7 +10658,7 @@ func TestRequiredNullableRoundTripDomainRegistration(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj DomainRegistration
-		require.NoError(t, json.Unmarshal([]byte(`{"amount_due":null,"expires_at":null,"payment_method_id":null,"purchase_url":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"amount_due":null,"expires_at":null,"payment_method_id":null,"purchase_url":null,"renewal_price":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
