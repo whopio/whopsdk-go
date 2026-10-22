@@ -4371,6 +4371,10 @@ const (
 	ListPaymentsRequestPaymentMethodsItemNyce                   ListPaymentsRequestPaymentMethodsItem = "nyce"
 	ListPaymentsRequestPaymentMethodsItemPulse                  ListPaymentsRequestPaymentMethodsItem = "pulse"
 	ListPaymentsRequestPaymentMethodsItemStar                   ListPaymentsRequestPaymentMethodsItem = "star"
+	ListPaymentsRequestPaymentMethodsItemEftpos                 ListPaymentsRequestPaymentMethodsItem = "eftpos"
+	ListPaymentsRequestPaymentMethodsItemAlelo                  ListPaymentsRequestPaymentMethodsItem = "alelo"
+	ListPaymentsRequestPaymentMethodsItemEdenred                ListPaymentsRequestPaymentMethodsItem = "edenred"
+	ListPaymentsRequestPaymentMethodsItemSodexo                 ListPaymentsRequestPaymentMethodsItem = "sodexo"
 	ListPaymentsRequestPaymentMethodsItemUnknown                ListPaymentsRequestPaymentMethodsItem = "unknown"
 	ListPaymentsRequestPaymentMethodsItemAcssDebit              ListPaymentsRequestPaymentMethodsItem = "acss_debit"
 	ListPaymentsRequestPaymentMethodsItemAddi                   ListPaymentsRequestPaymentMethodsItem = "addi"
@@ -4600,6 +4604,14 @@ func NewListPaymentsRequestPaymentMethodsItemFromString(s string) (ListPaymentsR
 		return ListPaymentsRequestPaymentMethodsItemPulse, nil
 	case "star":
 		return ListPaymentsRequestPaymentMethodsItemStar, nil
+	case "eftpos":
+		return ListPaymentsRequestPaymentMethodsItemEftpos, nil
+	case "alelo":
+		return ListPaymentsRequestPaymentMethodsItemAlelo, nil
+	case "edenred":
+		return ListPaymentsRequestPaymentMethodsItemEdenred, nil
+	case "sodexo":
+		return ListPaymentsRequestPaymentMethodsItemSodexo, nil
 	case "unknown":
 		return ListPaymentsRequestPaymentMethodsItemUnknown, nil
 	case "acss_debit":
@@ -7317,6 +7329,10 @@ const (
 	SummaryPaymentsRequestPaymentMethodsItemNyce                   SummaryPaymentsRequestPaymentMethodsItem = "nyce"
 	SummaryPaymentsRequestPaymentMethodsItemPulse                  SummaryPaymentsRequestPaymentMethodsItem = "pulse"
 	SummaryPaymentsRequestPaymentMethodsItemStar                   SummaryPaymentsRequestPaymentMethodsItem = "star"
+	SummaryPaymentsRequestPaymentMethodsItemEftpos                 SummaryPaymentsRequestPaymentMethodsItem = "eftpos"
+	SummaryPaymentsRequestPaymentMethodsItemAlelo                  SummaryPaymentsRequestPaymentMethodsItem = "alelo"
+	SummaryPaymentsRequestPaymentMethodsItemEdenred                SummaryPaymentsRequestPaymentMethodsItem = "edenred"
+	SummaryPaymentsRequestPaymentMethodsItemSodexo                 SummaryPaymentsRequestPaymentMethodsItem = "sodexo"
 	SummaryPaymentsRequestPaymentMethodsItemUnknown                SummaryPaymentsRequestPaymentMethodsItem = "unknown"
 	SummaryPaymentsRequestPaymentMethodsItemAcssDebit              SummaryPaymentsRequestPaymentMethodsItem = "acss_debit"
 	SummaryPaymentsRequestPaymentMethodsItemAddi                   SummaryPaymentsRequestPaymentMethodsItem = "addi"
@@ -7546,6 +7562,14 @@ func NewSummaryPaymentsRequestPaymentMethodsItemFromString(s string) (SummaryPay
 		return SummaryPaymentsRequestPaymentMethodsItemPulse, nil
 	case "star":
 		return SummaryPaymentsRequestPaymentMethodsItemStar, nil
+	case "eftpos":
+		return SummaryPaymentsRequestPaymentMethodsItemEftpos, nil
+	case "alelo":
+		return SummaryPaymentsRequestPaymentMethodsItemAlelo, nil
+	case "edenred":
+		return SummaryPaymentsRequestPaymentMethodsItemEdenred, nil
+	case "sodexo":
+		return SummaryPaymentsRequestPaymentMethodsItemSodexo, nil
 	case "unknown":
 		return SummaryPaymentsRequestPaymentMethodsItemUnknown, nil
 	case "acss_debit":
