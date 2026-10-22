@@ -161,7 +161,6 @@ func (c *Client) Create(
 // Example:
 //
 //	request := &whopsdk.CreateQuotePayoutsRequest{
-//	    Amount: 6762.41,
 //	    PayoutMethodID: "potk_xxxxxxxxxxxxxx",
 //	}
 //	client.Payouts.CreateQuote(
