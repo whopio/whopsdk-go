@@ -818,66 +818,67 @@ var (
 	accountFieldCompanyFormation                    = big.NewInt(1 << 11)
 	accountFieldCountry                             = big.NewInt(1 << 12)
 	accountFieldCreatedAt                           = big.NewInt(1 << 13)
-	accountFieldDescription                         = big.NewInt(1 << 14)
-	accountFieldDirectReportsCount                  = big.NewInt(1 << 15)
-	accountFieldDisputeFighterEnabled               = big.NewInt(1 << 16)
-	accountFieldEconomicIntelligence                = big.NewInt(1 << 17)
-	accountFieldEmail                               = big.NewInt(1 << 18)
-	accountFieldEula                                = big.NewInt(1 << 19)
-	accountFieldFinancing                           = big.NewInt(1 << 20)
-	accountFieldHomePreferences                     = big.NewInt(1 << 21)
-	accountFieldID                                  = big.NewInt(1 << 22)
-	accountFieldIndustryType                        = big.NewInt(1 << 23)
-	accountFieldInvoicePrefix                       = big.NewInt(1 << 24)
-	accountFieldLevel                               = big.NewInt(1 << 25)
-	accountFieldLogoURL                             = big.NewInt(1 << 26)
-	accountFieldMetadata                            = big.NewInt(1 << 27)
-	accountFieldOnboardingType                      = big.NewInt(1 << 28)
-	accountFieldOpengraphImageURL                   = big.NewInt(1 << 29)
-	accountFieldOpengraphImageVariant               = big.NewInt(1 << 30)
-	accountFieldOrchestrationEnabled                = big.NewInt(1 << 31)
-	accountFieldOtherBusinessDescription            = big.NewInt(1 << 32)
-	accountFieldOtherIndustryDescription            = big.NewInt(1 << 33)
-	accountFieldOwner                               = big.NewInt(1 << 34)
-	accountFieldParentAccount                       = big.NewInt(1 << 35)
-	accountFieldPartner                             = big.NewInt(1 << 36)
-	accountFieldPaymentControls                     = big.NewInt(1 << 37)
-	accountFieldPlatformCredits                     = big.NewInt(1 << 38)
-	accountFieldPrivacyPolicy                       = big.NewInt(1 << 39)
-	accountFieldProductTaxCode                      = big.NewInt(1 << 40)
-	accountFieldRecommendedActions                  = big.NewInt(1 << 41)
-	accountFieldRequire2Fa                          = big.NewInt(1 << 42)
-	accountFieldRequiredActions                     = big.NewInt(1 << 43)
-	accountFieldReturnPolicy                        = big.NewInt(1 << 44)
-	accountFieldRewards                             = big.NewInt(1 << 45)
-	accountFieldRoute                               = big.NewInt(1 << 46)
-	accountFieldSendCustomerEmails                  = big.NewInt(1 << 47)
-	accountFieldShippingPolicy                      = big.NewInt(1 << 48)
-	accountFieldShowJoinedWhops                     = big.NewInt(1 << 49)
-	accountFieldShowReviewsDtc                      = big.NewInt(1 << 50)
-	accountFieldShowUserDirectory                   = big.NewInt(1 << 51)
-	accountFieldSocialLinks                         = big.NewInt(1 << 52)
-	accountFieldStatus                              = big.NewInt(1 << 53)
-	accountFieldStatusReason                        = big.NewInt(1 << 54)
-	accountFieldStorePageConfig                     = big.NewInt(1 << 55)
-	accountFieldTargetAudience                      = big.NewInt(1 << 56)
-	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 57)
-	accountFieldTaxIdentifiers                      = big.NewInt(1 << 58)
-	accountFieldTaxRemittedBy                       = big.NewInt(1 << 59)
-	accountFieldTaxType                             = big.NewInt(1 << 60)
-	accountFieldTermsOfService                      = big.NewInt(1 << 61)
-	accountFieldThreeDsLevel                        = big.NewInt(1 << 62)
-	accountFieldTitle                               = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	accountFieldTotalEarnedUsd                      = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	accountFieldTotalUsd                            = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	accountFieldTrading                             = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(0).Lsh(big.NewInt(1), 67)
-	accountFieldVerification                        = big.NewInt(0).Lsh(big.NewInt(1), 68)
-	accountFieldVolumeL30DUsd                       = big.NewInt(0).Lsh(big.NewInt(1), 69)
-	accountFieldVolumeUsd                           = big.NewInt(0).Lsh(big.NewInt(1), 70)
-	accountFieldWallet                              = big.NewInt(0).Lsh(big.NewInt(1), 71)
-	accountFieldWebsite                             = big.NewInt(0).Lsh(big.NewInt(1), 72)
-	accountFieldWhopPartnerEnabledAt                = big.NewInt(0).Lsh(big.NewInt(1), 73)
+	accountFieldCustomersL30D                       = big.NewInt(1 << 14)
+	accountFieldDescription                         = big.NewInt(1 << 15)
+	accountFieldDirectReportsCount                  = big.NewInt(1 << 16)
+	accountFieldDisputeFighterEnabled               = big.NewInt(1 << 17)
+	accountFieldEconomicIntelligence                = big.NewInt(1 << 18)
+	accountFieldEmail                               = big.NewInt(1 << 19)
+	accountFieldEula                                = big.NewInt(1 << 20)
+	accountFieldFinancing                           = big.NewInt(1 << 21)
+	accountFieldHomePreferences                     = big.NewInt(1 << 22)
+	accountFieldID                                  = big.NewInt(1 << 23)
+	accountFieldIndustryType                        = big.NewInt(1 << 24)
+	accountFieldInvoicePrefix                       = big.NewInt(1 << 25)
+	accountFieldLevel                               = big.NewInt(1 << 26)
+	accountFieldLogoURL                             = big.NewInt(1 << 27)
+	accountFieldMetadata                            = big.NewInt(1 << 28)
+	accountFieldOnboardingType                      = big.NewInt(1 << 29)
+	accountFieldOpengraphImageURL                   = big.NewInt(1 << 30)
+	accountFieldOpengraphImageVariant               = big.NewInt(1 << 31)
+	accountFieldOrchestrationEnabled                = big.NewInt(1 << 32)
+	accountFieldOtherBusinessDescription            = big.NewInt(1 << 33)
+	accountFieldOtherIndustryDescription            = big.NewInt(1 << 34)
+	accountFieldOwner                               = big.NewInt(1 << 35)
+	accountFieldParentAccount                       = big.NewInt(1 << 36)
+	accountFieldPartner                             = big.NewInt(1 << 37)
+	accountFieldPaymentControls                     = big.NewInt(1 << 38)
+	accountFieldPlatformCredits                     = big.NewInt(1 << 39)
+	accountFieldPrivacyPolicy                       = big.NewInt(1 << 40)
+	accountFieldProductTaxCode                      = big.NewInt(1 << 41)
+	accountFieldRecommendedActions                  = big.NewInt(1 << 42)
+	accountFieldRequire2Fa                          = big.NewInt(1 << 43)
+	accountFieldRequiredActions                     = big.NewInt(1 << 44)
+	accountFieldReturnPolicy                        = big.NewInt(1 << 45)
+	accountFieldRewards                             = big.NewInt(1 << 46)
+	accountFieldRoute                               = big.NewInt(1 << 47)
+	accountFieldSendCustomerEmails                  = big.NewInt(1 << 48)
+	accountFieldShippingPolicy                      = big.NewInt(1 << 49)
+	accountFieldShowJoinedWhops                     = big.NewInt(1 << 50)
+	accountFieldShowReviewsDtc                      = big.NewInt(1 << 51)
+	accountFieldShowUserDirectory                   = big.NewInt(1 << 52)
+	accountFieldSocialLinks                         = big.NewInt(1 << 53)
+	accountFieldStatus                              = big.NewInt(1 << 54)
+	accountFieldStatusReason                        = big.NewInt(1 << 55)
+	accountFieldStorePageConfig                     = big.NewInt(1 << 56)
+	accountFieldTargetAudience                      = big.NewInt(1 << 57)
+	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 58)
+	accountFieldTaxIdentifiers                      = big.NewInt(1 << 59)
+	accountFieldTaxRemittedBy                       = big.NewInt(1 << 60)
+	accountFieldTaxType                             = big.NewInt(1 << 61)
+	accountFieldTermsOfService                      = big.NewInt(1 << 62)
+	accountFieldThreeDsLevel                        = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	accountFieldTitle                               = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	accountFieldTotalEarnedUsd                      = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	accountFieldTotalUsd                            = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	accountFieldTrading                             = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	accountFieldVerification                        = big.NewInt(0).Lsh(big.NewInt(1), 69)
+	accountFieldVolumeL30DUsd                       = big.NewInt(0).Lsh(big.NewInt(1), 70)
+	accountFieldVolumeUsd                           = big.NewInt(0).Lsh(big.NewInt(1), 71)
+	accountFieldWallet                              = big.NewInt(0).Lsh(big.NewInt(1), 72)
+	accountFieldWebsite                             = big.NewInt(0).Lsh(big.NewInt(1), 73)
+	accountFieldWhopPartnerEnabledAt                = big.NewInt(0).Lsh(big.NewInt(1), 74)
 )
 
 // accountNullableFields maps the wire names of Account's nullable fields (required or optional) to their field bits.
@@ -891,6 +892,7 @@ var accountNullableFields = map[string]*big.Int{
 	"capabilities":               accountFieldCapabilities,
 	"cards":                      accountFieldCards,
 	"country":                    accountFieldCountry,
+	"customers_l30d":             accountFieldCustomersL30D,
 	"description":                accountFieldDescription,
 	"email":                      accountFieldEmail,
 	"eula":                       accountFieldEula,
@@ -958,6 +960,8 @@ type Account struct {
 	Country *string `json:"country,omitempty" url:"country,omitempty"`
 	// When the account was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
+	// Distinct customers with a paid receipt at the account in the last 30 days, refreshed every few hours. Computed only on `retrieve` for callers with `stats:read` on the account; `null` otherwise, and when the count is unavailable.
+	CustomersL30D *int `json:"customers_l30d,omitempty" url:"customers_l30d,omitempty"`
 	// Account promotional description.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
 	// How many team members report to the business directly, with no manager above them. Present on single-account reads.
@@ -1175,6 +1179,13 @@ func (a *Account) GetCreatedAt() string {
 		return ""
 	}
 	return a.CreatedAt
+}
+
+func (a *Account) GetCustomersL30D() *int {
+	if a == nil {
+		return nil
+	}
+	return a.CustomersL30D
 }
 
 func (a *Account) GetDescription() *string {
@@ -1709,6 +1720,13 @@ func (a *Account) SetCountry(country *string) {
 func (a *Account) SetCreatedAt(createdAt string) {
 	a.CreatedAt = createdAt
 	a.require(accountFieldCreatedAt)
+}
+
+// SetCustomersL30D sets the CustomersL30D field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetCustomersL30D(customersL30D *int) {
+	a.CustomersL30D = customersL30D
+	a.require(accountFieldCustomersL30D)
 }
 
 // SetDescription sets the Description field and marks it as non-optional;
