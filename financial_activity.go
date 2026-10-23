@@ -5463,14 +5463,14 @@ type LedgerActivitySource struct {
 	// Lowercase currency code converted from (swap sources only).
 	FromCurrency *string `json:"from_currency,omitempty" url:"from_currency,omitempty"`
 	ID           string  `json:"id" url:"id"`
-	// Memo attached to the transfer or payout source, or null when none was provided (on payout sources requires payout:withdrawal:read).
+	// Memo attached to the transfer, payout, or bank_deposit source, or null when none was provided (on payout sources requires payout:withdrawal:read).
 	Notes  *string `json:"notes,omitempty" url:"notes,omitempty"`
 	Object string  `json:"object" url:"object"`
-	// Name of the entity processing the payout (payout sources only; requires payout:withdrawal:read).
+	// On payout sources, the name of the entity processing the payout (requires payout:withdrawal:read). On bank_deposit sources, the name of the account that sent the deposit.
 	PayerName *string `json:"payer_name,omitempty" url:"payer_name,omitempty"`
 	// Total charged by the payment source.
 	PaymentAmount *Money `json:"payment_amount,omitempty" url:"payment_amount,omitempty"`
-	// Payment method used by the payment source.
+	// Payment method used by the payment source. On bank_deposit sources, the transfer rail: `wire`, `ach`, or `rtp`.
 	PaymentMethodType *string `json:"payment_method_type,omitempty" url:"payment_method_type,omitempty"`
 	// Processor used by the payment source.
 	PaymentProcessor *string `json:"payment_processor,omitempty" url:"payment_processor,omitempty"`
@@ -5484,7 +5484,7 @@ type LedgerActivitySource struct {
 	Reason *string `json:"reason,omitempty" url:"reason,omitempty"`
 	// Whether this payout is currently held for manual risk review (payout sources only; requires payout:withdrawal:read).
 	RiskReviewHold *bool `json:"risk_review_hold,omitempty" url:"risk_review_hold,omitempty"`
-	// Sender wallet address or onramp provider identifier (onchain_transaction sources only).
+	// On onchain_transaction sources, the sender wallet address or onramp provider identifier. On bank_deposit sources, the last four digits of the sending bank account, such as `••••1547`.
 	SenderAddress *string `json:"sender_address,omitempty" url:"sender_address,omitempty"`
 	// Lifecycle status. On payout sources this is the payout status (requires payout:withdrawal:read); on airdrop_link sources it is the claim-link status (ungated); on payment and top-up sources it is the friendly payment status such as succeeded/pending/failed (ungated).
 	Status *string `json:"status,omitempty" url:"status,omitempty"`
