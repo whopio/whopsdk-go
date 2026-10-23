@@ -17,11 +17,11 @@ var (
 )
 
 type CreateAdPixelsRequest struct {
-	// An access token that can send events to the pixel on the ad platform: a Meta Conversions API access token or a TikTok Events API access token. Whop never returns it.
+	// A credential that can send events to the pixel on the ad platform: a Meta Conversions API access token, a TikTok Events API access token, or for `google`, the JSON key of a Google Cloud service account. The service account needs Standard access to the Google Ads account, and its project needs the Google Ads API and the Data Manager API turned on and Explorer access or higher to the Google Ads API. Use a service account made only for Whop, with no roles in its project. Whop never returns it.
 	AccessToken string `json:"access_token" url:"-"`
 	// The business whose claimed campaigns send conversions to this pixel, prefixed `biz_`. You must have claimed at least one of its campaigns.
 	AccountID string `json:"account_id" url:"-"`
-	// The pixel's ID on the ad platform: the Meta pixel or dataset ID, or the TikTok pixel code.
+	// The pixel's ID on the ad platform: the Meta pixel or dataset ID, the TikTok pixel code, or the Google Ads customer ID.
 	ExternalID string `json:"external_id" url:"-"`
 	// The ad platform the pixel belongs to.
 	Platform CreateAdPixelsRequestPlatform `json:"platform" url:"-"`
@@ -255,7 +255,7 @@ type AdPixel struct {
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Why the ad platform rejected the last delivery. Null unless `status` is `errored`.
 	ErrorMessage *string `json:"error_message,omitempty" url:"error_message,omitempty"`
-	// The pixel's ID on the ad platform: the Meta pixel or dataset ID, or the TikTok pixel code.
+	// The pixel's ID on the ad platform: the Meta pixel or dataset ID, the TikTok pixel code, or the Google Ads customer ID.
 	ExternalID string `json:"external_id" url:"external_id"`
 	// Ad pixel ID, prefixed `adpx_`.
 	ID string `json:"id" url:"id"`
@@ -472,6 +472,7 @@ type AdPixelPlatform string
 const (
 	AdPixelPlatformMeta   AdPixelPlatform = "meta"
 	AdPixelPlatformTiktok AdPixelPlatform = "tiktok"
+	AdPixelPlatformGoogle AdPixelPlatform = "google"
 )
 
 func NewAdPixelPlatformFromString(s string) (AdPixelPlatform, error) {
@@ -480,6 +481,8 @@ func NewAdPixelPlatformFromString(s string) (AdPixelPlatform, error) {
 		return AdPixelPlatformMeta, nil
 	case "tiktok":
 		return AdPixelPlatformTiktok, nil
+	case "google":
+		return AdPixelPlatformGoogle, nil
 	}
 	var t AdPixelPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -521,6 +524,7 @@ type CreateAdPixelsRequestPlatform string
 const (
 	CreateAdPixelsRequestPlatformMeta   CreateAdPixelsRequestPlatform = "meta"
 	CreateAdPixelsRequestPlatformTiktok CreateAdPixelsRequestPlatform = "tiktok"
+	CreateAdPixelsRequestPlatformGoogle CreateAdPixelsRequestPlatform = "google"
 )
 
 func NewCreateAdPixelsRequestPlatformFromString(s string) (CreateAdPixelsRequestPlatform, error) {
@@ -529,6 +533,8 @@ func NewCreateAdPixelsRequestPlatformFromString(s string) (CreateAdPixelsRequest
 		return CreateAdPixelsRequestPlatformMeta, nil
 	case "tiktok":
 		return CreateAdPixelsRequestPlatformTiktok, nil
+	case "google":
+		return CreateAdPixelsRequestPlatformGoogle, nil
 	}
 	var t CreateAdPixelsRequestPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -938,7 +944,7 @@ var (
 type UpdateAdPixelsRequest struct {
 	// Ad pixel ID, prefixed `adpx_`.
 	ID string `json:"-" url:"-"`
-	// An access token that can send events to the pixel on the ad platform: a Meta Conversions API access token or a TikTok Events API access token. Whop never returns it.
+	// A credential that can send events to the pixel on the ad platform: a Meta Conversions API access token, a TikTok Events API access token, or for `google`, the JSON key of a Google Cloud service account. The service account needs Standard access to the Google Ads account, and its project needs the Google Ads API and the Data Manager API turned on and Explorer access or higher to the Google Ads API. Use a service account made only for Whop, with no roles in its project. Whop never returns it.
 	AccessToken string `json:"access_token" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
