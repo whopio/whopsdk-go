@@ -46,7 +46,7 @@ type CreateInvoicesRequest struct {
 	MemberID *string `json:"member_id,omitempty" url:"-"`
 	// Up to 50 caller-owned string key/value pairs.
 	Metadata map[string]string `json:"metadata,omitempty" url:"-"`
-	// A saved payment method belonging to the member.
+	// A saved payment method belonging to the member. Issuing the invoice charges it.
 	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
 	// Email addresses saved for invoice delivery, independent of the billed customer. Saving them sends no email. Defaults to the customer email when omitted on create. Can be updated on draft, open, or uncollectible invoices.
 	RecipientEmails []string `json:"recipient_emails,omitempty" url:"-"`
@@ -5649,7 +5649,7 @@ type UpdateInvoicesRequest struct {
 	MemberID *string `json:"member_id,omitempty" url:"-"`
 	// Up to 50 caller-owned string key/value pairs.
 	Metadata map[string]string `json:"metadata,omitempty" url:"-"`
-	// A saved payment method belonging to the member.
+	// A saved payment method belonging to the member. Issuing the invoice charges it.
 	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
 	// Email addresses saved for invoice delivery, independent of the billed customer. Saving them sends no email. Defaults to the customer email when omitted on create. Can be updated on draft, open, or uncollectible invoices.
 	RecipientEmails []string `json:"recipient_emails,omitempty" url:"-"`
