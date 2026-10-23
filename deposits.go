@@ -13,7 +13,8 @@ import (
 var (
 	createDepositsRequestFieldAmount          = big.NewInt(1 << 0)
 	createDepositsRequestFieldDestination     = big.NewInt(1 << 1)
-	createDepositsRequestFieldPaymentMethodID = big.NewInt(1 << 2)
+	createDepositsRequestFieldMetadata        = big.NewInt(1 << 2)
+	createDepositsRequestFieldPaymentMethodID = big.NewInt(1 << 3)
 )
 
 type CreateDepositsRequest struct {
@@ -21,6 +22,8 @@ type CreateDepositsRequest struct {
 	Amount *float64 `json:"amount,omitempty" url:"-"`
 	// Account ID to fund, `biz_` or `user_`. Any business resolves without authentication; a user account resolves only for that same authenticated user.
 	Destination string `json:"destination" url:"-"`
+	// Custom metadata to attach to the payment the charge creates. Ignored unless `payment_method_id` is provided.
+	Metadata map[string]*CreateDepositsRequestMetadataValue `json:"metadata,omitempty" url:"-"`
 	// A saved payment method of the business to charge for `amount`, prefixed `payt_`. Save one with Create setup intent and `owner_id` set to the account. Only for a `biz_` destination, and requires authentication with the `payment:charge` scope. A declined charge fails the request with 400.
 	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
 
@@ -51,6 +54,13 @@ func (c *CreateDepositsRequest) SetDestination(destination string) {
 	c.require(createDepositsRequestFieldDestination)
 }
 
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDepositsRequest) SetMetadata(metadata map[string]*CreateDepositsRequestMetadataValue) {
+	c.Metadata = metadata
+	c.require(createDepositsRequestFieldMetadata)
+}
+
 // SetPaymentMethodID sets the PaymentMethodID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateDepositsRequest) SetPaymentMethodID(paymentMethodID *string) {
@@ -77,6 +87,89 @@ func (c *CreateDepositsRequest) MarshalJSON() ([]byte, error) {
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
 	return json.Marshal(explicitMarshaler)
+}
+
+type CreateDepositsRequestMetadataValue struct {
+	String  string
+	Double  float64
+	Boolean bool
+
+	typ string
+}
+
+func (c *CreateDepositsRequestMetadataValue) GetString() string {
+	if c == nil {
+		return ""
+	}
+	return c.String
+}
+
+func (c *CreateDepositsRequestMetadataValue) GetDouble() float64 {
+	if c == nil {
+		return 0
+	}
+	return c.Double
+}
+
+func (c *CreateDepositsRequestMetadataValue) GetBoolean() bool {
+	if c == nil {
+		return false
+	}
+	return c.Boolean
+}
+
+func (c *CreateDepositsRequestMetadataValue) UnmarshalJSON(data []byte) error {
+	var valueString string
+	if err := json.Unmarshal(data, &valueString); err == nil {
+		c.typ = "String"
+		c.String = valueString
+		return nil
+	}
+	var valueDouble float64
+	if err := json.Unmarshal(data, &valueDouble); err == nil {
+		c.typ = "Double"
+		c.Double = valueDouble
+		return nil
+	}
+	var valueBoolean bool
+	if err := json.Unmarshal(data, &valueBoolean); err == nil {
+		c.typ = "Boolean"
+		c.Boolean = valueBoolean
+		return nil
+	}
+	return fmt.Errorf("%s cannot be deserialized as a %T", data, c)
+}
+
+func (c CreateDepositsRequestMetadataValue) MarshalJSON() ([]byte, error) {
+	if c.typ == "String" || c.String != "" {
+		return json.Marshal(c.String)
+	}
+	if c.typ == "Double" || c.Double != 0 {
+		return json.Marshal(c.Double)
+	}
+	if c.typ == "Boolean" || c.Boolean != false {
+		return json.Marshal(c.Boolean)
+	}
+	return nil, fmt.Errorf("type %T does not include a non-empty union type", c)
+}
+
+type CreateDepositsRequestMetadataValueVisitor interface {
+	VisitString(string) error
+	VisitDouble(float64) error
+	VisitBoolean(bool) error
+}
+
+func (c *CreateDepositsRequestMetadataValue) Accept(visitor CreateDepositsRequestMetadataValueVisitor) error {
+	if c.typ == "String" || c.String != "" {
+		return visitor.VisitString(c.String)
+	}
+	if c.typ == "Double" || c.Double != 0 {
+		return visitor.VisitDouble(c.Double)
+	}
+	if c.typ == "Boolean" || c.Boolean != false {
+		return visitor.VisitBoolean(c.Boolean)
+	}
+	return fmt.Errorf("type %T does not include a non-empty union type", c)
 }
 
 var (
@@ -742,12 +835,20 @@ func (c CreateDepositsResponseMethodsBankCurrenciesItemRailsItem) Ptr() *CreateD
 }
 
 var (
-	createDepositsResponseMethodsCardFieldPaymentID       = big.NewInt(1 << 0)
-	createDepositsResponseMethodsCardFieldPaymentMethodID = big.NewInt(1 << 1)
+	createDepositsResponseMethodsCardFieldMetadata        = big.NewInt(1 << 0)
+	createDepositsResponseMethodsCardFieldPaymentID       = big.NewInt(1 << 1)
+	createDepositsResponseMethodsCardFieldPaymentMethodID = big.NewInt(1 << 2)
 )
+
+// createDepositsResponseMethodsCardNullableFields maps the wire names of CreateDepositsResponseMethodsCard's nullable fields (required or optional) to their field bits.
+var createDepositsResponseMethodsCardNullableFields = map[string]*big.Int{
+	"metadata": createDepositsResponseMethodsCardFieldMetadata,
+}
 
 // The charge to a saved payment method. Null unless `payment_method_id` was passed.
 type CreateDepositsResponseMethodsCard struct {
+	// The custom metadata attached to the payment the charge created. Null if none was passed.
+	Metadata map[string]*string `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// The payment the charge created, prefixed `pay_`. Retrieve it, or listen for `payment.succeeded`, to confirm the funds landed.
 	PaymentID string `json:"payment_id" url:"payment_id"`
 	// The saved payment method that was charged, prefixed `payt_`.
@@ -758,6 +859,13 @@ type CreateDepositsResponseMethodsCard struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (c *CreateDepositsResponseMethodsCard) GetMetadata() map[string]*string {
+	if c == nil {
+		return nil
+	}
+	return c.Metadata
 }
 
 func (c *CreateDepositsResponseMethodsCard) GetPaymentID() string {
@@ -790,6 +898,13 @@ func (c *CreateDepositsResponseMethodsCard) require(field *big.Int) {
 	c.explicitFields = next
 }
 
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDepositsResponseMethodsCard) SetMetadata(metadata map[string]*string) {
+	c.Metadata = metadata
+	c.require(createDepositsResponseMethodsCardFieldMetadata)
+}
+
 // SetPaymentID sets the PaymentID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateDepositsResponseMethodsCard) SetPaymentID(paymentID string) {
@@ -816,6 +931,13 @@ func (c *CreateDepositsResponseMethodsCard) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createDepositsResponseMethodsCardNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }

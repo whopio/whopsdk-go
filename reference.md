@@ -14899,6 +14899,14 @@ client.Deposits.Create(
 <dl>
 <dd>
 
+**metadata:** `map[string]*whopsdk.CreateDepositsRequestMetadataValue` — Custom metadata to attach to the payment the charge creates. Ignored unless `payment_method_id` is provided.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **paymentMethodID:** `*string` — A saved payment method of the business to charge for `amount`, prefixed `payt_`. Save one with Create setup intent and `owner_id` set to the account. Only for a `biz_` destination, and requires authentication with the `payment:charge` scope. A declined charge fails the request with 400.
     
 </dd>
@@ -16680,6 +16688,14 @@ client.Domains.List(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**transfer:** `*whopsdk.ListDomainsRequestTransfer` — Only domains with transfer in this state, such as `ready`, or `any` for every domain that has transfer.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
@@ -16793,6 +16809,14 @@ client.Domains.Create(
 <dd>
 
 **registration:** `*whopsdk.CreateDomainsRequestRegistration` — Buy the domain through Whop, or transfer in a domain you own elsewhere with `auth_code`, then renew it every year and let Whop run its DNS. Pass `null` to release an unpaid or failed purchase, or to cancel a transfer while its current registrar can still stop it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**transfer:** `*whopsdk.CreateDomainsRequestTransfer` — Move a domain registered through Whop to another Whop account. Turning it on returns a code in `transfer.code`; the receiving account enters it as `registration.auth_code` on its own copy of the domain. Whop then removes the domain's email, email addresses and Apple Pay from this account, moves the registration with its expiry, stops charging this account to renew it, and removes the domain from this account. Pass `null` to turn it off and invalidate the code, until another account has entered it.
     
 </dd>
 </dl>
@@ -17031,6 +17055,14 @@ client.Domains.Update(
 <dd>
 
 **registration:** `*whopsdk.UpdateDomainsRequestRegistration` — Buy the domain through Whop, or transfer in a domain you own elsewhere with `auth_code`, then renew it every year and let Whop run its DNS. Pass `null` to release an unpaid or failed purchase, or to cancel a transfer while its current registrar can still stop it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**transfer:** `*whopsdk.UpdateDomainsRequestTransfer` — Move a domain registered through Whop to another Whop account. Turning it on returns a code in `transfer.code`; the receiving account enters it as `registration.auth_code` on its own copy of the domain. Whop then removes the domain's email, email addresses and Apple Pay from this account, moves the registration with its expiry, stops charging this account to renew it, and removes the domain from this account. Pass `null` to turn it off and invalidate the code, until another account has entered it.
     
 </dd>
 </dl>
