@@ -8449,8 +8449,8 @@
       }
     },
     {
-      "id": "0bb8fa6a-9464-4742-88ef-ea41d58d07db",
-      "name": "List invoices - default",
+      "id": "1651d3e2-8b40-46bf-a5b5-daf7c7d13a1a",
+      "name": "List Invoices - default",
       "request": {
         "urlPathTemplate": "/invoices",
         "method": "GET",
@@ -8458,33 +8458,16 @@
           "Authorization": {
             "matches": "Bearer .+"
           }
-        },
-        "queryParameters": {
-          "first": {
-            "equalTo": "42"
-          },
-          "last": {
-            "equalTo": "42"
-          },
-          "created_before": {
-            "equalTo": "2023-12-01T05:00:00.000Z"
-          },
-          "created_after": {
-            "equalTo": "2023-12-01T05:00:00.000Z"
-          },
-          "account_id": {
-            "equalTo": "biz_xxxxxxxxxxxxxx"
-          }
         }
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"created_at\": \"2023-12-01T05:00:00Z\",\n      \"current_plan\": {\n        \"currency\": \"usd\",\n        \"formatted_price\": \"$10.00\",\n        \"id\": \"plan_xxxxxxxxxxxxx\"\n      },\n      \"due_date\": \"2023-12-01T05:00:00Z\",\n      \"email_address\": \"customer@example.com\",\n      \"fetch_invoice_token\": \"eyJhbGciOiJIUzI1NiJ9...\",\n      \"id\": \"inv_xxxxxxxxxxxxxx\",\n      \"line_items\": [\n        {\n          \"label\": \"Platform subscription\",\n          \"position\": 42,\n          \"quantity\": 6.9,\n          \"total\": 6.9,\n          \"unit_price\": 6.9\n        }\n      ],\n      \"number\": \"#0001\",\n      \"payment_processing\": true,\n      \"status\": \"draft\",\n      \"user\": {\n        \"id\": \"user_xxxxxxxxxxxxx\",\n        \"name\": \"John Doe\",\n        \"username\": \"johndoe42\"\n      }\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": true,\n    \"has_previous_page\": true,\n    \"start_cursor\": \"start_cursor\"\n  }\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"amount_due\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"billing_address\": {\n        \"city\": \"Austin\",\n        \"country\": \"US\",\n        \"line1\": \"1114 Bouldin Ave\",\n        \"line2\": \"Unit B\",\n        \"name\": \"Dana Whitfield\",\n        \"postal_code\": \"78704\",\n        \"state\": \"TX\"\n      },\n      \"buyer_fee_amount\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"buyer_fee_percentage\": 0,\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"customer_name\": \"Dana\",\n      \"due_at\": \"due_at\",\n      \"email_address\": \"marcus@shinetime.example\",\n      \"id\": \"pay_xxxxxxxxxxxxxx\",\n      \"invoice_prefix\": \"invoice_prefix\",\n      \"line_items\": [\n        {\n          \"discount_amount\": {\n            \"amount\": \"-1234.56\",\n            \"currency\": \"usd\",\n            \"decimals\": 2,\n            \"display_decimals\": 2\n          },\n          \"id\": \"li_xxxxxxxxxxxxxx\",\n          \"label\": \"Ceramic Coating Package\",\n          \"plan_id\": \"plan_xxxxxxxxxxxxxx\",\n          \"product_id\": \"prod_xxxxxxxxxxxxxx\",\n          \"quantity\": 1,\n          \"subtotal\": {\n            \"amount\": \"-1234.56\",\n            \"currency\": \"usd\",\n            \"decimals\": 2,\n            \"display_decimals\": 2\n          },\n          \"tax_amount\": {\n            \"amount\": \"-1234.56\",\n            \"currency\": \"usd\",\n            \"decimals\": 2,\n            \"display_decimals\": 2\n          },\n          \"unit_amount\": {\n            \"amount\": \"-1234.56\",\n            \"currency\": \"usd\",\n            \"decimals\": 2,\n            \"display_decimals\": 2\n          }\n        }\n      ],\n      \"mailing_address_id\": \"mailing_address_id\",\n      \"member_id\": \"mber_xxxxxxxxxxxxxx\",\n      \"metadata\": {\n        \"key\": \"value\"\n      },\n      \"number\": \"#xxxxxxxx\",\n      \"object\": \"invoice\",\n      \"overdue\": false,\n      \"paid_at\": \"paid_at\",\n      \"payment_method_id\": \"payment_method_id\",\n      \"recipient_emails\": [\n        \"marcus@shinetime.example\"\n      ],\n      \"status\": \"draft\",\n      \"subtotal\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"tax_amount\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"total\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"totals_status\": \"estimated\",\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
       },
-      "uuid": "0bb8fa6a-9464-4742-88ef-ea41d58d07db",
+      "uuid": "1651d3e2-8b40-46bf-a5b5-daf7c7d13a1a",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -8498,8 +8481,8 @@
       "postServeActions": []
     },
     {
-      "id": "903c112f-233b-473d-929a-72b938a22fbe",
-      "name": "Create invoice - default",
+      "id": "1715287b-0452-43e3-b2a2-65071793f5e2",
+      "name": "Create Invoice - default",
       "request": {
         "urlPathTemplate": "/invoices",
         "method": "POST",
@@ -8510,13 +8493,13 @@
         }
       },
       "response": {
-        "status": 200,
-        "body": "{\n  \"automatically_finalizes_at\": \"2023-12-01T05:00:00Z\",\n  \"charge_buyer_fee\": true,\n  \"collection_method\": \"send_invoice\",\n  \"company\": {\n    \"id\": \"biz_xxxxxxxxxxxxxx\"\n  },\n  \"created_at\": \"2023-12-01T05:00:00Z\",\n  \"current_plan\": {\n    \"currency\": \"usd\",\n    \"description\": \"Monthly access to all premium analytics dashboards and data exports.\",\n    \"formatted_price\": \"$10.00\",\n    \"id\": \"plan_xxxxxxxxxxxxx\"\n  },\n  \"customer_name\": \"Jane Doe\",\n  \"due_date\": \"2023-12-01T05:00:00Z\",\n  \"email_address\": \"customer@example.com\",\n  \"fetch_invoice_token\": \"eyJhbGciOiJIUzI1NiJ9...\",\n  \"id\": \"inv_xxxxxxxxxxxxxx\",\n  \"line_items\": [\n    {\n      \"label\": \"Platform subscription\",\n      \"position\": 42,\n      \"quantity\": 6.9,\n      \"total\": 6.9,\n      \"unit_price\": 6.9\n    }\n  ],\n  \"mailing_address\": {\n    \"city\": \"city\",\n    \"country\": \"country\",\n    \"line1\": \"line1\",\n    \"line2\": \"line2\",\n    \"name\": \"name\",\n    \"phone\": \"phone\",\n    \"postal_code\": \"postal_code\",\n    \"state\": \"state\"\n  },\n  \"member\": {\n    \"id\": \"id\"\n  },\n  \"number\": \"#0001\",\n  \"pay_online_url\": \"pay_online_url\",\n  \"payment\": {\n    \"id\": \"pay_xxxxxxxxxxxxxx\"\n  },\n  \"payment_processing\": true,\n  \"product\": {\n    \"id\": \"prod_xxxxxxxxxxxxx\",\n    \"title\": \"Pickaxe Analytics\"\n  },\n  \"status\": \"draft\",\n  \"subscription_billing_anchor_at\": \"2023-12-01T05:00:00Z\",\n  \"updated_at\": \"2023-12-01T05:00:00Z\",\n  \"user\": {\n    \"email\": \"john.doe@example.com\",\n    \"id\": \"user_xxxxxxxxxxxxx\",\n    \"name\": \"John Doe\",\n    \"username\": \"johndoe42\"\n  }\n}",
+        "status": 201,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"amount_due\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"billing_address\": {\n    \"city\": \"Austin\",\n    \"country\": \"US\",\n    \"line1\": \"1114 Bouldin Ave\",\n    \"line2\": \"Unit B\",\n    \"name\": \"Dana Whitfield\",\n    \"postal_code\": \"78704\",\n    \"state\": \"TX\"\n  },\n  \"buyer_fee_amount\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"buyer_fee_percentage\": 0,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"customer_name\": \"Dana\",\n  \"due_at\": \"due_at\",\n  \"email_address\": \"marcus@shinetime.example\",\n  \"id\": \"pay_xxxxxxxxxxxxxx\",\n  \"invoice_prefix\": \"invoice_prefix\",\n  \"line_items\": [\n    {\n      \"discount_amount\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"id\": \"li_xxxxxxxxxxxxxx\",\n      \"label\": \"Ceramic Coating Package\",\n      \"plan_id\": \"plan_xxxxxxxxxxxxxx\",\n      \"product_id\": \"prod_xxxxxxxxxxxxxx\",\n      \"quantity\": 1,\n      \"subtotal\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"tax_amount\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"unit_amount\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      }\n    }\n  ],\n  \"mailing_address_id\": \"mailing_address_id\",\n  \"member_id\": \"mber_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"number\": \"#xxxxxxxx\",\n  \"object\": \"invoice\",\n  \"overdue\": false,\n  \"paid_at\": \"paid_at\",\n  \"payment_method_id\": \"payment_method_id\",\n  \"recipient_emails\": [\n    \"marcus@shinetime.example\"\n  ],\n  \"status\": \"draft\",\n  \"subtotal\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"tax_amount\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"total\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"totals_status\": \"estimated\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
       },
-      "uuid": "903c112f-233b-473d-929a-72b938a22fbe",
+      "uuid": "1715287b-0452-43e3-b2a2-65071793f5e2",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -8529,8 +8512,8 @@
       }
     },
     {
-      "id": "33fff0c1-c647-41b2-8dda-0e2e38129575",
-      "name": "Retrieve invoice - default",
+      "id": "63a56ae2-08ef-4b91-a8e6-1c0e67ce56ed",
+      "name": "Retrieve Invoice - default",
       "request": {
         "urlPathTemplate": "/invoices/{id}",
         "method": "GET",
@@ -8541,18 +8524,18 @@
         },
         "pathParameters": {
           "id": {
-            "equalTo": "inv_xxxxxxxxxxxxxx"
+            "equalTo": "id"
           }
         }
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"automatically_finalizes_at\": \"2023-12-01T05:00:00Z\",\n  \"charge_buyer_fee\": true,\n  \"collection_method\": \"send_invoice\",\n  \"company\": {\n    \"id\": \"biz_xxxxxxxxxxxxxx\"\n  },\n  \"created_at\": \"2023-12-01T05:00:00Z\",\n  \"current_plan\": {\n    \"currency\": \"usd\",\n    \"description\": \"Monthly access to all premium analytics dashboards and data exports.\",\n    \"formatted_price\": \"$10.00\",\n    \"id\": \"plan_xxxxxxxxxxxxx\"\n  },\n  \"customer_name\": \"Jane Doe\",\n  \"due_date\": \"2023-12-01T05:00:00Z\",\n  \"email_address\": \"customer@example.com\",\n  \"fetch_invoice_token\": \"eyJhbGciOiJIUzI1NiJ9...\",\n  \"id\": \"inv_xxxxxxxxxxxxxx\",\n  \"line_items\": [\n    {\n      \"label\": \"Platform subscription\",\n      \"position\": 42,\n      \"quantity\": 6.9,\n      \"total\": 6.9,\n      \"unit_price\": 6.9\n    }\n  ],\n  \"mailing_address\": {\n    \"city\": \"city\",\n    \"country\": \"country\",\n    \"line1\": \"line1\",\n    \"line2\": \"line2\",\n    \"name\": \"name\",\n    \"phone\": \"phone\",\n    \"postal_code\": \"postal_code\",\n    \"state\": \"state\"\n  },\n  \"member\": {\n    \"id\": \"id\"\n  },\n  \"number\": \"#0001\",\n  \"pay_online_url\": \"pay_online_url\",\n  \"payment\": {\n    \"id\": \"pay_xxxxxxxxxxxxxx\"\n  },\n  \"payment_processing\": true,\n  \"product\": {\n    \"id\": \"prod_xxxxxxxxxxxxx\",\n    \"title\": \"Pickaxe Analytics\"\n  },\n  \"status\": \"draft\",\n  \"subscription_billing_anchor_at\": \"2023-12-01T05:00:00Z\",\n  \"updated_at\": \"2023-12-01T05:00:00Z\",\n  \"user\": {\n    \"email\": \"john.doe@example.com\",\n    \"id\": \"user_xxxxxxxxxxxxx\",\n    \"name\": \"John Doe\",\n    \"username\": \"johndoe42\"\n  }\n}",
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"amount_due\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"billing_address\": {\n    \"city\": \"Austin\",\n    \"country\": \"US\",\n    \"line1\": \"1114 Bouldin Ave\",\n    \"line2\": \"Unit B\",\n    \"name\": \"Dana Whitfield\",\n    \"postal_code\": \"78704\",\n    \"state\": \"TX\"\n  },\n  \"buyer_fee_amount\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"buyer_fee_percentage\": 0,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"customer_name\": \"Dana\",\n  \"due_at\": \"due_at\",\n  \"email_address\": \"marcus@shinetime.example\",\n  \"id\": \"pay_xxxxxxxxxxxxxx\",\n  \"invoice_prefix\": \"invoice_prefix\",\n  \"line_items\": [\n    {\n      \"discount_amount\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"id\": \"li_xxxxxxxxxxxxxx\",\n      \"label\": \"Ceramic Coating Package\",\n      \"plan_id\": \"plan_xxxxxxxxxxxxxx\",\n      \"product_id\": \"prod_xxxxxxxxxxxxxx\",\n      \"quantity\": 1,\n      \"subtotal\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"tax_amount\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"unit_amount\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      }\n    }\n  ],\n  \"mailing_address_id\": \"mailing_address_id\",\n  \"member_id\": \"mber_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"number\": \"#xxxxxxxx\",\n  \"object\": \"invoice\",\n  \"overdue\": false,\n  \"paid_at\": \"paid_at\",\n  \"payment_method_id\": \"payment_method_id\",\n  \"recipient_emails\": [\n    \"marcus@shinetime.example\"\n  ],\n  \"status\": \"draft\",\n  \"subtotal\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"tax_amount\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"total\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"totals_status\": \"estimated\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
       },
-      "uuid": "33fff0c1-c647-41b2-8dda-0e2e38129575",
+      "uuid": "63a56ae2-08ef-4b91-a8e6-1c0e67ce56ed",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -8565,44 +8548,8 @@
       }
     },
     {
-      "id": "672ce0c7-c47d-4d7b-8454-b42df09ca027",
-      "name": "Delete invoice - default",
-      "request": {
-        "urlPathTemplate": "/invoices/{id}",
-        "method": "DELETE",
-        "headers": {
-          "Authorization": {
-            "matches": "Bearer .+"
-          }
-        },
-        "pathParameters": {
-          "id": {
-            "equalTo": "inv_xxxxxxxxxxxxxx"
-          }
-        }
-      },
-      "response": {
-        "status": 200,
-        "body": "true",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      },
-      "uuid": "672ce0c7-c47d-4d7b-8454-b42df09ca027",
-      "persistent": true,
-      "priority": 3,
-      "metadata": {
-        "mocklab": {
-          "created": {
-            "at": "2020-01-01T00:00:00.000Z",
-            "via": "SYSTEM"
-          }
-        }
-      }
-    },
-    {
-      "id": "40952a1d-b4f7-407f-9600-c1a79ec88567",
-      "name": "Update invoice - default",
+      "id": "1cd12cc3-41f3-4907-b7f5-d8269fa9a11c",
+      "name": "Update Invoice - default",
       "request": {
         "urlPathTemplate": "/invoices/{id}",
         "method": "PATCH",
@@ -8613,18 +8560,18 @@
         },
         "pathParameters": {
           "id": {
-            "equalTo": "inv_xxxxxxxxxxxxxx"
+            "equalTo": "id"
           }
         }
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"automatically_finalizes_at\": \"2023-12-01T05:00:00Z\",\n  \"charge_buyer_fee\": true,\n  \"collection_method\": \"send_invoice\",\n  \"company\": {\n    \"id\": \"biz_xxxxxxxxxxxxxx\"\n  },\n  \"created_at\": \"2023-12-01T05:00:00Z\",\n  \"current_plan\": {\n    \"currency\": \"usd\",\n    \"description\": \"Monthly access to all premium analytics dashboards and data exports.\",\n    \"formatted_price\": \"$10.00\",\n    \"id\": \"plan_xxxxxxxxxxxxx\"\n  },\n  \"customer_name\": \"Jane Doe\",\n  \"due_date\": \"2023-12-01T05:00:00Z\",\n  \"email_address\": \"customer@example.com\",\n  \"fetch_invoice_token\": \"eyJhbGciOiJIUzI1NiJ9...\",\n  \"id\": \"inv_xxxxxxxxxxxxxx\",\n  \"line_items\": [\n    {\n      \"label\": \"Platform subscription\",\n      \"position\": 42,\n      \"quantity\": 6.9,\n      \"total\": 6.9,\n      \"unit_price\": 6.9\n    }\n  ],\n  \"mailing_address\": {\n    \"city\": \"city\",\n    \"country\": \"country\",\n    \"line1\": \"line1\",\n    \"line2\": \"line2\",\n    \"name\": \"name\",\n    \"phone\": \"phone\",\n    \"postal_code\": \"postal_code\",\n    \"state\": \"state\"\n  },\n  \"member\": {\n    \"id\": \"id\"\n  },\n  \"number\": \"#0001\",\n  \"pay_online_url\": \"pay_online_url\",\n  \"payment\": {\n    \"id\": \"pay_xxxxxxxxxxxxxx\"\n  },\n  \"payment_processing\": true,\n  \"product\": {\n    \"id\": \"prod_xxxxxxxxxxxxx\",\n    \"title\": \"Pickaxe Analytics\"\n  },\n  \"status\": \"draft\",\n  \"subscription_billing_anchor_at\": \"2023-12-01T05:00:00Z\",\n  \"updated_at\": \"2023-12-01T05:00:00Z\",\n  \"user\": {\n    \"email\": \"john.doe@example.com\",\n    \"id\": \"user_xxxxxxxxxxxxx\",\n    \"name\": \"John Doe\",\n    \"username\": \"johndoe42\"\n  }\n}",
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"amount_due\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"billing_address\": {\n    \"city\": \"Austin\",\n    \"country\": \"US\",\n    \"line1\": \"1114 Bouldin Ave\",\n    \"line2\": \"Unit B\",\n    \"name\": \"Dana Whitfield\",\n    \"postal_code\": \"78704\",\n    \"state\": \"TX\"\n  },\n  \"buyer_fee_amount\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"buyer_fee_percentage\": 0,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"customer_name\": \"Dana\",\n  \"due_at\": \"due_at\",\n  \"email_address\": \"marcus@shinetime.example\",\n  \"id\": \"pay_xxxxxxxxxxxxxx\",\n  \"invoice_prefix\": \"invoice_prefix\",\n  \"line_items\": [\n    {\n      \"discount_amount\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"id\": \"li_xxxxxxxxxxxxxx\",\n      \"label\": \"Ceramic Coating Package\",\n      \"plan_id\": \"plan_xxxxxxxxxxxxxx\",\n      \"product_id\": \"prod_xxxxxxxxxxxxxx\",\n      \"quantity\": 1,\n      \"subtotal\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"tax_amount\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"unit_amount\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      }\n    }\n  ],\n  \"mailing_address_id\": \"mailing_address_id\",\n  \"member_id\": \"mber_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"number\": \"#xxxxxxxx\",\n  \"object\": \"invoice\",\n  \"overdue\": false,\n  \"paid_at\": \"paid_at\",\n  \"payment_method_id\": \"payment_method_id\",\n  \"recipient_emails\": [\n    \"marcus@shinetime.example\"\n  ],\n  \"status\": \"draft\",\n  \"subtotal\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"tax_amount\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"total\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"totals_status\": \"estimated\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
       },
-      "uuid": "40952a1d-b4f7-407f-9600-c1a79ec88567",
+      "uuid": "1cd12cc3-41f3-4907-b7f5-d8269fa9a11c",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -8637,10 +8584,10 @@
       }
     },
     {
-      "id": "6775847f-a510-42f3-b50b-3f69daf1bc29",
-      "name": "Mark paid invoice - default",
+      "id": "f4ad4bed-d2ac-4eb8-bf72-23981f068d9e",
+      "name": "Issue Invoice - default",
       "request": {
-        "urlPathTemplate": "/invoices/{id}/mark_paid",
+        "urlPathTemplate": "/invoices/{id}/issue",
         "method": "POST",
         "headers": {
           "Authorization": {
@@ -8649,18 +8596,18 @@
         },
         "pathParameters": {
           "id": {
-            "equalTo": "inv_xxxxxxxxxxxxxx"
+            "equalTo": "id"
           }
         }
       },
       "response": {
         "status": 200,
-        "body": "true",
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"amount_due\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"billing_address\": {\n    \"city\": \"Austin\",\n    \"country\": \"US\",\n    \"line1\": \"1114 Bouldin Ave\",\n    \"line2\": \"Unit B\",\n    \"name\": \"Dana Whitfield\",\n    \"postal_code\": \"78704\",\n    \"state\": \"TX\"\n  },\n  \"buyer_fee_amount\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"buyer_fee_percentage\": 0,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"customer_name\": \"Dana\",\n  \"due_at\": \"due_at\",\n  \"email_address\": \"marcus@shinetime.example\",\n  \"id\": \"pay_xxxxxxxxxxxxxx\",\n  \"invoice_prefix\": \"invoice_prefix\",\n  \"line_items\": [\n    {\n      \"discount_amount\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"id\": \"li_xxxxxxxxxxxxxx\",\n      \"label\": \"Ceramic Coating Package\",\n      \"plan_id\": \"plan_xxxxxxxxxxxxxx\",\n      \"product_id\": \"prod_xxxxxxxxxxxxxx\",\n      \"quantity\": 1,\n      \"subtotal\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"tax_amount\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"unit_amount\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      }\n    }\n  ],\n  \"mailing_address_id\": \"mailing_address_id\",\n  \"member_id\": \"mber_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"number\": \"#xxxxxxxx\",\n  \"object\": \"invoice\",\n  \"overdue\": false,\n  \"paid_at\": \"paid_at\",\n  \"payment_method_id\": \"payment_method_id\",\n  \"recipient_emails\": [\n    \"marcus@shinetime.example\"\n  ],\n  \"status\": \"draft\",\n  \"subtotal\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"tax_amount\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"total\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"totals_status\": \"estimated\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
       },
-      "uuid": "6775847f-a510-42f3-b50b-3f69daf1bc29",
+      "uuid": "f4ad4bed-d2ac-4eb8-bf72-23981f068d9e",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -8673,8 +8620,8 @@
       }
     },
     {
-      "id": "bd5090c5-3901-47f9-941e-3631215f3d60",
-      "name": "Mark uncollectible invoice - default",
+      "id": "83d004d8-a726-433c-b093-56c6e5197998",
+      "name": "Mark Invoice Uncollectible - default",
       "request": {
         "urlPathTemplate": "/invoices/{id}/mark_uncollectible",
         "method": "POST",
@@ -8685,18 +8632,18 @@
         },
         "pathParameters": {
           "id": {
-            "equalTo": "inv_xxxxxxxxxxxxxx"
+            "equalTo": "id"
           }
         }
       },
       "response": {
         "status": 200,
-        "body": "true",
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"amount_due\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"billing_address\": {\n    \"city\": \"Austin\",\n    \"country\": \"US\",\n    \"line1\": \"1114 Bouldin Ave\",\n    \"line2\": \"Unit B\",\n    \"name\": \"Dana Whitfield\",\n    \"postal_code\": \"78704\",\n    \"state\": \"TX\"\n  },\n  \"buyer_fee_amount\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"buyer_fee_percentage\": 0,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"customer_name\": \"Dana\",\n  \"due_at\": \"due_at\",\n  \"email_address\": \"marcus@shinetime.example\",\n  \"id\": \"pay_xxxxxxxxxxxxxx\",\n  \"invoice_prefix\": \"invoice_prefix\",\n  \"line_items\": [\n    {\n      \"discount_amount\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"id\": \"li_xxxxxxxxxxxxxx\",\n      \"label\": \"Ceramic Coating Package\",\n      \"plan_id\": \"plan_xxxxxxxxxxxxxx\",\n      \"product_id\": \"prod_xxxxxxxxxxxxxx\",\n      \"quantity\": 1,\n      \"subtotal\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"tax_amount\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"unit_amount\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      }\n    }\n  ],\n  \"mailing_address_id\": \"mailing_address_id\",\n  \"member_id\": \"mber_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"number\": \"#xxxxxxxx\",\n  \"object\": \"invoice\",\n  \"overdue\": false,\n  \"paid_at\": \"paid_at\",\n  \"payment_method_id\": \"payment_method_id\",\n  \"recipient_emails\": [\n    \"marcus@shinetime.example\"\n  ],\n  \"status\": \"draft\",\n  \"subtotal\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"tax_amount\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"total\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"totals_status\": \"estimated\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
       },
-      "uuid": "bd5090c5-3901-47f9-941e-3631215f3d60",
+      "uuid": "83d004d8-a726-433c-b093-56c6e5197998",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -8709,44 +8656,8 @@
       }
     },
     {
-      "id": "a5d319ce-7b57-4b69-ab83-1e79e2f277d1",
-      "name": "Resend invoice - default",
-      "request": {
-        "urlPathTemplate": "/invoices/{id}/resend",
-        "method": "POST",
-        "headers": {
-          "Authorization": {
-            "matches": "Bearer .+"
-          }
-        },
-        "pathParameters": {
-          "id": {
-            "equalTo": "inv_xxxxxxxxxxxxxx"
-          }
-        }
-      },
-      "response": {
-        "status": 200,
-        "body": "true",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      },
-      "uuid": "a5d319ce-7b57-4b69-ab83-1e79e2f277d1",
-      "persistent": true,
-      "priority": 3,
-      "metadata": {
-        "mocklab": {
-          "created": {
-            "at": "2020-01-01T00:00:00.000Z",
-            "via": "SYSTEM"
-          }
-        }
-      }
-    },
-    {
-      "id": "76a60985-6aa4-4120-a369-75f4e04c7db6",
-      "name": "Void invoice - default",
+      "id": "d21cc058-55de-482f-ad6c-81f84f38c38f",
+      "name": "Void Invoice - default",
       "request": {
         "urlPathTemplate": "/invoices/{id}/void",
         "method": "POST",
@@ -8757,18 +8668,18 @@
         },
         "pathParameters": {
           "id": {
-            "equalTo": "inv_xxxxxxxxxxxxxx"
+            "equalTo": "id"
           }
         }
       },
       "response": {
         "status": 200,
-        "body": "true",
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"amount_due\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"billing_address\": {\n    \"city\": \"Austin\",\n    \"country\": \"US\",\n    \"line1\": \"1114 Bouldin Ave\",\n    \"line2\": \"Unit B\",\n    \"name\": \"Dana Whitfield\",\n    \"postal_code\": \"78704\",\n    \"state\": \"TX\"\n  },\n  \"buyer_fee_amount\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"buyer_fee_percentage\": 0,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"customer_name\": \"Dana\",\n  \"due_at\": \"due_at\",\n  \"email_address\": \"marcus@shinetime.example\",\n  \"id\": \"pay_xxxxxxxxxxxxxx\",\n  \"invoice_prefix\": \"invoice_prefix\",\n  \"line_items\": [\n    {\n      \"discount_amount\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"id\": \"li_xxxxxxxxxxxxxx\",\n      \"label\": \"Ceramic Coating Package\",\n      \"plan_id\": \"plan_xxxxxxxxxxxxxx\",\n      \"product_id\": \"prod_xxxxxxxxxxxxxx\",\n      \"quantity\": 1,\n      \"subtotal\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"tax_amount\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"unit_amount\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      }\n    }\n  ],\n  \"mailing_address_id\": \"mailing_address_id\",\n  \"member_id\": \"mber_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"number\": \"#xxxxxxxx\",\n  \"object\": \"invoice\",\n  \"overdue\": false,\n  \"paid_at\": \"paid_at\",\n  \"payment_method_id\": \"payment_method_id\",\n  \"recipient_emails\": [\n    \"marcus@shinetime.example\"\n  ],\n  \"status\": \"draft\",\n  \"subtotal\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"tax_amount\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"total\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"totals_status\": \"estimated\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
       },
-      "uuid": "76a60985-6aa4-4120-a369-75f4e04c7db6",
+      "uuid": "d21cc058-55de-482f-ad6c-81f84f38c38f",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -15880,7 +15791,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"api_version\": \"v1\",\n      \"api_version_date\": \"2026-10-15-1\",\n      \"child_resource_events\": false,\n      \"consecutive_failures\": 0,\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n      \"disabled_reason\": \"delivery_failures\",\n      \"enabled\": false,\n      \"events\": [\n        \"account.updated\"\n      ],\n      \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n      \"id\": \"hook_xxxxxxxxxxxxxx\",\n      \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n      \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"url\": \"https://example.com/shine-time/whop\",\n      \"webhook_secret\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"api_version\": \"v1\",\n      \"api_version_date\": \"2026-01-01\",\n      \"child_resource_events\": false,\n      \"consecutive_failures\": 0,\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n      \"disabled_reason\": \"delivery_failures\",\n      \"enabled\": false,\n      \"events\": [\n        \"account.updated\"\n      ],\n      \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n      \"id\": \"hook_xxxxxxxxxxxxxx\",\n      \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n      \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"url\": \"https://example.com/shine-time/whop\",\n      \"webhook_secret\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -15912,7 +15823,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-10-15-1\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
+        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-01-01\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -15948,7 +15859,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-10-15-1\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
+        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-01-01\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -16020,7 +15931,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-10-15-1\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
+        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-01-01\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -18110,6 +18021,6 @@
     }
   ],
   "meta": {
-    "total": 505
+    "total": 503
   }
 }

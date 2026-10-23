@@ -23196,10 +23196,7 @@ client.IdentityProfiles.ListVerificationsIdentityProfile(
 <dl>
 <dd>
 
-Returns a paginated list of invoices for an account, with optional filtering by product, status, collection method, and creation date.
-
-Required permissions:
- - `invoice:basic:read`
+Lists receipt-backed invoices for accounts the caller can read. Legacy invoices are excluded.
 </dd>
 </dl>
 </dd>
@@ -23214,27 +23211,7 @@ Required permissions:
 <dd>
 
 ```go
-request := &whopsdk.ListInvoicesRequest{
-    First: whopsdk.Int(
-        42,
-    ),
-    Last: whopsdk.Int(
-        42,
-    ),
-    CreatedBefore: whopsdk.Time(
-        whopsdk.MustParseDateTime(
-            "2023-12-01T05:00:00Z",
-        ),
-    ),
-    CreatedAfter: whopsdk.Time(
-        whopsdk.MustParseDateTime(
-            "2023-12-01T05:00:00Z",
-        ),
-    ),
-    AccountID: whopsdk.String(
-        "biz_xxxxxxxxxxxxxx",
-    ),
-}
+request := &whopsdk.ListInvoicesRequest{}
 client.Invoices.List(
     context.TODO(),
     request,
@@ -23253,7 +23230,7 @@ client.Invoices.List(
 <dl>
 <dd>
 
-**after:** `*string` — Returns the elements in the list that come after the specified cursor.
+**accountID:** `*string` 
     
 </dd>
 </dl>
@@ -23261,7 +23238,7 @@ client.Invoices.List(
 <dl>
 <dd>
 
-**before:** `*string` — Returns the elements in the list that come before the specified cursor.
+**status:** `*whopsdk.ListInvoicesRequestStatus` 
     
 </dd>
 </dl>
@@ -23269,7 +23246,7 @@ client.Invoices.List(
 <dl>
 <dd>
 
-**first:** `*int` — Returns the first _n_ elements from the list.
+**overdue:** `*bool` 
     
 </dd>
 </dl>
@@ -23277,7 +23254,7 @@ client.Invoices.List(
 <dl>
 <dd>
 
-**last:** `*int` — Returns the last _n_ elements from the list.
+**memberID:** `*string` 
     
 </dd>
 </dl>
@@ -23285,7 +23262,7 @@ client.Invoices.List(
 <dl>
 <dd>
 
-**direction:** `*whopsdk.Direction` 
+**productID:** `*string` 
     
 </dd>
 </dl>
@@ -23293,7 +23270,7 @@ client.Invoices.List(
 <dl>
 <dd>
 
-**productIDs:** `*string` — Filter invoices to only those associated with these specific product identifiers.
+**createdAfter:** `*time.Time` 
     
 </dd>
 </dl>
@@ -23301,7 +23278,7 @@ client.Invoices.List(
 <dl>
 <dd>
 
-**collectionMethods:** `*whopsdk.InvoiceCollectionMethods` — Filter invoices by their collection method.
+**createdBefore:** `*time.Time` 
     
 </dd>
 </dl>
@@ -23309,7 +23286,7 @@ client.Invoices.List(
 <dl>
 <dd>
 
-**statuses:** `*whopsdk.InvoiceStatuses` — Filter invoices by their current status.
+**order:** `*whopsdk.ListInvoicesRequestOrder` 
     
 </dd>
 </dl>
@@ -23317,7 +23294,7 @@ client.Invoices.List(
 <dl>
 <dd>
 
-**order:** `*whopsdk.InvoicesSortableColumns` 
+**direction:** `*whopsdk.ListInvoicesRequestDirection` 
     
 </dd>
 </dl>
@@ -23325,7 +23302,7 @@ client.Invoices.List(
 <dl>
 <dd>
 
-**createdBefore:** `*time.Time` — Only return invoices created before this timestamp.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -23333,7 +23310,7 @@ client.Invoices.List(
 <dl>
 <dd>
 
-**createdAfter:** `*time.Time` — Only return invoices created after this timestamp.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -23341,7 +23318,15 @@ client.Invoices.List(
 <dl>
 <dd>
 
-**accountID:** `*string` — The unique identifier of the company to list invoices for.
+**last:** `*int` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -23365,13 +23350,7 @@ client.Invoices.List(
 <dl>
 <dd>
 
-Create an invoice for a customer. The invoice can be charged automatically using a stored payment method, or sent to the customer for manual payment.
-
-Required permissions:
- - `invoice:create`
- - `member:email:read`
- - `member:basic:read`
- - `payment:basic:read`
+Creates a draft invoice backed by a receipt, with saved items, quantities, prices, and recipients. Issue the draft to resolve final tax and open the invoice. The pay_ ID stays the same when paid.
 </dd>
 </dl>
 </dd>
@@ -23387,14 +23366,8 @@ Required permissions:
 
 ```go
 request := &whopsdk.CreateInvoicesRequest{
-    CreateInvoicesRequestProduct: &whopsdk.CreateInvoicesRequestProduct{
-        AccountID: "biz_xxxxxxxxxxxxxx",
-        CollectionMethod: whopsdk.InvoiceCollectionMethodsSendInvoice,
-        Plan: &whopsdk.CreateInvoicesRequestProductPlan{},
-        Product: &whopsdk.CreateInvoicesRequestProductProduct{
-            Title: "title",
-        },
-    },
+    AccountID: "biz_xxxxxxxxxxxxxx",
+    Items: []*whopsdk.CreateInvoicesRequestItemsItem{},
 }
 client.Invoices.Create(
     context.TODO(),
@@ -23414,7 +23387,95 @@ client.Invoices.Create(
 <dl>
 <dd>
 
-**request:** `*whopsdk.CreateInvoicesRequest` — Parameters for CreateInvoice
+**accountID:** `string` — The issuing account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**billingAddress:** `*whopsdk.CreateInvoicesRequestBillingAddress` — Create a billing address linked to this member.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**buyerFeePercentage:** `*float64` — The buyer's adjustable fee in percentage points, with at most two decimal places.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**customerName:** `*string` — The contact name when creating an email-only member.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**dueAt:** `*time.Time` — When payment is due, as an ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**emailAddress:** `*string` — Resolve or create the member for this email, creating a Whop user when none exists. Mutually exclusive with member_id.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**items:** `[]*whopsdk.CreateInvoicesRequestItemsItem` — The one-time variants being invoiced, all in the same currency. Each variant may appear once; use quantity for multiple units. Product and price come from each variant. Multiple items require unlimited stock and compatible payment, tax, and access settings.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**mailingAddressID:** `*string` — An address associated with the member. Mutually exclusive with billing_address.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**memberID:** `*string` — The billed customer, a member of the account. Changing email recipients does not change this buyer.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `map[string]string` — Up to 50 caller-owned string key/value pairs.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**paymentMethodID:** `*string` — A saved payment method belonging to the member.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**recipientEmails:** `[]string` — Email addresses saved for invoice delivery, independent of the billed customer. Saving them sends no email. Defaults to the customer email when omitted on create. Can be updated on draft, open, or uncollectible invoices.
     
 </dd>
 </dl>
@@ -23438,13 +23499,7 @@ client.Invoices.Create(
 <dl>
 <dd>
 
-Retrieves the details of an existing invoice.
-
-Required permissions:
- - `invoice:basic:read`
- - `member:email:read`
- - `member:basic:read`
- - `payment:basic:read`
+Retrieves a receipt-backed invoice by its pay_ ID.
 </dd>
 </dl>
 </dd>
@@ -23460,7 +23515,7 @@ Required permissions:
 
 ```go
 request := &whopsdk.RetrieveInvoicesRequest{
-    ID: "inv_xxxxxxxxxxxxxx",
+    ID: "id",
 }
 client.Invoices.Retrieve(
     context.TODO(),
@@ -23480,70 +23535,7 @@ client.Invoices.Retrieve(
 <dl>
 <dd>
 
-**id:** `string` — The unique identifier of the invoice, or a secure token.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.Invoices.Delete(ID) -> bool</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Delete a draft invoice.
-
-Required permissions:
- - `invoice:update`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.DeleteInvoicesRequest{
-    ID: "inv_xxxxxxxxxxxxxx",
-}
-client.Invoices.Delete(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `string` — The unique identifier of the draft invoice to delete.
+**id:** `string` — The invoice's pay_ ID.
     
 </dd>
 </dl>
@@ -23567,13 +23559,7 @@ client.Invoices.Delete(
 <dl>
 <dd>
 
-Update a draft invoice's details.
-
-Required permissions:
- - `invoice:update`
- - `member:email:read`
- - `member:basic:read`
- - `payment:basic:read`
+Updates draft invoice items and billing fields. Recipient-only updates are also allowed on unpaid invoices. Edit customer contact details through the member API.
 </dd>
 </dl>
 </dd>
@@ -23589,7 +23575,7 @@ Required permissions:
 
 ```go
 request := &whopsdk.UpdateInvoicesRequest{
-    ID: "inv_xxxxxxxxxxxxxx",
+    ID: "id",
 }
 client.Invoices.Update(
     context.TODO(),
@@ -23609,7 +23595,7 @@ client.Invoices.Update(
 <dl>
 <dd>
 
-**id:** `string` — The unique identifier of the invoice to update.
+**id:** `string` — The invoice's pay_ ID.
     
 </dd>
 </dl>
@@ -23617,7 +23603,7 @@ client.Invoices.Update(
 <dl>
 <dd>
 
-**automaticallyFinalizesAt:** `*time.Time` — The date and time when the invoice will be automatically finalized. For charge_automatically, triggers an automatic charge. For send_invoice, sends the invoice email at the specified time.
+**billingAddress:** `*whopsdk.UpdateInvoicesRequestBillingAddress` — Create a billing address linked to this member.
     
 </dd>
 </dl>
@@ -23625,7 +23611,7 @@ client.Invoices.Update(
 <dl>
 <dd>
 
-**billingAddress:** `*whopsdk.UpdateInvoicesRequestBillingAddress` — Inline billing address to create or update a mailing address for this invoice.
+**buyerFeePercentage:** `*float64` — The buyer's adjustable fee in percentage points, with at most two decimal places.
     
 </dd>
 </dl>
@@ -23633,7 +23619,7 @@ client.Invoices.Update(
 <dl>
 <dd>
 
-**chargeBuyerFee:** `*bool` — Whether to charge the customer a buyer fee on this invoice.
+**dueAt:** `*time.Time` — When payment is due, as an ISO 8601 timestamp.
     
 </dd>
 </dl>
@@ -23641,7 +23627,7 @@ client.Invoices.Update(
 <dl>
 <dd>
 
-**collectionMethod:** `*whopsdk.InvoiceCollectionMethods` — How the invoice should be collected.
+**items:** `[]*whopsdk.UpdateInvoicesRequestItemsItem` — The one-time variants being invoiced, all in the same currency. Each variant may appear once; use quantity for multiple units. Product and price come from each variant. Multiple items require unlimited stock and compatible payment, tax, and access settings.
     
 </dd>
 </dl>
@@ -23649,7 +23635,7 @@ client.Invoices.Update(
 <dl>
 <dd>
 
-**customerName:** `*string` — The name of the customer.
+**mailingAddressID:** `*string` — An address associated with the member. Mutually exclusive with billing_address.
     
 </dd>
 </dl>
@@ -23657,7 +23643,7 @@ client.Invoices.Update(
 <dl>
 <dd>
 
-**dueDate:** `*time.Time` — The date by which the invoice must be paid.
+**memberID:** `*string` — The billed customer, a member of the account. Changing email recipients does not change this buyer.
     
 </dd>
 </dl>
@@ -23665,7 +23651,7 @@ client.Invoices.Update(
 <dl>
 <dd>
 
-**emailAddress:** `*string` — The email address of the customer.
+**metadata:** `map[string]string` — Up to 50 caller-owned string key/value pairs.
     
 </dd>
 </dl>
@@ -23673,7 +23659,7 @@ client.Invoices.Update(
 <dl>
 <dd>
 
-**lineItems:** `[]*whopsdk.UpdateInvoicesRequestLineItemsItem` — Line items that break down the invoice total. When provided, the sum of (quantity * unit_price) for all items must equal the plan price. Individual items may be negative to represent a credit, as long as the sum is not negative and clears the currency's minimum charge. Pass an empty list to remove the breakdown.
+**paymentMethodID:** `*string` — A saved payment method belonging to the member.
     
 </dd>
 </dl>
@@ -23681,47 +23667,7 @@ client.Invoices.Update(
 <dl>
 <dd>
 
-**mailingAddressID:** `*string` — The unique identifier of an existing mailing address to attach.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**memberID:** `*string` — The unique identifier of a member to assign as the customer.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**paymentMethodID:** `*string` — The unique identifier of the payment method to charge.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**plan:** `*whopsdk.UpdateInvoicesRequestPlan` — Updated plan attributes.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**productID:** `*string` — The unique identifier of an existing product to attach to this invoice. Only allowed while the invoice is still a draft.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**subscriptionBillingAnchorAt:** `*time.Time` — The date that defines when the subscription billing cycle should start.
+**recipientEmails:** `[]string` — Email addresses saved for invoice delivery, independent of the billed customer. Saving them sends no email. Defaults to the customer email when omitted on create. Can be updated on draft, open, or uncollectible invoices.
     
 </dd>
 </dl>
@@ -23733,7 +23679,7 @@ client.Invoices.Update(
 </dl>
 </details>
 
-<details><summary><code>client.Invoices.MarkPaid(ID) -> bool</code></summary>
+<details><summary><code>client.Invoices.Issue(ID) -> *whopsdk.Invoice</code></summary>
 <dl>
 <dd>
 
@@ -23745,10 +23691,7 @@ client.Invoices.Update(
 <dl>
 <dd>
 
-Mark an open invoice as paid when payment was collected outside of Whop.
-
-Required permissions:
- - `invoice:update`
+Resolves final tax and opens a draft invoice. Issuing an open invoice again retains its totals.
 </dd>
 </dl>
 </dd>
@@ -23763,10 +23706,10 @@ Required permissions:
 <dd>
 
 ```go
-request := &whopsdk.MarkPaidInvoicesRequest{
-    ID: "inv_xxxxxxxxxxxxxx",
+request := &whopsdk.IssueInvoicesRequest{
+    ID: "id",
 }
-client.Invoices.MarkPaid(
+client.Invoices.Issue(
     context.TODO(),
     request,
 )
@@ -23784,7 +23727,7 @@ client.Invoices.MarkPaid(
 <dl>
 <dd>
 
-**id:** `string` — The unique identifier of the invoice to mark as paid.
+**id:** `string` — The invoice's pay_ ID.
     
 </dd>
 </dl>
@@ -23796,7 +23739,7 @@ client.Invoices.MarkPaid(
 </dl>
 </details>
 
-<details><summary><code>client.Invoices.MarkUncollectible(ID) -> bool</code></summary>
+<details><summary><code>client.Invoices.MarkUncollectible(ID) -> *whopsdk.Invoice</code></summary>
 <dl>
 <dd>
 
@@ -23808,10 +23751,7 @@ client.Invoices.MarkPaid(
 <dl>
 <dd>
 
-Mark an open invoice as uncollectible when payment is not expected.
-
-Required permissions:
- - `invoice:update`
+Marks an open invoice as uncollectible. Reminders stop, but the customer can still pay it.
 </dd>
 </dl>
 </dd>
@@ -23827,7 +23767,7 @@ Required permissions:
 
 ```go
 request := &whopsdk.MarkUncollectibleInvoicesRequest{
-    ID: "inv_xxxxxxxxxxxxxx",
+    ID: "id",
 }
 client.Invoices.MarkUncollectible(
     context.TODO(),
@@ -23847,7 +23787,7 @@ client.Invoices.MarkUncollectible(
 <dl>
 <dd>
 
-**id:** `string` — The unique identifier of the invoice to mark as uncollectible.
+**id:** `string` — The invoice's pay_ ID.
     
 </dd>
 </dl>
@@ -23859,7 +23799,7 @@ client.Invoices.MarkUncollectible(
 </dl>
 </details>
 
-<details><summary><code>client.Invoices.Resend(ID) -> bool</code></summary>
+<details><summary><code>client.Invoices.Void(ID) -> *whopsdk.Invoice</code></summary>
 <dl>
 <dd>
 
@@ -23871,73 +23811,7 @@ client.Invoices.MarkUncollectible(
 <dl>
 <dd>
 
-Resend the notification email for an existing invoice to the customer.
-
-Required permissions:
- - `invoice:update`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.ResendInvoicesRequest{
-    ID: "inv_xxxxxxxxxxxxxx",
-}
-client.Invoices.Resend(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `string` — The unique identifier of the invoice to resend.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.Invoices.Void(ID) -> bool</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Void an open invoice so it can no longer be paid. Voiding is permanent and cannot be undone.
-
-Required permissions:
- - `invoice:update`
+Voids a draft or unpaid invoice.
 </dd>
 </dl>
 </dd>
@@ -23953,7 +23827,7 @@ Required permissions:
 
 ```go
 request := &whopsdk.VoidInvoicesRequest{
-    ID: "inv_xxxxxxxxxxxxxx",
+    ID: "id",
 }
 client.Invoices.Void(
     context.TODO(),
@@ -23973,7 +23847,7 @@ client.Invoices.Void(
 <dl>
 <dd>
 
-**id:** `string` — The unique identifier of the invoice to void.
+**id:** `string` — The invoice's pay_ ID.
     
 </dd>
 </dl>

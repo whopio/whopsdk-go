@@ -12048,6 +12048,26 @@ func (c CustomCtas) Ptr() *CustomCtas {
 	return &c
 }
 
+// The type of the custom field.
+type CustomFieldTypes string
+
+const (
+	CustomFieldTypesText CustomFieldTypes = "text"
+)
+
+func NewCustomFieldTypesFromString(s string) (CustomFieldTypes, error) {
+	switch s {
+	case "text":
+		return CustomFieldTypesText, nil
+	}
+	var t CustomFieldTypes
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CustomFieldTypes) Ptr() *CustomFieldTypes {
+	return &c
+}
+
 var (
 	customerTrackingPreferencesFieldAccentColor      = big.NewInt(1 << 0)
 	customerTrackingPreferencesFieldEnabled          = big.NewInt(1 << 1)
@@ -23560,6 +23580,3908 @@ func (i *InternalServerErrorBodyError) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", i)
+}
+
+// The method of collection for an invoice.
+type InvoiceCollectionMethods string
+
+const (
+	InvoiceCollectionMethodsSendInvoice         InvoiceCollectionMethods = "send_invoice"
+	InvoiceCollectionMethodsChargeAutomatically InvoiceCollectionMethods = "charge_automatically"
+)
+
+func NewInvoiceCollectionMethodsFromString(s string) (InvoiceCollectionMethods, error) {
+	switch s {
+	case "send_invoice":
+		return InvoiceCollectionMethodsSendInvoice, nil
+	case "charge_automatically":
+		return InvoiceCollectionMethodsChargeAutomatically, nil
+	}
+	var t InvoiceCollectionMethods
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (i InvoiceCollectionMethods) Ptr() *InvoiceCollectionMethods {
+	return &i
+}
+
+var (
+	invoiceLegacyFieldAutomaticallyFinalizesAt    = big.NewInt(1 << 0)
+	invoiceLegacyFieldChargeBuyerFee              = big.NewInt(1 << 1)
+	invoiceLegacyFieldCollectionMethod            = big.NewInt(1 << 2)
+	invoiceLegacyFieldCompany                     = big.NewInt(1 << 3)
+	invoiceLegacyFieldCreatedAt                   = big.NewInt(1 << 4)
+	invoiceLegacyFieldCurrentPlan                 = big.NewInt(1 << 5)
+	invoiceLegacyFieldCustomerName                = big.NewInt(1 << 6)
+	invoiceLegacyFieldDueDate                     = big.NewInt(1 << 7)
+	invoiceLegacyFieldEmailAddress                = big.NewInt(1 << 8)
+	invoiceLegacyFieldFetchInvoiceToken           = big.NewInt(1 << 9)
+	invoiceLegacyFieldID                          = big.NewInt(1 << 10)
+	invoiceLegacyFieldLineItems                   = big.NewInt(1 << 11)
+	invoiceLegacyFieldMailingAddress              = big.NewInt(1 << 12)
+	invoiceLegacyFieldMember                      = big.NewInt(1 << 13)
+	invoiceLegacyFieldNumber                      = big.NewInt(1 << 14)
+	invoiceLegacyFieldPayOnlineURL                = big.NewInt(1 << 15)
+	invoiceLegacyFieldPayment                     = big.NewInt(1 << 16)
+	invoiceLegacyFieldPaymentProcessing           = big.NewInt(1 << 17)
+	invoiceLegacyFieldProduct                     = big.NewInt(1 << 18)
+	invoiceLegacyFieldStatus                      = big.NewInt(1 << 19)
+	invoiceLegacyFieldSubscriptionBillingAnchorAt = big.NewInt(1 << 20)
+	invoiceLegacyFieldUpdatedAt                   = big.NewInt(1 << 21)
+	invoiceLegacyFieldUser                        = big.NewInt(1 << 22)
+)
+
+// invoiceLegacyNullableFields maps the wire names of InvoiceLegacy's nullable fields (required or optional) to their field bits.
+var invoiceLegacyNullableFields = map[string]*big.Int{
+	"automatically_finalizes_at":     invoiceLegacyFieldAutomaticallyFinalizesAt,
+	"customer_name":                  invoiceLegacyFieldCustomerName,
+	"due_date":                       invoiceLegacyFieldDueDate,
+	"email_address":                  invoiceLegacyFieldEmailAddress,
+	"mailing_address":                invoiceLegacyFieldMailingAddress,
+	"member":                         invoiceLegacyFieldMember,
+	"pay_online_url":                 invoiceLegacyFieldPayOnlineURL,
+	"payment":                        invoiceLegacyFieldPayment,
+	"subscription_billing_anchor_at": invoiceLegacyFieldSubscriptionBillingAnchorAt,
+	"user":                           invoiceLegacyFieldUser,
+}
+
+// An invoice represents an itemized bill sent by a company to a customer for a specific product and plan, tracking the amount owed, due date, and payment status.
+type InvoiceLegacy struct {
+	// The date and time when the invoice will be automatically finalized. For charge_automatically, triggers an automatic charge. For send_invoice, sends the invoice email at the specified time.
+	AutomaticallyFinalizesAt *time.Time `json:"automatically_finalizes_at,omitempty" url:"automatically_finalizes_at,omitempty"`
+	// Whether the invoice includes a buyer processing fee on top of the plan price.
+	ChargeBuyerFee bool `json:"charge_buyer_fee" url:"charge_buyer_fee"`
+	// The method used to collect payment for this invoice, such as automatic charging or manual payment.
+	CollectionMethod InvoiceCollectionMethods `json:"collection_method" url:"collection_method"`
+	// The company that issued this invoice.
+	Company *InvoiceLegacyCompany `json:"company" url:"company"`
+	// The datetime the invoice was created.
+	CreatedAt time.Time `json:"created_at" url:"created_at"`
+	// The plan that this invoice charges for.
+	CurrentPlan *InvoiceLegacyCurrentPlan `json:"current_plan" url:"current_plan"`
+	// The full name of the customer this invoice is addressed to. Null if no name is on file.
+	CustomerName *string `json:"customer_name,omitempty" url:"customer_name,omitempty"`
+	// The deadline by which payment is expected. Null if the invoice is collected automatically.
+	DueDate *time.Time `json:"due_date,omitempty" url:"due_date,omitempty"`
+	// The email address of the customer this invoice is addressed to. Null if no email is on file.
+	EmailAddress *string `json:"email_address,omitempty" url:"email_address,omitempty"`
+	// A signed token that allows fetching invoice data publicly without authentication.
+	FetchInvoiceToken string `json:"fetch_invoice_token" url:"fetch_invoice_token"`
+	// The unique identifier for the invoice.
+	ID string `json:"id" url:"id"`
+	// Optional line items that break down the invoice total into individual charges.
+	LineItems []*InvoiceLegacyLineItemsItem `json:"line_items" url:"line_items"`
+	// The billing/mailing address associated with this invoice, if one was provided at creation time.
+	MailingAddress *InvoiceLegacyMailingAddress `json:"mailing_address,omitempty" url:"mailing_address,omitempty"`
+	// The member that the invoice was created for. Null when the invoice is addressed to an email address with no member record behind it.
+	Member *InvoiceLegacyMember `json:"member,omitempty" url:"member,omitempty"`
+	// The sequential invoice number for display purposes.
+	Number string `json:"number" url:"number"`
+	// The checkout URL where the customer can pay this invoice online, with their email address pre-filled and locked.
+	PayOnlineURL *string `json:"pay_online_url,omitempty" url:"pay_online_url,omitempty"`
+	// The payment that settled this invoice. Null while the invoice is unpaid, when the invoice was marked paid manually, and on a subscription renewal invoice, where the settling payment cannot yet be identified.
+	Payment *InvoiceLegacyPayment `json:"payment,omitempty" url:"payment,omitempty"`
+	// Whether a payment on this invoice is still clearing. True while a delayed payment method such as ACH or SEPA settles, during which the invoice stays open and is not marked past due.
+	PaymentProcessing bool `json:"payment_processing" url:"payment_processing"`
+	// The product that this invoice was generated for.
+	Product *InvoiceLegacyProduct `json:"product" url:"product"`
+	// The current payment status of the invoice, such as draft, open, paid, or void.
+	Status InvoiceStatuses `json:"status" url:"status"`
+	// The date that defines when the subscription billing cycle starts. When set on a renewal plan invoice, all future billing periods anchor to this date.
+	SubscriptionBillingAnchorAt *time.Time `json:"subscription_billing_anchor_at,omitempty" url:"subscription_billing_anchor_at,omitempty"`
+	// The datetime the invoice was last updated.
+	UpdatedAt time.Time `json:"updated_at" url:"updated_at"`
+	// The user this invoice is addressed to. Null if the user account has been removed.
+	User *InvoiceLegacyUser `json:"user,omitempty" url:"user,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *InvoiceLegacy) GetAutomaticallyFinalizesAt() *time.Time {
+	if i == nil {
+		return nil
+	}
+	return i.AutomaticallyFinalizesAt
+}
+
+func (i *InvoiceLegacy) GetChargeBuyerFee() bool {
+	if i == nil {
+		return false
+	}
+	return i.ChargeBuyerFee
+}
+
+func (i *InvoiceLegacy) GetCollectionMethod() InvoiceCollectionMethods {
+	if i == nil {
+		return ""
+	}
+	return i.CollectionMethod
+}
+
+func (i *InvoiceLegacy) GetCompany() *InvoiceLegacyCompany {
+	if i == nil {
+		return nil
+	}
+	return i.Company
+}
+
+func (i *InvoiceLegacy) GetCreatedAt() time.Time {
+	if i == nil {
+		return time.Time{}
+	}
+	return i.CreatedAt
+}
+
+func (i *InvoiceLegacy) GetCurrentPlan() *InvoiceLegacyCurrentPlan {
+	if i == nil {
+		return nil
+	}
+	return i.CurrentPlan
+}
+
+func (i *InvoiceLegacy) GetCustomerName() *string {
+	if i == nil {
+		return nil
+	}
+	return i.CustomerName
+}
+
+func (i *InvoiceLegacy) GetDueDate() *time.Time {
+	if i == nil {
+		return nil
+	}
+	return i.DueDate
+}
+
+func (i *InvoiceLegacy) GetEmailAddress() *string {
+	if i == nil {
+		return nil
+	}
+	return i.EmailAddress
+}
+
+func (i *InvoiceLegacy) GetFetchInvoiceToken() string {
+	if i == nil {
+		return ""
+	}
+	return i.FetchInvoiceToken
+}
+
+func (i *InvoiceLegacy) GetID() string {
+	if i == nil {
+		return ""
+	}
+	return i.ID
+}
+
+func (i *InvoiceLegacy) GetLineItems() []*InvoiceLegacyLineItemsItem {
+	if i == nil {
+		return nil
+	}
+	return i.LineItems
+}
+
+func (i *InvoiceLegacy) GetMailingAddress() *InvoiceLegacyMailingAddress {
+	if i == nil {
+		return nil
+	}
+	return i.MailingAddress
+}
+
+func (i *InvoiceLegacy) GetMember() *InvoiceLegacyMember {
+	if i == nil {
+		return nil
+	}
+	return i.Member
+}
+
+func (i *InvoiceLegacy) GetNumber() string {
+	if i == nil {
+		return ""
+	}
+	return i.Number
+}
+
+func (i *InvoiceLegacy) GetPayOnlineURL() *string {
+	if i == nil {
+		return nil
+	}
+	return i.PayOnlineURL
+}
+
+func (i *InvoiceLegacy) GetPayment() *InvoiceLegacyPayment {
+	if i == nil {
+		return nil
+	}
+	return i.Payment
+}
+
+func (i *InvoiceLegacy) GetPaymentProcessing() bool {
+	if i == nil {
+		return false
+	}
+	return i.PaymentProcessing
+}
+
+func (i *InvoiceLegacy) GetProduct() *InvoiceLegacyProduct {
+	if i == nil {
+		return nil
+	}
+	return i.Product
+}
+
+func (i *InvoiceLegacy) GetStatus() InvoiceStatuses {
+	if i == nil {
+		return ""
+	}
+	return i.Status
+}
+
+func (i *InvoiceLegacy) GetSubscriptionBillingAnchorAt() *time.Time {
+	if i == nil {
+		return nil
+	}
+	return i.SubscriptionBillingAnchorAt
+}
+
+func (i *InvoiceLegacy) GetUpdatedAt() time.Time {
+	if i == nil {
+		return time.Time{}
+	}
+	return i.UpdatedAt
+}
+
+func (i *InvoiceLegacy) GetUser() *InvoiceLegacyUser {
+	if i == nil {
+		return nil
+	}
+	return i.User
+}
+
+func (i *InvoiceLegacy) GetExtraProperties() map[string]interface{} {
+	if i == nil {
+		return nil
+	}
+	return i.extraProperties
+}
+
+func (i *InvoiceLegacy) require(field *big.Int) {
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
+	}
+	next.Or(next, field)
+	i.explicitFields = next
+}
+
+// SetAutomaticallyFinalizesAt sets the AutomaticallyFinalizesAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacy) SetAutomaticallyFinalizesAt(automaticallyFinalizesAt *time.Time) {
+	i.AutomaticallyFinalizesAt = automaticallyFinalizesAt
+	i.require(invoiceLegacyFieldAutomaticallyFinalizesAt)
+}
+
+// SetChargeBuyerFee sets the ChargeBuyerFee field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacy) SetChargeBuyerFee(chargeBuyerFee bool) {
+	i.ChargeBuyerFee = chargeBuyerFee
+	i.require(invoiceLegacyFieldChargeBuyerFee)
+}
+
+// SetCollectionMethod sets the CollectionMethod field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacy) SetCollectionMethod(collectionMethod InvoiceCollectionMethods) {
+	i.CollectionMethod = collectionMethod
+	i.require(invoiceLegacyFieldCollectionMethod)
+}
+
+// SetCompany sets the Company field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacy) SetCompany(company *InvoiceLegacyCompany) {
+	i.Company = company
+	i.require(invoiceLegacyFieldCompany)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacy) SetCreatedAt(createdAt time.Time) {
+	i.CreatedAt = createdAt
+	i.require(invoiceLegacyFieldCreatedAt)
+}
+
+// SetCurrentPlan sets the CurrentPlan field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacy) SetCurrentPlan(currentPlan *InvoiceLegacyCurrentPlan) {
+	i.CurrentPlan = currentPlan
+	i.require(invoiceLegacyFieldCurrentPlan)
+}
+
+// SetCustomerName sets the CustomerName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacy) SetCustomerName(customerName *string) {
+	i.CustomerName = customerName
+	i.require(invoiceLegacyFieldCustomerName)
+}
+
+// SetDueDate sets the DueDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacy) SetDueDate(dueDate *time.Time) {
+	i.DueDate = dueDate
+	i.require(invoiceLegacyFieldDueDate)
+}
+
+// SetEmailAddress sets the EmailAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacy) SetEmailAddress(emailAddress *string) {
+	i.EmailAddress = emailAddress
+	i.require(invoiceLegacyFieldEmailAddress)
+}
+
+// SetFetchInvoiceToken sets the FetchInvoiceToken field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacy) SetFetchInvoiceToken(fetchInvoiceToken string) {
+	i.FetchInvoiceToken = fetchInvoiceToken
+	i.require(invoiceLegacyFieldFetchInvoiceToken)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacy) SetID(id string) {
+	i.ID = id
+	i.require(invoiceLegacyFieldID)
+}
+
+// SetLineItems sets the LineItems field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacy) SetLineItems(lineItems []*InvoiceLegacyLineItemsItem) {
+	i.LineItems = lineItems
+	i.require(invoiceLegacyFieldLineItems)
+}
+
+// SetMailingAddress sets the MailingAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacy) SetMailingAddress(mailingAddress *InvoiceLegacyMailingAddress) {
+	i.MailingAddress = mailingAddress
+	i.require(invoiceLegacyFieldMailingAddress)
+}
+
+// SetMember sets the Member field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacy) SetMember(member *InvoiceLegacyMember) {
+	i.Member = member
+	i.require(invoiceLegacyFieldMember)
+}
+
+// SetNumber sets the Number field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacy) SetNumber(number string) {
+	i.Number = number
+	i.require(invoiceLegacyFieldNumber)
+}
+
+// SetPayOnlineURL sets the PayOnlineURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacy) SetPayOnlineURL(payOnlineURL *string) {
+	i.PayOnlineURL = payOnlineURL
+	i.require(invoiceLegacyFieldPayOnlineURL)
+}
+
+// SetPayment sets the Payment field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacy) SetPayment(payment *InvoiceLegacyPayment) {
+	i.Payment = payment
+	i.require(invoiceLegacyFieldPayment)
+}
+
+// SetPaymentProcessing sets the PaymentProcessing field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacy) SetPaymentProcessing(paymentProcessing bool) {
+	i.PaymentProcessing = paymentProcessing
+	i.require(invoiceLegacyFieldPaymentProcessing)
+}
+
+// SetProduct sets the Product field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacy) SetProduct(product *InvoiceLegacyProduct) {
+	i.Product = product
+	i.require(invoiceLegacyFieldProduct)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacy) SetStatus(status InvoiceStatuses) {
+	i.Status = status
+	i.require(invoiceLegacyFieldStatus)
+}
+
+// SetSubscriptionBillingAnchorAt sets the SubscriptionBillingAnchorAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacy) SetSubscriptionBillingAnchorAt(subscriptionBillingAnchorAt *time.Time) {
+	i.SubscriptionBillingAnchorAt = subscriptionBillingAnchorAt
+	i.require(invoiceLegacyFieldSubscriptionBillingAnchorAt)
+}
+
+// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacy) SetUpdatedAt(updatedAt time.Time) {
+	i.UpdatedAt = updatedAt
+	i.require(invoiceLegacyFieldUpdatedAt)
+}
+
+// SetUser sets the User field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacy) SetUser(user *InvoiceLegacyUser) {
+	i.User = user
+	i.require(invoiceLegacyFieldUser)
+}
+
+func (i *InvoiceLegacy) UnmarshalJSON(data []byte) error {
+	type embed InvoiceLegacy
+	var unmarshaler = struct {
+		embed
+		AutomaticallyFinalizesAt    *internal.DateTime `json:"automatically_finalizes_at,omitempty"`
+		CreatedAt                   *internal.DateTime `json:"created_at"`
+		DueDate                     *internal.DateTime `json:"due_date,omitempty"`
+		SubscriptionBillingAnchorAt *internal.DateTime `json:"subscription_billing_anchor_at,omitempty"`
+		UpdatedAt                   *internal.DateTime `json:"updated_at"`
+	}{
+		embed: embed(*i),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*i = InvoiceLegacy(unmarshaler.embed)
+	i.AutomaticallyFinalizesAt = unmarshaler.AutomaticallyFinalizesAt.TimePtr()
+	i.CreatedAt = unmarshaler.CreatedAt.Time()
+	i.DueDate = unmarshaler.DueDate.TimePtr()
+	i.SubscriptionBillingAnchorAt = unmarshaler.SubscriptionBillingAnchorAt.TimePtr()
+	i.UpdatedAt = unmarshaler.UpdatedAt.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, invoiceLegacyNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		i.require(presentFields)
+	}
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceLegacy) MarshalJSON() ([]byte, error) {
+	type embed InvoiceLegacy
+	var marshaler = struct {
+		embed
+		AutomaticallyFinalizesAt    *internal.DateTime `json:"automatically_finalizes_at,omitempty"`
+		CreatedAt                   *internal.DateTime `json:"created_at"`
+		DueDate                     *internal.DateTime `json:"due_date,omitempty"`
+		SubscriptionBillingAnchorAt *internal.DateTime `json:"subscription_billing_anchor_at,omitempty"`
+		UpdatedAt                   *internal.DateTime `json:"updated_at"`
+	}{
+		embed:                       embed(*i),
+		AutomaticallyFinalizesAt:    internal.NewOptionalDateTime(i.AutomaticallyFinalizesAt),
+		CreatedAt:                   internal.NewDateTime(i.CreatedAt),
+		DueDate:                     internal.NewOptionalDateTime(i.DueDate),
+		SubscriptionBillingAnchorAt: internal.NewOptionalDateTime(i.SubscriptionBillingAnchorAt),
+		UpdatedAt:                   internal.NewDateTime(i.UpdatedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (i *InvoiceLegacy) String() string {
+	if i == nil {
+		return "<nil>"
+	}
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+var (
+	invoiceLegacyCompanyFieldID = big.NewInt(1 << 0)
+)
+
+// The company that issued this invoice.
+type InvoiceLegacyCompany struct {
+	// The unique identifier for the company.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *InvoiceLegacyCompany) GetID() string {
+	if i == nil {
+		return ""
+	}
+	return i.ID
+}
+
+func (i *InvoiceLegacyCompany) GetExtraProperties() map[string]interface{} {
+	if i == nil {
+		return nil
+	}
+	return i.extraProperties
+}
+
+func (i *InvoiceLegacyCompany) require(field *big.Int) {
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
+	}
+	next.Or(next, field)
+	i.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyCompany) SetID(id string) {
+	i.ID = id
+	i.require(invoiceLegacyCompanyFieldID)
+}
+
+func (i *InvoiceLegacyCompany) UnmarshalJSON(data []byte) error {
+	type unmarshaler InvoiceLegacyCompany
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = InvoiceLegacyCompany(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceLegacyCompany) MarshalJSON() ([]byte, error) {
+	type embed InvoiceLegacyCompany
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*i),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (i *InvoiceLegacyCompany) String() string {
+	if i == nil {
+		return "<nil>"
+	}
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+var (
+	invoiceLegacyCurrentPlanFieldCurrency       = big.NewInt(1 << 0)
+	invoiceLegacyCurrentPlanFieldDescription    = big.NewInt(1 << 1)
+	invoiceLegacyCurrentPlanFieldFormattedPrice = big.NewInt(1 << 2)
+	invoiceLegacyCurrentPlanFieldID             = big.NewInt(1 << 3)
+)
+
+// invoiceLegacyCurrentPlanNullableFields maps the wire names of InvoiceLegacyCurrentPlan's nullable fields (required or optional) to their field bits.
+var invoiceLegacyCurrentPlanNullableFields = map[string]*big.Int{
+	"description": invoiceLegacyCurrentPlanFieldDescription,
+}
+
+// The plan that this invoice charges for.
+type InvoiceLegacyCurrentPlan struct {
+	// The currency used for all prices on this plan (e.g., 'usd', 'eur'). All monetary amounts on the plan are denominated in this currency.
+	Currency Currencies `json:"currency" url:"currency"`
+	// A text description of the plan visible to customers. Maximum 1000 characters. Null if no description is set.
+	Description *string `json:"description,omitempty" url:"description,omitempty"`
+	// The formatted price (including currency) for the plan.
+	FormattedPrice string `json:"formatted_price" url:"formatted_price"`
+	// The unique identifier for the plan.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *InvoiceLegacyCurrentPlan) GetCurrency() Currencies {
+	if i == nil {
+		return ""
+	}
+	return i.Currency
+}
+
+func (i *InvoiceLegacyCurrentPlan) GetDescription() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Description
+}
+
+func (i *InvoiceLegacyCurrentPlan) GetFormattedPrice() string {
+	if i == nil {
+		return ""
+	}
+	return i.FormattedPrice
+}
+
+func (i *InvoiceLegacyCurrentPlan) GetID() string {
+	if i == nil {
+		return ""
+	}
+	return i.ID
+}
+
+func (i *InvoiceLegacyCurrentPlan) GetExtraProperties() map[string]interface{} {
+	if i == nil {
+		return nil
+	}
+	return i.extraProperties
+}
+
+func (i *InvoiceLegacyCurrentPlan) require(field *big.Int) {
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
+	}
+	next.Or(next, field)
+	i.explicitFields = next
+}
+
+// SetCurrency sets the Currency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyCurrentPlan) SetCurrency(currency Currencies) {
+	i.Currency = currency
+	i.require(invoiceLegacyCurrentPlanFieldCurrency)
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyCurrentPlan) SetDescription(description *string) {
+	i.Description = description
+	i.require(invoiceLegacyCurrentPlanFieldDescription)
+}
+
+// SetFormattedPrice sets the FormattedPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyCurrentPlan) SetFormattedPrice(formattedPrice string) {
+	i.FormattedPrice = formattedPrice
+	i.require(invoiceLegacyCurrentPlanFieldFormattedPrice)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyCurrentPlan) SetID(id string) {
+	i.ID = id
+	i.require(invoiceLegacyCurrentPlanFieldID)
+}
+
+func (i *InvoiceLegacyCurrentPlan) UnmarshalJSON(data []byte) error {
+	type unmarshaler InvoiceLegacyCurrentPlan
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = InvoiceLegacyCurrentPlan(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, invoiceLegacyCurrentPlanNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		i.require(presentFields)
+	}
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceLegacyCurrentPlan) MarshalJSON() ([]byte, error) {
+	type embed InvoiceLegacyCurrentPlan
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*i),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (i *InvoiceLegacyCurrentPlan) String() string {
+	if i == nil {
+		return "<nil>"
+	}
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+var (
+	invoiceLegacyLineItemsItemFieldLabel     = big.NewInt(1 << 0)
+	invoiceLegacyLineItemsItemFieldPosition  = big.NewInt(1 << 1)
+	invoiceLegacyLineItemsItemFieldQuantity  = big.NewInt(1 << 2)
+	invoiceLegacyLineItemsItemFieldTotal     = big.NewInt(1 << 3)
+	invoiceLegacyLineItemsItemFieldUnitPrice = big.NewInt(1 << 4)
+)
+
+// A line item on an invoice, representing a single charge with a label, quantity, and unit price.
+type InvoiceLegacyLineItemsItem struct {
+	// The label or description for this line item.
+	Label string `json:"label" url:"label"`
+	// The display order of this line item within the invoice.
+	Position int `json:"position" url:"position"`
+	// The quantity of this line item.
+	Quantity float64 `json:"quantity" url:"quantity"`
+	// The computed total for this line item (quantity * unit_price).
+	Total float64 `json:"total" url:"total"`
+	// The unit price for this line item. Negative for a credit or deduction.
+	UnitPrice float64 `json:"unit_price" url:"unit_price"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *InvoiceLegacyLineItemsItem) GetLabel() string {
+	if i == nil {
+		return ""
+	}
+	return i.Label
+}
+
+func (i *InvoiceLegacyLineItemsItem) GetPosition() int {
+	if i == nil {
+		return 0
+	}
+	return i.Position
+}
+
+func (i *InvoiceLegacyLineItemsItem) GetQuantity() float64 {
+	if i == nil {
+		return 0
+	}
+	return i.Quantity
+}
+
+func (i *InvoiceLegacyLineItemsItem) GetTotal() float64 {
+	if i == nil {
+		return 0
+	}
+	return i.Total
+}
+
+func (i *InvoiceLegacyLineItemsItem) GetUnitPrice() float64 {
+	if i == nil {
+		return 0
+	}
+	return i.UnitPrice
+}
+
+func (i *InvoiceLegacyLineItemsItem) GetExtraProperties() map[string]interface{} {
+	if i == nil {
+		return nil
+	}
+	return i.extraProperties
+}
+
+func (i *InvoiceLegacyLineItemsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
+	}
+	next.Or(next, field)
+	i.explicitFields = next
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyLineItemsItem) SetLabel(label string) {
+	i.Label = label
+	i.require(invoiceLegacyLineItemsItemFieldLabel)
+}
+
+// SetPosition sets the Position field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyLineItemsItem) SetPosition(position int) {
+	i.Position = position
+	i.require(invoiceLegacyLineItemsItemFieldPosition)
+}
+
+// SetQuantity sets the Quantity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyLineItemsItem) SetQuantity(quantity float64) {
+	i.Quantity = quantity
+	i.require(invoiceLegacyLineItemsItemFieldQuantity)
+}
+
+// SetTotal sets the Total field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyLineItemsItem) SetTotal(total float64) {
+	i.Total = total
+	i.require(invoiceLegacyLineItemsItemFieldTotal)
+}
+
+// SetUnitPrice sets the UnitPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyLineItemsItem) SetUnitPrice(unitPrice float64) {
+	i.UnitPrice = unitPrice
+	i.require(invoiceLegacyLineItemsItemFieldUnitPrice)
+}
+
+func (i *InvoiceLegacyLineItemsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler InvoiceLegacyLineItemsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = InvoiceLegacyLineItemsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceLegacyLineItemsItem) MarshalJSON() ([]byte, error) {
+	type embed InvoiceLegacyLineItemsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*i),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (i *InvoiceLegacyLineItemsItem) String() string {
+	if i == nil {
+		return "<nil>"
+	}
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+var (
+	invoiceLegacyMailingAddressFieldCity       = big.NewInt(1 << 0)
+	invoiceLegacyMailingAddressFieldCountry    = big.NewInt(1 << 1)
+	invoiceLegacyMailingAddressFieldLine1      = big.NewInt(1 << 2)
+	invoiceLegacyMailingAddressFieldLine2      = big.NewInt(1 << 3)
+	invoiceLegacyMailingAddressFieldName       = big.NewInt(1 << 4)
+	invoiceLegacyMailingAddressFieldPhone      = big.NewInt(1 << 5)
+	invoiceLegacyMailingAddressFieldPostalCode = big.NewInt(1 << 6)
+	invoiceLegacyMailingAddressFieldState      = big.NewInt(1 << 7)
+)
+
+// invoiceLegacyMailingAddressNullableFields maps the wire names of InvoiceLegacyMailingAddress's nullable fields (required or optional) to their field bits.
+var invoiceLegacyMailingAddressNullableFields = map[string]*big.Int{
+	"city":        invoiceLegacyMailingAddressFieldCity,
+	"country":     invoiceLegacyMailingAddressFieldCountry,
+	"line1":       invoiceLegacyMailingAddressFieldLine1,
+	"line2":       invoiceLegacyMailingAddressFieldLine2,
+	"name":        invoiceLegacyMailingAddressFieldName,
+	"phone":       invoiceLegacyMailingAddressFieldPhone,
+	"postal_code": invoiceLegacyMailingAddressFieldPostalCode,
+	"state":       invoiceLegacyMailingAddressFieldState,
+}
+
+// The billing/mailing address associated with this invoice, if one was provided at creation time.
+type InvoiceLegacyMailingAddress struct {
+	// The city of the address.
+	City *string `json:"city,omitempty" url:"city,omitempty"`
+	// The country of the address.
+	Country *string `json:"country,omitempty" url:"country,omitempty"`
+	// The line 1 of the address.
+	Line1 *string `json:"line1,omitempty" url:"line1,omitempty"`
+	// The line 2 of the address.
+	Line2 *string `json:"line2,omitempty" url:"line2,omitempty"`
+	// The name of the customer.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// The phone number of the customer.
+	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
+	// The postal code of the address.
+	PostalCode *string `json:"postal_code,omitempty" url:"postal_code,omitempty"`
+	// The state of the address.
+	State *string `json:"state,omitempty" url:"state,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *InvoiceLegacyMailingAddress) GetCity() *string {
+	if i == nil {
+		return nil
+	}
+	return i.City
+}
+
+func (i *InvoiceLegacyMailingAddress) GetCountry() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Country
+}
+
+func (i *InvoiceLegacyMailingAddress) GetLine1() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Line1
+}
+
+func (i *InvoiceLegacyMailingAddress) GetLine2() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Line2
+}
+
+func (i *InvoiceLegacyMailingAddress) GetName() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Name
+}
+
+func (i *InvoiceLegacyMailingAddress) GetPhone() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Phone
+}
+
+func (i *InvoiceLegacyMailingAddress) GetPostalCode() *string {
+	if i == nil {
+		return nil
+	}
+	return i.PostalCode
+}
+
+func (i *InvoiceLegacyMailingAddress) GetState() *string {
+	if i == nil {
+		return nil
+	}
+	return i.State
+}
+
+func (i *InvoiceLegacyMailingAddress) GetExtraProperties() map[string]interface{} {
+	if i == nil {
+		return nil
+	}
+	return i.extraProperties
+}
+
+func (i *InvoiceLegacyMailingAddress) require(field *big.Int) {
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
+	}
+	next.Or(next, field)
+	i.explicitFields = next
+}
+
+// SetCity sets the City field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyMailingAddress) SetCity(city *string) {
+	i.City = city
+	i.require(invoiceLegacyMailingAddressFieldCity)
+}
+
+// SetCountry sets the Country field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyMailingAddress) SetCountry(country *string) {
+	i.Country = country
+	i.require(invoiceLegacyMailingAddressFieldCountry)
+}
+
+// SetLine1 sets the Line1 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyMailingAddress) SetLine1(line1 *string) {
+	i.Line1 = line1
+	i.require(invoiceLegacyMailingAddressFieldLine1)
+}
+
+// SetLine2 sets the Line2 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyMailingAddress) SetLine2(line2 *string) {
+	i.Line2 = line2
+	i.require(invoiceLegacyMailingAddressFieldLine2)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyMailingAddress) SetName(name *string) {
+	i.Name = name
+	i.require(invoiceLegacyMailingAddressFieldName)
+}
+
+// SetPhone sets the Phone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyMailingAddress) SetPhone(phone *string) {
+	i.Phone = phone
+	i.require(invoiceLegacyMailingAddressFieldPhone)
+}
+
+// SetPostalCode sets the PostalCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyMailingAddress) SetPostalCode(postalCode *string) {
+	i.PostalCode = postalCode
+	i.require(invoiceLegacyMailingAddressFieldPostalCode)
+}
+
+// SetState sets the State field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyMailingAddress) SetState(state *string) {
+	i.State = state
+	i.require(invoiceLegacyMailingAddressFieldState)
+}
+
+func (i *InvoiceLegacyMailingAddress) UnmarshalJSON(data []byte) error {
+	type unmarshaler InvoiceLegacyMailingAddress
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = InvoiceLegacyMailingAddress(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, invoiceLegacyMailingAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		i.require(presentFields)
+	}
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceLegacyMailingAddress) MarshalJSON() ([]byte, error) {
+	type embed InvoiceLegacyMailingAddress
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*i),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (i *InvoiceLegacyMailingAddress) String() string {
+	if i == nil {
+		return "<nil>"
+	}
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+var (
+	invoiceLegacyMemberFieldID = big.NewInt(1 << 0)
+)
+
+// The member that the invoice was created for. Null when the invoice is addressed to an email address with no member record behind it.
+type InvoiceLegacyMember struct {
+	// The unique identifier for the company member.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *InvoiceLegacyMember) GetID() string {
+	if i == nil {
+		return ""
+	}
+	return i.ID
+}
+
+func (i *InvoiceLegacyMember) GetExtraProperties() map[string]interface{} {
+	if i == nil {
+		return nil
+	}
+	return i.extraProperties
+}
+
+func (i *InvoiceLegacyMember) require(field *big.Int) {
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
+	}
+	next.Or(next, field)
+	i.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyMember) SetID(id string) {
+	i.ID = id
+	i.require(invoiceLegacyMemberFieldID)
+}
+
+func (i *InvoiceLegacyMember) UnmarshalJSON(data []byte) error {
+	type unmarshaler InvoiceLegacyMember
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = InvoiceLegacyMember(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceLegacyMember) MarshalJSON() ([]byte, error) {
+	type embed InvoiceLegacyMember
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*i),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (i *InvoiceLegacyMember) String() string {
+	if i == nil {
+		return "<nil>"
+	}
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+var (
+	invoiceLegacyPaymentFieldID = big.NewInt(1 << 0)
+)
+
+// The payment that settled this invoice. Null while the invoice is unpaid, when the invoice was marked paid manually, and on a subscription renewal invoice, where the settling payment cannot yet be identified.
+type InvoiceLegacyPayment struct {
+	// The unique identifier for the payment.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *InvoiceLegacyPayment) GetID() string {
+	if i == nil {
+		return ""
+	}
+	return i.ID
+}
+
+func (i *InvoiceLegacyPayment) GetExtraProperties() map[string]interface{} {
+	if i == nil {
+		return nil
+	}
+	return i.extraProperties
+}
+
+func (i *InvoiceLegacyPayment) require(field *big.Int) {
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
+	}
+	next.Or(next, field)
+	i.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyPayment) SetID(id string) {
+	i.ID = id
+	i.require(invoiceLegacyPaymentFieldID)
+}
+
+func (i *InvoiceLegacyPayment) UnmarshalJSON(data []byte) error {
+	type unmarshaler InvoiceLegacyPayment
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = InvoiceLegacyPayment(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceLegacyPayment) MarshalJSON() ([]byte, error) {
+	type embed InvoiceLegacyPayment
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*i),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (i *InvoiceLegacyPayment) String() string {
+	if i == nil {
+		return "<nil>"
+	}
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+var (
+	invoiceLegacyProductFieldID    = big.NewInt(1 << 0)
+	invoiceLegacyProductFieldTitle = big.NewInt(1 << 1)
+)
+
+// The product that this invoice was generated for.
+type InvoiceLegacyProduct struct {
+	// The unique identifier for the product.
+	ID string `json:"id" url:"id"`
+	// The display name of the product shown to customers on the product page and in search results.
+	Title string `json:"title" url:"title"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *InvoiceLegacyProduct) GetID() string {
+	if i == nil {
+		return ""
+	}
+	return i.ID
+}
+
+func (i *InvoiceLegacyProduct) GetTitle() string {
+	if i == nil {
+		return ""
+	}
+	return i.Title
+}
+
+func (i *InvoiceLegacyProduct) GetExtraProperties() map[string]interface{} {
+	if i == nil {
+		return nil
+	}
+	return i.extraProperties
+}
+
+func (i *InvoiceLegacyProduct) require(field *big.Int) {
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
+	}
+	next.Or(next, field)
+	i.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyProduct) SetID(id string) {
+	i.ID = id
+	i.require(invoiceLegacyProductFieldID)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyProduct) SetTitle(title string) {
+	i.Title = title
+	i.require(invoiceLegacyProductFieldTitle)
+}
+
+func (i *InvoiceLegacyProduct) UnmarshalJSON(data []byte) error {
+	type unmarshaler InvoiceLegacyProduct
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = InvoiceLegacyProduct(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceLegacyProduct) MarshalJSON() ([]byte, error) {
+	type embed InvoiceLegacyProduct
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*i),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (i *InvoiceLegacyProduct) String() string {
+	if i == nil {
+		return "<nil>"
+	}
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+var (
+	invoiceLegacyUserFieldEmail    = big.NewInt(1 << 0)
+	invoiceLegacyUserFieldID       = big.NewInt(1 << 1)
+	invoiceLegacyUserFieldName     = big.NewInt(1 << 2)
+	invoiceLegacyUserFieldUsername = big.NewInt(1 << 3)
+)
+
+// invoiceLegacyUserNullableFields maps the wire names of InvoiceLegacyUser's nullable fields (required or optional) to their field bits.
+var invoiceLegacyUserNullableFields = map[string]*big.Int{
+	"email": invoiceLegacyUserFieldEmail,
+	"name":  invoiceLegacyUserFieldName,
+}
+
+// The user this invoice is addressed to. Null if the user account has been removed.
+type InvoiceLegacyUser struct {
+	// The user's email address. Requires the member:email:read permission to access. Null if not authorized.
+	Email *string `json:"email,omitempty" url:"email,omitempty"`
+	// The unique identifier for the user.
+	ID string `json:"id" url:"id"`
+	// The user's display name shown on their public profile.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// The user's unique username shown on their public profile.
+	Username string `json:"username" url:"username"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *InvoiceLegacyUser) GetEmail() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Email
+}
+
+func (i *InvoiceLegacyUser) GetID() string {
+	if i == nil {
+		return ""
+	}
+	return i.ID
+}
+
+func (i *InvoiceLegacyUser) GetName() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Name
+}
+
+func (i *InvoiceLegacyUser) GetUsername() string {
+	if i == nil {
+		return ""
+	}
+	return i.Username
+}
+
+func (i *InvoiceLegacyUser) GetExtraProperties() map[string]interface{} {
+	if i == nil {
+		return nil
+	}
+	return i.extraProperties
+}
+
+func (i *InvoiceLegacyUser) require(field *big.Int) {
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
+	}
+	next.Or(next, field)
+	i.explicitFields = next
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyUser) SetEmail(email *string) {
+	i.Email = email
+	i.require(invoiceLegacyUserFieldEmail)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyUser) SetID(id string) {
+	i.ID = id
+	i.require(invoiceLegacyUserFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyUser) SetName(name *string) {
+	i.Name = name
+	i.require(invoiceLegacyUserFieldName)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyUser) SetUsername(username string) {
+	i.Username = username
+	i.require(invoiceLegacyUserFieldUsername)
+}
+
+func (i *InvoiceLegacyUser) UnmarshalJSON(data []byte) error {
+	type unmarshaler InvoiceLegacyUser
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = InvoiceLegacyUser(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, invoiceLegacyUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		i.require(presentFields)
+	}
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceLegacyUser) MarshalJSON() ([]byte, error) {
+	type embed InvoiceLegacyUser
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*i),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (i *InvoiceLegacyUser) String() string {
+	if i == nil {
+		return "<nil>"
+	}
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+// The different statuses an invoice can be in
+type InvoiceStatuses string
+
+const (
+	InvoiceStatusesDraft         InvoiceStatuses = "draft"
+	InvoiceStatusesOpen          InvoiceStatuses = "open"
+	InvoiceStatusesPaid          InvoiceStatuses = "paid"
+	InvoiceStatusesPastDue       InvoiceStatuses = "past_due"
+	InvoiceStatusesUncollectible InvoiceStatuses = "uncollectible"
+	InvoiceStatusesVoid          InvoiceStatuses = "void"
+)
+
+func NewInvoiceStatusesFromString(s string) (InvoiceStatuses, error) {
+	switch s {
+	case "draft":
+		return InvoiceStatusesDraft, nil
+	case "open":
+		return InvoiceStatusesOpen, nil
+	case "paid":
+		return InvoiceStatusesPaid, nil
+	case "past_due":
+		return InvoiceStatusesPastDue, nil
+	case "uncollectible":
+		return InvoiceStatusesUncollectible, nil
+	case "void":
+		return InvoiceStatusesVoid, nil
+	}
+	var t InvoiceStatuses
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (i InvoiceStatuses) Ptr() *InvoiceStatuses {
+	return &i
+}
+
+// Which columns can be used to sort.
+type InvoicesSortableColumns string
+
+const (
+	InvoicesSortableColumnsID        InvoicesSortableColumns = "id"
+	InvoicesSortableColumnsCreatedAt InvoicesSortableColumns = "created_at"
+	InvoicesSortableColumnsDueDate   InvoicesSortableColumns = "due_date"
+)
+
+func NewInvoicesSortableColumnsFromString(s string) (InvoicesSortableColumns, error) {
+	switch s {
+	case "id":
+		return InvoicesSortableColumnsID, nil
+	case "created_at":
+		return InvoicesSortableColumnsCreatedAt, nil
+	case "due_date":
+		return InvoicesSortableColumnsDueDate, nil
+	}
+	var t InvoicesSortableColumns
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (i InvoicesSortableColumns) Ptr() *InvoicesSortableColumns {
+	return &i
+}
+
+var (
+	legacyInvoiceFieldAutomaticallyFinalizesAt    = big.NewInt(1 << 0)
+	legacyInvoiceFieldChargeBuyerFee              = big.NewInt(1 << 1)
+	legacyInvoiceFieldCollectionMethod            = big.NewInt(1 << 2)
+	legacyInvoiceFieldCompany                     = big.NewInt(1 << 3)
+	legacyInvoiceFieldCreatedAt                   = big.NewInt(1 << 4)
+	legacyInvoiceFieldCurrentPlan                 = big.NewInt(1 << 5)
+	legacyInvoiceFieldCustomerName                = big.NewInt(1 << 6)
+	legacyInvoiceFieldDueDate                     = big.NewInt(1 << 7)
+	legacyInvoiceFieldEmailAddress                = big.NewInt(1 << 8)
+	legacyInvoiceFieldFetchInvoiceToken           = big.NewInt(1 << 9)
+	legacyInvoiceFieldID                          = big.NewInt(1 << 10)
+	legacyInvoiceFieldLineItems                   = big.NewInt(1 << 11)
+	legacyInvoiceFieldMailingAddress              = big.NewInt(1 << 12)
+	legacyInvoiceFieldMember                      = big.NewInt(1 << 13)
+	legacyInvoiceFieldNumber                      = big.NewInt(1 << 14)
+	legacyInvoiceFieldPayOnlineURL                = big.NewInt(1 << 15)
+	legacyInvoiceFieldPayment                     = big.NewInt(1 << 16)
+	legacyInvoiceFieldPaymentProcessing           = big.NewInt(1 << 17)
+	legacyInvoiceFieldProduct                     = big.NewInt(1 << 18)
+	legacyInvoiceFieldStatus                      = big.NewInt(1 << 19)
+	legacyInvoiceFieldSubscriptionBillingAnchorAt = big.NewInt(1 << 20)
+	legacyInvoiceFieldUpdatedAt                   = big.NewInt(1 << 21)
+	legacyInvoiceFieldUser                        = big.NewInt(1 << 22)
+)
+
+// legacyInvoiceNullableFields maps the wire names of LegacyInvoice's nullable fields (required or optional) to their field bits.
+var legacyInvoiceNullableFields = map[string]*big.Int{
+	"automatically_finalizes_at":     legacyInvoiceFieldAutomaticallyFinalizesAt,
+	"customer_name":                  legacyInvoiceFieldCustomerName,
+	"due_date":                       legacyInvoiceFieldDueDate,
+	"email_address":                  legacyInvoiceFieldEmailAddress,
+	"mailing_address":                legacyInvoiceFieldMailingAddress,
+	"member":                         legacyInvoiceFieldMember,
+	"pay_online_url":                 legacyInvoiceFieldPayOnlineURL,
+	"payment":                        legacyInvoiceFieldPayment,
+	"subscription_billing_anchor_at": legacyInvoiceFieldSubscriptionBillingAnchorAt,
+	"user":                           legacyInvoiceFieldUser,
+}
+
+// An invoice represents an itemized bill sent by a company to a customer for a specific product and plan, tracking the amount owed, due date, and payment status.
+type LegacyInvoice struct {
+	// The date and time when the invoice will be automatically finalized. For charge_automatically, triggers an automatic charge. For send_invoice, sends the invoice email at the specified time.
+	AutomaticallyFinalizesAt *time.Time `json:"automatically_finalizes_at,omitempty" url:"automatically_finalizes_at,omitempty"`
+	// Whether the invoice includes a buyer processing fee on top of the plan price.
+	ChargeBuyerFee bool `json:"charge_buyer_fee" url:"charge_buyer_fee"`
+	// The method used to collect payment for this invoice, such as automatic charging or manual payment.
+	CollectionMethod InvoiceCollectionMethods `json:"collection_method" url:"collection_method"`
+	// The company that issued this invoice.
+	Company *LegacyInvoiceCompany `json:"company" url:"company"`
+	// The datetime the invoice was created.
+	CreatedAt time.Time `json:"created_at" url:"created_at"`
+	// The plan that this invoice charges for.
+	CurrentPlan *LegacyInvoiceCurrentPlan `json:"current_plan" url:"current_plan"`
+	// The full name of the customer this invoice is addressed to. Null if no name is on file.
+	CustomerName *string `json:"customer_name,omitempty" url:"customer_name,omitempty"`
+	// The deadline by which payment is expected. Null if the invoice is collected automatically.
+	DueDate *time.Time `json:"due_date,omitempty" url:"due_date,omitempty"`
+	// The email address of the customer this invoice is addressed to. Null if no email is on file.
+	EmailAddress *string `json:"email_address,omitempty" url:"email_address,omitempty"`
+	// A signed token that allows fetching invoice data publicly without authentication.
+	FetchInvoiceToken string `json:"fetch_invoice_token" url:"fetch_invoice_token"`
+	// The unique identifier for the invoice.
+	ID string `json:"id" url:"id"`
+	// Optional line items that break down the invoice total into individual charges.
+	LineItems []*LegacyInvoiceLineItemsItem `json:"line_items" url:"line_items"`
+	// The billing/mailing address associated with this invoice, if one was provided at creation time.
+	MailingAddress *LegacyInvoiceMailingAddress `json:"mailing_address,omitempty" url:"mailing_address,omitempty"`
+	// The member that the invoice was created for. Null when the invoice is addressed to an email address with no member record behind it.
+	Member *LegacyInvoiceMember `json:"member,omitempty" url:"member,omitempty"`
+	// The sequential invoice number for display purposes.
+	Number string `json:"number" url:"number"`
+	// The checkout URL where the customer can pay this invoice online, with their email address pre-filled and locked.
+	PayOnlineURL *string `json:"pay_online_url,omitempty" url:"pay_online_url,omitempty"`
+	// The payment that settled this invoice. Null while the invoice is unpaid, when the invoice was marked paid manually, and on a subscription renewal invoice, where the settling payment cannot yet be identified.
+	Payment *LegacyInvoicePayment `json:"payment,omitempty" url:"payment,omitempty"`
+	// Whether a payment on this invoice is still clearing. True while a delayed payment method such as ACH or SEPA settles, during which the invoice stays open and is not marked past due.
+	PaymentProcessing bool `json:"payment_processing" url:"payment_processing"`
+	// The product that this invoice was generated for.
+	Product *LegacyInvoiceProduct `json:"product" url:"product"`
+	// The current payment status of the invoice, such as draft, open, paid, or void.
+	Status InvoiceStatuses `json:"status" url:"status"`
+	// The date that defines when the subscription billing cycle starts. When set on a renewal plan invoice, all future billing periods anchor to this date.
+	SubscriptionBillingAnchorAt *time.Time `json:"subscription_billing_anchor_at,omitempty" url:"subscription_billing_anchor_at,omitempty"`
+	// The datetime the invoice was last updated.
+	UpdatedAt time.Time `json:"updated_at" url:"updated_at"`
+	// The user this invoice is addressed to. Null if the user account has been removed.
+	User *LegacyInvoiceUser `json:"user,omitempty" url:"user,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LegacyInvoice) GetAutomaticallyFinalizesAt() *time.Time {
+	if l == nil {
+		return nil
+	}
+	return l.AutomaticallyFinalizesAt
+}
+
+func (l *LegacyInvoice) GetChargeBuyerFee() bool {
+	if l == nil {
+		return false
+	}
+	return l.ChargeBuyerFee
+}
+
+func (l *LegacyInvoice) GetCollectionMethod() InvoiceCollectionMethods {
+	if l == nil {
+		return ""
+	}
+	return l.CollectionMethod
+}
+
+func (l *LegacyInvoice) GetCompany() *LegacyInvoiceCompany {
+	if l == nil {
+		return nil
+	}
+	return l.Company
+}
+
+func (l *LegacyInvoice) GetCreatedAt() time.Time {
+	if l == nil {
+		return time.Time{}
+	}
+	return l.CreatedAt
+}
+
+func (l *LegacyInvoice) GetCurrentPlan() *LegacyInvoiceCurrentPlan {
+	if l == nil {
+		return nil
+	}
+	return l.CurrentPlan
+}
+
+func (l *LegacyInvoice) GetCustomerName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.CustomerName
+}
+
+func (l *LegacyInvoice) GetDueDate() *time.Time {
+	if l == nil {
+		return nil
+	}
+	return l.DueDate
+}
+
+func (l *LegacyInvoice) GetEmailAddress() *string {
+	if l == nil {
+		return nil
+	}
+	return l.EmailAddress
+}
+
+func (l *LegacyInvoice) GetFetchInvoiceToken() string {
+	if l == nil {
+		return ""
+	}
+	return l.FetchInvoiceToken
+}
+
+func (l *LegacyInvoice) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LegacyInvoice) GetLineItems() []*LegacyInvoiceLineItemsItem {
+	if l == nil {
+		return nil
+	}
+	return l.LineItems
+}
+
+func (l *LegacyInvoice) GetMailingAddress() *LegacyInvoiceMailingAddress {
+	if l == nil {
+		return nil
+	}
+	return l.MailingAddress
+}
+
+func (l *LegacyInvoice) GetMember() *LegacyInvoiceMember {
+	if l == nil {
+		return nil
+	}
+	return l.Member
+}
+
+func (l *LegacyInvoice) GetNumber() string {
+	if l == nil {
+		return ""
+	}
+	return l.Number
+}
+
+func (l *LegacyInvoice) GetPayOnlineURL() *string {
+	if l == nil {
+		return nil
+	}
+	return l.PayOnlineURL
+}
+
+func (l *LegacyInvoice) GetPayment() *LegacyInvoicePayment {
+	if l == nil {
+		return nil
+	}
+	return l.Payment
+}
+
+func (l *LegacyInvoice) GetPaymentProcessing() bool {
+	if l == nil {
+		return false
+	}
+	return l.PaymentProcessing
+}
+
+func (l *LegacyInvoice) GetProduct() *LegacyInvoiceProduct {
+	if l == nil {
+		return nil
+	}
+	return l.Product
+}
+
+func (l *LegacyInvoice) GetStatus() InvoiceStatuses {
+	if l == nil {
+		return ""
+	}
+	return l.Status
+}
+
+func (l *LegacyInvoice) GetSubscriptionBillingAnchorAt() *time.Time {
+	if l == nil {
+		return nil
+	}
+	return l.SubscriptionBillingAnchorAt
+}
+
+func (l *LegacyInvoice) GetUpdatedAt() time.Time {
+	if l == nil {
+		return time.Time{}
+	}
+	return l.UpdatedAt
+}
+
+func (l *LegacyInvoice) GetUser() *LegacyInvoiceUser {
+	if l == nil {
+		return nil
+	}
+	return l.User
+}
+
+func (l *LegacyInvoice) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LegacyInvoice) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetAutomaticallyFinalizesAt sets the AutomaticallyFinalizesAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoice) SetAutomaticallyFinalizesAt(automaticallyFinalizesAt *time.Time) {
+	l.AutomaticallyFinalizesAt = automaticallyFinalizesAt
+	l.require(legacyInvoiceFieldAutomaticallyFinalizesAt)
+}
+
+// SetChargeBuyerFee sets the ChargeBuyerFee field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoice) SetChargeBuyerFee(chargeBuyerFee bool) {
+	l.ChargeBuyerFee = chargeBuyerFee
+	l.require(legacyInvoiceFieldChargeBuyerFee)
+}
+
+// SetCollectionMethod sets the CollectionMethod field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoice) SetCollectionMethod(collectionMethod InvoiceCollectionMethods) {
+	l.CollectionMethod = collectionMethod
+	l.require(legacyInvoiceFieldCollectionMethod)
+}
+
+// SetCompany sets the Company field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoice) SetCompany(company *LegacyInvoiceCompany) {
+	l.Company = company
+	l.require(legacyInvoiceFieldCompany)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoice) SetCreatedAt(createdAt time.Time) {
+	l.CreatedAt = createdAt
+	l.require(legacyInvoiceFieldCreatedAt)
+}
+
+// SetCurrentPlan sets the CurrentPlan field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoice) SetCurrentPlan(currentPlan *LegacyInvoiceCurrentPlan) {
+	l.CurrentPlan = currentPlan
+	l.require(legacyInvoiceFieldCurrentPlan)
+}
+
+// SetCustomerName sets the CustomerName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoice) SetCustomerName(customerName *string) {
+	l.CustomerName = customerName
+	l.require(legacyInvoiceFieldCustomerName)
+}
+
+// SetDueDate sets the DueDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoice) SetDueDate(dueDate *time.Time) {
+	l.DueDate = dueDate
+	l.require(legacyInvoiceFieldDueDate)
+}
+
+// SetEmailAddress sets the EmailAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoice) SetEmailAddress(emailAddress *string) {
+	l.EmailAddress = emailAddress
+	l.require(legacyInvoiceFieldEmailAddress)
+}
+
+// SetFetchInvoiceToken sets the FetchInvoiceToken field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoice) SetFetchInvoiceToken(fetchInvoiceToken string) {
+	l.FetchInvoiceToken = fetchInvoiceToken
+	l.require(legacyInvoiceFieldFetchInvoiceToken)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoice) SetID(id string) {
+	l.ID = id
+	l.require(legacyInvoiceFieldID)
+}
+
+// SetLineItems sets the LineItems field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoice) SetLineItems(lineItems []*LegacyInvoiceLineItemsItem) {
+	l.LineItems = lineItems
+	l.require(legacyInvoiceFieldLineItems)
+}
+
+// SetMailingAddress sets the MailingAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoice) SetMailingAddress(mailingAddress *LegacyInvoiceMailingAddress) {
+	l.MailingAddress = mailingAddress
+	l.require(legacyInvoiceFieldMailingAddress)
+}
+
+// SetMember sets the Member field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoice) SetMember(member *LegacyInvoiceMember) {
+	l.Member = member
+	l.require(legacyInvoiceFieldMember)
+}
+
+// SetNumber sets the Number field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoice) SetNumber(number string) {
+	l.Number = number
+	l.require(legacyInvoiceFieldNumber)
+}
+
+// SetPayOnlineURL sets the PayOnlineURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoice) SetPayOnlineURL(payOnlineURL *string) {
+	l.PayOnlineURL = payOnlineURL
+	l.require(legacyInvoiceFieldPayOnlineURL)
+}
+
+// SetPayment sets the Payment field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoice) SetPayment(payment *LegacyInvoicePayment) {
+	l.Payment = payment
+	l.require(legacyInvoiceFieldPayment)
+}
+
+// SetPaymentProcessing sets the PaymentProcessing field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoice) SetPaymentProcessing(paymentProcessing bool) {
+	l.PaymentProcessing = paymentProcessing
+	l.require(legacyInvoiceFieldPaymentProcessing)
+}
+
+// SetProduct sets the Product field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoice) SetProduct(product *LegacyInvoiceProduct) {
+	l.Product = product
+	l.require(legacyInvoiceFieldProduct)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoice) SetStatus(status InvoiceStatuses) {
+	l.Status = status
+	l.require(legacyInvoiceFieldStatus)
+}
+
+// SetSubscriptionBillingAnchorAt sets the SubscriptionBillingAnchorAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoice) SetSubscriptionBillingAnchorAt(subscriptionBillingAnchorAt *time.Time) {
+	l.SubscriptionBillingAnchorAt = subscriptionBillingAnchorAt
+	l.require(legacyInvoiceFieldSubscriptionBillingAnchorAt)
+}
+
+// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoice) SetUpdatedAt(updatedAt time.Time) {
+	l.UpdatedAt = updatedAt
+	l.require(legacyInvoiceFieldUpdatedAt)
+}
+
+// SetUser sets the User field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoice) SetUser(user *LegacyInvoiceUser) {
+	l.User = user
+	l.require(legacyInvoiceFieldUser)
+}
+
+func (l *LegacyInvoice) UnmarshalJSON(data []byte) error {
+	type embed LegacyInvoice
+	var unmarshaler = struct {
+		embed
+		AutomaticallyFinalizesAt    *internal.DateTime `json:"automatically_finalizes_at,omitempty"`
+		CreatedAt                   *internal.DateTime `json:"created_at"`
+		DueDate                     *internal.DateTime `json:"due_date,omitempty"`
+		SubscriptionBillingAnchorAt *internal.DateTime `json:"subscription_billing_anchor_at,omitempty"`
+		UpdatedAt                   *internal.DateTime `json:"updated_at"`
+	}{
+		embed: embed(*l),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*l = LegacyInvoice(unmarshaler.embed)
+	l.AutomaticallyFinalizesAt = unmarshaler.AutomaticallyFinalizesAt.TimePtr()
+	l.CreatedAt = unmarshaler.CreatedAt.Time()
+	l.DueDate = unmarshaler.DueDate.TimePtr()
+	l.SubscriptionBillingAnchorAt = unmarshaler.SubscriptionBillingAnchorAt.TimePtr()
+	l.UpdatedAt = unmarshaler.UpdatedAt.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, legacyInvoiceNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LegacyInvoice) MarshalJSON() ([]byte, error) {
+	type embed LegacyInvoice
+	var marshaler = struct {
+		embed
+		AutomaticallyFinalizesAt    *internal.DateTime `json:"automatically_finalizes_at,omitempty"`
+		CreatedAt                   *internal.DateTime `json:"created_at"`
+		DueDate                     *internal.DateTime `json:"due_date,omitempty"`
+		SubscriptionBillingAnchorAt *internal.DateTime `json:"subscription_billing_anchor_at,omitempty"`
+		UpdatedAt                   *internal.DateTime `json:"updated_at"`
+	}{
+		embed:                       embed(*l),
+		AutomaticallyFinalizesAt:    internal.NewOptionalDateTime(l.AutomaticallyFinalizesAt),
+		CreatedAt:                   internal.NewDateTime(l.CreatedAt),
+		DueDate:                     internal.NewOptionalDateTime(l.DueDate),
+		SubscriptionBillingAnchorAt: internal.NewOptionalDateTime(l.SubscriptionBillingAnchorAt),
+		UpdatedAt:                   internal.NewDateTime(l.UpdatedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LegacyInvoice) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	legacyInvoiceCompanyFieldID = big.NewInt(1 << 0)
+)
+
+// The company that issued this invoice.
+type LegacyInvoiceCompany struct {
+	// The unique identifier for the company.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LegacyInvoiceCompany) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LegacyInvoiceCompany) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LegacyInvoiceCompany) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceCompany) SetID(id string) {
+	l.ID = id
+	l.require(legacyInvoiceCompanyFieldID)
+}
+
+func (l *LegacyInvoiceCompany) UnmarshalJSON(data []byte) error {
+	type unmarshaler LegacyInvoiceCompany
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LegacyInvoiceCompany(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LegacyInvoiceCompany) MarshalJSON() ([]byte, error) {
+	type embed LegacyInvoiceCompany
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LegacyInvoiceCompany) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	legacyInvoiceCurrentPlanFieldCurrency       = big.NewInt(1 << 0)
+	legacyInvoiceCurrentPlanFieldDescription    = big.NewInt(1 << 1)
+	legacyInvoiceCurrentPlanFieldFormattedPrice = big.NewInt(1 << 2)
+	legacyInvoiceCurrentPlanFieldID             = big.NewInt(1 << 3)
+)
+
+// legacyInvoiceCurrentPlanNullableFields maps the wire names of LegacyInvoiceCurrentPlan's nullable fields (required or optional) to their field bits.
+var legacyInvoiceCurrentPlanNullableFields = map[string]*big.Int{
+	"description": legacyInvoiceCurrentPlanFieldDescription,
+}
+
+// The plan that this invoice charges for.
+type LegacyInvoiceCurrentPlan struct {
+	// The currency used for all prices on this plan (e.g., 'usd', 'eur'). All monetary amounts on the plan are denominated in this currency.
+	Currency Currencies `json:"currency" url:"currency"`
+	// A text description of the plan visible to customers. Maximum 1000 characters. Null if no description is set.
+	Description *string `json:"description,omitempty" url:"description,omitempty"`
+	// The formatted price (including currency) for the plan.
+	FormattedPrice string `json:"formatted_price" url:"formatted_price"`
+	// The unique identifier for the plan.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LegacyInvoiceCurrentPlan) GetCurrency() Currencies {
+	if l == nil {
+		return ""
+	}
+	return l.Currency
+}
+
+func (l *LegacyInvoiceCurrentPlan) GetDescription() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Description
+}
+
+func (l *LegacyInvoiceCurrentPlan) GetFormattedPrice() string {
+	if l == nil {
+		return ""
+	}
+	return l.FormattedPrice
+}
+
+func (l *LegacyInvoiceCurrentPlan) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LegacyInvoiceCurrentPlan) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LegacyInvoiceCurrentPlan) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetCurrency sets the Currency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceCurrentPlan) SetCurrency(currency Currencies) {
+	l.Currency = currency
+	l.require(legacyInvoiceCurrentPlanFieldCurrency)
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceCurrentPlan) SetDescription(description *string) {
+	l.Description = description
+	l.require(legacyInvoiceCurrentPlanFieldDescription)
+}
+
+// SetFormattedPrice sets the FormattedPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceCurrentPlan) SetFormattedPrice(formattedPrice string) {
+	l.FormattedPrice = formattedPrice
+	l.require(legacyInvoiceCurrentPlanFieldFormattedPrice)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceCurrentPlan) SetID(id string) {
+	l.ID = id
+	l.require(legacyInvoiceCurrentPlanFieldID)
+}
+
+func (l *LegacyInvoiceCurrentPlan) UnmarshalJSON(data []byte) error {
+	type unmarshaler LegacyInvoiceCurrentPlan
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LegacyInvoiceCurrentPlan(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, legacyInvoiceCurrentPlanNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LegacyInvoiceCurrentPlan) MarshalJSON() ([]byte, error) {
+	type embed LegacyInvoiceCurrentPlan
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LegacyInvoiceCurrentPlan) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	legacyInvoiceLineItemsItemFieldLabel     = big.NewInt(1 << 0)
+	legacyInvoiceLineItemsItemFieldPosition  = big.NewInt(1 << 1)
+	legacyInvoiceLineItemsItemFieldQuantity  = big.NewInt(1 << 2)
+	legacyInvoiceLineItemsItemFieldTotal     = big.NewInt(1 << 3)
+	legacyInvoiceLineItemsItemFieldUnitPrice = big.NewInt(1 << 4)
+)
+
+// A line item on an invoice, representing a single charge with a label, quantity, and unit price.
+type LegacyInvoiceLineItemsItem struct {
+	// The label or description for this line item.
+	Label string `json:"label" url:"label"`
+	// The display order of this line item within the invoice.
+	Position int `json:"position" url:"position"`
+	// The quantity of this line item.
+	Quantity float64 `json:"quantity" url:"quantity"`
+	// The computed total for this line item (quantity * unit_price).
+	Total float64 `json:"total" url:"total"`
+	// The unit price for this line item. Negative for a credit or deduction.
+	UnitPrice float64 `json:"unit_price" url:"unit_price"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LegacyInvoiceLineItemsItem) GetLabel() string {
+	if l == nil {
+		return ""
+	}
+	return l.Label
+}
+
+func (l *LegacyInvoiceLineItemsItem) GetPosition() int {
+	if l == nil {
+		return 0
+	}
+	return l.Position
+}
+
+func (l *LegacyInvoiceLineItemsItem) GetQuantity() float64 {
+	if l == nil {
+		return 0
+	}
+	return l.Quantity
+}
+
+func (l *LegacyInvoiceLineItemsItem) GetTotal() float64 {
+	if l == nil {
+		return 0
+	}
+	return l.Total
+}
+
+func (l *LegacyInvoiceLineItemsItem) GetUnitPrice() float64 {
+	if l == nil {
+		return 0
+	}
+	return l.UnitPrice
+}
+
+func (l *LegacyInvoiceLineItemsItem) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LegacyInvoiceLineItemsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceLineItemsItem) SetLabel(label string) {
+	l.Label = label
+	l.require(legacyInvoiceLineItemsItemFieldLabel)
+}
+
+// SetPosition sets the Position field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceLineItemsItem) SetPosition(position int) {
+	l.Position = position
+	l.require(legacyInvoiceLineItemsItemFieldPosition)
+}
+
+// SetQuantity sets the Quantity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceLineItemsItem) SetQuantity(quantity float64) {
+	l.Quantity = quantity
+	l.require(legacyInvoiceLineItemsItemFieldQuantity)
+}
+
+// SetTotal sets the Total field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceLineItemsItem) SetTotal(total float64) {
+	l.Total = total
+	l.require(legacyInvoiceLineItemsItemFieldTotal)
+}
+
+// SetUnitPrice sets the UnitPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceLineItemsItem) SetUnitPrice(unitPrice float64) {
+	l.UnitPrice = unitPrice
+	l.require(legacyInvoiceLineItemsItemFieldUnitPrice)
+}
+
+func (l *LegacyInvoiceLineItemsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler LegacyInvoiceLineItemsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LegacyInvoiceLineItemsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LegacyInvoiceLineItemsItem) MarshalJSON() ([]byte, error) {
+	type embed LegacyInvoiceLineItemsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LegacyInvoiceLineItemsItem) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	legacyInvoiceListItemFieldCreatedAt         = big.NewInt(1 << 0)
+	legacyInvoiceListItemFieldCurrentPlan       = big.NewInt(1 << 1)
+	legacyInvoiceListItemFieldDueDate           = big.NewInt(1 << 2)
+	legacyInvoiceListItemFieldEmailAddress      = big.NewInt(1 << 3)
+	legacyInvoiceListItemFieldFetchInvoiceToken = big.NewInt(1 << 4)
+	legacyInvoiceListItemFieldID                = big.NewInt(1 << 5)
+	legacyInvoiceListItemFieldLineItems         = big.NewInt(1 << 6)
+	legacyInvoiceListItemFieldNumber            = big.NewInt(1 << 7)
+	legacyInvoiceListItemFieldPaymentProcessing = big.NewInt(1 << 8)
+	legacyInvoiceListItemFieldStatus            = big.NewInt(1 << 9)
+	legacyInvoiceListItemFieldUser              = big.NewInt(1 << 10)
+)
+
+// legacyInvoiceListItemNullableFields maps the wire names of LegacyInvoiceListItem's nullable fields (required or optional) to their field bits.
+var legacyInvoiceListItemNullableFields = map[string]*big.Int{
+	"due_date":      legacyInvoiceListItemFieldDueDate,
+	"email_address": legacyInvoiceListItemFieldEmailAddress,
+	"user":          legacyInvoiceListItemFieldUser,
+}
+
+// An invoice represents an itemized bill sent by a company to a customer for a specific product and plan, tracking the amount owed, due date, and payment status.
+type LegacyInvoiceListItem struct {
+	// The datetime the invoice was created.
+	CreatedAt time.Time `json:"created_at" url:"created_at"`
+	// The plan that this invoice charges for.
+	CurrentPlan *LegacyInvoiceListItemCurrentPlan `json:"current_plan" url:"current_plan"`
+	// The deadline by which payment is expected. Null if the invoice is collected automatically.
+	DueDate *time.Time `json:"due_date,omitempty" url:"due_date,omitempty"`
+	// The email address of the customer this invoice is addressed to. Null if no email is on file.
+	EmailAddress *string `json:"email_address,omitempty" url:"email_address,omitempty"`
+	// A signed token that allows fetching invoice data publicly without authentication.
+	FetchInvoiceToken string `json:"fetch_invoice_token" url:"fetch_invoice_token"`
+	// The unique identifier for the invoice.
+	ID string `json:"id" url:"id"`
+	// Optional line items that break down the invoice total into individual charges.
+	LineItems []*LegacyInvoiceListItemLineItemsItem `json:"line_items" url:"line_items"`
+	// The sequential invoice number for display purposes.
+	Number string `json:"number" url:"number"`
+	// Whether a payment on this invoice is still clearing. True while a delayed payment method such as ACH or SEPA settles, during which the invoice stays open and is not marked past due.
+	PaymentProcessing bool `json:"payment_processing" url:"payment_processing"`
+	// The current payment status of the invoice, such as draft, open, paid, or void.
+	Status InvoiceStatuses `json:"status" url:"status"`
+	// The user this invoice is addressed to. Null if the user account has been removed.
+	User *LegacyInvoiceListItemUser `json:"user,omitempty" url:"user,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LegacyInvoiceListItem) GetCreatedAt() time.Time {
+	if l == nil {
+		return time.Time{}
+	}
+	return l.CreatedAt
+}
+
+func (l *LegacyInvoiceListItem) GetCurrentPlan() *LegacyInvoiceListItemCurrentPlan {
+	if l == nil {
+		return nil
+	}
+	return l.CurrentPlan
+}
+
+func (l *LegacyInvoiceListItem) GetDueDate() *time.Time {
+	if l == nil {
+		return nil
+	}
+	return l.DueDate
+}
+
+func (l *LegacyInvoiceListItem) GetEmailAddress() *string {
+	if l == nil {
+		return nil
+	}
+	return l.EmailAddress
+}
+
+func (l *LegacyInvoiceListItem) GetFetchInvoiceToken() string {
+	if l == nil {
+		return ""
+	}
+	return l.FetchInvoiceToken
+}
+
+func (l *LegacyInvoiceListItem) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LegacyInvoiceListItem) GetLineItems() []*LegacyInvoiceListItemLineItemsItem {
+	if l == nil {
+		return nil
+	}
+	return l.LineItems
+}
+
+func (l *LegacyInvoiceListItem) GetNumber() string {
+	if l == nil {
+		return ""
+	}
+	return l.Number
+}
+
+func (l *LegacyInvoiceListItem) GetPaymentProcessing() bool {
+	if l == nil {
+		return false
+	}
+	return l.PaymentProcessing
+}
+
+func (l *LegacyInvoiceListItem) GetStatus() InvoiceStatuses {
+	if l == nil {
+		return ""
+	}
+	return l.Status
+}
+
+func (l *LegacyInvoiceListItem) GetUser() *LegacyInvoiceListItemUser {
+	if l == nil {
+		return nil
+	}
+	return l.User
+}
+
+func (l *LegacyInvoiceListItem) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LegacyInvoiceListItem) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceListItem) SetCreatedAt(createdAt time.Time) {
+	l.CreatedAt = createdAt
+	l.require(legacyInvoiceListItemFieldCreatedAt)
+}
+
+// SetCurrentPlan sets the CurrentPlan field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceListItem) SetCurrentPlan(currentPlan *LegacyInvoiceListItemCurrentPlan) {
+	l.CurrentPlan = currentPlan
+	l.require(legacyInvoiceListItemFieldCurrentPlan)
+}
+
+// SetDueDate sets the DueDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceListItem) SetDueDate(dueDate *time.Time) {
+	l.DueDate = dueDate
+	l.require(legacyInvoiceListItemFieldDueDate)
+}
+
+// SetEmailAddress sets the EmailAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceListItem) SetEmailAddress(emailAddress *string) {
+	l.EmailAddress = emailAddress
+	l.require(legacyInvoiceListItemFieldEmailAddress)
+}
+
+// SetFetchInvoiceToken sets the FetchInvoiceToken field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceListItem) SetFetchInvoiceToken(fetchInvoiceToken string) {
+	l.FetchInvoiceToken = fetchInvoiceToken
+	l.require(legacyInvoiceListItemFieldFetchInvoiceToken)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceListItem) SetID(id string) {
+	l.ID = id
+	l.require(legacyInvoiceListItemFieldID)
+}
+
+// SetLineItems sets the LineItems field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceListItem) SetLineItems(lineItems []*LegacyInvoiceListItemLineItemsItem) {
+	l.LineItems = lineItems
+	l.require(legacyInvoiceListItemFieldLineItems)
+}
+
+// SetNumber sets the Number field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceListItem) SetNumber(number string) {
+	l.Number = number
+	l.require(legacyInvoiceListItemFieldNumber)
+}
+
+// SetPaymentProcessing sets the PaymentProcessing field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceListItem) SetPaymentProcessing(paymentProcessing bool) {
+	l.PaymentProcessing = paymentProcessing
+	l.require(legacyInvoiceListItemFieldPaymentProcessing)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceListItem) SetStatus(status InvoiceStatuses) {
+	l.Status = status
+	l.require(legacyInvoiceListItemFieldStatus)
+}
+
+// SetUser sets the User field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceListItem) SetUser(user *LegacyInvoiceListItemUser) {
+	l.User = user
+	l.require(legacyInvoiceListItemFieldUser)
+}
+
+func (l *LegacyInvoiceListItem) UnmarshalJSON(data []byte) error {
+	type embed LegacyInvoiceListItem
+	var unmarshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"created_at"`
+		DueDate   *internal.DateTime `json:"due_date,omitempty"`
+	}{
+		embed: embed(*l),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*l = LegacyInvoiceListItem(unmarshaler.embed)
+	l.CreatedAt = unmarshaler.CreatedAt.Time()
+	l.DueDate = unmarshaler.DueDate.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, legacyInvoiceListItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LegacyInvoiceListItem) MarshalJSON() ([]byte, error) {
+	type embed LegacyInvoiceListItem
+	var marshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"created_at"`
+		DueDate   *internal.DateTime `json:"due_date,omitempty"`
+	}{
+		embed:     embed(*l),
+		CreatedAt: internal.NewDateTime(l.CreatedAt),
+		DueDate:   internal.NewOptionalDateTime(l.DueDate),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LegacyInvoiceListItem) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	legacyInvoiceListItemCurrentPlanFieldCurrency       = big.NewInt(1 << 0)
+	legacyInvoiceListItemCurrentPlanFieldFormattedPrice = big.NewInt(1 << 1)
+	legacyInvoiceListItemCurrentPlanFieldID             = big.NewInt(1 << 2)
+)
+
+// The plan that this invoice charges for.
+type LegacyInvoiceListItemCurrentPlan struct {
+	// The currency used for all prices on this plan (e.g., 'usd', 'eur'). All monetary amounts on the plan are denominated in this currency.
+	Currency Currencies `json:"currency" url:"currency"`
+	// The formatted price (including currency) for the plan.
+	FormattedPrice string `json:"formatted_price" url:"formatted_price"`
+	// The unique identifier for the plan.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LegacyInvoiceListItemCurrentPlan) GetCurrency() Currencies {
+	if l == nil {
+		return ""
+	}
+	return l.Currency
+}
+
+func (l *LegacyInvoiceListItemCurrentPlan) GetFormattedPrice() string {
+	if l == nil {
+		return ""
+	}
+	return l.FormattedPrice
+}
+
+func (l *LegacyInvoiceListItemCurrentPlan) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LegacyInvoiceListItemCurrentPlan) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LegacyInvoiceListItemCurrentPlan) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetCurrency sets the Currency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceListItemCurrentPlan) SetCurrency(currency Currencies) {
+	l.Currency = currency
+	l.require(legacyInvoiceListItemCurrentPlanFieldCurrency)
+}
+
+// SetFormattedPrice sets the FormattedPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceListItemCurrentPlan) SetFormattedPrice(formattedPrice string) {
+	l.FormattedPrice = formattedPrice
+	l.require(legacyInvoiceListItemCurrentPlanFieldFormattedPrice)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceListItemCurrentPlan) SetID(id string) {
+	l.ID = id
+	l.require(legacyInvoiceListItemCurrentPlanFieldID)
+}
+
+func (l *LegacyInvoiceListItemCurrentPlan) UnmarshalJSON(data []byte) error {
+	type unmarshaler LegacyInvoiceListItemCurrentPlan
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LegacyInvoiceListItemCurrentPlan(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LegacyInvoiceListItemCurrentPlan) MarshalJSON() ([]byte, error) {
+	type embed LegacyInvoiceListItemCurrentPlan
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LegacyInvoiceListItemCurrentPlan) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	legacyInvoiceListItemLineItemsItemFieldLabel     = big.NewInt(1 << 0)
+	legacyInvoiceListItemLineItemsItemFieldPosition  = big.NewInt(1 << 1)
+	legacyInvoiceListItemLineItemsItemFieldQuantity  = big.NewInt(1 << 2)
+	legacyInvoiceListItemLineItemsItemFieldTotal     = big.NewInt(1 << 3)
+	legacyInvoiceListItemLineItemsItemFieldUnitPrice = big.NewInt(1 << 4)
+)
+
+// A line item on an invoice, representing a single charge with a label, quantity, and unit price.
+type LegacyInvoiceListItemLineItemsItem struct {
+	// The label or description for this line item.
+	Label string `json:"label" url:"label"`
+	// The display order of this line item within the invoice.
+	Position int `json:"position" url:"position"`
+	// The quantity of this line item.
+	Quantity float64 `json:"quantity" url:"quantity"`
+	// The computed total for this line item (quantity * unit_price).
+	Total float64 `json:"total" url:"total"`
+	// The unit price for this line item. Negative for a credit or deduction.
+	UnitPrice float64 `json:"unit_price" url:"unit_price"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LegacyInvoiceListItemLineItemsItem) GetLabel() string {
+	if l == nil {
+		return ""
+	}
+	return l.Label
+}
+
+func (l *LegacyInvoiceListItemLineItemsItem) GetPosition() int {
+	if l == nil {
+		return 0
+	}
+	return l.Position
+}
+
+func (l *LegacyInvoiceListItemLineItemsItem) GetQuantity() float64 {
+	if l == nil {
+		return 0
+	}
+	return l.Quantity
+}
+
+func (l *LegacyInvoiceListItemLineItemsItem) GetTotal() float64 {
+	if l == nil {
+		return 0
+	}
+	return l.Total
+}
+
+func (l *LegacyInvoiceListItemLineItemsItem) GetUnitPrice() float64 {
+	if l == nil {
+		return 0
+	}
+	return l.UnitPrice
+}
+
+func (l *LegacyInvoiceListItemLineItemsItem) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LegacyInvoiceListItemLineItemsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceListItemLineItemsItem) SetLabel(label string) {
+	l.Label = label
+	l.require(legacyInvoiceListItemLineItemsItemFieldLabel)
+}
+
+// SetPosition sets the Position field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceListItemLineItemsItem) SetPosition(position int) {
+	l.Position = position
+	l.require(legacyInvoiceListItemLineItemsItemFieldPosition)
+}
+
+// SetQuantity sets the Quantity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceListItemLineItemsItem) SetQuantity(quantity float64) {
+	l.Quantity = quantity
+	l.require(legacyInvoiceListItemLineItemsItemFieldQuantity)
+}
+
+// SetTotal sets the Total field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceListItemLineItemsItem) SetTotal(total float64) {
+	l.Total = total
+	l.require(legacyInvoiceListItemLineItemsItemFieldTotal)
+}
+
+// SetUnitPrice sets the UnitPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceListItemLineItemsItem) SetUnitPrice(unitPrice float64) {
+	l.UnitPrice = unitPrice
+	l.require(legacyInvoiceListItemLineItemsItemFieldUnitPrice)
+}
+
+func (l *LegacyInvoiceListItemLineItemsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler LegacyInvoiceListItemLineItemsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LegacyInvoiceListItemLineItemsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LegacyInvoiceListItemLineItemsItem) MarshalJSON() ([]byte, error) {
+	type embed LegacyInvoiceListItemLineItemsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LegacyInvoiceListItemLineItemsItem) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	legacyInvoiceListItemUserFieldID       = big.NewInt(1 << 0)
+	legacyInvoiceListItemUserFieldName     = big.NewInt(1 << 1)
+	legacyInvoiceListItemUserFieldUsername = big.NewInt(1 << 2)
+)
+
+// legacyInvoiceListItemUserNullableFields maps the wire names of LegacyInvoiceListItemUser's nullable fields (required or optional) to their field bits.
+var legacyInvoiceListItemUserNullableFields = map[string]*big.Int{
+	"name": legacyInvoiceListItemUserFieldName,
+}
+
+// The user this invoice is addressed to. Null if the user account has been removed.
+type LegacyInvoiceListItemUser struct {
+	// The unique identifier for the user.
+	ID string `json:"id" url:"id"`
+	// The user's display name shown on their public profile.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// The user's unique username shown on their public profile.
+	Username string `json:"username" url:"username"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LegacyInvoiceListItemUser) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LegacyInvoiceListItemUser) GetName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Name
+}
+
+func (l *LegacyInvoiceListItemUser) GetUsername() string {
+	if l == nil {
+		return ""
+	}
+	return l.Username
+}
+
+func (l *LegacyInvoiceListItemUser) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LegacyInvoiceListItemUser) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceListItemUser) SetID(id string) {
+	l.ID = id
+	l.require(legacyInvoiceListItemUserFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceListItemUser) SetName(name *string) {
+	l.Name = name
+	l.require(legacyInvoiceListItemUserFieldName)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceListItemUser) SetUsername(username string) {
+	l.Username = username
+	l.require(legacyInvoiceListItemUserFieldUsername)
+}
+
+func (l *LegacyInvoiceListItemUser) UnmarshalJSON(data []byte) error {
+	type unmarshaler LegacyInvoiceListItemUser
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LegacyInvoiceListItemUser(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, legacyInvoiceListItemUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LegacyInvoiceListItemUser) MarshalJSON() ([]byte, error) {
+	type embed LegacyInvoiceListItemUser
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LegacyInvoiceListItemUser) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	legacyInvoiceMailingAddressFieldCity       = big.NewInt(1 << 0)
+	legacyInvoiceMailingAddressFieldCountry    = big.NewInt(1 << 1)
+	legacyInvoiceMailingAddressFieldLine1      = big.NewInt(1 << 2)
+	legacyInvoiceMailingAddressFieldLine2      = big.NewInt(1 << 3)
+	legacyInvoiceMailingAddressFieldName       = big.NewInt(1 << 4)
+	legacyInvoiceMailingAddressFieldPhone      = big.NewInt(1 << 5)
+	legacyInvoiceMailingAddressFieldPostalCode = big.NewInt(1 << 6)
+	legacyInvoiceMailingAddressFieldState      = big.NewInt(1 << 7)
+)
+
+// legacyInvoiceMailingAddressNullableFields maps the wire names of LegacyInvoiceMailingAddress's nullable fields (required or optional) to their field bits.
+var legacyInvoiceMailingAddressNullableFields = map[string]*big.Int{
+	"city":        legacyInvoiceMailingAddressFieldCity,
+	"country":     legacyInvoiceMailingAddressFieldCountry,
+	"line1":       legacyInvoiceMailingAddressFieldLine1,
+	"line2":       legacyInvoiceMailingAddressFieldLine2,
+	"name":        legacyInvoiceMailingAddressFieldName,
+	"phone":       legacyInvoiceMailingAddressFieldPhone,
+	"postal_code": legacyInvoiceMailingAddressFieldPostalCode,
+	"state":       legacyInvoiceMailingAddressFieldState,
+}
+
+// The billing/mailing address associated with this invoice, if one was provided at creation time.
+type LegacyInvoiceMailingAddress struct {
+	// The city of the address.
+	City *string `json:"city,omitempty" url:"city,omitempty"`
+	// The country of the address.
+	Country *string `json:"country,omitempty" url:"country,omitempty"`
+	// The line 1 of the address.
+	Line1 *string `json:"line1,omitempty" url:"line1,omitempty"`
+	// The line 2 of the address.
+	Line2 *string `json:"line2,omitempty" url:"line2,omitempty"`
+	// The name of the customer.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// The phone number of the customer.
+	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
+	// The postal code of the address.
+	PostalCode *string `json:"postal_code,omitempty" url:"postal_code,omitempty"`
+	// The state of the address.
+	State *string `json:"state,omitempty" url:"state,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LegacyInvoiceMailingAddress) GetCity() *string {
+	if l == nil {
+		return nil
+	}
+	return l.City
+}
+
+func (l *LegacyInvoiceMailingAddress) GetCountry() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Country
+}
+
+func (l *LegacyInvoiceMailingAddress) GetLine1() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Line1
+}
+
+func (l *LegacyInvoiceMailingAddress) GetLine2() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Line2
+}
+
+func (l *LegacyInvoiceMailingAddress) GetName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Name
+}
+
+func (l *LegacyInvoiceMailingAddress) GetPhone() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Phone
+}
+
+func (l *LegacyInvoiceMailingAddress) GetPostalCode() *string {
+	if l == nil {
+		return nil
+	}
+	return l.PostalCode
+}
+
+func (l *LegacyInvoiceMailingAddress) GetState() *string {
+	if l == nil {
+		return nil
+	}
+	return l.State
+}
+
+func (l *LegacyInvoiceMailingAddress) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LegacyInvoiceMailingAddress) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetCity sets the City field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceMailingAddress) SetCity(city *string) {
+	l.City = city
+	l.require(legacyInvoiceMailingAddressFieldCity)
+}
+
+// SetCountry sets the Country field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceMailingAddress) SetCountry(country *string) {
+	l.Country = country
+	l.require(legacyInvoiceMailingAddressFieldCountry)
+}
+
+// SetLine1 sets the Line1 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceMailingAddress) SetLine1(line1 *string) {
+	l.Line1 = line1
+	l.require(legacyInvoiceMailingAddressFieldLine1)
+}
+
+// SetLine2 sets the Line2 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceMailingAddress) SetLine2(line2 *string) {
+	l.Line2 = line2
+	l.require(legacyInvoiceMailingAddressFieldLine2)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceMailingAddress) SetName(name *string) {
+	l.Name = name
+	l.require(legacyInvoiceMailingAddressFieldName)
+}
+
+// SetPhone sets the Phone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceMailingAddress) SetPhone(phone *string) {
+	l.Phone = phone
+	l.require(legacyInvoiceMailingAddressFieldPhone)
+}
+
+// SetPostalCode sets the PostalCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceMailingAddress) SetPostalCode(postalCode *string) {
+	l.PostalCode = postalCode
+	l.require(legacyInvoiceMailingAddressFieldPostalCode)
+}
+
+// SetState sets the State field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceMailingAddress) SetState(state *string) {
+	l.State = state
+	l.require(legacyInvoiceMailingAddressFieldState)
+}
+
+func (l *LegacyInvoiceMailingAddress) UnmarshalJSON(data []byte) error {
+	type unmarshaler LegacyInvoiceMailingAddress
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LegacyInvoiceMailingAddress(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, legacyInvoiceMailingAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LegacyInvoiceMailingAddress) MarshalJSON() ([]byte, error) {
+	type embed LegacyInvoiceMailingAddress
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LegacyInvoiceMailingAddress) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	legacyInvoiceMemberFieldID = big.NewInt(1 << 0)
+)
+
+// The member that the invoice was created for. Null when the invoice is addressed to an email address with no member record behind it.
+type LegacyInvoiceMember struct {
+	// The unique identifier for the company member.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LegacyInvoiceMember) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LegacyInvoiceMember) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LegacyInvoiceMember) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceMember) SetID(id string) {
+	l.ID = id
+	l.require(legacyInvoiceMemberFieldID)
+}
+
+func (l *LegacyInvoiceMember) UnmarshalJSON(data []byte) error {
+	type unmarshaler LegacyInvoiceMember
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LegacyInvoiceMember(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LegacyInvoiceMember) MarshalJSON() ([]byte, error) {
+	type embed LegacyInvoiceMember
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LegacyInvoiceMember) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	legacyInvoicePaymentFieldID = big.NewInt(1 << 0)
+)
+
+// The payment that settled this invoice. Null while the invoice is unpaid, when the invoice was marked paid manually, and on a subscription renewal invoice, where the settling payment cannot yet be identified.
+type LegacyInvoicePayment struct {
+	// The unique identifier for the payment.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LegacyInvoicePayment) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LegacyInvoicePayment) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LegacyInvoicePayment) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoicePayment) SetID(id string) {
+	l.ID = id
+	l.require(legacyInvoicePaymentFieldID)
+}
+
+func (l *LegacyInvoicePayment) UnmarshalJSON(data []byte) error {
+	type unmarshaler LegacyInvoicePayment
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LegacyInvoicePayment(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LegacyInvoicePayment) MarshalJSON() ([]byte, error) {
+	type embed LegacyInvoicePayment
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LegacyInvoicePayment) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	legacyInvoiceProductFieldID    = big.NewInt(1 << 0)
+	legacyInvoiceProductFieldTitle = big.NewInt(1 << 1)
+)
+
+// The product that this invoice was generated for.
+type LegacyInvoiceProduct struct {
+	// The unique identifier for the product.
+	ID string `json:"id" url:"id"`
+	// The display name of the product shown to customers on the product page and in search results.
+	Title string `json:"title" url:"title"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LegacyInvoiceProduct) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LegacyInvoiceProduct) GetTitle() string {
+	if l == nil {
+		return ""
+	}
+	return l.Title
+}
+
+func (l *LegacyInvoiceProduct) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LegacyInvoiceProduct) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceProduct) SetID(id string) {
+	l.ID = id
+	l.require(legacyInvoiceProductFieldID)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceProduct) SetTitle(title string) {
+	l.Title = title
+	l.require(legacyInvoiceProductFieldTitle)
+}
+
+func (l *LegacyInvoiceProduct) UnmarshalJSON(data []byte) error {
+	type unmarshaler LegacyInvoiceProduct
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LegacyInvoiceProduct(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LegacyInvoiceProduct) MarshalJSON() ([]byte, error) {
+	type embed LegacyInvoiceProduct
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LegacyInvoiceProduct) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	legacyInvoiceUserFieldEmail    = big.NewInt(1 << 0)
+	legacyInvoiceUserFieldID       = big.NewInt(1 << 1)
+	legacyInvoiceUserFieldName     = big.NewInt(1 << 2)
+	legacyInvoiceUserFieldUsername = big.NewInt(1 << 3)
+)
+
+// legacyInvoiceUserNullableFields maps the wire names of LegacyInvoiceUser's nullable fields (required or optional) to their field bits.
+var legacyInvoiceUserNullableFields = map[string]*big.Int{
+	"email": legacyInvoiceUserFieldEmail,
+	"name":  legacyInvoiceUserFieldName,
+}
+
+// The user this invoice is addressed to. Null if the user account has been removed.
+type LegacyInvoiceUser struct {
+	// The user's email address. Requires the member:email:read permission to access. Null if not authorized.
+	Email *string `json:"email,omitempty" url:"email,omitempty"`
+	// The unique identifier for the user.
+	ID string `json:"id" url:"id"`
+	// The user's display name shown on their public profile.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// The user's unique username shown on their public profile.
+	Username string `json:"username" url:"username"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LegacyInvoiceUser) GetEmail() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Email
+}
+
+func (l *LegacyInvoiceUser) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LegacyInvoiceUser) GetName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Name
+}
+
+func (l *LegacyInvoiceUser) GetUsername() string {
+	if l == nil {
+		return ""
+	}
+	return l.Username
+}
+
+func (l *LegacyInvoiceUser) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LegacyInvoiceUser) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceUser) SetEmail(email *string) {
+	l.Email = email
+	l.require(legacyInvoiceUserFieldEmail)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceUser) SetID(id string) {
+	l.ID = id
+	l.require(legacyInvoiceUserFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceUser) SetName(name *string) {
+	l.Name = name
+	l.require(legacyInvoiceUserFieldName)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceUser) SetUsername(username string) {
+	l.Username = username
+	l.require(legacyInvoiceUserFieldUsername)
+}
+
+func (l *LegacyInvoiceUser) UnmarshalJSON(data []byte) error {
+	type unmarshaler LegacyInvoiceUser
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LegacyInvoiceUser(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, legacyInvoiceUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LegacyInvoiceUser) MarshalJSON() ([]byte, error) {
+	type embed LegacyInvoiceUser
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LegacyInvoiceUser) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
 }
 
 // The available types for a lesson
@@ -47445,6 +51367,29 @@ func (p PlanThreeDsLevels) Ptr() *PlanThreeDsLevels {
 	return &p
 }
 
+// The type of plan that can be attached to a product
+type PlanTypes string
+
+const (
+	PlanTypesRenewal PlanTypes = "renewal"
+	PlanTypesOneTime PlanTypes = "one_time"
+)
+
+func NewPlanTypesFromString(s string) (PlanTypes, error) {
+	switch s {
+	case "renewal":
+		return PlanTypesRenewal, nil
+	case "one_time":
+		return PlanTypesOneTime, nil
+	}
+	var t PlanTypes
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PlanTypes) Ptr() *PlanTypes {
+	return &p
+}
+
 var (
 	productLegacyFieldCompany                   = big.NewInt(1 << 0)
 	productLegacyFieldCreatedAt                 = big.NewInt(1 << 1)
@@ -51166,6 +55111,29 @@ func NewRefundStatusesFromString(s string) (RefundStatuses, error) {
 }
 
 func (r RefundStatuses) Ptr() *RefundStatuses {
+	return &r
+}
+
+// The methods of how a plan can be released.
+type ReleaseMethod string
+
+const (
+	ReleaseMethodBuyNow   ReleaseMethod = "buy_now"
+	ReleaseMethodWaitlist ReleaseMethod = "waitlist"
+)
+
+func NewReleaseMethodFromString(s string) (ReleaseMethod, error) {
+	switch s {
+	case "buy_now":
+		return ReleaseMethodBuyNow, nil
+	case "waitlist":
+		return ReleaseMethodWaitlist, nil
+	}
+	var t ReleaseMethod
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r ReleaseMethod) Ptr() *ReleaseMethod {
 	return &r
 }
 
@@ -57588,6 +61556,362 @@ func (s *StorefrontAccount) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
+// The type of tax identifier
+type TaxIdentifierTypes string
+
+const (
+	TaxIdentifierTypesAdNrt    TaxIdentifierTypes = "ad_nrt"
+	TaxIdentifierTypesAoTin    TaxIdentifierTypes = "ao_tin"
+	TaxIdentifierTypesArCuit   TaxIdentifierTypes = "ar_cuit"
+	TaxIdentifierTypesAlTin    TaxIdentifierTypes = "al_tin"
+	TaxIdentifierTypesAmTin    TaxIdentifierTypes = "am_tin"
+	TaxIdentifierTypesAwTin    TaxIdentifierTypes = "aw_tin"
+	TaxIdentifierTypesAuAbn    TaxIdentifierTypes = "au_abn"
+	TaxIdentifierTypesAuArn    TaxIdentifierTypes = "au_arn"
+	TaxIdentifierTypesEuVat    TaxIdentifierTypes = "eu_vat"
+	TaxIdentifierTypesAzTin    TaxIdentifierTypes = "az_tin"
+	TaxIdentifierTypesBsTin    TaxIdentifierTypes = "bs_tin"
+	TaxIdentifierTypesBhVat    TaxIdentifierTypes = "bh_vat"
+	TaxIdentifierTypesBdBin    TaxIdentifierTypes = "bd_bin"
+	TaxIdentifierTypesBbTin    TaxIdentifierTypes = "bb_tin"
+	TaxIdentifierTypesByTin    TaxIdentifierTypes = "by_tin"
+	TaxIdentifierTypesBjIfu    TaxIdentifierTypes = "bj_ifu"
+	TaxIdentifierTypesBoTin    TaxIdentifierTypes = "bo_tin"
+	TaxIdentifierTypesBaTin    TaxIdentifierTypes = "ba_tin"
+	TaxIdentifierTypesBrCnpj   TaxIdentifierTypes = "br_cnpj"
+	TaxIdentifierTypesBrCpf    TaxIdentifierTypes = "br_cpf"
+	TaxIdentifierTypesBgUic    TaxIdentifierTypes = "bg_uic"
+	TaxIdentifierTypesBfIfu    TaxIdentifierTypes = "bf_ifu"
+	TaxIdentifierTypesKhTin    TaxIdentifierTypes = "kh_tin"
+	TaxIdentifierTypesCmNiu    TaxIdentifierTypes = "cm_niu"
+	TaxIdentifierTypesCaBn     TaxIdentifierTypes = "ca_bn"
+	TaxIdentifierTypesCaGstHst TaxIdentifierTypes = "ca_gst_hst"
+	TaxIdentifierTypesCaPstBc  TaxIdentifierTypes = "ca_pst_bc"
+	TaxIdentifierTypesCaPstMb  TaxIdentifierTypes = "ca_pst_mb"
+	TaxIdentifierTypesCaPstSk  TaxIdentifierTypes = "ca_pst_sk"
+	TaxIdentifierTypesCaQst    TaxIdentifierTypes = "ca_qst"
+	TaxIdentifierTypesCvNif    TaxIdentifierTypes = "cv_nif"
+	TaxIdentifierTypesClTin    TaxIdentifierTypes = "cl_tin"
+	TaxIdentifierTypesCnTin    TaxIdentifierTypes = "cn_tin"
+	TaxIdentifierTypesCoNit    TaxIdentifierTypes = "co_nit"
+	TaxIdentifierTypesCdNif    TaxIdentifierTypes = "cd_nif"
+	TaxIdentifierTypesCrTin    TaxIdentifierTypes = "cr_tin"
+	TaxIdentifierTypesHrOib    TaxIdentifierTypes = "hr_oib"
+	TaxIdentifierTypesDoRcn    TaxIdentifierTypes = "do_rcn"
+	TaxIdentifierTypesEcRuc    TaxIdentifierTypes = "ec_ruc"
+	TaxIdentifierTypesEgTin    TaxIdentifierTypes = "eg_tin"
+	TaxIdentifierTypesSvNit    TaxIdentifierTypes = "sv_nit"
+	TaxIdentifierTypesEtTin    TaxIdentifierTypes = "et_tin"
+	TaxIdentifierTypesEuOssVat TaxIdentifierTypes = "eu_oss_vat"
+	TaxIdentifierTypesGeVat    TaxIdentifierTypes = "ge_vat"
+	TaxIdentifierTypesGhTin    TaxIdentifierTypes = "gh_tin"
+	TaxIdentifierTypesDeStn    TaxIdentifierTypes = "de_stn"
+	TaxIdentifierTypesGbVat    TaxIdentifierTypes = "gb_vat"
+	TaxIdentifierTypesGnNif    TaxIdentifierTypes = "gn_nif"
+	TaxIdentifierTypesHkBr     TaxIdentifierTypes = "hk_br"
+	TaxIdentifierTypesHuTin    TaxIdentifierTypes = "hu_tin"
+	TaxIdentifierTypesIsVat    TaxIdentifierTypes = "is_vat"
+	TaxIdentifierTypesInGst    TaxIdentifierTypes = "in_gst"
+	TaxIdentifierTypesIDNpwp   TaxIdentifierTypes = "id_npwp"
+	TaxIdentifierTypesIlVat    TaxIdentifierTypes = "il_vat"
+	TaxIdentifierTypesJpCn     TaxIdentifierTypes = "jp_cn"
+	TaxIdentifierTypesJpRn     TaxIdentifierTypes = "jp_rn"
+	TaxIdentifierTypesJpTrn    TaxIdentifierTypes = "jp_trn"
+	TaxIdentifierTypesKzBin    TaxIdentifierTypes = "kz_bin"
+	TaxIdentifierTypesKePin    TaxIdentifierTypes = "ke_pin"
+	TaxIdentifierTypesKgTin    TaxIdentifierTypes = "kg_tin"
+	TaxIdentifierTypesLaTin    TaxIdentifierTypes = "la_tin"
+	TaxIdentifierTypesLiUID    TaxIdentifierTypes = "li_uid"
+	TaxIdentifierTypesLiVat    TaxIdentifierTypes = "li_vat"
+	TaxIdentifierTypesMyFrp    TaxIdentifierTypes = "my_frp"
+	TaxIdentifierTypesMyItn    TaxIdentifierTypes = "my_itn"
+	TaxIdentifierTypesMySst    TaxIdentifierTypes = "my_sst"
+	TaxIdentifierTypesMrNif    TaxIdentifierTypes = "mr_nif"
+	TaxIdentifierTypesMxRfc    TaxIdentifierTypes = "mx_rfc"
+	TaxIdentifierTypesMdVat    TaxIdentifierTypes = "md_vat"
+	TaxIdentifierTypesMePib    TaxIdentifierTypes = "me_pib"
+	TaxIdentifierTypesMaVat    TaxIdentifierTypes = "ma_vat"
+	TaxIdentifierTypesNpPan    TaxIdentifierTypes = "np_pan"
+	TaxIdentifierTypesNzGst    TaxIdentifierTypes = "nz_gst"
+	TaxIdentifierTypesNgTin    TaxIdentifierTypes = "ng_tin"
+	TaxIdentifierTypesMkVat    TaxIdentifierTypes = "mk_vat"
+	TaxIdentifierTypesNoVat    TaxIdentifierTypes = "no_vat"
+	TaxIdentifierTypesNoVoec   TaxIdentifierTypes = "no_voec"
+	TaxIdentifierTypesOmVat    TaxIdentifierTypes = "om_vat"
+	TaxIdentifierTypesPeRuc    TaxIdentifierTypes = "pe_ruc"
+	TaxIdentifierTypesPhTin    TaxIdentifierTypes = "ph_tin"
+	TaxIdentifierTypesPlNip    TaxIdentifierTypes = "pl_nip"
+	TaxIdentifierTypesRoTin    TaxIdentifierTypes = "ro_tin"
+	TaxIdentifierTypesRuInn    TaxIdentifierTypes = "ru_inn"
+	TaxIdentifierTypesRuKpp    TaxIdentifierTypes = "ru_kpp"
+	TaxIdentifierTypesSaVat    TaxIdentifierTypes = "sa_vat"
+	TaxIdentifierTypesSnNinea  TaxIdentifierTypes = "sn_ninea"
+	TaxIdentifierTypesRsPib    TaxIdentifierTypes = "rs_pib"
+	TaxIdentifierTypesSgGst    TaxIdentifierTypes = "sg_gst"
+	TaxIdentifierTypesSgUen    TaxIdentifierTypes = "sg_uen"
+	TaxIdentifierTypesSiTin    TaxIdentifierTypes = "si_tin"
+	TaxIdentifierTypesZaVat    TaxIdentifierTypes = "za_vat"
+	TaxIdentifierTypesKrBrn    TaxIdentifierTypes = "kr_brn"
+	TaxIdentifierTypesEsCif    TaxIdentifierTypes = "es_cif"
+	TaxIdentifierTypesChUID    TaxIdentifierTypes = "ch_uid"
+	TaxIdentifierTypesChVat    TaxIdentifierTypes = "ch_vat"
+	TaxIdentifierTypesTwVat    TaxIdentifierTypes = "tw_vat"
+	TaxIdentifierTypesTjTin    TaxIdentifierTypes = "tj_tin"
+	TaxIdentifierTypesTzVat    TaxIdentifierTypes = "tz_vat"
+	TaxIdentifierTypesThVat    TaxIdentifierTypes = "th_vat"
+	TaxIdentifierTypesTrTin    TaxIdentifierTypes = "tr_tin"
+	TaxIdentifierTypesUgTin    TaxIdentifierTypes = "ug_tin"
+	TaxIdentifierTypesUaVat    TaxIdentifierTypes = "ua_vat"
+	TaxIdentifierTypesAeTrn    TaxIdentifierTypes = "ae_trn"
+	TaxIdentifierTypesUsEin    TaxIdentifierTypes = "us_ein"
+	TaxIdentifierTypesUyRuc    TaxIdentifierTypes = "uy_ruc"
+	TaxIdentifierTypesUzTin    TaxIdentifierTypes = "uz_tin"
+	TaxIdentifierTypesUzVat    TaxIdentifierTypes = "uz_vat"
+	TaxIdentifierTypesVeRif    TaxIdentifierTypes = "ve_rif"
+	TaxIdentifierTypesVnTin    TaxIdentifierTypes = "vn_tin"
+	TaxIdentifierTypesZmTin    TaxIdentifierTypes = "zm_tin"
+	TaxIdentifierTypesZwTin    TaxIdentifierTypes = "zw_tin"
+	TaxIdentifierTypesSrFin    TaxIdentifierTypes = "sr_fin"
+	TaxIdentifierTypesXiVat    TaxIdentifierTypes = "xi_vat"
+)
+
+func NewTaxIdentifierTypesFromString(s string) (TaxIdentifierTypes, error) {
+	switch s {
+	case "ad_nrt":
+		return TaxIdentifierTypesAdNrt, nil
+	case "ao_tin":
+		return TaxIdentifierTypesAoTin, nil
+	case "ar_cuit":
+		return TaxIdentifierTypesArCuit, nil
+	case "al_tin":
+		return TaxIdentifierTypesAlTin, nil
+	case "am_tin":
+		return TaxIdentifierTypesAmTin, nil
+	case "aw_tin":
+		return TaxIdentifierTypesAwTin, nil
+	case "au_abn":
+		return TaxIdentifierTypesAuAbn, nil
+	case "au_arn":
+		return TaxIdentifierTypesAuArn, nil
+	case "eu_vat":
+		return TaxIdentifierTypesEuVat, nil
+	case "az_tin":
+		return TaxIdentifierTypesAzTin, nil
+	case "bs_tin":
+		return TaxIdentifierTypesBsTin, nil
+	case "bh_vat":
+		return TaxIdentifierTypesBhVat, nil
+	case "bd_bin":
+		return TaxIdentifierTypesBdBin, nil
+	case "bb_tin":
+		return TaxIdentifierTypesBbTin, nil
+	case "by_tin":
+		return TaxIdentifierTypesByTin, nil
+	case "bj_ifu":
+		return TaxIdentifierTypesBjIfu, nil
+	case "bo_tin":
+		return TaxIdentifierTypesBoTin, nil
+	case "ba_tin":
+		return TaxIdentifierTypesBaTin, nil
+	case "br_cnpj":
+		return TaxIdentifierTypesBrCnpj, nil
+	case "br_cpf":
+		return TaxIdentifierTypesBrCpf, nil
+	case "bg_uic":
+		return TaxIdentifierTypesBgUic, nil
+	case "bf_ifu":
+		return TaxIdentifierTypesBfIfu, nil
+	case "kh_tin":
+		return TaxIdentifierTypesKhTin, nil
+	case "cm_niu":
+		return TaxIdentifierTypesCmNiu, nil
+	case "ca_bn":
+		return TaxIdentifierTypesCaBn, nil
+	case "ca_gst_hst":
+		return TaxIdentifierTypesCaGstHst, nil
+	case "ca_pst_bc":
+		return TaxIdentifierTypesCaPstBc, nil
+	case "ca_pst_mb":
+		return TaxIdentifierTypesCaPstMb, nil
+	case "ca_pst_sk":
+		return TaxIdentifierTypesCaPstSk, nil
+	case "ca_qst":
+		return TaxIdentifierTypesCaQst, nil
+	case "cv_nif":
+		return TaxIdentifierTypesCvNif, nil
+	case "cl_tin":
+		return TaxIdentifierTypesClTin, nil
+	case "cn_tin":
+		return TaxIdentifierTypesCnTin, nil
+	case "co_nit":
+		return TaxIdentifierTypesCoNit, nil
+	case "cd_nif":
+		return TaxIdentifierTypesCdNif, nil
+	case "cr_tin":
+		return TaxIdentifierTypesCrTin, nil
+	case "hr_oib":
+		return TaxIdentifierTypesHrOib, nil
+	case "do_rcn":
+		return TaxIdentifierTypesDoRcn, nil
+	case "ec_ruc":
+		return TaxIdentifierTypesEcRuc, nil
+	case "eg_tin":
+		return TaxIdentifierTypesEgTin, nil
+	case "sv_nit":
+		return TaxIdentifierTypesSvNit, nil
+	case "et_tin":
+		return TaxIdentifierTypesEtTin, nil
+	case "eu_oss_vat":
+		return TaxIdentifierTypesEuOssVat, nil
+	case "ge_vat":
+		return TaxIdentifierTypesGeVat, nil
+	case "gh_tin":
+		return TaxIdentifierTypesGhTin, nil
+	case "de_stn":
+		return TaxIdentifierTypesDeStn, nil
+	case "gb_vat":
+		return TaxIdentifierTypesGbVat, nil
+	case "gn_nif":
+		return TaxIdentifierTypesGnNif, nil
+	case "hk_br":
+		return TaxIdentifierTypesHkBr, nil
+	case "hu_tin":
+		return TaxIdentifierTypesHuTin, nil
+	case "is_vat":
+		return TaxIdentifierTypesIsVat, nil
+	case "in_gst":
+		return TaxIdentifierTypesInGst, nil
+	case "id_npwp":
+		return TaxIdentifierTypesIDNpwp, nil
+	case "il_vat":
+		return TaxIdentifierTypesIlVat, nil
+	case "jp_cn":
+		return TaxIdentifierTypesJpCn, nil
+	case "jp_rn":
+		return TaxIdentifierTypesJpRn, nil
+	case "jp_trn":
+		return TaxIdentifierTypesJpTrn, nil
+	case "kz_bin":
+		return TaxIdentifierTypesKzBin, nil
+	case "ke_pin":
+		return TaxIdentifierTypesKePin, nil
+	case "kg_tin":
+		return TaxIdentifierTypesKgTin, nil
+	case "la_tin":
+		return TaxIdentifierTypesLaTin, nil
+	case "li_uid":
+		return TaxIdentifierTypesLiUID, nil
+	case "li_vat":
+		return TaxIdentifierTypesLiVat, nil
+	case "my_frp":
+		return TaxIdentifierTypesMyFrp, nil
+	case "my_itn":
+		return TaxIdentifierTypesMyItn, nil
+	case "my_sst":
+		return TaxIdentifierTypesMySst, nil
+	case "mr_nif":
+		return TaxIdentifierTypesMrNif, nil
+	case "mx_rfc":
+		return TaxIdentifierTypesMxRfc, nil
+	case "md_vat":
+		return TaxIdentifierTypesMdVat, nil
+	case "me_pib":
+		return TaxIdentifierTypesMePib, nil
+	case "ma_vat":
+		return TaxIdentifierTypesMaVat, nil
+	case "np_pan":
+		return TaxIdentifierTypesNpPan, nil
+	case "nz_gst":
+		return TaxIdentifierTypesNzGst, nil
+	case "ng_tin":
+		return TaxIdentifierTypesNgTin, nil
+	case "mk_vat":
+		return TaxIdentifierTypesMkVat, nil
+	case "no_vat":
+		return TaxIdentifierTypesNoVat, nil
+	case "no_voec":
+		return TaxIdentifierTypesNoVoec, nil
+	case "om_vat":
+		return TaxIdentifierTypesOmVat, nil
+	case "pe_ruc":
+		return TaxIdentifierTypesPeRuc, nil
+	case "ph_tin":
+		return TaxIdentifierTypesPhTin, nil
+	case "pl_nip":
+		return TaxIdentifierTypesPlNip, nil
+	case "ro_tin":
+		return TaxIdentifierTypesRoTin, nil
+	case "ru_inn":
+		return TaxIdentifierTypesRuInn, nil
+	case "ru_kpp":
+		return TaxIdentifierTypesRuKpp, nil
+	case "sa_vat":
+		return TaxIdentifierTypesSaVat, nil
+	case "sn_ninea":
+		return TaxIdentifierTypesSnNinea, nil
+	case "rs_pib":
+		return TaxIdentifierTypesRsPib, nil
+	case "sg_gst":
+		return TaxIdentifierTypesSgGst, nil
+	case "sg_uen":
+		return TaxIdentifierTypesSgUen, nil
+	case "si_tin":
+		return TaxIdentifierTypesSiTin, nil
+	case "za_vat":
+		return TaxIdentifierTypesZaVat, nil
+	case "kr_brn":
+		return TaxIdentifierTypesKrBrn, nil
+	case "es_cif":
+		return TaxIdentifierTypesEsCif, nil
+	case "ch_uid":
+		return TaxIdentifierTypesChUID, nil
+	case "ch_vat":
+		return TaxIdentifierTypesChVat, nil
+	case "tw_vat":
+		return TaxIdentifierTypesTwVat, nil
+	case "tj_tin":
+		return TaxIdentifierTypesTjTin, nil
+	case "tz_vat":
+		return TaxIdentifierTypesTzVat, nil
+	case "th_vat":
+		return TaxIdentifierTypesThVat, nil
+	case "tr_tin":
+		return TaxIdentifierTypesTrTin, nil
+	case "ug_tin":
+		return TaxIdentifierTypesUgTin, nil
+	case "ua_vat":
+		return TaxIdentifierTypesUaVat, nil
+	case "ae_trn":
+		return TaxIdentifierTypesAeTrn, nil
+	case "us_ein":
+		return TaxIdentifierTypesUsEin, nil
+	case "uy_ruc":
+		return TaxIdentifierTypesUyRuc, nil
+	case "uz_tin":
+		return TaxIdentifierTypesUzTin, nil
+	case "uz_vat":
+		return TaxIdentifierTypesUzVat, nil
+	case "ve_rif":
+		return TaxIdentifierTypesVeRif, nil
+	case "vn_tin":
+		return TaxIdentifierTypesVnTin, nil
+	case "zm_tin":
+		return TaxIdentifierTypesZmTin, nil
+	case "zw_tin":
+		return TaxIdentifierTypesZwTin, nil
+	case "sr_fin":
+		return TaxIdentifierTypesSrFin, nil
+	case "xi_vat":
+		return TaxIdentifierTypesXiVat, nil
+	}
+	var t TaxIdentifierTypes
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (t TaxIdentifierTypes) Ptr() *TaxIdentifierTypes {
+	return &t
+}
+
 // Whether or not the tax is included in a plan's price (or if it hasn't been set up)
 type TaxTypes string
 
@@ -62693,6 +67017,35 @@ func NewVerificationStatusesFromString(s string) (VerificationStatuses, error) {
 }
 
 func (v VerificationStatuses) Ptr() *VerificationStatuses {
+	return &v
+}
+
+// Visibility of a resource
+type Visibility string
+
+const (
+	VisibilityVisible   Visibility = "visible"
+	VisibilityHidden    Visibility = "hidden"
+	VisibilityArchived  Visibility = "archived"
+	VisibilityQuickLink Visibility = "quick_link"
+)
+
+func NewVisibilityFromString(s string) (Visibility, error) {
+	switch s {
+	case "visible":
+		return VisibilityVisible, nil
+	case "hidden":
+		return VisibilityHidden, nil
+	case "archived":
+		return VisibilityArchived, nil
+	case "quick_link":
+		return VisibilityQuickLink, nil
+	}
+	var t Visibility
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (v Visibility) Ptr() *Visibility {
 	return &v
 }
 
