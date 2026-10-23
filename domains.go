@@ -45,8 +45,9 @@ var (
 	createDomainsRequestFieldMetadata     = big.NewInt(1 << 4)
 	createDomainsRequestFieldPixel        = big.NewInt(1 << 5)
 	createDomainsRequestFieldRegistration = big.NewInt(1 << 6)
-	createDomainsRequestFieldVerification = big.NewInt(1 << 7)
-	createDomainsRequestFieldWebsite      = big.NewInt(1 << 8)
+	createDomainsRequestFieldTransfer     = big.NewInt(1 << 7)
+	createDomainsRequestFieldVerification = big.NewInt(1 << 8)
+	createDomainsRequestFieldWebsite      = big.NewInt(1 << 9)
 )
 
 type CreateDomainsRequest struct {
@@ -64,6 +65,8 @@ type CreateDomainsRequest struct {
 	Pixel *CreateDomainsRequestPixel `json:"pixel,omitempty" url:"-"`
 	// Buy the domain through Whop, or transfer in a domain you own elsewhere with `auth_code`, then renew it every year and let Whop run its DNS. Pass `null` to release an unpaid or failed purchase, or to cancel a transfer while its current registrar can still stop it.
 	Registration *CreateDomainsRequestRegistration `json:"registration,omitempty" url:"-"`
+	// Move a domain registered through Whop to another Whop account. Turning it on returns a code in `transfer.code`; the receiving account enters it as `registration.auth_code` on its own copy of the domain. Whop then removes the domain's email, email addresses and Apple Pay from this account, moves the registration with its expiry, stops charging this account to renew it, and removes the domain from this account. Pass `null` to turn it off and invalidate the code, until another account has entered it.
+	Transfer *CreateDomainsRequestTransfer `json:"transfer,omitempty" url:"-"`
 	// Prove you control the domain's DNS: Whop returns a TXT record to publish in `issues`, and whoever publishes it owns the domain on Whop. Pass `null` to release it. Can't be combined with `registration`.
 	Verification *CreateDomainsRequestVerification `json:"verification,omitempty" url:"-"`
 	// Serve a Whop website on the domain. Pass `null` to stop serving it; the domain keeps its other capabilities.
@@ -129,6 +132,13 @@ func (c *CreateDomainsRequest) SetPixel(pixel *CreateDomainsRequestPixel) {
 func (c *CreateDomainsRequest) SetRegistration(registration *CreateDomainsRequestRegistration) {
 	c.Registration = registration
 	c.require(createDomainsRequestFieldRegistration)
+}
+
+// SetTransfer sets the Transfer field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDomainsRequest) SetTransfer(transfer *CreateDomainsRequestTransfer) {
+	c.Transfer = transfer
+	c.require(createDomainsRequestFieldTransfer)
 }
 
 // SetVerification sets the Verification field and marks it as non-optional;
@@ -214,6 +224,7 @@ var (
 	listDomainsRequestFieldApplePay     = big.NewInt(1 << 16)
 	listDomainsRequestFieldPixel        = big.NewInt(1 << 17)
 	listDomainsRequestFieldEmail        = big.NewInt(1 << 18)
+	listDomainsRequestFieldTransfer     = big.NewInt(1 << 19)
 )
 
 type ListDomainsRequest struct {
@@ -255,6 +266,8 @@ type ListDomainsRequest struct {
 	Pixel *ListDomainsRequestPixel `json:"-" url:"pixel,omitempty"`
 	// Only domains with email in this state, such as `ready`, or `any` for every domain that has email.
 	Email *ListDomainsRequestEmail `json:"-" url:"email,omitempty"`
+	// Only domains with transfer in this state, such as `ready`, or `any` for every domain that has transfer.
+	Transfer *ListDomainsRequestTransfer `json:"-" url:"transfer,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -402,6 +415,13 @@ func (l *ListDomainsRequest) SetEmail(email *ListDomainsRequestEmail) {
 	l.require(listDomainsRequestFieldEmail)
 }
 
+// SetTransfer sets the Transfer field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListDomainsRequest) SetTransfer(transfer *ListDomainsRequestTransfer) {
+	l.Transfer = transfer
+	l.require(listDomainsRequestFieldTransfer)
+}
+
 var (
 	retrieveDomainsRequestFieldID = big.NewInt(1 << 0)
 )
@@ -447,9 +467,10 @@ var (
 	domainFieldRegistration = big.NewInt(1 << 13)
 	domainFieldStats        = big.NewInt(1 << 14)
 	domainFieldStatus       = big.NewInt(1 << 15)
-	domainFieldUpdatedAt    = big.NewInt(1 << 16)
-	domainFieldVerification = big.NewInt(1 << 17)
-	domainFieldWebsite      = big.NewInt(1 << 18)
+	domainFieldTransfer     = big.NewInt(1 << 16)
+	domainFieldUpdatedAt    = big.NewInt(1 << 17)
+	domainFieldVerification = big.NewInt(1 << 18)
+	domainFieldWebsite      = big.NewInt(1 << 19)
 )
 
 // domainNullableFields maps the wire names of Domain's nullable fields (required or optional) to their field bits.
@@ -467,6 +488,7 @@ var domainNullableFields = map[string]*big.Int{
 	"registration":  domainFieldRegistration,
 	"stats":         domainFieldStats,
 	"status":        domainFieldStatus,
+	"transfer":      domainFieldTransfer,
 	"updated_at":    domainFieldUpdatedAt,
 	"verification":  domainFieldVerification,
 	"website":       domainFieldWebsite,
@@ -504,6 +526,8 @@ type Domain struct {
 	Stats *DomainStats `json:"stats,omitempty" url:"stats,omitempty"`
 	// The most pressing state of the domain's capabilities: `releasing`, then `action_required`, then `pending`, then `ready`. `idle` when it wants nothing.
 	Status *DomainStatus `json:"status,omitempty" url:"status,omitempty"`
+	// Moving the domain to another Whop account. `null` when not turned on or not visible to you.
+	Transfer *DomainTransfer `json:"transfer,omitempty" url:"transfer,omitempty"`
 	// When the domain was last updated, as an ISO 8601 timestamp.
 	UpdatedAt *string `json:"updated_at,omitempty" url:"updated_at,omitempty"`
 	// Proving you control the domain's DNS with a TXT record. `null` when not wanted or not visible to you.
@@ -628,6 +652,13 @@ func (d *Domain) GetStatus() *DomainStatus {
 		return nil
 	}
 	return d.Status
+}
+
+func (d *Domain) GetTransfer() *DomainTransfer {
+	if d == nil {
+		return nil
+	}
+	return d.Transfer
 }
 
 func (d *Domain) GetUpdatedAt() *string {
@@ -777,6 +808,13 @@ func (d *Domain) SetStats(stats *DomainStats) {
 func (d *Domain) SetStatus(status *DomainStatus) {
 	d.Status = status
 	d.require(domainFieldStatus)
+}
+
+// SetTransfer sets the Transfer field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *Domain) SetTransfer(transfer *DomainTransfer) {
+	d.Transfer = transfer
+	d.require(domainFieldTransfer)
 }
 
 // SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
@@ -1594,6 +1632,7 @@ const (
 	DomainIssueCapabilityApplePay     DomainIssueCapability = "apple_pay"
 	DomainIssueCapabilityPixel        DomainIssueCapability = "pixel"
 	DomainIssueCapabilityEmail        DomainIssueCapability = "email"
+	DomainIssueCapabilityTransfer     DomainIssueCapability = "transfer"
 )
 
 func NewDomainIssueCapabilityFromString(s string) (DomainIssueCapability, error) {
@@ -1612,6 +1651,8 @@ func NewDomainIssueCapabilityFromString(s string) (DomainIssueCapability, error)
 		return DomainIssueCapabilityPixel, nil
 	case "email":
 		return DomainIssueCapabilityEmail, nil
+	case "transfer":
+		return DomainIssueCapabilityTransfer, nil
 	}
 	var t DomainIssueCapability
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1756,9 +1797,10 @@ var (
 	domainListItemFieldRegistration = big.NewInt(1 << 12)
 	domainListItemFieldStats        = big.NewInt(1 << 13)
 	domainListItemFieldStatus       = big.NewInt(1 << 14)
-	domainListItemFieldUpdatedAt    = big.NewInt(1 << 15)
-	domainListItemFieldVerification = big.NewInt(1 << 16)
-	domainListItemFieldWebsite      = big.NewInt(1 << 17)
+	domainListItemFieldTransfer     = big.NewInt(1 << 15)
+	domainListItemFieldUpdatedAt    = big.NewInt(1 << 16)
+	domainListItemFieldVerification = big.NewInt(1 << 17)
+	domainListItemFieldWebsite      = big.NewInt(1 << 18)
 )
 
 // domainListItemNullableFields maps the wire names of DomainListItem's nullable fields (required or optional) to their field bits.
@@ -1775,6 +1817,7 @@ var domainListItemNullableFields = map[string]*big.Int{
 	"registration": domainListItemFieldRegistration,
 	"stats":        domainListItemFieldStats,
 	"status":       domainListItemFieldStatus,
+	"transfer":     domainListItemFieldTransfer,
 	"updated_at":   domainListItemFieldUpdatedAt,
 	"verification": domainListItemFieldVerification,
 	"website":      domainListItemFieldWebsite,
@@ -1810,6 +1853,8 @@ type DomainListItem struct {
 	Stats *DomainStats `json:"stats,omitempty" url:"stats,omitempty"`
 	// The most pressing state of the domain's capabilities: `releasing`, then `action_required`, then `pending`, then `ready`. `idle` when it wants nothing.
 	Status *DomainListItemStatus `json:"status,omitempty" url:"status,omitempty"`
+	// Moving the domain to another Whop account. `null` when not turned on or not visible to you.
+	Transfer *DomainTransfer `json:"transfer,omitempty" url:"transfer,omitempty"`
 	// When the domain was last updated, as an ISO 8601 timestamp.
 	UpdatedAt *string `json:"updated_at,omitempty" url:"updated_at,omitempty"`
 	// Proving you control the domain's DNS with a TXT record. `null` when not wanted or not visible to you.
@@ -1927,6 +1972,13 @@ func (d *DomainListItem) GetStatus() *DomainListItemStatus {
 		return nil
 	}
 	return d.Status
+}
+
+func (d *DomainListItem) GetTransfer() *DomainTransfer {
+	if d == nil {
+		return nil
+	}
+	return d.Transfer
 }
 
 func (d *DomainListItem) GetUpdatedAt() *string {
@@ -2069,6 +2121,13 @@ func (d *DomainListItem) SetStats(stats *DomainStats) {
 func (d *DomainListItem) SetStatus(status *DomainListItemStatus) {
 	d.Status = status
 	d.require(domainListItemFieldStatus)
+}
+
+// SetTransfer sets the Transfer field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainListItem) SetTransfer(transfer *DomainTransfer) {
+	d.Transfer = transfer
+	d.require(domainListItemFieldTransfer)
 }
 
 // SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
@@ -3566,6 +3625,182 @@ func (d DomainStatus) Ptr() *DomainStatus {
 }
 
 var (
+	domainTransferFieldCode        = big.NewInt(1 << 0)
+	domainTransferFieldDestination = big.NewInt(1 << 1)
+	domainTransferFieldState       = big.NewInt(1 << 2)
+)
+
+// domainTransferNullableFields maps the wire names of DomainTransfer's nullable fields (required or optional) to their field bits.
+var domainTransferNullableFields = map[string]*big.Int{
+	"code": domainTransferFieldCode,
+}
+
+type DomainTransfer struct {
+	// The code that takes the domain. For an `internal` move it starts `whop_dt_`, and the receiving Whop account enters it as `registration.auth_code` when it creates or updates the domain. Returned when the response is a single domain and you can manage it; `null` otherwise.
+	Code *string `json:"code,omitempty" url:"code,omitempty"`
+	// Where the domain is moving. `internal` is another Whop account.
+	Destination DomainTransferDestination `json:"destination" url:"destination"`
+	// `ready` while the code waits to be used. `pending` once it has: Whop removes the domain's email, Apple Pay and pixel from this account, then moves the registration and removes the domain from this account.
+	State DomainTransferState `json:"state" url:"state"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DomainTransfer) GetCode() *string {
+	if d == nil {
+		return nil
+	}
+	return d.Code
+}
+
+func (d *DomainTransfer) GetDestination() DomainTransferDestination {
+	if d == nil {
+		return ""
+	}
+	return d.Destination
+}
+
+func (d *DomainTransfer) GetState() DomainTransferState {
+	if d == nil {
+		return ""
+	}
+	return d.State
+}
+
+func (d *DomainTransfer) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DomainTransfer) require(field *big.Int) {
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
+	}
+	next.Or(next, field)
+	d.explicitFields = next
+}
+
+// SetCode sets the Code field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainTransfer) SetCode(code *string) {
+	d.Code = code
+	d.require(domainTransferFieldCode)
+}
+
+// SetDestination sets the Destination field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainTransfer) SetDestination(destination DomainTransferDestination) {
+	d.Destination = destination
+	d.require(domainTransferFieldDestination)
+}
+
+// SetState sets the State field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainTransfer) SetState(state DomainTransferState) {
+	d.State = state
+	d.require(domainTransferFieldState)
+}
+
+func (d *DomainTransfer) UnmarshalJSON(data []byte) error {
+	type unmarshaler DomainTransfer
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DomainTransfer(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, domainTransferNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		d.require(presentFields)
+	}
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DomainTransfer) MarshalJSON() ([]byte, error) {
+	type embed DomainTransfer
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DomainTransfer) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+// Where the domain is moving. `internal` is another Whop account.
+type DomainTransferDestination string
+
+const (
+	DomainTransferDestinationInternal DomainTransferDestination = "internal"
+)
+
+func NewDomainTransferDestinationFromString(s string) (DomainTransferDestination, error) {
+	switch s {
+	case "internal":
+		return DomainTransferDestinationInternal, nil
+	}
+	var t DomainTransferDestination
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (d DomainTransferDestination) Ptr() *DomainTransferDestination {
+	return &d
+}
+
+// `ready` while the code waits to be used. `pending` once it has: Whop removes the domain's email, Apple Pay and pixel from this account, then moves the registration and removes the domain from this account.
+type DomainTransferState string
+
+const (
+	DomainTransferStateReady   DomainTransferState = "ready"
+	DomainTransferStatePending DomainTransferState = "pending"
+)
+
+func NewDomainTransferStateFromString(s string) (DomainTransferState, error) {
+	switch s {
+	case "ready":
+		return DomainTransferStateReady, nil
+	case "pending":
+		return DomainTransferStatePending, nil
+	}
+	var t DomainTransferState
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (d DomainTransferState) Ptr() *DomainTransferState {
+	return &d
+}
+
+var (
 	domainVerificationFieldState                 = big.NewInt(1 << 0)
 	domainVerificationFieldVerificationExpiresAt = big.NewInt(1 << 1)
 )
@@ -4188,7 +4423,7 @@ var createDomainsRequestRegistrationNullableFields = map[string]*big.Int{
 
 // Buy the domain through Whop, or transfer in a domain you own elsewhere with `auth_code`, then renew it every year and let Whop run its DNS. Pass `null` to release an unpaid or failed purchase, or to cancel a transfer while its current registrar can still stop it.
 type CreateDomainsRequestRegistration struct {
-	// Transfer the domain to Whop instead of buying it. This is the transfer authorization code (also called an EPP code) from the domain's current registrar, which you usually find in its domain settings after unlocking the domain. Whop becomes the domain's registrant, and the domain moves to Whop DNS once the transfer completes, so its current DNS records, including email, stop working. After the transfer, the registry may lock the domain against another transfer for 60 days. While it's `transferring`, pass the same or a new code again to resubmit. Whop never returns the code.
+	// Transfer the domain to Whop instead of buying it. This is the transfer authorization code (also called an EPP code) from the domain's current registrar, which you usually find in its domain settings after unlocking the domain. Whop becomes the domain's registrant, and the domain moves to Whop DNS once the transfer completes, so its current DNS records, including email, stop working. After the transfer, the registry may lock the domain against another transfer for 60 days. While it's `transferring`, pass the same or a new code again to resubmit. Whop never returns the code. To take a domain from another Whop account instead, pass the `whop_dt_` code from its `transfer`: the domain moves without a payment, keeps its expiry and Whop DNS, and can't be cancelled once entered.
 	AuthCode *string `json:"auth_code,omitempty" url:"auth_code,omitempty"`
 	// Whether Whop charges the saved card to renew the domain before it expires.
 	AutoRenew *bool `json:"auto_renew,omitempty" url:"auto_renew,omitempty"`
@@ -4307,6 +4542,114 @@ func (c *CreateDomainsRequestRegistration) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createDomainsRequestTransferFieldDestination = big.NewInt(1 << 0)
+)
+
+// Move a domain registered through Whop to another Whop account. Turning it on returns a code in `transfer.code`; the receiving account enters it as `registration.auth_code` on its own copy of the domain. Whop then removes the domain's email, email addresses and Apple Pay from this account, moves the registration with its expiry, stops charging this account to renew it, and removes the domain from this account. Pass `null` to turn it off and invalidate the code, until another account has entered it.
+type CreateDomainsRequestTransfer struct {
+	// Where the domain moves. `internal` moves it to another Whop account.
+	Destination *CreateDomainsRequestTransferDestination `json:"destination,omitempty" url:"destination,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateDomainsRequestTransfer) GetDestination() *CreateDomainsRequestTransferDestination {
+	if c == nil {
+		return nil
+	}
+	return c.Destination
+}
+
+func (c *CreateDomainsRequestTransfer) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateDomainsRequestTransfer) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetDestination sets the Destination field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDomainsRequestTransfer) SetDestination(destination *CreateDomainsRequestTransferDestination) {
+	c.Destination = destination
+	c.require(createDomainsRequestTransferFieldDestination)
+}
+
+func (c *CreateDomainsRequestTransfer) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateDomainsRequestTransfer
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateDomainsRequestTransfer(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateDomainsRequestTransfer) MarshalJSON() ([]byte, error) {
+	type embed CreateDomainsRequestTransfer
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateDomainsRequestTransfer) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// Where the domain moves. `internal` moves it to another Whop account.
+type CreateDomainsRequestTransferDestination string
+
+const (
+	CreateDomainsRequestTransferDestinationInternal CreateDomainsRequestTransferDestination = "internal"
+)
+
+func NewCreateDomainsRequestTransferDestinationFromString(s string) (CreateDomainsRequestTransferDestination, error) {
+	switch s {
+	case "internal":
+		return CreateDomainsRequestTransferDestinationInternal, nil
+	}
+	var t CreateDomainsRequestTransferDestination
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateDomainsRequestTransferDestination) Ptr() *CreateDomainsRequestTransferDestination {
+	return &c
 }
 
 // Prove you control the domain's DNS: Whop returns a TXT record to publish in `issues`, and whoever publishes it owns the domain on Whop. Pass `null` to release it. Can't be combined with `registration`.
@@ -4710,6 +5053,37 @@ func NewListDomainsRequestStatusFromString(s string) (ListDomainsRequestStatus, 
 }
 
 func (l ListDomainsRequestStatus) Ptr() *ListDomainsRequestStatus {
+	return &l
+}
+
+type ListDomainsRequestTransfer string
+
+const (
+	ListDomainsRequestTransferPending        ListDomainsRequestTransfer = "pending"
+	ListDomainsRequestTransferReady          ListDomainsRequestTransfer = "ready"
+	ListDomainsRequestTransferActionRequired ListDomainsRequestTransfer = "action_required"
+	ListDomainsRequestTransferReleasing      ListDomainsRequestTransfer = "releasing"
+	ListDomainsRequestTransferAny            ListDomainsRequestTransfer = "any"
+)
+
+func NewListDomainsRequestTransferFromString(s string) (ListDomainsRequestTransfer, error) {
+	switch s {
+	case "pending":
+		return ListDomainsRequestTransferPending, nil
+	case "ready":
+		return ListDomainsRequestTransferReady, nil
+	case "action_required":
+		return ListDomainsRequestTransferActionRequired, nil
+	case "releasing":
+		return ListDomainsRequestTransferReleasing, nil
+	case "any":
+		return ListDomainsRequestTransferAny, nil
+	}
+	var t ListDomainsRequestTransfer
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListDomainsRequestTransfer) Ptr() *ListDomainsRequestTransfer {
 	return &l
 }
 
@@ -5241,7 +5615,7 @@ var updateDomainsRequestRegistrationNullableFields = map[string]*big.Int{
 
 // Buy the domain through Whop, or transfer in a domain you own elsewhere with `auth_code`, then renew it every year and let Whop run its DNS. Pass `null` to release an unpaid or failed purchase, or to cancel a transfer while its current registrar can still stop it.
 type UpdateDomainsRequestRegistration struct {
-	// Transfer the domain to Whop instead of buying it. This is the transfer authorization code (also called an EPP code) from the domain's current registrar, which you usually find in its domain settings after unlocking the domain. Whop becomes the domain's registrant, and the domain moves to Whop DNS once the transfer completes, so its current DNS records, including email, stop working. After the transfer, the registry may lock the domain against another transfer for 60 days. While it's `transferring`, pass the same or a new code again to resubmit. Whop never returns the code.
+	// Transfer the domain to Whop instead of buying it. This is the transfer authorization code (also called an EPP code) from the domain's current registrar, which you usually find in its domain settings after unlocking the domain. Whop becomes the domain's registrant, and the domain moves to Whop DNS once the transfer completes, so its current DNS records, including email, stop working. After the transfer, the registry may lock the domain against another transfer for 60 days. While it's `transferring`, pass the same or a new code again to resubmit. Whop never returns the code. To take a domain from another Whop account instead, pass the `whop_dt_` code from its `transfer`: the domain moves without a payment, keeps its expiry and Whop DNS, and can't be cancelled once entered.
 	AuthCode *string `json:"auth_code,omitempty" url:"auth_code,omitempty"`
 	// Whether Whop charges the saved card to renew the domain before it expires.
 	AutoRenew *bool `json:"auto_renew,omitempty" url:"auto_renew,omitempty"`
@@ -5360,6 +5734,114 @@ func (u *UpdateDomainsRequestRegistration) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateDomainsRequestTransferFieldDestination = big.NewInt(1 << 0)
+)
+
+// Move a domain registered through Whop to another Whop account. Turning it on returns a code in `transfer.code`; the receiving account enters it as `registration.auth_code` on its own copy of the domain. Whop then removes the domain's email, email addresses and Apple Pay from this account, moves the registration with its expiry, stops charging this account to renew it, and removes the domain from this account. Pass `null` to turn it off and invalidate the code, until another account has entered it.
+type UpdateDomainsRequestTransfer struct {
+	// Where the domain moves. `internal` moves it to another Whop account.
+	Destination *UpdateDomainsRequestTransferDestination `json:"destination,omitempty" url:"destination,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateDomainsRequestTransfer) GetDestination() *UpdateDomainsRequestTransferDestination {
+	if u == nil {
+		return nil
+	}
+	return u.Destination
+}
+
+func (u *UpdateDomainsRequestTransfer) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateDomainsRequestTransfer) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetDestination sets the Destination field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateDomainsRequestTransfer) SetDestination(destination *UpdateDomainsRequestTransferDestination) {
+	u.Destination = destination
+	u.require(updateDomainsRequestTransferFieldDestination)
+}
+
+func (u *UpdateDomainsRequestTransfer) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateDomainsRequestTransfer
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateDomainsRequestTransfer(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateDomainsRequestTransfer) MarshalJSON() ([]byte, error) {
+	type embed UpdateDomainsRequestTransfer
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateDomainsRequestTransfer) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// Where the domain moves. `internal` moves it to another Whop account.
+type UpdateDomainsRequestTransferDestination string
+
+const (
+	UpdateDomainsRequestTransferDestinationInternal UpdateDomainsRequestTransferDestination = "internal"
+)
+
+func NewUpdateDomainsRequestTransferDestinationFromString(s string) (UpdateDomainsRequestTransferDestination, error) {
+	switch s {
+	case "internal":
+		return UpdateDomainsRequestTransferDestinationInternal, nil
+	}
+	var t UpdateDomainsRequestTransferDestination
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateDomainsRequestTransferDestination) Ptr() *UpdateDomainsRequestTransferDestination {
+	return &u
 }
 
 // Prove you control the domain's DNS: Whop returns a TXT record to publish in `issues`, and whoever publishes it owns the domain on Whop. Pass `null` to release it. Can't be combined with `registration`.
@@ -5537,8 +6019,9 @@ var (
 	updateDomainsRequestFieldMetadata     = big.NewInt(1 << 3)
 	updateDomainsRequestFieldPixel        = big.NewInt(1 << 4)
 	updateDomainsRequestFieldRegistration = big.NewInt(1 << 5)
-	updateDomainsRequestFieldVerification = big.NewInt(1 << 6)
-	updateDomainsRequestFieldWebsite      = big.NewInt(1 << 7)
+	updateDomainsRequestFieldTransfer     = big.NewInt(1 << 6)
+	updateDomainsRequestFieldVerification = big.NewInt(1 << 7)
+	updateDomainsRequestFieldWebsite      = big.NewInt(1 << 8)
 )
 
 type UpdateDomainsRequest struct {
@@ -5554,6 +6037,8 @@ type UpdateDomainsRequest struct {
 	Pixel *UpdateDomainsRequestPixel `json:"pixel,omitempty" url:"-"`
 	// Buy the domain through Whop, or transfer in a domain you own elsewhere with `auth_code`, then renew it every year and let Whop run its DNS. Pass `null` to release an unpaid or failed purchase, or to cancel a transfer while its current registrar can still stop it.
 	Registration *UpdateDomainsRequestRegistration `json:"registration,omitempty" url:"-"`
+	// Move a domain registered through Whop to another Whop account. Turning it on returns a code in `transfer.code`; the receiving account enters it as `registration.auth_code` on its own copy of the domain. Whop then removes the domain's email, email addresses and Apple Pay from this account, moves the registration with its expiry, stops charging this account to renew it, and removes the domain from this account. Pass `null` to turn it off and invalidate the code, until another account has entered it.
+	Transfer *UpdateDomainsRequestTransfer `json:"transfer,omitempty" url:"-"`
 	// Prove you control the domain's DNS: Whop returns a TXT record to publish in `issues`, and whoever publishes it owns the domain on Whop. Pass `null` to release it. Can't be combined with `registration`.
 	Verification *UpdateDomainsRequestVerification `json:"verification,omitempty" url:"-"`
 	// Serve a Whop website on the domain. Pass `null` to stop serving it; the domain keeps its other capabilities.
@@ -5612,6 +6097,13 @@ func (u *UpdateDomainsRequest) SetPixel(pixel *UpdateDomainsRequestPixel) {
 func (u *UpdateDomainsRequest) SetRegistration(registration *UpdateDomainsRequestRegistration) {
 	u.Registration = registration
 	u.require(updateDomainsRequestFieldRegistration)
+}
+
+// SetTransfer sets the Transfer field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateDomainsRequest) SetTransfer(transfer *UpdateDomainsRequestTransfer) {
+	u.Transfer = transfer
+	u.require(updateDomainsRequestFieldTransfer)
 }
 
 // SetVerification sets the Verification field and marks it as non-optional;

@@ -27,6 +27,14 @@ func TestSettersCreateDepositsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetMetadata", func(t *testing.T) {
+		obj := &CreateDepositsRequest{}
+		var fernTestValueMetadata map[string]*CreateDepositsRequestMetadataValue
+		obj.SetMetadata(fernTestValueMetadata)
+		assert.Equal(t, fernTestValueMetadata, obj.Metadata)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetPaymentMethodID", func(t *testing.T) {
 		obj := &CreateDepositsRequest{}
 		var fernTestValuePaymentMethodID *string
@@ -100,6 +108,37 @@ func TestSettersMarkExplicitCreateDepositsRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetMetadata_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateDepositsRequest{}
+		var fernTestValueMetadata map[string]*CreateDepositsRequestMetadataValue
+
+		// Act
+		obj.SetMetadata(fernTestValueMetadata)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetPaymentMethodID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -129,6 +168,78 @@ func TestSettersMarkExplicitCreateDepositsRequest(t *testing.T) {
 
 		// Note: This does not explicitly assert the presence of a specific JSON field
 		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestGettersCreateDepositsRequestMetadataValue(t *testing.T) {
+	t.Run("GetString", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateDepositsRequestMetadataValue{}
+		var expected string
+		obj.String = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetString(), "getter should return the property value")
+	})
+
+	t.Run("GetString_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateDepositsRequestMetadataValue
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetString() // Should return zero value
+	})
+
+	t.Run("GetDouble", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateDepositsRequestMetadataValue{}
+		var expected float64
+		obj.Double = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDouble(), "getter should return the property value")
+	})
+
+	t.Run("GetDouble_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateDepositsRequestMetadataValue
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDouble() // Should return zero value
+	})
+
+	t.Run("GetBoolean", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateDepositsRequestMetadataValue{}
+		var expected bool
+		obj.Boolean = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetBoolean(), "getter should return the property value")
+	})
+
+	t.Run("GetBoolean_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateDepositsRequestMetadataValue
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetBoolean() // Should return zero value
 	})
 
 }
@@ -1446,6 +1557,14 @@ func TestSettersMarkExplicitCreateDepositsResponseMethodsBankCurrenciesItem(t *t
 }
 
 func TestSettersCreateDepositsResponseMethodsCard(t *testing.T) {
+	t.Run("SetMetadata", func(t *testing.T) {
+		obj := &CreateDepositsResponseMethodsCard{}
+		var fernTestValueMetadata map[string]*string
+		obj.SetMetadata(fernTestValueMetadata)
+		assert.Equal(t, fernTestValueMetadata, obj.Metadata)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetPaymentID", func(t *testing.T) {
 		obj := &CreateDepositsResponseMethodsCard{}
 		var fernTestValuePaymentID string
@@ -1465,6 +1584,39 @@ func TestSettersCreateDepositsResponseMethodsCard(t *testing.T) {
 }
 
 func TestGettersCreateDepositsResponseMethodsCard(t *testing.T) {
+	t.Run("GetMetadata", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateDepositsResponseMethodsCard{}
+		var expected map[string]*string
+		obj.Metadata = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetMetadata(), "getter should return the property value")
+	})
+
+	t.Run("GetMetadata_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateDepositsResponseMethodsCard{}
+		obj.Metadata = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetMetadata(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetMetadata_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateDepositsResponseMethodsCard
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetMetadata() // Should return zero value
+	})
+
 	t.Run("GetPaymentID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -1514,6 +1666,37 @@ func TestGettersCreateDepositsResponseMethodsCard(t *testing.T) {
 }
 
 func TestSettersMarkExplicitCreateDepositsResponseMethodsCard(t *testing.T) {
+	t.Run("SetMetadata_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateDepositsResponseMethodsCard{}
+		var fernTestValueMetadata map[string]*string
+
+		// Act
+		obj.SetMetadata(fernTestValueMetadata)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetPaymentID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -2948,6 +3131,49 @@ func TestRequiredNullableRoundTripCreateDepositsResponseMethodsBankCurrenciesIte
 	t.Run("FreshValueOmits", func(t *testing.T) {
 		t.Parallel()
 		result := marshalToMap(t, &CreateDepositsResponseMethodsBankCurrenciesItem{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestRequiredNullableRoundTripCreateDepositsResponseMethodsCard(t *testing.T) {
+	requiredNullableKeys := []string{
+		"metadata",
+	}
+	marshalToMap := func(t *testing.T, obj *CreateDepositsResponseMethodsCard) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateDepositsResponseMethodsCard
+		require.NoError(t, json.Unmarshal([]byte(`{"metadata":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateDepositsResponseMethodsCard
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &CreateDepositsResponseMethodsCard{})
 		for _, key := range requiredNullableKeys {
 			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
 		}
