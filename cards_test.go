@@ -43,6 +43,14 @@ func TestSettersCreateCardsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetKind", func(t *testing.T) {
+		obj := &CreateCardsRequest{}
+		var fernTestValueKind *CreateCardsRequestKind
+		obj.SetKind(fernTestValueKind)
+		assert.Equal(t, fernTestValueKind, obj.Kind)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetName", func(t *testing.T) {
 		obj := &CreateCardsRequest{}
 		var fernTestValueName *string
@@ -187,6 +195,37 @@ func TestSettersMarkExplicitCreateCardsRequest(t *testing.T) {
 
 		// Act
 		obj.SetCardholder(fernTestValueCardholder)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetKind_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateCardsRequest{}
+		var fernTestValueKind *CreateCardsRequestKind
+
+		// Act
+		obj.SetKind(fernTestValueKind)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -31522,6 +31561,35 @@ func TestStringUpdateCardsResponseSecrets(t *testing.T) {
 		var obj *UpdateCardsResponseSecrets
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestEnumCreateCardsRequestKind(t *testing.T) {
+	t.Run("NewFromString_individual", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCardsRequestKindFromString("individual")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCardsRequestKind("individual"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_business", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCardsRequestKindFromString("business")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCardsRequestKind("business"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCreateCardsRequestKindFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCreateCardsRequestKindFromString("individual")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
 	})
 }
 
