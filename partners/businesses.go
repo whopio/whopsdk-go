@@ -119,7 +119,7 @@ var (
 )
 
 type ListBusinessesRequest struct {
-	// List the referrals this business's team members made, past members included, instead of the authenticated user's own. Requires company:basic:read on that business, which every team member holds, and cannot be combined with user_id.
+	// List the referrals this business's team members made, past members included, instead of the authenticated user's own. Requires company:basic:read on that business, which every team member holds, and cannot be combined with user_id. The owner role reads every referral; anyone else reads only the referrals made by themselves and by the people under them in the org chart.
 	ReferringAccountID *string `json:"-" url:"referring_account_id,omitempty"`
 	// Filter the authenticated partner's CPA offers by status. Use offered for every state after qualification.
 	AdvanceStatus *ListBusinessesRequestAdvanceStatus `json:"-" url:"advance_status,omitempty"`

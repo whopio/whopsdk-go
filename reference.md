@@ -27725,7 +27725,7 @@ client.Partners.ReferredUsers(
 <dl>
 <dd>
 
-**referringAccountID:** `*string` — List the users this business's team members referred, past members included, instead of the caller's own. Requires company:basic:read on that business, which every team member holds, and cannot be combined with user_id. earning_partner_id or earning_partner_username then narrows to one team member.
+**referringAccountID:** `*string` — List the users this business's team members referred, past members included, instead of the caller's own. Requires company:basic:read on that business, which every team member holds, and cannot be combined with user_id. The owner role reads every team member's referrals; anyone else reads only their own and those of the people under them in the org chart. earning_partner_id or earning_partner_username then narrows to one team member.
     
 </dd>
 </dl>
@@ -46420,7 +46420,7 @@ client.Partners.Businesses.List(
 <dl>
 <dd>
 
-**referringAccountID:** `*string` — List the referrals this business's team members made, past members included, instead of the authenticated user's own. Requires company:basic:read on that business, which every team member holds, and cannot be combined with user_id.
+**referringAccountID:** `*string` — List the referrals this business's team members made, past members included, instead of the authenticated user's own. Requires company:basic:read on that business, which every team member holds, and cannot be combined with user_id. The owner role reads every referral; anyone else reads only the referrals made by themselves and by the people under them in the org chart.
     
 </dd>
 </dl>
