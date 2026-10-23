@@ -793,16 +793,19 @@ func (p *PaymentRuleCondition) String() string {
 type PaymentRuleConditionField string
 
 const (
-	PaymentRuleConditionFieldRiskScore     PaymentRuleConditionField = "risk_score"
-	PaymentRuleConditionFieldAmountInUsd   PaymentRuleConditionField = "amount_in_usd"
-	PaymentRuleConditionFieldCardCountry   PaymentRuleConditionField = "card_country"
-	PaymentRuleConditionFieldCardBrand     PaymentRuleConditionField = "card_brand"
-	PaymentRuleConditionFieldCardFunding   PaymentRuleConditionField = "card_funding"
-	PaymentRuleConditionFieldCardBin       PaymentRuleConditionField = "card_bin"
-	PaymentRuleConditionFieldCustomerEmail PaymentRuleConditionField = "customer_email"
-	PaymentRuleConditionFieldEmailDomain   PaymentRuleConditionField = "email_domain"
-	PaymentRuleConditionFieldIPAddress     PaymentRuleConditionField = "ip_address"
-	PaymentRuleConditionFieldIPCountry     PaymentRuleConditionField = "ip_country"
+	PaymentRuleConditionFieldRiskScore         PaymentRuleConditionField = "risk_score"
+	PaymentRuleConditionFieldAmountInUsd       PaymentRuleConditionField = "amount_in_usd"
+	PaymentRuleConditionFieldCardCountry       PaymentRuleConditionField = "card_country"
+	PaymentRuleConditionFieldCardBrand         PaymentRuleConditionField = "card_brand"
+	PaymentRuleConditionFieldCardFunding       PaymentRuleConditionField = "card_funding"
+	PaymentRuleConditionFieldCardBin           PaymentRuleConditionField = "card_bin"
+	PaymentRuleConditionFieldBillingCountry    PaymentRuleConditionField = "billing_country"
+	PaymentRuleConditionFieldBillingPostalCode PaymentRuleConditionField = "billing_postal_code"
+	PaymentRuleConditionFieldBillingCity       PaymentRuleConditionField = "billing_city"
+	PaymentRuleConditionFieldCustomerEmail     PaymentRuleConditionField = "customer_email"
+	PaymentRuleConditionFieldEmailDomain       PaymentRuleConditionField = "email_domain"
+	PaymentRuleConditionFieldIPAddress         PaymentRuleConditionField = "ip_address"
+	PaymentRuleConditionFieldIPCountry         PaymentRuleConditionField = "ip_country"
 )
 
 func NewPaymentRuleConditionFieldFromString(s string) (PaymentRuleConditionField, error) {
@@ -819,6 +822,12 @@ func NewPaymentRuleConditionFieldFromString(s string) (PaymentRuleConditionField
 		return PaymentRuleConditionFieldCardFunding, nil
 	case "card_bin":
 		return PaymentRuleConditionFieldCardBin, nil
+	case "billing_country":
+		return PaymentRuleConditionFieldBillingCountry, nil
+	case "billing_postal_code":
+		return PaymentRuleConditionFieldBillingPostalCode, nil
+	case "billing_city":
+		return PaymentRuleConditionFieldBillingCity, nil
 	case "customer_email":
 		return PaymentRuleConditionFieldCustomerEmail, nil
 	case "email_domain":
@@ -1247,16 +1256,19 @@ func (p *PaymentRuleField) String() string {
 type PaymentRuleFieldField string
 
 const (
-	PaymentRuleFieldFieldRiskScore     PaymentRuleFieldField = "risk_score"
-	PaymentRuleFieldFieldAmountInUsd   PaymentRuleFieldField = "amount_in_usd"
-	PaymentRuleFieldFieldCardCountry   PaymentRuleFieldField = "card_country"
-	PaymentRuleFieldFieldCardBrand     PaymentRuleFieldField = "card_brand"
-	PaymentRuleFieldFieldCardFunding   PaymentRuleFieldField = "card_funding"
-	PaymentRuleFieldFieldCardBin       PaymentRuleFieldField = "card_bin"
-	PaymentRuleFieldFieldCustomerEmail PaymentRuleFieldField = "customer_email"
-	PaymentRuleFieldFieldEmailDomain   PaymentRuleFieldField = "email_domain"
-	PaymentRuleFieldFieldIPAddress     PaymentRuleFieldField = "ip_address"
-	PaymentRuleFieldFieldIPCountry     PaymentRuleFieldField = "ip_country"
+	PaymentRuleFieldFieldRiskScore         PaymentRuleFieldField = "risk_score"
+	PaymentRuleFieldFieldAmountInUsd       PaymentRuleFieldField = "amount_in_usd"
+	PaymentRuleFieldFieldCardCountry       PaymentRuleFieldField = "card_country"
+	PaymentRuleFieldFieldCardBrand         PaymentRuleFieldField = "card_brand"
+	PaymentRuleFieldFieldCardFunding       PaymentRuleFieldField = "card_funding"
+	PaymentRuleFieldFieldCardBin           PaymentRuleFieldField = "card_bin"
+	PaymentRuleFieldFieldBillingCountry    PaymentRuleFieldField = "billing_country"
+	PaymentRuleFieldFieldBillingPostalCode PaymentRuleFieldField = "billing_postal_code"
+	PaymentRuleFieldFieldBillingCity       PaymentRuleFieldField = "billing_city"
+	PaymentRuleFieldFieldCustomerEmail     PaymentRuleFieldField = "customer_email"
+	PaymentRuleFieldFieldEmailDomain       PaymentRuleFieldField = "email_domain"
+	PaymentRuleFieldFieldIPAddress         PaymentRuleFieldField = "ip_address"
+	PaymentRuleFieldFieldIPCountry         PaymentRuleFieldField = "ip_country"
 )
 
 func NewPaymentRuleFieldFieldFromString(s string) (PaymentRuleFieldField, error) {
@@ -1273,6 +1285,12 @@ func NewPaymentRuleFieldFieldFromString(s string) (PaymentRuleFieldField, error)
 		return PaymentRuleFieldFieldCardFunding, nil
 	case "card_bin":
 		return PaymentRuleFieldFieldCardBin, nil
+	case "billing_country":
+		return PaymentRuleFieldFieldBillingCountry, nil
+	case "billing_postal_code":
+		return PaymentRuleFieldFieldBillingPostalCode, nil
+	case "billing_city":
+		return PaymentRuleFieldFieldBillingCity, nil
 	case "customer_email":
 		return PaymentRuleFieldFieldCustomerEmail, nil
 	case "email_domain":
@@ -1739,16 +1757,19 @@ func (c *CreatePaymentRulesRequestConditionsAllItem) String() string {
 type CreatePaymentRulesRequestConditionsAllItemField string
 
 const (
-	CreatePaymentRulesRequestConditionsAllItemFieldRiskScore     CreatePaymentRulesRequestConditionsAllItemField = "risk_score"
-	CreatePaymentRulesRequestConditionsAllItemFieldAmountInUsd   CreatePaymentRulesRequestConditionsAllItemField = "amount_in_usd"
-	CreatePaymentRulesRequestConditionsAllItemFieldCardCountry   CreatePaymentRulesRequestConditionsAllItemField = "card_country"
-	CreatePaymentRulesRequestConditionsAllItemFieldCardBrand     CreatePaymentRulesRequestConditionsAllItemField = "card_brand"
-	CreatePaymentRulesRequestConditionsAllItemFieldCardFunding   CreatePaymentRulesRequestConditionsAllItemField = "card_funding"
-	CreatePaymentRulesRequestConditionsAllItemFieldCardBin       CreatePaymentRulesRequestConditionsAllItemField = "card_bin"
-	CreatePaymentRulesRequestConditionsAllItemFieldCustomerEmail CreatePaymentRulesRequestConditionsAllItemField = "customer_email"
-	CreatePaymentRulesRequestConditionsAllItemFieldEmailDomain   CreatePaymentRulesRequestConditionsAllItemField = "email_domain"
-	CreatePaymentRulesRequestConditionsAllItemFieldIPAddress     CreatePaymentRulesRequestConditionsAllItemField = "ip_address"
-	CreatePaymentRulesRequestConditionsAllItemFieldIPCountry     CreatePaymentRulesRequestConditionsAllItemField = "ip_country"
+	CreatePaymentRulesRequestConditionsAllItemFieldRiskScore         CreatePaymentRulesRequestConditionsAllItemField = "risk_score"
+	CreatePaymentRulesRequestConditionsAllItemFieldAmountInUsd       CreatePaymentRulesRequestConditionsAllItemField = "amount_in_usd"
+	CreatePaymentRulesRequestConditionsAllItemFieldCardCountry       CreatePaymentRulesRequestConditionsAllItemField = "card_country"
+	CreatePaymentRulesRequestConditionsAllItemFieldCardBrand         CreatePaymentRulesRequestConditionsAllItemField = "card_brand"
+	CreatePaymentRulesRequestConditionsAllItemFieldCardFunding       CreatePaymentRulesRequestConditionsAllItemField = "card_funding"
+	CreatePaymentRulesRequestConditionsAllItemFieldCardBin           CreatePaymentRulesRequestConditionsAllItemField = "card_bin"
+	CreatePaymentRulesRequestConditionsAllItemFieldBillingCountry    CreatePaymentRulesRequestConditionsAllItemField = "billing_country"
+	CreatePaymentRulesRequestConditionsAllItemFieldBillingPostalCode CreatePaymentRulesRequestConditionsAllItemField = "billing_postal_code"
+	CreatePaymentRulesRequestConditionsAllItemFieldBillingCity       CreatePaymentRulesRequestConditionsAllItemField = "billing_city"
+	CreatePaymentRulesRequestConditionsAllItemFieldCustomerEmail     CreatePaymentRulesRequestConditionsAllItemField = "customer_email"
+	CreatePaymentRulesRequestConditionsAllItemFieldEmailDomain       CreatePaymentRulesRequestConditionsAllItemField = "email_domain"
+	CreatePaymentRulesRequestConditionsAllItemFieldIPAddress         CreatePaymentRulesRequestConditionsAllItemField = "ip_address"
+	CreatePaymentRulesRequestConditionsAllItemFieldIPCountry         CreatePaymentRulesRequestConditionsAllItemField = "ip_country"
 )
 
 func NewCreatePaymentRulesRequestConditionsAllItemFieldFromString(s string) (CreatePaymentRulesRequestConditionsAllItemField, error) {
@@ -1765,6 +1786,12 @@ func NewCreatePaymentRulesRequestConditionsAllItemFieldFromString(s string) (Cre
 		return CreatePaymentRulesRequestConditionsAllItemFieldCardFunding, nil
 	case "card_bin":
 		return CreatePaymentRulesRequestConditionsAllItemFieldCardBin, nil
+	case "billing_country":
+		return CreatePaymentRulesRequestConditionsAllItemFieldBillingCountry, nil
+	case "billing_postal_code":
+		return CreatePaymentRulesRequestConditionsAllItemFieldBillingPostalCode, nil
+	case "billing_city":
+		return CreatePaymentRulesRequestConditionsAllItemFieldBillingCity, nil
 	case "customer_email":
 		return CreatePaymentRulesRequestConditionsAllItemFieldCustomerEmail, nil
 	case "email_domain":
@@ -2667,16 +2694,19 @@ func (r *ReplacePaymentRulesRequestConditionsAllItem) String() string {
 type ReplacePaymentRulesRequestConditionsAllItemField string
 
 const (
-	ReplacePaymentRulesRequestConditionsAllItemFieldRiskScore     ReplacePaymentRulesRequestConditionsAllItemField = "risk_score"
-	ReplacePaymentRulesRequestConditionsAllItemFieldAmountInUsd   ReplacePaymentRulesRequestConditionsAllItemField = "amount_in_usd"
-	ReplacePaymentRulesRequestConditionsAllItemFieldCardCountry   ReplacePaymentRulesRequestConditionsAllItemField = "card_country"
-	ReplacePaymentRulesRequestConditionsAllItemFieldCardBrand     ReplacePaymentRulesRequestConditionsAllItemField = "card_brand"
-	ReplacePaymentRulesRequestConditionsAllItemFieldCardFunding   ReplacePaymentRulesRequestConditionsAllItemField = "card_funding"
-	ReplacePaymentRulesRequestConditionsAllItemFieldCardBin       ReplacePaymentRulesRequestConditionsAllItemField = "card_bin"
-	ReplacePaymentRulesRequestConditionsAllItemFieldCustomerEmail ReplacePaymentRulesRequestConditionsAllItemField = "customer_email"
-	ReplacePaymentRulesRequestConditionsAllItemFieldEmailDomain   ReplacePaymentRulesRequestConditionsAllItemField = "email_domain"
-	ReplacePaymentRulesRequestConditionsAllItemFieldIPAddress     ReplacePaymentRulesRequestConditionsAllItemField = "ip_address"
-	ReplacePaymentRulesRequestConditionsAllItemFieldIPCountry     ReplacePaymentRulesRequestConditionsAllItemField = "ip_country"
+	ReplacePaymentRulesRequestConditionsAllItemFieldRiskScore         ReplacePaymentRulesRequestConditionsAllItemField = "risk_score"
+	ReplacePaymentRulesRequestConditionsAllItemFieldAmountInUsd       ReplacePaymentRulesRequestConditionsAllItemField = "amount_in_usd"
+	ReplacePaymentRulesRequestConditionsAllItemFieldCardCountry       ReplacePaymentRulesRequestConditionsAllItemField = "card_country"
+	ReplacePaymentRulesRequestConditionsAllItemFieldCardBrand         ReplacePaymentRulesRequestConditionsAllItemField = "card_brand"
+	ReplacePaymentRulesRequestConditionsAllItemFieldCardFunding       ReplacePaymentRulesRequestConditionsAllItemField = "card_funding"
+	ReplacePaymentRulesRequestConditionsAllItemFieldCardBin           ReplacePaymentRulesRequestConditionsAllItemField = "card_bin"
+	ReplacePaymentRulesRequestConditionsAllItemFieldBillingCountry    ReplacePaymentRulesRequestConditionsAllItemField = "billing_country"
+	ReplacePaymentRulesRequestConditionsAllItemFieldBillingPostalCode ReplacePaymentRulesRequestConditionsAllItemField = "billing_postal_code"
+	ReplacePaymentRulesRequestConditionsAllItemFieldBillingCity       ReplacePaymentRulesRequestConditionsAllItemField = "billing_city"
+	ReplacePaymentRulesRequestConditionsAllItemFieldCustomerEmail     ReplacePaymentRulesRequestConditionsAllItemField = "customer_email"
+	ReplacePaymentRulesRequestConditionsAllItemFieldEmailDomain       ReplacePaymentRulesRequestConditionsAllItemField = "email_domain"
+	ReplacePaymentRulesRequestConditionsAllItemFieldIPAddress         ReplacePaymentRulesRequestConditionsAllItemField = "ip_address"
+	ReplacePaymentRulesRequestConditionsAllItemFieldIPCountry         ReplacePaymentRulesRequestConditionsAllItemField = "ip_country"
 )
 
 func NewReplacePaymentRulesRequestConditionsAllItemFieldFromString(s string) (ReplacePaymentRulesRequestConditionsAllItemField, error) {
@@ -2693,6 +2723,12 @@ func NewReplacePaymentRulesRequestConditionsAllItemFieldFromString(s string) (Re
 		return ReplacePaymentRulesRequestConditionsAllItemFieldCardFunding, nil
 	case "card_bin":
 		return ReplacePaymentRulesRequestConditionsAllItemFieldCardBin, nil
+	case "billing_country":
+		return ReplacePaymentRulesRequestConditionsAllItemFieldBillingCountry, nil
+	case "billing_postal_code":
+		return ReplacePaymentRulesRequestConditionsAllItemFieldBillingPostalCode, nil
+	case "billing_city":
+		return ReplacePaymentRulesRequestConditionsAllItemFieldBillingCity, nil
 	case "customer_email":
 		return ReplacePaymentRulesRequestConditionsAllItemFieldCustomerEmail, nil
 	case "email_domain":
