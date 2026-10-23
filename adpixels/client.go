@@ -119,7 +119,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Add your pixel for a business whose campaigns you claimed. Whop checks the access token with the ad platform, then sends the pixel the conversions credited to your claimed campaigns for that business. Each business takes one pixel per ad platform, and each pixel can serve one business.
+// Add your pixel for a business whose campaigns you claimed. Whop checks the access token with the ad platform, then sends the pixel the conversions credited to your claimed campaigns for that business. Each business takes one pixel per ad platform, and each pixel can serve one business. On Google, the pixel is your Google Ads account, which can serve several businesses, and Whop creates its conversion actions there with your service account key.
 //
 // Example:
 //
