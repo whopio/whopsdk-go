@@ -58,7 +58,7 @@ type ReferredUsersPartnersRequest struct {
 	EarningPartnerID *string `json:"-" url:"earning_partner_id,omitempty"`
 	// The selected referring partner's exact username. Requires user_id=global; cannot be combined with earning_partner_id.
 	EarningPartnerUsername *string `json:"-" url:"earning_partner_username,omitempty"`
-	// List the users this business's team members referred, past members included, instead of the caller's own. Requires company:basic:read on that business, which every team member holds, and cannot be combined with user_id. earning_partner_id or earning_partner_username then narrows to one team member.
+	// List the users this business's team members referred, past members included, instead of the caller's own. Requires company:basic:read on that business, which every team member holds, and cannot be combined with user_id. The owner role reads every team member's referrals; anyone else reads only their own and those of the people under them in the org chart. earning_partner_id or earning_partner_username then narrows to one team member.
 	ReferringAccountID *string `json:"-" url:"referring_account_id,omitempty"`
 	// Search referred users by name or username. In global mode, matches the beginning of usernames only.
 	Query *string `json:"-" url:"query,omitempty"`
