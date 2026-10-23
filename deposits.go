@@ -14,7 +14,8 @@ var (
 	createDepositsRequestFieldAmount          = big.NewInt(1 << 0)
 	createDepositsRequestFieldDestination     = big.NewInt(1 << 1)
 	createDepositsRequestFieldMetadata        = big.NewInt(1 << 2)
-	createDepositsRequestFieldPaymentMethodID = big.NewInt(1 << 3)
+	createDepositsRequestFieldOriginBic       = big.NewInt(1 << 3)
+	createDepositsRequestFieldPaymentMethodID = big.NewInt(1 << 4)
 )
 
 type CreateDepositsRequest struct {
@@ -24,6 +25,8 @@ type CreateDepositsRequest struct {
 	Destination string `json:"destination" url:"-"`
 	// Custom metadata to attach to the payment the charge creates. Ignored unless `payment_method_id` is provided.
 	Metadata map[string]*CreateDepositsRequestMetadataValue `json:"metadata,omitempty" url:"-"`
+	// SWIFT/BIC of the bank the funds are sent from, 8 or 11 characters. Fills each bank currency's `swift_bic` with the intermediary bank to route the wire through.
+	OriginBic *string `json:"origin_bic,omitempty" url:"-"`
 	// A saved payment method of the business to charge for `amount`, prefixed `payt_`. Save one with Create setup intent and `owner_id` set to the account. Only for a `biz_` destination, and requires authentication with the `payment:charge` scope. A declined charge fails the request with 400.
 	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
 
@@ -59,6 +62,13 @@ func (c *CreateDepositsRequest) SetDestination(destination string) {
 func (c *CreateDepositsRequest) SetMetadata(metadata map[string]*CreateDepositsRequestMetadataValue) {
 	c.Metadata = metadata
 	c.require(createDepositsRequestFieldMetadata)
+}
+
+// SetOriginBic sets the OriginBic field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDepositsRequest) SetOriginBic(originBic *string) {
+	c.OriginBic = originBic
+	c.require(createDepositsRequestFieldOriginBic)
 }
 
 // SetPaymentMethodID sets the PaymentMethodID field and marks it as non-optional;
@@ -602,7 +612,7 @@ type CreateDepositsResponseMethodsBankCurrenciesItem struct {
 	Rails []CreateDepositsResponseMethodsBankCurrenciesItemRailsItem `json:"rails" url:"rails"`
 	// Bank routing number for deposits in this currency.
 	RoutingNumber *string `json:"routing_number,omitempty" url:"routing_number,omitempty"`
-	// SWIFT/BIC code for international wires, when available.
+	// SWIFT/BIC of the intermediary bank the sending bank routes an international wire through. Null unless `origin_bic` is provided and an intermediary is published for that bank and currency.
 	SwiftBic *string `json:"swift_bic,omitempty" url:"swift_bic,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
