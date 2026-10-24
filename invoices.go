@@ -406,33 +406,35 @@ var (
 	invoiceFieldBillingAddress     = big.NewInt(1 << 2)
 	invoiceFieldBuyerFeeAmount     = big.NewInt(1 << 3)
 	invoiceFieldBuyerFeePercentage = big.NewInt(1 << 4)
-	invoiceFieldCreatedAt          = big.NewInt(1 << 5)
-	invoiceFieldCustomerName       = big.NewInt(1 << 6)
-	invoiceFieldDueAt              = big.NewInt(1 << 7)
-	invoiceFieldEmailAddress       = big.NewInt(1 << 8)
-	invoiceFieldID                 = big.NewInt(1 << 9)
-	invoiceFieldInvoicePrefix      = big.NewInt(1 << 10)
-	invoiceFieldLineItems          = big.NewInt(1 << 11)
-	invoiceFieldMailingAddressID   = big.NewInt(1 << 12)
-	invoiceFieldMemberID           = big.NewInt(1 << 13)
-	invoiceFieldMetadata           = big.NewInt(1 << 14)
-	invoiceFieldNumber             = big.NewInt(1 << 15)
-	invoiceFieldObject             = big.NewInt(1 << 16)
-	invoiceFieldOverdue            = big.NewInt(1 << 17)
-	invoiceFieldPaidAt             = big.NewInt(1 << 18)
-	invoiceFieldPaymentMethodID    = big.NewInt(1 << 19)
-	invoiceFieldRecipientEmails    = big.NewInt(1 << 20)
-	invoiceFieldStatus             = big.NewInt(1 << 21)
-	invoiceFieldSubtotal           = big.NewInt(1 << 22)
-	invoiceFieldTaxAmount          = big.NewInt(1 << 23)
-	invoiceFieldTotal              = big.NewInt(1 << 24)
-	invoiceFieldTotalsStatus       = big.NewInt(1 << 25)
-	invoiceFieldUpdatedAt          = big.NewInt(1 << 26)
+	invoiceFieldCheckoutLink       = big.NewInt(1 << 5)
+	invoiceFieldCreatedAt          = big.NewInt(1 << 6)
+	invoiceFieldCustomerName       = big.NewInt(1 << 7)
+	invoiceFieldDueAt              = big.NewInt(1 << 8)
+	invoiceFieldEmailAddress       = big.NewInt(1 << 9)
+	invoiceFieldID                 = big.NewInt(1 << 10)
+	invoiceFieldInvoicePrefix      = big.NewInt(1 << 11)
+	invoiceFieldLineItems          = big.NewInt(1 << 12)
+	invoiceFieldMailingAddressID   = big.NewInt(1 << 13)
+	invoiceFieldMemberID           = big.NewInt(1 << 14)
+	invoiceFieldMetadata           = big.NewInt(1 << 15)
+	invoiceFieldNumber             = big.NewInt(1 << 16)
+	invoiceFieldObject             = big.NewInt(1 << 17)
+	invoiceFieldOverdue            = big.NewInt(1 << 18)
+	invoiceFieldPaidAt             = big.NewInt(1 << 19)
+	invoiceFieldPaymentMethodID    = big.NewInt(1 << 20)
+	invoiceFieldRecipientEmails    = big.NewInt(1 << 21)
+	invoiceFieldStatus             = big.NewInt(1 << 22)
+	invoiceFieldSubtotal           = big.NewInt(1 << 23)
+	invoiceFieldTaxAmount          = big.NewInt(1 << 24)
+	invoiceFieldTotal              = big.NewInt(1 << 25)
+	invoiceFieldTotalsStatus       = big.NewInt(1 << 26)
+	invoiceFieldUpdatedAt          = big.NewInt(1 << 27)
 )
 
 // invoiceNullableFields maps the wire names of Invoice's nullable fields (required or optional) to their field bits.
 var invoiceNullableFields = map[string]*big.Int{
 	"billing_address":    invoiceFieldBillingAddress,
+	"checkout_link":      invoiceFieldCheckoutLink,
 	"customer_name":      invoiceFieldCustomerName,
 	"due_at":             invoiceFieldDueAt,
 	"email_address":      invoiceFieldEmailAddress,
@@ -445,33 +447,35 @@ var invoiceNullableFields = map[string]*big.Int{
 }
 
 type Invoice struct {
-	AccountID          string              `json:"account_id" url:"account_id"`
-	AmountDue          *Money              `json:"amount_due" url:"amount_due"`
-	BillingAddress     *PaymentAddress     `json:"billing_address,omitempty" url:"billing_address,omitempty"`
-	BuyerFeeAmount     *Money              `json:"buyer_fee_amount" url:"buyer_fee_amount"`
-	BuyerFeePercentage float64             `json:"buyer_fee_percentage" url:"buyer_fee_percentage"`
-	CreatedAt          string              `json:"created_at" url:"created_at"`
-	CustomerName       *string             `json:"customer_name,omitempty" url:"customer_name,omitempty"`
-	DueAt              *string             `json:"due_at,omitempty" url:"due_at,omitempty"`
-	EmailAddress       *string             `json:"email_address,omitempty" url:"email_address,omitempty"`
-	ID                 string              `json:"id" url:"id"`
-	InvoicePrefix      *string             `json:"invoice_prefix,omitempty" url:"invoice_prefix,omitempty"`
-	LineItems          []*InvoiceLineItem  `json:"line_items" url:"line_items"`
-	MailingAddressID   *string             `json:"mailing_address_id,omitempty" url:"mailing_address_id,omitempty"`
-	MemberID           *string             `json:"member_id,omitempty" url:"member_id,omitempty"`
-	Metadata           map[string]string   `json:"metadata" url:"metadata"`
-	Number             string              `json:"number" url:"number"`
-	Object             InvoiceObject       `json:"object" url:"object"`
-	Overdue            bool                `json:"overdue" url:"overdue"`
-	PaidAt             *string             `json:"paid_at,omitempty" url:"paid_at,omitempty"`
-	PaymentMethodID    *string             `json:"payment_method_id,omitempty" url:"payment_method_id,omitempty"`
-	RecipientEmails    []string            `json:"recipient_emails" url:"recipient_emails"`
-	Status             InvoiceStatus       `json:"status" url:"status"`
-	Subtotal           *Money              `json:"subtotal" url:"subtotal"`
-	TaxAmount          *Money              `json:"tax_amount,omitempty" url:"tax_amount,omitempty"`
-	Total              *Money              `json:"total" url:"total"`
-	TotalsStatus       InvoiceTotalsStatus `json:"totals_status" url:"totals_status"`
-	UpdatedAt          string              `json:"updated_at" url:"updated_at"`
+	AccountID          string          `json:"account_id" url:"account_id"`
+	AmountDue          *Money          `json:"amount_due" url:"amount_due"`
+	BillingAddress     *PaymentAddress `json:"billing_address,omitempty" url:"billing_address,omitempty"`
+	BuyerFeeAmount     *Money          `json:"buyer_fee_amount" url:"buyer_fee_amount"`
+	BuyerFeePercentage float64         `json:"buyer_fee_percentage" url:"buyer_fee_percentage"`
+	// A signed link that opens this invoice in a checkout session so the buyer can pay it: pass it as `link` to `POST /checkout_sessions`. Present once the invoice is issued and open; null while it is a draft, once it is paid or void, for an invoice with no product, and when you lack `payment:charge`.
+	CheckoutLink     *string             `json:"checkout_link,omitempty" url:"checkout_link,omitempty"`
+	CreatedAt        string              `json:"created_at" url:"created_at"`
+	CustomerName     *string             `json:"customer_name,omitempty" url:"customer_name,omitempty"`
+	DueAt            *string             `json:"due_at,omitempty" url:"due_at,omitempty"`
+	EmailAddress     *string             `json:"email_address,omitempty" url:"email_address,omitempty"`
+	ID               string              `json:"id" url:"id"`
+	InvoicePrefix    *string             `json:"invoice_prefix,omitempty" url:"invoice_prefix,omitempty"`
+	LineItems        []*InvoiceLineItem  `json:"line_items" url:"line_items"`
+	MailingAddressID *string             `json:"mailing_address_id,omitempty" url:"mailing_address_id,omitempty"`
+	MemberID         *string             `json:"member_id,omitempty" url:"member_id,omitempty"`
+	Metadata         map[string]string   `json:"metadata" url:"metadata"`
+	Number           string              `json:"number" url:"number"`
+	Object           InvoiceObject       `json:"object" url:"object"`
+	Overdue          bool                `json:"overdue" url:"overdue"`
+	PaidAt           *string             `json:"paid_at,omitempty" url:"paid_at,omitempty"`
+	PaymentMethodID  *string             `json:"payment_method_id,omitempty" url:"payment_method_id,omitempty"`
+	RecipientEmails  []string            `json:"recipient_emails" url:"recipient_emails"`
+	Status           InvoiceStatus       `json:"status" url:"status"`
+	Subtotal         *Money              `json:"subtotal" url:"subtotal"`
+	TaxAmount        *Money              `json:"tax_amount,omitempty" url:"tax_amount,omitempty"`
+	Total            *Money              `json:"total" url:"total"`
+	TotalsStatus     InvoiceTotalsStatus `json:"totals_status" url:"totals_status"`
+	UpdatedAt        string              `json:"updated_at" url:"updated_at"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -513,6 +517,13 @@ func (i *Invoice) GetBuyerFeePercentage() float64 {
 		return 0
 	}
 	return i.BuyerFeePercentage
+}
+
+func (i *Invoice) GetCheckoutLink() *string {
+	if i == nil {
+		return nil
+	}
+	return i.CheckoutLink
 }
 
 func (i *Invoice) GetCreatedAt() string {
@@ -718,6 +729,13 @@ func (i *Invoice) SetBuyerFeeAmount(buyerFeeAmount *Money) {
 func (i *Invoice) SetBuyerFeePercentage(buyerFeePercentage float64) {
 	i.BuyerFeePercentage = buyerFeePercentage
 	i.require(invoiceFieldBuyerFeePercentage)
+}
+
+// SetCheckoutLink sets the CheckoutLink field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *Invoice) SetCheckoutLink(checkoutLink *string) {
+	i.CheckoutLink = checkoutLink
+	i.require(invoiceFieldCheckoutLink)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
