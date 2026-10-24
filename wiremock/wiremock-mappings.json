@@ -15963,11 +15963,16 @@
           "id": {
             "equalTo": "id"
           }
+        },
+        "queryParameters": {
+          "resource_id": {
+            "equalTo": "pay_xxxxxxxxxxxxx"
+          }
         }
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"event\": \"payment.succeeded\",\n      \"id\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n      \"replayed_from\": \"whdel_MTcwMDAwMDAwMDAwMHx0ZXN0\",\n      \"request_body\": {\n        \"data\": {\n          \"id\": \"pay_123\"\n        },\n        \"id\": \"msg_original\",\n        \"type\": \"payment.succeeded\"\n      },\n      \"resource_id\": \"pay_123\",\n      \"response_body\": {\n        \"ok\": true\n      },\n      \"response_code\": 200,\n      \"sent_at\": \"2026-01-01T12:00:00.000Z\",\n      \"success\": true,\n      \"total_time\": 0.31\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"WyJjdXJzb3IiLDFd\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"start_cursor\"\n  }\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"event\": \"payment.succeeded\",\n      \"id\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n      \"replayed_from\": \"whdel_MTcwMDAwMDAwMDAwMHx0ZXN0\",\n      \"request_body\": {\n        \"data\": {\n          \"id\": \"pay_123\"\n        },\n        \"id\": \"msg_original\",\n        \"type\": \"payment.succeeded\"\n      },\n      \"resource_id\": \"pay_123\",\n      \"response_body\": {\n        \"ok\": true\n      },\n      \"response_code\": 200,\n      \"sent_at\": \"2026-01-01T12:00:00.000Z\",\n      \"status\": \"success\",\n      \"success\": true,\n      \"total_time\": 0.31\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"start_cursor\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }

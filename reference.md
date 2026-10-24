@@ -43626,7 +43626,7 @@ client.Webhooks.Update(
 <dl>
 <dd>
 
-Returns a paginated list of delivery attempts for a webhook, ordered by most recent first. Includes the request payload, response body, response code, and timing for each attempt.
+Returns a paginated list of delivery attempts for a webhook, ordered by most recent first. Includes the request payload, response body, response code, and timing for each attempt. Filtered queries use a bounded read budget, so a page may be partial or empty. Continue with `page_info.end_cursor` while `page_info.has_next_page` is `true`.
 </dd>
 </dl>
 </dd>
@@ -43643,6 +43643,9 @@ Returns a paginated list of delivery attempts for a webhook, ordered by most rec
 ```go
 request := &whopsdk.ListDeliveriesWebhooksRequest{
     ID: "id",
+    ResourceID: whopsdk.String(
+        "pay_xxxxxxxxxxxxx",
+    ),
 }
 client.Webhooks.ListDeliveries(
     context.TODO(),
@@ -43679,6 +43682,46 @@ client.Webhooks.ListDeliveries(
 <dd>
 
 **after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sentAfter:** `*time.Time` — Only deliveries sent at or after this ISO 8601 timestamp. Deliveries are retained for 30 days.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sentBefore:** `*time.Time` — Only deliveries sent at or before this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**events:** `*whopsdk.ListDeliveriesWebhooksRequestEventsItem` — Only deliveries of these event types. Repeat the parameter to pass several.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `*whopsdk.ListDeliveriesWebhooksRequestStatus` — Only deliveries with this outcome: `success` for a 2xx response, `error` otherwise.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**resourceID:** `*string` — Only deliveries triggered by this resource.
     
 </dd>
 </dl>
