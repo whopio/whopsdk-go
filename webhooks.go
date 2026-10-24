@@ -3240,6 +3240,9 @@ const (
 	ListDeliveriesWebhooksRequestEventsItemCardApplicationApproved               ListDeliveriesWebhooksRequestEventsItem = "card_application.approved"
 	ListDeliveriesWebhooksRequestEventsItemCardApplicationDenied                 ListDeliveriesWebhooksRequestEventsItem = "card_application.denied"
 	ListDeliveriesWebhooksRequestEventsItemCourseLessonInteractionCompleted      ListDeliveriesWebhooksRequestEventsItem = "course_lesson_interaction.completed"
+	ListDeliveriesWebhooksRequestEventsItemDomainCreated                         ListDeliveriesWebhooksRequestEventsItem = "domain.created"
+	ListDeliveriesWebhooksRequestEventsItemDomainUpdated                         ListDeliveriesWebhooksRequestEventsItem = "domain.updated"
+	ListDeliveriesWebhooksRequestEventsItemDomainDeleted                         ListDeliveriesWebhooksRequestEventsItem = "domain.deleted"
 	ListDeliveriesWebhooksRequestEventsItemPayoutMethodCreated                   ListDeliveriesWebhooksRequestEventsItem = "payout_method.created"
 	ListDeliveriesWebhooksRequestEventsItemVerificationSucceeded                 ListDeliveriesWebhooksRequestEventsItem = "verification.succeeded"
 	ListDeliveriesWebhooksRequestEventsItemIdentityProfileApproved               ListDeliveriesWebhooksRequestEventsItem = "identity_profile.approved"
@@ -3403,6 +3406,12 @@ func NewListDeliveriesWebhooksRequestEventsItemFromString(s string) (ListDeliver
 		return ListDeliveriesWebhooksRequestEventsItemCardApplicationDenied, nil
 	case "course_lesson_interaction.completed":
 		return ListDeliveriesWebhooksRequestEventsItemCourseLessonInteractionCompleted, nil
+	case "domain.created":
+		return ListDeliveriesWebhooksRequestEventsItemDomainCreated, nil
+	case "domain.updated":
+		return ListDeliveriesWebhooksRequestEventsItemDomainUpdated, nil
+	case "domain.deleted":
+		return ListDeliveriesWebhooksRequestEventsItemDomainDeleted, nil
 	case "payout_method.created":
 		return ListDeliveriesWebhooksRequestEventsItemPayoutMethodCreated, nil
 	case "verification.succeeded":
