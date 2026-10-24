@@ -3,11 +3,14 @@
 //
 // NewHTTPClient returns an HTTP client for option.WithHTTPClient. Before each request it exchanges
 // an identity token for a short-lived Whop access token, reuses that token until a few minutes before
-// it expires, and then exchanges a fresh identity token. When a renewal fails, requests keep using the
-// current token until 30 seconds before it expires, and the exchange is retried after a backoff. When
-// no valid token remains, the request fails with the exchange's error and is not sent, and later
-// requests return the same error without another exchange until its RetryAt. The package uses only the
-// standard library, never generated client code, so it survives the client being regenerated.
+// it expires, and then renews it in the background with a fresh identity token while requests keep
+// using the current one. A request waits only when no token with more than 30 seconds left remains.
+// Each renewal, from the call for the identity token through the exchange, is cut off after 30
+// seconds. When a renewal fails, requests keep using the current token until 30 seconds before it
+// expires, and the exchange is retried after a backoff. When no valid token remains, the request fails
+// with the exchange's error and is not sent, and later requests return the same error without another
+// exchange until its RetryAt. The package uses only the standard library, never generated client code,
+// so it survives the client being regenerated.
 //
 //	httpClient, err := oidc.NewHTTPClient(oidc.Options{
 //		RoleID:        "aurl_xxxxxxxxxxxxx",
@@ -51,9 +54,10 @@ const (
 )
 
 var (
-	now         = time.Now
-	random      = rand.Float64
-	httpTimeout = 10 * time.Second
+	now            = time.Now
+	random         = rand.Float64
+	httpTimeout    = 10 * time.Second
+	renewalTimeout = 30 * time.Second
 )
 
 // Options configures NewHTTPClient.
@@ -61,7 +65,8 @@ type Options struct {
 	// RoleID is the role to assume, prefixed aurl_. A trust linked to it must accept the identity token.
 	RoleID string
 	// IdentityToken returns an identity token from your cloud provider. It is called again for every
-	// exchange, so return a fresh token rather than a stored one.
+	// exchange, so return a fresh token rather than a stored one. A call still running 30 seconds after
+	// the renewal started fails the renewal and is abandoned, so give your requests their own timeout.
 	IdentityToken func() (string, error)
 	// BaseURL is the API's base URL, for example https://sandbox-api.whop.com/api/v1. Defaults to production.
 	BaseURL string
@@ -107,8 +112,8 @@ type HTTPClient struct {
 }
 
 // NewHTTPClient returns an HTTP client for option.WithHTTPClient that exchanges your provider's identity
-// token for a Whop access token and renews it before it expires. Concurrent requests share one exchange
-// and its outcome.
+// token for a Whop access token and renews it before it expires. Concurrent requests share one exchange,
+// and those that wait for it share its outcome.
 func NewHTTPClient(options Options) (*HTTPClient, error) {
 	if options.RoleID == "" {
 		return nil, &Error{Message: "Pass the role to assume as RoleID."}
@@ -119,9 +124,10 @@ func NewHTTPClient(options Options) (*HTTPClient, error) {
 	return &HTTPClient{source: &tokenSource{options: options}, send: httpClient(options.HTTPClient)}, nil
 }
 
-// Do sends the request with the current access token, exchanging for one first when there is none or it
-// is about to expire. When the exchange fails and no valid token remains, Do returns its error and does
-// not send the request.
+// Do sends the request with the current access token. When the token is due for renewal but has more
+// than 30 seconds left, Do sends the request with it and renews in the background; with no such token,
+// Do waits for the exchange. When the exchange fails and no valid token remains, Do returns its error
+// and does not send the request.
 func (c *HTTPClient) Do(request *http.Request) (*http.Response, error) {
 	token, err := c.source.token(request.Context())
 	if err != nil {
@@ -172,6 +178,11 @@ func (s *tokenSource) token(ctx context.Context) (string, error) {
 		s.inFlight = call
 		go s.renew(call)
 	}
+	if s.valid() {
+		token := s.current
+		s.mu.Unlock()
+		return token, nil
+	}
 	s.mu.Unlock()
 
 	select {
@@ -183,7 +194,7 @@ func (s *tokenSource) token(ctx context.Context) (string, error) {
 }
 
 func (s *tokenSource) renew(call *exchangeCall) {
-	granted, err := s.exchange()
+	granted, err := withTimeout(context.Background(), "The token renewal", renewalTimeout, s.exchange)
 	s.mu.Lock()
 	if err == nil {
 		s.current, s.failure, s.consecutiveFailures = granted.token, nil, 0
@@ -200,8 +211,12 @@ func (s *tokenSource) renew(call *exchangeCall) {
 	close(call.done)
 }
 
+func (s *tokenSource) valid() bool {
+	return s.current != "" && now().Before(s.expiresAt.Add(-expiryMargin))
+}
+
 func (s *tokenSource) currentOrFailure() (string, error) {
-	if s.current != "" && now().Before(s.expiresAt.Add(-expiryMargin)) {
+	if s.valid() {
 		return s.current, nil
 	}
 	return "", s.failure
@@ -232,7 +247,7 @@ func backoff(consecutiveFailures int) time.Duration {
 	return between(wait*9/10, wait*11/10)
 }
 
-func (s *tokenSource) exchange() (grant, error) {
+func (s *tokenSource) exchange(ctx context.Context) (grant, error) {
 	subjectToken, err := s.options.IdentityToken()
 	if err != nil {
 		return grant{}, err
@@ -252,7 +267,7 @@ func (s *tokenSource) exchange() (grant, error) {
 	if baseURL == "" {
 		baseURL = defaultBaseURL
 	}
-	return withTimeout("The token exchange", func(ctx context.Context) (grant, error) {
+	return withTimeout(ctx, "The token exchange", httpTimeout, func(ctx context.Context) (grant, error) {
 		request, err := http.NewRequestWithContext(ctx, http.MethodPost, strings.TrimRight(baseURL, "/")+"/access_tokens/exchange", bytes.NewReader(body))
 		if err != nil {
 			return grant{}, err
@@ -327,7 +342,7 @@ func GitHubActions(options IdentityOptions) func() (string, error) {
 		query.Set("audience", audience(options))
 		parsed.RawQuery = query.Encode()
 
-		return withTimeout("The GitHub Actions identity token request", func(ctx context.Context) (string, error) {
+		return withTimeout(context.Background(), "The GitHub Actions identity token request", httpTimeout, func(ctx context.Context) (string, error) {
 			request, err := http.NewRequestWithContext(ctx, http.MethodGet, parsed.String(), nil)
 			if err != nil {
 				return "", err
@@ -358,7 +373,7 @@ func GitHubActions(options IdentityOptions) func() (string, error) {
 // server, on Cloud Run, Cloud Functions, Compute Engine, or GKE with Workload Identity.
 func GoogleCloud(options IdentityOptions) func() (string, error) {
 	return func() (string, error) {
-		return withTimeout("The identity token request to the Google Cloud metadata server", func(ctx context.Context) (string, error) {
+		return withTimeout(context.Background(), "The identity token request to the Google Cloud metadata server", httpTimeout, func(ctx context.Context) (string, error) {
 			request, err := http.NewRequestWithContext(ctx, http.MethodGet, googleMetadataIdentityURL+"?audience="+url.QueryEscape(audience(options)), nil)
 			if err != nil {
 				return "", err
@@ -401,14 +416,27 @@ func httpClient(client *http.Client) *http.Client {
 	return http.DefaultClient
 }
 
-func withTimeout[T any](request string, send func(context.Context) (T, error)) (T, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), httpTimeout)
+func withTimeout[T any](parent context.Context, request string, timeout time.Duration, send func(context.Context) (T, error)) (T, error) {
+	ctx, cancel := context.WithTimeout(parent, timeout)
 	defer cancel()
-	result, err := send(ctx)
-	if err != nil && ctx.Err() != nil {
-		return result, &Error{Message: fmt.Sprintf("%s timed out after %g seconds.", request, httpTimeout.Seconds())}
+	type outcome struct {
+		value T
+		err   error
 	}
-	return result, err
+	finished := make(chan outcome, 1)
+	go func() {
+		value, err := send(ctx)
+		finished <- outcome{value, err}
+	}()
+	select {
+	case result := <-finished:
+		if result.err == nil || ctx.Err() == nil {
+			return result.value, result.err
+		}
+	case <-ctx.Done():
+	}
+	var zero T
+	return zero, &Error{Message: fmt.Sprintf("%s timed out after %g seconds.", request, timeout.Seconds())}
 }
 
 func between(low, high time.Duration) time.Duration {
