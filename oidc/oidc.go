@@ -1,19 +1,25 @@
 // Package oidc authenticates the Whop client with a cloud provider's OIDC identity token instead
 // of an API key.
 //
-// Token returns a function for option.WithTokenFunc. The client calls it before each request; it
-// exchanges an identity token for a short-lived Whop access token, reuses that token until shortly
-// before it expires, and then exchanges a fresh identity token. The package uses only the standard
-// library, never generated client code, so it survives the client being regenerated.
+// NewHTTPClient returns an HTTP client for option.WithHTTPClient. Before each request it exchanges
+// an identity token for a short-lived Whop access token, reuses that token until shortly before it
+// expires, and then exchanges a fresh identity token. When the exchange fails, the request fails
+// with its *Error and is not sent. The package uses only the standard library, never generated
+// client code, so it survives the client being regenerated.
 //
-//	whop := client.NewWhop(option.WithTokenFunc(oidc.Token(oidc.Options{
+//	httpClient, err := oidc.NewHTTPClient(oidc.Options{
 //		RoleID:        "aurl_xxxxxxxxxxxxx",
 //		IdentityToken: oidc.GitHubActions(oidc.IdentityOptions{}),
-//	})))
+//	})
+//	if err != nil {
+//		return err
+//	}
+//	whop := client.NewWhop(option.WithHTTPClient(httpClient))
 package oidc
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -39,7 +45,7 @@ const (
 
 var now = time.Now
 
-// Options configures Token.
+// Options configures NewHTTPClient.
 type Options struct {
 	// RoleID is the role to assume, prefixed aurl_. A trust linked to it must accept the identity token.
 	RoleID string
@@ -48,7 +54,8 @@ type Options struct {
 	IdentityToken func() (string, error)
 	// BaseURL is the API's base URL, for example https://sandbox-api.whop.com/api/v1. Defaults to production.
 	BaseURL string
-	// HTTPClient sends the exchange. Defaults to a client with a 10 second timeout.
+	// HTTPClient sends the exchange and the API requests. Defaults to a client with a 10 second
+	// timeout for the exchange and, as the Whop client does, http.DefaultClient for the API requests.
 	HTTPClient *http.Client
 }
 
@@ -69,41 +76,91 @@ type Error struct {
 
 func (e *Error) Error() string { return e.Message }
 
-// Token returns a function for option.WithTokenFunc that exchanges your provider's identity token for a
-// Whop access token and renews it before it expires. Concurrent requests share one exchange.
-func Token(options Options) func() (string, error) {
-	source := &tokenSource{options: options}
-	return source.token
+// HTTPClient sends the Whop client's requests with an access token from the exchange. Pass it to
+// option.WithHTTPClient. A request-level option.WithHTTPClient replaces it, and its authentication,
+// for that request.
+type HTTPClient struct {
+	source *tokenSource
+	send   *http.Client
+}
+
+// NewHTTPClient returns an HTTP client for option.WithHTTPClient that exchanges your provider's identity
+// token for a Whop access token and renews it before it expires. Concurrent requests share one exchange
+// and its outcome.
+func NewHTTPClient(options Options) (*HTTPClient, error) {
+	if options.RoleID == "" {
+		return nil, &Error{Message: "Pass the role to assume as RoleID."}
+	}
+	if options.IdentityToken == nil {
+		return nil, &Error{Message: "Pass a source of identity tokens as IdentityToken."}
+	}
+	send := options.HTTPClient
+	if send == nil {
+		send = http.DefaultClient
+	}
+	return &HTTPClient{source: &tokenSource{options: options}, send: send}, nil
+}
+
+// Do sends the request with the current access token, exchanging for one first when there is none or it
+// is about to expire. When the exchange fails, Do returns its error and does not send the request.
+func (c *HTTPClient) Do(request *http.Request) (*http.Response, error) {
+	token, err := c.source.token(request.Context())
+	if err != nil {
+		return nil, err
+	}
+	authenticated := request.Clone(request.Context())
+	authenticated.Header.Set("Authorization", "Bearer "+token)
+	return c.send.Do(authenticated)
 }
 
 type tokenSource struct {
-	options Options
-	mu      sync.Mutex
-	current string
-	renewAt time.Time
+	options  Options
+	mu       sync.Mutex
+	current  string
+	renewAt  time.Time
+	inFlight *exchangeCall
 }
 
-func (s *tokenSource) token() (string, error) {
-	if s.options.RoleID == "" {
-		return "", &Error{Message: "Pass the role to assume as RoleID."}
-	}
-	if s.options.IdentityToken == nil {
-		return "", &Error{Message: "Pass a source of identity tokens as IdentityToken."}
-	}
+type exchangeCall struct {
+	done  chan struct{}
+	token string
+	err   error
+}
 
+func (s *tokenSource) token(ctx context.Context) (string, error) {
 	s.mu.Lock()
-	defer s.mu.Unlock()
 	if s.current != "" && now().Before(s.renewAt) {
-		return s.current, nil
+		token := s.current
+		s.mu.Unlock()
+		return token, nil
 	}
+	call := s.inFlight
+	if call == nil {
+		call = &exchangeCall{done: make(chan struct{})}
+		s.inFlight = call
+		go s.renew(call)
+	}
+	s.mu.Unlock()
 
-	token, expiresIn, err := s.exchange()
-	if err != nil {
-		return "", err
+	select {
+	case <-call.done:
+		return call.token, call.err
+	case <-ctx.Done():
+		return "", ctx.Err()
 	}
-	s.current = token
-	s.renewAt = now().Add(time.Duration(expiresIn)*time.Second - renewBeforeExpiry)
-	return token, nil
+}
+
+func (s *tokenSource) renew(call *exchangeCall) {
+	token, expiresIn, err := s.exchange()
+	s.mu.Lock()
+	if err == nil {
+		s.current = token
+		s.renewAt = now().Add(time.Duration(expiresIn)*time.Second - renewBeforeExpiry)
+	}
+	s.inFlight = nil
+	s.mu.Unlock()
+	call.token, call.err = token, err
+	close(call.done)
 }
 
 func (s *tokenSource) exchange() (string, int64, error) {
@@ -136,7 +193,7 @@ func (s *tokenSource) exchange() (string, int64, error) {
 	if err != nil {
 		return "", 0, err
 	}
-	defer response.Body.Close()
+	defer func() { _ = response.Body.Close() }()
 
 	var payload struct {
 		AccessToken string `json:"access_token"`
@@ -192,7 +249,7 @@ func GitHubActions(options IdentityOptions) func() (string, error) {
 		if err != nil {
 			return "", err
 		}
-		defer response.Body.Close()
+		defer func() { _ = response.Body.Close() }()
 		if response.StatusCode >= 400 {
 			return "", &Error{Status: response.StatusCode, Message: fmt.Sprintf("GitHub Actions refused the identity token request with %d.", response.StatusCode)}
 		}
@@ -221,7 +278,7 @@ func GoogleCloud(options IdentityOptions) func() (string, error) {
 		if err != nil {
 			return "", err
 		}
-		defer response.Body.Close()
+		defer func() { _ = response.Body.Close() }()
 		if response.StatusCode >= 400 {
 			return "", &Error{Status: response.StatusCode, Message: fmt.Sprintf("The Google Cloud metadata server refused the identity token request with %d.", response.StatusCode)}
 		}

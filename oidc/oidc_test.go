@@ -1,6 +1,7 @@
 package oidc
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -39,10 +40,19 @@ func staticIdentity(token string) func() (string, error) {
 	return func() (string, error) { return token, nil }
 }
 
+func tokenFunc(t *testing.T, options Options) func() (string, error) {
+	t.Helper()
+	httpClient, err := NewHTTPClient(options)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return func() (string, error) { return httpClient.source.token(context.Background()) }
+}
+
 func TestTokenExchangesTheIdentityTokenForAnAccessTokenAssumingTheRole(t *testing.T) {
 	server, bodies := exchangeServer(t, "whop-token-1")
 
-	token, err := Token(Options{RoleID: roleID, IdentityToken: staticIdentity("id-token"), BaseURL: server.URL + "/api/v1/"})()
+	token, err := tokenFunc(t, Options{RoleID: roleID, IdentityToken: staticIdentity("id-token"), BaseURL: server.URL + "/api/v1/"})()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -74,7 +84,7 @@ func TestTokenRenewsAMinuteBeforeExpiryWithAFreshIdentityToken(t *testing.T) {
 		identities = identities[1:]
 		return next, nil
 	}
-	token := Token(Options{RoleID: roleID, IdentityToken: identity, BaseURL: server.URL + "/api/v1"})
+	token := tokenFunc(t, Options{RoleID: roleID, IdentityToken: identity, BaseURL: server.URL + "/api/v1"})
 
 	first, _ := token()
 	clock = clock.Add(58 * time.Minute)
@@ -92,7 +102,7 @@ func TestTokenRenewsAMinuteBeforeExpiryWithAFreshIdentityToken(t *testing.T) {
 
 func TestTokenSharesOneExchangeBetweenConcurrentCallers(t *testing.T) {
 	server, bodies := exchangeServer(t, "whop-token-1", "unexpected")
-	token := Token(Options{RoleID: roleID, IdentityToken: staticIdentity("id-token"), BaseURL: server.URL + "/api/v1"})
+	token := tokenFunc(t, Options{RoleID: roleID, IdentityToken: staticIdentity("id-token"), BaseURL: server.URL + "/api/v1"})
 
 	var wg sync.WaitGroup
 	results := make([]string, 5)
@@ -126,7 +136,7 @@ func TestTokenSurfacesTheAPIErrorAndRetriesOnTheNextCall(t *testing.T) {
 		_, _ = w.Write([]byte(`{"access_token":"whop-token-1","expires_in":3600}`))
 	}))
 	t.Cleanup(server.Close)
-	token := Token(Options{RoleID: roleID, IdentityToken: staticIdentity("id-token"), BaseURL: server.URL})
+	token := tokenFunc(t, Options{RoleID: roleID, IdentityToken: staticIdentity("id-token"), BaseURL: server.URL})
 
 	_, err := token()
 	var oidcErr *Error
@@ -138,12 +148,77 @@ func TestTokenSurfacesTheAPIErrorAndRetriesOnTheNextCall(t *testing.T) {
 	}
 }
 
-func TestTokenRequiresARoleAndAnIdentitySource(t *testing.T) {
-	if _, err := Token(Options{IdentityToken: staticIdentity("id-token")})(); err == nil {
-		t.Fatal("expected an error without RoleID")
+func TestConcurrentCallersShareOneFailedExchange(t *testing.T) {
+	var exchanges int32
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		atomic.AddInt32(&exchanges, 1)
+		time.Sleep(200 * time.Millisecond)
+		w.WriteHeader(http.StatusForbidden)
+		_, _ = w.Write([]byte(`{"error":{"message":"No trust linked to this role accepts this token.","code":"oidc_exchange_no_match"}}`))
+	}))
+	t.Cleanup(server.Close)
+	token := tokenFunc(t, Options{RoleID: roleID, IdentityToken: staticIdentity("id-token"), BaseURL: server.URL})
+
+	var wg sync.WaitGroup
+	errs := make([]error, 8)
+	for i := range errs {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			_, errs[i] = token()
+		}(i)
 	}
-	if _, err := Token(Options{RoleID: roleID})(); err == nil {
-		t.Fatal("expected an error without IdentityToken")
+	wg.Wait()
+
+	if got := atomic.LoadInt32(&exchanges); got != 1 {
+		t.Fatalf("exchanges = %d", got)
+	}
+	for _, err := range errs {
+		var oidcErr *Error
+		if !errors.As(err, &oidcErr) || oidcErr.Code != "oidc_exchange_no_match" {
+			t.Fatalf("errs = %v", errs)
+		}
+	}
+}
+
+func TestACancelledRequestStopsWaitingWhileTheExchangeFinishesForTheNext(t *testing.T) {
+	var exchanges int32
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		atomic.AddInt32(&exchanges, 1)
+		_, _ = w.Write([]byte(`{"access_token":"whop-token-1","expires_in":3600}`))
+	}))
+	t.Cleanup(server.Close)
+	release := make(chan struct{})
+	identity := func() (string, error) {
+		<-release
+		return "id-token", nil
+	}
+	httpClient, err := NewHTTPClient(Options{RoleID: roleID, IdentityToken: identity, BaseURL: server.URL})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	cancelled, cancel := context.WithCancel(context.Background())
+	cancel()
+	if _, err := httpClient.source.token(cancelled); !errors.Is(err, context.Canceled) {
+		t.Fatalf("err = %v", err)
+	}
+	close(release)
+	if token, err := httpClient.source.token(context.Background()); err != nil || token != "whop-token-1" {
+		t.Fatalf("token = %q, err = %v", token, err)
+	}
+	if got := atomic.LoadInt32(&exchanges); got != 1 {
+		t.Fatalf("exchanges = %d", got)
+	}
+}
+
+func TestNewHTTPClientRequiresARoleAndAnIdentitySource(t *testing.T) {
+	var oidcErr *Error
+	if _, err := NewHTTPClient(Options{IdentityToken: staticIdentity("id-token")}); !errors.As(err, &oidcErr) || oidcErr.Message != "Pass the role to assume as RoleID." {
+		t.Fatalf("err = %v", err)
+	}
+	if _, err := NewHTTPClient(Options{RoleID: roleID}); !errors.As(err, &oidcErr) || oidcErr.Message != "Pass a source of identity tokens as IdentityToken." {
+		t.Fatalf("err = %v", err)
 	}
 }
 
