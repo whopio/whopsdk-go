@@ -7,6 +7,7 @@ import (
 	assert "github.com/stretchr/testify/assert"
 	require "github.com/stretchr/testify/require"
 	testing "testing"
+	time "time"
 )
 
 func TestSettersCreateWebhooksRequest(t *testing.T) {
@@ -676,6 +677,46 @@ func TestSettersListDeliveriesWebhooksRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSentAfter", func(t *testing.T) {
+		obj := &ListDeliveriesWebhooksRequest{}
+		var fernTestValueSentAfter *time.Time
+		obj.SetSentAfter(fernTestValueSentAfter)
+		assert.Equal(t, fernTestValueSentAfter, obj.SentAfter)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetSentBefore", func(t *testing.T) {
+		obj := &ListDeliveriesWebhooksRequest{}
+		var fernTestValueSentBefore *time.Time
+		obj.SetSentBefore(fernTestValueSentBefore)
+		assert.Equal(t, fernTestValueSentBefore, obj.SentBefore)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetEvents", func(t *testing.T) {
+		obj := &ListDeliveriesWebhooksRequest{}
+		var fernTestValueEvents []*ListDeliveriesWebhooksRequestEventsItem
+		obj.SetEvents(fernTestValueEvents)
+		assert.Equal(t, fernTestValueEvents, obj.Events)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetStatus", func(t *testing.T) {
+		obj := &ListDeliveriesWebhooksRequest{}
+		var fernTestValueStatus *ListDeliveriesWebhooksRequestStatus
+		obj.SetStatus(fernTestValueStatus)
+		assert.Equal(t, fernTestValueStatus, obj.Status)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetResourceID", func(t *testing.T) {
+		obj := &ListDeliveriesWebhooksRequest{}
+		var fernTestValueResourceID *string
+		obj.SetResourceID(fernTestValueResourceID)
+		assert.Equal(t, fernTestValueResourceID, obj.ResourceID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestSettersMarkExplicitListDeliveriesWebhooksRequest(t *testing.T) {
@@ -749,6 +790,161 @@ func TestSettersMarkExplicitListDeliveriesWebhooksRequest(t *testing.T) {
 
 		// Act
 		obj.SetAfter(fernTestValueAfter)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSentAfter_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListDeliveriesWebhooksRequest{}
+		var fernTestValueSentAfter *time.Time
+
+		// Act
+		obj.SetSentAfter(fernTestValueSentAfter)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSentBefore_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListDeliveriesWebhooksRequest{}
+		var fernTestValueSentBefore *time.Time
+
+		// Act
+		obj.SetSentBefore(fernTestValueSentBefore)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetEvents_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListDeliveriesWebhooksRequest{}
+		var fernTestValueEvents []*ListDeliveriesWebhooksRequestEventsItem
+
+		// Act
+		obj.SetEvents(fernTestValueEvents)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetStatus_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListDeliveriesWebhooksRequest{}
+		var fernTestValueStatus *ListDeliveriesWebhooksRequestStatus
+
+		// Act
+		obj.SetStatus(fernTestValueStatus)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetResourceID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListDeliveriesWebhooksRequest{}
+		var fernTestValueResourceID *string
+
+		// Act
+		obj.SetResourceID(fernTestValueResourceID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -2484,6 +2680,14 @@ func TestSettersWebhookDelivery(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetStatus", func(t *testing.T) {
+		obj := &WebhookDelivery{}
+		var fernTestValueStatus WebhookDeliveryStatus
+		obj.SetStatus(fernTestValueStatus)
+		assert.Equal(t, fernTestValueStatus, obj.Status)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetSuccess", func(t *testing.T) {
 		obj := &WebhookDelivery{}
 		var fernTestValueSuccess bool
@@ -2725,6 +2929,29 @@ func TestGettersWebhookDelivery(t *testing.T) {
 			}
 		}()
 		_ = obj.GetSentAt() // Should return zero value
+	})
+
+	t.Run("GetStatus", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &WebhookDelivery{}
+		var expected WebhookDeliveryStatus
+		obj.Status = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetStatus(), "getter should return the property value")
+	})
+
+	t.Run("GetStatus_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *WebhookDelivery
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetStatus() // Should return zero value
 	})
 
 	t.Run("GetSuccess", func(t *testing.T) {
@@ -3001,6 +3228,37 @@ func TestSettersMarkExplicitWebhookDelivery(t *testing.T) {
 
 		// Act
 		obj.SetSentAt(fernTestValueSentAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetStatus_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &WebhookDelivery{}
+		var fernTestValueStatus WebhookDeliveryStatus
+
+		// Act
+		obj.SetStatus(fernTestValueStatus)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -7345,6 +7603,820 @@ func TestEnumCreateWebhooksRequestEventsItem(t *testing.T) {
 	})
 }
 
+func TestEnumListDeliveriesWebhooksRequestEventsItem(t *testing.T) {
+	t.Run("NewFromString_account_updated", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("account.updated")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("account.updated"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_account_financing_approved", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("account.financing_approved")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("account.financing_approved"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_account_financing_denied", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("account.financing_denied")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("account.financing_denied"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_account_financing_disabled", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("account.financing_disabled")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("account.financing_disabled"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_invoice_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("invoice.created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("invoice.created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_invoice_marked_uncollectible", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("invoice.marked_uncollectible")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("invoice.marked_uncollectible"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_invoice_paid", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("invoice.paid")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("invoice.paid"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_invoice_past_due", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("invoice.past_due")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("invoice.past_due"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_invoice_voided", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("invoice.voided")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("invoice.voided"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_membership_activated", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("membership.activated")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("membership.activated"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_membership_deactivated", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("membership.deactivated")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("membership.deactivated"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_membership_trial_ending_soon", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("membership.trial_ending_soon")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("membership.trial_ending_soon"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_membership_updated", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("membership.updated")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("membership.updated"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_entry_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("entry.created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("entry.created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_entry_approved", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("entry.approved")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("entry.approved"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_entry_denied", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("entry.denied")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("entry.denied"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_entry_deleted", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("entry.deleted")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("entry.deleted"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_export_completed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("export.completed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("export.completed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_export_failed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("export.failed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("export.failed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_setup_intent_requires_action", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("setup_intent.requires_action")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("setup_intent.requires_action"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_setup_intent_succeeded", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("setup_intent.succeeded")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("setup_intent.succeeded"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_setup_intent_canceled", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("setup_intent.canceled")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("setup_intent.canceled"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ledger_account_funds_available", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("ledger_account.funds_available")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("ledger_account.funds_available"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_swap_completed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("swap.completed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("swap.completed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_deposit_succeeded", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("deposit.succeeded")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("deposit.succeeded"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_financial_activity_funds_available", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("financial_activity.funds_available")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("financial_activity.funds_available"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_transfer_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("transfer.created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("transfer.created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_transfer_completed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("transfer.completed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("transfer.completed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_transfer_failed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("transfer.failed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("transfer.failed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_withdrawal_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("withdrawal.created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("withdrawal.created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_withdrawal_updated", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("withdrawal.updated")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("withdrawal.updated"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_withdrawal_reversed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("withdrawal.reversed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("withdrawal.reversed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payout_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("payout.created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("payout.created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payout_updated", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("payout.updated")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("payout.updated"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payout_reversed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("payout.reversed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("payout.reversed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_card_transaction_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("card_transaction.created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("card_transaction.created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_card_transaction_updated", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("card_transaction.updated")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("card_transaction.updated"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_card_transaction_completed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("card_transaction.completed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("card_transaction.completed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_card_transaction_declined", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("card_transaction.declined")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("card_transaction.declined"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_card_transaction_reversed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("card_transaction.reversed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("card_transaction.reversed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_card_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("card.created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("card.created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_card_updated", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("card.updated")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("card.updated"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_card_frozen", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("card.frozen")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("card.frozen"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_card_canceled", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("card.canceled")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("card.canceled"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_card_application_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("card_application.created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("card_application.created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_card_application_updated", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("card_application.updated")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("card_application.updated"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_card_application_approved", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("card_application.approved")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("card_application.approved"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_card_application_denied", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("card_application.denied")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("card_application.denied"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_course_lesson_interaction_completed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("course_lesson_interaction.completed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("course_lesson_interaction.completed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payout_method_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("payout_method.created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("payout_method.created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_verification_succeeded", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("verification.succeeded")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("verification.succeeded"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_identity_profile_approved", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("identity_profile.approved")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("identity_profile.approved"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_identity_profile_rejected", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("identity_profile.rejected")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("identity_profile.rejected"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_identity_profile_needs_action", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("identity_profile.needs_action")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("identity_profile.needs_action"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_identity_profile_updated", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("identity_profile.updated")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("identity_profile.updated"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payout_account_status_updated", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("payout_account.status_updated")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("payout_account.status_updated"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payment_authorized", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("payment.authorized")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("payment.authorized"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payment_canceled", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("payment.canceled")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("payment.canceled"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_resolution_center_case_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("resolution_center_case.created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("resolution_center_case.created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_resolution_center_case_updated", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("resolution_center_case.updated")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("resolution_center_case.updated"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_resolution_center_case_decided", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("resolution_center_case.decided")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("resolution_center_case.decided"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_product_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("product.created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("product.created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_product_updated", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("product.updated")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("product.updated"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_product_deleted", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("product.deleted")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("product.deleted"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_product_published", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("product.published")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("product.published"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_product_unpublished", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("product.unpublished")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("product.unpublished"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_plan_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("plan.created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("plan.created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_plan_updated", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("plan.updated")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("plan.updated"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_plan_deleted", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("plan.deleted")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("plan.deleted"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_shipment_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("shipment.created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("shipment.created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_shipment_updated", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("shipment.updated")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("shipment.updated"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_member_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("member.created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("member.created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_member_updated", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("member.updated")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("member.updated"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ad_campaign_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("ad_campaign.created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("ad_campaign.created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ad_campaign_payment_failed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("ad_campaign.payment_failed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("ad_campaign.payment_failed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ad_campaign_updated", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("ad_campaign.updated")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("ad_campaign.updated"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ad_campaign_events", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("ad_campaign.events")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("ad_campaign.events"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ad_group_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("ad_group.created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("ad_group.created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ad_group_updated", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("ad_group.updated")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("ad_group.updated"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ad_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("ad.created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("ad.created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ad_updated", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("ad.updated")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("ad.updated"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_chat_message_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("chat.message.created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("chat.message.created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_chat_reaction_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("chat.reaction.created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("chat.reaction.created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payment_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("payment.created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("payment.created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payment_succeeded", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("payment.succeeded")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("payment.succeeded"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payment_failed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("payment.failed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("payment.failed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payment_pending", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("payment.pending")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("payment.pending"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payment_requires_action", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("payment.requires_action")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("payment.requires_action"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_dispute_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("dispute.created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("dispute.created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_dispute_updated", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("dispute.updated")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("dispute.updated"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_refund_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("refund.created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("refund.created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_refund_updated", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("refund.updated")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("refund.updated"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_dispute_alert_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("dispute_alert.created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("dispute_alert.created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_membership_cancel_at_period_end_changed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("membership.cancel_at_period_end_changed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("membership.cancel_at_period_end_changed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_membership_went_valid", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("membership.went_valid")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("membership.went_valid"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_membership_went_invalid", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("membership.went_invalid")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("membership.went_invalid"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_membership_metadata_updated", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("membership.metadata_updated")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("membership.metadata_updated"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_resolution_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("resolution.created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("resolution.created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_resolution_updated", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("resolution.updated")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("resolution.updated"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_resolution_decided", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("resolution.decided")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("resolution.decided"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payment_affiliate_reward_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("payment.affiliate_reward_created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("payment.affiliate_reward_created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_membership_experience_claimed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("membership.experience_claimed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("membership.experience_claimed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_app_membership_went_valid", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("app_membership.went_valid")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("app_membership.went_valid"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_app_membership_went_invalid", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("app_membership.went_invalid")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("app_membership.went_invalid"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_app_payment_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("app_payment.created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("app_payment.created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_app_payment_succeeded", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("app_payment.succeeded")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("app_payment.succeeded"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_app_payment_failed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("app_payment.failed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("app_payment.failed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_app_payment_pending", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("app_payment.pending")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("app_payment.pending"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_app_payment_requires_action", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("app_payment.requires_action")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("app_payment.requires_action"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_app_membership_cancel_at_period_end_changed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("app_membership.cancel_at_period_end_changed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("app_membership.cancel_at_period_end_changed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewListDeliveriesWebhooksRequestEventsItemFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("account.updated")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumListDeliveriesWebhooksRequestStatus(t *testing.T) {
+	t.Run("NewFromString_success", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestStatusFromString("success")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestStatus("success"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_error", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestStatusFromString("error")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestStatus("error"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewListDeliveriesWebhooksRequestStatusFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewListDeliveriesWebhooksRequestStatusFromString("success")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumUpdateWebhooksRequestEventsItem(t *testing.T) {
 	t.Run("NewFromString_account_updated", func(t *testing.T) {
 		t.Parallel()
@@ -8047,6 +9119,35 @@ func TestEnumWebhookAPIVersion(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewWebhookAPIVersionFromString("v1")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumWebhookDeliveryStatus(t *testing.T) {
+	t.Run("NewFromString_success", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewWebhookDeliveryStatusFromString("success")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, WebhookDeliveryStatus("success"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_error", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewWebhookDeliveryStatusFromString("error")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, WebhookDeliveryStatus("error"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewWebhookDeliveryStatusFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewWebhookDeliveryStatusFromString("success")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
