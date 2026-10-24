@@ -1275,6 +1275,9 @@ const (
 	WebhookEventsItemCardApplicationApproved               WebhookEventsItem = "card_application.approved"
 	WebhookEventsItemCardApplicationDenied                 WebhookEventsItem = "card_application.denied"
 	WebhookEventsItemCourseLessonInteractionCompleted      WebhookEventsItem = "course_lesson_interaction.completed"
+	WebhookEventsItemDomainCreated                         WebhookEventsItem = "domain.created"
+	WebhookEventsItemDomainUpdated                         WebhookEventsItem = "domain.updated"
+	WebhookEventsItemDomainDeleted                         WebhookEventsItem = "domain.deleted"
 	WebhookEventsItemPayoutMethodCreated                   WebhookEventsItem = "payout_method.created"
 	WebhookEventsItemVerificationSucceeded                 WebhookEventsItem = "verification.succeeded"
 	WebhookEventsItemIdentityProfileApproved               WebhookEventsItem = "identity_profile.approved"
@@ -1438,6 +1441,12 @@ func NewWebhookEventsItemFromString(s string) (WebhookEventsItem, error) {
 		return WebhookEventsItemCardApplicationDenied, nil
 	case "course_lesson_interaction.completed":
 		return WebhookEventsItemCourseLessonInteractionCompleted, nil
+	case "domain.created":
+		return WebhookEventsItemDomainCreated, nil
+	case "domain.updated":
+		return WebhookEventsItemDomainUpdated, nil
+	case "domain.deleted":
+		return WebhookEventsItemDomainDeleted, nil
 	case "payout_method.created":
 		return WebhookEventsItemPayoutMethodCreated, nil
 	case "verification.succeeded":
@@ -2027,6 +2036,9 @@ const (
 	WebhookListItemEventsItemCardApplicationApproved               WebhookListItemEventsItem = "card_application.approved"
 	WebhookListItemEventsItemCardApplicationDenied                 WebhookListItemEventsItem = "card_application.denied"
 	WebhookListItemEventsItemCourseLessonInteractionCompleted      WebhookListItemEventsItem = "course_lesson_interaction.completed"
+	WebhookListItemEventsItemDomainCreated                         WebhookListItemEventsItem = "domain.created"
+	WebhookListItemEventsItemDomainUpdated                         WebhookListItemEventsItem = "domain.updated"
+	WebhookListItemEventsItemDomainDeleted                         WebhookListItemEventsItem = "domain.deleted"
 	WebhookListItemEventsItemPayoutMethodCreated                   WebhookListItemEventsItem = "payout_method.created"
 	WebhookListItemEventsItemVerificationSucceeded                 WebhookListItemEventsItem = "verification.succeeded"
 	WebhookListItemEventsItemIdentityProfileApproved               WebhookListItemEventsItem = "identity_profile.approved"
@@ -2190,6 +2202,12 @@ func NewWebhookListItemEventsItemFromString(s string) (WebhookListItemEventsItem
 		return WebhookListItemEventsItemCardApplicationDenied, nil
 	case "course_lesson_interaction.completed":
 		return WebhookListItemEventsItemCourseLessonInteractionCompleted, nil
+	case "domain.created":
+		return WebhookListItemEventsItemDomainCreated, nil
+	case "domain.updated":
+		return WebhookListItemEventsItemDomainUpdated, nil
+	case "domain.deleted":
+		return WebhookListItemEventsItemDomainDeleted, nil
 	case "payout_method.created":
 		return WebhookListItemEventsItemPayoutMethodCreated, nil
 	case "verification.succeeded":
@@ -2374,6 +2392,9 @@ const (
 	WebhookTestableEventsItemCardApplicationApproved               WebhookTestableEventsItem = "card_application.approved"
 	WebhookTestableEventsItemCardApplicationDenied                 WebhookTestableEventsItem = "card_application.denied"
 	WebhookTestableEventsItemCourseLessonInteractionCompleted      WebhookTestableEventsItem = "course_lesson_interaction.completed"
+	WebhookTestableEventsItemDomainCreated                         WebhookTestableEventsItem = "domain.created"
+	WebhookTestableEventsItemDomainUpdated                         WebhookTestableEventsItem = "domain.updated"
+	WebhookTestableEventsItemDomainDeleted                         WebhookTestableEventsItem = "domain.deleted"
 	WebhookTestableEventsItemPayoutMethodCreated                   WebhookTestableEventsItem = "payout_method.created"
 	WebhookTestableEventsItemVerificationSucceeded                 WebhookTestableEventsItem = "verification.succeeded"
 	WebhookTestableEventsItemIdentityProfileApproved               WebhookTestableEventsItem = "identity_profile.approved"
@@ -2537,6 +2558,12 @@ func NewWebhookTestableEventsItemFromString(s string) (WebhookTestableEventsItem
 		return WebhookTestableEventsItemCardApplicationDenied, nil
 	case "course_lesson_interaction.completed":
 		return WebhookTestableEventsItemCourseLessonInteractionCompleted, nil
+	case "domain.created":
+		return WebhookTestableEventsItemDomainCreated, nil
+	case "domain.updated":
+		return WebhookTestableEventsItemDomainUpdated, nil
+	case "domain.deleted":
+		return WebhookTestableEventsItemDomainDeleted, nil
 	case "payout_method.created":
 		return WebhookTestableEventsItemPayoutMethodCreated, nil
 	case "verification.succeeded":
@@ -2717,6 +2744,9 @@ const (
 	CreateWebhooksRequestEventsItemCardApplicationApproved            CreateWebhooksRequestEventsItem = "card_application.approved"
 	CreateWebhooksRequestEventsItemCardApplicationDenied              CreateWebhooksRequestEventsItem = "card_application.denied"
 	CreateWebhooksRequestEventsItemCourseLessonInteractionCompleted   CreateWebhooksRequestEventsItem = "course_lesson_interaction.completed"
+	CreateWebhooksRequestEventsItemDomainCreated                      CreateWebhooksRequestEventsItem = "domain.created"
+	CreateWebhooksRequestEventsItemDomainUpdated                      CreateWebhooksRequestEventsItem = "domain.updated"
+	CreateWebhooksRequestEventsItemDomainDeleted                      CreateWebhooksRequestEventsItem = "domain.deleted"
 	CreateWebhooksRequestEventsItemPayoutMethodCreated                CreateWebhooksRequestEventsItem = "payout_method.created"
 	CreateWebhooksRequestEventsItemVerificationSucceeded              CreateWebhooksRequestEventsItem = "verification.succeeded"
 	CreateWebhooksRequestEventsItemIdentityProfileApproved            CreateWebhooksRequestEventsItem = "identity_profile.approved"
@@ -2858,6 +2888,12 @@ func NewCreateWebhooksRequestEventsItemFromString(s string) (CreateWebhooksReque
 		return CreateWebhooksRequestEventsItemCardApplicationDenied, nil
 	case "course_lesson_interaction.completed":
 		return CreateWebhooksRequestEventsItemCourseLessonInteractionCompleted, nil
+	case "domain.created":
+		return CreateWebhooksRequestEventsItemDomainCreated, nil
+	case "domain.updated":
+		return CreateWebhooksRequestEventsItemDomainUpdated, nil
+	case "domain.deleted":
+		return CreateWebhooksRequestEventsItemDomainDeleted, nil
 	case "payout_method.created":
 		return CreateWebhooksRequestEventsItemPayoutMethodCreated, nil
 	case "verification.succeeded":
@@ -3936,6 +3972,9 @@ const (
 	UpdateWebhooksRequestEventsItemCardApplicationApproved            UpdateWebhooksRequestEventsItem = "card_application.approved"
 	UpdateWebhooksRequestEventsItemCardApplicationDenied              UpdateWebhooksRequestEventsItem = "card_application.denied"
 	UpdateWebhooksRequestEventsItemCourseLessonInteractionCompleted   UpdateWebhooksRequestEventsItem = "course_lesson_interaction.completed"
+	UpdateWebhooksRequestEventsItemDomainCreated                      UpdateWebhooksRequestEventsItem = "domain.created"
+	UpdateWebhooksRequestEventsItemDomainUpdated                      UpdateWebhooksRequestEventsItem = "domain.updated"
+	UpdateWebhooksRequestEventsItemDomainDeleted                      UpdateWebhooksRequestEventsItem = "domain.deleted"
 	UpdateWebhooksRequestEventsItemPayoutMethodCreated                UpdateWebhooksRequestEventsItem = "payout_method.created"
 	UpdateWebhooksRequestEventsItemVerificationSucceeded              UpdateWebhooksRequestEventsItem = "verification.succeeded"
 	UpdateWebhooksRequestEventsItemIdentityProfileApproved            UpdateWebhooksRequestEventsItem = "identity_profile.approved"
@@ -4077,6 +4116,12 @@ func NewUpdateWebhooksRequestEventsItemFromString(s string) (UpdateWebhooksReque
 		return UpdateWebhooksRequestEventsItemCardApplicationDenied, nil
 	case "course_lesson_interaction.completed":
 		return UpdateWebhooksRequestEventsItemCourseLessonInteractionCompleted, nil
+	case "domain.created":
+		return UpdateWebhooksRequestEventsItemDomainCreated, nil
+	case "domain.updated":
+		return UpdateWebhooksRequestEventsItemDomainUpdated, nil
+	case "domain.deleted":
+		return UpdateWebhooksRequestEventsItemDomainDeleted, nil
 	case "payout_method.created":
 		return UpdateWebhooksRequestEventsItemPayoutMethodCreated, nil
 	case "verification.succeeded":
