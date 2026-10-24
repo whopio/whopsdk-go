@@ -67140,6 +67140,9 @@ const (
 	WebhookEventCardApplicationApproved            WebhookEvent = "card_application.approved"
 	WebhookEventCardApplicationDenied              WebhookEvent = "card_application.denied"
 	WebhookEventCourseLessonInteractionCompleted   WebhookEvent = "course_lesson_interaction.completed"
+	WebhookEventDomainCreated                      WebhookEvent = "domain.created"
+	WebhookEventDomainUpdated                      WebhookEvent = "domain.updated"
+	WebhookEventDomainDeleted                      WebhookEvent = "domain.deleted"
 	WebhookEventPayoutMethodCreated                WebhookEvent = "payout_method.created"
 	WebhookEventVerificationSucceeded              WebhookEvent = "verification.succeeded"
 	WebhookEventIdentityProfileApproved            WebhookEvent = "identity_profile.approved"
@@ -67287,6 +67290,12 @@ func NewWebhookEventFromString(s string) (WebhookEvent, error) {
 		return WebhookEventCardApplicationDenied, nil
 	case "course_lesson_interaction.completed":
 		return WebhookEventCourseLessonInteractionCompleted, nil
+	case "domain.created":
+		return WebhookEventDomainCreated, nil
+	case "domain.updated":
+		return WebhookEventDomainUpdated, nil
+	case "domain.deleted":
+		return WebhookEventDomainDeleted, nil
 	case "payout_method.created":
 		return WebhookEventPayoutMethodCreated, nil
 	case "verification.succeeded":
