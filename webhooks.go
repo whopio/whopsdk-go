@@ -15,7 +15,8 @@ var (
 	createWebhooksRequestFieldEnabled             = big.NewInt(1 << 2)
 	createWebhooksRequestFieldEvents              = big.NewInt(1 << 3)
 	createWebhooksRequestFieldResourceID          = big.NewInt(1 << 4)
-	createWebhooksRequestFieldURL                 = big.NewInt(1 << 5)
+	createWebhooksRequestFieldTitle               = big.NewInt(1 << 5)
+	createWebhooksRequestFieldURL                 = big.NewInt(1 << 6)
 )
 
 type CreateWebhooksRequest struct {
@@ -29,6 +30,8 @@ type CreateWebhooksRequest struct {
 	Events []CreateWebhooksRequestEventsItem `json:"events,omitempty" url:"-"`
 	// The account or app to create the webhook for. Defaults to the current account.
 	ResourceID *string `json:"resource_id,omitempty" url:"-"`
+	// A label for the webhook, shown in the dashboard. Up to 255 characters.
+	Title *string `json:"title,omitempty" url:"-"`
 	// The URL to send the webhook to.
 	URL string `json:"url" url:"-"`
 
@@ -78,6 +81,13 @@ func (c *CreateWebhooksRequest) SetEvents(events []CreateWebhooksRequestEventsIt
 func (c *CreateWebhooksRequest) SetResourceID(resourceID *string) {
 	c.ResourceID = resourceID
 	c.require(createWebhooksRequestFieldResourceID)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateWebhooksRequest) SetTitle(title *string) {
+	c.Title = title
+	c.require(createWebhooksRequestFieldTitle)
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -552,8 +562,9 @@ var (
 	webhookFieldLastFailureAt       = big.NewInt(1 << 11)
 	webhookFieldResourceID          = big.NewInt(1 << 12)
 	webhookFieldTestableEvents      = big.NewInt(1 << 13)
-	webhookFieldURL                 = big.NewInt(1 << 14)
-	webhookFieldWebhookSecret       = big.NewInt(1 << 15)
+	webhookFieldTitle               = big.NewInt(1 << 14)
+	webhookFieldURL                 = big.NewInt(1 << 15)
+	webhookFieldWebhookSecret       = big.NewInt(1 << 16)
 )
 
 // webhookNullableFields maps the wire names of Webhook's nullable fields (required or optional) to their field bits.
@@ -563,6 +574,7 @@ var webhookNullableFields = map[string]*big.Int{
 	"disabled_reason":  webhookFieldDisabledReason,
 	"failing_since":    webhookFieldFailingSince,
 	"last_failure_at":  webhookFieldLastFailureAt,
+	"title":            webhookFieldTitle,
 	"webhook_secret":   webhookFieldWebhookSecret,
 }
 
@@ -593,6 +605,8 @@ type Webhook struct {
 	// ID of the resource (account or app) this webhook is attached to.
 	ResourceID     string                      `json:"resource_id" url:"resource_id"`
 	TestableEvents []WebhookTestableEventsItem `json:"testable_events" url:"testable_events"`
+	// A label for this webhook endpoint, such as `Production`, shown in the dashboard. `null` if no title was set.
+	Title *string `json:"title,omitempty" url:"title,omitempty"`
 	// Destination URL where webhook payloads are delivered via HTTP POST.
 	URL string `json:"url" url:"url"`
 	// Secret key used to sign webhook payloads for verification. Include this in your HMAC validation logic. Returned on the create response and to interactive dashboard sessions; `null` for API-key and OAuth callers on later reads.
@@ -701,6 +715,13 @@ func (w *Webhook) GetTestableEvents() []WebhookTestableEventsItem {
 		return nil
 	}
 	return w.TestableEvents
+}
+
+func (w *Webhook) GetTitle() *string {
+	if w == nil {
+		return nil
+	}
+	return w.Title
 }
 
 func (w *Webhook) GetURL() string {
@@ -829,6 +850,13 @@ func (w *Webhook) SetResourceID(resourceID string) {
 func (w *Webhook) SetTestableEvents(testableEvents []WebhookTestableEventsItem) {
 	w.TestableEvents = testableEvents
 	w.require(webhookFieldTestableEvents)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *Webhook) SetTitle(title *string) {
+	w.Title = title
+	w.require(webhookFieldTitle)
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -1555,8 +1583,9 @@ var (
 	webhookListItemFieldID                  = big.NewInt(1 << 10)
 	webhookListItemFieldLastFailureAt       = big.NewInt(1 << 11)
 	webhookListItemFieldResourceID          = big.NewInt(1 << 12)
-	webhookListItemFieldURL                 = big.NewInt(1 << 13)
-	webhookListItemFieldWebhookSecret       = big.NewInt(1 << 14)
+	webhookListItemFieldTitle               = big.NewInt(1 << 13)
+	webhookListItemFieldURL                 = big.NewInt(1 << 14)
+	webhookListItemFieldWebhookSecret       = big.NewInt(1 << 15)
 )
 
 // webhookListItemNullableFields maps the wire names of WebhookListItem's nullable fields (required or optional) to their field bits.
@@ -1566,6 +1595,7 @@ var webhookListItemNullableFields = map[string]*big.Int{
 	"disabled_reason":  webhookListItemFieldDisabledReason,
 	"failing_since":    webhookListItemFieldFailingSince,
 	"last_failure_at":  webhookListItemFieldLastFailureAt,
+	"title":            webhookListItemFieldTitle,
 	"webhook_secret":   webhookListItemFieldWebhookSecret,
 }
 
@@ -1595,6 +1625,8 @@ type WebhookListItem struct {
 	LastFailureAt *string `json:"last_failure_at,omitempty" url:"last_failure_at,omitempty"`
 	// ID of the resource (account or app) this webhook is attached to.
 	ResourceID string `json:"resource_id" url:"resource_id"`
+	// A label for this webhook endpoint, such as `Production`, shown in the dashboard. `null` if no title was set.
+	Title *string `json:"title,omitempty" url:"title,omitempty"`
 	// Destination URL where webhook payloads are delivered via HTTP POST.
 	URL string `json:"url" url:"url"`
 	// Secret key used to sign webhook payloads for verification. Include this in your HMAC validation logic. Returned on the create response and to interactive dashboard sessions; `null` for API-key and OAuth callers on later reads.
@@ -1696,6 +1728,13 @@ func (w *WebhookListItem) GetResourceID() string {
 		return ""
 	}
 	return w.ResourceID
+}
+
+func (w *WebhookListItem) GetTitle() *string {
+	if w == nil {
+		return nil
+	}
+	return w.Title
 }
 
 func (w *WebhookListItem) GetURL() string {
@@ -1817,6 +1856,13 @@ func (w *WebhookListItem) SetLastFailureAt(lastFailureAt *string) {
 func (w *WebhookListItem) SetResourceID(resourceID string) {
 	w.ResourceID = resourceID
 	w.require(webhookListItemFieldResourceID)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebhookListItem) SetTitle(title *string) {
+	w.Title = title
+	w.require(webhookListItemFieldTitle)
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -4136,7 +4182,8 @@ var (
 	updateWebhooksRequestFieldChildResourceEvents = big.NewInt(1 << 2)
 	updateWebhooksRequestFieldEnabled             = big.NewInt(1 << 3)
 	updateWebhooksRequestFieldEvents              = big.NewInt(1 << 4)
-	updateWebhooksRequestFieldURL                 = big.NewInt(1 << 5)
+	updateWebhooksRequestFieldTitle               = big.NewInt(1 << 5)
+	updateWebhooksRequestFieldURL                 = big.NewInt(1 << 6)
 )
 
 type UpdateWebhooksRequest struct {
@@ -4150,6 +4197,8 @@ type UpdateWebhooksRequest struct {
 	Enabled *bool `json:"enabled,omitempty" url:"-"`
 	// The events to send the webhook for, in dot form (for example `payment.succeeded`).
 	Events []UpdateWebhooksRequestEventsItem `json:"events,omitempty" url:"-"`
+	// A label for the webhook, shown in the dashboard. Up to 255 characters. Pass `null` or an empty string to remove it.
+	Title *string `json:"title,omitempty" url:"-"`
 	// The URL to send the webhook to.
 	URL *string `json:"url,omitempty" url:"-"`
 
@@ -4199,6 +4248,13 @@ func (u *UpdateWebhooksRequest) SetEnabled(enabled *bool) {
 func (u *UpdateWebhooksRequest) SetEvents(events []UpdateWebhooksRequestEventsItem) {
 	u.Events = events
 	u.require(updateWebhooksRequestFieldEvents)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateWebhooksRequest) SetTitle(title *string) {
+	u.Title = title
+	u.require(updateWebhooksRequestFieldTitle)
 }
 
 // SetURL sets the URL field and marks it as non-optional;
