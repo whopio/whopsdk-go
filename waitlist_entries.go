@@ -241,10 +241,11 @@ var (
 	listWaitlistEntriesRequestFieldProductID      = big.NewInt(1 << 6)
 	listWaitlistEntriesRequestFieldBuyerAccountID = big.NewInt(1 << 7)
 	listWaitlistEntriesRequestFieldStatus         = big.NewInt(1 << 8)
-	listWaitlistEntriesRequestFieldCreatedBefore  = big.NewInt(1 << 9)
-	listWaitlistEntriesRequestFieldCreatedAfter   = big.NewInt(1 << 10)
-	listWaitlistEntriesRequestFieldOrder          = big.NewInt(1 << 11)
-	listWaitlistEntriesRequestFieldDirection      = big.NewInt(1 << 12)
+	listWaitlistEntriesRequestFieldQuery          = big.NewInt(1 << 9)
+	listWaitlistEntriesRequestFieldCreatedBefore  = big.NewInt(1 << 10)
+	listWaitlistEntriesRequestFieldCreatedAfter   = big.NewInt(1 << 11)
+	listWaitlistEntriesRequestFieldOrder          = big.NewInt(1 << 12)
+	listWaitlistEntriesRequestFieldDirection      = big.NewInt(1 << 13)
 )
 
 type ListWaitlistEntriesRequest struct {
@@ -266,6 +267,8 @@ type ListWaitlistEntriesRequest struct {
 	BuyerAccountID *string `json:"-" url:"buyer_account_id,omitempty"`
 	// Only return signups in this state. Canceled signups are returned only when `status` is `canceled`.
 	Status *ListWaitlistEntriesRequestStatus `json:"-" url:"status,omitempty"`
+	// Search signups by the user's name or username, or the name of the account they were submitted on behalf of. An account ID, prefixed `biz_`, matches signups submitted on behalf of that account, and an exact email address matches that user's signups.
+	Query *string `json:"-" url:"query,omitempty"`
 	// Only return signups submitted at or before this ISO 8601 timestamp.
 	CreatedBefore *string `json:"-" url:"created_before,omitempty"`
 	// Only return signups submitted at or after this ISO 8601 timestamp.
@@ -349,6 +352,13 @@ func (l *ListWaitlistEntriesRequest) SetBuyerAccountID(buyerAccountID *string) {
 func (l *ListWaitlistEntriesRequest) SetStatus(status *ListWaitlistEntriesRequestStatus) {
 	l.Status = status
 	l.require(listWaitlistEntriesRequestFieldStatus)
+}
+
+// SetQuery sets the Query field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListWaitlistEntriesRequest) SetQuery(query *string) {
+	l.Query = query
+	l.require(listWaitlistEntriesRequestFieldQuery)
 }
 
 // SetCreatedBefore sets the CreatedBefore field and marks it as non-optional;
