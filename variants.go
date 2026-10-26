@@ -94,29 +94,32 @@ var (
 	createVariantsRequestFieldAdaptivePricingEnabled     = big.NewInt(1 << 1)
 	createVariantsRequestFieldAttributes                 = big.NewInt(1 << 2)
 	createVariantsRequestFieldBillingPeriod              = big.NewInt(1 << 3)
-	createVariantsRequestFieldCheckoutStyling            = big.NewInt(1 << 4)
-	createVariantsRequestFieldCurrency                   = big.NewInt(1 << 5)
-	createVariantsRequestFieldCustomFields               = big.NewInt(1 << 6)
-	createVariantsRequestFieldDescription                = big.NewInt(1 << 7)
-	createVariantsRequestFieldExpirationDays             = big.NewInt(1 << 8)
-	createVariantsRequestFieldImage                      = big.NewInt(1 << 9)
-	createVariantsRequestFieldInitialPrice               = big.NewInt(1 << 10)
-	createVariantsRequestFieldInternalNotes              = big.NewInt(1 << 11)
-	createVariantsRequestFieldMetadata                   = big.NewInt(1 << 12)
-	createVariantsRequestFieldOverrideTaxType            = big.NewInt(1 << 13)
-	createVariantsRequestFieldPaymentMethodConfiguration = big.NewInt(1 << 14)
-	createVariantsRequestFieldPlanType                   = big.NewInt(1 << 15)
-	createVariantsRequestFieldProductID                  = big.NewInt(1 << 16)
-	createVariantsRequestFieldReleaseMethod              = big.NewInt(1 << 17)
-	createVariantsRequestFieldRenewalPrice               = big.NewInt(1 << 18)
-	createVariantsRequestFieldSku                        = big.NewInt(1 << 19)
-	createVariantsRequestFieldSplitPayRequiredPayments   = big.NewInt(1 << 20)
-	createVariantsRequestFieldStock                      = big.NewInt(1 << 21)
-	createVariantsRequestFieldThreeDsLevel               = big.NewInt(1 << 22)
-	createVariantsRequestFieldTitle                      = big.NewInt(1 << 23)
-	createVariantsRequestFieldTrialPeriodDays            = big.NewInt(1 << 24)
-	createVariantsRequestFieldUnlimitedStock             = big.NewInt(1 << 25)
-	createVariantsRequestFieldVisibility                 = big.NewInt(1 << 26)
+	createVariantsRequestFieldCancelDiscountIntervals    = big.NewInt(1 << 4)
+	createVariantsRequestFieldCancelDiscountPercentage   = big.NewInt(1 << 5)
+	createVariantsRequestFieldCheckoutStyling            = big.NewInt(1 << 6)
+	createVariantsRequestFieldCurrency                   = big.NewInt(1 << 7)
+	createVariantsRequestFieldCustomFields               = big.NewInt(1 << 8)
+	createVariantsRequestFieldDescription                = big.NewInt(1 << 9)
+	createVariantsRequestFieldExpirationDays             = big.NewInt(1 << 10)
+	createVariantsRequestFieldImage                      = big.NewInt(1 << 11)
+	createVariantsRequestFieldInitialPrice               = big.NewInt(1 << 12)
+	createVariantsRequestFieldInternalNotes              = big.NewInt(1 << 13)
+	createVariantsRequestFieldMetadata                   = big.NewInt(1 << 14)
+	createVariantsRequestFieldOfferCancelDiscount        = big.NewInt(1 << 15)
+	createVariantsRequestFieldOverrideTaxType            = big.NewInt(1 << 16)
+	createVariantsRequestFieldPaymentMethodConfiguration = big.NewInt(1 << 17)
+	createVariantsRequestFieldPlanType                   = big.NewInt(1 << 18)
+	createVariantsRequestFieldProductID                  = big.NewInt(1 << 19)
+	createVariantsRequestFieldReleaseMethod              = big.NewInt(1 << 20)
+	createVariantsRequestFieldRenewalPrice               = big.NewInt(1 << 21)
+	createVariantsRequestFieldSku                        = big.NewInt(1 << 22)
+	createVariantsRequestFieldSplitPayRequiredPayments   = big.NewInt(1 << 23)
+	createVariantsRequestFieldStock                      = big.NewInt(1 << 24)
+	createVariantsRequestFieldThreeDsLevel               = big.NewInt(1 << 25)
+	createVariantsRequestFieldTitle                      = big.NewInt(1 << 26)
+	createVariantsRequestFieldTrialPeriodDays            = big.NewInt(1 << 27)
+	createVariantsRequestFieldUnlimitedStock             = big.NewInt(1 << 28)
+	createVariantsRequestFieldVisibility                 = big.NewInt(1 << 29)
 )
 
 type CreateVariantsRequest struct {
@@ -128,6 +131,10 @@ type CreateVariantsRequest struct {
 	Attributes map[string]any `json:"attributes,omitempty" url:"-"`
 	// Recurring billing interval in days, such as 30 for monthly or 365 for annual.
 	BillingPeriod *int `json:"billing_period,omitempty" url:"-"`
+	// How long the retention discount lasts: `0` forever, `1` the next payment only, or a number of calendar months from when the customer accepts it. Required when `offer_cancel_discount` is true.
+	CancelDiscountIntervals *int `json:"cancel_discount_intervals,omitempty" url:"-"`
+	// Percentage taken off each discounted renewal, as a whole number from 1 to 100. Required when `offer_cancel_discount` is true.
+	CancelDiscountPercentage *int `json:"cancel_discount_percentage,omitempty" url:"-"`
 	// Checkout styling overrides for this variant.
 	CheckoutStyling map[string]any `json:"checkout_styling,omitempty" url:"-"`
 	// The three-letter ISO currency code for the variant's pricing. Defaults to USD.
@@ -146,6 +153,8 @@ type CreateVariantsRequest struct {
 	InternalNotes *string `json:"internal_notes,omitempty" url:"-"`
 	// Custom key-value pairs to store on the variant. Included in webhook payloads for payment and membership events. Max 50 keys, 100 chars per key, 500 chars per string value. The reserved keys `custom_cta` (a checkout call-to-action button label — one of the product custom CTA values, e.g. `subscribe`, `get_offer`) and `custom_cta_url` (a URL the button links to; web or `tel:`) override the product's call to action for this variant and are validated on save.
 	Metadata map[string]any `json:"metadata,omitempty" url:"-"`
+	// Whether to offer a retention discount when a customer attempts to cancel.
+	OfferCancelDiscount *bool `json:"offer_cancel_discount,omitempty" url:"-"`
 	// Override the default tax classification for this specific variant.
 	OverrideTaxType *string `json:"override_tax_type,omitempty" url:"-"`
 	// Explicit payment method configuration for the variant. When not provided, the account's defaults apply. Send at least one of `enabled` or `disabled`; an omitted one is empty.
@@ -160,7 +169,7 @@ type CreateVariantsRequest struct {
 	RenewalPrice *float64 `json:"renewal_price,omitempty" url:"-"`
 	// Stock keeping unit for this variant. Maximum 100 characters. Free text, not enforced unique.
 	Sku *string `json:"sku,omitempty" url:"-"`
-	// Installment payments required before the subscription pauses.
+	// Installment payments required before the subscription pauses, from 2 to 115. Only valid on `renewal` variants.
 	SplitPayRequiredPayments *int `json:"split_pay_required_payments,omitempty" url:"-"`
 	// The maximum number of units available for purchase. Ignored when unlimited_stock is true.
 	Stock *int `json:"stock,omitempty" url:"-"`
@@ -214,6 +223,20 @@ func (c *CreateVariantsRequest) SetAttributes(attributes map[string]any) {
 func (c *CreateVariantsRequest) SetBillingPeriod(billingPeriod *int) {
 	c.BillingPeriod = billingPeriod
 	c.require(createVariantsRequestFieldBillingPeriod)
+}
+
+// SetCancelDiscountIntervals sets the CancelDiscountIntervals field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVariantsRequest) SetCancelDiscountIntervals(cancelDiscountIntervals *int) {
+	c.CancelDiscountIntervals = cancelDiscountIntervals
+	c.require(createVariantsRequestFieldCancelDiscountIntervals)
+}
+
+// SetCancelDiscountPercentage sets the CancelDiscountPercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVariantsRequest) SetCancelDiscountPercentage(cancelDiscountPercentage *int) {
+	c.CancelDiscountPercentage = cancelDiscountPercentage
+	c.require(createVariantsRequestFieldCancelDiscountPercentage)
 }
 
 // SetCheckoutStyling sets the CheckoutStyling field and marks it as non-optional;
@@ -277,6 +300,13 @@ func (c *CreateVariantsRequest) SetInternalNotes(internalNotes *string) {
 func (c *CreateVariantsRequest) SetMetadata(metadata map[string]any) {
 	c.Metadata = metadata
 	c.require(createVariantsRequestFieldMetadata)
+}
+
+// SetOfferCancelDiscount sets the OfferCancelDiscount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVariantsRequest) SetOfferCancelDiscount(offerCancelDiscount *bool) {
+	c.OfferCancelDiscount = offerCancelDiscount
+	c.require(createVariantsRequestFieldOfferCancelDiscount)
 }
 
 // SetOverrideTaxType sets the OverrideTaxType field and marks it as non-optional;
@@ -747,7 +777,7 @@ type Variant struct {
 	Attributes map[string]*string `json:"attributes,omitempty" url:"attributes,omitempty"`
 	// Number of days between recurring charges, such as 30 for monthly or 365 for annual. `null` for one-time variants.
 	BillingPeriod *float64 `json:"billing_period,omitempty" url:"billing_period,omitempty"`
-	// Billing intervals the cancellation discount applies to (`0` forever, `1` first payment, or a month count). `null` when none is offered or the actor lacks the `plan:basic:read` scope.
+	// How long the cancellation discount lasts: `0` forever, `1` the next payment only, or a number of calendar months from when the customer accepts it. `null` when none is offered or the actor lacks the `plan:basic:read` scope.
 	CancelDiscountIntervals *float64 `json:"cancel_discount_intervals,omitempty" url:"cancel_discount_intervals,omitempty"`
 	// Cancellation discount as a whole-number percentage. `null` when none is offered or the actor lacks the `plan:basic:read` scope.
 	CancelDiscountPercentage *float64 `json:"cancel_discount_percentage,omitempty" url:"cancel_discount_percentage,omitempty"`
@@ -4621,14 +4651,15 @@ var (
 	updateVariantsRequestFieldReleaseMethod              = big.NewInt(1 << 18)
 	updateVariantsRequestFieldRenewalPrice               = big.NewInt(1 << 19)
 	updateVariantsRequestFieldSku                        = big.NewInt(1 << 20)
-	updateVariantsRequestFieldStock                      = big.NewInt(1 << 21)
-	updateVariantsRequestFieldStrikeThroughInitialPrice  = big.NewInt(1 << 22)
-	updateVariantsRequestFieldStrikeThroughRenewalPrice  = big.NewInt(1 << 23)
-	updateVariantsRequestFieldThreeDsLevel               = big.NewInt(1 << 24)
-	updateVariantsRequestFieldTitle                      = big.NewInt(1 << 25)
-	updateVariantsRequestFieldTrialPeriodDays            = big.NewInt(1 << 26)
-	updateVariantsRequestFieldUnlimitedStock             = big.NewInt(1 << 27)
-	updateVariantsRequestFieldVisibility                 = big.NewInt(1 << 28)
+	updateVariantsRequestFieldSplitPayRequiredPayments   = big.NewInt(1 << 21)
+	updateVariantsRequestFieldStock                      = big.NewInt(1 << 22)
+	updateVariantsRequestFieldStrikeThroughInitialPrice  = big.NewInt(1 << 23)
+	updateVariantsRequestFieldStrikeThroughRenewalPrice  = big.NewInt(1 << 24)
+	updateVariantsRequestFieldThreeDsLevel               = big.NewInt(1 << 25)
+	updateVariantsRequestFieldTitle                      = big.NewInt(1 << 26)
+	updateVariantsRequestFieldTrialPeriodDays            = big.NewInt(1 << 27)
+	updateVariantsRequestFieldUnlimitedStock             = big.NewInt(1 << 28)
+	updateVariantsRequestFieldVisibility                 = big.NewInt(1 << 29)
 )
 
 type UpdateVariantsRequest struct {
@@ -4640,9 +4671,9 @@ type UpdateVariantsRequest struct {
 	Attributes map[string]any `json:"attributes,omitempty" url:"-"`
 	// Recurring billing interval in days, such as 30 for monthly or 365 for annual.
 	BillingPeriod *int `json:"billing_period,omitempty" url:"-"`
-	// How many renewals the retention discount applies to. Required when `offer_cancel_discount` is true.
+	// How long the retention discount lasts: `0` forever, `1` the next payment only, or a number of calendar months from when the customer accepts it. Required when `offer_cancel_discount` is true.
 	CancelDiscountIntervals *int `json:"cancel_discount_intervals,omitempty" url:"-"`
-	// Percentage taken off each discounted renewal. Required when `offer_cancel_discount` is true.
+	// Percentage taken off each discounted renewal, as a whole number from 1 to 100. Required when `offer_cancel_discount` is true.
 	CancelDiscountPercentage *int `json:"cancel_discount_percentage,omitempty" url:"-"`
 	// Checkout styling overrides for this variant.
 	CheckoutStyling map[string]any `json:"checkout_styling,omitempty" url:"-"`
@@ -4674,6 +4705,8 @@ type UpdateVariantsRequest struct {
 	RenewalPrice *float64 `json:"renewal_price,omitempty" url:"-"`
 	// Stock keeping unit for this variant. Maximum 100 characters. Free text, not enforced unique.
 	Sku *string `json:"sku,omitempty" url:"-"`
+	// Installment payments required before the subscription pauses, from 2 to 115. Only valid on `renewal` variants.
+	SplitPayRequiredPayments *int `json:"split_pay_required_payments,omitempty" url:"-"`
 	// The maximum number of units available for purchase. Ignored when unlimited_stock is true.
 	Stock *int `json:"stock,omitempty" url:"-"`
 	// A comparison price displayed with a strikethrough for the initial price.
@@ -4849,6 +4882,13 @@ func (u *UpdateVariantsRequest) SetRenewalPrice(renewalPrice *float64) {
 func (u *UpdateVariantsRequest) SetSku(sku *string) {
 	u.Sku = sku
 	u.require(updateVariantsRequestFieldSku)
+}
+
+// SetSplitPayRequiredPayments sets the SplitPayRequiredPayments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVariantsRequest) SetSplitPayRequiredPayments(splitPayRequiredPayments *int) {
+	u.SplitPayRequiredPayments = splitPayRequiredPayments
+	u.require(updateVariantsRequestFieldSplitPayRequiredPayments)
 }
 
 // SetStock sets the Stock field and marks it as non-optional;
