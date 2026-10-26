@@ -48782,6 +48782,97 @@ client.Stats.TimeSeries.Retrieve(
 </dl>
 </details>
 
+## Trades Markets
+<details><summary><code>client.Trades.Markets.List() -> *trades.ListMarketsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists the markets you can trade, sorted by `id` and then `instrument_type`: Hyperliquid's main-exchange perpetuals that still trade, and spot markets for the assets Whop wallets hold, named by symbol: `BTC`, `ETH`, `SOL`, and `XAUT` (gold). A perpetual and a spot market can share an `id`, so `id` and `instrument_type` together identify a market, and there is no endpoint to retrieve one. Send a perpetual's `id` as `market` when you create a trade. No authentication is required. Each IP address can make 60 requests a minute.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &trades.ListMarketsRequest{}
+client.Trades.Markets.List(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**instrumentType:** `*trades.ListMarketsRequestInstrumentType` — Only return perpetuals or only spot markets.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `*int` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `*int` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Users OauthGrants
 <details><summary><code>client.Users.OauthGrants.List() -> *users.ListOauthGrantsResponse</code></summary>
 <dl>
