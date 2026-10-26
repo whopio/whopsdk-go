@@ -429,6 +429,73 @@ func (r *RetrieveInvoicesRequest) SetID(id string) {
 }
 
 var (
+	sendInvoicesRequestFieldID     = big.NewInt(1 << 0)
+	sendInvoicesRequestFieldSendAt = big.NewInt(1 << 1)
+)
+
+type SendInvoicesRequest struct {
+	// The invoice's pay_ ID.
+	ID string `json:"-" url:"-"`
+	// When to send the draft, as an ISO 8601 timestamp in the future. Omit to send now.
+	SendAt *time.Time `json:"send_at,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (s *SendInvoicesRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
+	}
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendInvoicesRequest) SetID(id string) {
+	s.ID = id
+	s.require(sendInvoicesRequestFieldID)
+}
+
+// SetSendAt sets the SendAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendInvoicesRequest) SetSendAt(sendAt *time.Time) {
+	s.SendAt = sendAt
+	s.require(sendInvoicesRequestFieldSendAt)
+}
+
+func (s *SendInvoicesRequest) UnmarshalJSON(data []byte) error {
+	type embed SendInvoicesRequest
+	var body = struct {
+		embed
+		SendAt *internal.DateTime `json:"send_at,omitempty"`
+	}{
+		embed: embed(*s),
+	}
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*s = SendInvoicesRequest(body.embed)
+	s.SendAt = body.SendAt.TimePtr()
+	return nil
+}
+
+func (s *SendInvoicesRequest) MarshalJSON() ([]byte, error) {
+	type embed SendInvoicesRequest
+	var marshaler = struct {
+		embed
+		SendAt *internal.DateTime `json:"send_at,omitempty"`
+	}{
+		embed:  embed(*s),
+		SendAt: internal.NewOptionalDateTime(s.SendAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	invoiceFieldAccountID          = big.NewInt(1 << 0)
 	invoiceFieldAmountDue          = big.NewInt(1 << 1)
 	invoiceFieldBillingAddress     = big.NewInt(1 << 2)
@@ -451,12 +518,13 @@ var (
 	invoiceFieldPaidAt             = big.NewInt(1 << 19)
 	invoiceFieldPaymentMethodID    = big.NewInt(1 << 20)
 	invoiceFieldRecipientEmails    = big.NewInt(1 << 21)
-	invoiceFieldStatus             = big.NewInt(1 << 22)
-	invoiceFieldSubtotal           = big.NewInt(1 << 23)
-	invoiceFieldTaxAmount          = big.NewInt(1 << 24)
-	invoiceFieldTotal              = big.NewInt(1 << 25)
-	invoiceFieldTotalsStatus       = big.NewInt(1 << 26)
-	invoiceFieldUpdatedAt          = big.NewInt(1 << 27)
+	invoiceFieldScheduledSendAt    = big.NewInt(1 << 22)
+	invoiceFieldStatus             = big.NewInt(1 << 23)
+	invoiceFieldSubtotal           = big.NewInt(1 << 24)
+	invoiceFieldTaxAmount          = big.NewInt(1 << 25)
+	invoiceFieldTotal              = big.NewInt(1 << 26)
+	invoiceFieldTotalsStatus       = big.NewInt(1 << 27)
+	invoiceFieldUpdatedAt          = big.NewInt(1 << 28)
 )
 
 // invoiceNullableFields maps the wire names of Invoice's nullable fields (required or optional) to their field bits.
@@ -471,6 +539,7 @@ var invoiceNullableFields = map[string]*big.Int{
 	"member_id":          invoiceFieldMemberID,
 	"paid_at":            invoiceFieldPaidAt,
 	"payment_method_id":  invoiceFieldPaymentMethodID,
+	"scheduled_send_at":  invoiceFieldScheduledSendAt,
 	"tax_amount":         invoiceFieldTaxAmount,
 }
 
@@ -498,6 +567,7 @@ type Invoice struct {
 	PaidAt           *string             `json:"paid_at,omitempty" url:"paid_at,omitempty"`
 	PaymentMethodID  *string             `json:"payment_method_id,omitempty" url:"payment_method_id,omitempty"`
 	RecipientEmails  []string            `json:"recipient_emails" url:"recipient_emails"`
+	ScheduledSendAt  *string             `json:"scheduled_send_at,omitempty" url:"scheduled_send_at,omitempty"`
 	Status           InvoiceStatus       `json:"status" url:"status"`
 	Subtotal         *Money              `json:"subtotal" url:"subtotal"`
 	TaxAmount        *Money              `json:"tax_amount,omitempty" url:"tax_amount,omitempty"`
@@ -664,6 +734,13 @@ func (i *Invoice) GetRecipientEmails() []string {
 		return nil
 	}
 	return i.RecipientEmails
+}
+
+func (i *Invoice) GetScheduledSendAt() *string {
+	if i == nil {
+		return nil
+	}
+	return i.ScheduledSendAt
 }
 
 func (i *Invoice) GetStatus() InvoiceStatus {
@@ -876,6 +953,13 @@ func (i *Invoice) SetPaymentMethodID(paymentMethodID *string) {
 func (i *Invoice) SetRecipientEmails(recipientEmails []string) {
 	i.RecipientEmails = recipientEmails
 	i.require(invoiceFieldRecipientEmails)
+}
+
+// SetScheduledSendAt sets the ScheduledSendAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *Invoice) SetScheduledSendAt(scheduledSendAt *string) {
+	i.ScheduledSendAt = scheduledSendAt
+	i.require(invoiceFieldScheduledSendAt)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -5767,6 +5851,34 @@ func NewUpdateInvoicesRequestItemsItemPlanVisibilityFromString(s string) (Update
 
 func (u UpdateInvoicesRequestItemsItemPlanVisibility) Ptr() *UpdateInvoicesRequestItemsItemPlanVisibility {
 	return &u
+}
+
+var (
+	unscheduleInvoicesRequestFieldID = big.NewInt(1 << 0)
+)
+
+type UnscheduleInvoicesRequest struct {
+	// The invoice's pay_ ID.
+	ID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (u *UnscheduleInvoicesRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UnscheduleInvoicesRequest) SetID(id string) {
+	u.ID = id
+	u.require(unscheduleInvoicesRequestFieldID)
 }
 
 var (

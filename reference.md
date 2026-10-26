@@ -23859,6 +23859,134 @@ client.Invoices.MarkUncollectible(
 </dl>
 </details>
 
+<details><summary><code>client.Invoices.Send(ID, request) -> *whopsdk.Invoice</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Issues a draft and emails it to its recipients, with reminders after the due date. A draft with a `payment_method_id` is charged instead of emailed, which requires `payment:charge`, and its recipients get the payment link if the charge fails. Sending an open invoice emails it again, up to three emails a day including the first send. With `send_at`, the draft is sent at that time instead, and cannot be edited, except its recipients, until it is sent or unscheduled. Each email, reminders included, is sent separately to the customer email shown on the invoice and to each address in `recipient_emails`, so recipients never see each other's addresses.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.SendInvoicesRequest{
+    ID: "id",
+}
+client.Invoices.Send(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The invoice's pay_ ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sendAt:** `*time.Time` — When to send the draft, as an ISO 8601 timestamp in the future. Omit to send now.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Invoices.Unschedule(ID) -> *whopsdk.Invoice</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Cancels a draft's scheduled send, so it can be edited again. An invoice with no scheduled send is returned unchanged.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.UnscheduleInvoicesRequest{
+    ID: "id",
+}
+client.Invoices.Unschedule(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The invoice's pay_ ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Invoices.Void(ID) -> *whopsdk.Invoice</code></summary>
 <dl>
 <dd>
