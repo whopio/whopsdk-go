@@ -17638,20 +17638,20 @@
       }
     },
     {
-      "id": "e7fbadee-b509-464f-803f-e13576e2f7a0",
-      "name": "List Markets - default",
+      "id": "ec56e604-f713-4eb2-bca1-a94413e7e940",
+      "name": "List Markets - markets",
       "request": {
         "urlPathTemplate": "/trades/markets",
         "method": "GET"
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"id\": \"BTC\",\n      \"instrument_type\": \"perpetual\",\n      \"max_leverage\": 40,\n      \"price\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"size_decimals\": 5\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"MQ\"\n  }\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"id\": \"BTC\",\n      \"instrument_type\": \"perpetual\",\n      \"max_leverage\": 40,\n      \"price\": {\n        \"amount\": \"80155.500000\",\n        \"currency\": \"usd\",\n        \"decimals\": 6,\n        \"display_decimals\": 6\n      },\n      \"size_decimals\": 5\n    },\n    {\n      \"id\": \"BTC\",\n      \"instrument_type\": \"spot\",\n      \"max_leverage\": null,\n      \"price\": {\n        \"amount\": \"80065.50000000\",\n        \"currency\": \"usd\",\n        \"decimals\": 8,\n        \"display_decimals\": 8\n      },\n      \"size_decimals\": 5\n    },\n    {\n      \"id\": \"ETH\",\n      \"instrument_type\": \"perpetual\",\n      \"max_leverage\": 25,\n      \"price\": {\n        \"amount\": \"2322.350000\",\n        \"currency\": \"usd\",\n        \"decimals\": 6,\n        \"display_decimals\": 6\n      },\n      \"size_decimals\": 4\n    },\n    {\n      \"id\": \"ETH\",\n      \"instrument_type\": \"spot\",\n      \"max_leverage\": null,\n      \"price\": {\n        \"amount\": \"2320.65000000\",\n        \"currency\": \"usd\",\n        \"decimals\": 8,\n        \"display_decimals\": 8\n      },\n      \"size_decimals\": 4\n    },\n    {\n      \"id\": \"SOL\",\n      \"instrument_type\": \"perpetual\",\n      \"max_leverage\": 20,\n      \"price\": {\n        \"amount\": \"101.325000\",\n        \"currency\": \"usd\",\n        \"decimals\": 6,\n        \"display_decimals\": 6\n      },\n      \"size_decimals\": 2\n    },\n    {\n      \"id\": \"SOL\",\n      \"instrument_type\": \"spot\",\n      \"max_leverage\": null,\n      \"price\": {\n        \"amount\": \"101.23500000\",\n        \"currency\": \"usd\",\n        \"decimals\": 8,\n        \"display_decimals\": 8\n      },\n      \"size_decimals\": 3\n    },\n    {\n      \"id\": \"XAUT\",\n      \"instrument_type\": \"spot\",\n      \"max_leverage\": null,\n      \"price\": {\n        \"amount\": \"4012.85000000\",\n        \"currency\": \"usd\",\n        \"decimals\": 8,\n        \"display_decimals\": 8\n      },\n      \"size_decimals\": 2\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": null,\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"MQ\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
       },
-      "uuid": "e7fbadee-b509-464f-803f-e13576e2f7a0",
+      "uuid": "ec56e604-f713-4eb2-bca1-a94413e7e940",
       "persistent": true,
       "priority": 3,
       "metadata": {
