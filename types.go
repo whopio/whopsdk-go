@@ -67832,6 +67832,8 @@ const (
 	WebhookEventAdGroupUpdated                     WebhookEvent = "ad_group.updated"
 	WebhookEventAdCreated                          WebhookEvent = "ad.created"
 	WebhookEventAdUpdated                          WebhookEvent = "ad.updated"
+	WebhookEventAppInstallationCreated             WebhookEvent = "app_installation.created"
+	WebhookEventAppInstallationDeleted             WebhookEvent = "app_installation.deleted"
 	WebhookEventChatMessageCreated                 WebhookEvent = "chat.message.created"
 	WebhookEventChatReactionCreated                WebhookEvent = "chat.reaction.created"
 	WebhookEventPaymentCreated                     WebhookEvent = "payment.created"
@@ -68017,6 +68019,10 @@ func NewWebhookEventFromString(s string) (WebhookEvent, error) {
 		return WebhookEventAdCreated, nil
 	case "ad.updated":
 		return WebhookEventAdUpdated, nil
+	case "app_installation.created":
+		return WebhookEventAppInstallationCreated, nil
+	case "app_installation.deleted":
+		return WebhookEventAppInstallationDeleted, nil
 	case "chat.message.created":
 		return WebhookEventChatMessageCreated, nil
 	case "chat.reaction.created":

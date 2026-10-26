@@ -7498,6 +7498,20 @@ func TestEnumCreateWebhooksRequestEventsItem(t *testing.T) {
 		assert.Equal(t, CreateWebhooksRequestEventsItem("ad.updated"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_app_installation_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateWebhooksRequestEventsItemFromString("app_installation.created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateWebhooksRequestEventsItem("app_installation.created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_app_installation_deleted", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateWebhooksRequestEventsItemFromString("app_installation.deleted")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateWebhooksRequestEventsItem("app_installation.deleted"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_chat_message_created", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewCreateWebhooksRequestEventsItemFromString("chat.message.created")
@@ -8190,6 +8204,20 @@ func TestEnumListDeliveriesWebhooksRequestEventsItem(t *testing.T) {
 		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("ad.updated")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("ad.updated"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_app_installation_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("app_installation.created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("app_installation.created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_app_installation_deleted", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("app_installation.deleted")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("app_installation.deleted"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_chat_message_created", func(t *testing.T) {
@@ -9006,6 +9034,20 @@ func TestEnumUpdateWebhooksRequestEventsItem(t *testing.T) {
 		assert.Equal(t, UpdateWebhooksRequestEventsItem("ad.updated"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_app_installation_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateWebhooksRequestEventsItemFromString("app_installation.created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateWebhooksRequestEventsItem("app_installation.created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_app_installation_deleted", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateWebhooksRequestEventsItemFromString("app_installation.deleted")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateWebhooksRequestEventsItem("app_installation.deleted"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_chat_message_created", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewUpdateWebhooksRequestEventsItemFromString("chat.message.created")
@@ -9785,6 +9827,20 @@ func TestEnumWebhookEventsItem(t *testing.T) {
 		val, err := NewWebhookEventsItemFromString("ad.updated")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, WebhookEventsItem("ad.updated"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_app_installation_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewWebhookEventsItemFromString("app_installation.created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, WebhookEventsItem("app_installation.created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_app_installation_deleted", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewWebhookEventsItemFromString("app_installation.deleted")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, WebhookEventsItem("app_installation.deleted"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_chat_message_created", func(t *testing.T) {
@@ -10651,6 +10707,20 @@ func TestEnumWebhookListItemEventsItem(t *testing.T) {
 		assert.Equal(t, WebhookListItemEventsItem("ad.updated"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_app_installation_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewWebhookListItemEventsItemFromString("app_installation.created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, WebhookListItemEventsItem("app_installation.created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_app_installation_deleted", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewWebhookListItemEventsItemFromString("app_installation.deleted")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, WebhookListItemEventsItem("app_installation.deleted"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_chat_message_created", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewWebhookListItemEventsItemFromString("chat.message.created")
@@ -11455,6 +11525,20 @@ func TestEnumWebhookTestableEventsItem(t *testing.T) {
 		val, err := NewWebhookTestableEventsItemFromString("ad.updated")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, WebhookTestableEventsItem("ad.updated"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_app_installation_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewWebhookTestableEventsItemFromString("app_installation.created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, WebhookTestableEventsItem("app_installation.created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_app_installation_deleted", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewWebhookTestableEventsItemFromString("app_installation.deleted")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, WebhookTestableEventsItem("app_installation.deleted"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_chat_message_created", func(t *testing.T) {
