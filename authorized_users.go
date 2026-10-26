@@ -1184,7 +1184,7 @@ type CreateAuthorizedUsersRequestElevation struct {
 	Signature *string `json:"signature,omitempty" url:"signature,omitempty"`
 	// The 6-digit code from the authenticator app or SMS.
 	TotpCode *string `json:"totp_code,omitempty" url:"totp_code,omitempty"`
-	// Reuse an existing elevated session (for SMS/email 2FA users).
+	// Ignored. Kept so existing API clients that send it keep working.
 	UseFinanceSession *bool `json:"use_finance_session,omitempty" url:"use_finance_session,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
