@@ -7,6 +7,7 @@ import (
 	fmt "fmt"
 	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
+	time "time"
 )
 
 var (
@@ -860,6 +861,538 @@ func (l *ListAppInstallationsResponsePageInfo) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	postAppInstallationCreatedPayloadFieldAccountID          = big.NewInt(1 << 0)
+	postAppInstallationCreatedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
+	postAppInstallationCreatedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
+	postAppInstallationCreatedPayloadFieldData               = big.NewInt(1 << 3)
+	postAppInstallationCreatedPayloadFieldID                 = big.NewInt(1 << 4)
+	postAppInstallationCreatedPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
+	postAppInstallationCreatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
+	postAppInstallationCreatedPayloadFieldType               = big.NewInt(1 << 7)
+)
+
+// postAppInstallationCreatedPayloadNullableFields maps the wire names of PostAppInstallationCreatedPayload's nullable fields (required or optional) to their field bits.
+var postAppInstallationCreatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postAppInstallationCreatedPayloadFieldAccountID,
+	"api_version_date": postAppInstallationCreatedPayloadFieldAPIVersionDate,
+}
+
+type PostAppInstallationCreatedPayload struct {
+	// The account ID that this webhook event is associated with
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// The API version for this webhook
+	APIVersion PostAppInstallationCreatedPayloadAPIVersion `json:"api_version" url:"api_version"`
+	// The dated API version (Api-Version-Date) the payload is serialized to
+	APIVersionDate *string          `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *AppInstallation `json:"data" url:"data"`
+	// A unique ID for every single webhook request
+	ID string `json:"id" url:"id"`
+	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
+	PreviousAttributes map[string]any `json:"previous_attributes,omitempty" url:"previous_attributes,omitempty"`
+	// The timestamp in ISO 8601 format that the webhook was sent at on the server
+	Timestamp time.Time `json:"timestamp" url:"timestamp"`
+	// The webhook event type
+	Type PostAppInstallationCreatedPayloadType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostAppInstallationCreatedPayload) GetAccountID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AccountID
+}
+
+func (p *PostAppInstallationCreatedPayload) GetAPIVersion() PostAppInstallationCreatedPayloadAPIVersion {
+	if p == nil {
+		return ""
+	}
+	return p.APIVersion
+}
+
+func (p *PostAppInstallationCreatedPayload) GetAPIVersionDate() *string {
+	if p == nil {
+		return nil
+	}
+	return p.APIVersionDate
+}
+
+func (p *PostAppInstallationCreatedPayload) GetData() *AppInstallation {
+	if p == nil {
+		return nil
+	}
+	return p.Data
+}
+
+func (p *PostAppInstallationCreatedPayload) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostAppInstallationCreatedPayload) GetPreviousAttributes() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.PreviousAttributes
+}
+
+func (p *PostAppInstallationCreatedPayload) GetTimestamp() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.Timestamp
+}
+
+func (p *PostAppInstallationCreatedPayload) GetType() PostAppInstallationCreatedPayloadType {
+	if p == nil {
+		return ""
+	}
+	return p.Type
+}
+
+func (p *PostAppInstallationCreatedPayload) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostAppInstallationCreatedPayload) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAppInstallationCreatedPayload) SetAccountID(accountID *string) {
+	p.AccountID = accountID
+	p.require(postAppInstallationCreatedPayloadFieldAccountID)
+}
+
+// SetAPIVersion sets the APIVersion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAppInstallationCreatedPayload) SetAPIVersion(apiVersion PostAppInstallationCreatedPayloadAPIVersion) {
+	p.APIVersion = apiVersion
+	p.require(postAppInstallationCreatedPayloadFieldAPIVersion)
+}
+
+// SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAppInstallationCreatedPayload) SetAPIVersionDate(apiVersionDate *string) {
+	p.APIVersionDate = apiVersionDate
+	p.require(postAppInstallationCreatedPayloadFieldAPIVersionDate)
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAppInstallationCreatedPayload) SetData(data *AppInstallation) {
+	p.Data = data
+	p.require(postAppInstallationCreatedPayloadFieldData)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAppInstallationCreatedPayload) SetID(id string) {
+	p.ID = id
+	p.require(postAppInstallationCreatedPayloadFieldID)
+}
+
+// SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAppInstallationCreatedPayload) SetPreviousAttributes(previousAttributes map[string]any) {
+	p.PreviousAttributes = previousAttributes
+	p.require(postAppInstallationCreatedPayloadFieldPreviousAttributes)
+}
+
+// SetTimestamp sets the Timestamp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAppInstallationCreatedPayload) SetTimestamp(timestamp time.Time) {
+	p.Timestamp = timestamp
+	p.require(postAppInstallationCreatedPayloadFieldTimestamp)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAppInstallationCreatedPayload) SetType(type_ PostAppInstallationCreatedPayloadType) {
+	p.Type = type_
+	p.require(postAppInstallationCreatedPayloadFieldType)
+}
+
+func (p *PostAppInstallationCreatedPayload) UnmarshalJSON(data []byte) error {
+	type embed PostAppInstallationCreatedPayload
+	var unmarshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*p = PostAppInstallationCreatedPayload(unmarshaler.embed)
+	p.Timestamp = unmarshaler.Timestamp.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postAppInstallationCreatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostAppInstallationCreatedPayload) MarshalJSON() ([]byte, error) {
+	type embed PostAppInstallationCreatedPayload
+	var marshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed:     embed(*p),
+		Timestamp: internal.NewDateTime(p.Timestamp),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostAppInstallationCreatedPayload) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The API version for this webhook
+type PostAppInstallationCreatedPayloadAPIVersion string
+
+const (
+	PostAppInstallationCreatedPayloadAPIVersionV1 PostAppInstallationCreatedPayloadAPIVersion = "v1"
+)
+
+func NewPostAppInstallationCreatedPayloadAPIVersionFromString(s string) (PostAppInstallationCreatedPayloadAPIVersion, error) {
+	switch s {
+	case "v1":
+		return PostAppInstallationCreatedPayloadAPIVersionV1, nil
+	}
+	var t PostAppInstallationCreatedPayloadAPIVersion
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAppInstallationCreatedPayloadAPIVersion) Ptr() *PostAppInstallationCreatedPayloadAPIVersion {
+	return &p
+}
+
+// The webhook event type
+type PostAppInstallationCreatedPayloadType string
+
+const (
+	PostAppInstallationCreatedPayloadTypeAppInstallationCreated PostAppInstallationCreatedPayloadType = "app_installation.created"
+)
+
+func NewPostAppInstallationCreatedPayloadTypeFromString(s string) (PostAppInstallationCreatedPayloadType, error) {
+	switch s {
+	case "app_installation.created":
+		return PostAppInstallationCreatedPayloadTypeAppInstallationCreated, nil
+	}
+	var t PostAppInstallationCreatedPayloadType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAppInstallationCreatedPayloadType) Ptr() *PostAppInstallationCreatedPayloadType {
+	return &p
+}
+
+var (
+	postAppInstallationDeletedPayloadFieldAccountID          = big.NewInt(1 << 0)
+	postAppInstallationDeletedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
+	postAppInstallationDeletedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
+	postAppInstallationDeletedPayloadFieldData               = big.NewInt(1 << 3)
+	postAppInstallationDeletedPayloadFieldID                 = big.NewInt(1 << 4)
+	postAppInstallationDeletedPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
+	postAppInstallationDeletedPayloadFieldTimestamp          = big.NewInt(1 << 6)
+	postAppInstallationDeletedPayloadFieldType               = big.NewInt(1 << 7)
+)
+
+// postAppInstallationDeletedPayloadNullableFields maps the wire names of PostAppInstallationDeletedPayload's nullable fields (required or optional) to their field bits.
+var postAppInstallationDeletedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postAppInstallationDeletedPayloadFieldAccountID,
+	"api_version_date": postAppInstallationDeletedPayloadFieldAPIVersionDate,
+}
+
+type PostAppInstallationDeletedPayload struct {
+	// The account ID that this webhook event is associated with
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// The API version for this webhook
+	APIVersion PostAppInstallationDeletedPayloadAPIVersion `json:"api_version" url:"api_version"`
+	// The dated API version (Api-Version-Date) the payload is serialized to
+	APIVersionDate *string          `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *AppInstallation `json:"data" url:"data"`
+	// A unique ID for every single webhook request
+	ID string `json:"id" url:"id"`
+	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
+	PreviousAttributes map[string]any `json:"previous_attributes,omitempty" url:"previous_attributes,omitempty"`
+	// The timestamp in ISO 8601 format that the webhook was sent at on the server
+	Timestamp time.Time `json:"timestamp" url:"timestamp"`
+	// The webhook event type
+	Type PostAppInstallationDeletedPayloadType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostAppInstallationDeletedPayload) GetAccountID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AccountID
+}
+
+func (p *PostAppInstallationDeletedPayload) GetAPIVersion() PostAppInstallationDeletedPayloadAPIVersion {
+	if p == nil {
+		return ""
+	}
+	return p.APIVersion
+}
+
+func (p *PostAppInstallationDeletedPayload) GetAPIVersionDate() *string {
+	if p == nil {
+		return nil
+	}
+	return p.APIVersionDate
+}
+
+func (p *PostAppInstallationDeletedPayload) GetData() *AppInstallation {
+	if p == nil {
+		return nil
+	}
+	return p.Data
+}
+
+func (p *PostAppInstallationDeletedPayload) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostAppInstallationDeletedPayload) GetPreviousAttributes() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.PreviousAttributes
+}
+
+func (p *PostAppInstallationDeletedPayload) GetTimestamp() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.Timestamp
+}
+
+func (p *PostAppInstallationDeletedPayload) GetType() PostAppInstallationDeletedPayloadType {
+	if p == nil {
+		return ""
+	}
+	return p.Type
+}
+
+func (p *PostAppInstallationDeletedPayload) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostAppInstallationDeletedPayload) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAppInstallationDeletedPayload) SetAccountID(accountID *string) {
+	p.AccountID = accountID
+	p.require(postAppInstallationDeletedPayloadFieldAccountID)
+}
+
+// SetAPIVersion sets the APIVersion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAppInstallationDeletedPayload) SetAPIVersion(apiVersion PostAppInstallationDeletedPayloadAPIVersion) {
+	p.APIVersion = apiVersion
+	p.require(postAppInstallationDeletedPayloadFieldAPIVersion)
+}
+
+// SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAppInstallationDeletedPayload) SetAPIVersionDate(apiVersionDate *string) {
+	p.APIVersionDate = apiVersionDate
+	p.require(postAppInstallationDeletedPayloadFieldAPIVersionDate)
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAppInstallationDeletedPayload) SetData(data *AppInstallation) {
+	p.Data = data
+	p.require(postAppInstallationDeletedPayloadFieldData)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAppInstallationDeletedPayload) SetID(id string) {
+	p.ID = id
+	p.require(postAppInstallationDeletedPayloadFieldID)
+}
+
+// SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAppInstallationDeletedPayload) SetPreviousAttributes(previousAttributes map[string]any) {
+	p.PreviousAttributes = previousAttributes
+	p.require(postAppInstallationDeletedPayloadFieldPreviousAttributes)
+}
+
+// SetTimestamp sets the Timestamp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAppInstallationDeletedPayload) SetTimestamp(timestamp time.Time) {
+	p.Timestamp = timestamp
+	p.require(postAppInstallationDeletedPayloadFieldTimestamp)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAppInstallationDeletedPayload) SetType(type_ PostAppInstallationDeletedPayloadType) {
+	p.Type = type_
+	p.require(postAppInstallationDeletedPayloadFieldType)
+}
+
+func (p *PostAppInstallationDeletedPayload) UnmarshalJSON(data []byte) error {
+	type embed PostAppInstallationDeletedPayload
+	var unmarshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*p = PostAppInstallationDeletedPayload(unmarshaler.embed)
+	p.Timestamp = unmarshaler.Timestamp.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postAppInstallationDeletedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostAppInstallationDeletedPayload) MarshalJSON() ([]byte, error) {
+	type embed PostAppInstallationDeletedPayload
+	var marshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed:     embed(*p),
+		Timestamp: internal.NewDateTime(p.Timestamp),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostAppInstallationDeletedPayload) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The API version for this webhook
+type PostAppInstallationDeletedPayloadAPIVersion string
+
+const (
+	PostAppInstallationDeletedPayloadAPIVersionV1 PostAppInstallationDeletedPayloadAPIVersion = "v1"
+)
+
+func NewPostAppInstallationDeletedPayloadAPIVersionFromString(s string) (PostAppInstallationDeletedPayloadAPIVersion, error) {
+	switch s {
+	case "v1":
+		return PostAppInstallationDeletedPayloadAPIVersionV1, nil
+	}
+	var t PostAppInstallationDeletedPayloadAPIVersion
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAppInstallationDeletedPayloadAPIVersion) Ptr() *PostAppInstallationDeletedPayloadAPIVersion {
+	return &p
+}
+
+// The webhook event type
+type PostAppInstallationDeletedPayloadType string
+
+const (
+	PostAppInstallationDeletedPayloadTypeAppInstallationDeleted PostAppInstallationDeletedPayloadType = "app_installation.deleted"
+)
+
+func NewPostAppInstallationDeletedPayloadTypeFromString(s string) (PostAppInstallationDeletedPayloadType, error) {
+	switch s {
+	case "app_installation.deleted":
+		return PostAppInstallationDeletedPayloadTypeAppInstallationDeleted, nil
+	}
+	var t PostAppInstallationDeletedPayloadType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAppInstallationDeletedPayloadType) Ptr() *PostAppInstallationDeletedPayloadType {
+	return &p
 }
 
 var (
