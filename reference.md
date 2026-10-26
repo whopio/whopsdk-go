@@ -23679,6 +23679,66 @@ client.Invoices.Update(
 </dl>
 </details>
 
+<details><summary><code>client.Invoices.GeneratePdf(ID) -> *whopsdk.InvoicePdf</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Generates the invoice as a PDF and returns a short-lived link to download it. A draft renders with its current estimated totals. The buyer's name, email address and billing details appear only when you have `member:basic:read`, `member:email:read` and `payment:basic:read` respectively. Each call generates a new file and link, so this endpoint does not replay `Idempotency-Key` responses.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.GeneratePdfInvoicesRequest{
+    ID: "id",
+}
+client.Invoices.GeneratePdf(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The invoice's pay_ ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Invoices.Issue(ID) -> *whopsdk.Invoice</code></summary>
 <dl>
 <dd>
