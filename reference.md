@@ -46525,6 +46525,22 @@ client.Partners.Businesses.List(
 <dl>
 <dd>
 
+**firstSaleBefore:** `*string` — Only return partner businesses whose first paid sale above zero happened before this timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**firstSaleAfter:** `*string` — Only return partner businesses whose first paid sale above zero happened after this timestamp. Combined with first_sale_before, this is the net new set: businesses that processed their first $1 inside the window.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **referredUserID:** `*string` — Filter to referrals attributed to this user. For first-tier referrals, this is the referred account owner; for second-tier referrals, this is the partner you recruited.
     
 </dd>
