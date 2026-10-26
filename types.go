@@ -27519,6 +27519,197 @@ func (l LessonTypes) Ptr() *LessonTypes {
 	return &l
 }
 
+var (
+	marketFieldID             = big.NewInt(1 << 0)
+	marketFieldInstrumentType = big.NewInt(1 << 1)
+	marketFieldMaxLeverage    = big.NewInt(1 << 2)
+	marketFieldPrice          = big.NewInt(1 << 3)
+	marketFieldSizeDecimals   = big.NewInt(1 << 4)
+)
+
+// marketNullableFields maps the wire names of Market's nullable fields (required or optional) to their field bits.
+var marketNullableFields = map[string]*big.Int{
+	"max_leverage": marketFieldMaxLeverage,
+	"price":        marketFieldPrice,
+}
+
+type Market struct {
+	// The market's name: a perpetual's Hyperliquid name such as `BTC`, which you send as `market` when you create a trade, or a spot asset's symbol such as `BTC` or `XAUT`. A perpetual and a spot market can share an `id`, so `id` and `instrument_type` together identify a market.
+	ID string `json:"id" url:"id"`
+	// Whether this is a perpetual or a spot market. With `id`, it identifies the market.
+	InstrumentType MarketInstrumentType `json:"instrument_type" url:"instrument_type"`
+	// The highest cross leverage an order on this perpetual can use. `null` for a spot market, which trades without leverage.
+	MaxLeverage *int `json:"max_leverage,omitempty" url:"max_leverage,omitempty"`
+	// The current price in USD: the midpoint between the best bid and ask. `null` when no price is available.
+	Price *Money `json:"price,omitempty" url:"price,omitempty"`
+	// The most decimals an order's `size` can have on this market.
+	SizeDecimals int `json:"size_decimals" url:"size_decimals"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *Market) GetID() string {
+	if m == nil {
+		return ""
+	}
+	return m.ID
+}
+
+func (m *Market) GetInstrumentType() MarketInstrumentType {
+	if m == nil {
+		return ""
+	}
+	return m.InstrumentType
+}
+
+func (m *Market) GetMaxLeverage() *int {
+	if m == nil {
+		return nil
+	}
+	return m.MaxLeverage
+}
+
+func (m *Market) GetPrice() *Money {
+	if m == nil {
+		return nil
+	}
+	return m.Price
+}
+
+func (m *Market) GetSizeDecimals() int {
+	if m == nil {
+		return 0
+	}
+	return m.SizeDecimals
+}
+
+func (m *Market) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *Market) require(field *big.Int) {
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
+	}
+	next.Or(next, field)
+	m.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Market) SetID(id string) {
+	m.ID = id
+	m.require(marketFieldID)
+}
+
+// SetInstrumentType sets the InstrumentType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Market) SetInstrumentType(instrumentType MarketInstrumentType) {
+	m.InstrumentType = instrumentType
+	m.require(marketFieldInstrumentType)
+}
+
+// SetMaxLeverage sets the MaxLeverage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Market) SetMaxLeverage(maxLeverage *int) {
+	m.MaxLeverage = maxLeverage
+	m.require(marketFieldMaxLeverage)
+}
+
+// SetPrice sets the Price field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Market) SetPrice(price *Money) {
+	m.Price = price
+	m.require(marketFieldPrice)
+}
+
+// SetSizeDecimals sets the SizeDecimals field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Market) SetSizeDecimals(sizeDecimals int) {
+	m.SizeDecimals = sizeDecimals
+	m.require(marketFieldSizeDecimals)
+}
+
+func (m *Market) UnmarshalJSON(data []byte) error {
+	type unmarshaler Market
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = Market(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, marketNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		m.require(presentFields)
+	}
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *Market) MarshalJSON() ([]byte, error) {
+	type embed Market
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *Market) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
+// Whether this is a perpetual or a spot market. With `id`, it identifies the market.
+type MarketInstrumentType string
+
+const (
+	MarketInstrumentTypePerpetual MarketInstrumentType = "perpetual"
+	MarketInstrumentTypeSpot      MarketInstrumentType = "spot"
+)
+
+func NewMarketInstrumentTypeFromString(s string) (MarketInstrumentType, error) {
+	switch s {
+	case "perpetual":
+		return MarketInstrumentTypePerpetual, nil
+	case "spot":
+		return MarketInstrumentTypeSpot, nil
+	}
+	var t MarketInstrumentType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (m MarketInstrumentType) Ptr() *MarketInstrumentType {
+	return &m
+}
+
 // The available marketplace statuses to choose from.
 type MarketplaceStatuses string
 

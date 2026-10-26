@@ -17638,6 +17638,33 @@
       }
     },
     {
+      "id": "e7fbadee-b509-464f-803f-e13576e2f7a0",
+      "name": "List Markets - default",
+      "request": {
+        "urlPathTemplate": "/trades/markets",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"data\": [\n    {\n      \"id\": \"BTC\",\n      \"instrument_type\": \"perpetual\",\n      \"max_leverage\": 40,\n      \"price\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"size_decimals\": 5\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"MQ\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "e7fbadee-b509-464f-803f-e13576e2f7a0",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
       "id": "061d1415-6f21-4b6a-8b4a-0e2308b378dc",
       "name": "List OAuth Grants - default",
       "request": {
@@ -18026,6 +18053,6 @@
     }
   ],
   "meta": {
-    "total": 503
+    "total": 504
   }
 }

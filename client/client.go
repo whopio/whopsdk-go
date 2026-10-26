@@ -96,7 +96,7 @@ import (
 	supportchannels "github.com/whopio/whopsdk-go/v2/supportchannels"
 	swaps "github.com/whopio/whopsdk-go/v2/swaps"
 	teammembers "github.com/whopio/whopsdk-go/v2/teammembers"
-	trades "github.com/whopio/whopsdk-go/v2/trades"
+	tradesclient "github.com/whopio/whopsdk-go/v2/trades/client"
 	transfers "github.com/whopio/whopsdk-go/v2/transfers"
 	usersclient "github.com/whopio/whopsdk-go/v2/users/client"
 	variants "github.com/whopio/whopsdk-go/v2/variants"
@@ -196,7 +196,7 @@ type Whop struct {
 	SupportChannels          *supportchannels.Client
 	Swaps                    *swaps.Client
 	TeamMembers              *teammembers.Client
-	Trades                   *trades.Client
+	Trades                   *tradesclient.Client
 	Transfers                *transfers.Client
 	Users                    *usersclient.Client
 	Variants                 *variants.Client
@@ -306,7 +306,7 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		SupportChannels:          supportchannels.NewClient(options),
 		Swaps:                    swaps.NewClient(options),
 		TeamMembers:              teammembers.NewClient(options),
-		Trades:                   trades.NewClient(options),
+		Trades:                   tradesclient.NewClient(options),
 		Transfers:                transfers.NewClient(options),
 		Users:                    usersclient.NewClient(options),
 		Variants:                 variants.NewClient(options),
