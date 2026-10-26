@@ -8584,6 +8584,42 @@
       }
     },
     {
+      "id": "27f534ea-e0ce-4723-9c82-0116a928673b",
+      "name": "Generate Invoice PDF - default",
+      "request": {
+        "urlPathTemplate": "/invoices/{id}/generate_pdf",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"expires_at\": \"2026-01-01T12:00:00.000Z\",\n  \"url\": \"https://content.whop.com/exports/2026-01-01/pdfs/receipt_pay_xxxxxxxxxxxxxx.pdf\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "27f534ea-e0ce-4723-9c82-0116a928673b",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "f4ad4bed-d2ac-4eb8-bf72-23981f068d9e",
       "name": "Issue Invoice - default",
       "request": {
@@ -18053,6 +18089,6 @@
     }
   ],
   "meta": {
-    "total": 504
+    "total": 505
   }
 }

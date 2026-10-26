@@ -180,6 +180,32 @@ func TestInvoicesUpdateWithWireMock(
 	VerifyRequestCount(t, "TestInvoicesUpdateWithWireMock", "PATCH", "/invoices/id", nil, 1)
 }
 
+func TestInvoicesGeneratePdfWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.GeneratePdfInvoicesRequest{
+		ID: "id",
+	}
+	_, invocationErr := client.Invoices.GeneratePdf(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestInvoicesGeneratePdfWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestInvoicesGeneratePdfWithWireMock", "POST", "/invoices/id/generate_pdf", nil, 1)
+}
+
 func TestInvoicesIssueWithWireMock(
 	t *testing.T,
 ) {

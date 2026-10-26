@@ -201,6 +201,33 @@ func (c *Client) Update(
 	return response.Body, nil
 }
 
+// Generates the invoice as a PDF and returns a short-lived link to download it. A draft renders with its current estimated totals. The buyer's name, email address and billing details appear only when you have `member:basic:read`, `member:email:read` and `payment:basic:read` respectively. Each call generates a new file and link, so this endpoint does not replay `Idempotency-Key` responses.
+//
+// Example:
+//
+//	request := &whopsdk.GeneratePdfInvoicesRequest{
+//	    ID: "id",
+//	}
+//	client.Invoices.GeneratePdf(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GeneratePdf(
+	ctx context.Context,
+	request *whopsdk.GeneratePdfInvoicesRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.InvoicePdf, error) {
+	response, err := c.WithRawResponse.GeneratePdf(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Resolves final tax and opens a draft invoice. An invoice with a `payment_method_id` is then charged to it off-session, as `POST /payments` charges a saved payment method, and issuing it requires `payment:charge`. Issuing an open invoice again retains its totals and charges nothing.
 //
 // Example:
