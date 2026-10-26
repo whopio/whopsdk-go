@@ -9237,9 +9237,6 @@
           }
         },
         "queryParameters": {
-          "discord_id": {
-            "equalTo": "123456789012345678"
-          },
           "product_ids": {
             "hasExactly": [
               {
