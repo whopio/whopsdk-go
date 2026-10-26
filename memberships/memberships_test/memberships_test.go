@@ -89,6 +89,9 @@ func TestMembershipsListWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.ListMembershipsRequest{
+		DiscordID: whopsdk.String(
+			"123456789012345678",
+		),
 		ProductIDs: []*string{
 			whopsdk.String(
 				"prod_xxxxxxxxxxxxx",
@@ -114,7 +117,7 @@ func TestMembershipsListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestMembershipsListWithWireMock", "GET", "/memberships", map[string]interface{}{"product_ids": "prod_xxxxxxxxxxxxx", "plan_ids": "plan_xxxxxxxxxxxxx", "promo_code_ids": "promo_xxxxxxxxxxxxxx"}, 1)
+	VerifyRequestCount(t, "TestMembershipsListWithWireMock", "GET", "/memberships", map[string]interface{}{"discord_id": "123456789012345678", "product_ids": "prod_xxxxxxxxxxxxx", "plan_ids": "plan_xxxxxxxxxxxxx", "promo_code_ids": "promo_xxxxxxxxxxxxxx"}, 1)
 }
 
 func TestMembershipsInviteWithWireMock(

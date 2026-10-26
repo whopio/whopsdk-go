@@ -25125,6 +25125,9 @@ Lists every membership the caller can read: an account API key its account's; a 
 
 ```go
 request := &whopsdk.ListMembershipsRequest{
+    DiscordID: whopsdk.String(
+        "123456789012345678",
+    ),
     ProductIDs: []*string{
         whopsdk.String(
             "prod_xxxxxxxxxxxxx",
@@ -25176,6 +25179,14 @@ client.Memberships.List(
 <dd>
 
 **memberID:** `*string` — Narrow to one member's memberships (`mber_` tag), including memberships bought by another business. A member outside the caller's visible set returns an empty list.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**discordID:** `*string` — Narrow to memberships linked to this Discord account, by its numeric Discord user ID. Includes memberships imported with that Discord ID. A Discord account with no memberships the caller can read returns an empty list.
     
 </dd>
 </dl>
