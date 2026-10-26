@@ -23435,7 +23435,7 @@ client.Invoices.Create(
 <dl>
 <dd>
 
-**items:** `[]*whopsdk.CreateInvoicesRequestItemsItem` — The one-time variants being invoiced, all in the same currency. Each variant may appear once; use quantity for multiple units. Product and price come from each variant. Multiple items require unlimited stock and compatible payment, tax, and access settings.
+**items:** `[]*whopsdk.CreateInvoicesRequestItemsItem` — The variants being invoiced, all in the same currency. Each variant may appear once; use quantity for multiple units. Product and price come from each variant; a recurring variant must belong to a product, bills its renewal price and, once the invoice is paid, renews as a subscription charged to the payment method that paid it. With several items, every item that has a product must be a regular product, and all items need compatible payment, tax, and access settings.
     
 </dd>
 </dl>
@@ -23627,7 +23627,7 @@ client.Invoices.Update(
 <dl>
 <dd>
 
-**items:** `[]*whopsdk.UpdateInvoicesRequestItemsItem` — The one-time variants being invoiced, all in the same currency. Each variant may appear once; use quantity for multiple units. Product and price come from each variant. Multiple items require unlimited stock and compatible payment, tax, and access settings.
+**items:** `[]*whopsdk.UpdateInvoicesRequestItemsItem` — The variants being invoiced, all in the same currency. Each variant may appear once; use quantity for multiple units. Product and price come from each variant; a recurring variant must belong to a product, bills its renewal price and, once the invoice is paid, renews as a subscription charged to the payment method that paid it. With several items, every item that has a product must be a regular product, and all items need compatible payment, tax, and access settings.
     
 </dd>
 </dl>
