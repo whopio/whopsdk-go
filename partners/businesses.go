@@ -112,10 +112,12 @@ var (
 	listBusinessesRequestFieldDirection           = big.NewInt(1 << 9)
 	listBusinessesRequestFieldCreatedBefore       = big.NewInt(1 << 10)
 	listBusinessesRequestFieldCreatedAfter        = big.NewInt(1 << 11)
-	listBusinessesRequestFieldReferredUserID      = big.NewInt(1 << 12)
-	listBusinessesRequestFieldReferredUsername    = big.NewInt(1 << 13)
-	listBusinessesRequestFieldTier                = big.NewInt(1 << 14)
-	listBusinessesRequestFieldBusinessPrefixQuery = big.NewInt(1 << 15)
+	listBusinessesRequestFieldFirstSaleBefore     = big.NewInt(1 << 12)
+	listBusinessesRequestFieldFirstSaleAfter      = big.NewInt(1 << 13)
+	listBusinessesRequestFieldReferredUserID      = big.NewInt(1 << 14)
+	listBusinessesRequestFieldReferredUsername    = big.NewInt(1 << 15)
+	listBusinessesRequestFieldTier                = big.NewInt(1 << 16)
+	listBusinessesRequestFieldBusinessPrefixQuery = big.NewInt(1 << 17)
 )
 
 type ListBusinessesRequest struct {
@@ -143,6 +145,10 @@ type ListBusinessesRequest struct {
 	CreatedBefore *string `json:"-" url:"created_before,omitempty"`
 	// Only return partner businesses created after this timestamp.
 	CreatedAfter *string `json:"-" url:"created_after,omitempty"`
+	// Only return partner businesses whose first paid sale above zero happened before this timestamp.
+	FirstSaleBefore *string `json:"-" url:"first_sale_before,omitempty"`
+	// Only return partner businesses whose first paid sale above zero happened after this timestamp. Combined with first_sale_before, this is the net new set: businesses that processed their first $1 inside the window.
+	FirstSaleAfter *string `json:"-" url:"first_sale_after,omitempty"`
 	// Filter to referrals attributed to this user. For first-tier referrals, this is the referred account owner; for second-tier referrals, this is the partner you recruited.
 	ReferredUserID *string `json:"-" url:"referred_user_id,omitempty"`
 	// Filter by the referred user's exact username. Ignored when `referred_user_id` is present.
@@ -247,6 +253,20 @@ func (l *ListBusinessesRequest) SetCreatedBefore(createdBefore *string) {
 func (l *ListBusinessesRequest) SetCreatedAfter(createdAfter *string) {
 	l.CreatedAfter = createdAfter
 	l.require(listBusinessesRequestFieldCreatedAfter)
+}
+
+// SetFirstSaleBefore sets the FirstSaleBefore field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListBusinessesRequest) SetFirstSaleBefore(firstSaleBefore *string) {
+	l.FirstSaleBefore = firstSaleBefore
+	l.require(listBusinessesRequestFieldFirstSaleBefore)
+}
+
+// SetFirstSaleAfter sets the FirstSaleAfter field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListBusinessesRequest) SetFirstSaleAfter(firstSaleAfter *string) {
+	l.FirstSaleAfter = firstSaleAfter
+	l.require(listBusinessesRequestFieldFirstSaleAfter)
 }
 
 // SetReferredUserID sets the ReferredUserID field and marks it as non-optional;
