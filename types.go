@@ -24113,13 +24113,24 @@ func (i *InvoiceLegacy) String() string {
 }
 
 var (
-	invoiceLegacyCompanyFieldID = big.NewInt(1 << 0)
+	invoiceLegacyCompanyFieldID    = big.NewInt(1 << 0)
+	invoiceLegacyCompanyFieldLogo  = big.NewInt(1 << 1)
+	invoiceLegacyCompanyFieldTitle = big.NewInt(1 << 2)
 )
+
+// invoiceLegacyCompanyNullableFields maps the wire names of InvoiceLegacyCompany's nullable fields (required or optional) to their field bits.
+var invoiceLegacyCompanyNullableFields = map[string]*big.Int{
+	"logo": invoiceLegacyCompanyFieldLogo,
+}
 
 // The company that issued this invoice.
 type InvoiceLegacyCompany struct {
 	// The unique identifier for the company.
 	ID string `json:"id" url:"id"`
+	// The company's logo.
+	Logo *InvoiceLegacyCompanyLogo `json:"logo,omitempty" url:"logo,omitempty"`
+	// The display name of the company shown to customers.
+	Title string `json:"title" url:"title"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -24133,6 +24144,20 @@ func (i *InvoiceLegacyCompany) GetID() string {
 		return ""
 	}
 	return i.ID
+}
+
+func (i *InvoiceLegacyCompany) GetLogo() *InvoiceLegacyCompanyLogo {
+	if i == nil {
+		return nil
+	}
+	return i.Logo
+}
+
+func (i *InvoiceLegacyCompany) GetTitle() string {
+	if i == nil {
+		return ""
+	}
+	return i.Title
 }
 
 func (i *InvoiceLegacyCompany) GetExtraProperties() map[string]interface{} {
@@ -24158,6 +24183,20 @@ func (i *InvoiceLegacyCompany) SetID(id string) {
 	i.require(invoiceLegacyCompanyFieldID)
 }
 
+// SetLogo sets the Logo field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyCompany) SetLogo(logo *InvoiceLegacyCompanyLogo) {
+	i.Logo = logo
+	i.require(invoiceLegacyCompanyFieldLogo)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyCompany) SetTitle(title string) {
+	i.Title = title
+	i.require(invoiceLegacyCompanyFieldTitle)
+}
+
 func (i *InvoiceLegacyCompany) UnmarshalJSON(data []byte) error {
 	type unmarshaler InvoiceLegacyCompany
 	var value unmarshaler
@@ -24170,6 +24209,13 @@ func (i *InvoiceLegacyCompany) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	i.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, invoiceLegacyCompanyNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		i.require(presentFields)
+	}
 	i.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -24201,19 +24247,128 @@ func (i *InvoiceLegacyCompany) String() string {
 }
 
 var (
-	invoiceLegacyCurrentPlanFieldCurrency       = big.NewInt(1 << 0)
-	invoiceLegacyCurrentPlanFieldDescription    = big.NewInt(1 << 1)
-	invoiceLegacyCurrentPlanFieldFormattedPrice = big.NewInt(1 << 2)
-	invoiceLegacyCurrentPlanFieldID             = big.NewInt(1 << 3)
+	invoiceLegacyCompanyLogoFieldURL = big.NewInt(1 << 0)
+)
+
+// invoiceLegacyCompanyLogoNullableFields maps the wire names of InvoiceLegacyCompanyLogo's nullable fields (required or optional) to their field bits.
+var invoiceLegacyCompanyLogoNullableFields = map[string]*big.Int{
+	"url": invoiceLegacyCompanyLogoFieldURL,
+}
+
+// The company's logo.
+type InvoiceLegacyCompanyLogo struct {
+	// A pre-optimized URL for rendering this attachment on the client. This should be used for displaying attachments in apps.
+	URL *string `json:"url,omitempty" url:"url,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *InvoiceLegacyCompanyLogo) GetURL() *string {
+	if i == nil {
+		return nil
+	}
+	return i.URL
+}
+
+func (i *InvoiceLegacyCompanyLogo) GetExtraProperties() map[string]interface{} {
+	if i == nil {
+		return nil
+	}
+	return i.extraProperties
+}
+
+func (i *InvoiceLegacyCompanyLogo) require(field *big.Int) {
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
+	}
+	next.Or(next, field)
+	i.explicitFields = next
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyCompanyLogo) SetURL(url *string) {
+	i.URL = url
+	i.require(invoiceLegacyCompanyLogoFieldURL)
+}
+
+func (i *InvoiceLegacyCompanyLogo) UnmarshalJSON(data []byte) error {
+	type unmarshaler InvoiceLegacyCompanyLogo
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = InvoiceLegacyCompanyLogo(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, invoiceLegacyCompanyLogoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		i.require(presentFields)
+	}
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceLegacyCompanyLogo) MarshalJSON() ([]byte, error) {
+	type embed InvoiceLegacyCompanyLogo
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*i),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (i *InvoiceLegacyCompanyLogo) String() string {
+	if i == nil {
+		return "<nil>"
+	}
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+var (
+	invoiceLegacyCurrentPlanFieldBillingPeriod   = big.NewInt(1 << 0)
+	invoiceLegacyCurrentPlanFieldCurrency        = big.NewInt(1 << 1)
+	invoiceLegacyCurrentPlanFieldDescription     = big.NewInt(1 << 2)
+	invoiceLegacyCurrentPlanFieldFormattedPrice  = big.NewInt(1 << 3)
+	invoiceLegacyCurrentPlanFieldID              = big.NewInt(1 << 4)
+	invoiceLegacyCurrentPlanFieldInitialPrice    = big.NewInt(1 << 5)
+	invoiceLegacyCurrentPlanFieldPlanType        = big.NewInt(1 << 6)
+	invoiceLegacyCurrentPlanFieldRenewalPrice    = big.NewInt(1 << 7)
+	invoiceLegacyCurrentPlanFieldTrialPeriodDays = big.NewInt(1 << 8)
 )
 
 // invoiceLegacyCurrentPlanNullableFields maps the wire names of InvoiceLegacyCurrentPlan's nullable fields (required or optional) to their field bits.
 var invoiceLegacyCurrentPlanNullableFields = map[string]*big.Int{
-	"description": invoiceLegacyCurrentPlanFieldDescription,
+	"billing_period":    invoiceLegacyCurrentPlanFieldBillingPeriod,
+	"description":       invoiceLegacyCurrentPlanFieldDescription,
+	"trial_period_days": invoiceLegacyCurrentPlanFieldTrialPeriodDays,
 }
 
 // The plan that this invoice charges for.
 type InvoiceLegacyCurrentPlan struct {
+	// Number of days between recurring charges, such as 30 for monthly or 365 for annual. `null` for one-time plans.
+	BillingPeriod *int `json:"billing_period,omitempty" url:"billing_period,omitempty"`
 	// The currency used for all prices on this plan (e.g., 'usd', 'eur'). All monetary amounts on the plan are denominated in this currency.
 	Currency Currencies `json:"currency" url:"currency"`
 	// A text description of the plan visible to customers. Maximum 1000 characters. Null if no description is set.
@@ -24222,12 +24377,27 @@ type InvoiceLegacyCurrentPlan struct {
 	FormattedPrice string `json:"formatted_price" url:"formatted_price"`
 	// The unique identifier for the plan.
 	ID string `json:"id" url:"id"`
+	// The initial purchase price in the plan's base_currency (e.g., 49.99 for $49.99). For one-time plans, this is the full price. For renewal plans, this is charged on top of the first renewal_price.
+	InitialPrice float64 `json:"initial_price" url:"initial_price"`
+	// The billing model for this plan: 'renewal' for recurring subscriptions or 'one_time' for single payments.
+	PlanType PlanTypes `json:"plan_type" url:"plan_type"`
+	// The recurring price charged every billing_period in the plan's base_currency (e.g., 9.99 for $9.99/period). Zero for one-time plans.
+	RenewalPrice float64 `json:"renewal_price" url:"renewal_price"`
+	// Free trial days before first renewal charge. `null` if no trial is configured or the user has already used a trial for this plan.
+	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (i *InvoiceLegacyCurrentPlan) GetBillingPeriod() *int {
+	if i == nil {
+		return nil
+	}
+	return i.BillingPeriod
 }
 
 func (i *InvoiceLegacyCurrentPlan) GetCurrency() Currencies {
@@ -24258,6 +24428,34 @@ func (i *InvoiceLegacyCurrentPlan) GetID() string {
 	return i.ID
 }
 
+func (i *InvoiceLegacyCurrentPlan) GetInitialPrice() float64 {
+	if i == nil {
+		return 0
+	}
+	return i.InitialPrice
+}
+
+func (i *InvoiceLegacyCurrentPlan) GetPlanType() PlanTypes {
+	if i == nil {
+		return ""
+	}
+	return i.PlanType
+}
+
+func (i *InvoiceLegacyCurrentPlan) GetRenewalPrice() float64 {
+	if i == nil {
+		return 0
+	}
+	return i.RenewalPrice
+}
+
+func (i *InvoiceLegacyCurrentPlan) GetTrialPeriodDays() *int {
+	if i == nil {
+		return nil
+	}
+	return i.TrialPeriodDays
+}
+
 func (i *InvoiceLegacyCurrentPlan) GetExtraProperties() map[string]interface{} {
 	if i == nil {
 		return nil
@@ -24272,6 +24470,13 @@ func (i *InvoiceLegacyCurrentPlan) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	i.explicitFields = next
+}
+
+// SetBillingPeriod sets the BillingPeriod field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyCurrentPlan) SetBillingPeriod(billingPeriod *int) {
+	i.BillingPeriod = billingPeriod
+	i.require(invoiceLegacyCurrentPlanFieldBillingPeriod)
 }
 
 // SetCurrency sets the Currency field and marks it as non-optional;
@@ -24300,6 +24505,34 @@ func (i *InvoiceLegacyCurrentPlan) SetFormattedPrice(formattedPrice string) {
 func (i *InvoiceLegacyCurrentPlan) SetID(id string) {
 	i.ID = id
 	i.require(invoiceLegacyCurrentPlanFieldID)
+}
+
+// SetInitialPrice sets the InitialPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyCurrentPlan) SetInitialPrice(initialPrice float64) {
+	i.InitialPrice = initialPrice
+	i.require(invoiceLegacyCurrentPlanFieldInitialPrice)
+}
+
+// SetPlanType sets the PlanType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyCurrentPlan) SetPlanType(planType PlanTypes) {
+	i.PlanType = planType
+	i.require(invoiceLegacyCurrentPlanFieldPlanType)
+}
+
+// SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyCurrentPlan) SetRenewalPrice(renewalPrice float64) {
+	i.RenewalPrice = renewalPrice
+	i.require(invoiceLegacyCurrentPlanFieldRenewalPrice)
+}
+
+// SetTrialPeriodDays sets the TrialPeriodDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLegacyCurrentPlan) SetTrialPeriodDays(trialPeriodDays *int) {
+	i.TrialPeriodDays = trialPeriodDays
+	i.require(invoiceLegacyCurrentPlanFieldTrialPeriodDays)
 }
 
 func (i *InvoiceLegacyCurrentPlan) UnmarshalJSON(data []byte) error {
@@ -25735,13 +25968,24 @@ func (l *LegacyInvoice) String() string {
 }
 
 var (
-	legacyInvoiceCompanyFieldID = big.NewInt(1 << 0)
+	legacyInvoiceCompanyFieldID    = big.NewInt(1 << 0)
+	legacyInvoiceCompanyFieldLogo  = big.NewInt(1 << 1)
+	legacyInvoiceCompanyFieldTitle = big.NewInt(1 << 2)
 )
+
+// legacyInvoiceCompanyNullableFields maps the wire names of LegacyInvoiceCompany's nullable fields (required or optional) to their field bits.
+var legacyInvoiceCompanyNullableFields = map[string]*big.Int{
+	"logo": legacyInvoiceCompanyFieldLogo,
+}
 
 // The company that issued this invoice.
 type LegacyInvoiceCompany struct {
 	// The unique identifier for the company.
 	ID string `json:"id" url:"id"`
+	// The company's logo.
+	Logo *LegacyInvoiceCompanyLogo `json:"logo,omitempty" url:"logo,omitempty"`
+	// The display name of the company shown to customers.
+	Title string `json:"title" url:"title"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -25755,6 +25999,20 @@ func (l *LegacyInvoiceCompany) GetID() string {
 		return ""
 	}
 	return l.ID
+}
+
+func (l *LegacyInvoiceCompany) GetLogo() *LegacyInvoiceCompanyLogo {
+	if l == nil {
+		return nil
+	}
+	return l.Logo
+}
+
+func (l *LegacyInvoiceCompany) GetTitle() string {
+	if l == nil {
+		return ""
+	}
+	return l.Title
 }
 
 func (l *LegacyInvoiceCompany) GetExtraProperties() map[string]interface{} {
@@ -25780,6 +26038,20 @@ func (l *LegacyInvoiceCompany) SetID(id string) {
 	l.require(legacyInvoiceCompanyFieldID)
 }
 
+// SetLogo sets the Logo field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceCompany) SetLogo(logo *LegacyInvoiceCompanyLogo) {
+	l.Logo = logo
+	l.require(legacyInvoiceCompanyFieldLogo)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceCompany) SetTitle(title string) {
+	l.Title = title
+	l.require(legacyInvoiceCompanyFieldTitle)
+}
+
 func (l *LegacyInvoiceCompany) UnmarshalJSON(data []byte) error {
 	type unmarshaler LegacyInvoiceCompany
 	var value unmarshaler
@@ -25792,6 +26064,13 @@ func (l *LegacyInvoiceCompany) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, legacyInvoiceCompanyNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -25823,19 +26102,128 @@ func (l *LegacyInvoiceCompany) String() string {
 }
 
 var (
-	legacyInvoiceCurrentPlanFieldCurrency       = big.NewInt(1 << 0)
-	legacyInvoiceCurrentPlanFieldDescription    = big.NewInt(1 << 1)
-	legacyInvoiceCurrentPlanFieldFormattedPrice = big.NewInt(1 << 2)
-	legacyInvoiceCurrentPlanFieldID             = big.NewInt(1 << 3)
+	legacyInvoiceCompanyLogoFieldURL = big.NewInt(1 << 0)
+)
+
+// legacyInvoiceCompanyLogoNullableFields maps the wire names of LegacyInvoiceCompanyLogo's nullable fields (required or optional) to their field bits.
+var legacyInvoiceCompanyLogoNullableFields = map[string]*big.Int{
+	"url": legacyInvoiceCompanyLogoFieldURL,
+}
+
+// The company's logo.
+type LegacyInvoiceCompanyLogo struct {
+	// A pre-optimized URL for rendering this attachment on the client. This should be used for displaying attachments in apps.
+	URL *string `json:"url,omitempty" url:"url,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LegacyInvoiceCompanyLogo) GetURL() *string {
+	if l == nil {
+		return nil
+	}
+	return l.URL
+}
+
+func (l *LegacyInvoiceCompanyLogo) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LegacyInvoiceCompanyLogo) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceCompanyLogo) SetURL(url *string) {
+	l.URL = url
+	l.require(legacyInvoiceCompanyLogoFieldURL)
+}
+
+func (l *LegacyInvoiceCompanyLogo) UnmarshalJSON(data []byte) error {
+	type unmarshaler LegacyInvoiceCompanyLogo
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LegacyInvoiceCompanyLogo(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, legacyInvoiceCompanyLogoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LegacyInvoiceCompanyLogo) MarshalJSON() ([]byte, error) {
+	type embed LegacyInvoiceCompanyLogo
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LegacyInvoiceCompanyLogo) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	legacyInvoiceCurrentPlanFieldBillingPeriod   = big.NewInt(1 << 0)
+	legacyInvoiceCurrentPlanFieldCurrency        = big.NewInt(1 << 1)
+	legacyInvoiceCurrentPlanFieldDescription     = big.NewInt(1 << 2)
+	legacyInvoiceCurrentPlanFieldFormattedPrice  = big.NewInt(1 << 3)
+	legacyInvoiceCurrentPlanFieldID              = big.NewInt(1 << 4)
+	legacyInvoiceCurrentPlanFieldInitialPrice    = big.NewInt(1 << 5)
+	legacyInvoiceCurrentPlanFieldPlanType        = big.NewInt(1 << 6)
+	legacyInvoiceCurrentPlanFieldRenewalPrice    = big.NewInt(1 << 7)
+	legacyInvoiceCurrentPlanFieldTrialPeriodDays = big.NewInt(1 << 8)
 )
 
 // legacyInvoiceCurrentPlanNullableFields maps the wire names of LegacyInvoiceCurrentPlan's nullable fields (required or optional) to their field bits.
 var legacyInvoiceCurrentPlanNullableFields = map[string]*big.Int{
-	"description": legacyInvoiceCurrentPlanFieldDescription,
+	"billing_period":    legacyInvoiceCurrentPlanFieldBillingPeriod,
+	"description":       legacyInvoiceCurrentPlanFieldDescription,
+	"trial_period_days": legacyInvoiceCurrentPlanFieldTrialPeriodDays,
 }
 
 // The plan that this invoice charges for.
 type LegacyInvoiceCurrentPlan struct {
+	// Number of days between recurring charges, such as 30 for monthly or 365 for annual. `null` for one-time plans.
+	BillingPeriod *int `json:"billing_period,omitempty" url:"billing_period,omitempty"`
 	// The currency used for all prices on this plan (e.g., 'usd', 'eur'). All monetary amounts on the plan are denominated in this currency.
 	Currency Currencies `json:"currency" url:"currency"`
 	// A text description of the plan visible to customers. Maximum 1000 characters. Null if no description is set.
@@ -25844,12 +26232,27 @@ type LegacyInvoiceCurrentPlan struct {
 	FormattedPrice string `json:"formatted_price" url:"formatted_price"`
 	// The unique identifier for the plan.
 	ID string `json:"id" url:"id"`
+	// The initial purchase price in the plan's base_currency (e.g., 49.99 for $49.99). For one-time plans, this is the full price. For renewal plans, this is charged on top of the first renewal_price.
+	InitialPrice float64 `json:"initial_price" url:"initial_price"`
+	// The billing model for this plan: 'renewal' for recurring subscriptions or 'one_time' for single payments.
+	PlanType PlanTypes `json:"plan_type" url:"plan_type"`
+	// The recurring price charged every billing_period in the plan's base_currency (e.g., 9.99 for $9.99/period). Zero for one-time plans.
+	RenewalPrice float64 `json:"renewal_price" url:"renewal_price"`
+	// Free trial days before first renewal charge. `null` if no trial is configured or the user has already used a trial for this plan.
+	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (l *LegacyInvoiceCurrentPlan) GetBillingPeriod() *int {
+	if l == nil {
+		return nil
+	}
+	return l.BillingPeriod
 }
 
 func (l *LegacyInvoiceCurrentPlan) GetCurrency() Currencies {
@@ -25880,6 +26283,34 @@ func (l *LegacyInvoiceCurrentPlan) GetID() string {
 	return l.ID
 }
 
+func (l *LegacyInvoiceCurrentPlan) GetInitialPrice() float64 {
+	if l == nil {
+		return 0
+	}
+	return l.InitialPrice
+}
+
+func (l *LegacyInvoiceCurrentPlan) GetPlanType() PlanTypes {
+	if l == nil {
+		return ""
+	}
+	return l.PlanType
+}
+
+func (l *LegacyInvoiceCurrentPlan) GetRenewalPrice() float64 {
+	if l == nil {
+		return 0
+	}
+	return l.RenewalPrice
+}
+
+func (l *LegacyInvoiceCurrentPlan) GetTrialPeriodDays() *int {
+	if l == nil {
+		return nil
+	}
+	return l.TrialPeriodDays
+}
+
 func (l *LegacyInvoiceCurrentPlan) GetExtraProperties() map[string]interface{} {
 	if l == nil {
 		return nil
@@ -25894,6 +26325,13 @@ func (l *LegacyInvoiceCurrentPlan) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	l.explicitFields = next
+}
+
+// SetBillingPeriod sets the BillingPeriod field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceCurrentPlan) SetBillingPeriod(billingPeriod *int) {
+	l.BillingPeriod = billingPeriod
+	l.require(legacyInvoiceCurrentPlanFieldBillingPeriod)
 }
 
 // SetCurrency sets the Currency field and marks it as non-optional;
@@ -25922,6 +26360,34 @@ func (l *LegacyInvoiceCurrentPlan) SetFormattedPrice(formattedPrice string) {
 func (l *LegacyInvoiceCurrentPlan) SetID(id string) {
 	l.ID = id
 	l.require(legacyInvoiceCurrentPlanFieldID)
+}
+
+// SetInitialPrice sets the InitialPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceCurrentPlan) SetInitialPrice(initialPrice float64) {
+	l.InitialPrice = initialPrice
+	l.require(legacyInvoiceCurrentPlanFieldInitialPrice)
+}
+
+// SetPlanType sets the PlanType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceCurrentPlan) SetPlanType(planType PlanTypes) {
+	l.PlanType = planType
+	l.require(legacyInvoiceCurrentPlanFieldPlanType)
+}
+
+// SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceCurrentPlan) SetRenewalPrice(renewalPrice float64) {
+	l.RenewalPrice = renewalPrice
+	l.require(legacyInvoiceCurrentPlanFieldRenewalPrice)
+}
+
+// SetTrialPeriodDays sets the TrialPeriodDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LegacyInvoiceCurrentPlan) SetTrialPeriodDays(trialPeriodDays *int) {
+	l.TrialPeriodDays = trialPeriodDays
+	l.require(legacyInvoiceCurrentPlanFieldTrialPeriodDays)
 }
 
 func (l *LegacyInvoiceCurrentPlan) UnmarshalJSON(data []byte) error {
