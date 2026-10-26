@@ -307,24 +307,25 @@ func (e *ExtendMembershipsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	listMembershipsRequestFieldAccountID     = big.NewInt(1 << 0)
-	listMembershipsRequestFieldUserID        = big.NewInt(1 << 1)
-	listMembershipsRequestFieldMemberID      = big.NewInt(1 << 2)
-	listMembershipsRequestFieldStatus        = big.NewInt(1 << 3)
-	listMembershipsRequestFieldStatuses      = big.NewInt(1 << 4)
-	listMembershipsRequestFieldProductID     = big.NewInt(1 << 5)
-	listMembershipsRequestFieldProductIDs    = big.NewInt(1 << 6)
-	listMembershipsRequestFieldPlanID        = big.NewInt(1 << 7)
-	listMembershipsRequestFieldPlanIDs       = big.NewInt(1 << 8)
-	listMembershipsRequestFieldPromoCodeIDs  = big.NewInt(1 << 9)
-	listMembershipsRequestFieldCreatedAfter  = big.NewInt(1 << 10)
-	listMembershipsRequestFieldCreatedBefore = big.NewInt(1 << 11)
-	listMembershipsRequestFieldOrder         = big.NewInt(1 << 12)
-	listMembershipsRequestFieldDirection     = big.NewInt(1 << 13)
-	listMembershipsRequestFieldFirst         = big.NewInt(1 << 14)
-	listMembershipsRequestFieldAfter         = big.NewInt(1 << 15)
-	listMembershipsRequestFieldLast          = big.NewInt(1 << 16)
-	listMembershipsRequestFieldBefore        = big.NewInt(1 << 17)
+	listMembershipsRequestFieldAccountID       = big.NewInt(1 << 0)
+	listMembershipsRequestFieldUserID          = big.NewInt(1 << 1)
+	listMembershipsRequestFieldMemberID        = big.NewInt(1 << 2)
+	listMembershipsRequestFieldExternalAccount = big.NewInt(1 << 3)
+	listMembershipsRequestFieldStatus          = big.NewInt(1 << 4)
+	listMembershipsRequestFieldStatuses        = big.NewInt(1 << 5)
+	listMembershipsRequestFieldProductID       = big.NewInt(1 << 6)
+	listMembershipsRequestFieldProductIDs      = big.NewInt(1 << 7)
+	listMembershipsRequestFieldPlanID          = big.NewInt(1 << 8)
+	listMembershipsRequestFieldPlanIDs         = big.NewInt(1 << 9)
+	listMembershipsRequestFieldPromoCodeIDs    = big.NewInt(1 << 10)
+	listMembershipsRequestFieldCreatedAfter    = big.NewInt(1 << 11)
+	listMembershipsRequestFieldCreatedBefore   = big.NewInt(1 << 12)
+	listMembershipsRequestFieldOrder           = big.NewInt(1 << 13)
+	listMembershipsRequestFieldDirection       = big.NewInt(1 << 14)
+	listMembershipsRequestFieldFirst           = big.NewInt(1 << 15)
+	listMembershipsRequestFieldAfter           = big.NewInt(1 << 16)
+	listMembershipsRequestFieldLast            = big.NewInt(1 << 17)
+	listMembershipsRequestFieldBefore          = big.NewInt(1 << 18)
 )
 
 type ListMembershipsRequest struct {
@@ -334,6 +335,8 @@ type ListMembershipsRequest struct {
 	UserID *string `json:"-" url:"user_id,omitempty"`
 	// Narrow to one member's memberships (`mber_` tag), including memberships bought by another business. A member outside the caller's visible set returns an empty list.
 	MemberID *string `json:"-" url:"member_id,omitempty"`
+	// Narrow to memberships linked to one Discord or Telegram account, given as the platform's user ID prefixed with `discord_` or `telegram_`. Discord matches include memberships imported with that Discord ID. Any other format is a 400.
+	ExternalAccount *string `json:"-" url:"external_account,omitempty"`
 	// Filter by billing state. `trialing`, `active`, `past_due`, `completed`, `canceled`, and `expired` match the membership's `status`; `active`, `trialing`, and `past_due` exclude memberships set to cancel at period end. The other values are derived buckets that never appear as a `status`: `canceling` matches memberships set to cancel at period end; `paused` matches memberships with payment collection paused; `expiring` matches one-time purchases that have not yet expired; `one_time` matches one-time purchases that never expire; `unclaimed` matches memberships with no buyer user, including memberships bought by another business; `banned` matches memberships whose buyer is banned from the account.
 	Status *ListMembershipsRequestStatus `json:"-" url:"status,omitempty"`
 	// Filter to memberships matching any of these billing states, with the same meanings as `status`. Repeat the parameter to pass several. Combined with `status` when both are sent.
@@ -397,6 +400,13 @@ func (l *ListMembershipsRequest) SetUserID(userID *string) {
 func (l *ListMembershipsRequest) SetMemberID(memberID *string) {
 	l.MemberID = memberID
 	l.require(listMembershipsRequestFieldMemberID)
+}
+
+// SetExternalAccount sets the ExternalAccount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMembershipsRequest) SetExternalAccount(externalAccount *string) {
+	l.ExternalAccount = externalAccount
+	l.require(listMembershipsRequestFieldExternalAccount)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;

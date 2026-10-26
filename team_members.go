@@ -355,7 +355,7 @@ type TeamMember struct {
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// How many team members report directly to this member. `null` for invites.
 	DirectReportsCount *int `json:"direct_reports_count,omitempty" url:"direct_reports_count,omitempty"`
-	// The member's email address. For accepted members, `null` unless the caller holds the `company:authorized_user:email:read` scope; for invites, the invited address.
+	// The member's email address. For an invite sent to an email with no Whop account yet, the invited address; for accepted members and invites to an existing Whop account, `null` unless the caller holds the `company:authorized_user:email:read` scope.
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
 	// Team member ID — `ausr_` for accepted members, `mber_` for members whose role is held on their member record, `ausri_` for pending invites.
 	ID string `json:"id" url:"id"`

@@ -9309,6 +9309,9 @@
           }
         },
         "queryParameters": {
+          "external_account": {
+            "equalTo": "discord_123456789012345678"
+          },
           "product_ids": {
             "hasExactly": [
               {
