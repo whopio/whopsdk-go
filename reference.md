@@ -32493,6 +32493,22 @@ client.Plans.Create(
 <dl>
 <dd>
 
+**cancelDiscountIntervals:** `*int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cancelDiscountPercentage:** `*int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **checkoutStyling:** `map[string]any` 
     
 </dd>
@@ -32558,6 +32574,14 @@ client.Plans.Create(
 <dd>
 
 **metadata:** `map[string]any` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**offerCancelDiscount:** `*bool` 
     
 </dd>
 </dl>
@@ -33010,6 +33034,14 @@ client.Plans.Update(
 <dd>
 
 **sku:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**splitPayRequiredPayments:** `*int` 
     
 </dd>
 </dl>
@@ -41669,6 +41701,22 @@ client.Variants.Create(
 <dl>
 <dd>
 
+**cancelDiscountIntervals:** `*int` — How long the retention discount lasts: `0` forever, `1` the next payment only, or a number of calendar months from when the customer accepts it. Required when `offer_cancel_discount` is true.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cancelDiscountPercentage:** `*int` — Percentage taken off each discounted renewal, as a whole number from 1 to 100. Required when `offer_cancel_discount` is true.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **checkoutStyling:** `map[string]any` — Checkout styling overrides for this variant.
     
 </dd>
@@ -41741,6 +41789,14 @@ client.Variants.Create(
 <dl>
 <dd>
 
+**offerCancelDiscount:** `*bool` — Whether to offer a retention discount when a customer attempts to cancel.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **overrideTaxType:** `*string` — Override the default tax classification for this specific variant.
     
 </dd>
@@ -41797,7 +41853,7 @@ client.Variants.Create(
 <dl>
 <dd>
 
-**splitPayRequiredPayments:** `*int` — Installment payments required before the subscription pauses.
+**splitPayRequiredPayments:** `*int` — Installment payments required before the subscription pauses, from 2 to 115. Only valid on `renewal` variants.
     
 </dd>
 </dl>
@@ -42090,7 +42146,7 @@ client.Variants.Update(
 <dl>
 <dd>
 
-**cancelDiscountIntervals:** `*int` — How many renewals the retention discount applies to. Required when `offer_cancel_discount` is true.
+**cancelDiscountIntervals:** `*int` — How long the retention discount lasts: `0` forever, `1` the next payment only, or a number of calendar months from when the customer accepts it. Required when `offer_cancel_discount` is true.
     
 </dd>
 </dl>
@@ -42098,7 +42154,7 @@ client.Variants.Update(
 <dl>
 <dd>
 
-**cancelDiscountPercentage:** `*int` — Percentage taken off each discounted renewal. Required when `offer_cancel_discount` is true.
+**cancelDiscountPercentage:** `*int` — Percentage taken off each discounted renewal, as a whole number from 1 to 100. Required when `offer_cancel_discount` is true.
     
 </dd>
 </dl>
@@ -42219,6 +42275,14 @@ client.Variants.Update(
 <dd>
 
 **sku:** `*string` — Stock keeping unit for this variant. Maximum 100 characters. Free text, not enforced unique.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**splitPayRequiredPayments:** `*int` — Installment payments required before the subscription pauses, from 2 to 115. Only valid on `renewal` variants.
     
 </dd>
 </dl>
