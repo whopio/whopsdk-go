@@ -44,6 +44,9 @@ func NewClient(options *core.RequestOptions) *Client {
 // Example:
 //
 //	request := &whopsdk.ListMembershipsRequest{
+//	    ExternalAccount: whopsdk.String(
+//	        "discord_123456789012345678",
+//	    ),
 //	    ProductIDs: []*string{
 //	        whopsdk.String(
 //	            "prod_xxxxxxxxxxxxx",

@@ -25253,6 +25253,9 @@ Lists every membership the caller can read: an account API key its account's; a 
 
 ```go
 request := &whopsdk.ListMembershipsRequest{
+    ExternalAccount: whopsdk.String(
+        "discord_123456789012345678",
+    ),
     ProductIDs: []*string{
         whopsdk.String(
             "prod_xxxxxxxxxxxxx",
@@ -25304,6 +25307,14 @@ client.Memberships.List(
 <dd>
 
 **memberID:** `*string` — Narrow to one member's memberships (`mber_` tag), including memberships bought by another business. A member outside the caller's visible set returns an empty list.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**externalAccount:** `*string` — Narrow to memberships linked to one Discord or Telegram account, given as the platform's user ID prefixed with `discord_` or `telegram_`. Discord matches include memberships imported with that Discord ID. Any other format is a 400.
     
 </dd>
 </dl>

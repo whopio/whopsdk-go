@@ -289,7 +289,7 @@ type Member struct {
 	MostRecentAction *MemberMostRecentAction `json:"most_recent_action,omitempty" url:"most_recent_action,omitempty"`
 	// When `most_recent_action` took effect, as an ISO 8601 timestamp. `null` when `most_recent_action` is `null`.
 	MostRecentActionAt *string `json:"most_recent_action_at,omitempty" url:"most_recent_action_at,omitempty"`
-	// The member's phone number, or `null`. Their account number when they have shared one with this seller; otherwise the most recent number collected (or verified) at checkout.
+	// The member's phone number: the most recent number collected (or verified) at checkout, otherwise their account number when they have shared one with this seller. `null` without `member:phone:read` on the account, or when there is neither.
 	PhoneNumber *string `json:"phone_number,omitempty" url:"phone_number,omitempty"`
 	// `joined` while the member is part of the account, `left` after they leave.
 	Status MemberStatus `json:"status" url:"status"`
