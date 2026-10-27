@@ -48,12 +48,12 @@ var (
 	createPromoCodesRequestFieldExpiresAt               = big.NewInt(1 << 6)
 	createPromoCodesRequestFieldNewUsersOnly            = big.NewInt(1 << 7)
 	createPromoCodesRequestFieldOnePerCustomer          = big.NewInt(1 << 8)
-	createPromoCodesRequestFieldPlanIDs                 = big.NewInt(1 << 9)
-	createPromoCodesRequestFieldProductID               = big.NewInt(1 << 10)
-	createPromoCodesRequestFieldPromoDurationMonths     = big.NewInt(1 << 11)
-	createPromoCodesRequestFieldPromoType               = big.NewInt(1 << 12)
-	createPromoCodesRequestFieldStock                   = big.NewInt(1 << 13)
-	createPromoCodesRequestFieldUnlimitedStock          = big.NewInt(1 << 14)
+	createPromoCodesRequestFieldProductID               = big.NewInt(1 << 9)
+	createPromoCodesRequestFieldPromoDurationMonths     = big.NewInt(1 << 10)
+	createPromoCodesRequestFieldPromoType               = big.NewInt(1 << 11)
+	createPromoCodesRequestFieldStock                   = big.NewInt(1 << 12)
+	createPromoCodesRequestFieldUnlimitedStock          = big.NewInt(1 << 13)
+	createPromoCodesRequestFieldVariantIDs              = big.NewInt(1 << 14)
 )
 
 type CreatePromoCodesRequest struct {
@@ -66,12 +66,12 @@ type CreatePromoCodesRequest struct {
 	ExpiresAt               *string                             `json:"expires_at,omitempty" url:"-"`
 	NewUsersOnly            bool                                `json:"new_users_only" url:"-"`
 	OnePerCustomer          *bool                               `json:"one_per_customer,omitempty" url:"-"`
-	PlanIDs                 []string                            `json:"plan_ids,omitempty" url:"-"`
 	ProductID               *string                             `json:"product_id,omitempty" url:"-"`
 	PromoDurationMonths     int                                 `json:"promo_duration_months" url:"-"`
 	PromoType               CreatePromoCodesRequestPromoType    `json:"promo_type" url:"-"`
 	Stock                   *int                                `json:"stock,omitempty" url:"-"`
 	UnlimitedStock          *bool                               `json:"unlimited_stock,omitempty" url:"-"`
+	VariantIDs              []string                            `json:"variant_ids,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -149,13 +149,6 @@ func (c *CreatePromoCodesRequest) SetOnePerCustomer(onePerCustomer *bool) {
 	c.require(createPromoCodesRequestFieldOnePerCustomer)
 }
 
-// SetPlanIDs sets the PlanIDs field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePromoCodesRequest) SetPlanIDs(planIDs []string) {
-	c.PlanIDs = planIDs
-	c.require(createPromoCodesRequestFieldPlanIDs)
-}
-
 // SetProductID sets the ProductID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreatePromoCodesRequest) SetProductID(productID *string) {
@@ -189,6 +182,13 @@ func (c *CreatePromoCodesRequest) SetStock(stock *int) {
 func (c *CreatePromoCodesRequest) SetUnlimitedStock(unlimitedStock *bool) {
 	c.UnlimitedStock = unlimitedStock
 	c.require(createPromoCodesRequestFieldUnlimitedStock)
+}
+
+// SetVariantIDs sets the VariantIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePromoCodesRequest) SetVariantIDs(variantIDs []string) {
+	c.VariantIDs = variantIDs
+	c.require(createPromoCodesRequestFieldVariantIDs)
 }
 
 func (c *CreatePromoCodesRequest) UnmarshalJSON(data []byte) error {
@@ -272,7 +272,7 @@ var (
 	listPromoCodesRequestFieldAccountID     = big.NewInt(1 << 0)
 	listPromoCodesRequestFieldStatus        = big.NewInt(1 << 1)
 	listPromoCodesRequestFieldProductIDs    = big.NewInt(1 << 2)
-	listPromoCodesRequestFieldPlanIDs       = big.NewInt(1 << 3)
+	listPromoCodesRequestFieldVariantIDs    = big.NewInt(1 << 3)
 	listPromoCodesRequestFieldCreatedBefore = big.NewInt(1 << 4)
 	listPromoCodesRequestFieldCreatedAfter  = big.NewInt(1 << 5)
 	listPromoCodesRequestFieldOrder         = big.NewInt(1 << 6)
@@ -291,7 +291,7 @@ type ListPromoCodesRequest struct {
 	// Only promo codes scoped to these product IDs.
 	ProductIDs []*string `json:"-" url:"product_ids,omitempty"`
 	// Only promo codes scoped to these variant IDs.
-	PlanIDs []*string `json:"-" url:"plan_ids,omitempty"`
+	VariantIDs []*string `json:"-" url:"variant_ids,omitempty"`
 	// Only promo codes created before this ISO 8601 timestamp.
 	CreatedBefore *time.Time `json:"-" url:"created_before,omitempty"`
 	// Only promo codes created after this ISO 8601 timestamp.
@@ -343,11 +343,11 @@ func (l *ListPromoCodesRequest) SetProductIDs(productIDs []*string) {
 	l.require(listPromoCodesRequestFieldProductIDs)
 }
 
-// SetPlanIDs sets the PlanIDs field and marks it as non-optional;
+// SetVariantIDs sets the VariantIDs field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPromoCodesRequest) SetPlanIDs(planIDs []*string) {
-	l.PlanIDs = planIDs
-	l.require(listPromoCodesRequestFieldPlanIDs)
+func (l *ListPromoCodesRequest) SetVariantIDs(variantIDs []*string) {
+	l.VariantIDs = variantIDs
+	l.require(listPromoCodesRequestFieldVariantIDs)
 }
 
 // SetCreatedBefore sets the CreatedBefore field and marks it as non-optional;

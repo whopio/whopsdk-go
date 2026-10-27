@@ -113,7 +113,7 @@ func TestWaitlistEntriesCreateWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.CreateWaitlistEntriesRequest{
-		PlanID: "plan_xxxxxxxxxxxxxx",
+		VariantID: "plan_xxxxxxxxxxxxxx",
 	}
 	_, invocationErr := client.WaitlistEntries.Create(
 		context.TODO(),

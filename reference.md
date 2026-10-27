@@ -12090,7 +12090,7 @@ client.CheckoutConfigurations.List(
 <dl>
 <dd>
 
-**planID:** `*string` — Only return checkout configurations for this variant ID, prefixed `plan_`.
+**variantID:** `*string` — Only return checkout configurations for this variant ID, prefixed `plan_`.
     
 </dd>
 </dl>
@@ -12181,7 +12181,7 @@ request := &whopsdk.CreateCheckoutConfigurationsRequest{
     AccountID: whopsdk.String(
         "biz_xxxxxxxxxxxxxx",
     ),
-    PlanID: whopsdk.String(
+    VariantID: whopsdk.String(
         "plan_xxxxxxxxxxxxx",
     ),
 }
@@ -12251,22 +12251,6 @@ client.CheckoutConfigurations.Create(
 <dl>
 <dd>
 
-**plan:** `*whopsdk.CreateCheckoutConfigurationsRequestPlan` — Variant attributes used to create or find a variant for this checkout configuration. Mutually exclusive with `plan_id`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**planID:** `*string` — Existing variant ID, prefixed `plan_`. Mutually exclusive with `plan`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **redirectURL:** `*string` — URL customers are sent to after checkout.
     
 </dd>
@@ -12276,6 +12260,22 @@ client.CheckoutConfigurations.Create(
 <dd>
 
 **threeDsLevel:** `*whopsdk.CreateCheckoutConfigurationsRequestThreeDsLevel` — 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the variant policy.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**variant:** `*whopsdk.CreateCheckoutConfigurationsRequestVariant` — Variant attributes used to create or find a variant for this checkout configuration. Mutually exclusive with `variant_id`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**variantID:** `*string` — Existing variant ID, prefixed `plan_`. Mutually exclusive with `variant`.
     
 </dd>
 </dl>
@@ -14916,6 +14916,90 @@ client.Deposits.Create(
 <dd>
 
 **paymentMethodID:** `*string` — A saved payment method of the business to charge for `amount`, prefixed `payt_`. Save one with Create setup intent and `owner_id` set to the account. Only for a `biz_` destination, and requires authentication with the `payment:charge` scope. A declined charge fails the request with 400.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Deposits.Reverse(ID, request) -> *whopsdk.LedgerActivity</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Sends a bank deposit back to the bank account that wired it and takes it back out of the balance. Identify the deposit by its `vbt_` ID, the `source.id` of its row in the account's financial activity. The available balance has to cover the deposit minus the deposit fee, which is refunded. Returns the reversal's own row in the financial activity: a `topup_reversal` debit for the full deposit amount, whose `source` is the bank deposit. The source's `status` is `reversal_in_progress` until the money is back with the sender, then `reversed`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.ReverseDepositsRequest{
+    ID: "vbt_xxxxxxxxxxxxxx",
+}
+client.Deposits.Reverse(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The ID of the bank deposit to reverse, prefixed `vbt_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — The business that received the deposit, prefixed `biz_`. Pass this or `user_id`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `map[string]*whopsdk.ReverseDepositsRequestMetadataValue` — Custom metadata to store with the reversal.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**userID:** `*string` — The user that received the deposit, prefixed `user_`. Pass this or `account_id`.
     
 </dd>
 </dl>
@@ -24995,7 +25079,7 @@ request := &whopsdk.ListMembersRequest{
             "prod_xxxxxxxxxxxxx",
         ),
     },
-    PlanIDs: []*string{
+    VariantIDs: []*string{
         whopsdk.String(
             "plan_xxxxxxxxxxxxx",
         ),
@@ -25064,7 +25148,7 @@ client.Members.List(
 <dl>
 <dd>
 
-**membershipStatus:** `*whopsdk.ListMembersRequestMembershipStatus` — `active` returns members holding at least one membership that currently grants access; `inactive` returns members holding at least one membership that does not. Combined with `product_ids`, `plan_ids`, or `promo_code_ids`, one membership must match all of them.
+**membershipStatus:** `*whopsdk.ListMembersRequestMembershipStatus` — `active` returns members holding at least one membership that currently grants access; `inactive` returns members holding at least one membership that does not. Combined with `product_ids`, `variant_ids`, or `promo_code_ids`, one membership must match all of them.
     
 </dd>
 </dl>
@@ -25080,7 +25164,7 @@ client.Members.List(
 <dl>
 <dd>
 
-**planIDs:** `*string` — Only return members holding a membership on one of these plans, prefixed `plan_`. Unknown IDs match nothing.
+**variantIDs:** `*string` — Only return members holding a membership on one of these variants, prefixed `plan_`. Unknown IDs match nothing.
     
 </dd>
 </dl>
@@ -25269,7 +25353,7 @@ request := &whopsdk.ListMembershipsRequest{
             "prod_xxxxxxxxxxxxx",
         ),
     },
-    PlanIDs: []*string{
+    VariantIDs: []*string{
         whopsdk.String(
             "plan_xxxxxxxxxxxxx",
         ),
@@ -25362,7 +25446,7 @@ client.Memberships.List(
 <dl>
 <dd>
 
-**planID:** `*string` — Filter to memberships of this variant (`plan_` tag).
+**variantID:** `*string` — Filter to memberships of this variant (`plan_` tag).
     
 </dd>
 </dl>
@@ -25370,7 +25454,7 @@ client.Memberships.List(
 <dl>
 <dd>
 
-**planIDs:** `*string` — Filter to memberships of any of these variants, each prefixed `plan_`. Repeat the parameter to pass several.
+**variantIDs:** `*string` — Filter to memberships of any of these variants, each prefixed `plan_`. Repeat the parameter to pass several.
     
 </dd>
 </dl>
@@ -25483,8 +25567,8 @@ Emails one recipient an invitation to a free variant's membership. The invitatio
 ```go
 request := &whopsdk.InviteMembershipsRequestBody{
     InviteMembershipsRequestBodyUserID: &whopsdk.InviteMembershipsRequestBodyUserID{
-        PlanID: "plan_xxxxxxxxxxxxxx",
         UserID: "user_xxxxxxxxxxxxxx",
+        VariantID: "plan_xxxxxxxxxxxxxx",
     },
 }
 client.Memberships.Invite(
@@ -28741,7 +28825,7 @@ client.PaymentMethods.DeletePaymentMethod(
 <dl>
 <dd>
 
-Prices a purchase the way a payment for it will be charged. The body is the `PaymentInput` a payment takes plus where the buyer is, which a seller that collects no tax on the purchase can leave out. The purchase is priced from exactly what you send: no buyer is looked up, so no stored registration or purchase history applies. Pass the quote's `id` as `quote_id` when you create the payment to charge exactly the purchase, promo code, and tax shown here. A quote is priced once and may be consumed by one payment before `expires_at`. Cart entries must name existing variants with `plan_id`.
+Prices a purchase the way a payment for it will be charged. The body is the `PaymentInput` a payment takes plus where the buyer is, which a seller that collects no tax on the purchase can leave out. The purchase is priced from exactly what you send: no buyer is looked up, so no stored registration or purchase history applies. Pass the quote's `id` as `quote_id` when you create the payment to charge exactly the purchase, promo code, and tax shown here. A quote is priced once and may be consumed by one payment before `expires_at`. Cart entries must name existing variants with `variant_id`.
 </dd>
 </dl>
 </dd>
@@ -28793,7 +28877,7 @@ client.PaymentQuotes.Create(
 <dl>
 <dd>
 
-**lineItems:** `[]*whopsdk.CreatePaymentQuotesRequestLineItemsItem` — What the buyer is purchasing. Each entry names an existing variant by plan_id. Several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency.
+**lineItems:** `[]*whopsdk.CreatePaymentQuotesRequestLineItemsItem` — What the buyer is purchasing. Each entry names an existing variant by `variant_id`. Several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency.
     
 </dd>
 </dl>
@@ -29603,7 +29687,7 @@ request := &whopsdk.ListPaymentsRequest{
             "eur",
         ),
     },
-    PlanIDs: []*string{
+    VariantIDs: []*string{
         whopsdk.String(
             "plan_xxxxxxxxxxxxx",
         ),
@@ -29728,7 +29812,7 @@ client.Payments.List(
 <dl>
 <dd>
 
-**planID:** `*string` — Only payments priced by this variant, prefixed `plan_`.
+**variantID:** `*string` — Only payments priced by this variant, prefixed `plan_`.
     
 </dd>
 </dl>
@@ -29784,7 +29868,7 @@ client.Payments.List(
 <dl>
 <dd>
 
-**planIDs:** `*string` — Only payments priced by any of these variants, each prefixed `plan_`. Repeat the parameter to pass several. Combined with `plan_id` when both are sent.
+**variantIDs:** `*string` — Only payments priced by any of these variants, each prefixed `plan_`. Repeat the parameter to pass several. Combined with `variant_id` when both are sent.
     
 </dd>
 </dl>
@@ -30020,7 +30104,7 @@ client.Payments.Create(
 <dl>
 <dd>
 
-**lineItems:** `[]*whopsdk.CreatePaymentsRequestLineItemsItem` — What the buyer is purchasing. Each entry takes exactly one of `plan_id` or an inline `plan`. One entry charges that variant; several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency. Mutually exclusive with `plan_id` and `plan`.
+**lineItems:** `[]*whopsdk.CreatePaymentsRequestLineItemsItem` — What the buyer is purchasing. Each entry takes exactly one of `variant_id` or an inline `variant`. One entry charges that variant; several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency. Mutually exclusive with `variant_id` and `variant`.
     
 </dd>
 </dl>
@@ -30068,7 +30152,7 @@ client.Payments.Create(
 <dl>
 <dd>
 
-**quoteID:** `*string` — A payment quote from `POST /payment_quotes`, prefixed `pq_`. The payment charges exactly the quote: its purchase (its variants and quantities, or the `plan` it priced), which this body may then omit, its promo code, and its tax, the quote's `tax_amount` rather than a figure calculated now. Omit it, or send null, to have tax calculated when the payment is charged. The quote must belong to `account_id`. A purchase field you omit or send as null takes the quote's value; the buyer's email, the addresses and the payment method are this request's own, never the quote's. Whatever you do send must describe the quoted purchase: the same variants, quantities and promo code. A quote that priced `plan` takes only the same `plan` you sent to `POST /payment_quotes` (or omit the purchase to take the quoted one), never `plan_id` or `line_items`, and a quote that priced variants by id never takes `plan`. Unless the quote located no buyer (`located_by` is null), the address the payment carries (its shipping address, else its billing address) must put the buyer where the quote priced tax, by country, state and postal code; otherwise the payment is refused with 400 before the payment method is used. A quote located by IP address or by the country the buyer chose (`located_by` is `ip_address` or `presentment_country`) is a preview and cannot be paid. A quote is consumed by one payment: a declined payment keeps it and can be retried; a new payment needs a new quote. A quote cannot be charged by a processor that doesn't take quotes, such as a seller's own connected PayPal account; such a payment is refused before the payment method is used. A quote priced in a `presentment_currency` is charged in that currency at the quote's `exchange_rate`. A payment refused over its quote carries an error `code`. `quote_expired`: the quote has expired; quote again. `quote_tax_unavailable`: the quote could not price tax; quote again, or omit `quote_id`. `quote_preview_only`: the quote was located by IP address or by the country the buyer chose; quote again with the buyer's address. `quote_in_use` (409): another payment holds the quote. `quote_mismatch`: the purchase or the buyer's address is not the one quoted. `quote_rate_expired`: the exchange rate the quote was priced at has moved too far to charge; quote again. `payment_method_currency_unsupported`: the payment method cannot pay in the quote's currency; use another method, or quote again in another currency. `quote_processor_unsupported`: the payment would be processed by a processor that doesn't take quotes, such as a seller's own connected PayPal account; use another method, or omit `quote_id` to have tax calculated when the payment is charged.
+**quoteID:** `*string` — A payment quote from `POST /payment_quotes`, prefixed `pq_`. The payment charges exactly the quote: its purchase (its variants and quantities, or the `variant` it priced), which this body may then omit, its promo code, and its tax, the quote's `tax_amount` rather than a figure calculated now. Omit it, or send null, to have tax calculated when the payment is charged. The quote must belong to `account_id`. A purchase field you omit or send as null takes the quote's value; the buyer's email, the addresses and the payment method are this request's own, never the quote's. Whatever you do send must describe the quoted purchase: the same variants, quantities and promo code. A quote that priced `variant` takes only the same `variant` you sent to `POST /payment_quotes` (or omit the purchase to take the quoted one), never `variant_id` or `line_items`, and a quote that priced variants by id never takes `variant`. Unless the quote located no buyer (`located_by` is null), the address the payment carries (its shipping address, else its billing address) must put the buyer where the quote priced tax, by country, state and postal code; otherwise the payment is refused with 400 before the payment method is used. A quote located by IP address or by the country the buyer chose (`located_by` is `ip_address` or `presentment_country`) is a preview and cannot be paid. A quote is consumed by one payment: a declined payment keeps it and can be retried; a new payment needs a new quote. A quote cannot be charged by a processor that doesn't take quotes, such as a seller's own connected PayPal account; such a payment is refused before the payment method is used. A quote priced in a `presentment_currency` is charged in that currency at the quote's `exchange_rate`. A payment refused over its quote carries an error `code`. `quote_expired`: the quote has expired; quote again. `quote_tax_unavailable`: the quote could not price tax; quote again, or omit `quote_id`. `quote_preview_only`: the quote was located by IP address or by the country the buyer chose; quote again with the buyer's address. `quote_in_use` (409): another payment holds the quote. `quote_mismatch`: the purchase or the buyer's address is not the one quoted. `quote_rate_expired`: the exchange rate the quote was priced at has moved too far to charge; quote again. `payment_method_currency_unsupported`: the payment method cannot pay in the quote's currency; use another method, or quote again in another currency. `quote_processor_unsupported`: the payment would be processed by a processor that doesn't take quotes, such as a seller's own connected PayPal account; use another method, or omit `quote_id` to have tax calculated when the payment is charged.
     
 </dd>
 </dl>
@@ -30145,7 +30229,7 @@ request := &whopsdk.SummaryPaymentsRequest{
             "usd",
         ),
     },
-    PlanIDs: []*string{
+    VariantIDs: []*string{
         whopsdk.String(
             "plan_xxxxxxxxxxxxx",
         ),
@@ -30222,7 +30306,7 @@ client.Payments.Summary(
 <dl>
 <dd>
 
-**planIDs:** `*string` — Only payments priced by any of these variants, each prefixed `plan_`. Repeat the parameter to pass several.
+**variantIDs:** `*string` — Only payments priced by any of these variants, each prefixed `plan_`. Repeat the parameter to pass several.
     
 </dd>
 </dl>
@@ -34351,7 +34435,7 @@ request := &whopsdk.ListPromoCodesRequest{
             "prod_xxxxxxxxxxxxxx",
         ),
     },
-    PlanIDs: []*string{
+    VariantIDs: []*string{
         whopsdk.String(
             "plan_xxxxxxxxxxxxxx",
         ),
@@ -34399,7 +34483,7 @@ client.PromoCodes.List(
 <dl>
 <dd>
 
-**planIDs:** `*string` — Only promo codes scoped to these variant IDs.
+**variantIDs:** `*string` — Only promo codes scoped to these variant IDs.
     
 </dd>
 </dl>
@@ -34601,14 +34685,6 @@ client.PromoCodes.Create(
 <dl>
 <dd>
 
-**planIDs:** `[]string` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **productID:** `*string` 
     
 </dd>
@@ -34642,6 +34718,14 @@ client.PromoCodes.Create(
 <dd>
 
 **unlimitedStock:** `*bool` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**variantIDs:** `[]string` 
     
 </dd>
 </dl>
@@ -43033,7 +43117,7 @@ client.WaitlistEntries.List(
 <dl>
 <dd>
 
-**planID:** `*string` — Only return signups for this variant, prefixed `plan_`.
+**variantID:** `*string` — Only return signups for this variant, prefixed `plan_`.
     
 </dd>
 </dl>
@@ -43145,7 +43229,7 @@ Joins a free waitlist variant as the authenticated user, or on behalf of an acco
 
 ```go
 request := &whopsdk.CreateWaitlistEntriesRequest{
-    PlanID: "plan_xxxxxxxxxxxxxx",
+    VariantID: "plan_xxxxxxxxxxxxxx",
 }
 client.WaitlistEntries.Create(
     context.TODO(),
@@ -43189,7 +43273,7 @@ client.WaitlistEntries.Create(
 <dl>
 <dd>
 
-**planID:** `string` — The free waitlist variant to join, prefixed `plan_`.
+**variantID:** `string` — The free waitlist variant to join, prefixed `plan_`.
     
 </dd>
 </dl>
@@ -43257,7 +43341,7 @@ client.WaitlistEntries.ApproveAll(
 <dl>
 <dd>
 
-**planID:** `*string` — Only approve signups for this variant, prefixed `plan_`. Omit to include every waitlist variant on the account.
+**variantID:** `*string` — Only approve signups for this variant, prefixed `plan_`. Omit to include every waitlist variant on the account.
     
 </dd>
 </dl>
@@ -47433,7 +47517,7 @@ client.Payments.Direct.Create(
 <dl>
 <dd>
 
-**lineItems:** `[]*payments.CreateDirectRequestLineItemsItem` — What the buyer is purchasing. Each entry names an existing variant by plan_id. Several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency.
+**lineItems:** `[]*payments.CreateDirectRequestLineItemsItem` — What the buyer is purchasing. Each entry names an existing variant by `variant_id`. Several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency.
     
 </dd>
 </dl>
@@ -47473,7 +47557,23 @@ client.Payments.Direct.Create(
 <dl>
 <dd>
 
-**quoteID:** `*string` — A payment quote from `POST /payment_quotes`, prefixed `pq_`. The payment charges exactly the quote: its purchase (its variants and quantities, or the `plan` it priced), which this body may then omit, its promo code, and its tax, the quote's `tax_amount` rather than a figure calculated now. Omit it, or send null, to have tax calculated when the payment is charged. The quote must belong to `account_id`. A purchase field you omit or send as null takes the quote's value; the buyer's email, the addresses and the payment method are this request's own, never the quote's. Whatever you do send must describe the quoted purchase: the same variants, quantities and promo code. A quote that priced `plan` takes only the same `plan` you sent to `POST /payment_quotes` (or omit the purchase to take the quoted one), never `plan_id` or `line_items`, and a quote that priced variants by id never takes `plan`. Unless the quote located no buyer (`located_by` is null), the address the payment carries (its shipping address, else its billing address) must put the buyer where the quote priced tax, by country, state and postal code; otherwise the payment is refused with 400 before the payment method is used. A quote located by IP address or by the country the buyer chose (`located_by` is `ip_address` or `presentment_country`) is a preview and cannot be paid. A quote is consumed by one payment: a declined payment keeps it and can be retried; a new payment needs a new quote. A quote cannot be charged by a processor that doesn't take quotes, such as a seller's own connected PayPal account; such a payment is refused before the payment method is used. A quote priced in a `presentment_currency` is charged in that currency at the quote's `exchange_rate`. A payment refused over its quote carries an error `code`. `quote_expired`: the quote has expired; quote again. `quote_tax_unavailable`: the quote could not price tax; quote again, or omit `quote_id`. `quote_preview_only`: the quote was located by IP address or by the country the buyer chose; quote again with the buyer's address. `quote_in_use` (409): another payment holds the quote. `quote_mismatch`: the purchase or the buyer's address is not the one quoted. `quote_rate_expired`: the exchange rate the quote was priced at has moved too far to charge; quote again. `payment_method_currency_unsupported`: the payment method cannot pay in the quote's currency; use another method, or quote again in another currency. `quote_processor_unsupported`: the payment would be processed by a processor that doesn't take quotes, such as a seller's own connected PayPal account; use another method, or omit `quote_id` to have tax calculated when the payment is charged.
+**plan:** `*payments.CreateDirectRequestPlan` — Deprecated: send `variant`, which takes `billing_type` in place of `plan_type`. Accepted only from callers pinned to an API version before 2026-10-27-2.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**planID:** `*string` — Deprecated: send `variant_id`. Accepted only from callers pinned to an API version before 2026-10-27-2.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**quoteID:** `*string` — A payment quote from `POST /payment_quotes`, prefixed `pq_`. The payment charges exactly the quote: its purchase (its variants and quantities, or the `variant` it priced), which this body may then omit, its promo code, and its tax, the quote's `tax_amount` rather than a figure calculated now. Omit it, or send null, to have tax calculated when the payment is charged. The quote must belong to `account_id`. A purchase field you omit or send as null takes the quote's value; the buyer's email, the addresses and the payment method are this request's own, never the quote's. Whatever you do send must describe the quoted purchase: the same variants, quantities and promo code. A quote that priced `variant` takes only the same `variant` you sent to `POST /payment_quotes` (or omit the purchase to take the quoted one), never `variant_id` or `line_items`, and a quote that priced variants by id never takes `variant`. Unless the quote located no buyer (`located_by` is null), the address the payment carries (its shipping address, else its billing address) must put the buyer where the quote priced tax, by country, state and postal code; otherwise the payment is refused with 400 before the payment method is used. A quote located by IP address or by the country the buyer chose (`located_by` is `ip_address` or `presentment_country`) is a preview and cannot be paid. A quote is consumed by one payment: a declined payment keeps it and can be retried; a new payment needs a new quote. A quote cannot be charged by a processor that doesn't take quotes, such as a seller's own connected PayPal account; such a payment is refused before the payment method is used. A quote priced in a `presentment_currency` is charged in that currency at the quote's `exchange_rate`. A payment refused over its quote carries an error `code`. `quote_expired`: the quote has expired; quote again. `quote_tax_unavailable`: the quote could not price tax; quote again, or omit `quote_id`. `quote_preview_only`: the quote was located by IP address or by the country the buyer chose; quote again with the buyer's address. `quote_in_use` (409): another payment holds the quote. `quote_mismatch`: the purchase or the buyer's address is not the one quoted. `quote_rate_expired`: the exchange rate the quote was priced at has moved too far to charge; quote again. `payment_method_currency_unsupported`: the payment method cannot pay in the quote's currency; use another method, or quote again in another currency. `quote_processor_unsupported`: the payment would be processed by a processor that doesn't take quotes, such as a seller's own connected PayPal account; use another method, or omit `quote_id` to have tax calculated when the payment is charged.
     
 </dd>
 </dl>

@@ -315,8 +315,8 @@ var (
 	listMembershipsRequestFieldStatuses        = big.NewInt(1 << 5)
 	listMembershipsRequestFieldProductID       = big.NewInt(1 << 6)
 	listMembershipsRequestFieldProductIDs      = big.NewInt(1 << 7)
-	listMembershipsRequestFieldPlanID          = big.NewInt(1 << 8)
-	listMembershipsRequestFieldPlanIDs         = big.NewInt(1 << 9)
+	listMembershipsRequestFieldVariantID       = big.NewInt(1 << 8)
+	listMembershipsRequestFieldVariantIDs      = big.NewInt(1 << 9)
 	listMembershipsRequestFieldPromoCodeIDs    = big.NewInt(1 << 10)
 	listMembershipsRequestFieldCreatedAfter    = big.NewInt(1 << 11)
 	listMembershipsRequestFieldCreatedBefore   = big.NewInt(1 << 12)
@@ -346,9 +346,9 @@ type ListMembershipsRequest struct {
 	// Filter to memberships of any of these products, each prefixed `prod_`. Repeat the parameter to pass several.
 	ProductIDs []*string `json:"-" url:"product_ids,omitempty"`
 	// Filter to memberships of this variant (`plan_` tag).
-	PlanID *string `json:"-" url:"plan_id,omitempty"`
+	VariantID *string `json:"-" url:"variant_id,omitempty"`
 	// Filter to memberships of any of these variants, each prefixed `plan_`. Repeat the parameter to pass several.
-	PlanIDs []*string `json:"-" url:"plan_ids,omitempty"`
+	VariantIDs []*string `json:"-" url:"variant_ids,omitempty"`
 	// Filter to memberships discounted by any of these promo codes, each prefixed `promo_`. Repeat the parameter to pass several.
 	PromoCodeIDs []*string `json:"-" url:"promo_code_ids,omitempty"`
 	// Only memberships created after this ISO 8601 timestamp.
@@ -437,18 +437,18 @@ func (l *ListMembershipsRequest) SetProductIDs(productIDs []*string) {
 	l.require(listMembershipsRequestFieldProductIDs)
 }
 
-// SetPlanID sets the PlanID field and marks it as non-optional;
+// SetVariantID sets the VariantID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListMembershipsRequest) SetPlanID(planID *string) {
-	l.PlanID = planID
-	l.require(listMembershipsRequestFieldPlanID)
+func (l *ListMembershipsRequest) SetVariantID(variantID *string) {
+	l.VariantID = variantID
+	l.require(listMembershipsRequestFieldVariantID)
 }
 
-// SetPlanIDs sets the PlanIDs field and marks it as non-optional;
+// SetVariantIDs sets the VariantIDs field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListMembershipsRequest) SetPlanIDs(planIDs []*string) {
-	l.PlanIDs = planIDs
-	l.require(listMembershipsRequestFieldPlanIDs)
+func (l *ListMembershipsRequest) SetVariantIDs(variantIDs []*string) {
+	l.VariantIDs = variantIDs
+	l.require(listMembershipsRequestFieldVariantIDs)
 }
 
 // SetPromoCodeIDs sets the PromoCodeIDs field and marks it as non-optional;
@@ -768,16 +768,16 @@ var (
 	membershipFieldMostRecentAction         = big.NewInt(1 << 20)
 	membershipFieldMostRecentActionAt       = big.NewInt(1 << 21)
 	membershipFieldPhoneNumber              = big.NewInt(1 << 22)
-	membershipFieldPlanID                   = big.NewInt(1 << 23)
-	membershipFieldProduct                  = big.NewInt(1 << 24)
-	membershipFieldProductID                = big.NewInt(1 << 25)
-	membershipFieldPromoCodeID              = big.NewInt(1 << 26)
-	membershipFieldRenewalPrice             = big.NewInt(1 << 27)
-	membershipFieldSplitPayCurrentPayments  = big.NewInt(1 << 28)
-	membershipFieldSplitPayRequiredPayments = big.NewInt(1 << 29)
-	membershipFieldStatus                   = big.NewInt(1 << 30)
-	membershipFieldUpdatedAt                = big.NewInt(1 << 31)
-	membershipFieldUserID                   = big.NewInt(1 << 32)
+	membershipFieldProduct                  = big.NewInt(1 << 23)
+	membershipFieldProductID                = big.NewInt(1 << 24)
+	membershipFieldPromoCodeID              = big.NewInt(1 << 25)
+	membershipFieldRenewalPrice             = big.NewInt(1 << 26)
+	membershipFieldSplitPayCurrentPayments  = big.NewInt(1 << 27)
+	membershipFieldSplitPayRequiredPayments = big.NewInt(1 << 28)
+	membershipFieldStatus                   = big.NewInt(1 << 29)
+	membershipFieldUpdatedAt                = big.NewInt(1 << 30)
+	membershipFieldUserID                   = big.NewInt(1 << 31)
+	membershipFieldVariantID                = big.NewInt(1 << 32)
 )
 
 // membershipNullableFields maps the wire names of Membership's nullable fields (required or optional) to their field bits.
@@ -853,8 +853,6 @@ type Membership struct {
 	MostRecentActionAt *string `json:"most_recent_action_at,omitempty" url:"most_recent_action_at,omitempty"`
 	// The buyer's phone number recorded for this membership, or `null`. The number collected (or verified) at checkout when the seller's phone collection is on; falls back to the buyer's account number when they have shared one with this seller.
 	PhoneNumber *string `json:"phone_number,omitempty" url:"phone_number,omitempty"`
-	// The variant the buyer purchased, prefixed `plan_`.
-	PlanID string `json:"plan_id" url:"plan_id"`
 	// The product this membership grants access to.
 	Product *MembershipProduct `json:"product" url:"product"`
 	// The product this membership grants access to, prefixed `prod_`.
@@ -873,6 +871,8 @@ type Membership struct {
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
 	// The buyer, prefixed `user_`. `null` when the buyer is another business or the membership is unclaimed.
 	UserID *string `json:"user_id,omitempty" url:"user_id,omitempty"`
+	// The variant the buyer purchased, prefixed `plan_`.
+	VariantID string `json:"variant_id" url:"variant_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1042,13 +1042,6 @@ func (m *Membership) GetPhoneNumber() *string {
 	return m.PhoneNumber
 }
 
-func (m *Membership) GetPlanID() string {
-	if m == nil {
-		return ""
-	}
-	return m.PlanID
-}
-
 func (m *Membership) GetProduct() *MembershipProduct {
 	if m == nil {
 		return nil
@@ -1110,6 +1103,13 @@ func (m *Membership) GetUserID() *string {
 		return nil
 	}
 	return m.UserID
+}
+
+func (m *Membership) GetVariantID() string {
+	if m == nil {
+		return ""
+	}
+	return m.VariantID
 }
 
 func (m *Membership) GetExtraProperties() map[string]interface{} {
@@ -1289,13 +1289,6 @@ func (m *Membership) SetPhoneNumber(phoneNumber *string) {
 	m.require(membershipFieldPhoneNumber)
 }
 
-// SetPlanID sets the PlanID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *Membership) SetPlanID(planID string) {
-	m.PlanID = planID
-	m.require(membershipFieldPlanID)
-}
-
 // SetProduct sets the Product field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (m *Membership) SetProduct(product *MembershipProduct) {
@@ -1357,6 +1350,13 @@ func (m *Membership) SetUpdatedAt(updatedAt string) {
 func (m *Membership) SetUserID(userID *string) {
 	m.UserID = userID
 	m.require(membershipFieldUserID)
+}
+
+// SetVariantID sets the VariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetVariantID(variantID string) {
+	m.VariantID = variantID
+	m.require(membershipFieldVariantID)
 }
 
 func (m *Membership) UnmarshalJSON(data []byte) error {
@@ -2285,7 +2285,7 @@ func (i *InviteMembershipsRequestBody) GetInviteMembershipsRequestBodyEmail() *I
 }
 
 func (i *InviteMembershipsRequestBody) UnmarshalJSON(data []byte) error {
-	if internal.MatchesObjectKeys(data, []string{"plan_id", "user_id"}, []string{"plan_id", "user_id"}) {
+	if internal.MatchesObjectKeys(data, []string{"user_id", "variant_id"}, []string{"user_id", "variant_id"}) {
 		valueInviteMembershipsRequestBodyUserID := new(InviteMembershipsRequestBodyUserID)
 		if err := json.Unmarshal(data, &valueInviteMembershipsRequestBodyUserID); err == nil {
 			i.typ = "InviteMembershipsRequestBodyUserID"
@@ -2293,7 +2293,7 @@ func (i *InviteMembershipsRequestBody) UnmarshalJSON(data []byte) error {
 			return nil
 		}
 	}
-	if internal.MatchesObjectKeys(data, []string{"email", "plan_id"}, []string{"email", "plan_id"}) {
+	if internal.MatchesObjectKeys(data, []string{"email", "variant_id"}, []string{"email", "variant_id"}) {
 		valueInviteMembershipsRequestBodyEmail := new(InviteMembershipsRequestBodyEmail)
 		if err := json.Unmarshal(data, &valueInviteMembershipsRequestBodyEmail); err == nil {
 			i.typ = "InviteMembershipsRequestBodyEmail"
@@ -2301,7 +2301,7 @@ func (i *InviteMembershipsRequestBody) UnmarshalJSON(data []byte) error {
 			return nil
 		}
 	}
-	if internal.HasObjectKeys(data, []string{"plan_id", "user_id"}) {
+	if internal.HasObjectKeys(data, []string{"user_id", "variant_id"}) {
 		valueInviteMembershipsRequestBodyUserID := new(InviteMembershipsRequestBodyUserID)
 		if err := json.Unmarshal(data, &valueInviteMembershipsRequestBodyUserID); err == nil {
 			i.typ = "InviteMembershipsRequestBodyUserID"
@@ -2309,7 +2309,7 @@ func (i *InviteMembershipsRequestBody) UnmarshalJSON(data []byte) error {
 			return nil
 		}
 	}
-	if internal.HasObjectKeys(data, []string{"email", "plan_id"}) {
+	if internal.HasObjectKeys(data, []string{"email", "variant_id"}) {
 		valueInviteMembershipsRequestBodyEmail := new(InviteMembershipsRequestBodyEmail)
 		if err := json.Unmarshal(data, &valueInviteMembershipsRequestBodyEmail); err == nil {
 			i.typ = "InviteMembershipsRequestBodyEmail"
@@ -2358,15 +2358,15 @@ func (i *InviteMembershipsRequestBody) Accept(visitor InviteMembershipsRequestBo
 }
 
 var (
-	inviteMembershipsRequestBodyEmailFieldEmail  = big.NewInt(1 << 0)
-	inviteMembershipsRequestBodyEmailFieldPlanID = big.NewInt(1 << 1)
+	inviteMembershipsRequestBodyEmailFieldEmail     = big.NewInt(1 << 0)
+	inviteMembershipsRequestBodyEmailFieldVariantID = big.NewInt(1 << 1)
 )
 
 type InviteMembershipsRequestBodyEmail struct {
 	// Recipient email address.
 	Email string `json:"email" url:"email"`
 	// Free variant whose membership the recipient is invited to, prefixed `plan_`.
-	PlanID string `json:"plan_id" url:"plan_id"`
+	VariantID string `json:"variant_id" url:"variant_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -2382,11 +2382,11 @@ func (i *InviteMembershipsRequestBodyEmail) GetEmail() string {
 	return i.Email
 }
 
-func (i *InviteMembershipsRequestBodyEmail) GetPlanID() string {
+func (i *InviteMembershipsRequestBodyEmail) GetVariantID() string {
 	if i == nil {
 		return ""
 	}
-	return i.PlanID
+	return i.VariantID
 }
 
 func (i *InviteMembershipsRequestBodyEmail) GetExtraProperties() map[string]interface{} {
@@ -2412,11 +2412,11 @@ func (i *InviteMembershipsRequestBodyEmail) SetEmail(email string) {
 	i.require(inviteMembershipsRequestBodyEmailFieldEmail)
 }
 
-// SetPlanID sets the PlanID field and marks it as non-optional;
+// SetVariantID sets the VariantID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InviteMembershipsRequestBodyEmail) SetPlanID(planID string) {
-	i.PlanID = planID
-	i.require(inviteMembershipsRequestBodyEmailFieldPlanID)
+func (i *InviteMembershipsRequestBodyEmail) SetVariantID(variantID string) {
+	i.VariantID = variantID
+	i.require(inviteMembershipsRequestBodyEmailFieldVariantID)
 }
 
 func (i *InviteMembershipsRequestBodyEmail) UnmarshalJSON(data []byte) error {
@@ -2462,15 +2462,15 @@ func (i *InviteMembershipsRequestBodyEmail) String() string {
 }
 
 var (
-	inviteMembershipsRequestBodyUserIDFieldPlanID = big.NewInt(1 << 0)
-	inviteMembershipsRequestBodyUserIDFieldUserID = big.NewInt(1 << 1)
+	inviteMembershipsRequestBodyUserIDFieldUserID    = big.NewInt(1 << 0)
+	inviteMembershipsRequestBodyUserIDFieldVariantID = big.NewInt(1 << 1)
 )
 
 type InviteMembershipsRequestBodyUserID struct {
-	// Free variant whose membership the recipient is invited to, prefixed `plan_`.
-	PlanID string `json:"plan_id" url:"plan_id"`
 	// Recipient user ID, prefixed `user_`.
 	UserID string `json:"user_id" url:"user_id"`
+	// Free variant whose membership the recipient is invited to, prefixed `plan_`.
+	VariantID string `json:"variant_id" url:"variant_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -2479,18 +2479,18 @@ type InviteMembershipsRequestBodyUserID struct {
 	rawJSON         json.RawMessage
 }
 
-func (i *InviteMembershipsRequestBodyUserID) GetPlanID() string {
-	if i == nil {
-		return ""
-	}
-	return i.PlanID
-}
-
 func (i *InviteMembershipsRequestBodyUserID) GetUserID() string {
 	if i == nil {
 		return ""
 	}
 	return i.UserID
+}
+
+func (i *InviteMembershipsRequestBodyUserID) GetVariantID() string {
+	if i == nil {
+		return ""
+	}
+	return i.VariantID
 }
 
 func (i *InviteMembershipsRequestBodyUserID) GetExtraProperties() map[string]interface{} {
@@ -2509,18 +2509,18 @@ func (i *InviteMembershipsRequestBodyUserID) require(field *big.Int) {
 	i.explicitFields = next
 }
 
-// SetPlanID sets the PlanID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InviteMembershipsRequestBodyUserID) SetPlanID(planID string) {
-	i.PlanID = planID
-	i.require(inviteMembershipsRequestBodyUserIDFieldPlanID)
-}
-
 // SetUserID sets the UserID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (i *InviteMembershipsRequestBodyUserID) SetUserID(userID string) {
 	i.UserID = userID
 	i.require(inviteMembershipsRequestBodyUserIDFieldUserID)
+}
+
+// SetVariantID sets the VariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InviteMembershipsRequestBodyUserID) SetVariantID(variantID string) {
+	i.VariantID = variantID
+	i.require(inviteMembershipsRequestBodyUserIDFieldVariantID)
 }
 
 func (i *InviteMembershipsRequestBodyUserID) UnmarshalJSON(data []byte) error {

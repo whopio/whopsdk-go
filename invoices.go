@@ -1057,12 +1057,12 @@ var (
 	invoiceLineItemFieldDiscountAmount = big.NewInt(1 << 0)
 	invoiceLineItemFieldID             = big.NewInt(1 << 1)
 	invoiceLineItemFieldLabel          = big.NewInt(1 << 2)
-	invoiceLineItemFieldPlanID         = big.NewInt(1 << 3)
-	invoiceLineItemFieldProductID      = big.NewInt(1 << 4)
-	invoiceLineItemFieldQuantity       = big.NewInt(1 << 5)
-	invoiceLineItemFieldSubtotal       = big.NewInt(1 << 6)
-	invoiceLineItemFieldTaxAmount      = big.NewInt(1 << 7)
-	invoiceLineItemFieldUnitAmount     = big.NewInt(1 << 8)
+	invoiceLineItemFieldProductID      = big.NewInt(1 << 3)
+	invoiceLineItemFieldQuantity       = big.NewInt(1 << 4)
+	invoiceLineItemFieldSubtotal       = big.NewInt(1 << 5)
+	invoiceLineItemFieldTaxAmount      = big.NewInt(1 << 6)
+	invoiceLineItemFieldUnitAmount     = big.NewInt(1 << 7)
+	invoiceLineItemFieldVariantID      = big.NewInt(1 << 8)
 )
 
 // invoiceLineItemNullableFields maps the wire names of InvoiceLineItem's nullable fields (required or optional) to their field bits.
@@ -1070,11 +1070,11 @@ var invoiceLineItemNullableFields = map[string]*big.Int{
 	"discount_amount": invoiceLineItemFieldDiscountAmount,
 	"id":              invoiceLineItemFieldID,
 	"label":           invoiceLineItemFieldLabel,
-	"plan_id":         invoiceLineItemFieldPlanID,
 	"product_id":      invoiceLineItemFieldProductID,
 	"subtotal":        invoiceLineItemFieldSubtotal,
 	"tax_amount":      invoiceLineItemFieldTaxAmount,
 	"unit_amount":     invoiceLineItemFieldUnitAmount,
+	"variant_id":      invoiceLineItemFieldVariantID,
 }
 
 type InvoiceLineItem struct {
@@ -1084,8 +1084,6 @@ type InvoiceLineItem struct {
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
 	// The item's name as shown at checkout — the product title, else the variant title.
 	Label *string `json:"label,omitempty" url:"label,omitempty"`
-	// The variant bought, prefixed `plan_`. Null when the variant has since been deleted.
-	PlanID *string `json:"plan_id,omitempty" url:"plan_id,omitempty"`
 	// The product the variant belongs to, prefixed `prod_`. Null for a variant with no product.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// How many units were bought.
@@ -1096,6 +1094,8 @@ type InvoiceLineItem struct {
 	TaxAmount *Money `json:"tax_amount,omitempty" url:"tax_amount,omitempty"`
 	// The price of one unit before discounts, in the payment's `currency`. Null when the payment recorded no price.
 	UnitAmount *Money `json:"unit_amount,omitempty" url:"unit_amount,omitempty"`
+	// The variant bought, prefixed `plan_`. Null when the variant has since been deleted.
+	VariantID *string `json:"variant_id,omitempty" url:"variant_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1123,13 +1123,6 @@ func (i *InvoiceLineItem) GetLabel() *string {
 		return nil
 	}
 	return i.Label
-}
-
-func (i *InvoiceLineItem) GetPlanID() *string {
-	if i == nil {
-		return nil
-	}
-	return i.PlanID
 }
 
 func (i *InvoiceLineItem) GetProductID() *string {
@@ -1165,6 +1158,13 @@ func (i *InvoiceLineItem) GetUnitAmount() *Money {
 		return nil
 	}
 	return i.UnitAmount
+}
+
+func (i *InvoiceLineItem) GetVariantID() *string {
+	if i == nil {
+		return nil
+	}
+	return i.VariantID
 }
 
 func (i *InvoiceLineItem) GetExtraProperties() map[string]interface{} {
@@ -1204,13 +1204,6 @@ func (i *InvoiceLineItem) SetLabel(label *string) {
 	i.require(invoiceLineItemFieldLabel)
 }
 
-// SetPlanID sets the PlanID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceLineItem) SetPlanID(planID *string) {
-	i.PlanID = planID
-	i.require(invoiceLineItemFieldPlanID)
-}
-
 // SetProductID sets the ProductID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (i *InvoiceLineItem) SetProductID(productID *string) {
@@ -1244,6 +1237,13 @@ func (i *InvoiceLineItem) SetTaxAmount(taxAmount *Money) {
 func (i *InvoiceLineItem) SetUnitAmount(unitAmount *Money) {
 	i.UnitAmount = unitAmount
 	i.require(invoiceLineItemFieldUnitAmount)
+}
+
+// SetVariantID sets the VariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLineItem) SetVariantID(variantID *string) {
+	i.VariantID = variantID
+	i.require(invoiceLineItemFieldVariantID)
 }
 
 func (i *InvoiceLineItem) UnmarshalJSON(data []byte) error {
@@ -1737,55 +1737,57 @@ func (c *CreateInvoicesRequestItemsItem) Accept(visitor CreateInvoicesRequestIte
 }
 
 var (
-	createInvoicesRequestItemsItemPlanFieldAllowMultipleQuantity = big.NewInt(1 << 0)
-	createInvoicesRequestItemsItemPlanFieldApplicationFeeAmount  = big.NewInt(1 << 1)
-	createInvoicesRequestItemsItemPlanFieldBillingPeriod         = big.NewInt(1 << 2)
-	createInvoicesRequestItemsItemPlanFieldCurrency              = big.NewInt(1 << 3)
-	createInvoicesRequestItemsItemPlanFieldDescription           = big.NewInt(1 << 4)
-	createInvoicesRequestItemsItemPlanFieldExpirationDays        = big.NewInt(1 << 5)
-	createInvoicesRequestItemsItemPlanFieldForceCreateNewPlan    = big.NewInt(1 << 6)
-	createInvoicesRequestItemsItemPlanFieldInitialPrice          = big.NewInt(1 << 7)
-	createInvoicesRequestItemsItemPlanFieldInternalNotes         = big.NewInt(1 << 8)
-	createInvoicesRequestItemsItemPlanFieldOverrideTaxType       = big.NewInt(1 << 9)
-	createInvoicesRequestItemsItemPlanFieldPlanType              = big.NewInt(1 << 10)
-	createInvoicesRequestItemsItemPlanFieldProduct               = big.NewInt(1 << 11)
-	createInvoicesRequestItemsItemPlanFieldProductID             = big.NewInt(1 << 12)
-	createInvoicesRequestItemsItemPlanFieldRenewalPrice          = big.NewInt(1 << 13)
-	createInvoicesRequestItemsItemPlanFieldTitle                 = big.NewInt(1 << 14)
-	createInvoicesRequestItemsItemPlanFieldTrialPeriodDays       = big.NewInt(1 << 15)
-	createInvoicesRequestItemsItemPlanFieldVisibility            = big.NewInt(1 << 16)
+	createInvoicesRequestItemsItemVariantFieldAllowMultipleQuantity = big.NewInt(1 << 0)
+	createInvoicesRequestItemsItemVariantFieldApplicationFeeAmount  = big.NewInt(1 << 1)
+	createInvoicesRequestItemsItemVariantFieldBillingPeriod         = big.NewInt(1 << 2)
+	createInvoicesRequestItemsItemVariantFieldBillingType           = big.NewInt(1 << 3)
+	createInvoicesRequestItemsItemVariantFieldCurrency              = big.NewInt(1 << 4)
+	createInvoicesRequestItemsItemVariantFieldDescription           = big.NewInt(1 << 5)
+	createInvoicesRequestItemsItemVariantFieldExpirationDays        = big.NewInt(1 << 6)
+	createInvoicesRequestItemsItemVariantFieldForceCreateNewPlan    = big.NewInt(1 << 7)
+	createInvoicesRequestItemsItemVariantFieldInitialPrice          = big.NewInt(1 << 8)
+	createInvoicesRequestItemsItemVariantFieldInternalNotes         = big.NewInt(1 << 9)
+	createInvoicesRequestItemsItemVariantFieldOverrideTaxType       = big.NewInt(1 << 10)
+	createInvoicesRequestItemsItemVariantFieldProduct               = big.NewInt(1 << 11)
+	createInvoicesRequestItemsItemVariantFieldProductID             = big.NewInt(1 << 12)
+	createInvoicesRequestItemsItemVariantFieldRenewalPrice          = big.NewInt(1 << 13)
+	createInvoicesRequestItemsItemVariantFieldTitle                 = big.NewInt(1 << 14)
+	createInvoicesRequestItemsItemVariantFieldTrialPeriodDays       = big.NewInt(1 << 15)
+	createInvoicesRequestItemsItemVariantFieldVisibility            = big.NewInt(1 << 16)
 )
 
-// createInvoicesRequestItemsItemPlanNullableFields maps the wire names of CreateInvoicesRequestItemsItemPlan's nullable fields (required or optional) to their field bits.
-var createInvoicesRequestItemsItemPlanNullableFields = map[string]*big.Int{
-	"allow_multiple_quantity": createInvoicesRequestItemsItemPlanFieldAllowMultipleQuantity,
-	"application_fee_amount":  createInvoicesRequestItemsItemPlanFieldApplicationFeeAmount,
-	"billing_period":          createInvoicesRequestItemsItemPlanFieldBillingPeriod,
-	"description":             createInvoicesRequestItemsItemPlanFieldDescription,
-	"expiration_days":         createInvoicesRequestItemsItemPlanFieldExpirationDays,
-	"force_create_new_plan":   createInvoicesRequestItemsItemPlanFieldForceCreateNewPlan,
-	"initial_price":           createInvoicesRequestItemsItemPlanFieldInitialPrice,
-	"internal_notes":          createInvoicesRequestItemsItemPlanFieldInternalNotes,
-	"override_tax_type":       createInvoicesRequestItemsItemPlanFieldOverrideTaxType,
-	"plan_type":               createInvoicesRequestItemsItemPlanFieldPlanType,
-	"product":                 createInvoicesRequestItemsItemPlanFieldProduct,
-	"product_id":              createInvoicesRequestItemsItemPlanFieldProductID,
-	"renewal_price":           createInvoicesRequestItemsItemPlanFieldRenewalPrice,
-	"title":                   createInvoicesRequestItemsItemPlanFieldTitle,
-	"trial_period_days":       createInvoicesRequestItemsItemPlanFieldTrialPeriodDays,
-	"visibility":              createInvoicesRequestItemsItemPlanFieldVisibility,
+// createInvoicesRequestItemsItemVariantNullableFields maps the wire names of CreateInvoicesRequestItemsItemVariant's nullable fields (required or optional) to their field bits.
+var createInvoicesRequestItemsItemVariantNullableFields = map[string]*big.Int{
+	"allow_multiple_quantity": createInvoicesRequestItemsItemVariantFieldAllowMultipleQuantity,
+	"application_fee_amount":  createInvoicesRequestItemsItemVariantFieldApplicationFeeAmount,
+	"billing_period":          createInvoicesRequestItemsItemVariantFieldBillingPeriod,
+	"billing_type":            createInvoicesRequestItemsItemVariantFieldBillingType,
+	"description":             createInvoicesRequestItemsItemVariantFieldDescription,
+	"expiration_days":         createInvoicesRequestItemsItemVariantFieldExpirationDays,
+	"force_create_new_plan":   createInvoicesRequestItemsItemVariantFieldForceCreateNewPlan,
+	"initial_price":           createInvoicesRequestItemsItemVariantFieldInitialPrice,
+	"internal_notes":          createInvoicesRequestItemsItemVariantFieldInternalNotes,
+	"override_tax_type":       createInvoicesRequestItemsItemVariantFieldOverrideTaxType,
+	"product":                 createInvoicesRequestItemsItemVariantFieldProduct,
+	"product_id":              createInvoicesRequestItemsItemVariantFieldProductID,
+	"renewal_price":           createInvoicesRequestItemsItemVariantFieldRenewalPrice,
+	"title":                   createInvoicesRequestItemsItemVariantFieldTitle,
+	"trial_period_days":       createInvoicesRequestItemsItemVariantFieldTrialPeriodDays,
+	"visibility":              createInvoicesRequestItemsItemVariantFieldVisibility,
 }
 
-// Find or create a variant inline through the compatibility input plan, using the payment API properties. Requires plan:create.
-type CreateInvoicesRequestItemsItemPlan struct {
+// Find or create a variant inline by its attributes, using the payment API properties. Requires plan:create.
+type CreateInvoicesRequestItemsItemVariant struct {
 	// Whether more than one unit can be purchased in an order.
 	AllowMultipleQuantity *bool `json:"allow_multiple_quantity,omitempty" url:"allow_multiple_quantity,omitempty"`
 	// Application fee the platform collects per unit, in the variant currency (5.00 means $5.00 for USD). Must be positive and below the initial price for one-time variants or renewal price for recurring variants. Paid to the parent account alongside other processing fees; collection is capped to remaining proceeds. Applies to subsequent payments on recurring variants. Only valid for connected accounts with a parent account.
 	ApplicationFeeAmount *float64 `json:"application_fee_amount,omitempty" url:"application_fee_amount,omitempty"`
 	// Recurring billing interval in days.
 	BillingPeriod *int `json:"billing_period,omitempty" url:"billing_period,omitempty"`
+	// Billing model for the variant.
+	BillingType *CreateInvoicesRequestItemsItemVariantBillingType `json:"billing_type,omitempty" url:"billing_type,omitempty"`
 	// Currency code for the variant prices.
-	Currency CreateInvoicesRequestItemsItemPlanCurrency `json:"currency" url:"currency"`
+	Currency CreateInvoicesRequestItemsItemVariantCurrency `json:"currency" url:"currency"`
 	// Variant description.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
 	// Days until access expires.
@@ -1797,11 +1799,9 @@ type CreateInvoicesRequestItemsItemPlan struct {
 	// Internal notes for the account.
 	InternalNotes *string `json:"internal_notes,omitempty" url:"internal_notes,omitempty"`
 	// Whether the variant's price includes tax: `inclusive` (tax is included in the price), `exclusive` (tax is added on top), or `unspecified`. Omit it or pass `null` to use the account's tax setting. On an account enrolled in the Whop tax service, `inclusive` or `exclusive` replaces the account's setting and `unspecified` keeps it. Otherwise it applies only where the account is the merchant of record: `inclusive` or `exclusive` replaces the account's setting when the account collects tax, and `unspecified` means the variant collects no tax. Where Whop is the merchant of record, the account's setting applies. Variants that differ only in this value are different variants.
-	OverrideTaxType *CreateInvoicesRequestItemsItemPlanOverrideTaxType `json:"override_tax_type,omitempty" url:"override_tax_type,omitempty"`
-	// Billing model for the variant.
-	PlanType *CreateInvoicesRequestItemsItemPlanPlanType `json:"plan_type,omitempty" url:"plan_type,omitempty"`
+	OverrideTaxType *CreateInvoicesRequestItemsItemVariantOverrideTaxType `json:"override_tax_type,omitempty" url:"override_tax_type,omitempty"`
 	// Find or create a product by external identifier. Mutually exclusive with product_id.
-	Product *CreateInvoicesRequestItemsItemPlanProduct `json:"product,omitempty" url:"product,omitempty"`
+	Product *CreateInvoicesRequestItemsItemVariantProduct `json:"product,omitempty" url:"product,omitempty"`
 	// Existing product ID belonging to the account, prefixed `prod_`. Mutually exclusive with `product`.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// Recurring price in the variant currency.
@@ -1811,7 +1811,7 @@ type CreateInvoicesRequestItemsItemPlan struct {
 	// Free trial days before renewal.
 	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
 	// Whether the variant is visible to customers.
-	Visibility *CreateInvoicesRequestItemsItemPlanVisibility `json:"visibility,omitempty" url:"visibility,omitempty"`
+	Visibility *CreateInvoicesRequestItemsItemVariantVisibility `json:"visibility,omitempty" url:"visibility,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1820,133 +1820,133 @@ type CreateInvoicesRequestItemsItemPlan struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreateInvoicesRequestItemsItemPlan) GetAllowMultipleQuantity() *bool {
+func (c *CreateInvoicesRequestItemsItemVariant) GetAllowMultipleQuantity() *bool {
 	if c == nil {
 		return nil
 	}
 	return c.AllowMultipleQuantity
 }
 
-func (c *CreateInvoicesRequestItemsItemPlan) GetApplicationFeeAmount() *float64 {
+func (c *CreateInvoicesRequestItemsItemVariant) GetApplicationFeeAmount() *float64 {
 	if c == nil {
 		return nil
 	}
 	return c.ApplicationFeeAmount
 }
 
-func (c *CreateInvoicesRequestItemsItemPlan) GetBillingPeriod() *int {
+func (c *CreateInvoicesRequestItemsItemVariant) GetBillingPeriod() *int {
 	if c == nil {
 		return nil
 	}
 	return c.BillingPeriod
 }
 
-func (c *CreateInvoicesRequestItemsItemPlan) GetCurrency() CreateInvoicesRequestItemsItemPlanCurrency {
+func (c *CreateInvoicesRequestItemsItemVariant) GetBillingType() *CreateInvoicesRequestItemsItemVariantBillingType {
+	if c == nil {
+		return nil
+	}
+	return c.BillingType
+}
+
+func (c *CreateInvoicesRequestItemsItemVariant) GetCurrency() CreateInvoicesRequestItemsItemVariantCurrency {
 	if c == nil {
 		return ""
 	}
 	return c.Currency
 }
 
-func (c *CreateInvoicesRequestItemsItemPlan) GetDescription() *string {
+func (c *CreateInvoicesRequestItemsItemVariant) GetDescription() *string {
 	if c == nil {
 		return nil
 	}
 	return c.Description
 }
 
-func (c *CreateInvoicesRequestItemsItemPlan) GetExpirationDays() *int {
+func (c *CreateInvoicesRequestItemsItemVariant) GetExpirationDays() *int {
 	if c == nil {
 		return nil
 	}
 	return c.ExpirationDays
 }
 
-func (c *CreateInvoicesRequestItemsItemPlan) GetForceCreateNewPlan() *bool {
+func (c *CreateInvoicesRequestItemsItemVariant) GetForceCreateNewPlan() *bool {
 	if c == nil {
 		return nil
 	}
 	return c.ForceCreateNewPlan
 }
 
-func (c *CreateInvoicesRequestItemsItemPlan) GetInitialPrice() *float64 {
+func (c *CreateInvoicesRequestItemsItemVariant) GetInitialPrice() *float64 {
 	if c == nil {
 		return nil
 	}
 	return c.InitialPrice
 }
 
-func (c *CreateInvoicesRequestItemsItemPlan) GetInternalNotes() *string {
+func (c *CreateInvoicesRequestItemsItemVariant) GetInternalNotes() *string {
 	if c == nil {
 		return nil
 	}
 	return c.InternalNotes
 }
 
-func (c *CreateInvoicesRequestItemsItemPlan) GetOverrideTaxType() *CreateInvoicesRequestItemsItemPlanOverrideTaxType {
+func (c *CreateInvoicesRequestItemsItemVariant) GetOverrideTaxType() *CreateInvoicesRequestItemsItemVariantOverrideTaxType {
 	if c == nil {
 		return nil
 	}
 	return c.OverrideTaxType
 }
 
-func (c *CreateInvoicesRequestItemsItemPlan) GetPlanType() *CreateInvoicesRequestItemsItemPlanPlanType {
-	if c == nil {
-		return nil
-	}
-	return c.PlanType
-}
-
-func (c *CreateInvoicesRequestItemsItemPlan) GetProduct() *CreateInvoicesRequestItemsItemPlanProduct {
+func (c *CreateInvoicesRequestItemsItemVariant) GetProduct() *CreateInvoicesRequestItemsItemVariantProduct {
 	if c == nil {
 		return nil
 	}
 	return c.Product
 }
 
-func (c *CreateInvoicesRequestItemsItemPlan) GetProductID() *string {
+func (c *CreateInvoicesRequestItemsItemVariant) GetProductID() *string {
 	if c == nil {
 		return nil
 	}
 	return c.ProductID
 }
 
-func (c *CreateInvoicesRequestItemsItemPlan) GetRenewalPrice() *float64 {
+func (c *CreateInvoicesRequestItemsItemVariant) GetRenewalPrice() *float64 {
 	if c == nil {
 		return nil
 	}
 	return c.RenewalPrice
 }
 
-func (c *CreateInvoicesRequestItemsItemPlan) GetTitle() *string {
+func (c *CreateInvoicesRequestItemsItemVariant) GetTitle() *string {
 	if c == nil {
 		return nil
 	}
 	return c.Title
 }
 
-func (c *CreateInvoicesRequestItemsItemPlan) GetTrialPeriodDays() *int {
+func (c *CreateInvoicesRequestItemsItemVariant) GetTrialPeriodDays() *int {
 	if c == nil {
 		return nil
 	}
 	return c.TrialPeriodDays
 }
 
-func (c *CreateInvoicesRequestItemsItemPlan) GetVisibility() *CreateInvoicesRequestItemsItemPlanVisibility {
+func (c *CreateInvoicesRequestItemsItemVariant) GetVisibility() *CreateInvoicesRequestItemsItemVariantVisibility {
 	if c == nil {
 		return nil
 	}
 	return c.Visibility
 }
 
-func (c *CreateInvoicesRequestItemsItemPlan) GetExtraProperties() map[string]interface{} {
+func (c *CreateInvoicesRequestItemsItemVariant) GetExtraProperties() map[string]interface{} {
 	if c == nil {
 		return nil
 	}
 	return c.extraProperties
 }
 
-func (c *CreateInvoicesRequestItemsItemPlan) require(field *big.Int) {
+func (c *CreateInvoicesRequestItemsItemVariant) require(field *big.Int) {
 	next := new(big.Int)
 	if c.explicitFields != nil {
 		next.Set(c.explicitFields)
@@ -1957,136 +1957,136 @@ func (c *CreateInvoicesRequestItemsItemPlan) require(field *big.Int) {
 
 // SetAllowMultipleQuantity sets the AllowMultipleQuantity field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestItemsItemPlan) SetAllowMultipleQuantity(allowMultipleQuantity *bool) {
+func (c *CreateInvoicesRequestItemsItemVariant) SetAllowMultipleQuantity(allowMultipleQuantity *bool) {
 	c.AllowMultipleQuantity = allowMultipleQuantity
-	c.require(createInvoicesRequestItemsItemPlanFieldAllowMultipleQuantity)
+	c.require(createInvoicesRequestItemsItemVariantFieldAllowMultipleQuantity)
 }
 
 // SetApplicationFeeAmount sets the ApplicationFeeAmount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestItemsItemPlan) SetApplicationFeeAmount(applicationFeeAmount *float64) {
+func (c *CreateInvoicesRequestItemsItemVariant) SetApplicationFeeAmount(applicationFeeAmount *float64) {
 	c.ApplicationFeeAmount = applicationFeeAmount
-	c.require(createInvoicesRequestItemsItemPlanFieldApplicationFeeAmount)
+	c.require(createInvoicesRequestItemsItemVariantFieldApplicationFeeAmount)
 }
 
 // SetBillingPeriod sets the BillingPeriod field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestItemsItemPlan) SetBillingPeriod(billingPeriod *int) {
+func (c *CreateInvoicesRequestItemsItemVariant) SetBillingPeriod(billingPeriod *int) {
 	c.BillingPeriod = billingPeriod
-	c.require(createInvoicesRequestItemsItemPlanFieldBillingPeriod)
+	c.require(createInvoicesRequestItemsItemVariantFieldBillingPeriod)
+}
+
+// SetBillingType sets the BillingType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequestItemsItemVariant) SetBillingType(billingType *CreateInvoicesRequestItemsItemVariantBillingType) {
+	c.BillingType = billingType
+	c.require(createInvoicesRequestItemsItemVariantFieldBillingType)
 }
 
 // SetCurrency sets the Currency field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestItemsItemPlan) SetCurrency(currency CreateInvoicesRequestItemsItemPlanCurrency) {
+func (c *CreateInvoicesRequestItemsItemVariant) SetCurrency(currency CreateInvoicesRequestItemsItemVariantCurrency) {
 	c.Currency = currency
-	c.require(createInvoicesRequestItemsItemPlanFieldCurrency)
+	c.require(createInvoicesRequestItemsItemVariantFieldCurrency)
 }
 
 // SetDescription sets the Description field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestItemsItemPlan) SetDescription(description *string) {
+func (c *CreateInvoicesRequestItemsItemVariant) SetDescription(description *string) {
 	c.Description = description
-	c.require(createInvoicesRequestItemsItemPlanFieldDescription)
+	c.require(createInvoicesRequestItemsItemVariantFieldDescription)
 }
 
 // SetExpirationDays sets the ExpirationDays field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestItemsItemPlan) SetExpirationDays(expirationDays *int) {
+func (c *CreateInvoicesRequestItemsItemVariant) SetExpirationDays(expirationDays *int) {
 	c.ExpirationDays = expirationDays
-	c.require(createInvoicesRequestItemsItemPlanFieldExpirationDays)
+	c.require(createInvoicesRequestItemsItemVariantFieldExpirationDays)
 }
 
 // SetForceCreateNewPlan sets the ForceCreateNewPlan field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestItemsItemPlan) SetForceCreateNewPlan(forceCreateNewPlan *bool) {
+func (c *CreateInvoicesRequestItemsItemVariant) SetForceCreateNewPlan(forceCreateNewPlan *bool) {
 	c.ForceCreateNewPlan = forceCreateNewPlan
-	c.require(createInvoicesRequestItemsItemPlanFieldForceCreateNewPlan)
+	c.require(createInvoicesRequestItemsItemVariantFieldForceCreateNewPlan)
 }
 
 // SetInitialPrice sets the InitialPrice field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestItemsItemPlan) SetInitialPrice(initialPrice *float64) {
+func (c *CreateInvoicesRequestItemsItemVariant) SetInitialPrice(initialPrice *float64) {
 	c.InitialPrice = initialPrice
-	c.require(createInvoicesRequestItemsItemPlanFieldInitialPrice)
+	c.require(createInvoicesRequestItemsItemVariantFieldInitialPrice)
 }
 
 // SetInternalNotes sets the InternalNotes field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestItemsItemPlan) SetInternalNotes(internalNotes *string) {
+func (c *CreateInvoicesRequestItemsItemVariant) SetInternalNotes(internalNotes *string) {
 	c.InternalNotes = internalNotes
-	c.require(createInvoicesRequestItemsItemPlanFieldInternalNotes)
+	c.require(createInvoicesRequestItemsItemVariantFieldInternalNotes)
 }
 
 // SetOverrideTaxType sets the OverrideTaxType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestItemsItemPlan) SetOverrideTaxType(overrideTaxType *CreateInvoicesRequestItemsItemPlanOverrideTaxType) {
+func (c *CreateInvoicesRequestItemsItemVariant) SetOverrideTaxType(overrideTaxType *CreateInvoicesRequestItemsItemVariantOverrideTaxType) {
 	c.OverrideTaxType = overrideTaxType
-	c.require(createInvoicesRequestItemsItemPlanFieldOverrideTaxType)
-}
-
-// SetPlanType sets the PlanType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestItemsItemPlan) SetPlanType(planType *CreateInvoicesRequestItemsItemPlanPlanType) {
-	c.PlanType = planType
-	c.require(createInvoicesRequestItemsItemPlanFieldPlanType)
+	c.require(createInvoicesRequestItemsItemVariantFieldOverrideTaxType)
 }
 
 // SetProduct sets the Product field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestItemsItemPlan) SetProduct(product *CreateInvoicesRequestItemsItemPlanProduct) {
+func (c *CreateInvoicesRequestItemsItemVariant) SetProduct(product *CreateInvoicesRequestItemsItemVariantProduct) {
 	c.Product = product
-	c.require(createInvoicesRequestItemsItemPlanFieldProduct)
+	c.require(createInvoicesRequestItemsItemVariantFieldProduct)
 }
 
 // SetProductID sets the ProductID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestItemsItemPlan) SetProductID(productID *string) {
+func (c *CreateInvoicesRequestItemsItemVariant) SetProductID(productID *string) {
 	c.ProductID = productID
-	c.require(createInvoicesRequestItemsItemPlanFieldProductID)
+	c.require(createInvoicesRequestItemsItemVariantFieldProductID)
 }
 
 // SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestItemsItemPlan) SetRenewalPrice(renewalPrice *float64) {
+func (c *CreateInvoicesRequestItemsItemVariant) SetRenewalPrice(renewalPrice *float64) {
 	c.RenewalPrice = renewalPrice
-	c.require(createInvoicesRequestItemsItemPlanFieldRenewalPrice)
+	c.require(createInvoicesRequestItemsItemVariantFieldRenewalPrice)
 }
 
 // SetTitle sets the Title field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestItemsItemPlan) SetTitle(title *string) {
+func (c *CreateInvoicesRequestItemsItemVariant) SetTitle(title *string) {
 	c.Title = title
-	c.require(createInvoicesRequestItemsItemPlanFieldTitle)
+	c.require(createInvoicesRequestItemsItemVariantFieldTitle)
 }
 
 // SetTrialPeriodDays sets the TrialPeriodDays field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestItemsItemPlan) SetTrialPeriodDays(trialPeriodDays *int) {
+func (c *CreateInvoicesRequestItemsItemVariant) SetTrialPeriodDays(trialPeriodDays *int) {
 	c.TrialPeriodDays = trialPeriodDays
-	c.require(createInvoicesRequestItemsItemPlanFieldTrialPeriodDays)
+	c.require(createInvoicesRequestItemsItemVariantFieldTrialPeriodDays)
 }
 
 // SetVisibility sets the Visibility field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestItemsItemPlan) SetVisibility(visibility *CreateInvoicesRequestItemsItemPlanVisibility) {
+func (c *CreateInvoicesRequestItemsItemVariant) SetVisibility(visibility *CreateInvoicesRequestItemsItemVariantVisibility) {
 	c.Visibility = visibility
-	c.require(createInvoicesRequestItemsItemPlanFieldVisibility)
+	c.require(createInvoicesRequestItemsItemVariantFieldVisibility)
 }
 
-func (c *CreateInvoicesRequestItemsItemPlan) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateInvoicesRequestItemsItemPlan
+func (c *CreateInvoicesRequestItemsItemVariant) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateInvoicesRequestItemsItemVariant
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*c = CreateInvoicesRequestItemsItemPlan(value)
+	*c = CreateInvoicesRequestItemsItemVariant(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *c)
 	if err != nil {
 		return err
 	}
 	c.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestItemsItemPlanNullableFields)
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestItemsItemVariantNullableFields)
 	if err != nil {
 		return err
 	}
@@ -2097,8 +2097,8 @@ func (c *CreateInvoicesRequestItemsItemPlan) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (c *CreateInvoicesRequestItemsItemPlan) MarshalJSON() ([]byte, error) {
-	type embed CreateInvoicesRequestItemsItemPlan
+func (c *CreateInvoicesRequestItemsItemVariant) MarshalJSON() ([]byte, error) {
+	type embed CreateInvoicesRequestItemsItemVariant
 	var marshaler = struct {
 		embed
 	}{
@@ -2108,7 +2108,7 @@ func (c *CreateInvoicesRequestItemsItemPlan) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (c *CreateInvoicesRequestItemsItemPlan) String() string {
+func (c *CreateInvoicesRequestItemsItemVariant) String() string {
 	if c == nil {
 		return "<nil>"
 	}
@@ -2123,372 +2123,372 @@ func (c *CreateInvoicesRequestItemsItemPlan) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Currency code for the variant prices.
-type CreateInvoicesRequestItemsItemPlanCurrency string
+// Billing model for the variant.
+type CreateInvoicesRequestItemsItemVariantBillingType string
 
 const (
-	CreateInvoicesRequestItemsItemPlanCurrencyUsd     CreateInvoicesRequestItemsItemPlanCurrency = "usd"
-	CreateInvoicesRequestItemsItemPlanCurrencySgd     CreateInvoicesRequestItemsItemPlanCurrency = "sgd"
-	CreateInvoicesRequestItemsItemPlanCurrencyInr     CreateInvoicesRequestItemsItemPlanCurrency = "inr"
-	CreateInvoicesRequestItemsItemPlanCurrencyAud     CreateInvoicesRequestItemsItemPlanCurrency = "aud"
-	CreateInvoicesRequestItemsItemPlanCurrencyBrl     CreateInvoicesRequestItemsItemPlanCurrency = "brl"
-	CreateInvoicesRequestItemsItemPlanCurrencyCad     CreateInvoicesRequestItemsItemPlanCurrency = "cad"
-	CreateInvoicesRequestItemsItemPlanCurrencyDkk     CreateInvoicesRequestItemsItemPlanCurrency = "dkk"
-	CreateInvoicesRequestItemsItemPlanCurrencyEur     CreateInvoicesRequestItemsItemPlanCurrency = "eur"
-	CreateInvoicesRequestItemsItemPlanCurrencyNok     CreateInvoicesRequestItemsItemPlanCurrency = "nok"
-	CreateInvoicesRequestItemsItemPlanCurrencyGbp     CreateInvoicesRequestItemsItemPlanCurrency = "gbp"
-	CreateInvoicesRequestItemsItemPlanCurrencySek     CreateInvoicesRequestItemsItemPlanCurrency = "sek"
-	CreateInvoicesRequestItemsItemPlanCurrencyChf     CreateInvoicesRequestItemsItemPlanCurrency = "chf"
-	CreateInvoicesRequestItemsItemPlanCurrencyHkd     CreateInvoicesRequestItemsItemPlanCurrency = "hkd"
-	CreateInvoicesRequestItemsItemPlanCurrencyHuf     CreateInvoicesRequestItemsItemPlanCurrency = "huf"
-	CreateInvoicesRequestItemsItemPlanCurrencyJpy     CreateInvoicesRequestItemsItemPlanCurrency = "jpy"
-	CreateInvoicesRequestItemsItemPlanCurrencyMxn     CreateInvoicesRequestItemsItemPlanCurrency = "mxn"
-	CreateInvoicesRequestItemsItemPlanCurrencyMyr     CreateInvoicesRequestItemsItemPlanCurrency = "myr"
-	CreateInvoicesRequestItemsItemPlanCurrencyPln     CreateInvoicesRequestItemsItemPlanCurrency = "pln"
-	CreateInvoicesRequestItemsItemPlanCurrencyCzk     CreateInvoicesRequestItemsItemPlanCurrency = "czk"
-	CreateInvoicesRequestItemsItemPlanCurrencyNzd     CreateInvoicesRequestItemsItemPlanCurrency = "nzd"
-	CreateInvoicesRequestItemsItemPlanCurrencyAed     CreateInvoicesRequestItemsItemPlanCurrency = "aed"
-	CreateInvoicesRequestItemsItemPlanCurrencyEth     CreateInvoicesRequestItemsItemPlanCurrency = "eth"
-	CreateInvoicesRequestItemsItemPlanCurrencyApe     CreateInvoicesRequestItemsItemPlanCurrency = "ape"
-	CreateInvoicesRequestItemsItemPlanCurrencyCop     CreateInvoicesRequestItemsItemPlanCurrency = "cop"
-	CreateInvoicesRequestItemsItemPlanCurrencyRon     CreateInvoicesRequestItemsItemPlanCurrency = "ron"
-	CreateInvoicesRequestItemsItemPlanCurrencyThb     CreateInvoicesRequestItemsItemPlanCurrency = "thb"
-	CreateInvoicesRequestItemsItemPlanCurrencyBgn     CreateInvoicesRequestItemsItemPlanCurrency = "bgn"
-	CreateInvoicesRequestItemsItemPlanCurrencyIdr     CreateInvoicesRequestItemsItemPlanCurrency = "idr"
-	CreateInvoicesRequestItemsItemPlanCurrencyDop     CreateInvoicesRequestItemsItemPlanCurrency = "dop"
-	CreateInvoicesRequestItemsItemPlanCurrencyPhp     CreateInvoicesRequestItemsItemPlanCurrency = "php"
-	CreateInvoicesRequestItemsItemPlanCurrencyTry     CreateInvoicesRequestItemsItemPlanCurrency = "try"
-	CreateInvoicesRequestItemsItemPlanCurrencyKrw     CreateInvoicesRequestItemsItemPlanCurrency = "krw"
-	CreateInvoicesRequestItemsItemPlanCurrencyTwd     CreateInvoicesRequestItemsItemPlanCurrency = "twd"
-	CreateInvoicesRequestItemsItemPlanCurrencyVnd     CreateInvoicesRequestItemsItemPlanCurrency = "vnd"
-	CreateInvoicesRequestItemsItemPlanCurrencyPkr     CreateInvoicesRequestItemsItemPlanCurrency = "pkr"
-	CreateInvoicesRequestItemsItemPlanCurrencyClp     CreateInvoicesRequestItemsItemPlanCurrency = "clp"
-	CreateInvoicesRequestItemsItemPlanCurrencyUyu     CreateInvoicesRequestItemsItemPlanCurrency = "uyu"
-	CreateInvoicesRequestItemsItemPlanCurrencyArs     CreateInvoicesRequestItemsItemPlanCurrency = "ars"
-	CreateInvoicesRequestItemsItemPlanCurrencyZar     CreateInvoicesRequestItemsItemPlanCurrency = "zar"
-	CreateInvoicesRequestItemsItemPlanCurrencyDzd     CreateInvoicesRequestItemsItemPlanCurrency = "dzd"
-	CreateInvoicesRequestItemsItemPlanCurrencyTnd     CreateInvoicesRequestItemsItemPlanCurrency = "tnd"
-	CreateInvoicesRequestItemsItemPlanCurrencyMad     CreateInvoicesRequestItemsItemPlanCurrency = "mad"
-	CreateInvoicesRequestItemsItemPlanCurrencyKes     CreateInvoicesRequestItemsItemPlanCurrency = "kes"
-	CreateInvoicesRequestItemsItemPlanCurrencyKwd     CreateInvoicesRequestItemsItemPlanCurrency = "kwd"
-	CreateInvoicesRequestItemsItemPlanCurrencyJod     CreateInvoicesRequestItemsItemPlanCurrency = "jod"
-	CreateInvoicesRequestItemsItemPlanCurrencyAll     CreateInvoicesRequestItemsItemPlanCurrency = "all"
-	CreateInvoicesRequestItemsItemPlanCurrencyXcd     CreateInvoicesRequestItemsItemPlanCurrency = "xcd"
-	CreateInvoicesRequestItemsItemPlanCurrencyAmd     CreateInvoicesRequestItemsItemPlanCurrency = "amd"
-	CreateInvoicesRequestItemsItemPlanCurrencyBsd     CreateInvoicesRequestItemsItemPlanCurrency = "bsd"
-	CreateInvoicesRequestItemsItemPlanCurrencyBhd     CreateInvoicesRequestItemsItemPlanCurrency = "bhd"
-	CreateInvoicesRequestItemsItemPlanCurrencyBob     CreateInvoicesRequestItemsItemPlanCurrency = "bob"
-	CreateInvoicesRequestItemsItemPlanCurrencyBam     CreateInvoicesRequestItemsItemPlanCurrency = "bam"
-	CreateInvoicesRequestItemsItemPlanCurrencyKhr     CreateInvoicesRequestItemsItemPlanCurrency = "khr"
-	CreateInvoicesRequestItemsItemPlanCurrencyCrc     CreateInvoicesRequestItemsItemPlanCurrency = "crc"
-	CreateInvoicesRequestItemsItemPlanCurrencyXof     CreateInvoicesRequestItemsItemPlanCurrency = "xof"
-	CreateInvoicesRequestItemsItemPlanCurrencyEgp     CreateInvoicesRequestItemsItemPlanCurrency = "egp"
-	CreateInvoicesRequestItemsItemPlanCurrencyEtb     CreateInvoicesRequestItemsItemPlanCurrency = "etb"
-	CreateInvoicesRequestItemsItemPlanCurrencyGmd     CreateInvoicesRequestItemsItemPlanCurrency = "gmd"
-	CreateInvoicesRequestItemsItemPlanCurrencyGhs     CreateInvoicesRequestItemsItemPlanCurrency = "ghs"
-	CreateInvoicesRequestItemsItemPlanCurrencyGtq     CreateInvoicesRequestItemsItemPlanCurrency = "gtq"
-	CreateInvoicesRequestItemsItemPlanCurrencyGyd     CreateInvoicesRequestItemsItemPlanCurrency = "gyd"
-	CreateInvoicesRequestItemsItemPlanCurrencyIls     CreateInvoicesRequestItemsItemPlanCurrency = "ils"
-	CreateInvoicesRequestItemsItemPlanCurrencyJmd     CreateInvoicesRequestItemsItemPlanCurrency = "jmd"
-	CreateInvoicesRequestItemsItemPlanCurrencyMop     CreateInvoicesRequestItemsItemPlanCurrency = "mop"
-	CreateInvoicesRequestItemsItemPlanCurrencyMga     CreateInvoicesRequestItemsItemPlanCurrency = "mga"
-	CreateInvoicesRequestItemsItemPlanCurrencyMur     CreateInvoicesRequestItemsItemPlanCurrency = "mur"
-	CreateInvoicesRequestItemsItemPlanCurrencyMdl     CreateInvoicesRequestItemsItemPlanCurrency = "mdl"
-	CreateInvoicesRequestItemsItemPlanCurrencyMnt     CreateInvoicesRequestItemsItemPlanCurrency = "mnt"
-	CreateInvoicesRequestItemsItemPlanCurrencyNad     CreateInvoicesRequestItemsItemPlanCurrency = "nad"
-	CreateInvoicesRequestItemsItemPlanCurrencyNgn     CreateInvoicesRequestItemsItemPlanCurrency = "ngn"
-	CreateInvoicesRequestItemsItemPlanCurrencyMkd     CreateInvoicesRequestItemsItemPlanCurrency = "mkd"
-	CreateInvoicesRequestItemsItemPlanCurrencyOmr     CreateInvoicesRequestItemsItemPlanCurrency = "omr"
-	CreateInvoicesRequestItemsItemPlanCurrencyPyg     CreateInvoicesRequestItemsItemPlanCurrency = "pyg"
-	CreateInvoicesRequestItemsItemPlanCurrencyPen     CreateInvoicesRequestItemsItemPlanCurrency = "pen"
-	CreateInvoicesRequestItemsItemPlanCurrencyQar     CreateInvoicesRequestItemsItemPlanCurrency = "qar"
-	CreateInvoicesRequestItemsItemPlanCurrencyRwf     CreateInvoicesRequestItemsItemPlanCurrency = "rwf"
-	CreateInvoicesRequestItemsItemPlanCurrencySar     CreateInvoicesRequestItemsItemPlanCurrency = "sar"
-	CreateInvoicesRequestItemsItemPlanCurrencyRsd     CreateInvoicesRequestItemsItemPlanCurrency = "rsd"
-	CreateInvoicesRequestItemsItemPlanCurrencyLkr     CreateInvoicesRequestItemsItemPlanCurrency = "lkr"
-	CreateInvoicesRequestItemsItemPlanCurrencyTzs     CreateInvoicesRequestItemsItemPlanCurrency = "tzs"
-	CreateInvoicesRequestItemsItemPlanCurrencyTtd     CreateInvoicesRequestItemsItemPlanCurrency = "ttd"
-	CreateInvoicesRequestItemsItemPlanCurrencyUzs     CreateInvoicesRequestItemsItemPlanCurrency = "uzs"
-	CreateInvoicesRequestItemsItemPlanCurrencyRub     CreateInvoicesRequestItemsItemPlanCurrency = "rub"
-	CreateInvoicesRequestItemsItemPlanCurrencyBtc     CreateInvoicesRequestItemsItemPlanCurrency = "btc"
-	CreateInvoicesRequestItemsItemPlanCurrencyCny     CreateInvoicesRequestItemsItemPlanCurrency = "cny"
-	CreateInvoicesRequestItemsItemPlanCurrencyUsdt    CreateInvoicesRequestItemsItemPlanCurrency = "usdt"
-	CreateInvoicesRequestItemsItemPlanCurrencyKzt     CreateInvoicesRequestItemsItemPlanCurrency = "kzt"
-	CreateInvoicesRequestItemsItemPlanCurrencyAwg     CreateInvoicesRequestItemsItemPlanCurrency = "awg"
-	CreateInvoicesRequestItemsItemPlanCurrencyWhopUsd CreateInvoicesRequestItemsItemPlanCurrency = "whop_usd"
-	CreateInvoicesRequestItemsItemPlanCurrencyXau     CreateInvoicesRequestItemsItemPlanCurrency = "xau"
+	CreateInvoicesRequestItemsItemVariantBillingTypeRenewal CreateInvoicesRequestItemsItemVariantBillingType = "renewal"
+	CreateInvoicesRequestItemsItemVariantBillingTypeOneTime CreateInvoicesRequestItemsItemVariantBillingType = "one_time"
 )
 
-func NewCreateInvoicesRequestItemsItemPlanCurrencyFromString(s string) (CreateInvoicesRequestItemsItemPlanCurrency, error) {
+func NewCreateInvoicesRequestItemsItemVariantBillingTypeFromString(s string) (CreateInvoicesRequestItemsItemVariantBillingType, error) {
 	switch s {
-	case "usd":
-		return CreateInvoicesRequestItemsItemPlanCurrencyUsd, nil
-	case "sgd":
-		return CreateInvoicesRequestItemsItemPlanCurrencySgd, nil
-	case "inr":
-		return CreateInvoicesRequestItemsItemPlanCurrencyInr, nil
-	case "aud":
-		return CreateInvoicesRequestItemsItemPlanCurrencyAud, nil
-	case "brl":
-		return CreateInvoicesRequestItemsItemPlanCurrencyBrl, nil
-	case "cad":
-		return CreateInvoicesRequestItemsItemPlanCurrencyCad, nil
-	case "dkk":
-		return CreateInvoicesRequestItemsItemPlanCurrencyDkk, nil
-	case "eur":
-		return CreateInvoicesRequestItemsItemPlanCurrencyEur, nil
-	case "nok":
-		return CreateInvoicesRequestItemsItemPlanCurrencyNok, nil
-	case "gbp":
-		return CreateInvoicesRequestItemsItemPlanCurrencyGbp, nil
-	case "sek":
-		return CreateInvoicesRequestItemsItemPlanCurrencySek, nil
-	case "chf":
-		return CreateInvoicesRequestItemsItemPlanCurrencyChf, nil
-	case "hkd":
-		return CreateInvoicesRequestItemsItemPlanCurrencyHkd, nil
-	case "huf":
-		return CreateInvoicesRequestItemsItemPlanCurrencyHuf, nil
-	case "jpy":
-		return CreateInvoicesRequestItemsItemPlanCurrencyJpy, nil
-	case "mxn":
-		return CreateInvoicesRequestItemsItemPlanCurrencyMxn, nil
-	case "myr":
-		return CreateInvoicesRequestItemsItemPlanCurrencyMyr, nil
-	case "pln":
-		return CreateInvoicesRequestItemsItemPlanCurrencyPln, nil
-	case "czk":
-		return CreateInvoicesRequestItemsItemPlanCurrencyCzk, nil
-	case "nzd":
-		return CreateInvoicesRequestItemsItemPlanCurrencyNzd, nil
-	case "aed":
-		return CreateInvoicesRequestItemsItemPlanCurrencyAed, nil
-	case "eth":
-		return CreateInvoicesRequestItemsItemPlanCurrencyEth, nil
-	case "ape":
-		return CreateInvoicesRequestItemsItemPlanCurrencyApe, nil
-	case "cop":
-		return CreateInvoicesRequestItemsItemPlanCurrencyCop, nil
-	case "ron":
-		return CreateInvoicesRequestItemsItemPlanCurrencyRon, nil
-	case "thb":
-		return CreateInvoicesRequestItemsItemPlanCurrencyThb, nil
-	case "bgn":
-		return CreateInvoicesRequestItemsItemPlanCurrencyBgn, nil
-	case "idr":
-		return CreateInvoicesRequestItemsItemPlanCurrencyIdr, nil
-	case "dop":
-		return CreateInvoicesRequestItemsItemPlanCurrencyDop, nil
-	case "php":
-		return CreateInvoicesRequestItemsItemPlanCurrencyPhp, nil
-	case "try":
-		return CreateInvoicesRequestItemsItemPlanCurrencyTry, nil
-	case "krw":
-		return CreateInvoicesRequestItemsItemPlanCurrencyKrw, nil
-	case "twd":
-		return CreateInvoicesRequestItemsItemPlanCurrencyTwd, nil
-	case "vnd":
-		return CreateInvoicesRequestItemsItemPlanCurrencyVnd, nil
-	case "pkr":
-		return CreateInvoicesRequestItemsItemPlanCurrencyPkr, nil
-	case "clp":
-		return CreateInvoicesRequestItemsItemPlanCurrencyClp, nil
-	case "uyu":
-		return CreateInvoicesRequestItemsItemPlanCurrencyUyu, nil
-	case "ars":
-		return CreateInvoicesRequestItemsItemPlanCurrencyArs, nil
-	case "zar":
-		return CreateInvoicesRequestItemsItemPlanCurrencyZar, nil
-	case "dzd":
-		return CreateInvoicesRequestItemsItemPlanCurrencyDzd, nil
-	case "tnd":
-		return CreateInvoicesRequestItemsItemPlanCurrencyTnd, nil
-	case "mad":
-		return CreateInvoicesRequestItemsItemPlanCurrencyMad, nil
-	case "kes":
-		return CreateInvoicesRequestItemsItemPlanCurrencyKes, nil
-	case "kwd":
-		return CreateInvoicesRequestItemsItemPlanCurrencyKwd, nil
-	case "jod":
-		return CreateInvoicesRequestItemsItemPlanCurrencyJod, nil
-	case "all":
-		return CreateInvoicesRequestItemsItemPlanCurrencyAll, nil
-	case "xcd":
-		return CreateInvoicesRequestItemsItemPlanCurrencyXcd, nil
-	case "amd":
-		return CreateInvoicesRequestItemsItemPlanCurrencyAmd, nil
-	case "bsd":
-		return CreateInvoicesRequestItemsItemPlanCurrencyBsd, nil
-	case "bhd":
-		return CreateInvoicesRequestItemsItemPlanCurrencyBhd, nil
-	case "bob":
-		return CreateInvoicesRequestItemsItemPlanCurrencyBob, nil
-	case "bam":
-		return CreateInvoicesRequestItemsItemPlanCurrencyBam, nil
-	case "khr":
-		return CreateInvoicesRequestItemsItemPlanCurrencyKhr, nil
-	case "crc":
-		return CreateInvoicesRequestItemsItemPlanCurrencyCrc, nil
-	case "xof":
-		return CreateInvoicesRequestItemsItemPlanCurrencyXof, nil
-	case "egp":
-		return CreateInvoicesRequestItemsItemPlanCurrencyEgp, nil
-	case "etb":
-		return CreateInvoicesRequestItemsItemPlanCurrencyEtb, nil
-	case "gmd":
-		return CreateInvoicesRequestItemsItemPlanCurrencyGmd, nil
-	case "ghs":
-		return CreateInvoicesRequestItemsItemPlanCurrencyGhs, nil
-	case "gtq":
-		return CreateInvoicesRequestItemsItemPlanCurrencyGtq, nil
-	case "gyd":
-		return CreateInvoicesRequestItemsItemPlanCurrencyGyd, nil
-	case "ils":
-		return CreateInvoicesRequestItemsItemPlanCurrencyIls, nil
-	case "jmd":
-		return CreateInvoicesRequestItemsItemPlanCurrencyJmd, nil
-	case "mop":
-		return CreateInvoicesRequestItemsItemPlanCurrencyMop, nil
-	case "mga":
-		return CreateInvoicesRequestItemsItemPlanCurrencyMga, nil
-	case "mur":
-		return CreateInvoicesRequestItemsItemPlanCurrencyMur, nil
-	case "mdl":
-		return CreateInvoicesRequestItemsItemPlanCurrencyMdl, nil
-	case "mnt":
-		return CreateInvoicesRequestItemsItemPlanCurrencyMnt, nil
-	case "nad":
-		return CreateInvoicesRequestItemsItemPlanCurrencyNad, nil
-	case "ngn":
-		return CreateInvoicesRequestItemsItemPlanCurrencyNgn, nil
-	case "mkd":
-		return CreateInvoicesRequestItemsItemPlanCurrencyMkd, nil
-	case "omr":
-		return CreateInvoicesRequestItemsItemPlanCurrencyOmr, nil
-	case "pyg":
-		return CreateInvoicesRequestItemsItemPlanCurrencyPyg, nil
-	case "pen":
-		return CreateInvoicesRequestItemsItemPlanCurrencyPen, nil
-	case "qar":
-		return CreateInvoicesRequestItemsItemPlanCurrencyQar, nil
-	case "rwf":
-		return CreateInvoicesRequestItemsItemPlanCurrencyRwf, nil
-	case "sar":
-		return CreateInvoicesRequestItemsItemPlanCurrencySar, nil
-	case "rsd":
-		return CreateInvoicesRequestItemsItemPlanCurrencyRsd, nil
-	case "lkr":
-		return CreateInvoicesRequestItemsItemPlanCurrencyLkr, nil
-	case "tzs":
-		return CreateInvoicesRequestItemsItemPlanCurrencyTzs, nil
-	case "ttd":
-		return CreateInvoicesRequestItemsItemPlanCurrencyTtd, nil
-	case "uzs":
-		return CreateInvoicesRequestItemsItemPlanCurrencyUzs, nil
-	case "rub":
-		return CreateInvoicesRequestItemsItemPlanCurrencyRub, nil
-	case "btc":
-		return CreateInvoicesRequestItemsItemPlanCurrencyBtc, nil
-	case "cny":
-		return CreateInvoicesRequestItemsItemPlanCurrencyCny, nil
-	case "usdt":
-		return CreateInvoicesRequestItemsItemPlanCurrencyUsdt, nil
-	case "kzt":
-		return CreateInvoicesRequestItemsItemPlanCurrencyKzt, nil
-	case "awg":
-		return CreateInvoicesRequestItemsItemPlanCurrencyAwg, nil
-	case "whop_usd":
-		return CreateInvoicesRequestItemsItemPlanCurrencyWhopUsd, nil
-	case "xau":
-		return CreateInvoicesRequestItemsItemPlanCurrencyXau, nil
+	case "renewal":
+		return CreateInvoicesRequestItemsItemVariantBillingTypeRenewal, nil
+	case "one_time":
+		return CreateInvoicesRequestItemsItemVariantBillingTypeOneTime, nil
 	}
-	var t CreateInvoicesRequestItemsItemPlanCurrency
+	var t CreateInvoicesRequestItemsItemVariantBillingType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (c CreateInvoicesRequestItemsItemPlanCurrency) Ptr() *CreateInvoicesRequestItemsItemPlanCurrency {
+func (c CreateInvoicesRequestItemsItemVariantBillingType) Ptr() *CreateInvoicesRequestItemsItemVariantBillingType {
+	return &c
+}
+
+// Currency code for the variant prices.
+type CreateInvoicesRequestItemsItemVariantCurrency string
+
+const (
+	CreateInvoicesRequestItemsItemVariantCurrencyUsd     CreateInvoicesRequestItemsItemVariantCurrency = "usd"
+	CreateInvoicesRequestItemsItemVariantCurrencySgd     CreateInvoicesRequestItemsItemVariantCurrency = "sgd"
+	CreateInvoicesRequestItemsItemVariantCurrencyInr     CreateInvoicesRequestItemsItemVariantCurrency = "inr"
+	CreateInvoicesRequestItemsItemVariantCurrencyAud     CreateInvoicesRequestItemsItemVariantCurrency = "aud"
+	CreateInvoicesRequestItemsItemVariantCurrencyBrl     CreateInvoicesRequestItemsItemVariantCurrency = "brl"
+	CreateInvoicesRequestItemsItemVariantCurrencyCad     CreateInvoicesRequestItemsItemVariantCurrency = "cad"
+	CreateInvoicesRequestItemsItemVariantCurrencyDkk     CreateInvoicesRequestItemsItemVariantCurrency = "dkk"
+	CreateInvoicesRequestItemsItemVariantCurrencyEur     CreateInvoicesRequestItemsItemVariantCurrency = "eur"
+	CreateInvoicesRequestItemsItemVariantCurrencyNok     CreateInvoicesRequestItemsItemVariantCurrency = "nok"
+	CreateInvoicesRequestItemsItemVariantCurrencyGbp     CreateInvoicesRequestItemsItemVariantCurrency = "gbp"
+	CreateInvoicesRequestItemsItemVariantCurrencySek     CreateInvoicesRequestItemsItemVariantCurrency = "sek"
+	CreateInvoicesRequestItemsItemVariantCurrencyChf     CreateInvoicesRequestItemsItemVariantCurrency = "chf"
+	CreateInvoicesRequestItemsItemVariantCurrencyHkd     CreateInvoicesRequestItemsItemVariantCurrency = "hkd"
+	CreateInvoicesRequestItemsItemVariantCurrencyHuf     CreateInvoicesRequestItemsItemVariantCurrency = "huf"
+	CreateInvoicesRequestItemsItemVariantCurrencyJpy     CreateInvoicesRequestItemsItemVariantCurrency = "jpy"
+	CreateInvoicesRequestItemsItemVariantCurrencyMxn     CreateInvoicesRequestItemsItemVariantCurrency = "mxn"
+	CreateInvoicesRequestItemsItemVariantCurrencyMyr     CreateInvoicesRequestItemsItemVariantCurrency = "myr"
+	CreateInvoicesRequestItemsItemVariantCurrencyPln     CreateInvoicesRequestItemsItemVariantCurrency = "pln"
+	CreateInvoicesRequestItemsItemVariantCurrencyCzk     CreateInvoicesRequestItemsItemVariantCurrency = "czk"
+	CreateInvoicesRequestItemsItemVariantCurrencyNzd     CreateInvoicesRequestItemsItemVariantCurrency = "nzd"
+	CreateInvoicesRequestItemsItemVariantCurrencyAed     CreateInvoicesRequestItemsItemVariantCurrency = "aed"
+	CreateInvoicesRequestItemsItemVariantCurrencyEth     CreateInvoicesRequestItemsItemVariantCurrency = "eth"
+	CreateInvoicesRequestItemsItemVariantCurrencyApe     CreateInvoicesRequestItemsItemVariantCurrency = "ape"
+	CreateInvoicesRequestItemsItemVariantCurrencyCop     CreateInvoicesRequestItemsItemVariantCurrency = "cop"
+	CreateInvoicesRequestItemsItemVariantCurrencyRon     CreateInvoicesRequestItemsItemVariantCurrency = "ron"
+	CreateInvoicesRequestItemsItemVariantCurrencyThb     CreateInvoicesRequestItemsItemVariantCurrency = "thb"
+	CreateInvoicesRequestItemsItemVariantCurrencyBgn     CreateInvoicesRequestItemsItemVariantCurrency = "bgn"
+	CreateInvoicesRequestItemsItemVariantCurrencyIdr     CreateInvoicesRequestItemsItemVariantCurrency = "idr"
+	CreateInvoicesRequestItemsItemVariantCurrencyDop     CreateInvoicesRequestItemsItemVariantCurrency = "dop"
+	CreateInvoicesRequestItemsItemVariantCurrencyPhp     CreateInvoicesRequestItemsItemVariantCurrency = "php"
+	CreateInvoicesRequestItemsItemVariantCurrencyTry     CreateInvoicesRequestItemsItemVariantCurrency = "try"
+	CreateInvoicesRequestItemsItemVariantCurrencyKrw     CreateInvoicesRequestItemsItemVariantCurrency = "krw"
+	CreateInvoicesRequestItemsItemVariantCurrencyTwd     CreateInvoicesRequestItemsItemVariantCurrency = "twd"
+	CreateInvoicesRequestItemsItemVariantCurrencyVnd     CreateInvoicesRequestItemsItemVariantCurrency = "vnd"
+	CreateInvoicesRequestItemsItemVariantCurrencyPkr     CreateInvoicesRequestItemsItemVariantCurrency = "pkr"
+	CreateInvoicesRequestItemsItemVariantCurrencyClp     CreateInvoicesRequestItemsItemVariantCurrency = "clp"
+	CreateInvoicesRequestItemsItemVariantCurrencyUyu     CreateInvoicesRequestItemsItemVariantCurrency = "uyu"
+	CreateInvoicesRequestItemsItemVariantCurrencyArs     CreateInvoicesRequestItemsItemVariantCurrency = "ars"
+	CreateInvoicesRequestItemsItemVariantCurrencyZar     CreateInvoicesRequestItemsItemVariantCurrency = "zar"
+	CreateInvoicesRequestItemsItemVariantCurrencyDzd     CreateInvoicesRequestItemsItemVariantCurrency = "dzd"
+	CreateInvoicesRequestItemsItemVariantCurrencyTnd     CreateInvoicesRequestItemsItemVariantCurrency = "tnd"
+	CreateInvoicesRequestItemsItemVariantCurrencyMad     CreateInvoicesRequestItemsItemVariantCurrency = "mad"
+	CreateInvoicesRequestItemsItemVariantCurrencyKes     CreateInvoicesRequestItemsItemVariantCurrency = "kes"
+	CreateInvoicesRequestItemsItemVariantCurrencyKwd     CreateInvoicesRequestItemsItemVariantCurrency = "kwd"
+	CreateInvoicesRequestItemsItemVariantCurrencyJod     CreateInvoicesRequestItemsItemVariantCurrency = "jod"
+	CreateInvoicesRequestItemsItemVariantCurrencyAll     CreateInvoicesRequestItemsItemVariantCurrency = "all"
+	CreateInvoicesRequestItemsItemVariantCurrencyXcd     CreateInvoicesRequestItemsItemVariantCurrency = "xcd"
+	CreateInvoicesRequestItemsItemVariantCurrencyAmd     CreateInvoicesRequestItemsItemVariantCurrency = "amd"
+	CreateInvoicesRequestItemsItemVariantCurrencyBsd     CreateInvoicesRequestItemsItemVariantCurrency = "bsd"
+	CreateInvoicesRequestItemsItemVariantCurrencyBhd     CreateInvoicesRequestItemsItemVariantCurrency = "bhd"
+	CreateInvoicesRequestItemsItemVariantCurrencyBob     CreateInvoicesRequestItemsItemVariantCurrency = "bob"
+	CreateInvoicesRequestItemsItemVariantCurrencyBam     CreateInvoicesRequestItemsItemVariantCurrency = "bam"
+	CreateInvoicesRequestItemsItemVariantCurrencyKhr     CreateInvoicesRequestItemsItemVariantCurrency = "khr"
+	CreateInvoicesRequestItemsItemVariantCurrencyCrc     CreateInvoicesRequestItemsItemVariantCurrency = "crc"
+	CreateInvoicesRequestItemsItemVariantCurrencyXof     CreateInvoicesRequestItemsItemVariantCurrency = "xof"
+	CreateInvoicesRequestItemsItemVariantCurrencyEgp     CreateInvoicesRequestItemsItemVariantCurrency = "egp"
+	CreateInvoicesRequestItemsItemVariantCurrencyEtb     CreateInvoicesRequestItemsItemVariantCurrency = "etb"
+	CreateInvoicesRequestItemsItemVariantCurrencyGmd     CreateInvoicesRequestItemsItemVariantCurrency = "gmd"
+	CreateInvoicesRequestItemsItemVariantCurrencyGhs     CreateInvoicesRequestItemsItemVariantCurrency = "ghs"
+	CreateInvoicesRequestItemsItemVariantCurrencyGtq     CreateInvoicesRequestItemsItemVariantCurrency = "gtq"
+	CreateInvoicesRequestItemsItemVariantCurrencyGyd     CreateInvoicesRequestItemsItemVariantCurrency = "gyd"
+	CreateInvoicesRequestItemsItemVariantCurrencyIls     CreateInvoicesRequestItemsItemVariantCurrency = "ils"
+	CreateInvoicesRequestItemsItemVariantCurrencyJmd     CreateInvoicesRequestItemsItemVariantCurrency = "jmd"
+	CreateInvoicesRequestItemsItemVariantCurrencyMop     CreateInvoicesRequestItemsItemVariantCurrency = "mop"
+	CreateInvoicesRequestItemsItemVariantCurrencyMga     CreateInvoicesRequestItemsItemVariantCurrency = "mga"
+	CreateInvoicesRequestItemsItemVariantCurrencyMur     CreateInvoicesRequestItemsItemVariantCurrency = "mur"
+	CreateInvoicesRequestItemsItemVariantCurrencyMdl     CreateInvoicesRequestItemsItemVariantCurrency = "mdl"
+	CreateInvoicesRequestItemsItemVariantCurrencyMnt     CreateInvoicesRequestItemsItemVariantCurrency = "mnt"
+	CreateInvoicesRequestItemsItemVariantCurrencyNad     CreateInvoicesRequestItemsItemVariantCurrency = "nad"
+	CreateInvoicesRequestItemsItemVariantCurrencyNgn     CreateInvoicesRequestItemsItemVariantCurrency = "ngn"
+	CreateInvoicesRequestItemsItemVariantCurrencyMkd     CreateInvoicesRequestItemsItemVariantCurrency = "mkd"
+	CreateInvoicesRequestItemsItemVariantCurrencyOmr     CreateInvoicesRequestItemsItemVariantCurrency = "omr"
+	CreateInvoicesRequestItemsItemVariantCurrencyPyg     CreateInvoicesRequestItemsItemVariantCurrency = "pyg"
+	CreateInvoicesRequestItemsItemVariantCurrencyPen     CreateInvoicesRequestItemsItemVariantCurrency = "pen"
+	CreateInvoicesRequestItemsItemVariantCurrencyQar     CreateInvoicesRequestItemsItemVariantCurrency = "qar"
+	CreateInvoicesRequestItemsItemVariantCurrencyRwf     CreateInvoicesRequestItemsItemVariantCurrency = "rwf"
+	CreateInvoicesRequestItemsItemVariantCurrencySar     CreateInvoicesRequestItemsItemVariantCurrency = "sar"
+	CreateInvoicesRequestItemsItemVariantCurrencyRsd     CreateInvoicesRequestItemsItemVariantCurrency = "rsd"
+	CreateInvoicesRequestItemsItemVariantCurrencyLkr     CreateInvoicesRequestItemsItemVariantCurrency = "lkr"
+	CreateInvoicesRequestItemsItemVariantCurrencyTzs     CreateInvoicesRequestItemsItemVariantCurrency = "tzs"
+	CreateInvoicesRequestItemsItemVariantCurrencyTtd     CreateInvoicesRequestItemsItemVariantCurrency = "ttd"
+	CreateInvoicesRequestItemsItemVariantCurrencyUzs     CreateInvoicesRequestItemsItemVariantCurrency = "uzs"
+	CreateInvoicesRequestItemsItemVariantCurrencyRub     CreateInvoicesRequestItemsItemVariantCurrency = "rub"
+	CreateInvoicesRequestItemsItemVariantCurrencyBtc     CreateInvoicesRequestItemsItemVariantCurrency = "btc"
+	CreateInvoicesRequestItemsItemVariantCurrencyCny     CreateInvoicesRequestItemsItemVariantCurrency = "cny"
+	CreateInvoicesRequestItemsItemVariantCurrencyUsdt    CreateInvoicesRequestItemsItemVariantCurrency = "usdt"
+	CreateInvoicesRequestItemsItemVariantCurrencyKzt     CreateInvoicesRequestItemsItemVariantCurrency = "kzt"
+	CreateInvoicesRequestItemsItemVariantCurrencyAwg     CreateInvoicesRequestItemsItemVariantCurrency = "awg"
+	CreateInvoicesRequestItemsItemVariantCurrencyWhopUsd CreateInvoicesRequestItemsItemVariantCurrency = "whop_usd"
+	CreateInvoicesRequestItemsItemVariantCurrencyXau     CreateInvoicesRequestItemsItemVariantCurrency = "xau"
+)
+
+func NewCreateInvoicesRequestItemsItemVariantCurrencyFromString(s string) (CreateInvoicesRequestItemsItemVariantCurrency, error) {
+	switch s {
+	case "usd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyUsd, nil
+	case "sgd":
+		return CreateInvoicesRequestItemsItemVariantCurrencySgd, nil
+	case "inr":
+		return CreateInvoicesRequestItemsItemVariantCurrencyInr, nil
+	case "aud":
+		return CreateInvoicesRequestItemsItemVariantCurrencyAud, nil
+	case "brl":
+		return CreateInvoicesRequestItemsItemVariantCurrencyBrl, nil
+	case "cad":
+		return CreateInvoicesRequestItemsItemVariantCurrencyCad, nil
+	case "dkk":
+		return CreateInvoicesRequestItemsItemVariantCurrencyDkk, nil
+	case "eur":
+		return CreateInvoicesRequestItemsItemVariantCurrencyEur, nil
+	case "nok":
+		return CreateInvoicesRequestItemsItemVariantCurrencyNok, nil
+	case "gbp":
+		return CreateInvoicesRequestItemsItemVariantCurrencyGbp, nil
+	case "sek":
+		return CreateInvoicesRequestItemsItemVariantCurrencySek, nil
+	case "chf":
+		return CreateInvoicesRequestItemsItemVariantCurrencyChf, nil
+	case "hkd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyHkd, nil
+	case "huf":
+		return CreateInvoicesRequestItemsItemVariantCurrencyHuf, nil
+	case "jpy":
+		return CreateInvoicesRequestItemsItemVariantCurrencyJpy, nil
+	case "mxn":
+		return CreateInvoicesRequestItemsItemVariantCurrencyMxn, nil
+	case "myr":
+		return CreateInvoicesRequestItemsItemVariantCurrencyMyr, nil
+	case "pln":
+		return CreateInvoicesRequestItemsItemVariantCurrencyPln, nil
+	case "czk":
+		return CreateInvoicesRequestItemsItemVariantCurrencyCzk, nil
+	case "nzd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyNzd, nil
+	case "aed":
+		return CreateInvoicesRequestItemsItemVariantCurrencyAed, nil
+	case "eth":
+		return CreateInvoicesRequestItemsItemVariantCurrencyEth, nil
+	case "ape":
+		return CreateInvoicesRequestItemsItemVariantCurrencyApe, nil
+	case "cop":
+		return CreateInvoicesRequestItemsItemVariantCurrencyCop, nil
+	case "ron":
+		return CreateInvoicesRequestItemsItemVariantCurrencyRon, nil
+	case "thb":
+		return CreateInvoicesRequestItemsItemVariantCurrencyThb, nil
+	case "bgn":
+		return CreateInvoicesRequestItemsItemVariantCurrencyBgn, nil
+	case "idr":
+		return CreateInvoicesRequestItemsItemVariantCurrencyIdr, nil
+	case "dop":
+		return CreateInvoicesRequestItemsItemVariantCurrencyDop, nil
+	case "php":
+		return CreateInvoicesRequestItemsItemVariantCurrencyPhp, nil
+	case "try":
+		return CreateInvoicesRequestItemsItemVariantCurrencyTry, nil
+	case "krw":
+		return CreateInvoicesRequestItemsItemVariantCurrencyKrw, nil
+	case "twd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyTwd, nil
+	case "vnd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyVnd, nil
+	case "pkr":
+		return CreateInvoicesRequestItemsItemVariantCurrencyPkr, nil
+	case "clp":
+		return CreateInvoicesRequestItemsItemVariantCurrencyClp, nil
+	case "uyu":
+		return CreateInvoicesRequestItemsItemVariantCurrencyUyu, nil
+	case "ars":
+		return CreateInvoicesRequestItemsItemVariantCurrencyArs, nil
+	case "zar":
+		return CreateInvoicesRequestItemsItemVariantCurrencyZar, nil
+	case "dzd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyDzd, nil
+	case "tnd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyTnd, nil
+	case "mad":
+		return CreateInvoicesRequestItemsItemVariantCurrencyMad, nil
+	case "kes":
+		return CreateInvoicesRequestItemsItemVariantCurrencyKes, nil
+	case "kwd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyKwd, nil
+	case "jod":
+		return CreateInvoicesRequestItemsItemVariantCurrencyJod, nil
+	case "all":
+		return CreateInvoicesRequestItemsItemVariantCurrencyAll, nil
+	case "xcd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyXcd, nil
+	case "amd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyAmd, nil
+	case "bsd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyBsd, nil
+	case "bhd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyBhd, nil
+	case "bob":
+		return CreateInvoicesRequestItemsItemVariantCurrencyBob, nil
+	case "bam":
+		return CreateInvoicesRequestItemsItemVariantCurrencyBam, nil
+	case "khr":
+		return CreateInvoicesRequestItemsItemVariantCurrencyKhr, nil
+	case "crc":
+		return CreateInvoicesRequestItemsItemVariantCurrencyCrc, nil
+	case "xof":
+		return CreateInvoicesRequestItemsItemVariantCurrencyXof, nil
+	case "egp":
+		return CreateInvoicesRequestItemsItemVariantCurrencyEgp, nil
+	case "etb":
+		return CreateInvoicesRequestItemsItemVariantCurrencyEtb, nil
+	case "gmd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyGmd, nil
+	case "ghs":
+		return CreateInvoicesRequestItemsItemVariantCurrencyGhs, nil
+	case "gtq":
+		return CreateInvoicesRequestItemsItemVariantCurrencyGtq, nil
+	case "gyd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyGyd, nil
+	case "ils":
+		return CreateInvoicesRequestItemsItemVariantCurrencyIls, nil
+	case "jmd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyJmd, nil
+	case "mop":
+		return CreateInvoicesRequestItemsItemVariantCurrencyMop, nil
+	case "mga":
+		return CreateInvoicesRequestItemsItemVariantCurrencyMga, nil
+	case "mur":
+		return CreateInvoicesRequestItemsItemVariantCurrencyMur, nil
+	case "mdl":
+		return CreateInvoicesRequestItemsItemVariantCurrencyMdl, nil
+	case "mnt":
+		return CreateInvoicesRequestItemsItemVariantCurrencyMnt, nil
+	case "nad":
+		return CreateInvoicesRequestItemsItemVariantCurrencyNad, nil
+	case "ngn":
+		return CreateInvoicesRequestItemsItemVariantCurrencyNgn, nil
+	case "mkd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyMkd, nil
+	case "omr":
+		return CreateInvoicesRequestItemsItemVariantCurrencyOmr, nil
+	case "pyg":
+		return CreateInvoicesRequestItemsItemVariantCurrencyPyg, nil
+	case "pen":
+		return CreateInvoicesRequestItemsItemVariantCurrencyPen, nil
+	case "qar":
+		return CreateInvoicesRequestItemsItemVariantCurrencyQar, nil
+	case "rwf":
+		return CreateInvoicesRequestItemsItemVariantCurrencyRwf, nil
+	case "sar":
+		return CreateInvoicesRequestItemsItemVariantCurrencySar, nil
+	case "rsd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyRsd, nil
+	case "lkr":
+		return CreateInvoicesRequestItemsItemVariantCurrencyLkr, nil
+	case "tzs":
+		return CreateInvoicesRequestItemsItemVariantCurrencyTzs, nil
+	case "ttd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyTtd, nil
+	case "uzs":
+		return CreateInvoicesRequestItemsItemVariantCurrencyUzs, nil
+	case "rub":
+		return CreateInvoicesRequestItemsItemVariantCurrencyRub, nil
+	case "btc":
+		return CreateInvoicesRequestItemsItemVariantCurrencyBtc, nil
+	case "cny":
+		return CreateInvoicesRequestItemsItemVariantCurrencyCny, nil
+	case "usdt":
+		return CreateInvoicesRequestItemsItemVariantCurrencyUsdt, nil
+	case "kzt":
+		return CreateInvoicesRequestItemsItemVariantCurrencyKzt, nil
+	case "awg":
+		return CreateInvoicesRequestItemsItemVariantCurrencyAwg, nil
+	case "whop_usd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyWhopUsd, nil
+	case "xau":
+		return CreateInvoicesRequestItemsItemVariantCurrencyXau, nil
+	}
+	var t CreateInvoicesRequestItemsItemVariantCurrency
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateInvoicesRequestItemsItemVariantCurrency) Ptr() *CreateInvoicesRequestItemsItemVariantCurrency {
 	return &c
 }
 
 // Whether the variant's price includes tax: `inclusive` (tax is included in the price), `exclusive` (tax is added on top), or `unspecified`. Omit it or pass `null` to use the account's tax setting. On an account enrolled in the Whop tax service, `inclusive` or `exclusive` replaces the account's setting and `unspecified` keeps it. Otherwise it applies only where the account is the merchant of record: `inclusive` or `exclusive` replaces the account's setting when the account collects tax, and `unspecified` means the variant collects no tax. Where Whop is the merchant of record, the account's setting applies. Variants that differ only in this value are different variants.
-type CreateInvoicesRequestItemsItemPlanOverrideTaxType string
+type CreateInvoicesRequestItemsItemVariantOverrideTaxType string
 
 const (
-	CreateInvoicesRequestItemsItemPlanOverrideTaxTypeExclusive   CreateInvoicesRequestItemsItemPlanOverrideTaxType = "exclusive"
-	CreateInvoicesRequestItemsItemPlanOverrideTaxTypeInclusive   CreateInvoicesRequestItemsItemPlanOverrideTaxType = "inclusive"
-	CreateInvoicesRequestItemsItemPlanOverrideTaxTypeUnspecified CreateInvoicesRequestItemsItemPlanOverrideTaxType = "unspecified"
+	CreateInvoicesRequestItemsItemVariantOverrideTaxTypeExclusive   CreateInvoicesRequestItemsItemVariantOverrideTaxType = "exclusive"
+	CreateInvoicesRequestItemsItemVariantOverrideTaxTypeInclusive   CreateInvoicesRequestItemsItemVariantOverrideTaxType = "inclusive"
+	CreateInvoicesRequestItemsItemVariantOverrideTaxTypeUnspecified CreateInvoicesRequestItemsItemVariantOverrideTaxType = "unspecified"
 )
 
-func NewCreateInvoicesRequestItemsItemPlanOverrideTaxTypeFromString(s string) (CreateInvoicesRequestItemsItemPlanOverrideTaxType, error) {
+func NewCreateInvoicesRequestItemsItemVariantOverrideTaxTypeFromString(s string) (CreateInvoicesRequestItemsItemVariantOverrideTaxType, error) {
 	switch s {
 	case "exclusive":
-		return CreateInvoicesRequestItemsItemPlanOverrideTaxTypeExclusive, nil
+		return CreateInvoicesRequestItemsItemVariantOverrideTaxTypeExclusive, nil
 	case "inclusive":
-		return CreateInvoicesRequestItemsItemPlanOverrideTaxTypeInclusive, nil
+		return CreateInvoicesRequestItemsItemVariantOverrideTaxTypeInclusive, nil
 	case "unspecified":
-		return CreateInvoicesRequestItemsItemPlanOverrideTaxTypeUnspecified, nil
+		return CreateInvoicesRequestItemsItemVariantOverrideTaxTypeUnspecified, nil
 	}
-	var t CreateInvoicesRequestItemsItemPlanOverrideTaxType
+	var t CreateInvoicesRequestItemsItemVariantOverrideTaxType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (c CreateInvoicesRequestItemsItemPlanOverrideTaxType) Ptr() *CreateInvoicesRequestItemsItemPlanOverrideTaxType {
-	return &c
-}
-
-// Billing model for the variant.
-type CreateInvoicesRequestItemsItemPlanPlanType string
-
-const (
-	CreateInvoicesRequestItemsItemPlanPlanTypeRenewal CreateInvoicesRequestItemsItemPlanPlanType = "renewal"
-	CreateInvoicesRequestItemsItemPlanPlanTypeOneTime CreateInvoicesRequestItemsItemPlanPlanType = "one_time"
-)
-
-func NewCreateInvoicesRequestItemsItemPlanPlanTypeFromString(s string) (CreateInvoicesRequestItemsItemPlanPlanType, error) {
-	switch s {
-	case "renewal":
-		return CreateInvoicesRequestItemsItemPlanPlanTypeRenewal, nil
-	case "one_time":
-		return CreateInvoicesRequestItemsItemPlanPlanTypeOneTime, nil
-	}
-	var t CreateInvoicesRequestItemsItemPlanPlanType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CreateInvoicesRequestItemsItemPlanPlanType) Ptr() *CreateInvoicesRequestItemsItemPlanPlanType {
+func (c CreateInvoicesRequestItemsItemVariantOverrideTaxType) Ptr() *CreateInvoicesRequestItemsItemVariantOverrideTaxType {
 	return &c
 }
 
 var (
-	createInvoicesRequestItemsItemPlanProductFieldCollectShippingAddress    = big.NewInt(1 << 0)
-	createInvoicesRequestItemsItemPlanProductFieldCustomStatementDescriptor = big.NewInt(1 << 1)
-	createInvoicesRequestItemsItemPlanProductFieldDescription               = big.NewInt(1 << 2)
-	createInvoicesRequestItemsItemPlanProductFieldExternalIdentifier        = big.NewInt(1 << 3)
-	createInvoicesRequestItemsItemPlanProductFieldGlobalAffiliatePercentage = big.NewInt(1 << 4)
-	createInvoicesRequestItemsItemPlanProductFieldGlobalAffiliateStatus     = big.NewInt(1 << 5)
-	createInvoicesRequestItemsItemPlanProductFieldHeadline                  = big.NewInt(1 << 6)
-	createInvoicesRequestItemsItemPlanProductFieldProductTaxCodeID          = big.NewInt(1 << 7)
-	createInvoicesRequestItemsItemPlanProductFieldRedirectPurchaseURL       = big.NewInt(1 << 8)
-	createInvoicesRequestItemsItemPlanProductFieldRoute                     = big.NewInt(1 << 9)
-	createInvoicesRequestItemsItemPlanProductFieldTitle                     = big.NewInt(1 << 10)
-	createInvoicesRequestItemsItemPlanProductFieldVisibility                = big.NewInt(1 << 11)
+	createInvoicesRequestItemsItemVariantProductFieldCollectShippingAddress    = big.NewInt(1 << 0)
+	createInvoicesRequestItemsItemVariantProductFieldCustomStatementDescriptor = big.NewInt(1 << 1)
+	createInvoicesRequestItemsItemVariantProductFieldDescription               = big.NewInt(1 << 2)
+	createInvoicesRequestItemsItemVariantProductFieldExternalIdentifier        = big.NewInt(1 << 3)
+	createInvoicesRequestItemsItemVariantProductFieldGlobalAffiliatePercentage = big.NewInt(1 << 4)
+	createInvoicesRequestItemsItemVariantProductFieldGlobalAffiliateStatus     = big.NewInt(1 << 5)
+	createInvoicesRequestItemsItemVariantProductFieldHeadline                  = big.NewInt(1 << 6)
+	createInvoicesRequestItemsItemVariantProductFieldProductTaxCodeID          = big.NewInt(1 << 7)
+	createInvoicesRequestItemsItemVariantProductFieldRedirectPurchaseURL       = big.NewInt(1 << 8)
+	createInvoicesRequestItemsItemVariantProductFieldRoute                     = big.NewInt(1 << 9)
+	createInvoicesRequestItemsItemVariantProductFieldTitle                     = big.NewInt(1 << 10)
+	createInvoicesRequestItemsItemVariantProductFieldVisibility                = big.NewInt(1 << 11)
 )
 
-// createInvoicesRequestItemsItemPlanProductNullableFields maps the wire names of CreateInvoicesRequestItemsItemPlanProduct's nullable fields (required or optional) to their field bits.
-var createInvoicesRequestItemsItemPlanProductNullableFields = map[string]*big.Int{
-	"collect_shipping_address":    createInvoicesRequestItemsItemPlanProductFieldCollectShippingAddress,
-	"custom_statement_descriptor": createInvoicesRequestItemsItemPlanProductFieldCustomStatementDescriptor,
-	"description":                 createInvoicesRequestItemsItemPlanProductFieldDescription,
-	"global_affiliate_percentage": createInvoicesRequestItemsItemPlanProductFieldGlobalAffiliatePercentage,
-	"global_affiliate_status":     createInvoicesRequestItemsItemPlanProductFieldGlobalAffiliateStatus,
-	"headline":                    createInvoicesRequestItemsItemPlanProductFieldHeadline,
-	"product_tax_code_id":         createInvoicesRequestItemsItemPlanProductFieldProductTaxCodeID,
-	"redirect_purchase_url":       createInvoicesRequestItemsItemPlanProductFieldRedirectPurchaseURL,
-	"route":                       createInvoicesRequestItemsItemPlanProductFieldRoute,
+// createInvoicesRequestItemsItemVariantProductNullableFields maps the wire names of CreateInvoicesRequestItemsItemVariantProduct's nullable fields (required or optional) to their field bits.
+var createInvoicesRequestItemsItemVariantProductNullableFields = map[string]*big.Int{
+	"collect_shipping_address":    createInvoicesRequestItemsItemVariantProductFieldCollectShippingAddress,
+	"custom_statement_descriptor": createInvoicesRequestItemsItemVariantProductFieldCustomStatementDescriptor,
+	"description":                 createInvoicesRequestItemsItemVariantProductFieldDescription,
+	"global_affiliate_percentage": createInvoicesRequestItemsItemVariantProductFieldGlobalAffiliatePercentage,
+	"global_affiliate_status":     createInvoicesRequestItemsItemVariantProductFieldGlobalAffiliateStatus,
+	"headline":                    createInvoicesRequestItemsItemVariantProductFieldHeadline,
+	"product_tax_code_id":         createInvoicesRequestItemsItemVariantProductFieldProductTaxCodeID,
+	"redirect_purchase_url":       createInvoicesRequestItemsItemVariantProductFieldRedirectPurchaseURL,
+	"route":                       createInvoicesRequestItemsItemVariantProductFieldRoute,
 }
 
 // Find or create a product by external identifier. Mutually exclusive with product_id.
-type CreateInvoicesRequestItemsItemPlanProduct struct {
+type CreateInvoicesRequestItemsItemVariantProduct struct {
 	// Whether to collect a shipping address at checkout.
 	CollectShippingAddress *bool `json:"collect_shipping_address,omitempty" url:"collect_shipping_address,omitempty"`
 	// Custom card statement descriptor for the product, starting with WHOP*.
@@ -2500,7 +2500,7 @@ type CreateInvoicesRequestItemsItemPlanProduct struct {
 	// Percentage of revenue paid to global affiliates.
 	GlobalAffiliatePercentage *float64 `json:"global_affiliate_percentage,omitempty" url:"global_affiliate_percentage,omitempty"`
 	// Global affiliate program status.
-	GlobalAffiliateStatus *CreateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus `json:"global_affiliate_status,omitempty" url:"global_affiliate_status,omitempty"`
+	GlobalAffiliateStatus *CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus `json:"global_affiliate_status,omitempty" url:"global_affiliate_status,omitempty"`
 	// Product headline.
 	Headline *string `json:"headline,omitempty" url:"headline,omitempty"`
 	// Product tax code identifier.
@@ -2512,7 +2512,7 @@ type CreateInvoicesRequestItemsItemPlanProduct struct {
 	// Product title.
 	Title string `json:"title" url:"title"`
 	// Product visibility. Defaults to hidden.
-	Visibility *CreateInvoicesRequestItemsItemPlanProductVisibility `json:"visibility,omitempty" url:"visibility,omitempty"`
+	Visibility *CreateInvoicesRequestItemsItemVariantProductVisibility `json:"visibility,omitempty" url:"visibility,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -2521,98 +2521,98 @@ type CreateInvoicesRequestItemsItemPlanProduct struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreateInvoicesRequestItemsItemPlanProduct) GetCollectShippingAddress() *bool {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) GetCollectShippingAddress() *bool {
 	if c == nil {
 		return nil
 	}
 	return c.CollectShippingAddress
 }
 
-func (c *CreateInvoicesRequestItemsItemPlanProduct) GetCustomStatementDescriptor() *string {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) GetCustomStatementDescriptor() *string {
 	if c == nil {
 		return nil
 	}
 	return c.CustomStatementDescriptor
 }
 
-func (c *CreateInvoicesRequestItemsItemPlanProduct) GetDescription() *string {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) GetDescription() *string {
 	if c == nil {
 		return nil
 	}
 	return c.Description
 }
 
-func (c *CreateInvoicesRequestItemsItemPlanProduct) GetExternalIdentifier() string {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) GetExternalIdentifier() string {
 	if c == nil {
 		return ""
 	}
 	return c.ExternalIdentifier
 }
 
-func (c *CreateInvoicesRequestItemsItemPlanProduct) GetGlobalAffiliatePercentage() *float64 {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) GetGlobalAffiliatePercentage() *float64 {
 	if c == nil {
 		return nil
 	}
 	return c.GlobalAffiliatePercentage
 }
 
-func (c *CreateInvoicesRequestItemsItemPlanProduct) GetGlobalAffiliateStatus() *CreateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) GetGlobalAffiliateStatus() *CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus {
 	if c == nil {
 		return nil
 	}
 	return c.GlobalAffiliateStatus
 }
 
-func (c *CreateInvoicesRequestItemsItemPlanProduct) GetHeadline() *string {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) GetHeadline() *string {
 	if c == nil {
 		return nil
 	}
 	return c.Headline
 }
 
-func (c *CreateInvoicesRequestItemsItemPlanProduct) GetProductTaxCodeID() *string {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) GetProductTaxCodeID() *string {
 	if c == nil {
 		return nil
 	}
 	return c.ProductTaxCodeID
 }
 
-func (c *CreateInvoicesRequestItemsItemPlanProduct) GetRedirectPurchaseURL() *string {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) GetRedirectPurchaseURL() *string {
 	if c == nil {
 		return nil
 	}
 	return c.RedirectPurchaseURL
 }
 
-func (c *CreateInvoicesRequestItemsItemPlanProduct) GetRoute() *string {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) GetRoute() *string {
 	if c == nil {
 		return nil
 	}
 	return c.Route
 }
 
-func (c *CreateInvoicesRequestItemsItemPlanProduct) GetTitle() string {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) GetTitle() string {
 	if c == nil {
 		return ""
 	}
 	return c.Title
 }
 
-func (c *CreateInvoicesRequestItemsItemPlanProduct) GetVisibility() *CreateInvoicesRequestItemsItemPlanProductVisibility {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) GetVisibility() *CreateInvoicesRequestItemsItemVariantProductVisibility {
 	if c == nil {
 		return nil
 	}
 	return c.Visibility
 }
 
-func (c *CreateInvoicesRequestItemsItemPlanProduct) GetExtraProperties() map[string]interface{} {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) GetExtraProperties() map[string]interface{} {
 	if c == nil {
 		return nil
 	}
 	return c.extraProperties
 }
 
-func (c *CreateInvoicesRequestItemsItemPlanProduct) require(field *big.Int) {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) require(field *big.Int) {
 	next := new(big.Int)
 	if c.explicitFields != nil {
 		next.Set(c.explicitFields)
@@ -2623,101 +2623,101 @@ func (c *CreateInvoicesRequestItemsItemPlanProduct) require(field *big.Int) {
 
 // SetCollectShippingAddress sets the CollectShippingAddress field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestItemsItemPlanProduct) SetCollectShippingAddress(collectShippingAddress *bool) {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) SetCollectShippingAddress(collectShippingAddress *bool) {
 	c.CollectShippingAddress = collectShippingAddress
-	c.require(createInvoicesRequestItemsItemPlanProductFieldCollectShippingAddress)
+	c.require(createInvoicesRequestItemsItemVariantProductFieldCollectShippingAddress)
 }
 
 // SetCustomStatementDescriptor sets the CustomStatementDescriptor field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestItemsItemPlanProduct) SetCustomStatementDescriptor(customStatementDescriptor *string) {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) SetCustomStatementDescriptor(customStatementDescriptor *string) {
 	c.CustomStatementDescriptor = customStatementDescriptor
-	c.require(createInvoicesRequestItemsItemPlanProductFieldCustomStatementDescriptor)
+	c.require(createInvoicesRequestItemsItemVariantProductFieldCustomStatementDescriptor)
 }
 
 // SetDescription sets the Description field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestItemsItemPlanProduct) SetDescription(description *string) {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) SetDescription(description *string) {
 	c.Description = description
-	c.require(createInvoicesRequestItemsItemPlanProductFieldDescription)
+	c.require(createInvoicesRequestItemsItemVariantProductFieldDescription)
 }
 
 // SetExternalIdentifier sets the ExternalIdentifier field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestItemsItemPlanProduct) SetExternalIdentifier(externalIdentifier string) {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) SetExternalIdentifier(externalIdentifier string) {
 	c.ExternalIdentifier = externalIdentifier
-	c.require(createInvoicesRequestItemsItemPlanProductFieldExternalIdentifier)
+	c.require(createInvoicesRequestItemsItemVariantProductFieldExternalIdentifier)
 }
 
 // SetGlobalAffiliatePercentage sets the GlobalAffiliatePercentage field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestItemsItemPlanProduct) SetGlobalAffiliatePercentage(globalAffiliatePercentage *float64) {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) SetGlobalAffiliatePercentage(globalAffiliatePercentage *float64) {
 	c.GlobalAffiliatePercentage = globalAffiliatePercentage
-	c.require(createInvoicesRequestItemsItemPlanProductFieldGlobalAffiliatePercentage)
+	c.require(createInvoicesRequestItemsItemVariantProductFieldGlobalAffiliatePercentage)
 }
 
 // SetGlobalAffiliateStatus sets the GlobalAffiliateStatus field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestItemsItemPlanProduct) SetGlobalAffiliateStatus(globalAffiliateStatus *CreateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus) {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) SetGlobalAffiliateStatus(globalAffiliateStatus *CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus) {
 	c.GlobalAffiliateStatus = globalAffiliateStatus
-	c.require(createInvoicesRequestItemsItemPlanProductFieldGlobalAffiliateStatus)
+	c.require(createInvoicesRequestItemsItemVariantProductFieldGlobalAffiliateStatus)
 }
 
 // SetHeadline sets the Headline field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestItemsItemPlanProduct) SetHeadline(headline *string) {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) SetHeadline(headline *string) {
 	c.Headline = headline
-	c.require(createInvoicesRequestItemsItemPlanProductFieldHeadline)
+	c.require(createInvoicesRequestItemsItemVariantProductFieldHeadline)
 }
 
 // SetProductTaxCodeID sets the ProductTaxCodeID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestItemsItemPlanProduct) SetProductTaxCodeID(productTaxCodeID *string) {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) SetProductTaxCodeID(productTaxCodeID *string) {
 	c.ProductTaxCodeID = productTaxCodeID
-	c.require(createInvoicesRequestItemsItemPlanProductFieldProductTaxCodeID)
+	c.require(createInvoicesRequestItemsItemVariantProductFieldProductTaxCodeID)
 }
 
 // SetRedirectPurchaseURL sets the RedirectPurchaseURL field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestItemsItemPlanProduct) SetRedirectPurchaseURL(redirectPurchaseURL *string) {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) SetRedirectPurchaseURL(redirectPurchaseURL *string) {
 	c.RedirectPurchaseURL = redirectPurchaseURL
-	c.require(createInvoicesRequestItemsItemPlanProductFieldRedirectPurchaseURL)
+	c.require(createInvoicesRequestItemsItemVariantProductFieldRedirectPurchaseURL)
 }
 
 // SetRoute sets the Route field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestItemsItemPlanProduct) SetRoute(route *string) {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) SetRoute(route *string) {
 	c.Route = route
-	c.require(createInvoicesRequestItemsItemPlanProductFieldRoute)
+	c.require(createInvoicesRequestItemsItemVariantProductFieldRoute)
 }
 
 // SetTitle sets the Title field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestItemsItemPlanProduct) SetTitle(title string) {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) SetTitle(title string) {
 	c.Title = title
-	c.require(createInvoicesRequestItemsItemPlanProductFieldTitle)
+	c.require(createInvoicesRequestItemsItemVariantProductFieldTitle)
 }
 
 // SetVisibility sets the Visibility field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestItemsItemPlanProduct) SetVisibility(visibility *CreateInvoicesRequestItemsItemPlanProductVisibility) {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) SetVisibility(visibility *CreateInvoicesRequestItemsItemVariantProductVisibility) {
 	c.Visibility = visibility
-	c.require(createInvoicesRequestItemsItemPlanProductFieldVisibility)
+	c.require(createInvoicesRequestItemsItemVariantProductFieldVisibility)
 }
 
-func (c *CreateInvoicesRequestItemsItemPlanProduct) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateInvoicesRequestItemsItemPlanProduct
+func (c *CreateInvoicesRequestItemsItemVariantProduct) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateInvoicesRequestItemsItemVariantProduct
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*c = CreateInvoicesRequestItemsItemPlanProduct(value)
+	*c = CreateInvoicesRequestItemsItemVariantProduct(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *c)
 	if err != nil {
 		return err
 	}
 	c.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestItemsItemPlanProductNullableFields)
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestItemsItemVariantProductNullableFields)
 	if err != nil {
 		return err
 	}
@@ -2728,8 +2728,8 @@ func (c *CreateInvoicesRequestItemsItemPlanProduct) UnmarshalJSON(data []byte) e
 	return nil
 }
 
-func (c *CreateInvoicesRequestItemsItemPlanProduct) MarshalJSON() ([]byte, error) {
-	type embed CreateInvoicesRequestItemsItemPlanProduct
+func (c *CreateInvoicesRequestItemsItemVariantProduct) MarshalJSON() ([]byte, error) {
+	type embed CreateInvoicesRequestItemsItemVariantProduct
 	var marshaler = struct {
 		embed
 	}{
@@ -2739,7 +2739,7 @@ func (c *CreateInvoicesRequestItemsItemPlanProduct) MarshalJSON() ([]byte, error
 	return json.Marshal(explicitMarshaler)
 }
 
-func (c *CreateInvoicesRequestItemsItemPlanProduct) String() string {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) String() string {
 	if c == nil {
 		return "<nil>"
 	}
@@ -2755,83 +2755,83 @@ func (c *CreateInvoicesRequestItemsItemPlanProduct) String() string {
 }
 
 // Global affiliate program status.
-type CreateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus string
+type CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus string
 
 const (
-	CreateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatusEnabled  CreateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus = "enabled"
-	CreateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatusDisabled CreateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus = "disabled"
+	CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatusEnabled  CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus = "enabled"
+	CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatusDisabled CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus = "disabled"
 )
 
-func NewCreateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatusFromString(s string) (CreateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus, error) {
+func NewCreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatusFromString(s string) (CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus, error) {
 	switch s {
 	case "enabled":
-		return CreateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatusEnabled, nil
+		return CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatusEnabled, nil
 	case "disabled":
-		return CreateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatusDisabled, nil
+		return CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatusDisabled, nil
 	}
-	var t CreateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus
+	var t CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (c CreateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus) Ptr() *CreateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus {
+func (c CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus) Ptr() *CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus {
 	return &c
 }
 
 // Product visibility. Defaults to hidden.
-type CreateInvoicesRequestItemsItemPlanProductVisibility string
+type CreateInvoicesRequestItemsItemVariantProductVisibility string
 
 const (
-	CreateInvoicesRequestItemsItemPlanProductVisibilityVisible   CreateInvoicesRequestItemsItemPlanProductVisibility = "visible"
-	CreateInvoicesRequestItemsItemPlanProductVisibilityHidden    CreateInvoicesRequestItemsItemPlanProductVisibility = "hidden"
-	CreateInvoicesRequestItemsItemPlanProductVisibilityArchived  CreateInvoicesRequestItemsItemPlanProductVisibility = "archived"
-	CreateInvoicesRequestItemsItemPlanProductVisibilityQuickLink CreateInvoicesRequestItemsItemPlanProductVisibility = "quick_link"
+	CreateInvoicesRequestItemsItemVariantProductVisibilityVisible   CreateInvoicesRequestItemsItemVariantProductVisibility = "visible"
+	CreateInvoicesRequestItemsItemVariantProductVisibilityHidden    CreateInvoicesRequestItemsItemVariantProductVisibility = "hidden"
+	CreateInvoicesRequestItemsItemVariantProductVisibilityArchived  CreateInvoicesRequestItemsItemVariantProductVisibility = "archived"
+	CreateInvoicesRequestItemsItemVariantProductVisibilityQuickLink CreateInvoicesRequestItemsItemVariantProductVisibility = "quick_link"
 )
 
-func NewCreateInvoicesRequestItemsItemPlanProductVisibilityFromString(s string) (CreateInvoicesRequestItemsItemPlanProductVisibility, error) {
+func NewCreateInvoicesRequestItemsItemVariantProductVisibilityFromString(s string) (CreateInvoicesRequestItemsItemVariantProductVisibility, error) {
 	switch s {
 	case "visible":
-		return CreateInvoicesRequestItemsItemPlanProductVisibilityVisible, nil
+		return CreateInvoicesRequestItemsItemVariantProductVisibilityVisible, nil
 	case "hidden":
-		return CreateInvoicesRequestItemsItemPlanProductVisibilityHidden, nil
+		return CreateInvoicesRequestItemsItemVariantProductVisibilityHidden, nil
 	case "archived":
-		return CreateInvoicesRequestItemsItemPlanProductVisibilityArchived, nil
+		return CreateInvoicesRequestItemsItemVariantProductVisibilityArchived, nil
 	case "quick_link":
-		return CreateInvoicesRequestItemsItemPlanProductVisibilityQuickLink, nil
+		return CreateInvoicesRequestItemsItemVariantProductVisibilityQuickLink, nil
 	}
-	var t CreateInvoicesRequestItemsItemPlanProductVisibility
+	var t CreateInvoicesRequestItemsItemVariantProductVisibility
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (c CreateInvoicesRequestItemsItemPlanProductVisibility) Ptr() *CreateInvoicesRequestItemsItemPlanProductVisibility {
+func (c CreateInvoicesRequestItemsItemVariantProductVisibility) Ptr() *CreateInvoicesRequestItemsItemVariantProductVisibility {
 	return &c
 }
 
 // Whether the variant is visible to customers.
-type CreateInvoicesRequestItemsItemPlanVisibility string
+type CreateInvoicesRequestItemsItemVariantVisibility string
 
 const (
-	CreateInvoicesRequestItemsItemPlanVisibilityVisible   CreateInvoicesRequestItemsItemPlanVisibility = "visible"
-	CreateInvoicesRequestItemsItemPlanVisibilityHidden    CreateInvoicesRequestItemsItemPlanVisibility = "hidden"
-	CreateInvoicesRequestItemsItemPlanVisibilityArchived  CreateInvoicesRequestItemsItemPlanVisibility = "archived"
-	CreateInvoicesRequestItemsItemPlanVisibilityQuickLink CreateInvoicesRequestItemsItemPlanVisibility = "quick_link"
+	CreateInvoicesRequestItemsItemVariantVisibilityVisible   CreateInvoicesRequestItemsItemVariantVisibility = "visible"
+	CreateInvoicesRequestItemsItemVariantVisibilityHidden    CreateInvoicesRequestItemsItemVariantVisibility = "hidden"
+	CreateInvoicesRequestItemsItemVariantVisibilityArchived  CreateInvoicesRequestItemsItemVariantVisibility = "archived"
+	CreateInvoicesRequestItemsItemVariantVisibilityQuickLink CreateInvoicesRequestItemsItemVariantVisibility = "quick_link"
 )
 
-func NewCreateInvoicesRequestItemsItemPlanVisibilityFromString(s string) (CreateInvoicesRequestItemsItemPlanVisibility, error) {
+func NewCreateInvoicesRequestItemsItemVariantVisibilityFromString(s string) (CreateInvoicesRequestItemsItemVariantVisibility, error) {
 	switch s {
 	case "visible":
-		return CreateInvoicesRequestItemsItemPlanVisibilityVisible, nil
+		return CreateInvoicesRequestItemsItemVariantVisibilityVisible, nil
 	case "hidden":
-		return CreateInvoicesRequestItemsItemPlanVisibilityHidden, nil
+		return CreateInvoicesRequestItemsItemVariantVisibilityHidden, nil
 	case "archived":
-		return CreateInvoicesRequestItemsItemPlanVisibilityArchived, nil
+		return CreateInvoicesRequestItemsItemVariantVisibilityArchived, nil
 	case "quick_link":
-		return CreateInvoicesRequestItemsItemPlanVisibilityQuickLink, nil
+		return CreateInvoicesRequestItemsItemVariantVisibilityQuickLink, nil
 	}
-	var t CreateInvoicesRequestItemsItemPlanVisibility
+	var t CreateInvoicesRequestItemsItemVariantVisibility
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (c CreateInvoicesRequestItemsItemPlanVisibility) Ptr() *CreateInvoicesRequestItemsItemPlanVisibility {
+func (c CreateInvoicesRequestItemsItemVariantVisibility) Ptr() *CreateInvoicesRequestItemsItemVariantVisibility {
 	return &c
 }
 
@@ -4755,55 +4755,57 @@ func (u *UpdateInvoicesRequestItemsItem) Accept(visitor UpdateInvoicesRequestIte
 }
 
 var (
-	updateInvoicesRequestItemsItemPlanFieldAllowMultipleQuantity = big.NewInt(1 << 0)
-	updateInvoicesRequestItemsItemPlanFieldApplicationFeeAmount  = big.NewInt(1 << 1)
-	updateInvoicesRequestItemsItemPlanFieldBillingPeriod         = big.NewInt(1 << 2)
-	updateInvoicesRequestItemsItemPlanFieldCurrency              = big.NewInt(1 << 3)
-	updateInvoicesRequestItemsItemPlanFieldDescription           = big.NewInt(1 << 4)
-	updateInvoicesRequestItemsItemPlanFieldExpirationDays        = big.NewInt(1 << 5)
-	updateInvoicesRequestItemsItemPlanFieldForceCreateNewPlan    = big.NewInt(1 << 6)
-	updateInvoicesRequestItemsItemPlanFieldInitialPrice          = big.NewInt(1 << 7)
-	updateInvoicesRequestItemsItemPlanFieldInternalNotes         = big.NewInt(1 << 8)
-	updateInvoicesRequestItemsItemPlanFieldOverrideTaxType       = big.NewInt(1 << 9)
-	updateInvoicesRequestItemsItemPlanFieldPlanType              = big.NewInt(1 << 10)
-	updateInvoicesRequestItemsItemPlanFieldProduct               = big.NewInt(1 << 11)
-	updateInvoicesRequestItemsItemPlanFieldProductID             = big.NewInt(1 << 12)
-	updateInvoicesRequestItemsItemPlanFieldRenewalPrice          = big.NewInt(1 << 13)
-	updateInvoicesRequestItemsItemPlanFieldTitle                 = big.NewInt(1 << 14)
-	updateInvoicesRequestItemsItemPlanFieldTrialPeriodDays       = big.NewInt(1 << 15)
-	updateInvoicesRequestItemsItemPlanFieldVisibility            = big.NewInt(1 << 16)
+	updateInvoicesRequestItemsItemVariantFieldAllowMultipleQuantity = big.NewInt(1 << 0)
+	updateInvoicesRequestItemsItemVariantFieldApplicationFeeAmount  = big.NewInt(1 << 1)
+	updateInvoicesRequestItemsItemVariantFieldBillingPeriod         = big.NewInt(1 << 2)
+	updateInvoicesRequestItemsItemVariantFieldBillingType           = big.NewInt(1 << 3)
+	updateInvoicesRequestItemsItemVariantFieldCurrency              = big.NewInt(1 << 4)
+	updateInvoicesRequestItemsItemVariantFieldDescription           = big.NewInt(1 << 5)
+	updateInvoicesRequestItemsItemVariantFieldExpirationDays        = big.NewInt(1 << 6)
+	updateInvoicesRequestItemsItemVariantFieldForceCreateNewPlan    = big.NewInt(1 << 7)
+	updateInvoicesRequestItemsItemVariantFieldInitialPrice          = big.NewInt(1 << 8)
+	updateInvoicesRequestItemsItemVariantFieldInternalNotes         = big.NewInt(1 << 9)
+	updateInvoicesRequestItemsItemVariantFieldOverrideTaxType       = big.NewInt(1 << 10)
+	updateInvoicesRequestItemsItemVariantFieldProduct               = big.NewInt(1 << 11)
+	updateInvoicesRequestItemsItemVariantFieldProductID             = big.NewInt(1 << 12)
+	updateInvoicesRequestItemsItemVariantFieldRenewalPrice          = big.NewInt(1 << 13)
+	updateInvoicesRequestItemsItemVariantFieldTitle                 = big.NewInt(1 << 14)
+	updateInvoicesRequestItemsItemVariantFieldTrialPeriodDays       = big.NewInt(1 << 15)
+	updateInvoicesRequestItemsItemVariantFieldVisibility            = big.NewInt(1 << 16)
 )
 
-// updateInvoicesRequestItemsItemPlanNullableFields maps the wire names of UpdateInvoicesRequestItemsItemPlan's nullable fields (required or optional) to their field bits.
-var updateInvoicesRequestItemsItemPlanNullableFields = map[string]*big.Int{
-	"allow_multiple_quantity": updateInvoicesRequestItemsItemPlanFieldAllowMultipleQuantity,
-	"application_fee_amount":  updateInvoicesRequestItemsItemPlanFieldApplicationFeeAmount,
-	"billing_period":          updateInvoicesRequestItemsItemPlanFieldBillingPeriod,
-	"description":             updateInvoicesRequestItemsItemPlanFieldDescription,
-	"expiration_days":         updateInvoicesRequestItemsItemPlanFieldExpirationDays,
-	"force_create_new_plan":   updateInvoicesRequestItemsItemPlanFieldForceCreateNewPlan,
-	"initial_price":           updateInvoicesRequestItemsItemPlanFieldInitialPrice,
-	"internal_notes":          updateInvoicesRequestItemsItemPlanFieldInternalNotes,
-	"override_tax_type":       updateInvoicesRequestItemsItemPlanFieldOverrideTaxType,
-	"plan_type":               updateInvoicesRequestItemsItemPlanFieldPlanType,
-	"product":                 updateInvoicesRequestItemsItemPlanFieldProduct,
-	"product_id":              updateInvoicesRequestItemsItemPlanFieldProductID,
-	"renewal_price":           updateInvoicesRequestItemsItemPlanFieldRenewalPrice,
-	"title":                   updateInvoicesRequestItemsItemPlanFieldTitle,
-	"trial_period_days":       updateInvoicesRequestItemsItemPlanFieldTrialPeriodDays,
-	"visibility":              updateInvoicesRequestItemsItemPlanFieldVisibility,
+// updateInvoicesRequestItemsItemVariantNullableFields maps the wire names of UpdateInvoicesRequestItemsItemVariant's nullable fields (required or optional) to their field bits.
+var updateInvoicesRequestItemsItemVariantNullableFields = map[string]*big.Int{
+	"allow_multiple_quantity": updateInvoicesRequestItemsItemVariantFieldAllowMultipleQuantity,
+	"application_fee_amount":  updateInvoicesRequestItemsItemVariantFieldApplicationFeeAmount,
+	"billing_period":          updateInvoicesRequestItemsItemVariantFieldBillingPeriod,
+	"billing_type":            updateInvoicesRequestItemsItemVariantFieldBillingType,
+	"description":             updateInvoicesRequestItemsItemVariantFieldDescription,
+	"expiration_days":         updateInvoicesRequestItemsItemVariantFieldExpirationDays,
+	"force_create_new_plan":   updateInvoicesRequestItemsItemVariantFieldForceCreateNewPlan,
+	"initial_price":           updateInvoicesRequestItemsItemVariantFieldInitialPrice,
+	"internal_notes":          updateInvoicesRequestItemsItemVariantFieldInternalNotes,
+	"override_tax_type":       updateInvoicesRequestItemsItemVariantFieldOverrideTaxType,
+	"product":                 updateInvoicesRequestItemsItemVariantFieldProduct,
+	"product_id":              updateInvoicesRequestItemsItemVariantFieldProductID,
+	"renewal_price":           updateInvoicesRequestItemsItemVariantFieldRenewalPrice,
+	"title":                   updateInvoicesRequestItemsItemVariantFieldTitle,
+	"trial_period_days":       updateInvoicesRequestItemsItemVariantFieldTrialPeriodDays,
+	"visibility":              updateInvoicesRequestItemsItemVariantFieldVisibility,
 }
 
-// Find or create a variant inline through the compatibility input plan, using the payment API properties. Requires plan:create.
-type UpdateInvoicesRequestItemsItemPlan struct {
+// Find or create a variant inline by its attributes, using the payment API properties. Requires plan:create.
+type UpdateInvoicesRequestItemsItemVariant struct {
 	// Whether more than one unit can be purchased in an order.
 	AllowMultipleQuantity *bool `json:"allow_multiple_quantity,omitempty" url:"allow_multiple_quantity,omitempty"`
 	// Application fee the platform collects per unit, in the variant currency (5.00 means $5.00 for USD). Must be positive and below the initial price for one-time variants or renewal price for recurring variants. Paid to the parent account alongside other processing fees; collection is capped to remaining proceeds. Applies to subsequent payments on recurring variants. Only valid for connected accounts with a parent account.
 	ApplicationFeeAmount *float64 `json:"application_fee_amount,omitempty" url:"application_fee_amount,omitempty"`
 	// Recurring billing interval in days.
 	BillingPeriod *int `json:"billing_period,omitempty" url:"billing_period,omitempty"`
+	// Billing model for the variant.
+	BillingType *UpdateInvoicesRequestItemsItemVariantBillingType `json:"billing_type,omitempty" url:"billing_type,omitempty"`
 	// Currency code for the variant prices.
-	Currency UpdateInvoicesRequestItemsItemPlanCurrency `json:"currency" url:"currency"`
+	Currency UpdateInvoicesRequestItemsItemVariantCurrency `json:"currency" url:"currency"`
 	// Variant description.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
 	// Days until access expires.
@@ -4815,11 +4817,9 @@ type UpdateInvoicesRequestItemsItemPlan struct {
 	// Internal notes for the account.
 	InternalNotes *string `json:"internal_notes,omitempty" url:"internal_notes,omitempty"`
 	// Whether the variant's price includes tax: `inclusive` (tax is included in the price), `exclusive` (tax is added on top), or `unspecified`. Omit it or pass `null` to use the account's tax setting. On an account enrolled in the Whop tax service, `inclusive` or `exclusive` replaces the account's setting and `unspecified` keeps it. Otherwise it applies only where the account is the merchant of record: `inclusive` or `exclusive` replaces the account's setting when the account collects tax, and `unspecified` means the variant collects no tax. Where Whop is the merchant of record, the account's setting applies. Variants that differ only in this value are different variants.
-	OverrideTaxType *UpdateInvoicesRequestItemsItemPlanOverrideTaxType `json:"override_tax_type,omitempty" url:"override_tax_type,omitempty"`
-	// Billing model for the variant.
-	PlanType *UpdateInvoicesRequestItemsItemPlanPlanType `json:"plan_type,omitempty" url:"plan_type,omitempty"`
+	OverrideTaxType *UpdateInvoicesRequestItemsItemVariantOverrideTaxType `json:"override_tax_type,omitempty" url:"override_tax_type,omitempty"`
 	// Find or create a product by external identifier. Mutually exclusive with product_id.
-	Product *UpdateInvoicesRequestItemsItemPlanProduct `json:"product,omitempty" url:"product,omitempty"`
+	Product *UpdateInvoicesRequestItemsItemVariantProduct `json:"product,omitempty" url:"product,omitempty"`
 	// Existing product ID belonging to the account, prefixed `prod_`. Mutually exclusive with `product`.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// Recurring price in the variant currency.
@@ -4829,7 +4829,7 @@ type UpdateInvoicesRequestItemsItemPlan struct {
 	// Free trial days before renewal.
 	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
 	// Whether the variant is visible to customers.
-	Visibility *UpdateInvoicesRequestItemsItemPlanVisibility `json:"visibility,omitempty" url:"visibility,omitempty"`
+	Visibility *UpdateInvoicesRequestItemsItemVariantVisibility `json:"visibility,omitempty" url:"visibility,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -4838,133 +4838,133 @@ type UpdateInvoicesRequestItemsItemPlan struct {
 	rawJSON         json.RawMessage
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlan) GetAllowMultipleQuantity() *bool {
+func (u *UpdateInvoicesRequestItemsItemVariant) GetAllowMultipleQuantity() *bool {
 	if u == nil {
 		return nil
 	}
 	return u.AllowMultipleQuantity
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlan) GetApplicationFeeAmount() *float64 {
+func (u *UpdateInvoicesRequestItemsItemVariant) GetApplicationFeeAmount() *float64 {
 	if u == nil {
 		return nil
 	}
 	return u.ApplicationFeeAmount
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlan) GetBillingPeriod() *int {
+func (u *UpdateInvoicesRequestItemsItemVariant) GetBillingPeriod() *int {
 	if u == nil {
 		return nil
 	}
 	return u.BillingPeriod
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlan) GetCurrency() UpdateInvoicesRequestItemsItemPlanCurrency {
+func (u *UpdateInvoicesRequestItemsItemVariant) GetBillingType() *UpdateInvoicesRequestItemsItemVariantBillingType {
+	if u == nil {
+		return nil
+	}
+	return u.BillingType
+}
+
+func (u *UpdateInvoicesRequestItemsItemVariant) GetCurrency() UpdateInvoicesRequestItemsItemVariantCurrency {
 	if u == nil {
 		return ""
 	}
 	return u.Currency
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlan) GetDescription() *string {
+func (u *UpdateInvoicesRequestItemsItemVariant) GetDescription() *string {
 	if u == nil {
 		return nil
 	}
 	return u.Description
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlan) GetExpirationDays() *int {
+func (u *UpdateInvoicesRequestItemsItemVariant) GetExpirationDays() *int {
 	if u == nil {
 		return nil
 	}
 	return u.ExpirationDays
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlan) GetForceCreateNewPlan() *bool {
+func (u *UpdateInvoicesRequestItemsItemVariant) GetForceCreateNewPlan() *bool {
 	if u == nil {
 		return nil
 	}
 	return u.ForceCreateNewPlan
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlan) GetInitialPrice() *float64 {
+func (u *UpdateInvoicesRequestItemsItemVariant) GetInitialPrice() *float64 {
 	if u == nil {
 		return nil
 	}
 	return u.InitialPrice
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlan) GetInternalNotes() *string {
+func (u *UpdateInvoicesRequestItemsItemVariant) GetInternalNotes() *string {
 	if u == nil {
 		return nil
 	}
 	return u.InternalNotes
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlan) GetOverrideTaxType() *UpdateInvoicesRequestItemsItemPlanOverrideTaxType {
+func (u *UpdateInvoicesRequestItemsItemVariant) GetOverrideTaxType() *UpdateInvoicesRequestItemsItemVariantOverrideTaxType {
 	if u == nil {
 		return nil
 	}
 	return u.OverrideTaxType
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlan) GetPlanType() *UpdateInvoicesRequestItemsItemPlanPlanType {
-	if u == nil {
-		return nil
-	}
-	return u.PlanType
-}
-
-func (u *UpdateInvoicesRequestItemsItemPlan) GetProduct() *UpdateInvoicesRequestItemsItemPlanProduct {
+func (u *UpdateInvoicesRequestItemsItemVariant) GetProduct() *UpdateInvoicesRequestItemsItemVariantProduct {
 	if u == nil {
 		return nil
 	}
 	return u.Product
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlan) GetProductID() *string {
+func (u *UpdateInvoicesRequestItemsItemVariant) GetProductID() *string {
 	if u == nil {
 		return nil
 	}
 	return u.ProductID
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlan) GetRenewalPrice() *float64 {
+func (u *UpdateInvoicesRequestItemsItemVariant) GetRenewalPrice() *float64 {
 	if u == nil {
 		return nil
 	}
 	return u.RenewalPrice
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlan) GetTitle() *string {
+func (u *UpdateInvoicesRequestItemsItemVariant) GetTitle() *string {
 	if u == nil {
 		return nil
 	}
 	return u.Title
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlan) GetTrialPeriodDays() *int {
+func (u *UpdateInvoicesRequestItemsItemVariant) GetTrialPeriodDays() *int {
 	if u == nil {
 		return nil
 	}
 	return u.TrialPeriodDays
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlan) GetVisibility() *UpdateInvoicesRequestItemsItemPlanVisibility {
+func (u *UpdateInvoicesRequestItemsItemVariant) GetVisibility() *UpdateInvoicesRequestItemsItemVariantVisibility {
 	if u == nil {
 		return nil
 	}
 	return u.Visibility
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlan) GetExtraProperties() map[string]interface{} {
+func (u *UpdateInvoicesRequestItemsItemVariant) GetExtraProperties() map[string]interface{} {
 	if u == nil {
 		return nil
 	}
 	return u.extraProperties
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlan) require(field *big.Int) {
+func (u *UpdateInvoicesRequestItemsItemVariant) require(field *big.Int) {
 	next := new(big.Int)
 	if u.explicitFields != nil {
 		next.Set(u.explicitFields)
@@ -4975,136 +4975,136 @@ func (u *UpdateInvoicesRequestItemsItemPlan) require(field *big.Int) {
 
 // SetAllowMultipleQuantity sets the AllowMultipleQuantity field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestItemsItemPlan) SetAllowMultipleQuantity(allowMultipleQuantity *bool) {
+func (u *UpdateInvoicesRequestItemsItemVariant) SetAllowMultipleQuantity(allowMultipleQuantity *bool) {
 	u.AllowMultipleQuantity = allowMultipleQuantity
-	u.require(updateInvoicesRequestItemsItemPlanFieldAllowMultipleQuantity)
+	u.require(updateInvoicesRequestItemsItemVariantFieldAllowMultipleQuantity)
 }
 
 // SetApplicationFeeAmount sets the ApplicationFeeAmount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestItemsItemPlan) SetApplicationFeeAmount(applicationFeeAmount *float64) {
+func (u *UpdateInvoicesRequestItemsItemVariant) SetApplicationFeeAmount(applicationFeeAmount *float64) {
 	u.ApplicationFeeAmount = applicationFeeAmount
-	u.require(updateInvoicesRequestItemsItemPlanFieldApplicationFeeAmount)
+	u.require(updateInvoicesRequestItemsItemVariantFieldApplicationFeeAmount)
 }
 
 // SetBillingPeriod sets the BillingPeriod field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestItemsItemPlan) SetBillingPeriod(billingPeriod *int) {
+func (u *UpdateInvoicesRequestItemsItemVariant) SetBillingPeriod(billingPeriod *int) {
 	u.BillingPeriod = billingPeriod
-	u.require(updateInvoicesRequestItemsItemPlanFieldBillingPeriod)
+	u.require(updateInvoicesRequestItemsItemVariantFieldBillingPeriod)
+}
+
+// SetBillingType sets the BillingType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInvoicesRequestItemsItemVariant) SetBillingType(billingType *UpdateInvoicesRequestItemsItemVariantBillingType) {
+	u.BillingType = billingType
+	u.require(updateInvoicesRequestItemsItemVariantFieldBillingType)
 }
 
 // SetCurrency sets the Currency field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestItemsItemPlan) SetCurrency(currency UpdateInvoicesRequestItemsItemPlanCurrency) {
+func (u *UpdateInvoicesRequestItemsItemVariant) SetCurrency(currency UpdateInvoicesRequestItemsItemVariantCurrency) {
 	u.Currency = currency
-	u.require(updateInvoicesRequestItemsItemPlanFieldCurrency)
+	u.require(updateInvoicesRequestItemsItemVariantFieldCurrency)
 }
 
 // SetDescription sets the Description field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestItemsItemPlan) SetDescription(description *string) {
+func (u *UpdateInvoicesRequestItemsItemVariant) SetDescription(description *string) {
 	u.Description = description
-	u.require(updateInvoicesRequestItemsItemPlanFieldDescription)
+	u.require(updateInvoicesRequestItemsItemVariantFieldDescription)
 }
 
 // SetExpirationDays sets the ExpirationDays field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestItemsItemPlan) SetExpirationDays(expirationDays *int) {
+func (u *UpdateInvoicesRequestItemsItemVariant) SetExpirationDays(expirationDays *int) {
 	u.ExpirationDays = expirationDays
-	u.require(updateInvoicesRequestItemsItemPlanFieldExpirationDays)
+	u.require(updateInvoicesRequestItemsItemVariantFieldExpirationDays)
 }
 
 // SetForceCreateNewPlan sets the ForceCreateNewPlan field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestItemsItemPlan) SetForceCreateNewPlan(forceCreateNewPlan *bool) {
+func (u *UpdateInvoicesRequestItemsItemVariant) SetForceCreateNewPlan(forceCreateNewPlan *bool) {
 	u.ForceCreateNewPlan = forceCreateNewPlan
-	u.require(updateInvoicesRequestItemsItemPlanFieldForceCreateNewPlan)
+	u.require(updateInvoicesRequestItemsItemVariantFieldForceCreateNewPlan)
 }
 
 // SetInitialPrice sets the InitialPrice field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestItemsItemPlan) SetInitialPrice(initialPrice *float64) {
+func (u *UpdateInvoicesRequestItemsItemVariant) SetInitialPrice(initialPrice *float64) {
 	u.InitialPrice = initialPrice
-	u.require(updateInvoicesRequestItemsItemPlanFieldInitialPrice)
+	u.require(updateInvoicesRequestItemsItemVariantFieldInitialPrice)
 }
 
 // SetInternalNotes sets the InternalNotes field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestItemsItemPlan) SetInternalNotes(internalNotes *string) {
+func (u *UpdateInvoicesRequestItemsItemVariant) SetInternalNotes(internalNotes *string) {
 	u.InternalNotes = internalNotes
-	u.require(updateInvoicesRequestItemsItemPlanFieldInternalNotes)
+	u.require(updateInvoicesRequestItemsItemVariantFieldInternalNotes)
 }
 
 // SetOverrideTaxType sets the OverrideTaxType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestItemsItemPlan) SetOverrideTaxType(overrideTaxType *UpdateInvoicesRequestItemsItemPlanOverrideTaxType) {
+func (u *UpdateInvoicesRequestItemsItemVariant) SetOverrideTaxType(overrideTaxType *UpdateInvoicesRequestItemsItemVariantOverrideTaxType) {
 	u.OverrideTaxType = overrideTaxType
-	u.require(updateInvoicesRequestItemsItemPlanFieldOverrideTaxType)
-}
-
-// SetPlanType sets the PlanType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestItemsItemPlan) SetPlanType(planType *UpdateInvoicesRequestItemsItemPlanPlanType) {
-	u.PlanType = planType
-	u.require(updateInvoicesRequestItemsItemPlanFieldPlanType)
+	u.require(updateInvoicesRequestItemsItemVariantFieldOverrideTaxType)
 }
 
 // SetProduct sets the Product field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestItemsItemPlan) SetProduct(product *UpdateInvoicesRequestItemsItemPlanProduct) {
+func (u *UpdateInvoicesRequestItemsItemVariant) SetProduct(product *UpdateInvoicesRequestItemsItemVariantProduct) {
 	u.Product = product
-	u.require(updateInvoicesRequestItemsItemPlanFieldProduct)
+	u.require(updateInvoicesRequestItemsItemVariantFieldProduct)
 }
 
 // SetProductID sets the ProductID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestItemsItemPlan) SetProductID(productID *string) {
+func (u *UpdateInvoicesRequestItemsItemVariant) SetProductID(productID *string) {
 	u.ProductID = productID
-	u.require(updateInvoicesRequestItemsItemPlanFieldProductID)
+	u.require(updateInvoicesRequestItemsItemVariantFieldProductID)
 }
 
 // SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestItemsItemPlan) SetRenewalPrice(renewalPrice *float64) {
+func (u *UpdateInvoicesRequestItemsItemVariant) SetRenewalPrice(renewalPrice *float64) {
 	u.RenewalPrice = renewalPrice
-	u.require(updateInvoicesRequestItemsItemPlanFieldRenewalPrice)
+	u.require(updateInvoicesRequestItemsItemVariantFieldRenewalPrice)
 }
 
 // SetTitle sets the Title field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestItemsItemPlan) SetTitle(title *string) {
+func (u *UpdateInvoicesRequestItemsItemVariant) SetTitle(title *string) {
 	u.Title = title
-	u.require(updateInvoicesRequestItemsItemPlanFieldTitle)
+	u.require(updateInvoicesRequestItemsItemVariantFieldTitle)
 }
 
 // SetTrialPeriodDays sets the TrialPeriodDays field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestItemsItemPlan) SetTrialPeriodDays(trialPeriodDays *int) {
+func (u *UpdateInvoicesRequestItemsItemVariant) SetTrialPeriodDays(trialPeriodDays *int) {
 	u.TrialPeriodDays = trialPeriodDays
-	u.require(updateInvoicesRequestItemsItemPlanFieldTrialPeriodDays)
+	u.require(updateInvoicesRequestItemsItemVariantFieldTrialPeriodDays)
 }
 
 // SetVisibility sets the Visibility field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestItemsItemPlan) SetVisibility(visibility *UpdateInvoicesRequestItemsItemPlanVisibility) {
+func (u *UpdateInvoicesRequestItemsItemVariant) SetVisibility(visibility *UpdateInvoicesRequestItemsItemVariantVisibility) {
 	u.Visibility = visibility
-	u.require(updateInvoicesRequestItemsItemPlanFieldVisibility)
+	u.require(updateInvoicesRequestItemsItemVariantFieldVisibility)
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlan) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateInvoicesRequestItemsItemPlan
+func (u *UpdateInvoicesRequestItemsItemVariant) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateInvoicesRequestItemsItemVariant
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*u = UpdateInvoicesRequestItemsItemPlan(value)
+	*u = UpdateInvoicesRequestItemsItemVariant(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *u)
 	if err != nil {
 		return err
 	}
 	u.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateInvoicesRequestItemsItemPlanNullableFields)
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateInvoicesRequestItemsItemVariantNullableFields)
 	if err != nil {
 		return err
 	}
@@ -5115,8 +5115,8 @@ func (u *UpdateInvoicesRequestItemsItemPlan) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlan) MarshalJSON() ([]byte, error) {
-	type embed UpdateInvoicesRequestItemsItemPlan
+func (u *UpdateInvoicesRequestItemsItemVariant) MarshalJSON() ([]byte, error) {
+	type embed UpdateInvoicesRequestItemsItemVariant
 	var marshaler = struct {
 		embed
 	}{
@@ -5126,7 +5126,7 @@ func (u *UpdateInvoicesRequestItemsItemPlan) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlan) String() string {
+func (u *UpdateInvoicesRequestItemsItemVariant) String() string {
 	if u == nil {
 		return "<nil>"
 	}
@@ -5141,372 +5141,372 @@ func (u *UpdateInvoicesRequestItemsItemPlan) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Currency code for the variant prices.
-type UpdateInvoicesRequestItemsItemPlanCurrency string
+// Billing model for the variant.
+type UpdateInvoicesRequestItemsItemVariantBillingType string
 
 const (
-	UpdateInvoicesRequestItemsItemPlanCurrencyUsd     UpdateInvoicesRequestItemsItemPlanCurrency = "usd"
-	UpdateInvoicesRequestItemsItemPlanCurrencySgd     UpdateInvoicesRequestItemsItemPlanCurrency = "sgd"
-	UpdateInvoicesRequestItemsItemPlanCurrencyInr     UpdateInvoicesRequestItemsItemPlanCurrency = "inr"
-	UpdateInvoicesRequestItemsItemPlanCurrencyAud     UpdateInvoicesRequestItemsItemPlanCurrency = "aud"
-	UpdateInvoicesRequestItemsItemPlanCurrencyBrl     UpdateInvoicesRequestItemsItemPlanCurrency = "brl"
-	UpdateInvoicesRequestItemsItemPlanCurrencyCad     UpdateInvoicesRequestItemsItemPlanCurrency = "cad"
-	UpdateInvoicesRequestItemsItemPlanCurrencyDkk     UpdateInvoicesRequestItemsItemPlanCurrency = "dkk"
-	UpdateInvoicesRequestItemsItemPlanCurrencyEur     UpdateInvoicesRequestItemsItemPlanCurrency = "eur"
-	UpdateInvoicesRequestItemsItemPlanCurrencyNok     UpdateInvoicesRequestItemsItemPlanCurrency = "nok"
-	UpdateInvoicesRequestItemsItemPlanCurrencyGbp     UpdateInvoicesRequestItemsItemPlanCurrency = "gbp"
-	UpdateInvoicesRequestItemsItemPlanCurrencySek     UpdateInvoicesRequestItemsItemPlanCurrency = "sek"
-	UpdateInvoicesRequestItemsItemPlanCurrencyChf     UpdateInvoicesRequestItemsItemPlanCurrency = "chf"
-	UpdateInvoicesRequestItemsItemPlanCurrencyHkd     UpdateInvoicesRequestItemsItemPlanCurrency = "hkd"
-	UpdateInvoicesRequestItemsItemPlanCurrencyHuf     UpdateInvoicesRequestItemsItemPlanCurrency = "huf"
-	UpdateInvoicesRequestItemsItemPlanCurrencyJpy     UpdateInvoicesRequestItemsItemPlanCurrency = "jpy"
-	UpdateInvoicesRequestItemsItemPlanCurrencyMxn     UpdateInvoicesRequestItemsItemPlanCurrency = "mxn"
-	UpdateInvoicesRequestItemsItemPlanCurrencyMyr     UpdateInvoicesRequestItemsItemPlanCurrency = "myr"
-	UpdateInvoicesRequestItemsItemPlanCurrencyPln     UpdateInvoicesRequestItemsItemPlanCurrency = "pln"
-	UpdateInvoicesRequestItemsItemPlanCurrencyCzk     UpdateInvoicesRequestItemsItemPlanCurrency = "czk"
-	UpdateInvoicesRequestItemsItemPlanCurrencyNzd     UpdateInvoicesRequestItemsItemPlanCurrency = "nzd"
-	UpdateInvoicesRequestItemsItemPlanCurrencyAed     UpdateInvoicesRequestItemsItemPlanCurrency = "aed"
-	UpdateInvoicesRequestItemsItemPlanCurrencyEth     UpdateInvoicesRequestItemsItemPlanCurrency = "eth"
-	UpdateInvoicesRequestItemsItemPlanCurrencyApe     UpdateInvoicesRequestItemsItemPlanCurrency = "ape"
-	UpdateInvoicesRequestItemsItemPlanCurrencyCop     UpdateInvoicesRequestItemsItemPlanCurrency = "cop"
-	UpdateInvoicesRequestItemsItemPlanCurrencyRon     UpdateInvoicesRequestItemsItemPlanCurrency = "ron"
-	UpdateInvoicesRequestItemsItemPlanCurrencyThb     UpdateInvoicesRequestItemsItemPlanCurrency = "thb"
-	UpdateInvoicesRequestItemsItemPlanCurrencyBgn     UpdateInvoicesRequestItemsItemPlanCurrency = "bgn"
-	UpdateInvoicesRequestItemsItemPlanCurrencyIdr     UpdateInvoicesRequestItemsItemPlanCurrency = "idr"
-	UpdateInvoicesRequestItemsItemPlanCurrencyDop     UpdateInvoicesRequestItemsItemPlanCurrency = "dop"
-	UpdateInvoicesRequestItemsItemPlanCurrencyPhp     UpdateInvoicesRequestItemsItemPlanCurrency = "php"
-	UpdateInvoicesRequestItemsItemPlanCurrencyTry     UpdateInvoicesRequestItemsItemPlanCurrency = "try"
-	UpdateInvoicesRequestItemsItemPlanCurrencyKrw     UpdateInvoicesRequestItemsItemPlanCurrency = "krw"
-	UpdateInvoicesRequestItemsItemPlanCurrencyTwd     UpdateInvoicesRequestItemsItemPlanCurrency = "twd"
-	UpdateInvoicesRequestItemsItemPlanCurrencyVnd     UpdateInvoicesRequestItemsItemPlanCurrency = "vnd"
-	UpdateInvoicesRequestItemsItemPlanCurrencyPkr     UpdateInvoicesRequestItemsItemPlanCurrency = "pkr"
-	UpdateInvoicesRequestItemsItemPlanCurrencyClp     UpdateInvoicesRequestItemsItemPlanCurrency = "clp"
-	UpdateInvoicesRequestItemsItemPlanCurrencyUyu     UpdateInvoicesRequestItemsItemPlanCurrency = "uyu"
-	UpdateInvoicesRequestItemsItemPlanCurrencyArs     UpdateInvoicesRequestItemsItemPlanCurrency = "ars"
-	UpdateInvoicesRequestItemsItemPlanCurrencyZar     UpdateInvoicesRequestItemsItemPlanCurrency = "zar"
-	UpdateInvoicesRequestItemsItemPlanCurrencyDzd     UpdateInvoicesRequestItemsItemPlanCurrency = "dzd"
-	UpdateInvoicesRequestItemsItemPlanCurrencyTnd     UpdateInvoicesRequestItemsItemPlanCurrency = "tnd"
-	UpdateInvoicesRequestItemsItemPlanCurrencyMad     UpdateInvoicesRequestItemsItemPlanCurrency = "mad"
-	UpdateInvoicesRequestItemsItemPlanCurrencyKes     UpdateInvoicesRequestItemsItemPlanCurrency = "kes"
-	UpdateInvoicesRequestItemsItemPlanCurrencyKwd     UpdateInvoicesRequestItemsItemPlanCurrency = "kwd"
-	UpdateInvoicesRequestItemsItemPlanCurrencyJod     UpdateInvoicesRequestItemsItemPlanCurrency = "jod"
-	UpdateInvoicesRequestItemsItemPlanCurrencyAll     UpdateInvoicesRequestItemsItemPlanCurrency = "all"
-	UpdateInvoicesRequestItemsItemPlanCurrencyXcd     UpdateInvoicesRequestItemsItemPlanCurrency = "xcd"
-	UpdateInvoicesRequestItemsItemPlanCurrencyAmd     UpdateInvoicesRequestItemsItemPlanCurrency = "amd"
-	UpdateInvoicesRequestItemsItemPlanCurrencyBsd     UpdateInvoicesRequestItemsItemPlanCurrency = "bsd"
-	UpdateInvoicesRequestItemsItemPlanCurrencyBhd     UpdateInvoicesRequestItemsItemPlanCurrency = "bhd"
-	UpdateInvoicesRequestItemsItemPlanCurrencyBob     UpdateInvoicesRequestItemsItemPlanCurrency = "bob"
-	UpdateInvoicesRequestItemsItemPlanCurrencyBam     UpdateInvoicesRequestItemsItemPlanCurrency = "bam"
-	UpdateInvoicesRequestItemsItemPlanCurrencyKhr     UpdateInvoicesRequestItemsItemPlanCurrency = "khr"
-	UpdateInvoicesRequestItemsItemPlanCurrencyCrc     UpdateInvoicesRequestItemsItemPlanCurrency = "crc"
-	UpdateInvoicesRequestItemsItemPlanCurrencyXof     UpdateInvoicesRequestItemsItemPlanCurrency = "xof"
-	UpdateInvoicesRequestItemsItemPlanCurrencyEgp     UpdateInvoicesRequestItemsItemPlanCurrency = "egp"
-	UpdateInvoicesRequestItemsItemPlanCurrencyEtb     UpdateInvoicesRequestItemsItemPlanCurrency = "etb"
-	UpdateInvoicesRequestItemsItemPlanCurrencyGmd     UpdateInvoicesRequestItemsItemPlanCurrency = "gmd"
-	UpdateInvoicesRequestItemsItemPlanCurrencyGhs     UpdateInvoicesRequestItemsItemPlanCurrency = "ghs"
-	UpdateInvoicesRequestItemsItemPlanCurrencyGtq     UpdateInvoicesRequestItemsItemPlanCurrency = "gtq"
-	UpdateInvoicesRequestItemsItemPlanCurrencyGyd     UpdateInvoicesRequestItemsItemPlanCurrency = "gyd"
-	UpdateInvoicesRequestItemsItemPlanCurrencyIls     UpdateInvoicesRequestItemsItemPlanCurrency = "ils"
-	UpdateInvoicesRequestItemsItemPlanCurrencyJmd     UpdateInvoicesRequestItemsItemPlanCurrency = "jmd"
-	UpdateInvoicesRequestItemsItemPlanCurrencyMop     UpdateInvoicesRequestItemsItemPlanCurrency = "mop"
-	UpdateInvoicesRequestItemsItemPlanCurrencyMga     UpdateInvoicesRequestItemsItemPlanCurrency = "mga"
-	UpdateInvoicesRequestItemsItemPlanCurrencyMur     UpdateInvoicesRequestItemsItemPlanCurrency = "mur"
-	UpdateInvoicesRequestItemsItemPlanCurrencyMdl     UpdateInvoicesRequestItemsItemPlanCurrency = "mdl"
-	UpdateInvoicesRequestItemsItemPlanCurrencyMnt     UpdateInvoicesRequestItemsItemPlanCurrency = "mnt"
-	UpdateInvoicesRequestItemsItemPlanCurrencyNad     UpdateInvoicesRequestItemsItemPlanCurrency = "nad"
-	UpdateInvoicesRequestItemsItemPlanCurrencyNgn     UpdateInvoicesRequestItemsItemPlanCurrency = "ngn"
-	UpdateInvoicesRequestItemsItemPlanCurrencyMkd     UpdateInvoicesRequestItemsItemPlanCurrency = "mkd"
-	UpdateInvoicesRequestItemsItemPlanCurrencyOmr     UpdateInvoicesRequestItemsItemPlanCurrency = "omr"
-	UpdateInvoicesRequestItemsItemPlanCurrencyPyg     UpdateInvoicesRequestItemsItemPlanCurrency = "pyg"
-	UpdateInvoicesRequestItemsItemPlanCurrencyPen     UpdateInvoicesRequestItemsItemPlanCurrency = "pen"
-	UpdateInvoicesRequestItemsItemPlanCurrencyQar     UpdateInvoicesRequestItemsItemPlanCurrency = "qar"
-	UpdateInvoicesRequestItemsItemPlanCurrencyRwf     UpdateInvoicesRequestItemsItemPlanCurrency = "rwf"
-	UpdateInvoicesRequestItemsItemPlanCurrencySar     UpdateInvoicesRequestItemsItemPlanCurrency = "sar"
-	UpdateInvoicesRequestItemsItemPlanCurrencyRsd     UpdateInvoicesRequestItemsItemPlanCurrency = "rsd"
-	UpdateInvoicesRequestItemsItemPlanCurrencyLkr     UpdateInvoicesRequestItemsItemPlanCurrency = "lkr"
-	UpdateInvoicesRequestItemsItemPlanCurrencyTzs     UpdateInvoicesRequestItemsItemPlanCurrency = "tzs"
-	UpdateInvoicesRequestItemsItemPlanCurrencyTtd     UpdateInvoicesRequestItemsItemPlanCurrency = "ttd"
-	UpdateInvoicesRequestItemsItemPlanCurrencyUzs     UpdateInvoicesRequestItemsItemPlanCurrency = "uzs"
-	UpdateInvoicesRequestItemsItemPlanCurrencyRub     UpdateInvoicesRequestItemsItemPlanCurrency = "rub"
-	UpdateInvoicesRequestItemsItemPlanCurrencyBtc     UpdateInvoicesRequestItemsItemPlanCurrency = "btc"
-	UpdateInvoicesRequestItemsItemPlanCurrencyCny     UpdateInvoicesRequestItemsItemPlanCurrency = "cny"
-	UpdateInvoicesRequestItemsItemPlanCurrencyUsdt    UpdateInvoicesRequestItemsItemPlanCurrency = "usdt"
-	UpdateInvoicesRequestItemsItemPlanCurrencyKzt     UpdateInvoicesRequestItemsItemPlanCurrency = "kzt"
-	UpdateInvoicesRequestItemsItemPlanCurrencyAwg     UpdateInvoicesRequestItemsItemPlanCurrency = "awg"
-	UpdateInvoicesRequestItemsItemPlanCurrencyWhopUsd UpdateInvoicesRequestItemsItemPlanCurrency = "whop_usd"
-	UpdateInvoicesRequestItemsItemPlanCurrencyXau     UpdateInvoicesRequestItemsItemPlanCurrency = "xau"
+	UpdateInvoicesRequestItemsItemVariantBillingTypeRenewal UpdateInvoicesRequestItemsItemVariantBillingType = "renewal"
+	UpdateInvoicesRequestItemsItemVariantBillingTypeOneTime UpdateInvoicesRequestItemsItemVariantBillingType = "one_time"
 )
 
-func NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString(s string) (UpdateInvoicesRequestItemsItemPlanCurrency, error) {
+func NewUpdateInvoicesRequestItemsItemVariantBillingTypeFromString(s string) (UpdateInvoicesRequestItemsItemVariantBillingType, error) {
 	switch s {
-	case "usd":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyUsd, nil
-	case "sgd":
-		return UpdateInvoicesRequestItemsItemPlanCurrencySgd, nil
-	case "inr":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyInr, nil
-	case "aud":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyAud, nil
-	case "brl":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyBrl, nil
-	case "cad":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyCad, nil
-	case "dkk":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyDkk, nil
-	case "eur":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyEur, nil
-	case "nok":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyNok, nil
-	case "gbp":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyGbp, nil
-	case "sek":
-		return UpdateInvoicesRequestItemsItemPlanCurrencySek, nil
-	case "chf":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyChf, nil
-	case "hkd":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyHkd, nil
-	case "huf":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyHuf, nil
-	case "jpy":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyJpy, nil
-	case "mxn":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyMxn, nil
-	case "myr":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyMyr, nil
-	case "pln":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyPln, nil
-	case "czk":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyCzk, nil
-	case "nzd":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyNzd, nil
-	case "aed":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyAed, nil
-	case "eth":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyEth, nil
-	case "ape":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyApe, nil
-	case "cop":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyCop, nil
-	case "ron":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyRon, nil
-	case "thb":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyThb, nil
-	case "bgn":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyBgn, nil
-	case "idr":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyIdr, nil
-	case "dop":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyDop, nil
-	case "php":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyPhp, nil
-	case "try":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyTry, nil
-	case "krw":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyKrw, nil
-	case "twd":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyTwd, nil
-	case "vnd":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyVnd, nil
-	case "pkr":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyPkr, nil
-	case "clp":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyClp, nil
-	case "uyu":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyUyu, nil
-	case "ars":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyArs, nil
-	case "zar":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyZar, nil
-	case "dzd":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyDzd, nil
-	case "tnd":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyTnd, nil
-	case "mad":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyMad, nil
-	case "kes":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyKes, nil
-	case "kwd":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyKwd, nil
-	case "jod":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyJod, nil
-	case "all":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyAll, nil
-	case "xcd":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyXcd, nil
-	case "amd":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyAmd, nil
-	case "bsd":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyBsd, nil
-	case "bhd":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyBhd, nil
-	case "bob":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyBob, nil
-	case "bam":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyBam, nil
-	case "khr":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyKhr, nil
-	case "crc":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyCrc, nil
-	case "xof":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyXof, nil
-	case "egp":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyEgp, nil
-	case "etb":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyEtb, nil
-	case "gmd":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyGmd, nil
-	case "ghs":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyGhs, nil
-	case "gtq":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyGtq, nil
-	case "gyd":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyGyd, nil
-	case "ils":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyIls, nil
-	case "jmd":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyJmd, nil
-	case "mop":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyMop, nil
-	case "mga":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyMga, nil
-	case "mur":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyMur, nil
-	case "mdl":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyMdl, nil
-	case "mnt":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyMnt, nil
-	case "nad":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyNad, nil
-	case "ngn":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyNgn, nil
-	case "mkd":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyMkd, nil
-	case "omr":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyOmr, nil
-	case "pyg":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyPyg, nil
-	case "pen":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyPen, nil
-	case "qar":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyQar, nil
-	case "rwf":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyRwf, nil
-	case "sar":
-		return UpdateInvoicesRequestItemsItemPlanCurrencySar, nil
-	case "rsd":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyRsd, nil
-	case "lkr":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyLkr, nil
-	case "tzs":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyTzs, nil
-	case "ttd":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyTtd, nil
-	case "uzs":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyUzs, nil
-	case "rub":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyRub, nil
-	case "btc":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyBtc, nil
-	case "cny":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyCny, nil
-	case "usdt":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyUsdt, nil
-	case "kzt":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyKzt, nil
-	case "awg":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyAwg, nil
-	case "whop_usd":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyWhopUsd, nil
-	case "xau":
-		return UpdateInvoicesRequestItemsItemPlanCurrencyXau, nil
+	case "renewal":
+		return UpdateInvoicesRequestItemsItemVariantBillingTypeRenewal, nil
+	case "one_time":
+		return UpdateInvoicesRequestItemsItemVariantBillingTypeOneTime, nil
 	}
-	var t UpdateInvoicesRequestItemsItemPlanCurrency
+	var t UpdateInvoicesRequestItemsItemVariantBillingType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (u UpdateInvoicesRequestItemsItemPlanCurrency) Ptr() *UpdateInvoicesRequestItemsItemPlanCurrency {
+func (u UpdateInvoicesRequestItemsItemVariantBillingType) Ptr() *UpdateInvoicesRequestItemsItemVariantBillingType {
+	return &u
+}
+
+// Currency code for the variant prices.
+type UpdateInvoicesRequestItemsItemVariantCurrency string
+
+const (
+	UpdateInvoicesRequestItemsItemVariantCurrencyUsd     UpdateInvoicesRequestItemsItemVariantCurrency = "usd"
+	UpdateInvoicesRequestItemsItemVariantCurrencySgd     UpdateInvoicesRequestItemsItemVariantCurrency = "sgd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyInr     UpdateInvoicesRequestItemsItemVariantCurrency = "inr"
+	UpdateInvoicesRequestItemsItemVariantCurrencyAud     UpdateInvoicesRequestItemsItemVariantCurrency = "aud"
+	UpdateInvoicesRequestItemsItemVariantCurrencyBrl     UpdateInvoicesRequestItemsItemVariantCurrency = "brl"
+	UpdateInvoicesRequestItemsItemVariantCurrencyCad     UpdateInvoicesRequestItemsItemVariantCurrency = "cad"
+	UpdateInvoicesRequestItemsItemVariantCurrencyDkk     UpdateInvoicesRequestItemsItemVariantCurrency = "dkk"
+	UpdateInvoicesRequestItemsItemVariantCurrencyEur     UpdateInvoicesRequestItemsItemVariantCurrency = "eur"
+	UpdateInvoicesRequestItemsItemVariantCurrencyNok     UpdateInvoicesRequestItemsItemVariantCurrency = "nok"
+	UpdateInvoicesRequestItemsItemVariantCurrencyGbp     UpdateInvoicesRequestItemsItemVariantCurrency = "gbp"
+	UpdateInvoicesRequestItemsItemVariantCurrencySek     UpdateInvoicesRequestItemsItemVariantCurrency = "sek"
+	UpdateInvoicesRequestItemsItemVariantCurrencyChf     UpdateInvoicesRequestItemsItemVariantCurrency = "chf"
+	UpdateInvoicesRequestItemsItemVariantCurrencyHkd     UpdateInvoicesRequestItemsItemVariantCurrency = "hkd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyHuf     UpdateInvoicesRequestItemsItemVariantCurrency = "huf"
+	UpdateInvoicesRequestItemsItemVariantCurrencyJpy     UpdateInvoicesRequestItemsItemVariantCurrency = "jpy"
+	UpdateInvoicesRequestItemsItemVariantCurrencyMxn     UpdateInvoicesRequestItemsItemVariantCurrency = "mxn"
+	UpdateInvoicesRequestItemsItemVariantCurrencyMyr     UpdateInvoicesRequestItemsItemVariantCurrency = "myr"
+	UpdateInvoicesRequestItemsItemVariantCurrencyPln     UpdateInvoicesRequestItemsItemVariantCurrency = "pln"
+	UpdateInvoicesRequestItemsItemVariantCurrencyCzk     UpdateInvoicesRequestItemsItemVariantCurrency = "czk"
+	UpdateInvoicesRequestItemsItemVariantCurrencyNzd     UpdateInvoicesRequestItemsItemVariantCurrency = "nzd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyAed     UpdateInvoicesRequestItemsItemVariantCurrency = "aed"
+	UpdateInvoicesRequestItemsItemVariantCurrencyEth     UpdateInvoicesRequestItemsItemVariantCurrency = "eth"
+	UpdateInvoicesRequestItemsItemVariantCurrencyApe     UpdateInvoicesRequestItemsItemVariantCurrency = "ape"
+	UpdateInvoicesRequestItemsItemVariantCurrencyCop     UpdateInvoicesRequestItemsItemVariantCurrency = "cop"
+	UpdateInvoicesRequestItemsItemVariantCurrencyRon     UpdateInvoicesRequestItemsItemVariantCurrency = "ron"
+	UpdateInvoicesRequestItemsItemVariantCurrencyThb     UpdateInvoicesRequestItemsItemVariantCurrency = "thb"
+	UpdateInvoicesRequestItemsItemVariantCurrencyBgn     UpdateInvoicesRequestItemsItemVariantCurrency = "bgn"
+	UpdateInvoicesRequestItemsItemVariantCurrencyIdr     UpdateInvoicesRequestItemsItemVariantCurrency = "idr"
+	UpdateInvoicesRequestItemsItemVariantCurrencyDop     UpdateInvoicesRequestItemsItemVariantCurrency = "dop"
+	UpdateInvoicesRequestItemsItemVariantCurrencyPhp     UpdateInvoicesRequestItemsItemVariantCurrency = "php"
+	UpdateInvoicesRequestItemsItemVariantCurrencyTry     UpdateInvoicesRequestItemsItemVariantCurrency = "try"
+	UpdateInvoicesRequestItemsItemVariantCurrencyKrw     UpdateInvoicesRequestItemsItemVariantCurrency = "krw"
+	UpdateInvoicesRequestItemsItemVariantCurrencyTwd     UpdateInvoicesRequestItemsItemVariantCurrency = "twd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyVnd     UpdateInvoicesRequestItemsItemVariantCurrency = "vnd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyPkr     UpdateInvoicesRequestItemsItemVariantCurrency = "pkr"
+	UpdateInvoicesRequestItemsItemVariantCurrencyClp     UpdateInvoicesRequestItemsItemVariantCurrency = "clp"
+	UpdateInvoicesRequestItemsItemVariantCurrencyUyu     UpdateInvoicesRequestItemsItemVariantCurrency = "uyu"
+	UpdateInvoicesRequestItemsItemVariantCurrencyArs     UpdateInvoicesRequestItemsItemVariantCurrency = "ars"
+	UpdateInvoicesRequestItemsItemVariantCurrencyZar     UpdateInvoicesRequestItemsItemVariantCurrency = "zar"
+	UpdateInvoicesRequestItemsItemVariantCurrencyDzd     UpdateInvoicesRequestItemsItemVariantCurrency = "dzd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyTnd     UpdateInvoicesRequestItemsItemVariantCurrency = "tnd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyMad     UpdateInvoicesRequestItemsItemVariantCurrency = "mad"
+	UpdateInvoicesRequestItemsItemVariantCurrencyKes     UpdateInvoicesRequestItemsItemVariantCurrency = "kes"
+	UpdateInvoicesRequestItemsItemVariantCurrencyKwd     UpdateInvoicesRequestItemsItemVariantCurrency = "kwd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyJod     UpdateInvoicesRequestItemsItemVariantCurrency = "jod"
+	UpdateInvoicesRequestItemsItemVariantCurrencyAll     UpdateInvoicesRequestItemsItemVariantCurrency = "all"
+	UpdateInvoicesRequestItemsItemVariantCurrencyXcd     UpdateInvoicesRequestItemsItemVariantCurrency = "xcd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyAmd     UpdateInvoicesRequestItemsItemVariantCurrency = "amd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyBsd     UpdateInvoicesRequestItemsItemVariantCurrency = "bsd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyBhd     UpdateInvoicesRequestItemsItemVariantCurrency = "bhd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyBob     UpdateInvoicesRequestItemsItemVariantCurrency = "bob"
+	UpdateInvoicesRequestItemsItemVariantCurrencyBam     UpdateInvoicesRequestItemsItemVariantCurrency = "bam"
+	UpdateInvoicesRequestItemsItemVariantCurrencyKhr     UpdateInvoicesRequestItemsItemVariantCurrency = "khr"
+	UpdateInvoicesRequestItemsItemVariantCurrencyCrc     UpdateInvoicesRequestItemsItemVariantCurrency = "crc"
+	UpdateInvoicesRequestItemsItemVariantCurrencyXof     UpdateInvoicesRequestItemsItemVariantCurrency = "xof"
+	UpdateInvoicesRequestItemsItemVariantCurrencyEgp     UpdateInvoicesRequestItemsItemVariantCurrency = "egp"
+	UpdateInvoicesRequestItemsItemVariantCurrencyEtb     UpdateInvoicesRequestItemsItemVariantCurrency = "etb"
+	UpdateInvoicesRequestItemsItemVariantCurrencyGmd     UpdateInvoicesRequestItemsItemVariantCurrency = "gmd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyGhs     UpdateInvoicesRequestItemsItemVariantCurrency = "ghs"
+	UpdateInvoicesRequestItemsItemVariantCurrencyGtq     UpdateInvoicesRequestItemsItemVariantCurrency = "gtq"
+	UpdateInvoicesRequestItemsItemVariantCurrencyGyd     UpdateInvoicesRequestItemsItemVariantCurrency = "gyd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyIls     UpdateInvoicesRequestItemsItemVariantCurrency = "ils"
+	UpdateInvoicesRequestItemsItemVariantCurrencyJmd     UpdateInvoicesRequestItemsItemVariantCurrency = "jmd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyMop     UpdateInvoicesRequestItemsItemVariantCurrency = "mop"
+	UpdateInvoicesRequestItemsItemVariantCurrencyMga     UpdateInvoicesRequestItemsItemVariantCurrency = "mga"
+	UpdateInvoicesRequestItemsItemVariantCurrencyMur     UpdateInvoicesRequestItemsItemVariantCurrency = "mur"
+	UpdateInvoicesRequestItemsItemVariantCurrencyMdl     UpdateInvoicesRequestItemsItemVariantCurrency = "mdl"
+	UpdateInvoicesRequestItemsItemVariantCurrencyMnt     UpdateInvoicesRequestItemsItemVariantCurrency = "mnt"
+	UpdateInvoicesRequestItemsItemVariantCurrencyNad     UpdateInvoicesRequestItemsItemVariantCurrency = "nad"
+	UpdateInvoicesRequestItemsItemVariantCurrencyNgn     UpdateInvoicesRequestItemsItemVariantCurrency = "ngn"
+	UpdateInvoicesRequestItemsItemVariantCurrencyMkd     UpdateInvoicesRequestItemsItemVariantCurrency = "mkd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyOmr     UpdateInvoicesRequestItemsItemVariantCurrency = "omr"
+	UpdateInvoicesRequestItemsItemVariantCurrencyPyg     UpdateInvoicesRequestItemsItemVariantCurrency = "pyg"
+	UpdateInvoicesRequestItemsItemVariantCurrencyPen     UpdateInvoicesRequestItemsItemVariantCurrency = "pen"
+	UpdateInvoicesRequestItemsItemVariantCurrencyQar     UpdateInvoicesRequestItemsItemVariantCurrency = "qar"
+	UpdateInvoicesRequestItemsItemVariantCurrencyRwf     UpdateInvoicesRequestItemsItemVariantCurrency = "rwf"
+	UpdateInvoicesRequestItemsItemVariantCurrencySar     UpdateInvoicesRequestItemsItemVariantCurrency = "sar"
+	UpdateInvoicesRequestItemsItemVariantCurrencyRsd     UpdateInvoicesRequestItemsItemVariantCurrency = "rsd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyLkr     UpdateInvoicesRequestItemsItemVariantCurrency = "lkr"
+	UpdateInvoicesRequestItemsItemVariantCurrencyTzs     UpdateInvoicesRequestItemsItemVariantCurrency = "tzs"
+	UpdateInvoicesRequestItemsItemVariantCurrencyTtd     UpdateInvoicesRequestItemsItemVariantCurrency = "ttd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyUzs     UpdateInvoicesRequestItemsItemVariantCurrency = "uzs"
+	UpdateInvoicesRequestItemsItemVariantCurrencyRub     UpdateInvoicesRequestItemsItemVariantCurrency = "rub"
+	UpdateInvoicesRequestItemsItemVariantCurrencyBtc     UpdateInvoicesRequestItemsItemVariantCurrency = "btc"
+	UpdateInvoicesRequestItemsItemVariantCurrencyCny     UpdateInvoicesRequestItemsItemVariantCurrency = "cny"
+	UpdateInvoicesRequestItemsItemVariantCurrencyUsdt    UpdateInvoicesRequestItemsItemVariantCurrency = "usdt"
+	UpdateInvoicesRequestItemsItemVariantCurrencyKzt     UpdateInvoicesRequestItemsItemVariantCurrency = "kzt"
+	UpdateInvoicesRequestItemsItemVariantCurrencyAwg     UpdateInvoicesRequestItemsItemVariantCurrency = "awg"
+	UpdateInvoicesRequestItemsItemVariantCurrencyWhopUsd UpdateInvoicesRequestItemsItemVariantCurrency = "whop_usd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyXau     UpdateInvoicesRequestItemsItemVariantCurrency = "xau"
+)
+
+func NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString(s string) (UpdateInvoicesRequestItemsItemVariantCurrency, error) {
+	switch s {
+	case "usd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyUsd, nil
+	case "sgd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencySgd, nil
+	case "inr":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyInr, nil
+	case "aud":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyAud, nil
+	case "brl":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyBrl, nil
+	case "cad":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyCad, nil
+	case "dkk":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyDkk, nil
+	case "eur":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyEur, nil
+	case "nok":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyNok, nil
+	case "gbp":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyGbp, nil
+	case "sek":
+		return UpdateInvoicesRequestItemsItemVariantCurrencySek, nil
+	case "chf":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyChf, nil
+	case "hkd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyHkd, nil
+	case "huf":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyHuf, nil
+	case "jpy":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyJpy, nil
+	case "mxn":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyMxn, nil
+	case "myr":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyMyr, nil
+	case "pln":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyPln, nil
+	case "czk":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyCzk, nil
+	case "nzd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyNzd, nil
+	case "aed":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyAed, nil
+	case "eth":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyEth, nil
+	case "ape":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyApe, nil
+	case "cop":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyCop, nil
+	case "ron":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyRon, nil
+	case "thb":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyThb, nil
+	case "bgn":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyBgn, nil
+	case "idr":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyIdr, nil
+	case "dop":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyDop, nil
+	case "php":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyPhp, nil
+	case "try":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyTry, nil
+	case "krw":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyKrw, nil
+	case "twd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyTwd, nil
+	case "vnd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyVnd, nil
+	case "pkr":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyPkr, nil
+	case "clp":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyClp, nil
+	case "uyu":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyUyu, nil
+	case "ars":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyArs, nil
+	case "zar":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyZar, nil
+	case "dzd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyDzd, nil
+	case "tnd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyTnd, nil
+	case "mad":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyMad, nil
+	case "kes":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyKes, nil
+	case "kwd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyKwd, nil
+	case "jod":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyJod, nil
+	case "all":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyAll, nil
+	case "xcd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyXcd, nil
+	case "amd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyAmd, nil
+	case "bsd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyBsd, nil
+	case "bhd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyBhd, nil
+	case "bob":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyBob, nil
+	case "bam":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyBam, nil
+	case "khr":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyKhr, nil
+	case "crc":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyCrc, nil
+	case "xof":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyXof, nil
+	case "egp":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyEgp, nil
+	case "etb":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyEtb, nil
+	case "gmd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyGmd, nil
+	case "ghs":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyGhs, nil
+	case "gtq":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyGtq, nil
+	case "gyd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyGyd, nil
+	case "ils":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyIls, nil
+	case "jmd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyJmd, nil
+	case "mop":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyMop, nil
+	case "mga":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyMga, nil
+	case "mur":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyMur, nil
+	case "mdl":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyMdl, nil
+	case "mnt":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyMnt, nil
+	case "nad":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyNad, nil
+	case "ngn":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyNgn, nil
+	case "mkd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyMkd, nil
+	case "omr":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyOmr, nil
+	case "pyg":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyPyg, nil
+	case "pen":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyPen, nil
+	case "qar":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyQar, nil
+	case "rwf":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyRwf, nil
+	case "sar":
+		return UpdateInvoicesRequestItemsItemVariantCurrencySar, nil
+	case "rsd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyRsd, nil
+	case "lkr":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyLkr, nil
+	case "tzs":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyTzs, nil
+	case "ttd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyTtd, nil
+	case "uzs":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyUzs, nil
+	case "rub":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyRub, nil
+	case "btc":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyBtc, nil
+	case "cny":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyCny, nil
+	case "usdt":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyUsdt, nil
+	case "kzt":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyKzt, nil
+	case "awg":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyAwg, nil
+	case "whop_usd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyWhopUsd, nil
+	case "xau":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyXau, nil
+	}
+	var t UpdateInvoicesRequestItemsItemVariantCurrency
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateInvoicesRequestItemsItemVariantCurrency) Ptr() *UpdateInvoicesRequestItemsItemVariantCurrency {
 	return &u
 }
 
 // Whether the variant's price includes tax: `inclusive` (tax is included in the price), `exclusive` (tax is added on top), or `unspecified`. Omit it or pass `null` to use the account's tax setting. On an account enrolled in the Whop tax service, `inclusive` or `exclusive` replaces the account's setting and `unspecified` keeps it. Otherwise it applies only where the account is the merchant of record: `inclusive` or `exclusive` replaces the account's setting when the account collects tax, and `unspecified` means the variant collects no tax. Where Whop is the merchant of record, the account's setting applies. Variants that differ only in this value are different variants.
-type UpdateInvoicesRequestItemsItemPlanOverrideTaxType string
+type UpdateInvoicesRequestItemsItemVariantOverrideTaxType string
 
 const (
-	UpdateInvoicesRequestItemsItemPlanOverrideTaxTypeExclusive   UpdateInvoicesRequestItemsItemPlanOverrideTaxType = "exclusive"
-	UpdateInvoicesRequestItemsItemPlanOverrideTaxTypeInclusive   UpdateInvoicesRequestItemsItemPlanOverrideTaxType = "inclusive"
-	UpdateInvoicesRequestItemsItemPlanOverrideTaxTypeUnspecified UpdateInvoicesRequestItemsItemPlanOverrideTaxType = "unspecified"
+	UpdateInvoicesRequestItemsItemVariantOverrideTaxTypeExclusive   UpdateInvoicesRequestItemsItemVariantOverrideTaxType = "exclusive"
+	UpdateInvoicesRequestItemsItemVariantOverrideTaxTypeInclusive   UpdateInvoicesRequestItemsItemVariantOverrideTaxType = "inclusive"
+	UpdateInvoicesRequestItemsItemVariantOverrideTaxTypeUnspecified UpdateInvoicesRequestItemsItemVariantOverrideTaxType = "unspecified"
 )
 
-func NewUpdateInvoicesRequestItemsItemPlanOverrideTaxTypeFromString(s string) (UpdateInvoicesRequestItemsItemPlanOverrideTaxType, error) {
+func NewUpdateInvoicesRequestItemsItemVariantOverrideTaxTypeFromString(s string) (UpdateInvoicesRequestItemsItemVariantOverrideTaxType, error) {
 	switch s {
 	case "exclusive":
-		return UpdateInvoicesRequestItemsItemPlanOverrideTaxTypeExclusive, nil
+		return UpdateInvoicesRequestItemsItemVariantOverrideTaxTypeExclusive, nil
 	case "inclusive":
-		return UpdateInvoicesRequestItemsItemPlanOverrideTaxTypeInclusive, nil
+		return UpdateInvoicesRequestItemsItemVariantOverrideTaxTypeInclusive, nil
 	case "unspecified":
-		return UpdateInvoicesRequestItemsItemPlanOverrideTaxTypeUnspecified, nil
+		return UpdateInvoicesRequestItemsItemVariantOverrideTaxTypeUnspecified, nil
 	}
-	var t UpdateInvoicesRequestItemsItemPlanOverrideTaxType
+	var t UpdateInvoicesRequestItemsItemVariantOverrideTaxType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (u UpdateInvoicesRequestItemsItemPlanOverrideTaxType) Ptr() *UpdateInvoicesRequestItemsItemPlanOverrideTaxType {
-	return &u
-}
-
-// Billing model for the variant.
-type UpdateInvoicesRequestItemsItemPlanPlanType string
-
-const (
-	UpdateInvoicesRequestItemsItemPlanPlanTypeRenewal UpdateInvoicesRequestItemsItemPlanPlanType = "renewal"
-	UpdateInvoicesRequestItemsItemPlanPlanTypeOneTime UpdateInvoicesRequestItemsItemPlanPlanType = "one_time"
-)
-
-func NewUpdateInvoicesRequestItemsItemPlanPlanTypeFromString(s string) (UpdateInvoicesRequestItemsItemPlanPlanType, error) {
-	switch s {
-	case "renewal":
-		return UpdateInvoicesRequestItemsItemPlanPlanTypeRenewal, nil
-	case "one_time":
-		return UpdateInvoicesRequestItemsItemPlanPlanTypeOneTime, nil
-	}
-	var t UpdateInvoicesRequestItemsItemPlanPlanType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (u UpdateInvoicesRequestItemsItemPlanPlanType) Ptr() *UpdateInvoicesRequestItemsItemPlanPlanType {
+func (u UpdateInvoicesRequestItemsItemVariantOverrideTaxType) Ptr() *UpdateInvoicesRequestItemsItemVariantOverrideTaxType {
 	return &u
 }
 
 var (
-	updateInvoicesRequestItemsItemPlanProductFieldCollectShippingAddress    = big.NewInt(1 << 0)
-	updateInvoicesRequestItemsItemPlanProductFieldCustomStatementDescriptor = big.NewInt(1 << 1)
-	updateInvoicesRequestItemsItemPlanProductFieldDescription               = big.NewInt(1 << 2)
-	updateInvoicesRequestItemsItemPlanProductFieldExternalIdentifier        = big.NewInt(1 << 3)
-	updateInvoicesRequestItemsItemPlanProductFieldGlobalAffiliatePercentage = big.NewInt(1 << 4)
-	updateInvoicesRequestItemsItemPlanProductFieldGlobalAffiliateStatus     = big.NewInt(1 << 5)
-	updateInvoicesRequestItemsItemPlanProductFieldHeadline                  = big.NewInt(1 << 6)
-	updateInvoicesRequestItemsItemPlanProductFieldProductTaxCodeID          = big.NewInt(1 << 7)
-	updateInvoicesRequestItemsItemPlanProductFieldRedirectPurchaseURL       = big.NewInt(1 << 8)
-	updateInvoicesRequestItemsItemPlanProductFieldRoute                     = big.NewInt(1 << 9)
-	updateInvoicesRequestItemsItemPlanProductFieldTitle                     = big.NewInt(1 << 10)
-	updateInvoicesRequestItemsItemPlanProductFieldVisibility                = big.NewInt(1 << 11)
+	updateInvoicesRequestItemsItemVariantProductFieldCollectShippingAddress    = big.NewInt(1 << 0)
+	updateInvoicesRequestItemsItemVariantProductFieldCustomStatementDescriptor = big.NewInt(1 << 1)
+	updateInvoicesRequestItemsItemVariantProductFieldDescription               = big.NewInt(1 << 2)
+	updateInvoicesRequestItemsItemVariantProductFieldExternalIdentifier        = big.NewInt(1 << 3)
+	updateInvoicesRequestItemsItemVariantProductFieldGlobalAffiliatePercentage = big.NewInt(1 << 4)
+	updateInvoicesRequestItemsItemVariantProductFieldGlobalAffiliateStatus     = big.NewInt(1 << 5)
+	updateInvoicesRequestItemsItemVariantProductFieldHeadline                  = big.NewInt(1 << 6)
+	updateInvoicesRequestItemsItemVariantProductFieldProductTaxCodeID          = big.NewInt(1 << 7)
+	updateInvoicesRequestItemsItemVariantProductFieldRedirectPurchaseURL       = big.NewInt(1 << 8)
+	updateInvoicesRequestItemsItemVariantProductFieldRoute                     = big.NewInt(1 << 9)
+	updateInvoicesRequestItemsItemVariantProductFieldTitle                     = big.NewInt(1 << 10)
+	updateInvoicesRequestItemsItemVariantProductFieldVisibility                = big.NewInt(1 << 11)
 )
 
-// updateInvoicesRequestItemsItemPlanProductNullableFields maps the wire names of UpdateInvoicesRequestItemsItemPlanProduct's nullable fields (required or optional) to their field bits.
-var updateInvoicesRequestItemsItemPlanProductNullableFields = map[string]*big.Int{
-	"collect_shipping_address":    updateInvoicesRequestItemsItemPlanProductFieldCollectShippingAddress,
-	"custom_statement_descriptor": updateInvoicesRequestItemsItemPlanProductFieldCustomStatementDescriptor,
-	"description":                 updateInvoicesRequestItemsItemPlanProductFieldDescription,
-	"global_affiliate_percentage": updateInvoicesRequestItemsItemPlanProductFieldGlobalAffiliatePercentage,
-	"global_affiliate_status":     updateInvoicesRequestItemsItemPlanProductFieldGlobalAffiliateStatus,
-	"headline":                    updateInvoicesRequestItemsItemPlanProductFieldHeadline,
-	"product_tax_code_id":         updateInvoicesRequestItemsItemPlanProductFieldProductTaxCodeID,
-	"redirect_purchase_url":       updateInvoicesRequestItemsItemPlanProductFieldRedirectPurchaseURL,
-	"route":                       updateInvoicesRequestItemsItemPlanProductFieldRoute,
+// updateInvoicesRequestItemsItemVariantProductNullableFields maps the wire names of UpdateInvoicesRequestItemsItemVariantProduct's nullable fields (required or optional) to their field bits.
+var updateInvoicesRequestItemsItemVariantProductNullableFields = map[string]*big.Int{
+	"collect_shipping_address":    updateInvoicesRequestItemsItemVariantProductFieldCollectShippingAddress,
+	"custom_statement_descriptor": updateInvoicesRequestItemsItemVariantProductFieldCustomStatementDescriptor,
+	"description":                 updateInvoicesRequestItemsItemVariantProductFieldDescription,
+	"global_affiliate_percentage": updateInvoicesRequestItemsItemVariantProductFieldGlobalAffiliatePercentage,
+	"global_affiliate_status":     updateInvoicesRequestItemsItemVariantProductFieldGlobalAffiliateStatus,
+	"headline":                    updateInvoicesRequestItemsItemVariantProductFieldHeadline,
+	"product_tax_code_id":         updateInvoicesRequestItemsItemVariantProductFieldProductTaxCodeID,
+	"redirect_purchase_url":       updateInvoicesRequestItemsItemVariantProductFieldRedirectPurchaseURL,
+	"route":                       updateInvoicesRequestItemsItemVariantProductFieldRoute,
 }
 
 // Find or create a product by external identifier. Mutually exclusive with product_id.
-type UpdateInvoicesRequestItemsItemPlanProduct struct {
+type UpdateInvoicesRequestItemsItemVariantProduct struct {
 	// Whether to collect a shipping address at checkout.
 	CollectShippingAddress *bool `json:"collect_shipping_address,omitempty" url:"collect_shipping_address,omitempty"`
 	// Custom card statement descriptor for the product, starting with WHOP*.
@@ -5518,7 +5518,7 @@ type UpdateInvoicesRequestItemsItemPlanProduct struct {
 	// Percentage of revenue paid to global affiliates.
 	GlobalAffiliatePercentage *float64 `json:"global_affiliate_percentage,omitempty" url:"global_affiliate_percentage,omitempty"`
 	// Global affiliate program status.
-	GlobalAffiliateStatus *UpdateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus `json:"global_affiliate_status,omitempty" url:"global_affiliate_status,omitempty"`
+	GlobalAffiliateStatus *UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus `json:"global_affiliate_status,omitempty" url:"global_affiliate_status,omitempty"`
 	// Product headline.
 	Headline *string `json:"headline,omitempty" url:"headline,omitempty"`
 	// Product tax code identifier.
@@ -5530,7 +5530,7 @@ type UpdateInvoicesRequestItemsItemPlanProduct struct {
 	// Product title.
 	Title string `json:"title" url:"title"`
 	// Product visibility. Defaults to hidden.
-	Visibility *UpdateInvoicesRequestItemsItemPlanProductVisibility `json:"visibility,omitempty" url:"visibility,omitempty"`
+	Visibility *UpdateInvoicesRequestItemsItemVariantProductVisibility `json:"visibility,omitempty" url:"visibility,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -5539,98 +5539,98 @@ type UpdateInvoicesRequestItemsItemPlanProduct struct {
 	rawJSON         json.RawMessage
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlanProduct) GetCollectShippingAddress() *bool {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) GetCollectShippingAddress() *bool {
 	if u == nil {
 		return nil
 	}
 	return u.CollectShippingAddress
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlanProduct) GetCustomStatementDescriptor() *string {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) GetCustomStatementDescriptor() *string {
 	if u == nil {
 		return nil
 	}
 	return u.CustomStatementDescriptor
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlanProduct) GetDescription() *string {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) GetDescription() *string {
 	if u == nil {
 		return nil
 	}
 	return u.Description
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlanProduct) GetExternalIdentifier() string {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) GetExternalIdentifier() string {
 	if u == nil {
 		return ""
 	}
 	return u.ExternalIdentifier
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlanProduct) GetGlobalAffiliatePercentage() *float64 {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) GetGlobalAffiliatePercentage() *float64 {
 	if u == nil {
 		return nil
 	}
 	return u.GlobalAffiliatePercentage
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlanProduct) GetGlobalAffiliateStatus() *UpdateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) GetGlobalAffiliateStatus() *UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus {
 	if u == nil {
 		return nil
 	}
 	return u.GlobalAffiliateStatus
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlanProduct) GetHeadline() *string {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) GetHeadline() *string {
 	if u == nil {
 		return nil
 	}
 	return u.Headline
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlanProduct) GetProductTaxCodeID() *string {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) GetProductTaxCodeID() *string {
 	if u == nil {
 		return nil
 	}
 	return u.ProductTaxCodeID
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlanProduct) GetRedirectPurchaseURL() *string {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) GetRedirectPurchaseURL() *string {
 	if u == nil {
 		return nil
 	}
 	return u.RedirectPurchaseURL
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlanProduct) GetRoute() *string {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) GetRoute() *string {
 	if u == nil {
 		return nil
 	}
 	return u.Route
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlanProduct) GetTitle() string {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) GetTitle() string {
 	if u == nil {
 		return ""
 	}
 	return u.Title
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlanProduct) GetVisibility() *UpdateInvoicesRequestItemsItemPlanProductVisibility {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) GetVisibility() *UpdateInvoicesRequestItemsItemVariantProductVisibility {
 	if u == nil {
 		return nil
 	}
 	return u.Visibility
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlanProduct) GetExtraProperties() map[string]interface{} {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) GetExtraProperties() map[string]interface{} {
 	if u == nil {
 		return nil
 	}
 	return u.extraProperties
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlanProduct) require(field *big.Int) {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) require(field *big.Int) {
 	next := new(big.Int)
 	if u.explicitFields != nil {
 		next.Set(u.explicitFields)
@@ -5641,101 +5641,101 @@ func (u *UpdateInvoicesRequestItemsItemPlanProduct) require(field *big.Int) {
 
 // SetCollectShippingAddress sets the CollectShippingAddress field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestItemsItemPlanProduct) SetCollectShippingAddress(collectShippingAddress *bool) {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) SetCollectShippingAddress(collectShippingAddress *bool) {
 	u.CollectShippingAddress = collectShippingAddress
-	u.require(updateInvoicesRequestItemsItemPlanProductFieldCollectShippingAddress)
+	u.require(updateInvoicesRequestItemsItemVariantProductFieldCollectShippingAddress)
 }
 
 // SetCustomStatementDescriptor sets the CustomStatementDescriptor field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestItemsItemPlanProduct) SetCustomStatementDescriptor(customStatementDescriptor *string) {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) SetCustomStatementDescriptor(customStatementDescriptor *string) {
 	u.CustomStatementDescriptor = customStatementDescriptor
-	u.require(updateInvoicesRequestItemsItemPlanProductFieldCustomStatementDescriptor)
+	u.require(updateInvoicesRequestItemsItemVariantProductFieldCustomStatementDescriptor)
 }
 
 // SetDescription sets the Description field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestItemsItemPlanProduct) SetDescription(description *string) {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) SetDescription(description *string) {
 	u.Description = description
-	u.require(updateInvoicesRequestItemsItemPlanProductFieldDescription)
+	u.require(updateInvoicesRequestItemsItemVariantProductFieldDescription)
 }
 
 // SetExternalIdentifier sets the ExternalIdentifier field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestItemsItemPlanProduct) SetExternalIdentifier(externalIdentifier string) {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) SetExternalIdentifier(externalIdentifier string) {
 	u.ExternalIdentifier = externalIdentifier
-	u.require(updateInvoicesRequestItemsItemPlanProductFieldExternalIdentifier)
+	u.require(updateInvoicesRequestItemsItemVariantProductFieldExternalIdentifier)
 }
 
 // SetGlobalAffiliatePercentage sets the GlobalAffiliatePercentage field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestItemsItemPlanProduct) SetGlobalAffiliatePercentage(globalAffiliatePercentage *float64) {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) SetGlobalAffiliatePercentage(globalAffiliatePercentage *float64) {
 	u.GlobalAffiliatePercentage = globalAffiliatePercentage
-	u.require(updateInvoicesRequestItemsItemPlanProductFieldGlobalAffiliatePercentage)
+	u.require(updateInvoicesRequestItemsItemVariantProductFieldGlobalAffiliatePercentage)
 }
 
 // SetGlobalAffiliateStatus sets the GlobalAffiliateStatus field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestItemsItemPlanProduct) SetGlobalAffiliateStatus(globalAffiliateStatus *UpdateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus) {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) SetGlobalAffiliateStatus(globalAffiliateStatus *UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus) {
 	u.GlobalAffiliateStatus = globalAffiliateStatus
-	u.require(updateInvoicesRequestItemsItemPlanProductFieldGlobalAffiliateStatus)
+	u.require(updateInvoicesRequestItemsItemVariantProductFieldGlobalAffiliateStatus)
 }
 
 // SetHeadline sets the Headline field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestItemsItemPlanProduct) SetHeadline(headline *string) {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) SetHeadline(headline *string) {
 	u.Headline = headline
-	u.require(updateInvoicesRequestItemsItemPlanProductFieldHeadline)
+	u.require(updateInvoicesRequestItemsItemVariantProductFieldHeadline)
 }
 
 // SetProductTaxCodeID sets the ProductTaxCodeID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestItemsItemPlanProduct) SetProductTaxCodeID(productTaxCodeID *string) {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) SetProductTaxCodeID(productTaxCodeID *string) {
 	u.ProductTaxCodeID = productTaxCodeID
-	u.require(updateInvoicesRequestItemsItemPlanProductFieldProductTaxCodeID)
+	u.require(updateInvoicesRequestItemsItemVariantProductFieldProductTaxCodeID)
 }
 
 // SetRedirectPurchaseURL sets the RedirectPurchaseURL field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestItemsItemPlanProduct) SetRedirectPurchaseURL(redirectPurchaseURL *string) {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) SetRedirectPurchaseURL(redirectPurchaseURL *string) {
 	u.RedirectPurchaseURL = redirectPurchaseURL
-	u.require(updateInvoicesRequestItemsItemPlanProductFieldRedirectPurchaseURL)
+	u.require(updateInvoicesRequestItemsItemVariantProductFieldRedirectPurchaseURL)
 }
 
 // SetRoute sets the Route field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestItemsItemPlanProduct) SetRoute(route *string) {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) SetRoute(route *string) {
 	u.Route = route
-	u.require(updateInvoicesRequestItemsItemPlanProductFieldRoute)
+	u.require(updateInvoicesRequestItemsItemVariantProductFieldRoute)
 }
 
 // SetTitle sets the Title field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestItemsItemPlanProduct) SetTitle(title string) {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) SetTitle(title string) {
 	u.Title = title
-	u.require(updateInvoicesRequestItemsItemPlanProductFieldTitle)
+	u.require(updateInvoicesRequestItemsItemVariantProductFieldTitle)
 }
 
 // SetVisibility sets the Visibility field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestItemsItemPlanProduct) SetVisibility(visibility *UpdateInvoicesRequestItemsItemPlanProductVisibility) {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) SetVisibility(visibility *UpdateInvoicesRequestItemsItemVariantProductVisibility) {
 	u.Visibility = visibility
-	u.require(updateInvoicesRequestItemsItemPlanProductFieldVisibility)
+	u.require(updateInvoicesRequestItemsItemVariantProductFieldVisibility)
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlanProduct) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateInvoicesRequestItemsItemPlanProduct
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateInvoicesRequestItemsItemVariantProduct
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*u = UpdateInvoicesRequestItemsItemPlanProduct(value)
+	*u = UpdateInvoicesRequestItemsItemVariantProduct(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *u)
 	if err != nil {
 		return err
 	}
 	u.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateInvoicesRequestItemsItemPlanProductNullableFields)
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateInvoicesRequestItemsItemVariantProductNullableFields)
 	if err != nil {
 		return err
 	}
@@ -5746,8 +5746,8 @@ func (u *UpdateInvoicesRequestItemsItemPlanProduct) UnmarshalJSON(data []byte) e
 	return nil
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlanProduct) MarshalJSON() ([]byte, error) {
-	type embed UpdateInvoicesRequestItemsItemPlanProduct
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) MarshalJSON() ([]byte, error) {
+	type embed UpdateInvoicesRequestItemsItemVariantProduct
 	var marshaler = struct {
 		embed
 	}{
@@ -5757,7 +5757,7 @@ func (u *UpdateInvoicesRequestItemsItemPlanProduct) MarshalJSON() ([]byte, error
 	return json.Marshal(explicitMarshaler)
 }
 
-func (u *UpdateInvoicesRequestItemsItemPlanProduct) String() string {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) String() string {
 	if u == nil {
 		return "<nil>"
 	}
@@ -5773,83 +5773,83 @@ func (u *UpdateInvoicesRequestItemsItemPlanProduct) String() string {
 }
 
 // Global affiliate program status.
-type UpdateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus string
+type UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus string
 
 const (
-	UpdateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatusEnabled  UpdateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus = "enabled"
-	UpdateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatusDisabled UpdateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus = "disabled"
+	UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatusEnabled  UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus = "enabled"
+	UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatusDisabled UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus = "disabled"
 )
 
-func NewUpdateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatusFromString(s string) (UpdateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus, error) {
+func NewUpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatusFromString(s string) (UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus, error) {
 	switch s {
 	case "enabled":
-		return UpdateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatusEnabled, nil
+		return UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatusEnabled, nil
 	case "disabled":
-		return UpdateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatusDisabled, nil
+		return UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatusDisabled, nil
 	}
-	var t UpdateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus
+	var t UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (u UpdateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus) Ptr() *UpdateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus {
+func (u UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus) Ptr() *UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus {
 	return &u
 }
 
 // Product visibility. Defaults to hidden.
-type UpdateInvoicesRequestItemsItemPlanProductVisibility string
+type UpdateInvoicesRequestItemsItemVariantProductVisibility string
 
 const (
-	UpdateInvoicesRequestItemsItemPlanProductVisibilityVisible   UpdateInvoicesRequestItemsItemPlanProductVisibility = "visible"
-	UpdateInvoicesRequestItemsItemPlanProductVisibilityHidden    UpdateInvoicesRequestItemsItemPlanProductVisibility = "hidden"
-	UpdateInvoicesRequestItemsItemPlanProductVisibilityArchived  UpdateInvoicesRequestItemsItemPlanProductVisibility = "archived"
-	UpdateInvoicesRequestItemsItemPlanProductVisibilityQuickLink UpdateInvoicesRequestItemsItemPlanProductVisibility = "quick_link"
+	UpdateInvoicesRequestItemsItemVariantProductVisibilityVisible   UpdateInvoicesRequestItemsItemVariantProductVisibility = "visible"
+	UpdateInvoicesRequestItemsItemVariantProductVisibilityHidden    UpdateInvoicesRequestItemsItemVariantProductVisibility = "hidden"
+	UpdateInvoicesRequestItemsItemVariantProductVisibilityArchived  UpdateInvoicesRequestItemsItemVariantProductVisibility = "archived"
+	UpdateInvoicesRequestItemsItemVariantProductVisibilityQuickLink UpdateInvoicesRequestItemsItemVariantProductVisibility = "quick_link"
 )
 
-func NewUpdateInvoicesRequestItemsItemPlanProductVisibilityFromString(s string) (UpdateInvoicesRequestItemsItemPlanProductVisibility, error) {
+func NewUpdateInvoicesRequestItemsItemVariantProductVisibilityFromString(s string) (UpdateInvoicesRequestItemsItemVariantProductVisibility, error) {
 	switch s {
 	case "visible":
-		return UpdateInvoicesRequestItemsItemPlanProductVisibilityVisible, nil
+		return UpdateInvoicesRequestItemsItemVariantProductVisibilityVisible, nil
 	case "hidden":
-		return UpdateInvoicesRequestItemsItemPlanProductVisibilityHidden, nil
+		return UpdateInvoicesRequestItemsItemVariantProductVisibilityHidden, nil
 	case "archived":
-		return UpdateInvoicesRequestItemsItemPlanProductVisibilityArchived, nil
+		return UpdateInvoicesRequestItemsItemVariantProductVisibilityArchived, nil
 	case "quick_link":
-		return UpdateInvoicesRequestItemsItemPlanProductVisibilityQuickLink, nil
+		return UpdateInvoicesRequestItemsItemVariantProductVisibilityQuickLink, nil
 	}
-	var t UpdateInvoicesRequestItemsItemPlanProductVisibility
+	var t UpdateInvoicesRequestItemsItemVariantProductVisibility
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (u UpdateInvoicesRequestItemsItemPlanProductVisibility) Ptr() *UpdateInvoicesRequestItemsItemPlanProductVisibility {
+func (u UpdateInvoicesRequestItemsItemVariantProductVisibility) Ptr() *UpdateInvoicesRequestItemsItemVariantProductVisibility {
 	return &u
 }
 
 // Whether the variant is visible to customers.
-type UpdateInvoicesRequestItemsItemPlanVisibility string
+type UpdateInvoicesRequestItemsItemVariantVisibility string
 
 const (
-	UpdateInvoicesRequestItemsItemPlanVisibilityVisible   UpdateInvoicesRequestItemsItemPlanVisibility = "visible"
-	UpdateInvoicesRequestItemsItemPlanVisibilityHidden    UpdateInvoicesRequestItemsItemPlanVisibility = "hidden"
-	UpdateInvoicesRequestItemsItemPlanVisibilityArchived  UpdateInvoicesRequestItemsItemPlanVisibility = "archived"
-	UpdateInvoicesRequestItemsItemPlanVisibilityQuickLink UpdateInvoicesRequestItemsItemPlanVisibility = "quick_link"
+	UpdateInvoicesRequestItemsItemVariantVisibilityVisible   UpdateInvoicesRequestItemsItemVariantVisibility = "visible"
+	UpdateInvoicesRequestItemsItemVariantVisibilityHidden    UpdateInvoicesRequestItemsItemVariantVisibility = "hidden"
+	UpdateInvoicesRequestItemsItemVariantVisibilityArchived  UpdateInvoicesRequestItemsItemVariantVisibility = "archived"
+	UpdateInvoicesRequestItemsItemVariantVisibilityQuickLink UpdateInvoicesRequestItemsItemVariantVisibility = "quick_link"
 )
 
-func NewUpdateInvoicesRequestItemsItemPlanVisibilityFromString(s string) (UpdateInvoicesRequestItemsItemPlanVisibility, error) {
+func NewUpdateInvoicesRequestItemsItemVariantVisibilityFromString(s string) (UpdateInvoicesRequestItemsItemVariantVisibility, error) {
 	switch s {
 	case "visible":
-		return UpdateInvoicesRequestItemsItemPlanVisibilityVisible, nil
+		return UpdateInvoicesRequestItemsItemVariantVisibilityVisible, nil
 	case "hidden":
-		return UpdateInvoicesRequestItemsItemPlanVisibilityHidden, nil
+		return UpdateInvoicesRequestItemsItemVariantVisibilityHidden, nil
 	case "archived":
-		return UpdateInvoicesRequestItemsItemPlanVisibilityArchived, nil
+		return UpdateInvoicesRequestItemsItemVariantVisibilityArchived, nil
 	case "quick_link":
-		return UpdateInvoicesRequestItemsItemPlanVisibilityQuickLink, nil
+		return UpdateInvoicesRequestItemsItemVariantVisibilityQuickLink, nil
 	}
-	var t UpdateInvoicesRequestItemsItemPlanVisibility
+	var t UpdateInvoicesRequestItemsItemVariantVisibility
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (u UpdateInvoicesRequestItemsItemPlanVisibility) Ptr() *UpdateInvoicesRequestItemsItemPlanVisibility {
+func (u UpdateInvoicesRequestItemsItemVariantVisibility) Ptr() *UpdateInvoicesRequestItemsItemVariantVisibility {
 	return &u
 }
 

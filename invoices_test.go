@@ -3283,14 +3283,6 @@ func TestSettersInvoiceLineItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetPlanID", func(t *testing.T) {
-		obj := &InvoiceLineItem{}
-		var fernTestValuePlanID *string
-		obj.SetPlanID(fernTestValuePlanID)
-		assert.Equal(t, fernTestValuePlanID, obj.PlanID)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetProductID", func(t *testing.T) {
 		obj := &InvoiceLineItem{}
 		var fernTestValueProductID *string
@@ -3328,6 +3320,14 @@ func TestSettersInvoiceLineItem(t *testing.T) {
 		var fernTestValueUnitAmount *Money
 		obj.SetUnitAmount(fernTestValueUnitAmount)
 		assert.Equal(t, fernTestValueUnitAmount, obj.UnitAmount)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetVariantID", func(t *testing.T) {
+		obj := &InvoiceLineItem{}
+		var fernTestValueVariantID *string
+		obj.SetVariantID(fernTestValueVariantID)
+		assert.Equal(t, fernTestValueVariantID, obj.VariantID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -3431,39 +3431,6 @@ func TestGettersInvoiceLineItem(t *testing.T) {
 			}
 		}()
 		_ = obj.GetLabel() // Should return zero value
-	})
-
-	t.Run("GetPlanID", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &InvoiceLineItem{}
-		var expected *string
-		obj.PlanID = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetPlanID(), "getter should return the property value")
-	})
-
-	t.Run("GetPlanID_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &InvoiceLineItem{}
-		obj.PlanID = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetPlanID(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetPlanID_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *InvoiceLineItem
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetPlanID() // Should return zero value
 	})
 
 	t.Run("GetProductID", func(t *testing.T) {
@@ -3621,6 +3588,39 @@ func TestGettersInvoiceLineItem(t *testing.T) {
 		_ = obj.GetUnitAmount() // Should return zero value
 	})
 
+	t.Run("GetVariantID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &InvoiceLineItem{}
+		var expected *string
+		obj.VariantID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetVariantID(), "getter should return the property value")
+	})
+
+	t.Run("GetVariantID_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &InvoiceLineItem{}
+		obj.VariantID = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetVariantID(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetVariantID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *InvoiceLineItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetVariantID() // Should return zero value
+	})
+
 }
 
 func TestSettersMarkExplicitInvoiceLineItem(t *testing.T) {
@@ -3694,37 +3694,6 @@ func TestSettersMarkExplicitInvoiceLineItem(t *testing.T) {
 
 		// Act
 		obj.SetLabel(fernTestValueLabel)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetPlanID_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &InvoiceLineItem{}
-		var fernTestValuePlanID *string
-
-		// Act
-		obj.SetPlanID(fernTestValuePlanID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3880,6 +3849,37 @@ func TestSettersMarkExplicitInvoiceLineItem(t *testing.T) {
 
 		// Act
 		obj.SetUnitAmount(fernTestValueUnitAmount)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetVariantID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &InvoiceLineItem{}
+		var fernTestValueVariantID *string
+
+		// Act
+		obj.SetVariantID(fernTestValueVariantID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -4609,9 +4609,9 @@ func TestGettersCreateInvoicesRequestItemsItem(t *testing.T) {
 
 }
 
-func TestSettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
+func TestSettersCreateInvoicesRequestItemsItemVariant(t *testing.T) {
 	t.Run("SetAllowMultipleQuantity", func(t *testing.T) {
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var fernTestValueAllowMultipleQuantity *bool
 		obj.SetAllowMultipleQuantity(fernTestValueAllowMultipleQuantity)
 		assert.Equal(t, fernTestValueAllowMultipleQuantity, obj.AllowMultipleQuantity)
@@ -4619,7 +4619,7 @@ func TestSettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	})
 
 	t.Run("SetApplicationFeeAmount", func(t *testing.T) {
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var fernTestValueApplicationFeeAmount *float64
 		obj.SetApplicationFeeAmount(fernTestValueApplicationFeeAmount)
 		assert.Equal(t, fernTestValueApplicationFeeAmount, obj.ApplicationFeeAmount)
@@ -4627,23 +4627,31 @@ func TestSettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	})
 
 	t.Run("SetBillingPeriod", func(t *testing.T) {
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var fernTestValueBillingPeriod *int
 		obj.SetBillingPeriod(fernTestValueBillingPeriod)
 		assert.Equal(t, fernTestValueBillingPeriod, obj.BillingPeriod)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetBillingType", func(t *testing.T) {
+		obj := &CreateInvoicesRequestItemsItemVariant{}
+		var fernTestValueBillingType *CreateInvoicesRequestItemsItemVariantBillingType
+		obj.SetBillingType(fernTestValueBillingType)
+		assert.Equal(t, fernTestValueBillingType, obj.BillingType)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCurrency", func(t *testing.T) {
-		obj := &CreateInvoicesRequestItemsItemPlan{}
-		var fernTestValueCurrency CreateInvoicesRequestItemsItemPlanCurrency
+		obj := &CreateInvoicesRequestItemsItemVariant{}
+		var fernTestValueCurrency CreateInvoicesRequestItemsItemVariantCurrency
 		obj.SetCurrency(fernTestValueCurrency)
 		assert.Equal(t, fernTestValueCurrency, obj.Currency)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
 	t.Run("SetDescription", func(t *testing.T) {
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var fernTestValueDescription *string
 		obj.SetDescription(fernTestValueDescription)
 		assert.Equal(t, fernTestValueDescription, obj.Description)
@@ -4651,7 +4659,7 @@ func TestSettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	})
 
 	t.Run("SetExpirationDays", func(t *testing.T) {
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var fernTestValueExpirationDays *int
 		obj.SetExpirationDays(fernTestValueExpirationDays)
 		assert.Equal(t, fernTestValueExpirationDays, obj.ExpirationDays)
@@ -4659,7 +4667,7 @@ func TestSettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	})
 
 	t.Run("SetForceCreateNewPlan", func(t *testing.T) {
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var fernTestValueForceCreateNewPlan *bool
 		obj.SetForceCreateNewPlan(fernTestValueForceCreateNewPlan)
 		assert.Equal(t, fernTestValueForceCreateNewPlan, obj.ForceCreateNewPlan)
@@ -4667,7 +4675,7 @@ func TestSettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	})
 
 	t.Run("SetInitialPrice", func(t *testing.T) {
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var fernTestValueInitialPrice *float64
 		obj.SetInitialPrice(fernTestValueInitialPrice)
 		assert.Equal(t, fernTestValueInitialPrice, obj.InitialPrice)
@@ -4675,7 +4683,7 @@ func TestSettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	})
 
 	t.Run("SetInternalNotes", func(t *testing.T) {
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var fernTestValueInternalNotes *string
 		obj.SetInternalNotes(fernTestValueInternalNotes)
 		assert.Equal(t, fernTestValueInternalNotes, obj.InternalNotes)
@@ -4683,31 +4691,23 @@ func TestSettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	})
 
 	t.Run("SetOverrideTaxType", func(t *testing.T) {
-		obj := &CreateInvoicesRequestItemsItemPlan{}
-		var fernTestValueOverrideTaxType *CreateInvoicesRequestItemsItemPlanOverrideTaxType
+		obj := &CreateInvoicesRequestItemsItemVariant{}
+		var fernTestValueOverrideTaxType *CreateInvoicesRequestItemsItemVariantOverrideTaxType
 		obj.SetOverrideTaxType(fernTestValueOverrideTaxType)
 		assert.Equal(t, fernTestValueOverrideTaxType, obj.OverrideTaxType)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetPlanType", func(t *testing.T) {
-		obj := &CreateInvoicesRequestItemsItemPlan{}
-		var fernTestValuePlanType *CreateInvoicesRequestItemsItemPlanPlanType
-		obj.SetPlanType(fernTestValuePlanType)
-		assert.Equal(t, fernTestValuePlanType, obj.PlanType)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetProduct", func(t *testing.T) {
-		obj := &CreateInvoicesRequestItemsItemPlan{}
-		var fernTestValueProduct *CreateInvoicesRequestItemsItemPlanProduct
+		obj := &CreateInvoicesRequestItemsItemVariant{}
+		var fernTestValueProduct *CreateInvoicesRequestItemsItemVariantProduct
 		obj.SetProduct(fernTestValueProduct)
 		assert.Equal(t, fernTestValueProduct, obj.Product)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
 	t.Run("SetProductID", func(t *testing.T) {
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var fernTestValueProductID *string
 		obj.SetProductID(fernTestValueProductID)
 		assert.Equal(t, fernTestValueProductID, obj.ProductID)
@@ -4715,7 +4715,7 @@ func TestSettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	})
 
 	t.Run("SetRenewalPrice", func(t *testing.T) {
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var fernTestValueRenewalPrice *float64
 		obj.SetRenewalPrice(fernTestValueRenewalPrice)
 		assert.Equal(t, fernTestValueRenewalPrice, obj.RenewalPrice)
@@ -4723,7 +4723,7 @@ func TestSettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	})
 
 	t.Run("SetTitle", func(t *testing.T) {
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var fernTestValueTitle *string
 		obj.SetTitle(fernTestValueTitle)
 		assert.Equal(t, fernTestValueTitle, obj.Title)
@@ -4731,7 +4731,7 @@ func TestSettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	})
 
 	t.Run("SetTrialPeriodDays", func(t *testing.T) {
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var fernTestValueTrialPeriodDays *int
 		obj.SetTrialPeriodDays(fernTestValueTrialPeriodDays)
 		assert.Equal(t, fernTestValueTrialPeriodDays, obj.TrialPeriodDays)
@@ -4739,8 +4739,8 @@ func TestSettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	})
 
 	t.Run("SetVisibility", func(t *testing.T) {
-		obj := &CreateInvoicesRequestItemsItemPlan{}
-		var fernTestValueVisibility *CreateInvoicesRequestItemsItemPlanVisibility
+		obj := &CreateInvoicesRequestItemsItemVariant{}
+		var fernTestValueVisibility *CreateInvoicesRequestItemsItemVariantVisibility
 		obj.SetVisibility(fernTestValueVisibility)
 		assert.Equal(t, fernTestValueVisibility, obj.Visibility)
 		assert.NotNil(t, obj.explicitFields)
@@ -4748,11 +4748,11 @@ func TestSettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 }
 
-func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
+func TestGettersCreateInvoicesRequestItemsItemVariant(t *testing.T) {
 	t.Run("GetAllowMultipleQuantity", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var expected *bool
 		obj.AllowMultipleQuantity = expected
 
@@ -4763,7 +4763,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetAllowMultipleQuantity_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		obj.AllowMultipleQuantity = nil
 
 		// Act & Assert
@@ -4772,7 +4772,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetAllowMultipleQuantity_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlan
+		var obj *CreateInvoicesRequestItemsItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -4785,7 +4785,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetApplicationFeeAmount", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var expected *float64
 		obj.ApplicationFeeAmount = expected
 
@@ -4796,7 +4796,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetApplicationFeeAmount_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		obj.ApplicationFeeAmount = nil
 
 		// Act & Assert
@@ -4805,7 +4805,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetApplicationFeeAmount_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlan
+		var obj *CreateInvoicesRequestItemsItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -4818,7 +4818,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetBillingPeriod", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var expected *int
 		obj.BillingPeriod = expected
 
@@ -4829,7 +4829,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetBillingPeriod_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		obj.BillingPeriod = nil
 
 		// Act & Assert
@@ -4838,7 +4838,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetBillingPeriod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlan
+		var obj *CreateInvoicesRequestItemsItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -4848,11 +4848,44 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 		_ = obj.GetBillingPeriod() // Should return zero value
 	})
 
+	t.Run("GetBillingType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateInvoicesRequestItemsItemVariant{}
+		var expected *CreateInvoicesRequestItemsItemVariantBillingType
+		obj.BillingType = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetBillingType(), "getter should return the property value")
+	})
+
+	t.Run("GetBillingType_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateInvoicesRequestItemsItemVariant{}
+		obj.BillingType = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetBillingType(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetBillingType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateInvoicesRequestItemsItemVariant
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetBillingType() // Should return zero value
+	})
+
 	t.Run("GetCurrency", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
-		var expected CreateInvoicesRequestItemsItemPlanCurrency
+		obj := &CreateInvoicesRequestItemsItemVariant{}
+		var expected CreateInvoicesRequestItemsItemVariantCurrency
 		obj.Currency = expected
 
 		// Act & Assert
@@ -4861,7 +4894,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetCurrency_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlan
+		var obj *CreateInvoicesRequestItemsItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -4874,7 +4907,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetDescription", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var expected *string
 		obj.Description = expected
 
@@ -4885,7 +4918,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetDescription_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		obj.Description = nil
 
 		// Act & Assert
@@ -4894,7 +4927,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetDescription_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlan
+		var obj *CreateInvoicesRequestItemsItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -4907,7 +4940,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetExpirationDays", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var expected *int
 		obj.ExpirationDays = expected
 
@@ -4918,7 +4951,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetExpirationDays_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		obj.ExpirationDays = nil
 
 		// Act & Assert
@@ -4927,7 +4960,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetExpirationDays_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlan
+		var obj *CreateInvoicesRequestItemsItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -4940,7 +4973,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetForceCreateNewPlan", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var expected *bool
 		obj.ForceCreateNewPlan = expected
 
@@ -4951,7 +4984,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetForceCreateNewPlan_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		obj.ForceCreateNewPlan = nil
 
 		// Act & Assert
@@ -4960,7 +4993,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetForceCreateNewPlan_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlan
+		var obj *CreateInvoicesRequestItemsItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -4973,7 +5006,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetInitialPrice", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var expected *float64
 		obj.InitialPrice = expected
 
@@ -4984,7 +5017,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetInitialPrice_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		obj.InitialPrice = nil
 
 		// Act & Assert
@@ -4993,7 +5026,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetInitialPrice_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlan
+		var obj *CreateInvoicesRequestItemsItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -5006,7 +5039,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetInternalNotes", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var expected *string
 		obj.InternalNotes = expected
 
@@ -5017,7 +5050,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetInternalNotes_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		obj.InternalNotes = nil
 
 		// Act & Assert
@@ -5026,7 +5059,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetInternalNotes_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlan
+		var obj *CreateInvoicesRequestItemsItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -5039,8 +5072,8 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetOverrideTaxType", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
-		var expected *CreateInvoicesRequestItemsItemPlanOverrideTaxType
+		obj := &CreateInvoicesRequestItemsItemVariant{}
+		var expected *CreateInvoicesRequestItemsItemVariantOverrideTaxType
 		obj.OverrideTaxType = expected
 
 		// Act & Assert
@@ -5050,7 +5083,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetOverrideTaxType_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		obj.OverrideTaxType = nil
 
 		// Act & Assert
@@ -5059,7 +5092,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetOverrideTaxType_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlan
+		var obj *CreateInvoicesRequestItemsItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -5069,44 +5102,11 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 		_ = obj.GetOverrideTaxType() // Should return zero value
 	})
 
-	t.Run("GetPlanType", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
-		var expected *CreateInvoicesRequestItemsItemPlanPlanType
-		obj.PlanType = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetPlanType(), "getter should return the property value")
-	})
-
-	t.Run("GetPlanType_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
-		obj.PlanType = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetPlanType(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetPlanType_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlan
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetPlanType() // Should return zero value
-	})
-
 	t.Run("GetProduct", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
-		var expected *CreateInvoicesRequestItemsItemPlanProduct
+		obj := &CreateInvoicesRequestItemsItemVariant{}
+		var expected *CreateInvoicesRequestItemsItemVariantProduct
 		obj.Product = expected
 
 		// Act & Assert
@@ -5116,7 +5116,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetProduct_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		obj.Product = nil
 
 		// Act & Assert
@@ -5125,7 +5125,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetProduct_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlan
+		var obj *CreateInvoicesRequestItemsItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -5138,7 +5138,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetProductID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var expected *string
 		obj.ProductID = expected
 
@@ -5149,7 +5149,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetProductID_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		obj.ProductID = nil
 
 		// Act & Assert
@@ -5158,7 +5158,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetProductID_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlan
+		var obj *CreateInvoicesRequestItemsItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -5171,7 +5171,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetRenewalPrice", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var expected *float64
 		obj.RenewalPrice = expected
 
@@ -5182,7 +5182,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetRenewalPrice_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		obj.RenewalPrice = nil
 
 		// Act & Assert
@@ -5191,7 +5191,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetRenewalPrice_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlan
+		var obj *CreateInvoicesRequestItemsItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -5204,7 +5204,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetTitle", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var expected *string
 		obj.Title = expected
 
@@ -5215,7 +5215,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetTitle_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		obj.Title = nil
 
 		// Act & Assert
@@ -5224,7 +5224,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetTitle_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlan
+		var obj *CreateInvoicesRequestItemsItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -5237,7 +5237,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetTrialPeriodDays", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var expected *int
 		obj.TrialPeriodDays = expected
 
@@ -5248,7 +5248,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetTrialPeriodDays_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		obj.TrialPeriodDays = nil
 
 		// Act & Assert
@@ -5257,7 +5257,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetTrialPeriodDays_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlan
+		var obj *CreateInvoicesRequestItemsItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -5270,8 +5270,8 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetVisibility", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
-		var expected *CreateInvoicesRequestItemsItemPlanVisibility
+		obj := &CreateInvoicesRequestItemsItemVariant{}
+		var expected *CreateInvoicesRequestItemsItemVariantVisibility
 		obj.Visibility = expected
 
 		// Act & Assert
@@ -5281,7 +5281,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetVisibility_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		obj.Visibility = nil
 
 		// Act & Assert
@@ -5290,7 +5290,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetVisibility_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlan
+		var obj *CreateInvoicesRequestItemsItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -5302,11 +5302,11 @@ func TestGettersCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 }
 
-func TestSettersMarkExplicitCreateInvoicesRequestItemsItemPlan(t *testing.T) {
+func TestSettersMarkExplicitCreateInvoicesRequestItemsItemVariant(t *testing.T) {
 	t.Run("SetAllowMultipleQuantity_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var fernTestValueAllowMultipleQuantity *bool
 
 		// Act
@@ -5337,7 +5337,7 @@ func TestSettersMarkExplicitCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("SetApplicationFeeAmount_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var fernTestValueApplicationFeeAmount *float64
 
 		// Act
@@ -5368,7 +5368,7 @@ func TestSettersMarkExplicitCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("SetBillingPeriod_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var fernTestValueBillingPeriod *int
 
 		// Act
@@ -5396,11 +5396,42 @@ func TestSettersMarkExplicitCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetBillingType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateInvoicesRequestItemsItemVariant{}
+		var fernTestValueBillingType *CreateInvoicesRequestItemsItemVariantBillingType
+
+		// Act
+		obj.SetBillingType(fernTestValueBillingType)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetCurrency_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
-		var fernTestValueCurrency CreateInvoicesRequestItemsItemPlanCurrency
+		obj := &CreateInvoicesRequestItemsItemVariant{}
+		var fernTestValueCurrency CreateInvoicesRequestItemsItemVariantCurrency
 
 		// Act
 		obj.SetCurrency(fernTestValueCurrency)
@@ -5430,7 +5461,7 @@ func TestSettersMarkExplicitCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("SetDescription_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var fernTestValueDescription *string
 
 		// Act
@@ -5461,7 +5492,7 @@ func TestSettersMarkExplicitCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("SetExpirationDays_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var fernTestValueExpirationDays *int
 
 		// Act
@@ -5492,7 +5523,7 @@ func TestSettersMarkExplicitCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("SetForceCreateNewPlan_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var fernTestValueForceCreateNewPlan *bool
 
 		// Act
@@ -5523,7 +5554,7 @@ func TestSettersMarkExplicitCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("SetInitialPrice_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var fernTestValueInitialPrice *float64
 
 		// Act
@@ -5554,7 +5585,7 @@ func TestSettersMarkExplicitCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("SetInternalNotes_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var fernTestValueInternalNotes *string
 
 		// Act
@@ -5585,8 +5616,8 @@ func TestSettersMarkExplicitCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("SetOverrideTaxType_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
-		var fernTestValueOverrideTaxType *CreateInvoicesRequestItemsItemPlanOverrideTaxType
+		obj := &CreateInvoicesRequestItemsItemVariant{}
+		var fernTestValueOverrideTaxType *CreateInvoicesRequestItemsItemVariantOverrideTaxType
 
 		// Act
 		obj.SetOverrideTaxType(fernTestValueOverrideTaxType)
@@ -5613,42 +5644,11 @@ func TestSettersMarkExplicitCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetPlanType_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
-		var fernTestValuePlanType *CreateInvoicesRequestItemsItemPlanPlanType
-
-		// Act
-		obj.SetPlanType(fernTestValuePlanType)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
 	t.Run("SetProduct_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
-		var fernTestValueProduct *CreateInvoicesRequestItemsItemPlanProduct
+		obj := &CreateInvoicesRequestItemsItemVariant{}
+		var fernTestValueProduct *CreateInvoicesRequestItemsItemVariantProduct
 
 		// Act
 		obj.SetProduct(fernTestValueProduct)
@@ -5678,7 +5678,7 @@ func TestSettersMarkExplicitCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("SetProductID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var fernTestValueProductID *string
 
 		// Act
@@ -5709,7 +5709,7 @@ func TestSettersMarkExplicitCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("SetRenewalPrice_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var fernTestValueRenewalPrice *float64
 
 		// Act
@@ -5740,7 +5740,7 @@ func TestSettersMarkExplicitCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("SetTitle_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var fernTestValueTitle *string
 
 		// Act
@@ -5771,7 +5771,7 @@ func TestSettersMarkExplicitCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("SetTrialPeriodDays_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		var fernTestValueTrialPeriodDays *int
 
 		// Act
@@ -5802,8 +5802,8 @@ func TestSettersMarkExplicitCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("SetVisibility_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
-		var fernTestValueVisibility *CreateInvoicesRequestItemsItemPlanVisibility
+		obj := &CreateInvoicesRequestItemsItemVariant{}
+		var fernTestValueVisibility *CreateInvoicesRequestItemsItemVariantVisibility
 
 		// Act
 		obj.SetVisibility(fernTestValueVisibility)
@@ -5832,9 +5832,9 @@ func TestSettersMarkExplicitCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 }
 
-func TestSettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
+func TestSettersCreateInvoicesRequestItemsItemVariantProduct(t *testing.T) {
 	t.Run("SetCollectShippingAddress", func(t *testing.T) {
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueCollectShippingAddress *bool
 		obj.SetCollectShippingAddress(fernTestValueCollectShippingAddress)
 		assert.Equal(t, fernTestValueCollectShippingAddress, obj.CollectShippingAddress)
@@ -5842,7 +5842,7 @@ func TestSettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	})
 
 	t.Run("SetCustomStatementDescriptor", func(t *testing.T) {
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueCustomStatementDescriptor *string
 		obj.SetCustomStatementDescriptor(fernTestValueCustomStatementDescriptor)
 		assert.Equal(t, fernTestValueCustomStatementDescriptor, obj.CustomStatementDescriptor)
@@ -5850,7 +5850,7 @@ func TestSettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	})
 
 	t.Run("SetDescription", func(t *testing.T) {
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueDescription *string
 		obj.SetDescription(fernTestValueDescription)
 		assert.Equal(t, fernTestValueDescription, obj.Description)
@@ -5858,7 +5858,7 @@ func TestSettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	})
 
 	t.Run("SetExternalIdentifier", func(t *testing.T) {
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueExternalIdentifier string
 		obj.SetExternalIdentifier(fernTestValueExternalIdentifier)
 		assert.Equal(t, fernTestValueExternalIdentifier, obj.ExternalIdentifier)
@@ -5866,7 +5866,7 @@ func TestSettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	})
 
 	t.Run("SetGlobalAffiliatePercentage", func(t *testing.T) {
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueGlobalAffiliatePercentage *float64
 		obj.SetGlobalAffiliatePercentage(fernTestValueGlobalAffiliatePercentage)
 		assert.Equal(t, fernTestValueGlobalAffiliatePercentage, obj.GlobalAffiliatePercentage)
@@ -5874,15 +5874,15 @@ func TestSettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	})
 
 	t.Run("SetGlobalAffiliateStatus", func(t *testing.T) {
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
-		var fernTestValueGlobalAffiliateStatus *CreateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
+		var fernTestValueGlobalAffiliateStatus *CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus
 		obj.SetGlobalAffiliateStatus(fernTestValueGlobalAffiliateStatus)
 		assert.Equal(t, fernTestValueGlobalAffiliateStatus, obj.GlobalAffiliateStatus)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
 	t.Run("SetHeadline", func(t *testing.T) {
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueHeadline *string
 		obj.SetHeadline(fernTestValueHeadline)
 		assert.Equal(t, fernTestValueHeadline, obj.Headline)
@@ -5890,7 +5890,7 @@ func TestSettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	})
 
 	t.Run("SetProductTaxCodeID", func(t *testing.T) {
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueProductTaxCodeID *string
 		obj.SetProductTaxCodeID(fernTestValueProductTaxCodeID)
 		assert.Equal(t, fernTestValueProductTaxCodeID, obj.ProductTaxCodeID)
@@ -5898,7 +5898,7 @@ func TestSettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	})
 
 	t.Run("SetRedirectPurchaseURL", func(t *testing.T) {
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueRedirectPurchaseURL *string
 		obj.SetRedirectPurchaseURL(fernTestValueRedirectPurchaseURL)
 		assert.Equal(t, fernTestValueRedirectPurchaseURL, obj.RedirectPurchaseURL)
@@ -5906,7 +5906,7 @@ func TestSettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	})
 
 	t.Run("SetRoute", func(t *testing.T) {
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueRoute *string
 		obj.SetRoute(fernTestValueRoute)
 		assert.Equal(t, fernTestValueRoute, obj.Route)
@@ -5914,7 +5914,7 @@ func TestSettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	})
 
 	t.Run("SetTitle", func(t *testing.T) {
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueTitle string
 		obj.SetTitle(fernTestValueTitle)
 		assert.Equal(t, fernTestValueTitle, obj.Title)
@@ -5922,8 +5922,8 @@ func TestSettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	})
 
 	t.Run("SetVisibility", func(t *testing.T) {
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
-		var fernTestValueVisibility *CreateInvoicesRequestItemsItemPlanProductVisibility
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
+		var fernTestValueVisibility *CreateInvoicesRequestItemsItemVariantProductVisibility
 		obj.SetVisibility(fernTestValueVisibility)
 		assert.Equal(t, fernTestValueVisibility, obj.Visibility)
 		assert.NotNil(t, obj.explicitFields)
@@ -5931,11 +5931,11 @@ func TestSettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 
 }
 
-func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
+func TestGettersCreateInvoicesRequestItemsItemVariantProduct(t *testing.T) {
 	t.Run("GetCollectShippingAddress", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		var expected *bool
 		obj.CollectShippingAddress = expected
 
@@ -5946,7 +5946,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetCollectShippingAddress_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		obj.CollectShippingAddress = nil
 
 		// Act & Assert
@@ -5955,7 +5955,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 
 	t.Run("GetCollectShippingAddress_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlanProduct
+		var obj *CreateInvoicesRequestItemsItemVariantProduct
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -5968,7 +5968,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetCustomStatementDescriptor", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		var expected *string
 		obj.CustomStatementDescriptor = expected
 
@@ -5979,7 +5979,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetCustomStatementDescriptor_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		obj.CustomStatementDescriptor = nil
 
 		// Act & Assert
@@ -5988,7 +5988,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 
 	t.Run("GetCustomStatementDescriptor_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlanProduct
+		var obj *CreateInvoicesRequestItemsItemVariantProduct
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -6001,7 +6001,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetDescription", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		var expected *string
 		obj.Description = expected
 
@@ -6012,7 +6012,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetDescription_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		obj.Description = nil
 
 		// Act & Assert
@@ -6021,7 +6021,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 
 	t.Run("GetDescription_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlanProduct
+		var obj *CreateInvoicesRequestItemsItemVariantProduct
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -6034,7 +6034,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetExternalIdentifier", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		var expected string
 		obj.ExternalIdentifier = expected
 
@@ -6044,7 +6044,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 
 	t.Run("GetExternalIdentifier_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlanProduct
+		var obj *CreateInvoicesRequestItemsItemVariantProduct
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -6057,7 +6057,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetGlobalAffiliatePercentage", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		var expected *float64
 		obj.GlobalAffiliatePercentage = expected
 
@@ -6068,7 +6068,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetGlobalAffiliatePercentage_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		obj.GlobalAffiliatePercentage = nil
 
 		// Act & Assert
@@ -6077,7 +6077,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 
 	t.Run("GetGlobalAffiliatePercentage_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlanProduct
+		var obj *CreateInvoicesRequestItemsItemVariantProduct
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -6090,8 +6090,8 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetGlobalAffiliateStatus", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
-		var expected *CreateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
+		var expected *CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus
 		obj.GlobalAffiliateStatus = expected
 
 		// Act & Assert
@@ -6101,7 +6101,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetGlobalAffiliateStatus_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		obj.GlobalAffiliateStatus = nil
 
 		// Act & Assert
@@ -6110,7 +6110,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 
 	t.Run("GetGlobalAffiliateStatus_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlanProduct
+		var obj *CreateInvoicesRequestItemsItemVariantProduct
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -6123,7 +6123,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetHeadline", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		var expected *string
 		obj.Headline = expected
 
@@ -6134,7 +6134,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetHeadline_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		obj.Headline = nil
 
 		// Act & Assert
@@ -6143,7 +6143,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 
 	t.Run("GetHeadline_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlanProduct
+		var obj *CreateInvoicesRequestItemsItemVariantProduct
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -6156,7 +6156,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetProductTaxCodeID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		var expected *string
 		obj.ProductTaxCodeID = expected
 
@@ -6167,7 +6167,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetProductTaxCodeID_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		obj.ProductTaxCodeID = nil
 
 		// Act & Assert
@@ -6176,7 +6176,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 
 	t.Run("GetProductTaxCodeID_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlanProduct
+		var obj *CreateInvoicesRequestItemsItemVariantProduct
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -6189,7 +6189,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetRedirectPurchaseURL", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		var expected *string
 		obj.RedirectPurchaseURL = expected
 
@@ -6200,7 +6200,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetRedirectPurchaseURL_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		obj.RedirectPurchaseURL = nil
 
 		// Act & Assert
@@ -6209,7 +6209,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 
 	t.Run("GetRedirectPurchaseURL_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlanProduct
+		var obj *CreateInvoicesRequestItemsItemVariantProduct
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -6222,7 +6222,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetRoute", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		var expected *string
 		obj.Route = expected
 
@@ -6233,7 +6233,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetRoute_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		obj.Route = nil
 
 		// Act & Assert
@@ -6242,7 +6242,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 
 	t.Run("GetRoute_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlanProduct
+		var obj *CreateInvoicesRequestItemsItemVariantProduct
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -6255,7 +6255,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetTitle", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		var expected string
 		obj.Title = expected
 
@@ -6265,7 +6265,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 
 	t.Run("GetTitle_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlanProduct
+		var obj *CreateInvoicesRequestItemsItemVariantProduct
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -6278,8 +6278,8 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetVisibility", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
-		var expected *CreateInvoicesRequestItemsItemPlanProductVisibility
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
+		var expected *CreateInvoicesRequestItemsItemVariantProductVisibility
 		obj.Visibility = expected
 
 		// Act & Assert
@@ -6289,7 +6289,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetVisibility_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		obj.Visibility = nil
 
 		// Act & Assert
@@ -6298,7 +6298,7 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 
 	t.Run("GetVisibility_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlanProduct
+		var obj *CreateInvoicesRequestItemsItemVariantProduct
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -6310,11 +6310,11 @@ func TestGettersCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 
 }
 
-func TestSettersMarkExplicitCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
+func TestSettersMarkExplicitCreateInvoicesRequestItemsItemVariantProduct(t *testing.T) {
 	t.Run("SetCollectShippingAddress_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueCollectShippingAddress *bool
 
 		// Act
@@ -6345,7 +6345,7 @@ func TestSettersMarkExplicitCreateInvoicesRequestItemsItemPlanProduct(t *testing
 	t.Run("SetCustomStatementDescriptor_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueCustomStatementDescriptor *string
 
 		// Act
@@ -6376,7 +6376,7 @@ func TestSettersMarkExplicitCreateInvoicesRequestItemsItemPlanProduct(t *testing
 	t.Run("SetDescription_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueDescription *string
 
 		// Act
@@ -6407,7 +6407,7 @@ func TestSettersMarkExplicitCreateInvoicesRequestItemsItemPlanProduct(t *testing
 	t.Run("SetExternalIdentifier_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueExternalIdentifier string
 
 		// Act
@@ -6438,7 +6438,7 @@ func TestSettersMarkExplicitCreateInvoicesRequestItemsItemPlanProduct(t *testing
 	t.Run("SetGlobalAffiliatePercentage_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueGlobalAffiliatePercentage *float64
 
 		// Act
@@ -6469,8 +6469,8 @@ func TestSettersMarkExplicitCreateInvoicesRequestItemsItemPlanProduct(t *testing
 	t.Run("SetGlobalAffiliateStatus_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
-		var fernTestValueGlobalAffiliateStatus *CreateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
+		var fernTestValueGlobalAffiliateStatus *CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus
 
 		// Act
 		obj.SetGlobalAffiliateStatus(fernTestValueGlobalAffiliateStatus)
@@ -6500,7 +6500,7 @@ func TestSettersMarkExplicitCreateInvoicesRequestItemsItemPlanProduct(t *testing
 	t.Run("SetHeadline_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueHeadline *string
 
 		// Act
@@ -6531,7 +6531,7 @@ func TestSettersMarkExplicitCreateInvoicesRequestItemsItemPlanProduct(t *testing
 	t.Run("SetProductTaxCodeID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueProductTaxCodeID *string
 
 		// Act
@@ -6562,7 +6562,7 @@ func TestSettersMarkExplicitCreateInvoicesRequestItemsItemPlanProduct(t *testing
 	t.Run("SetRedirectPurchaseURL_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueRedirectPurchaseURL *string
 
 		// Act
@@ -6593,7 +6593,7 @@ func TestSettersMarkExplicitCreateInvoicesRequestItemsItemPlanProduct(t *testing
 	t.Run("SetRoute_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueRoute *string
 
 		// Act
@@ -6624,7 +6624,7 @@ func TestSettersMarkExplicitCreateInvoicesRequestItemsItemPlanProduct(t *testing
 	t.Run("SetTitle_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueTitle string
 
 		// Act
@@ -6655,8 +6655,8 @@ func TestSettersMarkExplicitCreateInvoicesRequestItemsItemPlanProduct(t *testing
 	t.Run("SetVisibility_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
-		var fernTestValueVisibility *CreateInvoicesRequestItemsItemPlanProductVisibility
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
+		var fernTestValueVisibility *CreateInvoicesRequestItemsItemVariantProductVisibility
 
 		// Act
 		obj.SetVisibility(fernTestValueVisibility)
@@ -10411,9 +10411,9 @@ func TestGettersUpdateInvoicesRequestItemsItem(t *testing.T) {
 
 }
 
-func TestSettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
+func TestSettersUpdateInvoicesRequestItemsItemVariant(t *testing.T) {
 	t.Run("SetAllowMultipleQuantity", func(t *testing.T) {
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var fernTestValueAllowMultipleQuantity *bool
 		obj.SetAllowMultipleQuantity(fernTestValueAllowMultipleQuantity)
 		assert.Equal(t, fernTestValueAllowMultipleQuantity, obj.AllowMultipleQuantity)
@@ -10421,7 +10421,7 @@ func TestSettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	})
 
 	t.Run("SetApplicationFeeAmount", func(t *testing.T) {
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var fernTestValueApplicationFeeAmount *float64
 		obj.SetApplicationFeeAmount(fernTestValueApplicationFeeAmount)
 		assert.Equal(t, fernTestValueApplicationFeeAmount, obj.ApplicationFeeAmount)
@@ -10429,23 +10429,31 @@ func TestSettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	})
 
 	t.Run("SetBillingPeriod", func(t *testing.T) {
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var fernTestValueBillingPeriod *int
 		obj.SetBillingPeriod(fernTestValueBillingPeriod)
 		assert.Equal(t, fernTestValueBillingPeriod, obj.BillingPeriod)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetBillingType", func(t *testing.T) {
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
+		var fernTestValueBillingType *UpdateInvoicesRequestItemsItemVariantBillingType
+		obj.SetBillingType(fernTestValueBillingType)
+		assert.Equal(t, fernTestValueBillingType, obj.BillingType)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCurrency", func(t *testing.T) {
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
-		var fernTestValueCurrency UpdateInvoicesRequestItemsItemPlanCurrency
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
+		var fernTestValueCurrency UpdateInvoicesRequestItemsItemVariantCurrency
 		obj.SetCurrency(fernTestValueCurrency)
 		assert.Equal(t, fernTestValueCurrency, obj.Currency)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
 	t.Run("SetDescription", func(t *testing.T) {
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var fernTestValueDescription *string
 		obj.SetDescription(fernTestValueDescription)
 		assert.Equal(t, fernTestValueDescription, obj.Description)
@@ -10453,7 +10461,7 @@ func TestSettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	})
 
 	t.Run("SetExpirationDays", func(t *testing.T) {
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var fernTestValueExpirationDays *int
 		obj.SetExpirationDays(fernTestValueExpirationDays)
 		assert.Equal(t, fernTestValueExpirationDays, obj.ExpirationDays)
@@ -10461,7 +10469,7 @@ func TestSettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	})
 
 	t.Run("SetForceCreateNewPlan", func(t *testing.T) {
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var fernTestValueForceCreateNewPlan *bool
 		obj.SetForceCreateNewPlan(fernTestValueForceCreateNewPlan)
 		assert.Equal(t, fernTestValueForceCreateNewPlan, obj.ForceCreateNewPlan)
@@ -10469,7 +10477,7 @@ func TestSettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	})
 
 	t.Run("SetInitialPrice", func(t *testing.T) {
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var fernTestValueInitialPrice *float64
 		obj.SetInitialPrice(fernTestValueInitialPrice)
 		assert.Equal(t, fernTestValueInitialPrice, obj.InitialPrice)
@@ -10477,7 +10485,7 @@ func TestSettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	})
 
 	t.Run("SetInternalNotes", func(t *testing.T) {
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var fernTestValueInternalNotes *string
 		obj.SetInternalNotes(fernTestValueInternalNotes)
 		assert.Equal(t, fernTestValueInternalNotes, obj.InternalNotes)
@@ -10485,31 +10493,23 @@ func TestSettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	})
 
 	t.Run("SetOverrideTaxType", func(t *testing.T) {
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
-		var fernTestValueOverrideTaxType *UpdateInvoicesRequestItemsItemPlanOverrideTaxType
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
+		var fernTestValueOverrideTaxType *UpdateInvoicesRequestItemsItemVariantOverrideTaxType
 		obj.SetOverrideTaxType(fernTestValueOverrideTaxType)
 		assert.Equal(t, fernTestValueOverrideTaxType, obj.OverrideTaxType)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetPlanType", func(t *testing.T) {
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
-		var fernTestValuePlanType *UpdateInvoicesRequestItemsItemPlanPlanType
-		obj.SetPlanType(fernTestValuePlanType)
-		assert.Equal(t, fernTestValuePlanType, obj.PlanType)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetProduct", func(t *testing.T) {
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
-		var fernTestValueProduct *UpdateInvoicesRequestItemsItemPlanProduct
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
+		var fernTestValueProduct *UpdateInvoicesRequestItemsItemVariantProduct
 		obj.SetProduct(fernTestValueProduct)
 		assert.Equal(t, fernTestValueProduct, obj.Product)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
 	t.Run("SetProductID", func(t *testing.T) {
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var fernTestValueProductID *string
 		obj.SetProductID(fernTestValueProductID)
 		assert.Equal(t, fernTestValueProductID, obj.ProductID)
@@ -10517,7 +10517,7 @@ func TestSettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	})
 
 	t.Run("SetRenewalPrice", func(t *testing.T) {
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var fernTestValueRenewalPrice *float64
 		obj.SetRenewalPrice(fernTestValueRenewalPrice)
 		assert.Equal(t, fernTestValueRenewalPrice, obj.RenewalPrice)
@@ -10525,7 +10525,7 @@ func TestSettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	})
 
 	t.Run("SetTitle", func(t *testing.T) {
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var fernTestValueTitle *string
 		obj.SetTitle(fernTestValueTitle)
 		assert.Equal(t, fernTestValueTitle, obj.Title)
@@ -10533,7 +10533,7 @@ func TestSettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	})
 
 	t.Run("SetTrialPeriodDays", func(t *testing.T) {
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var fernTestValueTrialPeriodDays *int
 		obj.SetTrialPeriodDays(fernTestValueTrialPeriodDays)
 		assert.Equal(t, fernTestValueTrialPeriodDays, obj.TrialPeriodDays)
@@ -10541,8 +10541,8 @@ func TestSettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	})
 
 	t.Run("SetVisibility", func(t *testing.T) {
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
-		var fernTestValueVisibility *UpdateInvoicesRequestItemsItemPlanVisibility
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
+		var fernTestValueVisibility *UpdateInvoicesRequestItemsItemVariantVisibility
 		obj.SetVisibility(fernTestValueVisibility)
 		assert.Equal(t, fernTestValueVisibility, obj.Visibility)
 		assert.NotNil(t, obj.explicitFields)
@@ -10550,11 +10550,11 @@ func TestSettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 }
 
-func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
+func TestGettersUpdateInvoicesRequestItemsItemVariant(t *testing.T) {
 	t.Run("GetAllowMultipleQuantity", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var expected *bool
 		obj.AllowMultipleQuantity = expected
 
@@ -10565,7 +10565,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetAllowMultipleQuantity_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		obj.AllowMultipleQuantity = nil
 
 		// Act & Assert
@@ -10574,7 +10574,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetAllowMultipleQuantity_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlan
+		var obj *UpdateInvoicesRequestItemsItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -10587,7 +10587,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetApplicationFeeAmount", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var expected *float64
 		obj.ApplicationFeeAmount = expected
 
@@ -10598,7 +10598,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetApplicationFeeAmount_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		obj.ApplicationFeeAmount = nil
 
 		// Act & Assert
@@ -10607,7 +10607,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetApplicationFeeAmount_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlan
+		var obj *UpdateInvoicesRequestItemsItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -10620,7 +10620,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetBillingPeriod", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var expected *int
 		obj.BillingPeriod = expected
 
@@ -10631,7 +10631,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetBillingPeriod_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		obj.BillingPeriod = nil
 
 		// Act & Assert
@@ -10640,7 +10640,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetBillingPeriod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlan
+		var obj *UpdateInvoicesRequestItemsItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -10650,11 +10650,44 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 		_ = obj.GetBillingPeriod() // Should return zero value
 	})
 
+	t.Run("GetBillingType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
+		var expected *UpdateInvoicesRequestItemsItemVariantBillingType
+		obj.BillingType = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetBillingType(), "getter should return the property value")
+	})
+
+	t.Run("GetBillingType_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
+		obj.BillingType = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetBillingType(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetBillingType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateInvoicesRequestItemsItemVariant
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetBillingType() // Should return zero value
+	})
+
 	t.Run("GetCurrency", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
-		var expected UpdateInvoicesRequestItemsItemPlanCurrency
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
+		var expected UpdateInvoicesRequestItemsItemVariantCurrency
 		obj.Currency = expected
 
 		// Act & Assert
@@ -10663,7 +10696,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetCurrency_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlan
+		var obj *UpdateInvoicesRequestItemsItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -10676,7 +10709,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetDescription", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var expected *string
 		obj.Description = expected
 
@@ -10687,7 +10720,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetDescription_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		obj.Description = nil
 
 		// Act & Assert
@@ -10696,7 +10729,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetDescription_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlan
+		var obj *UpdateInvoicesRequestItemsItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -10709,7 +10742,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetExpirationDays", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var expected *int
 		obj.ExpirationDays = expected
 
@@ -10720,7 +10753,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetExpirationDays_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		obj.ExpirationDays = nil
 
 		// Act & Assert
@@ -10729,7 +10762,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetExpirationDays_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlan
+		var obj *UpdateInvoicesRequestItemsItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -10742,7 +10775,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetForceCreateNewPlan", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var expected *bool
 		obj.ForceCreateNewPlan = expected
 
@@ -10753,7 +10786,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetForceCreateNewPlan_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		obj.ForceCreateNewPlan = nil
 
 		// Act & Assert
@@ -10762,7 +10795,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetForceCreateNewPlan_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlan
+		var obj *UpdateInvoicesRequestItemsItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -10775,7 +10808,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetInitialPrice", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var expected *float64
 		obj.InitialPrice = expected
 
@@ -10786,7 +10819,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetInitialPrice_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		obj.InitialPrice = nil
 
 		// Act & Assert
@@ -10795,7 +10828,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetInitialPrice_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlan
+		var obj *UpdateInvoicesRequestItemsItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -10808,7 +10841,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetInternalNotes", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var expected *string
 		obj.InternalNotes = expected
 
@@ -10819,7 +10852,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetInternalNotes_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		obj.InternalNotes = nil
 
 		// Act & Assert
@@ -10828,7 +10861,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetInternalNotes_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlan
+		var obj *UpdateInvoicesRequestItemsItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -10841,8 +10874,8 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetOverrideTaxType", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
-		var expected *UpdateInvoicesRequestItemsItemPlanOverrideTaxType
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
+		var expected *UpdateInvoicesRequestItemsItemVariantOverrideTaxType
 		obj.OverrideTaxType = expected
 
 		// Act & Assert
@@ -10852,7 +10885,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetOverrideTaxType_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		obj.OverrideTaxType = nil
 
 		// Act & Assert
@@ -10861,7 +10894,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetOverrideTaxType_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlan
+		var obj *UpdateInvoicesRequestItemsItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -10871,44 +10904,11 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 		_ = obj.GetOverrideTaxType() // Should return zero value
 	})
 
-	t.Run("GetPlanType", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
-		var expected *UpdateInvoicesRequestItemsItemPlanPlanType
-		obj.PlanType = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetPlanType(), "getter should return the property value")
-	})
-
-	t.Run("GetPlanType_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
-		obj.PlanType = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetPlanType(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetPlanType_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlan
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetPlanType() // Should return zero value
-	})
-
 	t.Run("GetProduct", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
-		var expected *UpdateInvoicesRequestItemsItemPlanProduct
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
+		var expected *UpdateInvoicesRequestItemsItemVariantProduct
 		obj.Product = expected
 
 		// Act & Assert
@@ -10918,7 +10918,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetProduct_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		obj.Product = nil
 
 		// Act & Assert
@@ -10927,7 +10927,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetProduct_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlan
+		var obj *UpdateInvoicesRequestItemsItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -10940,7 +10940,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetProductID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var expected *string
 		obj.ProductID = expected
 
@@ -10951,7 +10951,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetProductID_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		obj.ProductID = nil
 
 		// Act & Assert
@@ -10960,7 +10960,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetProductID_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlan
+		var obj *UpdateInvoicesRequestItemsItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -10973,7 +10973,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetRenewalPrice", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var expected *float64
 		obj.RenewalPrice = expected
 
@@ -10984,7 +10984,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetRenewalPrice_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		obj.RenewalPrice = nil
 
 		// Act & Assert
@@ -10993,7 +10993,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetRenewalPrice_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlan
+		var obj *UpdateInvoicesRequestItemsItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -11006,7 +11006,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetTitle", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var expected *string
 		obj.Title = expected
 
@@ -11017,7 +11017,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetTitle_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		obj.Title = nil
 
 		// Act & Assert
@@ -11026,7 +11026,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetTitle_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlan
+		var obj *UpdateInvoicesRequestItemsItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -11039,7 +11039,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetTrialPeriodDays", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var expected *int
 		obj.TrialPeriodDays = expected
 
@@ -11050,7 +11050,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetTrialPeriodDays_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		obj.TrialPeriodDays = nil
 
 		// Act & Assert
@@ -11059,7 +11059,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetTrialPeriodDays_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlan
+		var obj *UpdateInvoicesRequestItemsItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -11072,8 +11072,8 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetVisibility", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
-		var expected *UpdateInvoicesRequestItemsItemPlanVisibility
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
+		var expected *UpdateInvoicesRequestItemsItemVariantVisibility
 		obj.Visibility = expected
 
 		// Act & Assert
@@ -11083,7 +11083,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("GetVisibility_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		obj.Visibility = nil
 
 		// Act & Assert
@@ -11092,7 +11092,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetVisibility_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlan
+		var obj *UpdateInvoicesRequestItemsItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -11104,11 +11104,11 @@ func TestGettersUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 }
 
-func TestSettersMarkExplicitUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
+func TestSettersMarkExplicitUpdateInvoicesRequestItemsItemVariant(t *testing.T) {
 	t.Run("SetAllowMultipleQuantity_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var fernTestValueAllowMultipleQuantity *bool
 
 		// Act
@@ -11139,7 +11139,7 @@ func TestSettersMarkExplicitUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("SetApplicationFeeAmount_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var fernTestValueApplicationFeeAmount *float64
 
 		// Act
@@ -11170,7 +11170,7 @@ func TestSettersMarkExplicitUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("SetBillingPeriod_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var fernTestValueBillingPeriod *int
 
 		// Act
@@ -11198,11 +11198,42 @@ func TestSettersMarkExplicitUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetBillingType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
+		var fernTestValueBillingType *UpdateInvoicesRequestItemsItemVariantBillingType
+
+		// Act
+		obj.SetBillingType(fernTestValueBillingType)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetCurrency_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
-		var fernTestValueCurrency UpdateInvoicesRequestItemsItemPlanCurrency
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
+		var fernTestValueCurrency UpdateInvoicesRequestItemsItemVariantCurrency
 
 		// Act
 		obj.SetCurrency(fernTestValueCurrency)
@@ -11232,7 +11263,7 @@ func TestSettersMarkExplicitUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("SetDescription_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var fernTestValueDescription *string
 
 		// Act
@@ -11263,7 +11294,7 @@ func TestSettersMarkExplicitUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("SetExpirationDays_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var fernTestValueExpirationDays *int
 
 		// Act
@@ -11294,7 +11325,7 @@ func TestSettersMarkExplicitUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("SetForceCreateNewPlan_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var fernTestValueForceCreateNewPlan *bool
 
 		// Act
@@ -11325,7 +11356,7 @@ func TestSettersMarkExplicitUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("SetInitialPrice_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var fernTestValueInitialPrice *float64
 
 		// Act
@@ -11356,7 +11387,7 @@ func TestSettersMarkExplicitUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("SetInternalNotes_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var fernTestValueInternalNotes *string
 
 		// Act
@@ -11387,8 +11418,8 @@ func TestSettersMarkExplicitUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("SetOverrideTaxType_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
-		var fernTestValueOverrideTaxType *UpdateInvoicesRequestItemsItemPlanOverrideTaxType
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
+		var fernTestValueOverrideTaxType *UpdateInvoicesRequestItemsItemVariantOverrideTaxType
 
 		// Act
 		obj.SetOverrideTaxType(fernTestValueOverrideTaxType)
@@ -11415,42 +11446,11 @@ func TestSettersMarkExplicitUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetPlanType_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
-		var fernTestValuePlanType *UpdateInvoicesRequestItemsItemPlanPlanType
-
-		// Act
-		obj.SetPlanType(fernTestValuePlanType)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
 	t.Run("SetProduct_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
-		var fernTestValueProduct *UpdateInvoicesRequestItemsItemPlanProduct
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
+		var fernTestValueProduct *UpdateInvoicesRequestItemsItemVariantProduct
 
 		// Act
 		obj.SetProduct(fernTestValueProduct)
@@ -11480,7 +11480,7 @@ func TestSettersMarkExplicitUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("SetProductID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var fernTestValueProductID *string
 
 		// Act
@@ -11511,7 +11511,7 @@ func TestSettersMarkExplicitUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("SetRenewalPrice_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var fernTestValueRenewalPrice *float64
 
 		// Act
@@ -11542,7 +11542,7 @@ func TestSettersMarkExplicitUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("SetTitle_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var fernTestValueTitle *string
 
 		// Act
@@ -11573,7 +11573,7 @@ func TestSettersMarkExplicitUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("SetTrialPeriodDays_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		var fernTestValueTrialPeriodDays *int
 
 		// Act
@@ -11604,8 +11604,8 @@ func TestSettersMarkExplicitUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 	t.Run("SetVisibility_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
-		var fernTestValueVisibility *UpdateInvoicesRequestItemsItemPlanVisibility
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
+		var fernTestValueVisibility *UpdateInvoicesRequestItemsItemVariantVisibility
 
 		// Act
 		obj.SetVisibility(fernTestValueVisibility)
@@ -11634,9 +11634,9 @@ func TestSettersMarkExplicitUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 }
 
-func TestSettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
+func TestSettersUpdateInvoicesRequestItemsItemVariantProduct(t *testing.T) {
 	t.Run("SetCollectShippingAddress", func(t *testing.T) {
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueCollectShippingAddress *bool
 		obj.SetCollectShippingAddress(fernTestValueCollectShippingAddress)
 		assert.Equal(t, fernTestValueCollectShippingAddress, obj.CollectShippingAddress)
@@ -11644,7 +11644,7 @@ func TestSettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	})
 
 	t.Run("SetCustomStatementDescriptor", func(t *testing.T) {
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueCustomStatementDescriptor *string
 		obj.SetCustomStatementDescriptor(fernTestValueCustomStatementDescriptor)
 		assert.Equal(t, fernTestValueCustomStatementDescriptor, obj.CustomStatementDescriptor)
@@ -11652,7 +11652,7 @@ func TestSettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	})
 
 	t.Run("SetDescription", func(t *testing.T) {
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueDescription *string
 		obj.SetDescription(fernTestValueDescription)
 		assert.Equal(t, fernTestValueDescription, obj.Description)
@@ -11660,7 +11660,7 @@ func TestSettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	})
 
 	t.Run("SetExternalIdentifier", func(t *testing.T) {
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueExternalIdentifier string
 		obj.SetExternalIdentifier(fernTestValueExternalIdentifier)
 		assert.Equal(t, fernTestValueExternalIdentifier, obj.ExternalIdentifier)
@@ -11668,7 +11668,7 @@ func TestSettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	})
 
 	t.Run("SetGlobalAffiliatePercentage", func(t *testing.T) {
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueGlobalAffiliatePercentage *float64
 		obj.SetGlobalAffiliatePercentage(fernTestValueGlobalAffiliatePercentage)
 		assert.Equal(t, fernTestValueGlobalAffiliatePercentage, obj.GlobalAffiliatePercentage)
@@ -11676,15 +11676,15 @@ func TestSettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	})
 
 	t.Run("SetGlobalAffiliateStatus", func(t *testing.T) {
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
-		var fernTestValueGlobalAffiliateStatus *UpdateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
+		var fernTestValueGlobalAffiliateStatus *UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus
 		obj.SetGlobalAffiliateStatus(fernTestValueGlobalAffiliateStatus)
 		assert.Equal(t, fernTestValueGlobalAffiliateStatus, obj.GlobalAffiliateStatus)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
 	t.Run("SetHeadline", func(t *testing.T) {
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueHeadline *string
 		obj.SetHeadline(fernTestValueHeadline)
 		assert.Equal(t, fernTestValueHeadline, obj.Headline)
@@ -11692,7 +11692,7 @@ func TestSettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	})
 
 	t.Run("SetProductTaxCodeID", func(t *testing.T) {
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueProductTaxCodeID *string
 		obj.SetProductTaxCodeID(fernTestValueProductTaxCodeID)
 		assert.Equal(t, fernTestValueProductTaxCodeID, obj.ProductTaxCodeID)
@@ -11700,7 +11700,7 @@ func TestSettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	})
 
 	t.Run("SetRedirectPurchaseURL", func(t *testing.T) {
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueRedirectPurchaseURL *string
 		obj.SetRedirectPurchaseURL(fernTestValueRedirectPurchaseURL)
 		assert.Equal(t, fernTestValueRedirectPurchaseURL, obj.RedirectPurchaseURL)
@@ -11708,7 +11708,7 @@ func TestSettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	})
 
 	t.Run("SetRoute", func(t *testing.T) {
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueRoute *string
 		obj.SetRoute(fernTestValueRoute)
 		assert.Equal(t, fernTestValueRoute, obj.Route)
@@ -11716,7 +11716,7 @@ func TestSettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	})
 
 	t.Run("SetTitle", func(t *testing.T) {
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueTitle string
 		obj.SetTitle(fernTestValueTitle)
 		assert.Equal(t, fernTestValueTitle, obj.Title)
@@ -11724,8 +11724,8 @@ func TestSettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	})
 
 	t.Run("SetVisibility", func(t *testing.T) {
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
-		var fernTestValueVisibility *UpdateInvoicesRequestItemsItemPlanProductVisibility
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
+		var fernTestValueVisibility *UpdateInvoicesRequestItemsItemVariantProductVisibility
 		obj.SetVisibility(fernTestValueVisibility)
 		assert.Equal(t, fernTestValueVisibility, obj.Visibility)
 		assert.NotNil(t, obj.explicitFields)
@@ -11733,11 +11733,11 @@ func TestSettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 
 }
 
-func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
+func TestGettersUpdateInvoicesRequestItemsItemVariantProduct(t *testing.T) {
 	t.Run("GetCollectShippingAddress", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		var expected *bool
 		obj.CollectShippingAddress = expected
 
@@ -11748,7 +11748,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetCollectShippingAddress_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		obj.CollectShippingAddress = nil
 
 		// Act & Assert
@@ -11757,7 +11757,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 
 	t.Run("GetCollectShippingAddress_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlanProduct
+		var obj *UpdateInvoicesRequestItemsItemVariantProduct
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -11770,7 +11770,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetCustomStatementDescriptor", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		var expected *string
 		obj.CustomStatementDescriptor = expected
 
@@ -11781,7 +11781,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetCustomStatementDescriptor_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		obj.CustomStatementDescriptor = nil
 
 		// Act & Assert
@@ -11790,7 +11790,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 
 	t.Run("GetCustomStatementDescriptor_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlanProduct
+		var obj *UpdateInvoicesRequestItemsItemVariantProduct
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -11803,7 +11803,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetDescription", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		var expected *string
 		obj.Description = expected
 
@@ -11814,7 +11814,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetDescription_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		obj.Description = nil
 
 		// Act & Assert
@@ -11823,7 +11823,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 
 	t.Run("GetDescription_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlanProduct
+		var obj *UpdateInvoicesRequestItemsItemVariantProduct
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -11836,7 +11836,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetExternalIdentifier", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		var expected string
 		obj.ExternalIdentifier = expected
 
@@ -11846,7 +11846,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 
 	t.Run("GetExternalIdentifier_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlanProduct
+		var obj *UpdateInvoicesRequestItemsItemVariantProduct
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -11859,7 +11859,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetGlobalAffiliatePercentage", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		var expected *float64
 		obj.GlobalAffiliatePercentage = expected
 
@@ -11870,7 +11870,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetGlobalAffiliatePercentage_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		obj.GlobalAffiliatePercentage = nil
 
 		// Act & Assert
@@ -11879,7 +11879,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 
 	t.Run("GetGlobalAffiliatePercentage_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlanProduct
+		var obj *UpdateInvoicesRequestItemsItemVariantProduct
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -11892,8 +11892,8 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetGlobalAffiliateStatus", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
-		var expected *UpdateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
+		var expected *UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus
 		obj.GlobalAffiliateStatus = expected
 
 		// Act & Assert
@@ -11903,7 +11903,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetGlobalAffiliateStatus_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		obj.GlobalAffiliateStatus = nil
 
 		// Act & Assert
@@ -11912,7 +11912,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 
 	t.Run("GetGlobalAffiliateStatus_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlanProduct
+		var obj *UpdateInvoicesRequestItemsItemVariantProduct
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -11925,7 +11925,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetHeadline", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		var expected *string
 		obj.Headline = expected
 
@@ -11936,7 +11936,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetHeadline_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		obj.Headline = nil
 
 		// Act & Assert
@@ -11945,7 +11945,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 
 	t.Run("GetHeadline_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlanProduct
+		var obj *UpdateInvoicesRequestItemsItemVariantProduct
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -11958,7 +11958,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetProductTaxCodeID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		var expected *string
 		obj.ProductTaxCodeID = expected
 
@@ -11969,7 +11969,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetProductTaxCodeID_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		obj.ProductTaxCodeID = nil
 
 		// Act & Assert
@@ -11978,7 +11978,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 
 	t.Run("GetProductTaxCodeID_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlanProduct
+		var obj *UpdateInvoicesRequestItemsItemVariantProduct
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -11991,7 +11991,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetRedirectPurchaseURL", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		var expected *string
 		obj.RedirectPurchaseURL = expected
 
@@ -12002,7 +12002,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetRedirectPurchaseURL_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		obj.RedirectPurchaseURL = nil
 
 		// Act & Assert
@@ -12011,7 +12011,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 
 	t.Run("GetRedirectPurchaseURL_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlanProduct
+		var obj *UpdateInvoicesRequestItemsItemVariantProduct
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -12024,7 +12024,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetRoute", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		var expected *string
 		obj.Route = expected
 
@@ -12035,7 +12035,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetRoute_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		obj.Route = nil
 
 		// Act & Assert
@@ -12044,7 +12044,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 
 	t.Run("GetRoute_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlanProduct
+		var obj *UpdateInvoicesRequestItemsItemVariantProduct
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -12057,7 +12057,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetTitle", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		var expected string
 		obj.Title = expected
 
@@ -12067,7 +12067,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 
 	t.Run("GetTitle_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlanProduct
+		var obj *UpdateInvoicesRequestItemsItemVariantProduct
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -12080,8 +12080,8 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetVisibility", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
-		var expected *UpdateInvoicesRequestItemsItemPlanProductVisibility
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
+		var expected *UpdateInvoicesRequestItemsItemVariantProductVisibility
 		obj.Visibility = expected
 
 		// Act & Assert
@@ -12091,7 +12091,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 	t.Run("GetVisibility_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		obj.Visibility = nil
 
 		// Act & Assert
@@ -12100,7 +12100,7 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 
 	t.Run("GetVisibility_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlanProduct
+		var obj *UpdateInvoicesRequestItemsItemVariantProduct
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -12112,11 +12112,11 @@ func TestGettersUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 
 }
 
-func TestSettersMarkExplicitUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
+func TestSettersMarkExplicitUpdateInvoicesRequestItemsItemVariantProduct(t *testing.T) {
 	t.Run("SetCollectShippingAddress_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueCollectShippingAddress *bool
 
 		// Act
@@ -12147,7 +12147,7 @@ func TestSettersMarkExplicitUpdateInvoicesRequestItemsItemPlanProduct(t *testing
 	t.Run("SetCustomStatementDescriptor_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueCustomStatementDescriptor *string
 
 		// Act
@@ -12178,7 +12178,7 @@ func TestSettersMarkExplicitUpdateInvoicesRequestItemsItemPlanProduct(t *testing
 	t.Run("SetDescription_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueDescription *string
 
 		// Act
@@ -12209,7 +12209,7 @@ func TestSettersMarkExplicitUpdateInvoicesRequestItemsItemPlanProduct(t *testing
 	t.Run("SetExternalIdentifier_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueExternalIdentifier string
 
 		// Act
@@ -12240,7 +12240,7 @@ func TestSettersMarkExplicitUpdateInvoicesRequestItemsItemPlanProduct(t *testing
 	t.Run("SetGlobalAffiliatePercentage_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueGlobalAffiliatePercentage *float64
 
 		// Act
@@ -12271,8 +12271,8 @@ func TestSettersMarkExplicitUpdateInvoicesRequestItemsItemPlanProduct(t *testing
 	t.Run("SetGlobalAffiliateStatus_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
-		var fernTestValueGlobalAffiliateStatus *UpdateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
+		var fernTestValueGlobalAffiliateStatus *UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus
 
 		// Act
 		obj.SetGlobalAffiliateStatus(fernTestValueGlobalAffiliateStatus)
@@ -12302,7 +12302,7 @@ func TestSettersMarkExplicitUpdateInvoicesRequestItemsItemPlanProduct(t *testing
 	t.Run("SetHeadline_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueHeadline *string
 
 		// Act
@@ -12333,7 +12333,7 @@ func TestSettersMarkExplicitUpdateInvoicesRequestItemsItemPlanProduct(t *testing
 	t.Run("SetProductTaxCodeID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueProductTaxCodeID *string
 
 		// Act
@@ -12364,7 +12364,7 @@ func TestSettersMarkExplicitUpdateInvoicesRequestItemsItemPlanProduct(t *testing
 	t.Run("SetRedirectPurchaseURL_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueRedirectPurchaseURL *string
 
 		// Act
@@ -12395,7 +12395,7 @@ func TestSettersMarkExplicitUpdateInvoicesRequestItemsItemPlanProduct(t *testing
 	t.Run("SetRoute_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueRoute *string
 
 		// Act
@@ -12426,7 +12426,7 @@ func TestSettersMarkExplicitUpdateInvoicesRequestItemsItemPlanProduct(t *testing
 	t.Run("SetTitle_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		var fernTestValueTitle string
 
 		// Act
@@ -12457,8 +12457,8 @@ func TestSettersMarkExplicitUpdateInvoicesRequestItemsItemPlanProduct(t *testing
 	t.Run("SetVisibility_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
-		var fernTestValueVisibility *UpdateInvoicesRequestItemsItemPlanProductVisibility
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
+		var fernTestValueVisibility *UpdateInvoicesRequestItemsItemVariantProductVisibility
 
 		// Act
 		obj.SetVisibility(fernTestValueVisibility)
@@ -13006,11 +13006,11 @@ func TestJSONMarshalingCreateInvoicesRequestBillingAddress(t *testing.T) {
 	})
 }
 
-func TestJSONMarshalingCreateInvoicesRequestItemsItemPlan(t *testing.T) {
+func TestJSONMarshalingCreateInvoicesRequestItemsItemVariant(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 
 		// Act - Marshal to JSON
 		data, err := json.Marshal(obj)
@@ -13019,31 +13019,31 @@ func TestJSONMarshalingCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 		assert.NotEmpty(t, data, "marshaled data should not be empty")
 
 		// Unmarshal back and verify round-trip
-		var unmarshaled CreateInvoicesRequestItemsItemPlan
+		var unmarshaled CreateInvoicesRequestItemsItemVariant
 		err = json.Unmarshal(data, &unmarshaled)
 		assert.NoError(t, err, "round-trip unmarshal should succeed")
 	})
 
 	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
 		t.Parallel()
-		var obj CreateInvoicesRequestItemsItemPlan
+		var obj CreateInvoicesRequestItemsItemVariant
 		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
 		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
 	})
 
 	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
 		t.Parallel()
-		var obj CreateInvoicesRequestItemsItemPlan
+		var obj CreateInvoicesRequestItemsItemVariant
 		err := json.Unmarshal([]byte(`{}`), &obj)
 		assert.NoError(t, err, "unmarshaling empty object should succeed")
 	})
 }
 
-func TestJSONMarshalingCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
+func TestJSONMarshalingCreateInvoicesRequestItemsItemVariantProduct(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 
 		// Act - Marshal to JSON
 		data, err := json.Marshal(obj)
@@ -13052,21 +13052,21 @@ func TestJSONMarshalingCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 		assert.NotEmpty(t, data, "marshaled data should not be empty")
 
 		// Unmarshal back and verify round-trip
-		var unmarshaled CreateInvoicesRequestItemsItemPlanProduct
+		var unmarshaled CreateInvoicesRequestItemsItemVariantProduct
 		err = json.Unmarshal(data, &unmarshaled)
 		assert.NoError(t, err, "round-trip unmarshal should succeed")
 	})
 
 	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
 		t.Parallel()
-		var obj CreateInvoicesRequestItemsItemPlanProduct
+		var obj CreateInvoicesRequestItemsItemVariantProduct
 		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
 		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
 	})
 
 	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
 		t.Parallel()
-		var obj CreateInvoicesRequestItemsItemPlanProduct
+		var obj CreateInvoicesRequestItemsItemVariantProduct
 		err := json.Unmarshal([]byte(`{}`), &obj)
 		assert.NoError(t, err, "unmarshaling empty object should succeed")
 	})
@@ -13435,11 +13435,11 @@ func TestJSONMarshalingUpdateInvoicesRequestBillingAddress(t *testing.T) {
 	})
 }
 
-func TestJSONMarshalingUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
+func TestJSONMarshalingUpdateInvoicesRequestItemsItemVariant(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 
 		// Act - Marshal to JSON
 		data, err := json.Marshal(obj)
@@ -13448,31 +13448,31 @@ func TestJSONMarshalingUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 		assert.NotEmpty(t, data, "marshaled data should not be empty")
 
 		// Unmarshal back and verify round-trip
-		var unmarshaled UpdateInvoicesRequestItemsItemPlan
+		var unmarshaled UpdateInvoicesRequestItemsItemVariant
 		err = json.Unmarshal(data, &unmarshaled)
 		assert.NoError(t, err, "round-trip unmarshal should succeed")
 	})
 
 	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
 		t.Parallel()
-		var obj UpdateInvoicesRequestItemsItemPlan
+		var obj UpdateInvoicesRequestItemsItemVariant
 		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
 		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
 	})
 
 	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
 		t.Parallel()
-		var obj UpdateInvoicesRequestItemsItemPlan
+		var obj UpdateInvoicesRequestItemsItemVariant
 		err := json.Unmarshal([]byte(`{}`), &obj)
 		assert.NoError(t, err, "unmarshaling empty object should succeed")
 	})
 }
 
-func TestJSONMarshalingUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
+func TestJSONMarshalingUpdateInvoicesRequestItemsItemVariantProduct(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 
 		// Act - Marshal to JSON
 		data, err := json.Marshal(obj)
@@ -13481,21 +13481,21 @@ func TestJSONMarshalingUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
 		assert.NotEmpty(t, data, "marshaled data should not be empty")
 
 		// Unmarshal back and verify round-trip
-		var unmarshaled UpdateInvoicesRequestItemsItemPlanProduct
+		var unmarshaled UpdateInvoicesRequestItemsItemVariantProduct
 		err = json.Unmarshal(data, &unmarshaled)
 		assert.NoError(t, err, "round-trip unmarshal should succeed")
 	})
 
 	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
 		t.Parallel()
-		var obj UpdateInvoicesRequestItemsItemPlanProduct
+		var obj UpdateInvoicesRequestItemsItemVariantProduct
 		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
 		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
 	})
 
 	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
 		t.Parallel()
-		var obj UpdateInvoicesRequestItemsItemPlanProduct
+		var obj UpdateInvoicesRequestItemsItemVariantProduct
 		err := json.Unmarshal([]byte(`{}`), &obj)
 		assert.NoError(t, err, "unmarshaling empty object should succeed")
 	})
@@ -13560,11 +13560,11 @@ func TestRequiredNullableRoundTripInvoiceLineItem(t *testing.T) {
 		"discount_amount",
 		"id",
 		"label",
-		"plan_id",
 		"product_id",
 		"subtotal",
 		"tax_amount",
 		"unit_amount",
+		"variant_id",
 	}
 	marshalToMap := func(t *testing.T, obj *InvoiceLineItem) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
@@ -13577,7 +13577,7 @@ func TestRequiredNullableRoundTripInvoiceLineItem(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj InvoiceLineItem
-		require.NoError(t, json.Unmarshal([]byte(`{"discount_amount":null,"id":null,"label":null,"plan_id":null,"product_id":null,"subtotal":null,"tax_amount":null,"unit_amount":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"discount_amount":null,"id":null,"label":null,"product_id":null,"subtotal":null,"tax_amount":null,"unit_amount":null,"variant_id":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -13910,18 +13910,18 @@ func TestOptionalNullableRoundTripCreateInvoicesRequestBillingAddress(t *testing
 	})
 }
 
-func TestOptionalNullableRoundTripCreateInvoicesRequestItemsItemPlan(t *testing.T) {
+func TestOptionalNullableRoundTripCreateInvoicesRequestItemsItemVariant(t *testing.T) {
 	optionalNullableKeys := []string{
 		"allow_multiple_quantity",
 		"application_fee_amount",
 		"billing_period",
+		"billing_type",
 		"description",
 		"expiration_days",
 		"force_create_new_plan",
 		"initial_price",
 		"internal_notes",
 		"override_tax_type",
-		"plan_type",
 		"product",
 		"product_id",
 		"renewal_price",
@@ -13929,7 +13929,7 @@ func TestOptionalNullableRoundTripCreateInvoicesRequestItemsItemPlan(t *testing.
 		"trial_period_days",
 		"visibility",
 	}
-	marshalToMap := func(t *testing.T, obj *CreateInvoicesRequestItemsItemPlan) map[string]json.RawMessage {
+	marshalToMap := func(t *testing.T, obj *CreateInvoicesRequestItemsItemVariant) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
 		require.NoError(t, err, "marshaling should succeed")
 		var result map[string]json.RawMessage
@@ -13939,8 +13939,8 @@ func TestOptionalNullableRoundTripCreateInvoicesRequestItemsItemPlan(t *testing.
 
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
-		var obj CreateInvoicesRequestItemsItemPlan
-		require.NoError(t, json.Unmarshal([]byte(`{"allow_multiple_quantity":null,"application_fee_amount":null,"billing_period":null,"description":null,"expiration_days":null,"force_create_new_plan":null,"initial_price":null,"internal_notes":null,"override_tax_type":null,"plan_type":null,"product":null,"product_id":null,"renewal_price":null,"title":null,"trial_period_days":null,"visibility":null}`), &obj))
+		var obj CreateInvoicesRequestItemsItemVariant
+		require.NoError(t, json.Unmarshal([]byte(`{"allow_multiple_quantity":null,"application_fee_amount":null,"billing_period":null,"billing_type":null,"description":null,"expiration_days":null,"force_create_new_plan":null,"initial_price":null,"internal_notes":null,"override_tax_type":null,"product":null,"product_id":null,"renewal_price":null,"title":null,"trial_period_days":null,"visibility":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range optionalNullableKeys {
 			value, ok := result[key]
@@ -13951,7 +13951,7 @@ func TestOptionalNullableRoundTripCreateInvoicesRequestItemsItemPlan(t *testing.
 
 	t.Run("AbsentStaysAbsent", func(t *testing.T) {
 		t.Parallel()
-		var obj CreateInvoicesRequestItemsItemPlan
+		var obj CreateInvoicesRequestItemsItemVariant
 		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range optionalNullableKeys {
@@ -13961,14 +13961,14 @@ func TestOptionalNullableRoundTripCreateInvoicesRequestItemsItemPlan(t *testing.
 
 	t.Run("FreshValueOmits", func(t *testing.T) {
 		t.Parallel()
-		result := marshalToMap(t, &CreateInvoicesRequestItemsItemPlan{})
+		result := marshalToMap(t, &CreateInvoicesRequestItemsItemVariant{})
 		for _, key := range optionalNullableKeys {
 			assert.NotContains(t, result, key, "optional nullable field %q should be omitted from a freshly constructed value", key)
 		}
 	})
 }
 
-func TestOptionalNullableRoundTripCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
+func TestOptionalNullableRoundTripCreateInvoicesRequestItemsItemVariantProduct(t *testing.T) {
 	optionalNullableKeys := []string{
 		"collect_shipping_address",
 		"custom_statement_descriptor",
@@ -13980,7 +13980,7 @@ func TestOptionalNullableRoundTripCreateInvoicesRequestItemsItemPlanProduct(t *t
 		"redirect_purchase_url",
 		"route",
 	}
-	marshalToMap := func(t *testing.T, obj *CreateInvoicesRequestItemsItemPlanProduct) map[string]json.RawMessage {
+	marshalToMap := func(t *testing.T, obj *CreateInvoicesRequestItemsItemVariantProduct) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
 		require.NoError(t, err, "marshaling should succeed")
 		var result map[string]json.RawMessage
@@ -13990,7 +13990,7 @@ func TestOptionalNullableRoundTripCreateInvoicesRequestItemsItemPlanProduct(t *t
 
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
-		var obj CreateInvoicesRequestItemsItemPlanProduct
+		var obj CreateInvoicesRequestItemsItemVariantProduct
 		require.NoError(t, json.Unmarshal([]byte(`{"collect_shipping_address":null,"custom_statement_descriptor":null,"description":null,"global_affiliate_percentage":null,"global_affiliate_status":null,"headline":null,"product_tax_code_id":null,"redirect_purchase_url":null,"route":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range optionalNullableKeys {
@@ -14002,7 +14002,7 @@ func TestOptionalNullableRoundTripCreateInvoicesRequestItemsItemPlanProduct(t *t
 
 	t.Run("AbsentStaysAbsent", func(t *testing.T) {
 		t.Parallel()
-		var obj CreateInvoicesRequestItemsItemPlanProduct
+		var obj CreateInvoicesRequestItemsItemVariantProduct
 		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range optionalNullableKeys {
@@ -14012,7 +14012,7 @@ func TestOptionalNullableRoundTripCreateInvoicesRequestItemsItemPlanProduct(t *t
 
 	t.Run("FreshValueOmits", func(t *testing.T) {
 		t.Parallel()
-		result := marshalToMap(t, &CreateInvoicesRequestItemsItemPlanProduct{})
+		result := marshalToMap(t, &CreateInvoicesRequestItemsItemVariantProduct{})
 		for _, key := range optionalNullableKeys {
 			assert.NotContains(t, result, key, "optional nullable field %q should be omitted from a freshly constructed value", key)
 		}
@@ -14280,18 +14280,18 @@ func TestOptionalNullableRoundTripUpdateInvoicesRequestBillingAddress(t *testing
 	})
 }
 
-func TestOptionalNullableRoundTripUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
+func TestOptionalNullableRoundTripUpdateInvoicesRequestItemsItemVariant(t *testing.T) {
 	optionalNullableKeys := []string{
 		"allow_multiple_quantity",
 		"application_fee_amount",
 		"billing_period",
+		"billing_type",
 		"description",
 		"expiration_days",
 		"force_create_new_plan",
 		"initial_price",
 		"internal_notes",
 		"override_tax_type",
-		"plan_type",
 		"product",
 		"product_id",
 		"renewal_price",
@@ -14299,7 +14299,7 @@ func TestOptionalNullableRoundTripUpdateInvoicesRequestItemsItemPlan(t *testing.
 		"trial_period_days",
 		"visibility",
 	}
-	marshalToMap := func(t *testing.T, obj *UpdateInvoicesRequestItemsItemPlan) map[string]json.RawMessage {
+	marshalToMap := func(t *testing.T, obj *UpdateInvoicesRequestItemsItemVariant) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
 		require.NoError(t, err, "marshaling should succeed")
 		var result map[string]json.RawMessage
@@ -14309,8 +14309,8 @@ func TestOptionalNullableRoundTripUpdateInvoicesRequestItemsItemPlan(t *testing.
 
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
-		var obj UpdateInvoicesRequestItemsItemPlan
-		require.NoError(t, json.Unmarshal([]byte(`{"allow_multiple_quantity":null,"application_fee_amount":null,"billing_period":null,"description":null,"expiration_days":null,"force_create_new_plan":null,"initial_price":null,"internal_notes":null,"override_tax_type":null,"plan_type":null,"product":null,"product_id":null,"renewal_price":null,"title":null,"trial_period_days":null,"visibility":null}`), &obj))
+		var obj UpdateInvoicesRequestItemsItemVariant
+		require.NoError(t, json.Unmarshal([]byte(`{"allow_multiple_quantity":null,"application_fee_amount":null,"billing_period":null,"billing_type":null,"description":null,"expiration_days":null,"force_create_new_plan":null,"initial_price":null,"internal_notes":null,"override_tax_type":null,"product":null,"product_id":null,"renewal_price":null,"title":null,"trial_period_days":null,"visibility":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range optionalNullableKeys {
 			value, ok := result[key]
@@ -14321,7 +14321,7 @@ func TestOptionalNullableRoundTripUpdateInvoicesRequestItemsItemPlan(t *testing.
 
 	t.Run("AbsentStaysAbsent", func(t *testing.T) {
 		t.Parallel()
-		var obj UpdateInvoicesRequestItemsItemPlan
+		var obj UpdateInvoicesRequestItemsItemVariant
 		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range optionalNullableKeys {
@@ -14331,14 +14331,14 @@ func TestOptionalNullableRoundTripUpdateInvoicesRequestItemsItemPlan(t *testing.
 
 	t.Run("FreshValueOmits", func(t *testing.T) {
 		t.Parallel()
-		result := marshalToMap(t, &UpdateInvoicesRequestItemsItemPlan{})
+		result := marshalToMap(t, &UpdateInvoicesRequestItemsItemVariant{})
 		for _, key := range optionalNullableKeys {
 			assert.NotContains(t, result, key, "optional nullable field %q should be omitted from a freshly constructed value", key)
 		}
 	})
 }
 
-func TestOptionalNullableRoundTripUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
+func TestOptionalNullableRoundTripUpdateInvoicesRequestItemsItemVariantProduct(t *testing.T) {
 	optionalNullableKeys := []string{
 		"collect_shipping_address",
 		"custom_statement_descriptor",
@@ -14350,7 +14350,7 @@ func TestOptionalNullableRoundTripUpdateInvoicesRequestItemsItemPlanProduct(t *t
 		"redirect_purchase_url",
 		"route",
 	}
-	marshalToMap := func(t *testing.T, obj *UpdateInvoicesRequestItemsItemPlanProduct) map[string]json.RawMessage {
+	marshalToMap := func(t *testing.T, obj *UpdateInvoicesRequestItemsItemVariantProduct) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
 		require.NoError(t, err, "marshaling should succeed")
 		var result map[string]json.RawMessage
@@ -14360,7 +14360,7 @@ func TestOptionalNullableRoundTripUpdateInvoicesRequestItemsItemPlanProduct(t *t
 
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
-		var obj UpdateInvoicesRequestItemsItemPlanProduct
+		var obj UpdateInvoicesRequestItemsItemVariantProduct
 		require.NoError(t, json.Unmarshal([]byte(`{"collect_shipping_address":null,"custom_statement_descriptor":null,"description":null,"global_affiliate_percentage":null,"global_affiliate_status":null,"headline":null,"product_tax_code_id":null,"redirect_purchase_url":null,"route":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range optionalNullableKeys {
@@ -14372,7 +14372,7 @@ func TestOptionalNullableRoundTripUpdateInvoicesRequestItemsItemPlanProduct(t *t
 
 	t.Run("AbsentStaysAbsent", func(t *testing.T) {
 		t.Parallel()
-		var obj UpdateInvoicesRequestItemsItemPlanProduct
+		var obj UpdateInvoicesRequestItemsItemVariantProduct
 		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range optionalNullableKeys {
@@ -14382,7 +14382,7 @@ func TestOptionalNullableRoundTripUpdateInvoicesRequestItemsItemPlanProduct(t *t
 
 	t.Run("FreshValueOmits", func(t *testing.T) {
 		t.Parallel()
-		result := marshalToMap(t, &UpdateInvoicesRequestItemsItemPlanProduct{})
+		result := marshalToMap(t, &UpdateInvoicesRequestItemsItemVariantProduct{})
 		for _, key := range optionalNullableKeys {
 			assert.NotContains(t, result, key, "optional nullable field %q should be omitted from a freshly constructed value", key)
 		}
@@ -14405,33 +14405,33 @@ func TestStringCreateInvoicesRequestBillingAddress(t *testing.T) {
 	})
 }
 
-func TestStringCreateInvoicesRequestItemsItemPlan(t *testing.T) {
+func TestStringCreateInvoicesRequestItemsItemVariant(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		result := obj.String()
 		assert.NotEmpty(t, result, "String() should return a non-empty representation")
 	})
 
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlan
+		var obj *CreateInvoicesRequestItemsItemVariant
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
 }
 
-func TestStringCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
+func TestStringCreateInvoicesRequestItemsItemVariantProduct(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		result := obj.String()
 		assert.NotEmpty(t, result, "String() should return a non-empty representation")
 	})
 
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlanProduct
+		var obj *CreateInvoicesRequestItemsItemVariantProduct
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -14613,741 +14613,60 @@ func TestStringUpdateInvoicesRequestBillingAddress(t *testing.T) {
 	})
 }
 
-func TestStringUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
+func TestStringUpdateInvoicesRequestItemsItemVariant(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		result := obj.String()
 		assert.NotEmpty(t, result, "String() should return a non-empty representation")
 	})
 
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlan
+		var obj *UpdateInvoicesRequestItemsItemVariant
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
 }
 
-func TestStringUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
+func TestStringUpdateInvoicesRequestItemsItemVariantProduct(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		result := obj.String()
 		assert.NotEmpty(t, result, "String() should return a non-empty representation")
 	})
 
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlanProduct
+		var obj *UpdateInvoicesRequestItemsItemVariantProduct
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
 }
 
-func TestEnumCreateInvoicesRequestItemsItemPlanCurrency(t *testing.T) {
-	t.Run("NewFromString_usd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("usd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("usd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_sgd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("sgd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("sgd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_inr", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("inr")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("inr"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_aud", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("aud")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("aud"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_brl", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("brl")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("brl"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_cad", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("cad")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("cad"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_dkk", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("dkk")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("dkk"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_eur", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("eur")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("eur"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_nok", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("nok")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("nok"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_gbp", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("gbp")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("gbp"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_sek", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("sek")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("sek"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_chf", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("chf")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("chf"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_hkd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("hkd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("hkd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_huf", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("huf")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("huf"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_jpy", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("jpy")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("jpy"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_mxn", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("mxn")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("mxn"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_myr", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("myr")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("myr"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_pln", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("pln")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("pln"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_czk", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("czk")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("czk"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_nzd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("nzd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("nzd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_aed", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("aed")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("aed"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_eth", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("eth")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("eth"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_ape", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("ape")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("ape"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_cop", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("cop")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("cop"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_ron", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("ron")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("ron"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_thb", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("thb")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("thb"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_bgn", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("bgn")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("bgn"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_idr", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("idr")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("idr"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_dop", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("dop")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("dop"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_php", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("php")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("php"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_try", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("try")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("try"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_krw", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("krw")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("krw"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_twd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("twd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("twd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_vnd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("vnd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("vnd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_pkr", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("pkr")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("pkr"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_clp", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("clp")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("clp"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_uyu", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("uyu")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("uyu"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_ars", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("ars")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("ars"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_zar", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("zar")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("zar"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_dzd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("dzd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("dzd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_tnd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("tnd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("tnd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_mad", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("mad")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("mad"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_kes", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("kes")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("kes"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_kwd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("kwd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("kwd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_jod", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("jod")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("jod"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_all", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("all")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("all"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_xcd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("xcd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("xcd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_amd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("amd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("amd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_bsd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("bsd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("bsd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_bhd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("bhd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("bhd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_bob", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("bob")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("bob"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_bam", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("bam")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("bam"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_khr", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("khr")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("khr"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_crc", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("crc")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("crc"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_xof", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("xof")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("xof"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_egp", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("egp")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("egp"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_etb", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("etb")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("etb"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_gmd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("gmd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("gmd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_ghs", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("ghs")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("ghs"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_gtq", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("gtq")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("gtq"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_gyd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("gyd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("gyd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_ils", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("ils")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("ils"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_jmd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("jmd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("jmd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_mop", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("mop")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("mop"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_mga", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("mga")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("mga"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_mur", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("mur")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("mur"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_mdl", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("mdl")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("mdl"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_mnt", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("mnt")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("mnt"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_nad", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("nad")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("nad"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_ngn", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("ngn")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("ngn"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_mkd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("mkd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("mkd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_omr", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("omr")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("omr"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_pyg", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("pyg")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("pyg"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_pen", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("pen")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("pen"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_qar", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("qar")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("qar"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_rwf", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("rwf")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("rwf"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_sar", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("sar")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("sar"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_rsd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("rsd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("rsd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_lkr", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("lkr")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("lkr"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_tzs", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("tzs")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("tzs"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_ttd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("ttd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("ttd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_uzs", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("uzs")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("uzs"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_rub", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("rub")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("rub"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_btc", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("btc")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("btc"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_cny", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("cny")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("cny"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_usdt", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("usdt")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("usdt"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_kzt", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("kzt")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("kzt"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_awg", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("awg")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("awg"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_whop_usd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("whop_usd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("whop_usd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_xau", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("xau")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanCurrency("xau"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("invalid_value_that_does_not_exist")
-		assert.Error(t, err)
-	})
-
-	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewCreateInvoicesRequestItemsItemPlanCurrencyFromString("usd")
-		assert.NoError(t, err)
-		ptr := val.Ptr()
-		assert.NotNil(t, ptr)
-		assert.Equal(t, val, *ptr)
-	})
-}
-
-func TestEnumCreateInvoicesRequestItemsItemPlanOverrideTaxType(t *testing.T) {
-	t.Run("NewFromString_exclusive", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanOverrideTaxTypeFromString("exclusive")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanOverrideTaxType("exclusive"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_inclusive", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanOverrideTaxTypeFromString("inclusive")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanOverrideTaxType("inclusive"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_unspecified", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanOverrideTaxTypeFromString("unspecified")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanOverrideTaxType("unspecified"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewCreateInvoicesRequestItemsItemPlanOverrideTaxTypeFromString("invalid_value_that_does_not_exist")
-		assert.Error(t, err)
-	})
-
-	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewCreateInvoicesRequestItemsItemPlanOverrideTaxTypeFromString("exclusive")
-		assert.NoError(t, err)
-		ptr := val.Ptr()
-		assert.NotNil(t, ptr)
-		assert.Equal(t, val, *ptr)
-	})
-}
-
-func TestEnumCreateInvoicesRequestItemsItemPlanPlanType(t *testing.T) {
+func TestEnumCreateInvoicesRequestItemsItemVariantBillingType(t *testing.T) {
 	t.Run("NewFromString_renewal", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanPlanTypeFromString("renewal")
+		val, err := NewCreateInvoicesRequestItemsItemVariantBillingTypeFromString("renewal")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanPlanType("renewal"), val, "enum value should match expected wire value")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantBillingType("renewal"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_one_time", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanPlanTypeFromString("one_time")
+		val, err := NewCreateInvoicesRequestItemsItemVariantBillingTypeFromString("one_time")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanPlanType("one_time"), val, "enum value should match expected wire value")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantBillingType("one_time"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewCreateInvoicesRequestItemsItemPlanPlanTypeFromString("invalid_value_that_does_not_exist")
+		_, err := NewCreateInvoicesRequestItemsItemVariantBillingTypeFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewCreateInvoicesRequestItemsItemPlanPlanTypeFromString("renewal")
+		val, err := NewCreateInvoicesRequestItemsItemVariantBillingTypeFromString("renewal")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -15355,28 +14674,709 @@ func TestEnumCreateInvoicesRequestItemsItemPlanPlanType(t *testing.T) {
 	})
 }
 
-func TestEnumCreateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus(t *testing.T) {
+func TestEnumCreateInvoicesRequestItemsItemVariantCurrency(t *testing.T) {
+	t.Run("NewFromString_usd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("usd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("usd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_sgd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("sgd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("sgd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_inr", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("inr")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("inr"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_aud", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("aud")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("aud"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_brl", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("brl")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("brl"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_cad", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("cad")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("cad"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_dkk", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("dkk")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("dkk"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_eur", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("eur")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("eur"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_nok", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("nok")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("nok"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_gbp", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("gbp")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("gbp"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_sek", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("sek")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("sek"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_chf", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("chf")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("chf"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_hkd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("hkd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("hkd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_huf", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("huf")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("huf"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_jpy", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("jpy")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("jpy"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mxn", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("mxn")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("mxn"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_myr", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("myr")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("myr"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pln", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("pln")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("pln"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_czk", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("czk")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("czk"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_nzd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("nzd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("nzd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_aed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("aed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("aed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_eth", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("eth")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("eth"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ape", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("ape")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("ape"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_cop", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("cop")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("cop"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ron", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("ron")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("ron"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_thb", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("thb")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("thb"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_bgn", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("bgn")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("bgn"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_idr", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("idr")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("idr"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_dop", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("dop")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("dop"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_php", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("php")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("php"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_try", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("try")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("try"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_krw", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("krw")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("krw"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_twd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("twd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("twd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_vnd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("vnd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("vnd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pkr", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("pkr")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("pkr"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_clp", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("clp")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("clp"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_uyu", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("uyu")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("uyu"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ars", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("ars")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("ars"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_zar", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("zar")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("zar"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_dzd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("dzd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("dzd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_tnd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("tnd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("tnd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mad", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("mad")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("mad"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_kes", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("kes")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("kes"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_kwd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("kwd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("kwd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_jod", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("jod")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("jod"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_all", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("all")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("all"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_xcd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("xcd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("xcd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_amd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("amd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("amd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_bsd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("bsd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("bsd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_bhd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("bhd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("bhd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_bob", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("bob")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("bob"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_bam", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("bam")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("bam"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_khr", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("khr")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("khr"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_crc", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("crc")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("crc"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_xof", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("xof")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("xof"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_egp", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("egp")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("egp"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_etb", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("etb")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("etb"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_gmd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("gmd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("gmd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ghs", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("ghs")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("ghs"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_gtq", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("gtq")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("gtq"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_gyd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("gyd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("gyd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ils", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("ils")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("ils"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_jmd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("jmd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("jmd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mop", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("mop")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("mop"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mga", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("mga")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("mga"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mur", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("mur")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("mur"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mdl", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("mdl")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("mdl"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mnt", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("mnt")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("mnt"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_nad", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("nad")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("nad"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ngn", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("ngn")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("ngn"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mkd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("mkd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("mkd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_omr", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("omr")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("omr"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pyg", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("pyg")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("pyg"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pen", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("pen")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("pen"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_qar", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("qar")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("qar"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_rwf", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("rwf")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("rwf"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_sar", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("sar")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("sar"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_rsd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("rsd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("rsd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_lkr", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("lkr")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("lkr"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_tzs", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("tzs")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("tzs"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ttd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("ttd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("ttd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_uzs", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("uzs")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("uzs"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_rub", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("rub")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("rub"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_btc", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("btc")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("btc"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_cny", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("cny")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("cny"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_usdt", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("usdt")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("usdt"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_kzt", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("kzt")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("kzt"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_awg", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("awg")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("awg"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_whop_usd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("whop_usd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("whop_usd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_xau", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("xau")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("xau"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("usd")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumCreateInvoicesRequestItemsItemVariantOverrideTaxType(t *testing.T) {
+	t.Run("NewFromString_exclusive", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantOverrideTaxTypeFromString("exclusive")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantOverrideTaxType("exclusive"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_inclusive", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantOverrideTaxTypeFromString("inclusive")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantOverrideTaxType("inclusive"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_unspecified", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantOverrideTaxTypeFromString("unspecified")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantOverrideTaxType("unspecified"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCreateInvoicesRequestItemsItemVariantOverrideTaxTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCreateInvoicesRequestItemsItemVariantOverrideTaxTypeFromString("exclusive")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumCreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus(t *testing.T) {
 	t.Run("NewFromString_enabled", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatusFromString("enabled")
+		val, err := NewCreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatusFromString("enabled")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus("enabled"), val, "enum value should match expected wire value")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus("enabled"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_disabled", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatusFromString("disabled")
+		val, err := NewCreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatusFromString("disabled")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus("disabled"), val, "enum value should match expected wire value")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus("disabled"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewCreateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatusFromString("invalid_value_that_does_not_exist")
+		_, err := NewCreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatusFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewCreateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatusFromString("enabled")
+		val, err := NewCreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatusFromString("enabled")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -15384,42 +15384,42 @@ func TestEnumCreateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus(t *t
 	})
 }
 
-func TestEnumCreateInvoicesRequestItemsItemPlanProductVisibility(t *testing.T) {
+func TestEnumCreateInvoicesRequestItemsItemVariantProductVisibility(t *testing.T) {
 	t.Run("NewFromString_visible", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanProductVisibilityFromString("visible")
+		val, err := NewCreateInvoicesRequestItemsItemVariantProductVisibilityFromString("visible")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanProductVisibility("visible"), val, "enum value should match expected wire value")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantProductVisibility("visible"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_hidden", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanProductVisibilityFromString("hidden")
+		val, err := NewCreateInvoicesRequestItemsItemVariantProductVisibilityFromString("hidden")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanProductVisibility("hidden"), val, "enum value should match expected wire value")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantProductVisibility("hidden"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_archived", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanProductVisibilityFromString("archived")
+		val, err := NewCreateInvoicesRequestItemsItemVariantProductVisibilityFromString("archived")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanProductVisibility("archived"), val, "enum value should match expected wire value")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantProductVisibility("archived"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_quick_link", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanProductVisibilityFromString("quick_link")
+		val, err := NewCreateInvoicesRequestItemsItemVariantProductVisibilityFromString("quick_link")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanProductVisibility("quick_link"), val, "enum value should match expected wire value")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantProductVisibility("quick_link"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewCreateInvoicesRequestItemsItemPlanProductVisibilityFromString("invalid_value_that_does_not_exist")
+		_, err := NewCreateInvoicesRequestItemsItemVariantProductVisibilityFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewCreateInvoicesRequestItemsItemPlanProductVisibilityFromString("visible")
+		val, err := NewCreateInvoicesRequestItemsItemVariantProductVisibilityFromString("visible")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -15427,42 +15427,42 @@ func TestEnumCreateInvoicesRequestItemsItemPlanProductVisibility(t *testing.T) {
 	})
 }
 
-func TestEnumCreateInvoicesRequestItemsItemPlanVisibility(t *testing.T) {
+func TestEnumCreateInvoicesRequestItemsItemVariantVisibility(t *testing.T) {
 	t.Run("NewFromString_visible", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanVisibilityFromString("visible")
+		val, err := NewCreateInvoicesRequestItemsItemVariantVisibilityFromString("visible")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanVisibility("visible"), val, "enum value should match expected wire value")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantVisibility("visible"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_hidden", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanVisibilityFromString("hidden")
+		val, err := NewCreateInvoicesRequestItemsItemVariantVisibilityFromString("hidden")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanVisibility("hidden"), val, "enum value should match expected wire value")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantVisibility("hidden"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_archived", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanVisibilityFromString("archived")
+		val, err := NewCreateInvoicesRequestItemsItemVariantVisibilityFromString("archived")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanVisibility("archived"), val, "enum value should match expected wire value")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantVisibility("archived"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_quick_link", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewCreateInvoicesRequestItemsItemPlanVisibilityFromString("quick_link")
+		val, err := NewCreateInvoicesRequestItemsItemVariantVisibilityFromString("quick_link")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateInvoicesRequestItemsItemPlanVisibility("quick_link"), val, "enum value should match expected wire value")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantVisibility("quick_link"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewCreateInvoicesRequestItemsItemPlanVisibilityFromString("invalid_value_that_does_not_exist")
+		_, err := NewCreateInvoicesRequestItemsItemVariantVisibilityFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewCreateInvoicesRequestItemsItemPlanVisibilityFromString("visible")
+		val, err := NewCreateInvoicesRequestItemsItemVariantVisibilityFromString("visible")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -15941,709 +15941,28 @@ func TestEnumPostInvoiceVoidedPayloadType(t *testing.T) {
 	})
 }
 
-func TestEnumUpdateInvoicesRequestItemsItemPlanCurrency(t *testing.T) {
-	t.Run("NewFromString_usd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("usd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("usd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_sgd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("sgd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("sgd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_inr", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("inr")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("inr"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_aud", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("aud")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("aud"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_brl", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("brl")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("brl"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_cad", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("cad")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("cad"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_dkk", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("dkk")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("dkk"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_eur", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("eur")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("eur"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_nok", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("nok")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("nok"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_gbp", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("gbp")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("gbp"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_sek", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("sek")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("sek"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_chf", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("chf")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("chf"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_hkd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("hkd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("hkd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_huf", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("huf")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("huf"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_jpy", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("jpy")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("jpy"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_mxn", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("mxn")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("mxn"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_myr", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("myr")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("myr"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_pln", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("pln")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("pln"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_czk", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("czk")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("czk"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_nzd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("nzd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("nzd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_aed", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("aed")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("aed"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_eth", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("eth")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("eth"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_ape", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("ape")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("ape"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_cop", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("cop")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("cop"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_ron", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("ron")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("ron"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_thb", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("thb")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("thb"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_bgn", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("bgn")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("bgn"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_idr", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("idr")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("idr"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_dop", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("dop")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("dop"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_php", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("php")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("php"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_try", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("try")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("try"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_krw", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("krw")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("krw"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_twd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("twd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("twd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_vnd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("vnd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("vnd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_pkr", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("pkr")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("pkr"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_clp", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("clp")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("clp"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_uyu", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("uyu")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("uyu"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_ars", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("ars")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("ars"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_zar", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("zar")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("zar"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_dzd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("dzd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("dzd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_tnd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("tnd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("tnd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_mad", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("mad")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("mad"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_kes", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("kes")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("kes"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_kwd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("kwd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("kwd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_jod", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("jod")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("jod"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_all", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("all")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("all"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_xcd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("xcd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("xcd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_amd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("amd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("amd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_bsd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("bsd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("bsd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_bhd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("bhd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("bhd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_bob", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("bob")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("bob"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_bam", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("bam")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("bam"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_khr", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("khr")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("khr"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_crc", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("crc")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("crc"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_xof", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("xof")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("xof"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_egp", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("egp")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("egp"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_etb", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("etb")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("etb"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_gmd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("gmd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("gmd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_ghs", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("ghs")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("ghs"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_gtq", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("gtq")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("gtq"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_gyd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("gyd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("gyd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_ils", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("ils")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("ils"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_jmd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("jmd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("jmd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_mop", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("mop")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("mop"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_mga", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("mga")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("mga"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_mur", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("mur")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("mur"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_mdl", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("mdl")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("mdl"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_mnt", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("mnt")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("mnt"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_nad", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("nad")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("nad"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_ngn", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("ngn")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("ngn"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_mkd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("mkd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("mkd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_omr", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("omr")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("omr"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_pyg", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("pyg")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("pyg"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_pen", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("pen")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("pen"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_qar", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("qar")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("qar"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_rwf", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("rwf")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("rwf"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_sar", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("sar")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("sar"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_rsd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("rsd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("rsd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_lkr", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("lkr")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("lkr"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_tzs", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("tzs")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("tzs"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_ttd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("ttd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("ttd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_uzs", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("uzs")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("uzs"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_rub", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("rub")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("rub"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_btc", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("btc")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("btc"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_cny", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("cny")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("cny"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_usdt", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("usdt")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("usdt"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_kzt", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("kzt")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("kzt"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_awg", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("awg")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("awg"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_whop_usd", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("whop_usd")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("whop_usd"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_xau", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("xau")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanCurrency("xau"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("invalid_value_that_does_not_exist")
-		assert.Error(t, err)
-	})
-
-	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewUpdateInvoicesRequestItemsItemPlanCurrencyFromString("usd")
-		assert.NoError(t, err)
-		ptr := val.Ptr()
-		assert.NotNil(t, ptr)
-		assert.Equal(t, val, *ptr)
-	})
-}
-
-func TestEnumUpdateInvoicesRequestItemsItemPlanOverrideTaxType(t *testing.T) {
-	t.Run("NewFromString_exclusive", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanOverrideTaxTypeFromString("exclusive")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanOverrideTaxType("exclusive"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_inclusive", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanOverrideTaxTypeFromString("inclusive")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanOverrideTaxType("inclusive"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_unspecified", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanOverrideTaxTypeFromString("unspecified")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanOverrideTaxType("unspecified"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewUpdateInvoicesRequestItemsItemPlanOverrideTaxTypeFromString("invalid_value_that_does_not_exist")
-		assert.Error(t, err)
-	})
-
-	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewUpdateInvoicesRequestItemsItemPlanOverrideTaxTypeFromString("exclusive")
-		assert.NoError(t, err)
-		ptr := val.Ptr()
-		assert.NotNil(t, ptr)
-		assert.Equal(t, val, *ptr)
-	})
-}
-
-func TestEnumUpdateInvoicesRequestItemsItemPlanPlanType(t *testing.T) {
+func TestEnumUpdateInvoicesRequestItemsItemVariantBillingType(t *testing.T) {
 	t.Run("NewFromString_renewal", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanPlanTypeFromString("renewal")
+		val, err := NewUpdateInvoicesRequestItemsItemVariantBillingTypeFromString("renewal")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanPlanType("renewal"), val, "enum value should match expected wire value")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantBillingType("renewal"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_one_time", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanPlanTypeFromString("one_time")
+		val, err := NewUpdateInvoicesRequestItemsItemVariantBillingTypeFromString("one_time")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanPlanType("one_time"), val, "enum value should match expected wire value")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantBillingType("one_time"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewUpdateInvoicesRequestItemsItemPlanPlanTypeFromString("invalid_value_that_does_not_exist")
+		_, err := NewUpdateInvoicesRequestItemsItemVariantBillingTypeFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewUpdateInvoicesRequestItemsItemPlanPlanTypeFromString("renewal")
+		val, err := NewUpdateInvoicesRequestItemsItemVariantBillingTypeFromString("renewal")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -16651,28 +15970,709 @@ func TestEnumUpdateInvoicesRequestItemsItemPlanPlanType(t *testing.T) {
 	})
 }
 
-func TestEnumUpdateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus(t *testing.T) {
+func TestEnumUpdateInvoicesRequestItemsItemVariantCurrency(t *testing.T) {
+	t.Run("NewFromString_usd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("usd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("usd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_sgd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("sgd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("sgd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_inr", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("inr")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("inr"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_aud", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("aud")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("aud"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_brl", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("brl")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("brl"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_cad", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("cad")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("cad"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_dkk", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("dkk")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("dkk"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_eur", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("eur")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("eur"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_nok", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("nok")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("nok"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_gbp", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("gbp")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("gbp"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_sek", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("sek")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("sek"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_chf", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("chf")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("chf"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_hkd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("hkd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("hkd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_huf", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("huf")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("huf"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_jpy", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("jpy")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("jpy"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mxn", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("mxn")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("mxn"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_myr", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("myr")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("myr"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pln", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("pln")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("pln"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_czk", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("czk")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("czk"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_nzd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("nzd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("nzd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_aed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("aed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("aed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_eth", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("eth")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("eth"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ape", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("ape")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("ape"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_cop", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("cop")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("cop"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ron", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("ron")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("ron"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_thb", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("thb")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("thb"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_bgn", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("bgn")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("bgn"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_idr", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("idr")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("idr"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_dop", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("dop")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("dop"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_php", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("php")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("php"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_try", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("try")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("try"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_krw", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("krw")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("krw"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_twd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("twd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("twd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_vnd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("vnd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("vnd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pkr", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("pkr")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("pkr"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_clp", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("clp")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("clp"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_uyu", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("uyu")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("uyu"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ars", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("ars")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("ars"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_zar", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("zar")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("zar"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_dzd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("dzd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("dzd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_tnd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("tnd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("tnd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mad", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("mad")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("mad"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_kes", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("kes")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("kes"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_kwd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("kwd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("kwd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_jod", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("jod")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("jod"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_all", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("all")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("all"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_xcd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("xcd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("xcd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_amd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("amd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("amd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_bsd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("bsd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("bsd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_bhd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("bhd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("bhd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_bob", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("bob")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("bob"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_bam", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("bam")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("bam"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_khr", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("khr")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("khr"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_crc", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("crc")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("crc"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_xof", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("xof")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("xof"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_egp", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("egp")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("egp"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_etb", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("etb")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("etb"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_gmd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("gmd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("gmd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ghs", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("ghs")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("ghs"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_gtq", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("gtq")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("gtq"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_gyd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("gyd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("gyd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ils", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("ils")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("ils"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_jmd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("jmd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("jmd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mop", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("mop")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("mop"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mga", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("mga")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("mga"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mur", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("mur")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("mur"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mdl", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("mdl")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("mdl"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mnt", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("mnt")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("mnt"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_nad", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("nad")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("nad"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ngn", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("ngn")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("ngn"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mkd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("mkd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("mkd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_omr", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("omr")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("omr"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pyg", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("pyg")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("pyg"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pen", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("pen")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("pen"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_qar", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("qar")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("qar"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_rwf", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("rwf")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("rwf"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_sar", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("sar")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("sar"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_rsd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("rsd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("rsd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_lkr", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("lkr")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("lkr"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_tzs", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("tzs")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("tzs"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ttd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("ttd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("ttd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_uzs", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("uzs")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("uzs"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_rub", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("rub")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("rub"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_btc", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("btc")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("btc"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_cny", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("cny")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("cny"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_usdt", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("usdt")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("usdt"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_kzt", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("kzt")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("kzt"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_awg", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("awg")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("awg"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_whop_usd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("whop_usd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("whop_usd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_xau", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("xau")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("xau"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("usd")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumUpdateInvoicesRequestItemsItemVariantOverrideTaxType(t *testing.T) {
+	t.Run("NewFromString_exclusive", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantOverrideTaxTypeFromString("exclusive")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantOverrideTaxType("exclusive"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_inclusive", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantOverrideTaxTypeFromString("inclusive")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantOverrideTaxType("inclusive"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_unspecified", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantOverrideTaxTypeFromString("unspecified")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantOverrideTaxType("unspecified"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewUpdateInvoicesRequestItemsItemVariantOverrideTaxTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewUpdateInvoicesRequestItemsItemVariantOverrideTaxTypeFromString("exclusive")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumUpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus(t *testing.T) {
 	t.Run("NewFromString_enabled", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatusFromString("enabled")
+		val, err := NewUpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatusFromString("enabled")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus("enabled"), val, "enum value should match expected wire value")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus("enabled"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_disabled", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatusFromString("disabled")
+		val, err := NewUpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatusFromString("disabled")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus("disabled"), val, "enum value should match expected wire value")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus("disabled"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewUpdateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatusFromString("invalid_value_that_does_not_exist")
+		_, err := NewUpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatusFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewUpdateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatusFromString("enabled")
+		val, err := NewUpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatusFromString("enabled")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -16680,42 +16680,42 @@ func TestEnumUpdateInvoicesRequestItemsItemPlanProductGlobalAffiliateStatus(t *t
 	})
 }
 
-func TestEnumUpdateInvoicesRequestItemsItemPlanProductVisibility(t *testing.T) {
+func TestEnumUpdateInvoicesRequestItemsItemVariantProductVisibility(t *testing.T) {
 	t.Run("NewFromString_visible", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanProductVisibilityFromString("visible")
+		val, err := NewUpdateInvoicesRequestItemsItemVariantProductVisibilityFromString("visible")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanProductVisibility("visible"), val, "enum value should match expected wire value")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantProductVisibility("visible"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_hidden", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanProductVisibilityFromString("hidden")
+		val, err := NewUpdateInvoicesRequestItemsItemVariantProductVisibilityFromString("hidden")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanProductVisibility("hidden"), val, "enum value should match expected wire value")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantProductVisibility("hidden"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_archived", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanProductVisibilityFromString("archived")
+		val, err := NewUpdateInvoicesRequestItemsItemVariantProductVisibilityFromString("archived")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanProductVisibility("archived"), val, "enum value should match expected wire value")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantProductVisibility("archived"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_quick_link", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanProductVisibilityFromString("quick_link")
+		val, err := NewUpdateInvoicesRequestItemsItemVariantProductVisibilityFromString("quick_link")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanProductVisibility("quick_link"), val, "enum value should match expected wire value")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantProductVisibility("quick_link"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewUpdateInvoicesRequestItemsItemPlanProductVisibilityFromString("invalid_value_that_does_not_exist")
+		_, err := NewUpdateInvoicesRequestItemsItemVariantProductVisibilityFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewUpdateInvoicesRequestItemsItemPlanProductVisibilityFromString("visible")
+		val, err := NewUpdateInvoicesRequestItemsItemVariantProductVisibilityFromString("visible")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -16723,42 +16723,42 @@ func TestEnumUpdateInvoicesRequestItemsItemPlanProductVisibility(t *testing.T) {
 	})
 }
 
-func TestEnumUpdateInvoicesRequestItemsItemPlanVisibility(t *testing.T) {
+func TestEnumUpdateInvoicesRequestItemsItemVariantVisibility(t *testing.T) {
 	t.Run("NewFromString_visible", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanVisibilityFromString("visible")
+		val, err := NewUpdateInvoicesRequestItemsItemVariantVisibilityFromString("visible")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanVisibility("visible"), val, "enum value should match expected wire value")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantVisibility("visible"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_hidden", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanVisibilityFromString("hidden")
+		val, err := NewUpdateInvoicesRequestItemsItemVariantVisibilityFromString("hidden")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanVisibility("hidden"), val, "enum value should match expected wire value")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantVisibility("hidden"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_archived", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanVisibilityFromString("archived")
+		val, err := NewUpdateInvoicesRequestItemsItemVariantVisibilityFromString("archived")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanVisibility("archived"), val, "enum value should match expected wire value")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantVisibility("archived"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_quick_link", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewUpdateInvoicesRequestItemsItemPlanVisibilityFromString("quick_link")
+		val, err := NewUpdateInvoicesRequestItemsItemVariantVisibilityFromString("quick_link")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateInvoicesRequestItemsItemPlanVisibility("quick_link"), val, "enum value should match expected wire value")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantVisibility("quick_link"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewUpdateInvoicesRequestItemsItemPlanVisibilityFromString("invalid_value_that_does_not_exist")
+		_, err := NewUpdateInvoicesRequestItemsItemVariantVisibilityFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewUpdateInvoicesRequestItemsItemPlanVisibilityFromString("visible")
+		val, err := NewUpdateInvoicesRequestItemsItemVariantVisibilityFromString("visible")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -16789,10 +16789,10 @@ func TestExtraPropertiesCreateInvoicesRequestBillingAddress(t *testing.T) {
 	})
 }
 
-func TestExtraPropertiesCreateInvoicesRequestItemsItemPlan(t *testing.T) {
+func TestExtraPropertiesCreateInvoicesRequestItemsItemVariant(t *testing.T) {
 	t.Run("GetExtraProperties", func(t *testing.T) {
 		t.Parallel()
-		obj := &CreateInvoicesRequestItemsItemPlan{}
+		obj := &CreateInvoicesRequestItemsItemVariant{}
 		// Should not panic when calling GetExtraProperties()
 		defer func() {
 			if r := recover(); r != nil {
@@ -16806,16 +16806,16 @@ func TestExtraPropertiesCreateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlan
+		var obj *CreateInvoicesRequestItemsItemVariant
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
 }
 
-func TestExtraPropertiesCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
+func TestExtraPropertiesCreateInvoicesRequestItemsItemVariantProduct(t *testing.T) {
 	t.Run("GetExtraProperties", func(t *testing.T) {
 		t.Parallel()
-		obj := &CreateInvoicesRequestItemsItemPlanProduct{}
+		obj := &CreateInvoicesRequestItemsItemVariantProduct{}
 		// Should not panic when calling GetExtraProperties()
 		defer func() {
 			if r := recover(); r != nil {
@@ -16829,7 +16829,7 @@ func TestExtraPropertiesCreateInvoicesRequestItemsItemPlanProduct(t *testing.T) 
 
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateInvoicesRequestItemsItemPlanProduct
+		var obj *CreateInvoicesRequestItemsItemVariantProduct
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
@@ -17088,10 +17088,10 @@ func TestExtraPropertiesUpdateInvoicesRequestBillingAddress(t *testing.T) {
 	})
 }
 
-func TestExtraPropertiesUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
+func TestExtraPropertiesUpdateInvoicesRequestItemsItemVariant(t *testing.T) {
 	t.Run("GetExtraProperties", func(t *testing.T) {
 		t.Parallel()
-		obj := &UpdateInvoicesRequestItemsItemPlan{}
+		obj := &UpdateInvoicesRequestItemsItemVariant{}
 		// Should not panic when calling GetExtraProperties()
 		defer func() {
 			if r := recover(); r != nil {
@@ -17105,16 +17105,16 @@ func TestExtraPropertiesUpdateInvoicesRequestItemsItemPlan(t *testing.T) {
 
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlan
+		var obj *UpdateInvoicesRequestItemsItemVariant
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
 }
 
-func TestExtraPropertiesUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) {
+func TestExtraPropertiesUpdateInvoicesRequestItemsItemVariantProduct(t *testing.T) {
 	t.Run("GetExtraProperties", func(t *testing.T) {
 		t.Parallel()
-		obj := &UpdateInvoicesRequestItemsItemPlanProduct{}
+		obj := &UpdateInvoicesRequestItemsItemVariantProduct{}
 		// Should not panic when calling GetExtraProperties()
 		defer func() {
 			if r := recover(); r != nil {
@@ -17128,7 +17128,7 @@ func TestExtraPropertiesUpdateInvoicesRequestItemsItemPlanProduct(t *testing.T) 
 
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *UpdateInvoicesRequestItemsItemPlanProduct
+		var obj *UpdateInvoicesRequestItemsItemVariantProduct
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

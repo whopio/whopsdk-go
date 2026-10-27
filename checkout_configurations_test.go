@@ -58,22 +58,6 @@ func TestSettersCreateCheckoutConfigurationsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetPlan", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsRequest{}
-		var fernTestValuePlan *CreateCheckoutConfigurationsRequestPlan
-		obj.SetPlan(fernTestValuePlan)
-		assert.Equal(t, fernTestValuePlan, obj.Plan)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetPlanID", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsRequest{}
-		var fernTestValuePlanID *string
-		obj.SetPlanID(fernTestValuePlanID)
-		assert.Equal(t, fernTestValuePlanID, obj.PlanID)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetRedirectURL", func(t *testing.T) {
 		obj := &CreateCheckoutConfigurationsRequest{}
 		var fernTestValueRedirectURL *string
@@ -87,6 +71,22 @@ func TestSettersCreateCheckoutConfigurationsRequest(t *testing.T) {
 		var fernTestValueThreeDsLevel *CreateCheckoutConfigurationsRequestThreeDsLevel
 		obj.SetThreeDsLevel(fernTestValueThreeDsLevel)
 		assert.Equal(t, fernTestValueThreeDsLevel, obj.ThreeDsLevel)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetVariant", func(t *testing.T) {
+		obj := &CreateCheckoutConfigurationsRequest{}
+		var fernTestValueVariant *CreateCheckoutConfigurationsRequestVariant
+		obj.SetVariant(fernTestValueVariant)
+		assert.Equal(t, fernTestValueVariant, obj.Variant)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetVariantID", func(t *testing.T) {
+		obj := &CreateCheckoutConfigurationsRequest{}
+		var fernTestValueVariantID *string
+		obj.SetVariantID(fernTestValueVariantID)
+		assert.Equal(t, fernTestValueVariantID, obj.VariantID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -279,68 +279,6 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetPlan_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateCheckoutConfigurationsRequest{}
-		var fernTestValuePlan *CreateCheckoutConfigurationsRequestPlan
-
-		// Act
-		obj.SetPlan(fernTestValuePlan)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetPlanID_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateCheckoutConfigurationsRequest{}
-		var fernTestValuePlanID *string
-
-		// Act
-		obj.SetPlanID(fernTestValuePlanID)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
 	t.Run("SetRedirectURL_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -380,6 +318,68 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsRequest(t *testing.T) {
 
 		// Act
 		obj.SetThreeDsLevel(fernTestValueThreeDsLevel)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetVariant_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateCheckoutConfigurationsRequest{}
+		var fernTestValueVariant *CreateCheckoutConfigurationsRequestVariant
+
+		// Act
+		obj.SetVariant(fernTestValueVariant)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetVariantID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateCheckoutConfigurationsRequest{}
+		var fernTestValueVariantID *string
+
+		// Act
+		obj.SetVariantID(fernTestValueVariantID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -459,11 +459,11 @@ func TestSettersListCheckoutConfigurationsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetPlanID", func(t *testing.T) {
+	t.Run("SetVariantID", func(t *testing.T) {
 		obj := &ListCheckoutConfigurationsRequest{}
-		var fernTestValuePlanID *string
-		obj.SetPlanID(fernTestValuePlanID)
-		assert.Equal(t, fernTestValuePlanID, obj.PlanID)
+		var fernTestValueVariantID *string
+		obj.SetVariantID(fernTestValueVariantID)
+		assert.Equal(t, fernTestValueVariantID, obj.VariantID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -549,14 +549,14 @@ func TestSettersMarkExplicitListCheckoutConfigurationsRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetPlanID_MarksExplicit", func(t *testing.T) {
+	t.Run("SetVariantID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListCheckoutConfigurationsRequest{}
-		var fernTestValuePlanID *string
+		var fernTestValueVariantID *string
 
 		// Act
-		obj.SetPlanID(fernTestValuePlanID)
+		obj.SetVariantID(fernTestValueVariantID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1038,9 +1038,9 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsRequestPaymentMethodConf
 
 }
 
-func TestSettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
+func TestSettersCreateCheckoutConfigurationsRequestVariant(t *testing.T) {
 	t.Run("SetAccountID", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var fernTestValueAccountID *string
 		obj.SetAccountID(fernTestValueAccountID)
 		assert.Equal(t, fernTestValueAccountID, obj.AccountID)
@@ -1048,15 +1048,23 @@ func TestSettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	})
 
 	t.Run("SetBillingPeriod", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var fernTestValueBillingPeriod *int
 		obj.SetBillingPeriod(fernTestValueBillingPeriod)
 		assert.Equal(t, fernTestValueBillingPeriod, obj.BillingPeriod)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetBillingType", func(t *testing.T) {
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
+		var fernTestValueBillingType *CreateCheckoutConfigurationsRequestVariantBillingType
+		obj.SetBillingType(fernTestValueBillingType)
+		assert.Equal(t, fernTestValueBillingType, obj.BillingType)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCurrency", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var fernTestValueCurrency *string
 		obj.SetCurrency(fernTestValueCurrency)
 		assert.Equal(t, fernTestValueCurrency, obj.Currency)
@@ -1064,7 +1072,7 @@ func TestSettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	})
 
 	t.Run("SetDescription", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var fernTestValueDescription *string
 		obj.SetDescription(fernTestValueDescription)
 		assert.Equal(t, fernTestValueDescription, obj.Description)
@@ -1072,7 +1080,7 @@ func TestSettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	})
 
 	t.Run("SetExpirationDays", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var fernTestValueExpirationDays *int
 		obj.SetExpirationDays(fernTestValueExpirationDays)
 		assert.Equal(t, fernTestValueExpirationDays, obj.ExpirationDays)
@@ -1080,7 +1088,7 @@ func TestSettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	})
 
 	t.Run("SetForceCreateNewPlan", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var fernTestValueForceCreateNewPlan *bool
 		obj.SetForceCreateNewPlan(fernTestValueForceCreateNewPlan)
 		assert.Equal(t, fernTestValueForceCreateNewPlan, obj.ForceCreateNewPlan)
@@ -1088,7 +1096,7 @@ func TestSettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	})
 
 	t.Run("SetInitialPrice", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var fernTestValueInitialPrice *float64
 		obj.SetInitialPrice(fernTestValueInitialPrice)
 		assert.Equal(t, fernTestValueInitialPrice, obj.InitialPrice)
@@ -1096,7 +1104,7 @@ func TestSettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	})
 
 	t.Run("SetMetadata", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var fernTestValueMetadata map[string]any
 		obj.SetMetadata(fernTestValueMetadata)
 		assert.Equal(t, fernTestValueMetadata, obj.Metadata)
@@ -1104,7 +1112,7 @@ func TestSettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	})
 
 	t.Run("SetOverrideTaxType", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var fernTestValueOverrideTaxType *string
 		obj.SetOverrideTaxType(fernTestValueOverrideTaxType)
 		assert.Equal(t, fernTestValueOverrideTaxType, obj.OverrideTaxType)
@@ -1112,23 +1120,15 @@ func TestSettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	})
 
 	t.Run("SetPaymentMethodConfiguration", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
-		var fernTestValuePaymentMethodConfiguration *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
+		var fernTestValuePaymentMethodConfiguration *CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration
 		obj.SetPaymentMethodConfiguration(fernTestValuePaymentMethodConfiguration)
 		assert.Equal(t, fernTestValuePaymentMethodConfiguration, obj.PaymentMethodConfiguration)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetPlanType", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
-		var fernTestValuePlanType *CreateCheckoutConfigurationsRequestPlanPlanType
-		obj.SetPlanType(fernTestValuePlanType)
-		assert.Equal(t, fernTestValuePlanType, obj.PlanType)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetProductID", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var fernTestValueProductID *string
 		obj.SetProductID(fernTestValueProductID)
 		assert.Equal(t, fernTestValueProductID, obj.ProductID)
@@ -1136,15 +1136,15 @@ func TestSettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	})
 
 	t.Run("SetReleaseMethod", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
-		var fernTestValueReleaseMethod *CreateCheckoutConfigurationsRequestPlanReleaseMethod
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
+		var fernTestValueReleaseMethod *CreateCheckoutConfigurationsRequestVariantReleaseMethod
 		obj.SetReleaseMethod(fernTestValueReleaseMethod)
 		assert.Equal(t, fernTestValueReleaseMethod, obj.ReleaseMethod)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
 	t.Run("SetRenewalPrice", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var fernTestValueRenewalPrice *float64
 		obj.SetRenewalPrice(fernTestValueRenewalPrice)
 		assert.Equal(t, fernTestValueRenewalPrice, obj.RenewalPrice)
@@ -1152,7 +1152,7 @@ func TestSettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	})
 
 	t.Run("SetStock", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var fernTestValueStock *int
 		obj.SetStock(fernTestValueStock)
 		assert.Equal(t, fernTestValueStock, obj.Stock)
@@ -1160,15 +1160,15 @@ func TestSettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	})
 
 	t.Run("SetThreeDsLevel", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
-		var fernTestValueThreeDsLevel *CreateCheckoutConfigurationsRequestPlanThreeDsLevel
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
+		var fernTestValueThreeDsLevel *CreateCheckoutConfigurationsRequestVariantThreeDsLevel
 		obj.SetThreeDsLevel(fernTestValueThreeDsLevel)
 		assert.Equal(t, fernTestValueThreeDsLevel, obj.ThreeDsLevel)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
 	t.Run("SetTitle", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var fernTestValueTitle *string
 		obj.SetTitle(fernTestValueTitle)
 		assert.Equal(t, fernTestValueTitle, obj.Title)
@@ -1176,7 +1176,7 @@ func TestSettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	})
 
 	t.Run("SetTrialPeriodDays", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var fernTestValueTrialPeriodDays *int
 		obj.SetTrialPeriodDays(fernTestValueTrialPeriodDays)
 		assert.Equal(t, fernTestValueTrialPeriodDays, obj.TrialPeriodDays)
@@ -1184,7 +1184,7 @@ func TestSettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	})
 
 	t.Run("SetUnlimitedStock", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var fernTestValueUnlimitedStock *bool
 		obj.SetUnlimitedStock(fernTestValueUnlimitedStock)
 		assert.Equal(t, fernTestValueUnlimitedStock, obj.UnlimitedStock)
@@ -1192,8 +1192,8 @@ func TestSettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	})
 
 	t.Run("SetVisibility", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
-		var fernTestValueVisibility *CreateCheckoutConfigurationsRequestPlanVisibility
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
+		var fernTestValueVisibility *CreateCheckoutConfigurationsRequestVariantVisibility
 		obj.SetVisibility(fernTestValueVisibility)
 		assert.Equal(t, fernTestValueVisibility, obj.Visibility)
 		assert.NotNil(t, obj.explicitFields)
@@ -1201,11 +1201,11 @@ func TestSettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 
 }
 
-func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
+func TestGettersCreateCheckoutConfigurationsRequestVariant(t *testing.T) {
 	t.Run("GetAccountID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var expected *string
 		obj.AccountID = expected
 
@@ -1216,7 +1216,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetAccountID_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		obj.AccountID = nil
 
 		// Act & Assert
@@ -1225,7 +1225,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 
 	t.Run("GetAccountID_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsRequestPlan
+		var obj *CreateCheckoutConfigurationsRequestVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -1238,7 +1238,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetBillingPeriod", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var expected *int
 		obj.BillingPeriod = expected
 
@@ -1249,7 +1249,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetBillingPeriod_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		obj.BillingPeriod = nil
 
 		// Act & Assert
@@ -1258,7 +1258,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 
 	t.Run("GetBillingPeriod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsRequestPlan
+		var obj *CreateCheckoutConfigurationsRequestVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -1268,10 +1268,43 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 		_ = obj.GetBillingPeriod() // Should return zero value
 	})
 
+	t.Run("GetBillingType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
+		var expected *CreateCheckoutConfigurationsRequestVariantBillingType
+		obj.BillingType = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetBillingType(), "getter should return the property value")
+	})
+
+	t.Run("GetBillingType_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
+		obj.BillingType = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetBillingType(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetBillingType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateCheckoutConfigurationsRequestVariant
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetBillingType() // Should return zero value
+	})
+
 	t.Run("GetCurrency", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var expected *string
 		obj.Currency = expected
 
@@ -1282,7 +1315,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetCurrency_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		obj.Currency = nil
 
 		// Act & Assert
@@ -1291,7 +1324,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 
 	t.Run("GetCurrency_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsRequestPlan
+		var obj *CreateCheckoutConfigurationsRequestVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -1304,7 +1337,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetDescription", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var expected *string
 		obj.Description = expected
 
@@ -1315,7 +1348,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetDescription_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		obj.Description = nil
 
 		// Act & Assert
@@ -1324,7 +1357,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 
 	t.Run("GetDescription_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsRequestPlan
+		var obj *CreateCheckoutConfigurationsRequestVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -1337,7 +1370,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetExpirationDays", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var expected *int
 		obj.ExpirationDays = expected
 
@@ -1348,7 +1381,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetExpirationDays_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		obj.ExpirationDays = nil
 
 		// Act & Assert
@@ -1357,7 +1390,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 
 	t.Run("GetExpirationDays_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsRequestPlan
+		var obj *CreateCheckoutConfigurationsRequestVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -1370,7 +1403,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetForceCreateNewPlan", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var expected *bool
 		obj.ForceCreateNewPlan = expected
 
@@ -1381,7 +1414,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetForceCreateNewPlan_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		obj.ForceCreateNewPlan = nil
 
 		// Act & Assert
@@ -1390,7 +1423,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 
 	t.Run("GetForceCreateNewPlan_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsRequestPlan
+		var obj *CreateCheckoutConfigurationsRequestVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -1403,7 +1436,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetInitialPrice", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var expected *float64
 		obj.InitialPrice = expected
 
@@ -1414,7 +1447,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetInitialPrice_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		obj.InitialPrice = nil
 
 		// Act & Assert
@@ -1423,7 +1456,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 
 	t.Run("GetInitialPrice_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsRequestPlan
+		var obj *CreateCheckoutConfigurationsRequestVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -1436,7 +1469,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetMetadata", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var expected map[string]any
 		obj.Metadata = expected
 
@@ -1447,7 +1480,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetMetadata_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		obj.Metadata = nil
 
 		// Act & Assert
@@ -1456,7 +1489,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 
 	t.Run("GetMetadata_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsRequestPlan
+		var obj *CreateCheckoutConfigurationsRequestVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -1469,7 +1502,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetOverrideTaxType", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var expected *string
 		obj.OverrideTaxType = expected
 
@@ -1480,7 +1513,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetOverrideTaxType_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		obj.OverrideTaxType = nil
 
 		// Act & Assert
@@ -1489,7 +1522,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 
 	t.Run("GetOverrideTaxType_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsRequestPlan
+		var obj *CreateCheckoutConfigurationsRequestVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -1502,8 +1535,8 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetPaymentMethodConfiguration", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
-		var expected *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
+		var expected *CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration
 		obj.PaymentMethodConfiguration = expected
 
 		// Act & Assert
@@ -1513,7 +1546,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetPaymentMethodConfiguration_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		obj.PaymentMethodConfiguration = nil
 
 		// Act & Assert
@@ -1522,7 +1555,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 
 	t.Run("GetPaymentMethodConfiguration_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsRequestPlan
+		var obj *CreateCheckoutConfigurationsRequestVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -1532,43 +1565,10 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 		_ = obj.GetPaymentMethodConfiguration() // Should return zero value
 	})
 
-	t.Run("GetPlanType", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
-		var expected *CreateCheckoutConfigurationsRequestPlanPlanType
-		obj.PlanType = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetPlanType(), "getter should return the property value")
-	})
-
-	t.Run("GetPlanType_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
-		obj.PlanType = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetPlanType(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetPlanType_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *CreateCheckoutConfigurationsRequestPlan
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetPlanType() // Should return zero value
-	})
-
 	t.Run("GetProductID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var expected *string
 		obj.ProductID = expected
 
@@ -1579,7 +1579,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetProductID_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		obj.ProductID = nil
 
 		// Act & Assert
@@ -1588,7 +1588,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 
 	t.Run("GetProductID_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsRequestPlan
+		var obj *CreateCheckoutConfigurationsRequestVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -1601,8 +1601,8 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetReleaseMethod", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
-		var expected *CreateCheckoutConfigurationsRequestPlanReleaseMethod
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
+		var expected *CreateCheckoutConfigurationsRequestVariantReleaseMethod
 		obj.ReleaseMethod = expected
 
 		// Act & Assert
@@ -1612,7 +1612,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetReleaseMethod_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		obj.ReleaseMethod = nil
 
 		// Act & Assert
@@ -1621,7 +1621,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 
 	t.Run("GetReleaseMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsRequestPlan
+		var obj *CreateCheckoutConfigurationsRequestVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -1634,7 +1634,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetRenewalPrice", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var expected *float64
 		obj.RenewalPrice = expected
 
@@ -1645,7 +1645,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetRenewalPrice_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		obj.RenewalPrice = nil
 
 		// Act & Assert
@@ -1654,7 +1654,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 
 	t.Run("GetRenewalPrice_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsRequestPlan
+		var obj *CreateCheckoutConfigurationsRequestVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -1667,7 +1667,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetStock", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var expected *int
 		obj.Stock = expected
 
@@ -1678,7 +1678,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetStock_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		obj.Stock = nil
 
 		// Act & Assert
@@ -1687,7 +1687,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 
 	t.Run("GetStock_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsRequestPlan
+		var obj *CreateCheckoutConfigurationsRequestVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -1700,8 +1700,8 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetThreeDsLevel", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
-		var expected *CreateCheckoutConfigurationsRequestPlanThreeDsLevel
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
+		var expected *CreateCheckoutConfigurationsRequestVariantThreeDsLevel
 		obj.ThreeDsLevel = expected
 
 		// Act & Assert
@@ -1711,7 +1711,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetThreeDsLevel_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		obj.ThreeDsLevel = nil
 
 		// Act & Assert
@@ -1720,7 +1720,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 
 	t.Run("GetThreeDsLevel_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsRequestPlan
+		var obj *CreateCheckoutConfigurationsRequestVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -1733,7 +1733,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetTitle", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var expected *string
 		obj.Title = expected
 
@@ -1744,7 +1744,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetTitle_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		obj.Title = nil
 
 		// Act & Assert
@@ -1753,7 +1753,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 
 	t.Run("GetTitle_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsRequestPlan
+		var obj *CreateCheckoutConfigurationsRequestVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -1766,7 +1766,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetTrialPeriodDays", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var expected *int
 		obj.TrialPeriodDays = expected
 
@@ -1777,7 +1777,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetTrialPeriodDays_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		obj.TrialPeriodDays = nil
 
 		// Act & Assert
@@ -1786,7 +1786,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 
 	t.Run("GetTrialPeriodDays_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsRequestPlan
+		var obj *CreateCheckoutConfigurationsRequestVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -1799,7 +1799,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetUnlimitedStock", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var expected *bool
 		obj.UnlimitedStock = expected
 
@@ -1810,7 +1810,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetUnlimitedStock_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		obj.UnlimitedStock = nil
 
 		// Act & Assert
@@ -1819,7 +1819,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 
 	t.Run("GetUnlimitedStock_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsRequestPlan
+		var obj *CreateCheckoutConfigurationsRequestVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -1832,8 +1832,8 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetVisibility", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
-		var expected *CreateCheckoutConfigurationsRequestPlanVisibility
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
+		var expected *CreateCheckoutConfigurationsRequestVariantVisibility
 		obj.Visibility = expected
 
 		// Act & Assert
@@ -1843,7 +1843,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 	t.Run("GetVisibility_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		obj.Visibility = nil
 
 		// Act & Assert
@@ -1852,7 +1852,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 
 	t.Run("GetVisibility_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsRequestPlan
+		var obj *CreateCheckoutConfigurationsRequestVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -1864,11 +1864,11 @@ func TestGettersCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 
 }
 
-func TestSettersMarkExplicitCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
+func TestSettersMarkExplicitCreateCheckoutConfigurationsRequestVariant(t *testing.T) {
 	t.Run("SetAccountID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var fernTestValueAccountID *string
 
 		// Act
@@ -1899,7 +1899,7 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsRequestPlan(t *testing.T
 	t.Run("SetBillingPeriod_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var fernTestValueBillingPeriod *int
 
 		// Act
@@ -1927,10 +1927,41 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsRequestPlan(t *testing.T
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetBillingType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
+		var fernTestValueBillingType *CreateCheckoutConfigurationsRequestVariantBillingType
+
+		// Act
+		obj.SetBillingType(fernTestValueBillingType)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetCurrency_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var fernTestValueCurrency *string
 
 		// Act
@@ -1961,7 +1992,7 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsRequestPlan(t *testing.T
 	t.Run("SetDescription_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var fernTestValueDescription *string
 
 		// Act
@@ -1992,7 +2023,7 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsRequestPlan(t *testing.T
 	t.Run("SetExpirationDays_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var fernTestValueExpirationDays *int
 
 		// Act
@@ -2023,7 +2054,7 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsRequestPlan(t *testing.T
 	t.Run("SetForceCreateNewPlan_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var fernTestValueForceCreateNewPlan *bool
 
 		// Act
@@ -2054,7 +2085,7 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsRequestPlan(t *testing.T
 	t.Run("SetInitialPrice_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var fernTestValueInitialPrice *float64
 
 		// Act
@@ -2085,7 +2116,7 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsRequestPlan(t *testing.T
 	t.Run("SetMetadata_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var fernTestValueMetadata map[string]any
 
 		// Act
@@ -2116,7 +2147,7 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsRequestPlan(t *testing.T
 	t.Run("SetOverrideTaxType_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var fernTestValueOverrideTaxType *string
 
 		// Act
@@ -2147,8 +2178,8 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsRequestPlan(t *testing.T
 	t.Run("SetPaymentMethodConfiguration_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
-		var fernTestValuePaymentMethodConfiguration *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
+		var fernTestValuePaymentMethodConfiguration *CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration
 
 		// Act
 		obj.SetPaymentMethodConfiguration(fernTestValuePaymentMethodConfiguration)
@@ -2175,41 +2206,10 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsRequestPlan(t *testing.T
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetPlanType_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
-		var fernTestValuePlanType *CreateCheckoutConfigurationsRequestPlanPlanType
-
-		// Act
-		obj.SetPlanType(fernTestValuePlanType)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
 	t.Run("SetProductID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var fernTestValueProductID *string
 
 		// Act
@@ -2240,8 +2240,8 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsRequestPlan(t *testing.T
 	t.Run("SetReleaseMethod_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
-		var fernTestValueReleaseMethod *CreateCheckoutConfigurationsRequestPlanReleaseMethod
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
+		var fernTestValueReleaseMethod *CreateCheckoutConfigurationsRequestVariantReleaseMethod
 
 		// Act
 		obj.SetReleaseMethod(fernTestValueReleaseMethod)
@@ -2271,7 +2271,7 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsRequestPlan(t *testing.T
 	t.Run("SetRenewalPrice_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var fernTestValueRenewalPrice *float64
 
 		// Act
@@ -2302,7 +2302,7 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsRequestPlan(t *testing.T
 	t.Run("SetStock_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var fernTestValueStock *int
 
 		// Act
@@ -2333,8 +2333,8 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsRequestPlan(t *testing.T
 	t.Run("SetThreeDsLevel_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
-		var fernTestValueThreeDsLevel *CreateCheckoutConfigurationsRequestPlanThreeDsLevel
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
+		var fernTestValueThreeDsLevel *CreateCheckoutConfigurationsRequestVariantThreeDsLevel
 
 		// Act
 		obj.SetThreeDsLevel(fernTestValueThreeDsLevel)
@@ -2364,7 +2364,7 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsRequestPlan(t *testing.T
 	t.Run("SetTitle_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var fernTestValueTitle *string
 
 		// Act
@@ -2395,7 +2395,7 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsRequestPlan(t *testing.T
 	t.Run("SetTrialPeriodDays_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var fernTestValueTrialPeriodDays *int
 
 		// Act
@@ -2426,7 +2426,7 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsRequestPlan(t *testing.T
 	t.Run("SetUnlimitedStock_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		var fernTestValueUnlimitedStock *bool
 
 		// Act
@@ -2457,8 +2457,8 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsRequestPlan(t *testing.T
 	t.Run("SetVisibility_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
-		var fernTestValueVisibility *CreateCheckoutConfigurationsRequestPlanVisibility
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
+		var fernTestValueVisibility *CreateCheckoutConfigurationsRequestVariantVisibility
 
 		// Act
 		obj.SetVisibility(fernTestValueVisibility)
@@ -2487,9 +2487,9 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsRequestPlan(t *testing.T
 
 }
 
-func TestSettersCreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration(t *testing.T) {
+func TestSettersCreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration(t *testing.T) {
 	t.Run("SetDisabled", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration{}
+		obj := &CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration{}
 		var fernTestValueDisabled []PaymentMethodTypes
 		obj.SetDisabled(fernTestValueDisabled)
 		assert.Equal(t, fernTestValueDisabled, obj.Disabled)
@@ -2497,7 +2497,7 @@ func TestSettersCreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguratio
 	})
 
 	t.Run("SetEnabled", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration{}
+		obj := &CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration{}
 		var fernTestValueEnabled []PaymentMethodTypes
 		obj.SetEnabled(fernTestValueEnabled)
 		assert.Equal(t, fernTestValueEnabled, obj.Enabled)
@@ -2505,7 +2505,7 @@ func TestSettersCreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguratio
 	})
 
 	t.Run("SetIncludePlatformDefaults", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration{}
+		obj := &CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration{}
 		var fernTestValueIncludePlatformDefaults *bool
 		obj.SetIncludePlatformDefaults(fernTestValueIncludePlatformDefaults)
 		assert.Equal(t, fernTestValueIncludePlatformDefaults, obj.IncludePlatformDefaults)
@@ -2514,11 +2514,11 @@ func TestSettersCreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguratio
 
 }
 
-func TestGettersCreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration(t *testing.T) {
+func TestGettersCreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration(t *testing.T) {
 	t.Run("GetDisabled", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration{}
+		obj := &CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration{}
 		var expected []PaymentMethodTypes
 		obj.Disabled = expected
 
@@ -2529,7 +2529,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguratio
 	t.Run("GetDisabled_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration{}
+		obj := &CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration{}
 		obj.Disabled = nil
 
 		// Act & Assert
@@ -2538,7 +2538,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguratio
 
 	t.Run("GetDisabled_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration
+		var obj *CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -2551,7 +2551,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguratio
 	t.Run("GetEnabled", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration{}
+		obj := &CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration{}
 		var expected []PaymentMethodTypes
 		obj.Enabled = expected
 
@@ -2562,7 +2562,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguratio
 	t.Run("GetEnabled_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration{}
+		obj := &CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration{}
 		obj.Enabled = nil
 
 		// Act & Assert
@@ -2571,7 +2571,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguratio
 
 	t.Run("GetEnabled_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration
+		var obj *CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -2584,7 +2584,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguratio
 	t.Run("GetIncludePlatformDefaults", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration{}
+		obj := &CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration{}
 		var expected *bool
 		obj.IncludePlatformDefaults = expected
 
@@ -2595,7 +2595,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguratio
 	t.Run("GetIncludePlatformDefaults_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration{}
+		obj := &CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration{}
 		obj.IncludePlatformDefaults = nil
 
 		// Act & Assert
@@ -2604,7 +2604,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguratio
 
 	t.Run("GetIncludePlatformDefaults_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration
+		var obj *CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -2616,11 +2616,11 @@ func TestGettersCreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguratio
 
 }
 
-func TestSettersMarkExplicitCreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration(t *testing.T) {
+func TestSettersMarkExplicitCreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration(t *testing.T) {
 	t.Run("SetDisabled_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration{}
+		obj := &CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration{}
 		var fernTestValueDisabled []PaymentMethodTypes
 
 		// Act
@@ -2651,7 +2651,7 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsRequestPlanPaymentMethod
 	t.Run("SetEnabled_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration{}
+		obj := &CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration{}
 		var fernTestValueEnabled []PaymentMethodTypes
 
 		// Act
@@ -2682,7 +2682,7 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsRequestPlanPaymentMethod
 	t.Run("SetIncludePlatformDefaults_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration{}
+		obj := &CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration{}
 		var fernTestValueIncludePlatformDefaults *bool
 
 		// Act
@@ -2785,14 +2785,6 @@ func TestSettersCreateCheckoutConfigurationsResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetPlan", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsResponse{}
-		var fernTestValuePlan *CreateCheckoutConfigurationsResponsePlan
-		obj.SetPlan(fernTestValuePlan)
-		assert.Equal(t, fernTestValuePlan, obj.Plan)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetPurchaseURL", func(t *testing.T) {
 		obj := &CreateCheckoutConfigurationsResponse{}
 		var fernTestValuePurchaseURL *string
@@ -2822,6 +2814,14 @@ func TestSettersCreateCheckoutConfigurationsResponse(t *testing.T) {
 		var fernTestValueUpdatedAt string
 		obj.SetUpdatedAt(fernTestValueUpdatedAt)
 		assert.Equal(t, fernTestValueUpdatedAt, obj.UpdatedAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetVariant", func(t *testing.T) {
+		obj := &CreateCheckoutConfigurationsResponse{}
+		var fernTestValueVariant *CreateCheckoutConfigurationsResponseVariant
+		obj.SetVariant(fernTestValueVariant)
+		assert.Equal(t, fernTestValueVariant, obj.Variant)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -3085,39 +3085,6 @@ func TestGettersCreateCheckoutConfigurationsResponse(t *testing.T) {
 		_ = obj.GetPaymentMethodConfiguration() // Should return zero value
 	})
 
-	t.Run("GetPlan", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateCheckoutConfigurationsResponse{}
-		var expected *CreateCheckoutConfigurationsResponsePlan
-		obj.Plan = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetPlan(), "getter should return the property value")
-	})
-
-	t.Run("GetPlan_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateCheckoutConfigurationsResponse{}
-		obj.Plan = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetPlan(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetPlan_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *CreateCheckoutConfigurationsResponse
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetPlan() // Should return zero value
-	})
-
 	t.Run("GetPurchaseURL", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -3238,6 +3205,39 @@ func TestGettersCreateCheckoutConfigurationsResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetUpdatedAt() // Should return zero value
+	})
+
+	t.Run("GetVariant", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateCheckoutConfigurationsResponse{}
+		var expected *CreateCheckoutConfigurationsResponseVariant
+		obj.Variant = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetVariant(), "getter should return the property value")
+	})
+
+	t.Run("GetVariant_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateCheckoutConfigurationsResponse{}
+		obj.Variant = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetVariant(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetVariant_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateCheckoutConfigurationsResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetVariant() // Should return zero value
 	})
 
 }
@@ -3522,37 +3522,6 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsResponse(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetPlan_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateCheckoutConfigurationsResponse{}
-		var fernTestValuePlan *CreateCheckoutConfigurationsResponsePlan
-
-		// Act
-		obj.SetPlan(fernTestValuePlan)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
 	t.Run("SetPurchaseURL_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -3654,6 +3623,37 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsResponse(t *testing.T) {
 
 		// Act
 		obj.SetUpdatedAt(fernTestValueUpdatedAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetVariant_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateCheckoutConfigurationsResponse{}
+		var fernTestValueVariant *CreateCheckoutConfigurationsResponseVariant
+
+		// Act
+		obj.SetVariant(fernTestValueVariant)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -4129,9 +4129,9 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsResponsePaymentMethodCon
 
 }
 
-func TestSettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
+func TestSettersCreateCheckoutConfigurationsResponseVariant(t *testing.T) {
 	t.Run("SetAdaptivePricingEnabled", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
 		var fernTestValueAdaptivePricingEnabled bool
 		obj.SetAdaptivePricingEnabled(fernTestValueAdaptivePricingEnabled)
 		assert.Equal(t, fernTestValueAdaptivePricingEnabled, obj.AdaptivePricingEnabled)
@@ -4139,15 +4139,23 @@ func TestSettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 	})
 
 	t.Run("SetBillingPeriod", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
 		var fernTestValueBillingPeriod *int
 		obj.SetBillingPeriod(fernTestValueBillingPeriod)
 		assert.Equal(t, fernTestValueBillingPeriod, obj.BillingPeriod)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetBillingType", func(t *testing.T) {
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
+		var fernTestValueBillingType CreateCheckoutConfigurationsResponseVariantBillingType
+		obj.SetBillingType(fernTestValueBillingType)
+		assert.Equal(t, fernTestValueBillingType, obj.BillingType)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCurrency", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
 		var fernTestValueCurrency string
 		obj.SetCurrency(fernTestValueCurrency)
 		assert.Equal(t, fernTestValueCurrency, obj.Currency)
@@ -4155,7 +4163,7 @@ func TestSettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 	})
 
 	t.Run("SetExpirationDays", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
 		var fernTestValueExpirationDays *int
 		obj.SetExpirationDays(fernTestValueExpirationDays)
 		assert.Equal(t, fernTestValueExpirationDays, obj.ExpirationDays)
@@ -4163,7 +4171,7 @@ func TestSettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 	})
 
 	t.Run("SetID", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
 		var fernTestValueID string
 		obj.SetID(fernTestValueID)
 		assert.Equal(t, fernTestValueID, obj.ID)
@@ -4171,31 +4179,23 @@ func TestSettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 	})
 
 	t.Run("SetInitialPrice", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
 		var fernTestValueInitialPrice float64
 		obj.SetInitialPrice(fernTestValueInitialPrice)
 		assert.Equal(t, fernTestValueInitialPrice, obj.InitialPrice)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetPlanType", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
-		var fernTestValuePlanType CreateCheckoutConfigurationsResponsePlanPlanType
-		obj.SetPlanType(fernTestValuePlanType)
-		assert.Equal(t, fernTestValuePlanType, obj.PlanType)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetReleaseMethod", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
-		var fernTestValueReleaseMethod CreateCheckoutConfigurationsResponsePlanReleaseMethod
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
+		var fernTestValueReleaseMethod CreateCheckoutConfigurationsResponseVariantReleaseMethod
 		obj.SetReleaseMethod(fernTestValueReleaseMethod)
 		assert.Equal(t, fernTestValueReleaseMethod, obj.ReleaseMethod)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
 	t.Run("SetRenewalPrice", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
 		var fernTestValueRenewalPrice float64
 		obj.SetRenewalPrice(fernTestValueRenewalPrice)
 		assert.Equal(t, fernTestValueRenewalPrice, obj.RenewalPrice)
@@ -4203,15 +4203,15 @@ func TestSettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 	})
 
 	t.Run("SetThreeDsLevel", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
-		var fernTestValueThreeDsLevel *CreateCheckoutConfigurationsResponsePlanThreeDsLevel
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
+		var fernTestValueThreeDsLevel *CreateCheckoutConfigurationsResponseVariantThreeDsLevel
 		obj.SetThreeDsLevel(fernTestValueThreeDsLevel)
 		assert.Equal(t, fernTestValueThreeDsLevel, obj.ThreeDsLevel)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
 	t.Run("SetTrialPeriodDays", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
 		var fernTestValueTrialPeriodDays *int
 		obj.SetTrialPeriodDays(fernTestValueTrialPeriodDays)
 		assert.Equal(t, fernTestValueTrialPeriodDays, obj.TrialPeriodDays)
@@ -4219,8 +4219,8 @@ func TestSettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 	})
 
 	t.Run("SetVisibility", func(t *testing.T) {
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
-		var fernTestValueVisibility CreateCheckoutConfigurationsResponsePlanVisibility
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
+		var fernTestValueVisibility CreateCheckoutConfigurationsResponseVariantVisibility
 		obj.SetVisibility(fernTestValueVisibility)
 		assert.Equal(t, fernTestValueVisibility, obj.Visibility)
 		assert.NotNil(t, obj.explicitFields)
@@ -4228,11 +4228,11 @@ func TestSettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 
 }
 
-func TestGettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
+func TestGettersCreateCheckoutConfigurationsResponseVariant(t *testing.T) {
 	t.Run("GetAdaptivePricingEnabled", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
 		var expected bool
 		obj.AdaptivePricingEnabled = expected
 
@@ -4242,7 +4242,7 @@ func TestGettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 
 	t.Run("GetAdaptivePricingEnabled_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsResponsePlan
+		var obj *CreateCheckoutConfigurationsResponseVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -4255,7 +4255,7 @@ func TestGettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 	t.Run("GetBillingPeriod", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
 		var expected *int
 		obj.BillingPeriod = expected
 
@@ -4266,7 +4266,7 @@ func TestGettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 	t.Run("GetBillingPeriod_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
 		obj.BillingPeriod = nil
 
 		// Act & Assert
@@ -4275,7 +4275,7 @@ func TestGettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 
 	t.Run("GetBillingPeriod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsResponsePlan
+		var obj *CreateCheckoutConfigurationsResponseVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -4285,10 +4285,33 @@ func TestGettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 		_ = obj.GetBillingPeriod() // Should return zero value
 	})
 
+	t.Run("GetBillingType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
+		var expected CreateCheckoutConfigurationsResponseVariantBillingType
+		obj.BillingType = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetBillingType(), "getter should return the property value")
+	})
+
+	t.Run("GetBillingType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateCheckoutConfigurationsResponseVariant
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetBillingType() // Should return zero value
+	})
+
 	t.Run("GetCurrency", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
 		var expected string
 		obj.Currency = expected
 
@@ -4298,7 +4321,7 @@ func TestGettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 
 	t.Run("GetCurrency_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsResponsePlan
+		var obj *CreateCheckoutConfigurationsResponseVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -4311,7 +4334,7 @@ func TestGettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 	t.Run("GetExpirationDays", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
 		var expected *int
 		obj.ExpirationDays = expected
 
@@ -4322,7 +4345,7 @@ func TestGettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 	t.Run("GetExpirationDays_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
 		obj.ExpirationDays = nil
 
 		// Act & Assert
@@ -4331,7 +4354,7 @@ func TestGettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 
 	t.Run("GetExpirationDays_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsResponsePlan
+		var obj *CreateCheckoutConfigurationsResponseVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -4344,7 +4367,7 @@ func TestGettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 	t.Run("GetID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
 		var expected string
 		obj.ID = expected
 
@@ -4354,7 +4377,7 @@ func TestGettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 
 	t.Run("GetID_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsResponsePlan
+		var obj *CreateCheckoutConfigurationsResponseVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -4367,7 +4390,7 @@ func TestGettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 	t.Run("GetInitialPrice", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
 		var expected float64
 		obj.InitialPrice = expected
 
@@ -4377,7 +4400,7 @@ func TestGettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 
 	t.Run("GetInitialPrice_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsResponsePlan
+		var obj *CreateCheckoutConfigurationsResponseVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -4387,34 +4410,11 @@ func TestGettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 		_ = obj.GetInitialPrice() // Should return zero value
 	})
 
-	t.Run("GetPlanType", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
-		var expected CreateCheckoutConfigurationsResponsePlanPlanType
-		obj.PlanType = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetPlanType(), "getter should return the property value")
-	})
-
-	t.Run("GetPlanType_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *CreateCheckoutConfigurationsResponsePlan
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetPlanType() // Should return zero value
-	})
-
 	t.Run("GetReleaseMethod", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
-		var expected CreateCheckoutConfigurationsResponsePlanReleaseMethod
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
+		var expected CreateCheckoutConfigurationsResponseVariantReleaseMethod
 		obj.ReleaseMethod = expected
 
 		// Act & Assert
@@ -4423,7 +4423,7 @@ func TestGettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 
 	t.Run("GetReleaseMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsResponsePlan
+		var obj *CreateCheckoutConfigurationsResponseVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -4436,7 +4436,7 @@ func TestGettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 	t.Run("GetRenewalPrice", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
 		var expected float64
 		obj.RenewalPrice = expected
 
@@ -4446,7 +4446,7 @@ func TestGettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 
 	t.Run("GetRenewalPrice_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsResponsePlan
+		var obj *CreateCheckoutConfigurationsResponseVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -4459,8 +4459,8 @@ func TestGettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 	t.Run("GetThreeDsLevel", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
-		var expected *CreateCheckoutConfigurationsResponsePlanThreeDsLevel
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
+		var expected *CreateCheckoutConfigurationsResponseVariantThreeDsLevel
 		obj.ThreeDsLevel = expected
 
 		// Act & Assert
@@ -4470,7 +4470,7 @@ func TestGettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 	t.Run("GetThreeDsLevel_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
 		obj.ThreeDsLevel = nil
 
 		// Act & Assert
@@ -4479,7 +4479,7 @@ func TestGettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 
 	t.Run("GetThreeDsLevel_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsResponsePlan
+		var obj *CreateCheckoutConfigurationsResponseVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -4492,7 +4492,7 @@ func TestGettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 	t.Run("GetTrialPeriodDays", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
 		var expected *int
 		obj.TrialPeriodDays = expected
 
@@ -4503,7 +4503,7 @@ func TestGettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 	t.Run("GetTrialPeriodDays_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
 		obj.TrialPeriodDays = nil
 
 		// Act & Assert
@@ -4512,7 +4512,7 @@ func TestGettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 
 	t.Run("GetTrialPeriodDays_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsResponsePlan
+		var obj *CreateCheckoutConfigurationsResponseVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -4525,8 +4525,8 @@ func TestGettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 	t.Run("GetVisibility", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
-		var expected CreateCheckoutConfigurationsResponsePlanVisibility
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
+		var expected CreateCheckoutConfigurationsResponseVariantVisibility
 		obj.Visibility = expected
 
 		// Act & Assert
@@ -4535,7 +4535,7 @@ func TestGettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 
 	t.Run("GetVisibility_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsResponsePlan
+		var obj *CreateCheckoutConfigurationsResponseVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -4547,11 +4547,11 @@ func TestGettersCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 
 }
 
-func TestSettersMarkExplicitCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
+func TestSettersMarkExplicitCreateCheckoutConfigurationsResponseVariant(t *testing.T) {
 	t.Run("SetAdaptivePricingEnabled_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
 		var fernTestValueAdaptivePricingEnabled bool
 
 		// Act
@@ -4582,7 +4582,7 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsResponsePlan(t *testing.
 	t.Run("SetBillingPeriod_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
 		var fernTestValueBillingPeriod *int
 
 		// Act
@@ -4610,10 +4610,41 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsResponsePlan(t *testing.
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetBillingType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
+		var fernTestValueBillingType CreateCheckoutConfigurationsResponseVariantBillingType
+
+		// Act
+		obj.SetBillingType(fernTestValueBillingType)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetCurrency_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
 		var fernTestValueCurrency string
 
 		// Act
@@ -4644,7 +4675,7 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsResponsePlan(t *testing.
 	t.Run("SetExpirationDays_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
 		var fernTestValueExpirationDays *int
 
 		// Act
@@ -4675,7 +4706,7 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsResponsePlan(t *testing.
 	t.Run("SetID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
 		var fernTestValueID string
 
 		// Act
@@ -4706,7 +4737,7 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsResponsePlan(t *testing.
 	t.Run("SetInitialPrice_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
 		var fernTestValueInitialPrice float64
 
 		// Act
@@ -4734,42 +4765,11 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsResponsePlan(t *testing.
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetPlanType_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
-		var fernTestValuePlanType CreateCheckoutConfigurationsResponsePlanPlanType
-
-		// Act
-		obj.SetPlanType(fernTestValuePlanType)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
 	t.Run("SetReleaseMethod_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
-		var fernTestValueReleaseMethod CreateCheckoutConfigurationsResponsePlanReleaseMethod
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
+		var fernTestValueReleaseMethod CreateCheckoutConfigurationsResponseVariantReleaseMethod
 
 		// Act
 		obj.SetReleaseMethod(fernTestValueReleaseMethod)
@@ -4799,7 +4799,7 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsResponsePlan(t *testing.
 	t.Run("SetRenewalPrice_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
 		var fernTestValueRenewalPrice float64
 
 		// Act
@@ -4830,8 +4830,8 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsResponsePlan(t *testing.
 	t.Run("SetThreeDsLevel_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
-		var fernTestValueThreeDsLevel *CreateCheckoutConfigurationsResponsePlanThreeDsLevel
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
+		var fernTestValueThreeDsLevel *CreateCheckoutConfigurationsResponseVariantThreeDsLevel
 
 		// Act
 		obj.SetThreeDsLevel(fernTestValueThreeDsLevel)
@@ -4861,7 +4861,7 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsResponsePlan(t *testing.
 	t.Run("SetTrialPeriodDays_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
 		var fernTestValueTrialPeriodDays *int
 
 		// Act
@@ -4892,8 +4892,8 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsResponsePlan(t *testing.
 	t.Run("SetVisibility_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
-		var fernTestValueVisibility CreateCheckoutConfigurationsResponsePlanVisibility
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
+		var fernTestValueVisibility CreateCheckoutConfigurationsResponseVariantVisibility
 
 		// Act
 		obj.SetVisibility(fernTestValueVisibility)
@@ -5281,14 +5281,6 @@ func TestSettersListCheckoutConfigurationsResponseDataItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetPlan", func(t *testing.T) {
-		obj := &ListCheckoutConfigurationsResponseDataItem{}
-		var fernTestValuePlan *ListCheckoutConfigurationsResponseDataItemPlan
-		obj.SetPlan(fernTestValuePlan)
-		assert.Equal(t, fernTestValuePlan, obj.Plan)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetPurchaseURL", func(t *testing.T) {
 		obj := &ListCheckoutConfigurationsResponseDataItem{}
 		var fernTestValuePurchaseURL *string
@@ -5318,6 +5310,14 @@ func TestSettersListCheckoutConfigurationsResponseDataItem(t *testing.T) {
 		var fernTestValueUpdatedAt string
 		obj.SetUpdatedAt(fernTestValueUpdatedAt)
 		assert.Equal(t, fernTestValueUpdatedAt, obj.UpdatedAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetVariant", func(t *testing.T) {
+		obj := &ListCheckoutConfigurationsResponseDataItem{}
+		var fernTestValueVariant *ListCheckoutConfigurationsResponseDataItemVariant
+		obj.SetVariant(fernTestValueVariant)
+		assert.Equal(t, fernTestValueVariant, obj.Variant)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -5581,39 +5581,6 @@ func TestGettersListCheckoutConfigurationsResponseDataItem(t *testing.T) {
 		_ = obj.GetPaymentMethodConfiguration() // Should return zero value
 	})
 
-	t.Run("GetPlan", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &ListCheckoutConfigurationsResponseDataItem{}
-		var expected *ListCheckoutConfigurationsResponseDataItemPlan
-		obj.Plan = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetPlan(), "getter should return the property value")
-	})
-
-	t.Run("GetPlan_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &ListCheckoutConfigurationsResponseDataItem{}
-		obj.Plan = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetPlan(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetPlan_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *ListCheckoutConfigurationsResponseDataItem
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetPlan() // Should return zero value
-	})
-
 	t.Run("GetPurchaseURL", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -5734,6 +5701,39 @@ func TestGettersListCheckoutConfigurationsResponseDataItem(t *testing.T) {
 			}
 		}()
 		_ = obj.GetUpdatedAt() // Should return zero value
+	})
+
+	t.Run("GetVariant", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListCheckoutConfigurationsResponseDataItem{}
+		var expected *ListCheckoutConfigurationsResponseDataItemVariant
+		obj.Variant = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetVariant(), "getter should return the property value")
+	})
+
+	t.Run("GetVariant_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListCheckoutConfigurationsResponseDataItem{}
+		obj.Variant = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetVariant(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetVariant_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListCheckoutConfigurationsResponseDataItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetVariant() // Should return zero value
 	})
 
 }
@@ -6018,37 +6018,6 @@ func TestSettersMarkExplicitListCheckoutConfigurationsResponseDataItem(t *testin
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetPlan_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &ListCheckoutConfigurationsResponseDataItem{}
-		var fernTestValuePlan *ListCheckoutConfigurationsResponseDataItemPlan
-
-		// Act
-		obj.SetPlan(fernTestValuePlan)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
 	t.Run("SetPurchaseURL_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -6150,6 +6119,37 @@ func TestSettersMarkExplicitListCheckoutConfigurationsResponseDataItem(t *testin
 
 		// Act
 		obj.SetUpdatedAt(fernTestValueUpdatedAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetVariant_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListCheckoutConfigurationsResponseDataItem{}
+		var fernTestValueVariant *ListCheckoutConfigurationsResponseDataItemVariant
+
+		// Act
+		obj.SetVariant(fernTestValueVariant)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -6625,9 +6625,9 @@ func TestSettersMarkExplicitListCheckoutConfigurationsResponseDataItemPaymentMet
 
 }
 
-func TestSettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
+func TestSettersListCheckoutConfigurationsResponseDataItemVariant(t *testing.T) {
 	t.Run("SetAdaptivePricingEnabled", func(t *testing.T) {
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
 		var fernTestValueAdaptivePricingEnabled bool
 		obj.SetAdaptivePricingEnabled(fernTestValueAdaptivePricingEnabled)
 		assert.Equal(t, fernTestValueAdaptivePricingEnabled, obj.AdaptivePricingEnabled)
@@ -6635,15 +6635,23 @@ func TestSettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 	})
 
 	t.Run("SetBillingPeriod", func(t *testing.T) {
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
 		var fernTestValueBillingPeriod *int
 		obj.SetBillingPeriod(fernTestValueBillingPeriod)
 		assert.Equal(t, fernTestValueBillingPeriod, obj.BillingPeriod)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetBillingType", func(t *testing.T) {
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
+		var fernTestValueBillingType ListCheckoutConfigurationsResponseDataItemVariantBillingType
+		obj.SetBillingType(fernTestValueBillingType)
+		assert.Equal(t, fernTestValueBillingType, obj.BillingType)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCurrency", func(t *testing.T) {
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
 		var fernTestValueCurrency string
 		obj.SetCurrency(fernTestValueCurrency)
 		assert.Equal(t, fernTestValueCurrency, obj.Currency)
@@ -6651,7 +6659,7 @@ func TestSettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 	})
 
 	t.Run("SetExpirationDays", func(t *testing.T) {
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
 		var fernTestValueExpirationDays *int
 		obj.SetExpirationDays(fernTestValueExpirationDays)
 		assert.Equal(t, fernTestValueExpirationDays, obj.ExpirationDays)
@@ -6659,7 +6667,7 @@ func TestSettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 	})
 
 	t.Run("SetID", func(t *testing.T) {
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
 		var fernTestValueID string
 		obj.SetID(fernTestValueID)
 		assert.Equal(t, fernTestValueID, obj.ID)
@@ -6667,31 +6675,23 @@ func TestSettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 	})
 
 	t.Run("SetInitialPrice", func(t *testing.T) {
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
 		var fernTestValueInitialPrice float64
 		obj.SetInitialPrice(fernTestValueInitialPrice)
 		assert.Equal(t, fernTestValueInitialPrice, obj.InitialPrice)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetPlanType", func(t *testing.T) {
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
-		var fernTestValuePlanType ListCheckoutConfigurationsResponseDataItemPlanPlanType
-		obj.SetPlanType(fernTestValuePlanType)
-		assert.Equal(t, fernTestValuePlanType, obj.PlanType)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetReleaseMethod", func(t *testing.T) {
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
-		var fernTestValueReleaseMethod ListCheckoutConfigurationsResponseDataItemPlanReleaseMethod
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
+		var fernTestValueReleaseMethod ListCheckoutConfigurationsResponseDataItemVariantReleaseMethod
 		obj.SetReleaseMethod(fernTestValueReleaseMethod)
 		assert.Equal(t, fernTestValueReleaseMethod, obj.ReleaseMethod)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
 	t.Run("SetRenewalPrice", func(t *testing.T) {
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
 		var fernTestValueRenewalPrice float64
 		obj.SetRenewalPrice(fernTestValueRenewalPrice)
 		assert.Equal(t, fernTestValueRenewalPrice, obj.RenewalPrice)
@@ -6699,15 +6699,15 @@ func TestSettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 	})
 
 	t.Run("SetThreeDsLevel", func(t *testing.T) {
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
-		var fernTestValueThreeDsLevel *ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
+		var fernTestValueThreeDsLevel *ListCheckoutConfigurationsResponseDataItemVariantThreeDsLevel
 		obj.SetThreeDsLevel(fernTestValueThreeDsLevel)
 		assert.Equal(t, fernTestValueThreeDsLevel, obj.ThreeDsLevel)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
 	t.Run("SetTrialPeriodDays", func(t *testing.T) {
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
 		var fernTestValueTrialPeriodDays *int
 		obj.SetTrialPeriodDays(fernTestValueTrialPeriodDays)
 		assert.Equal(t, fernTestValueTrialPeriodDays, obj.TrialPeriodDays)
@@ -6715,8 +6715,8 @@ func TestSettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 	})
 
 	t.Run("SetVisibility", func(t *testing.T) {
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
-		var fernTestValueVisibility ListCheckoutConfigurationsResponseDataItemPlanVisibility
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
+		var fernTestValueVisibility ListCheckoutConfigurationsResponseDataItemVariantVisibility
 		obj.SetVisibility(fernTestValueVisibility)
 		assert.Equal(t, fernTestValueVisibility, obj.Visibility)
 		assert.NotNil(t, obj.explicitFields)
@@ -6724,11 +6724,11 @@ func TestSettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 
 }
 
-func TestGettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
+func TestGettersListCheckoutConfigurationsResponseDataItemVariant(t *testing.T) {
 	t.Run("GetAdaptivePricingEnabled", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
 		var expected bool
 		obj.AdaptivePricingEnabled = expected
 
@@ -6738,7 +6738,7 @@ func TestGettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 
 	t.Run("GetAdaptivePricingEnabled_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *ListCheckoutConfigurationsResponseDataItemPlan
+		var obj *ListCheckoutConfigurationsResponseDataItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -6751,7 +6751,7 @@ func TestGettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 	t.Run("GetBillingPeriod", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
 		var expected *int
 		obj.BillingPeriod = expected
 
@@ -6762,7 +6762,7 @@ func TestGettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 	t.Run("GetBillingPeriod_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
 		obj.BillingPeriod = nil
 
 		// Act & Assert
@@ -6771,7 +6771,7 @@ func TestGettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 
 	t.Run("GetBillingPeriod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *ListCheckoutConfigurationsResponseDataItemPlan
+		var obj *ListCheckoutConfigurationsResponseDataItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -6781,10 +6781,33 @@ func TestGettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 		_ = obj.GetBillingPeriod() // Should return zero value
 	})
 
+	t.Run("GetBillingType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
+		var expected ListCheckoutConfigurationsResponseDataItemVariantBillingType
+		obj.BillingType = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetBillingType(), "getter should return the property value")
+	})
+
+	t.Run("GetBillingType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListCheckoutConfigurationsResponseDataItemVariant
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetBillingType() // Should return zero value
+	})
+
 	t.Run("GetCurrency", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
 		var expected string
 		obj.Currency = expected
 
@@ -6794,7 +6817,7 @@ func TestGettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 
 	t.Run("GetCurrency_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *ListCheckoutConfigurationsResponseDataItemPlan
+		var obj *ListCheckoutConfigurationsResponseDataItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -6807,7 +6830,7 @@ func TestGettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 	t.Run("GetExpirationDays", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
 		var expected *int
 		obj.ExpirationDays = expected
 
@@ -6818,7 +6841,7 @@ func TestGettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 	t.Run("GetExpirationDays_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
 		obj.ExpirationDays = nil
 
 		// Act & Assert
@@ -6827,7 +6850,7 @@ func TestGettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 
 	t.Run("GetExpirationDays_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *ListCheckoutConfigurationsResponseDataItemPlan
+		var obj *ListCheckoutConfigurationsResponseDataItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -6840,7 +6863,7 @@ func TestGettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 	t.Run("GetID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
 		var expected string
 		obj.ID = expected
 
@@ -6850,7 +6873,7 @@ func TestGettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 
 	t.Run("GetID_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *ListCheckoutConfigurationsResponseDataItemPlan
+		var obj *ListCheckoutConfigurationsResponseDataItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -6863,7 +6886,7 @@ func TestGettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 	t.Run("GetInitialPrice", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
 		var expected float64
 		obj.InitialPrice = expected
 
@@ -6873,7 +6896,7 @@ func TestGettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 
 	t.Run("GetInitialPrice_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *ListCheckoutConfigurationsResponseDataItemPlan
+		var obj *ListCheckoutConfigurationsResponseDataItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -6883,34 +6906,11 @@ func TestGettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 		_ = obj.GetInitialPrice() // Should return zero value
 	})
 
-	t.Run("GetPlanType", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
-		var expected ListCheckoutConfigurationsResponseDataItemPlanPlanType
-		obj.PlanType = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetPlanType(), "getter should return the property value")
-	})
-
-	t.Run("GetPlanType_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *ListCheckoutConfigurationsResponseDataItemPlan
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetPlanType() // Should return zero value
-	})
-
 	t.Run("GetReleaseMethod", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
-		var expected ListCheckoutConfigurationsResponseDataItemPlanReleaseMethod
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
+		var expected ListCheckoutConfigurationsResponseDataItemVariantReleaseMethod
 		obj.ReleaseMethod = expected
 
 		// Act & Assert
@@ -6919,7 +6919,7 @@ func TestGettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 
 	t.Run("GetReleaseMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *ListCheckoutConfigurationsResponseDataItemPlan
+		var obj *ListCheckoutConfigurationsResponseDataItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -6932,7 +6932,7 @@ func TestGettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 	t.Run("GetRenewalPrice", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
 		var expected float64
 		obj.RenewalPrice = expected
 
@@ -6942,7 +6942,7 @@ func TestGettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 
 	t.Run("GetRenewalPrice_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *ListCheckoutConfigurationsResponseDataItemPlan
+		var obj *ListCheckoutConfigurationsResponseDataItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -6955,8 +6955,8 @@ func TestGettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 	t.Run("GetThreeDsLevel", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
-		var expected *ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
+		var expected *ListCheckoutConfigurationsResponseDataItemVariantThreeDsLevel
 		obj.ThreeDsLevel = expected
 
 		// Act & Assert
@@ -6966,7 +6966,7 @@ func TestGettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 	t.Run("GetThreeDsLevel_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
 		obj.ThreeDsLevel = nil
 
 		// Act & Assert
@@ -6975,7 +6975,7 @@ func TestGettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 
 	t.Run("GetThreeDsLevel_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *ListCheckoutConfigurationsResponseDataItemPlan
+		var obj *ListCheckoutConfigurationsResponseDataItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -6988,7 +6988,7 @@ func TestGettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 	t.Run("GetTrialPeriodDays", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
 		var expected *int
 		obj.TrialPeriodDays = expected
 
@@ -6999,7 +6999,7 @@ func TestGettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 	t.Run("GetTrialPeriodDays_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
 		obj.TrialPeriodDays = nil
 
 		// Act & Assert
@@ -7008,7 +7008,7 @@ func TestGettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 
 	t.Run("GetTrialPeriodDays_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *ListCheckoutConfigurationsResponseDataItemPlan
+		var obj *ListCheckoutConfigurationsResponseDataItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -7021,8 +7021,8 @@ func TestGettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 	t.Run("GetVisibility", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
-		var expected ListCheckoutConfigurationsResponseDataItemPlanVisibility
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
+		var expected ListCheckoutConfigurationsResponseDataItemVariantVisibility
 		obj.Visibility = expected
 
 		// Act & Assert
@@ -7031,7 +7031,7 @@ func TestGettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 
 	t.Run("GetVisibility_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *ListCheckoutConfigurationsResponseDataItemPlan
+		var obj *ListCheckoutConfigurationsResponseDataItemVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -7043,11 +7043,11 @@ func TestGettersListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
 
 }
 
-func TestSettersMarkExplicitListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
+func TestSettersMarkExplicitListCheckoutConfigurationsResponseDataItemVariant(t *testing.T) {
 	t.Run("SetAdaptivePricingEnabled_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
 		var fernTestValueAdaptivePricingEnabled bool
 
 		// Act
@@ -7078,7 +7078,7 @@ func TestSettersMarkExplicitListCheckoutConfigurationsResponseDataItemPlan(t *te
 	t.Run("SetBillingPeriod_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
 		var fernTestValueBillingPeriod *int
 
 		// Act
@@ -7106,10 +7106,41 @@ func TestSettersMarkExplicitListCheckoutConfigurationsResponseDataItemPlan(t *te
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetBillingType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
+		var fernTestValueBillingType ListCheckoutConfigurationsResponseDataItemVariantBillingType
+
+		// Act
+		obj.SetBillingType(fernTestValueBillingType)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetCurrency_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
 		var fernTestValueCurrency string
 
 		// Act
@@ -7140,7 +7171,7 @@ func TestSettersMarkExplicitListCheckoutConfigurationsResponseDataItemPlan(t *te
 	t.Run("SetExpirationDays_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
 		var fernTestValueExpirationDays *int
 
 		// Act
@@ -7171,7 +7202,7 @@ func TestSettersMarkExplicitListCheckoutConfigurationsResponseDataItemPlan(t *te
 	t.Run("SetID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
 		var fernTestValueID string
 
 		// Act
@@ -7202,7 +7233,7 @@ func TestSettersMarkExplicitListCheckoutConfigurationsResponseDataItemPlan(t *te
 	t.Run("SetInitialPrice_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
 		var fernTestValueInitialPrice float64
 
 		// Act
@@ -7230,42 +7261,11 @@ func TestSettersMarkExplicitListCheckoutConfigurationsResponseDataItemPlan(t *te
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetPlanType_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
-		var fernTestValuePlanType ListCheckoutConfigurationsResponseDataItemPlanPlanType
-
-		// Act
-		obj.SetPlanType(fernTestValuePlanType)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
 	t.Run("SetReleaseMethod_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
-		var fernTestValueReleaseMethod ListCheckoutConfigurationsResponseDataItemPlanReleaseMethod
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
+		var fernTestValueReleaseMethod ListCheckoutConfigurationsResponseDataItemVariantReleaseMethod
 
 		// Act
 		obj.SetReleaseMethod(fernTestValueReleaseMethod)
@@ -7295,7 +7295,7 @@ func TestSettersMarkExplicitListCheckoutConfigurationsResponseDataItemPlan(t *te
 	t.Run("SetRenewalPrice_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
 		var fernTestValueRenewalPrice float64
 
 		// Act
@@ -7326,8 +7326,8 @@ func TestSettersMarkExplicitListCheckoutConfigurationsResponseDataItemPlan(t *te
 	t.Run("SetThreeDsLevel_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
-		var fernTestValueThreeDsLevel *ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
+		var fernTestValueThreeDsLevel *ListCheckoutConfigurationsResponseDataItemVariantThreeDsLevel
 
 		// Act
 		obj.SetThreeDsLevel(fernTestValueThreeDsLevel)
@@ -7357,7 +7357,7 @@ func TestSettersMarkExplicitListCheckoutConfigurationsResponseDataItemPlan(t *te
 	t.Run("SetTrialPeriodDays_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
 		var fernTestValueTrialPeriodDays *int
 
 		// Act
@@ -7388,8 +7388,8 @@ func TestSettersMarkExplicitListCheckoutConfigurationsResponseDataItemPlan(t *te
 	t.Run("SetVisibility_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
-		var fernTestValueVisibility ListCheckoutConfigurationsResponseDataItemPlanVisibility
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
+		var fernTestValueVisibility ListCheckoutConfigurationsResponseDataItemVariantVisibility
 
 		// Act
 		obj.SetVisibility(fernTestValueVisibility)
@@ -7768,14 +7768,6 @@ func TestSettersRetrieveCheckoutConfigurationsResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetPlan", func(t *testing.T) {
-		obj := &RetrieveCheckoutConfigurationsResponse{}
-		var fernTestValuePlan *RetrieveCheckoutConfigurationsResponsePlan
-		obj.SetPlan(fernTestValuePlan)
-		assert.Equal(t, fernTestValuePlan, obj.Plan)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetPurchaseURL", func(t *testing.T) {
 		obj := &RetrieveCheckoutConfigurationsResponse{}
 		var fernTestValuePurchaseURL *string
@@ -7805,6 +7797,14 @@ func TestSettersRetrieveCheckoutConfigurationsResponse(t *testing.T) {
 		var fernTestValueUpdatedAt string
 		obj.SetUpdatedAt(fernTestValueUpdatedAt)
 		assert.Equal(t, fernTestValueUpdatedAt, obj.UpdatedAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetVariant", func(t *testing.T) {
+		obj := &RetrieveCheckoutConfigurationsResponse{}
+		var fernTestValueVariant *RetrieveCheckoutConfigurationsResponseVariant
+		obj.SetVariant(fernTestValueVariant)
+		assert.Equal(t, fernTestValueVariant, obj.Variant)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -8068,39 +8068,6 @@ func TestGettersRetrieveCheckoutConfigurationsResponse(t *testing.T) {
 		_ = obj.GetPaymentMethodConfiguration() // Should return zero value
 	})
 
-	t.Run("GetPlan", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &RetrieveCheckoutConfigurationsResponse{}
-		var expected *RetrieveCheckoutConfigurationsResponsePlan
-		obj.Plan = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetPlan(), "getter should return the property value")
-	})
-
-	t.Run("GetPlan_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &RetrieveCheckoutConfigurationsResponse{}
-		obj.Plan = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetPlan(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetPlan_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *RetrieveCheckoutConfigurationsResponse
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetPlan() // Should return zero value
-	})
-
 	t.Run("GetPurchaseURL", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -8221,6 +8188,39 @@ func TestGettersRetrieveCheckoutConfigurationsResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetUpdatedAt() // Should return zero value
+	})
+
+	t.Run("GetVariant", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveCheckoutConfigurationsResponse{}
+		var expected *RetrieveCheckoutConfigurationsResponseVariant
+		obj.Variant = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetVariant(), "getter should return the property value")
+	})
+
+	t.Run("GetVariant_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveCheckoutConfigurationsResponse{}
+		obj.Variant = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetVariant(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetVariant_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrieveCheckoutConfigurationsResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetVariant() // Should return zero value
 	})
 
 }
@@ -8505,37 +8505,6 @@ func TestSettersMarkExplicitRetrieveCheckoutConfigurationsResponse(t *testing.T)
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetPlan_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &RetrieveCheckoutConfigurationsResponse{}
-		var fernTestValuePlan *RetrieveCheckoutConfigurationsResponsePlan
-
-		// Act
-		obj.SetPlan(fernTestValuePlan)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
 	t.Run("SetPurchaseURL_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -8637,6 +8606,37 @@ func TestSettersMarkExplicitRetrieveCheckoutConfigurationsResponse(t *testing.T)
 
 		// Act
 		obj.SetUpdatedAt(fernTestValueUpdatedAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetVariant_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveCheckoutConfigurationsResponse{}
+		var fernTestValueVariant *RetrieveCheckoutConfigurationsResponseVariant
+
+		// Act
+		obj.SetVariant(fernTestValueVariant)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -9112,9 +9112,9 @@ func TestSettersMarkExplicitRetrieveCheckoutConfigurationsResponsePaymentMethodC
 
 }
 
-func TestSettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
+func TestSettersRetrieveCheckoutConfigurationsResponseVariant(t *testing.T) {
 	t.Run("SetAdaptivePricingEnabled", func(t *testing.T) {
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
 		var fernTestValueAdaptivePricingEnabled bool
 		obj.SetAdaptivePricingEnabled(fernTestValueAdaptivePricingEnabled)
 		assert.Equal(t, fernTestValueAdaptivePricingEnabled, obj.AdaptivePricingEnabled)
@@ -9122,15 +9122,23 @@ func TestSettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 	})
 
 	t.Run("SetBillingPeriod", func(t *testing.T) {
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
 		var fernTestValueBillingPeriod *int
 		obj.SetBillingPeriod(fernTestValueBillingPeriod)
 		assert.Equal(t, fernTestValueBillingPeriod, obj.BillingPeriod)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetBillingType", func(t *testing.T) {
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
+		var fernTestValueBillingType RetrieveCheckoutConfigurationsResponseVariantBillingType
+		obj.SetBillingType(fernTestValueBillingType)
+		assert.Equal(t, fernTestValueBillingType, obj.BillingType)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCurrency", func(t *testing.T) {
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
 		var fernTestValueCurrency string
 		obj.SetCurrency(fernTestValueCurrency)
 		assert.Equal(t, fernTestValueCurrency, obj.Currency)
@@ -9138,7 +9146,7 @@ func TestSettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 	})
 
 	t.Run("SetExpirationDays", func(t *testing.T) {
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
 		var fernTestValueExpirationDays *int
 		obj.SetExpirationDays(fernTestValueExpirationDays)
 		assert.Equal(t, fernTestValueExpirationDays, obj.ExpirationDays)
@@ -9146,7 +9154,7 @@ func TestSettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 	})
 
 	t.Run("SetID", func(t *testing.T) {
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
 		var fernTestValueID string
 		obj.SetID(fernTestValueID)
 		assert.Equal(t, fernTestValueID, obj.ID)
@@ -9154,31 +9162,23 @@ func TestSettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 	})
 
 	t.Run("SetInitialPrice", func(t *testing.T) {
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
 		var fernTestValueInitialPrice float64
 		obj.SetInitialPrice(fernTestValueInitialPrice)
 		assert.Equal(t, fernTestValueInitialPrice, obj.InitialPrice)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetPlanType", func(t *testing.T) {
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
-		var fernTestValuePlanType RetrieveCheckoutConfigurationsResponsePlanPlanType
-		obj.SetPlanType(fernTestValuePlanType)
-		assert.Equal(t, fernTestValuePlanType, obj.PlanType)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetReleaseMethod", func(t *testing.T) {
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
-		var fernTestValueReleaseMethod RetrieveCheckoutConfigurationsResponsePlanReleaseMethod
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
+		var fernTestValueReleaseMethod RetrieveCheckoutConfigurationsResponseVariantReleaseMethod
 		obj.SetReleaseMethod(fernTestValueReleaseMethod)
 		assert.Equal(t, fernTestValueReleaseMethod, obj.ReleaseMethod)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
 	t.Run("SetRenewalPrice", func(t *testing.T) {
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
 		var fernTestValueRenewalPrice float64
 		obj.SetRenewalPrice(fernTestValueRenewalPrice)
 		assert.Equal(t, fernTestValueRenewalPrice, obj.RenewalPrice)
@@ -9186,15 +9186,15 @@ func TestSettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 	})
 
 	t.Run("SetThreeDsLevel", func(t *testing.T) {
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
-		var fernTestValueThreeDsLevel *RetrieveCheckoutConfigurationsResponsePlanThreeDsLevel
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
+		var fernTestValueThreeDsLevel *RetrieveCheckoutConfigurationsResponseVariantThreeDsLevel
 		obj.SetThreeDsLevel(fernTestValueThreeDsLevel)
 		assert.Equal(t, fernTestValueThreeDsLevel, obj.ThreeDsLevel)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
 	t.Run("SetTrialPeriodDays", func(t *testing.T) {
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
 		var fernTestValueTrialPeriodDays *int
 		obj.SetTrialPeriodDays(fernTestValueTrialPeriodDays)
 		assert.Equal(t, fernTestValueTrialPeriodDays, obj.TrialPeriodDays)
@@ -9202,8 +9202,8 @@ func TestSettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 	})
 
 	t.Run("SetVisibility", func(t *testing.T) {
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
-		var fernTestValueVisibility RetrieveCheckoutConfigurationsResponsePlanVisibility
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
+		var fernTestValueVisibility RetrieveCheckoutConfigurationsResponseVariantVisibility
 		obj.SetVisibility(fernTestValueVisibility)
 		assert.Equal(t, fernTestValueVisibility, obj.Visibility)
 		assert.NotNil(t, obj.explicitFields)
@@ -9211,11 +9211,11 @@ func TestSettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 
 }
 
-func TestGettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
+func TestGettersRetrieveCheckoutConfigurationsResponseVariant(t *testing.T) {
 	t.Run("GetAdaptivePricingEnabled", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
 		var expected bool
 		obj.AdaptivePricingEnabled = expected
 
@@ -9225,7 +9225,7 @@ func TestGettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 
 	t.Run("GetAdaptivePricingEnabled_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *RetrieveCheckoutConfigurationsResponsePlan
+		var obj *RetrieveCheckoutConfigurationsResponseVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -9238,7 +9238,7 @@ func TestGettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 	t.Run("GetBillingPeriod", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
 		var expected *int
 		obj.BillingPeriod = expected
 
@@ -9249,7 +9249,7 @@ func TestGettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 	t.Run("GetBillingPeriod_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
 		obj.BillingPeriod = nil
 
 		// Act & Assert
@@ -9258,7 +9258,7 @@ func TestGettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 
 	t.Run("GetBillingPeriod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *RetrieveCheckoutConfigurationsResponsePlan
+		var obj *RetrieveCheckoutConfigurationsResponseVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -9268,10 +9268,33 @@ func TestGettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 		_ = obj.GetBillingPeriod() // Should return zero value
 	})
 
+	t.Run("GetBillingType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
+		var expected RetrieveCheckoutConfigurationsResponseVariantBillingType
+		obj.BillingType = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetBillingType(), "getter should return the property value")
+	})
+
+	t.Run("GetBillingType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrieveCheckoutConfigurationsResponseVariant
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetBillingType() // Should return zero value
+	})
+
 	t.Run("GetCurrency", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
 		var expected string
 		obj.Currency = expected
 
@@ -9281,7 +9304,7 @@ func TestGettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 
 	t.Run("GetCurrency_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *RetrieveCheckoutConfigurationsResponsePlan
+		var obj *RetrieveCheckoutConfigurationsResponseVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -9294,7 +9317,7 @@ func TestGettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 	t.Run("GetExpirationDays", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
 		var expected *int
 		obj.ExpirationDays = expected
 
@@ -9305,7 +9328,7 @@ func TestGettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 	t.Run("GetExpirationDays_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
 		obj.ExpirationDays = nil
 
 		// Act & Assert
@@ -9314,7 +9337,7 @@ func TestGettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 
 	t.Run("GetExpirationDays_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *RetrieveCheckoutConfigurationsResponsePlan
+		var obj *RetrieveCheckoutConfigurationsResponseVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -9327,7 +9350,7 @@ func TestGettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 	t.Run("GetID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
 		var expected string
 		obj.ID = expected
 
@@ -9337,7 +9360,7 @@ func TestGettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 
 	t.Run("GetID_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *RetrieveCheckoutConfigurationsResponsePlan
+		var obj *RetrieveCheckoutConfigurationsResponseVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -9350,7 +9373,7 @@ func TestGettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 	t.Run("GetInitialPrice", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
 		var expected float64
 		obj.InitialPrice = expected
 
@@ -9360,7 +9383,7 @@ func TestGettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 
 	t.Run("GetInitialPrice_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *RetrieveCheckoutConfigurationsResponsePlan
+		var obj *RetrieveCheckoutConfigurationsResponseVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -9370,34 +9393,11 @@ func TestGettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 		_ = obj.GetInitialPrice() // Should return zero value
 	})
 
-	t.Run("GetPlanType", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
-		var expected RetrieveCheckoutConfigurationsResponsePlanPlanType
-		obj.PlanType = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetPlanType(), "getter should return the property value")
-	})
-
-	t.Run("GetPlanType_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *RetrieveCheckoutConfigurationsResponsePlan
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetPlanType() // Should return zero value
-	})
-
 	t.Run("GetReleaseMethod", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
-		var expected RetrieveCheckoutConfigurationsResponsePlanReleaseMethod
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
+		var expected RetrieveCheckoutConfigurationsResponseVariantReleaseMethod
 		obj.ReleaseMethod = expected
 
 		// Act & Assert
@@ -9406,7 +9406,7 @@ func TestGettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 
 	t.Run("GetReleaseMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *RetrieveCheckoutConfigurationsResponsePlan
+		var obj *RetrieveCheckoutConfigurationsResponseVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -9419,7 +9419,7 @@ func TestGettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 	t.Run("GetRenewalPrice", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
 		var expected float64
 		obj.RenewalPrice = expected
 
@@ -9429,7 +9429,7 @@ func TestGettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 
 	t.Run("GetRenewalPrice_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *RetrieveCheckoutConfigurationsResponsePlan
+		var obj *RetrieveCheckoutConfigurationsResponseVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -9442,8 +9442,8 @@ func TestGettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 	t.Run("GetThreeDsLevel", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
-		var expected *RetrieveCheckoutConfigurationsResponsePlanThreeDsLevel
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
+		var expected *RetrieveCheckoutConfigurationsResponseVariantThreeDsLevel
 		obj.ThreeDsLevel = expected
 
 		// Act & Assert
@@ -9453,7 +9453,7 @@ func TestGettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 	t.Run("GetThreeDsLevel_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
 		obj.ThreeDsLevel = nil
 
 		// Act & Assert
@@ -9462,7 +9462,7 @@ func TestGettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 
 	t.Run("GetThreeDsLevel_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *RetrieveCheckoutConfigurationsResponsePlan
+		var obj *RetrieveCheckoutConfigurationsResponseVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -9475,7 +9475,7 @@ func TestGettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 	t.Run("GetTrialPeriodDays", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
 		var expected *int
 		obj.TrialPeriodDays = expected
 
@@ -9486,7 +9486,7 @@ func TestGettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 	t.Run("GetTrialPeriodDays_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
 		obj.TrialPeriodDays = nil
 
 		// Act & Assert
@@ -9495,7 +9495,7 @@ func TestGettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 
 	t.Run("GetTrialPeriodDays_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *RetrieveCheckoutConfigurationsResponsePlan
+		var obj *RetrieveCheckoutConfigurationsResponseVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -9508,8 +9508,8 @@ func TestGettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 	t.Run("GetVisibility", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
-		var expected RetrieveCheckoutConfigurationsResponsePlanVisibility
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
+		var expected RetrieveCheckoutConfigurationsResponseVariantVisibility
 		obj.Visibility = expected
 
 		// Act & Assert
@@ -9518,7 +9518,7 @@ func TestGettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 
 	t.Run("GetVisibility_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *RetrieveCheckoutConfigurationsResponsePlan
+		var obj *RetrieveCheckoutConfigurationsResponseVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -9530,11 +9530,11 @@ func TestGettersRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
 
 }
 
-func TestSettersMarkExplicitRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
+func TestSettersMarkExplicitRetrieveCheckoutConfigurationsResponseVariant(t *testing.T) {
 	t.Run("SetAdaptivePricingEnabled_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
 		var fernTestValueAdaptivePricingEnabled bool
 
 		// Act
@@ -9565,7 +9565,7 @@ func TestSettersMarkExplicitRetrieveCheckoutConfigurationsResponsePlan(t *testin
 	t.Run("SetBillingPeriod_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
 		var fernTestValueBillingPeriod *int
 
 		// Act
@@ -9593,10 +9593,41 @@ func TestSettersMarkExplicitRetrieveCheckoutConfigurationsResponsePlan(t *testin
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetBillingType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
+		var fernTestValueBillingType RetrieveCheckoutConfigurationsResponseVariantBillingType
+
+		// Act
+		obj.SetBillingType(fernTestValueBillingType)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetCurrency_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
 		var fernTestValueCurrency string
 
 		// Act
@@ -9627,7 +9658,7 @@ func TestSettersMarkExplicitRetrieveCheckoutConfigurationsResponsePlan(t *testin
 	t.Run("SetExpirationDays_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
 		var fernTestValueExpirationDays *int
 
 		// Act
@@ -9658,7 +9689,7 @@ func TestSettersMarkExplicitRetrieveCheckoutConfigurationsResponsePlan(t *testin
 	t.Run("SetID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
 		var fernTestValueID string
 
 		// Act
@@ -9689,7 +9720,7 @@ func TestSettersMarkExplicitRetrieveCheckoutConfigurationsResponsePlan(t *testin
 	t.Run("SetInitialPrice_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
 		var fernTestValueInitialPrice float64
 
 		// Act
@@ -9717,42 +9748,11 @@ func TestSettersMarkExplicitRetrieveCheckoutConfigurationsResponsePlan(t *testin
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetPlanType_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
-		var fernTestValuePlanType RetrieveCheckoutConfigurationsResponsePlanPlanType
-
-		// Act
-		obj.SetPlanType(fernTestValuePlanType)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
 	t.Run("SetReleaseMethod_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
-		var fernTestValueReleaseMethod RetrieveCheckoutConfigurationsResponsePlanReleaseMethod
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
+		var fernTestValueReleaseMethod RetrieveCheckoutConfigurationsResponseVariantReleaseMethod
 
 		// Act
 		obj.SetReleaseMethod(fernTestValueReleaseMethod)
@@ -9782,7 +9782,7 @@ func TestSettersMarkExplicitRetrieveCheckoutConfigurationsResponsePlan(t *testin
 	t.Run("SetRenewalPrice_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
 		var fernTestValueRenewalPrice float64
 
 		// Act
@@ -9813,8 +9813,8 @@ func TestSettersMarkExplicitRetrieveCheckoutConfigurationsResponsePlan(t *testin
 	t.Run("SetThreeDsLevel_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
-		var fernTestValueThreeDsLevel *RetrieveCheckoutConfigurationsResponsePlanThreeDsLevel
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
+		var fernTestValueThreeDsLevel *RetrieveCheckoutConfigurationsResponseVariantThreeDsLevel
 
 		// Act
 		obj.SetThreeDsLevel(fernTestValueThreeDsLevel)
@@ -9844,7 +9844,7 @@ func TestSettersMarkExplicitRetrieveCheckoutConfigurationsResponsePlan(t *testin
 	t.Run("SetTrialPeriodDays_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
 		var fernTestValueTrialPeriodDays *int
 
 		// Act
@@ -9875,8 +9875,8 @@ func TestSettersMarkExplicitRetrieveCheckoutConfigurationsResponsePlan(t *testin
 	t.Run("SetVisibility_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
-		var fernTestValueVisibility RetrieveCheckoutConfigurationsResponsePlanVisibility
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
+		var fernTestValueVisibility RetrieveCheckoutConfigurationsResponseVariantVisibility
 
 		// Act
 		obj.SetVisibility(fernTestValueVisibility)
@@ -9938,11 +9938,11 @@ func TestJSONMarshalingCreateCheckoutConfigurationsRequestPaymentMethodConfigura
 	})
 }
 
-func TestJSONMarshalingCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
+func TestJSONMarshalingCreateCheckoutConfigurationsRequestVariant(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 
 		// Act - Marshal to JSON
 		data, err := json.Marshal(obj)
@@ -9951,31 +9951,31 @@ func TestJSONMarshalingCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 		assert.NotEmpty(t, data, "marshaled data should not be empty")
 
 		// Unmarshal back and verify round-trip
-		var unmarshaled CreateCheckoutConfigurationsRequestPlan
+		var unmarshaled CreateCheckoutConfigurationsRequestVariant
 		err = json.Unmarshal(data, &unmarshaled)
 		assert.NoError(t, err, "round-trip unmarshal should succeed")
 	})
 
 	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
 		t.Parallel()
-		var obj CreateCheckoutConfigurationsRequestPlan
+		var obj CreateCheckoutConfigurationsRequestVariant
 		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
 		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
 	})
 
 	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
 		t.Parallel()
-		var obj CreateCheckoutConfigurationsRequestPlan
+		var obj CreateCheckoutConfigurationsRequestVariant
 		err := json.Unmarshal([]byte(`{}`), &obj)
 		assert.NoError(t, err, "unmarshaling empty object should succeed")
 	})
 }
 
-func TestJSONMarshalingCreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration(t *testing.T) {
+func TestJSONMarshalingCreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration{}
+		obj := &CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration{}
 
 		// Act - Marshal to JSON
 		data, err := json.Marshal(obj)
@@ -9984,21 +9984,21 @@ func TestJSONMarshalingCreateCheckoutConfigurationsRequestPlanPaymentMethodConfi
 		assert.NotEmpty(t, data, "marshaled data should not be empty")
 
 		// Unmarshal back and verify round-trip
-		var unmarshaled CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration
+		var unmarshaled CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration
 		err = json.Unmarshal(data, &unmarshaled)
 		assert.NoError(t, err, "round-trip unmarshal should succeed")
 	})
 
 	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
 		t.Parallel()
-		var obj CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration
+		var obj CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration
 		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
 		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
 	})
 
 	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
 		t.Parallel()
-		var obj CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration
+		var obj CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration
 		err := json.Unmarshal([]byte(`{}`), &obj)
 		assert.NoError(t, err, "unmarshaling empty object should succeed")
 	})
@@ -10103,11 +10103,11 @@ func TestJSONMarshalingCreateCheckoutConfigurationsResponsePaymentMethodConfigur
 	})
 }
 
-func TestJSONMarshalingCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
+func TestJSONMarshalingCreateCheckoutConfigurationsResponseVariant(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
 
 		// Act - Marshal to JSON
 		data, err := json.Marshal(obj)
@@ -10116,21 +10116,21 @@ func TestJSONMarshalingCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 		assert.NotEmpty(t, data, "marshaled data should not be empty")
 
 		// Unmarshal back and verify round-trip
-		var unmarshaled CreateCheckoutConfigurationsResponsePlan
+		var unmarshaled CreateCheckoutConfigurationsResponseVariant
 		err = json.Unmarshal(data, &unmarshaled)
 		assert.NoError(t, err, "round-trip unmarshal should succeed")
 	})
 
 	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
 		t.Parallel()
-		var obj CreateCheckoutConfigurationsResponsePlan
+		var obj CreateCheckoutConfigurationsResponseVariant
 		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
 		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
 	})
 
 	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
 		t.Parallel()
-		var obj CreateCheckoutConfigurationsResponsePlan
+		var obj CreateCheckoutConfigurationsResponseVariant
 		err := json.Unmarshal([]byte(`{}`), &obj)
 		assert.NoError(t, err, "unmarshaling empty object should succeed")
 	})
@@ -10301,11 +10301,11 @@ func TestJSONMarshalingListCheckoutConfigurationsResponseDataItemPaymentMethodCo
 	})
 }
 
-func TestJSONMarshalingListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
+func TestJSONMarshalingListCheckoutConfigurationsResponseDataItemVariant(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
 
 		// Act - Marshal to JSON
 		data, err := json.Marshal(obj)
@@ -10314,21 +10314,21 @@ func TestJSONMarshalingListCheckoutConfigurationsResponseDataItemPlan(t *testing
 		assert.NotEmpty(t, data, "marshaled data should not be empty")
 
 		// Unmarshal back and verify round-trip
-		var unmarshaled ListCheckoutConfigurationsResponseDataItemPlan
+		var unmarshaled ListCheckoutConfigurationsResponseDataItemVariant
 		err = json.Unmarshal(data, &unmarshaled)
 		assert.NoError(t, err, "round-trip unmarshal should succeed")
 	})
 
 	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
 		t.Parallel()
-		var obj ListCheckoutConfigurationsResponseDataItemPlan
+		var obj ListCheckoutConfigurationsResponseDataItemVariant
 		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
 		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
 	})
 
 	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
 		t.Parallel()
-		var obj ListCheckoutConfigurationsResponseDataItemPlan
+		var obj ListCheckoutConfigurationsResponseDataItemVariant
 		err := json.Unmarshal([]byte(`{}`), &obj)
 		assert.NoError(t, err, "unmarshaling empty object should succeed")
 	})
@@ -10466,11 +10466,11 @@ func TestJSONMarshalingRetrieveCheckoutConfigurationsResponsePaymentMethodConfig
 	})
 }
 
-func TestJSONMarshalingRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
+func TestJSONMarshalingRetrieveCheckoutConfigurationsResponseVariant(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
 
 		// Act - Marshal to JSON
 		data, err := json.Marshal(obj)
@@ -10479,34 +10479,34 @@ func TestJSONMarshalingRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) 
 		assert.NotEmpty(t, data, "marshaled data should not be empty")
 
 		// Unmarshal back and verify round-trip
-		var unmarshaled RetrieveCheckoutConfigurationsResponsePlan
+		var unmarshaled RetrieveCheckoutConfigurationsResponseVariant
 		err = json.Unmarshal(data, &unmarshaled)
 		assert.NoError(t, err, "round-trip unmarshal should succeed")
 	})
 
 	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
 		t.Parallel()
-		var obj RetrieveCheckoutConfigurationsResponsePlan
+		var obj RetrieveCheckoutConfigurationsResponseVariant
 		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
 		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
 	})
 
 	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
 		t.Parallel()
-		var obj RetrieveCheckoutConfigurationsResponsePlan
+		var obj RetrieveCheckoutConfigurationsResponseVariant
 		err := json.Unmarshal([]byte(`{}`), &obj)
 		assert.NoError(t, err, "unmarshaling empty object should succeed")
 	})
 }
 
-func TestRequiredNullableRoundTripCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
+func TestRequiredNullableRoundTripCreateCheckoutConfigurationsResponseVariant(t *testing.T) {
 	requiredNullableKeys := []string{
 		"billing_period",
 		"expiration_days",
 		"three_ds_level",
 		"trial_period_days",
 	}
-	marshalToMap := func(t *testing.T, obj *CreateCheckoutConfigurationsResponsePlan) map[string]json.RawMessage {
+	marshalToMap := func(t *testing.T, obj *CreateCheckoutConfigurationsResponseVariant) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
 		require.NoError(t, err, "marshaling should succeed")
 		var result map[string]json.RawMessage
@@ -10516,7 +10516,7 @@ func TestRequiredNullableRoundTripCreateCheckoutConfigurationsResponsePlan(t *te
 
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
-		var obj CreateCheckoutConfigurationsResponsePlan
+		var obj CreateCheckoutConfigurationsResponseVariant
 		require.NoError(t, json.Unmarshal([]byte(`{"billing_period":null,"expiration_days":null,"three_ds_level":null,"trial_period_days":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
@@ -10528,7 +10528,7 @@ func TestRequiredNullableRoundTripCreateCheckoutConfigurationsResponsePlan(t *te
 
 	t.Run("AbsentStaysAbsent", func(t *testing.T) {
 		t.Parallel()
-		var obj CreateCheckoutConfigurationsResponsePlan
+		var obj CreateCheckoutConfigurationsResponseVariant
 		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
@@ -10538,21 +10538,21 @@ func TestRequiredNullableRoundTripCreateCheckoutConfigurationsResponsePlan(t *te
 
 	t.Run("FreshValueOmits", func(t *testing.T) {
 		t.Parallel()
-		result := marshalToMap(t, &CreateCheckoutConfigurationsResponsePlan{})
+		result := marshalToMap(t, &CreateCheckoutConfigurationsResponseVariant{})
 		for _, key := range requiredNullableKeys {
 			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
 		}
 	})
 }
 
-func TestRequiredNullableRoundTripListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
+func TestRequiredNullableRoundTripListCheckoutConfigurationsResponseDataItemVariant(t *testing.T) {
 	requiredNullableKeys := []string{
 		"billing_period",
 		"expiration_days",
 		"three_ds_level",
 		"trial_period_days",
 	}
-	marshalToMap := func(t *testing.T, obj *ListCheckoutConfigurationsResponseDataItemPlan) map[string]json.RawMessage {
+	marshalToMap := func(t *testing.T, obj *ListCheckoutConfigurationsResponseDataItemVariant) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
 		require.NoError(t, err, "marshaling should succeed")
 		var result map[string]json.RawMessage
@@ -10562,7 +10562,7 @@ func TestRequiredNullableRoundTripListCheckoutConfigurationsResponseDataItemPlan
 
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
-		var obj ListCheckoutConfigurationsResponseDataItemPlan
+		var obj ListCheckoutConfigurationsResponseDataItemVariant
 		require.NoError(t, json.Unmarshal([]byte(`{"billing_period":null,"expiration_days":null,"three_ds_level":null,"trial_period_days":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
@@ -10574,7 +10574,7 @@ func TestRequiredNullableRoundTripListCheckoutConfigurationsResponseDataItemPlan
 
 	t.Run("AbsentStaysAbsent", func(t *testing.T) {
 		t.Parallel()
-		var obj ListCheckoutConfigurationsResponseDataItemPlan
+		var obj ListCheckoutConfigurationsResponseDataItemVariant
 		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
@@ -10584,7 +10584,7 @@ func TestRequiredNullableRoundTripListCheckoutConfigurationsResponseDataItemPlan
 
 	t.Run("FreshValueOmits", func(t *testing.T) {
 		t.Parallel()
-		result := marshalToMap(t, &ListCheckoutConfigurationsResponseDataItemPlan{})
+		result := marshalToMap(t, &ListCheckoutConfigurationsResponseDataItemVariant{})
 		for _, key := range requiredNullableKeys {
 			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
 		}
@@ -10635,14 +10635,14 @@ func TestRequiredNullableRoundTripListCheckoutConfigurationsResponsePageInfo(t *
 	})
 }
 
-func TestRequiredNullableRoundTripRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
+func TestRequiredNullableRoundTripRetrieveCheckoutConfigurationsResponseVariant(t *testing.T) {
 	requiredNullableKeys := []string{
 		"billing_period",
 		"expiration_days",
 		"three_ds_level",
 		"trial_period_days",
 	}
-	marshalToMap := func(t *testing.T, obj *RetrieveCheckoutConfigurationsResponsePlan) map[string]json.RawMessage {
+	marshalToMap := func(t *testing.T, obj *RetrieveCheckoutConfigurationsResponseVariant) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
 		require.NoError(t, err, "marshaling should succeed")
 		var result map[string]json.RawMessage
@@ -10652,7 +10652,7 @@ func TestRequiredNullableRoundTripRetrieveCheckoutConfigurationsResponsePlan(t *
 
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
-		var obj RetrieveCheckoutConfigurationsResponsePlan
+		var obj RetrieveCheckoutConfigurationsResponseVariant
 		require.NoError(t, json.Unmarshal([]byte(`{"billing_period":null,"expiration_days":null,"three_ds_level":null,"trial_period_days":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
@@ -10664,7 +10664,7 @@ func TestRequiredNullableRoundTripRetrieveCheckoutConfigurationsResponsePlan(t *
 
 	t.Run("AbsentStaysAbsent", func(t *testing.T) {
 		t.Parallel()
-		var obj RetrieveCheckoutConfigurationsResponsePlan
+		var obj RetrieveCheckoutConfigurationsResponseVariant
 		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
@@ -10674,17 +10674,18 @@ func TestRequiredNullableRoundTripRetrieveCheckoutConfigurationsResponsePlan(t *
 
 	t.Run("FreshValueOmits", func(t *testing.T) {
 		t.Parallel()
-		result := marshalToMap(t, &RetrieveCheckoutConfigurationsResponsePlan{})
+		result := marshalToMap(t, &RetrieveCheckoutConfigurationsResponseVariant{})
 		for _, key := range requiredNullableKeys {
 			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
 		}
 	})
 }
 
-func TestOptionalNullableRoundTripCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
+func TestOptionalNullableRoundTripCreateCheckoutConfigurationsRequestVariant(t *testing.T) {
 	optionalNullableKeys := []string{
 		"account_id",
 		"billing_period",
+		"billing_type",
 		"currency",
 		"description",
 		"expiration_days",
@@ -10693,7 +10694,6 @@ func TestOptionalNullableRoundTripCreateCheckoutConfigurationsRequestPlan(t *tes
 		"metadata",
 		"override_tax_type",
 		"payment_method_configuration",
-		"plan_type",
 		"product_id",
 		"release_method",
 		"renewal_price",
@@ -10704,7 +10704,7 @@ func TestOptionalNullableRoundTripCreateCheckoutConfigurationsRequestPlan(t *tes
 		"unlimited_stock",
 		"visibility",
 	}
-	marshalToMap := func(t *testing.T, obj *CreateCheckoutConfigurationsRequestPlan) map[string]json.RawMessage {
+	marshalToMap := func(t *testing.T, obj *CreateCheckoutConfigurationsRequestVariant) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
 		require.NoError(t, err, "marshaling should succeed")
 		var result map[string]json.RawMessage
@@ -10714,8 +10714,8 @@ func TestOptionalNullableRoundTripCreateCheckoutConfigurationsRequestPlan(t *tes
 
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
-		var obj CreateCheckoutConfigurationsRequestPlan
-		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"billing_period":null,"currency":null,"description":null,"expiration_days":null,"force_create_new_plan":null,"initial_price":null,"metadata":null,"override_tax_type":null,"payment_method_configuration":null,"plan_type":null,"product_id":null,"release_method":null,"renewal_price":null,"stock":null,"three_ds_level":null,"title":null,"trial_period_days":null,"unlimited_stock":null,"visibility":null}`), &obj))
+		var obj CreateCheckoutConfigurationsRequestVariant
+		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"billing_period":null,"billing_type":null,"currency":null,"description":null,"expiration_days":null,"force_create_new_plan":null,"initial_price":null,"metadata":null,"override_tax_type":null,"payment_method_configuration":null,"product_id":null,"release_method":null,"renewal_price":null,"stock":null,"three_ds_level":null,"title":null,"trial_period_days":null,"unlimited_stock":null,"visibility":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range optionalNullableKeys {
 			value, ok := result[key]
@@ -10726,7 +10726,7 @@ func TestOptionalNullableRoundTripCreateCheckoutConfigurationsRequestPlan(t *tes
 
 	t.Run("AbsentStaysAbsent", func(t *testing.T) {
 		t.Parallel()
-		var obj CreateCheckoutConfigurationsRequestPlan
+		var obj CreateCheckoutConfigurationsRequestVariant
 		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range optionalNullableKeys {
@@ -10736,7 +10736,7 @@ func TestOptionalNullableRoundTripCreateCheckoutConfigurationsRequestPlan(t *tes
 
 	t.Run("FreshValueOmits", func(t *testing.T) {
 		t.Parallel()
-		result := marshalToMap(t, &CreateCheckoutConfigurationsRequestPlan{})
+		result := marshalToMap(t, &CreateCheckoutConfigurationsRequestVariant{})
 		for _, key := range optionalNullableKeys {
 			assert.NotContains(t, result, key, "optional nullable field %q should be omitted from a freshly constructed value", key)
 		}
@@ -10750,10 +10750,10 @@ func TestOptionalNullableRoundTripCreateCheckoutConfigurationsResponse(t *testin
 		"effective_payment_method_configuration",
 		"metadata",
 		"payment_method_configuration",
-		"plan",
 		"purchase_url",
 		"redirect_url",
 		"three_ds_level",
+		"variant",
 	}
 	marshalToMap := func(t *testing.T, obj *CreateCheckoutConfigurationsResponse) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
@@ -10766,7 +10766,7 @@ func TestOptionalNullableRoundTripCreateCheckoutConfigurationsResponse(t *testin
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj CreateCheckoutConfigurationsResponse
-		require.NoError(t, json.Unmarshal([]byte(`{"affiliate_code":null,"currency":null,"effective_payment_method_configuration":null,"metadata":null,"payment_method_configuration":null,"plan":null,"purchase_url":null,"redirect_url":null,"three_ds_level":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"affiliate_code":null,"currency":null,"effective_payment_method_configuration":null,"metadata":null,"payment_method_configuration":null,"purchase_url":null,"redirect_url":null,"three_ds_level":null,"variant":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range optionalNullableKeys {
 			value, ok := result[key]
@@ -10801,10 +10801,10 @@ func TestOptionalNullableRoundTripListCheckoutConfigurationsResponseDataItem(t *
 		"effective_payment_method_configuration",
 		"metadata",
 		"payment_method_configuration",
-		"plan",
 		"purchase_url",
 		"redirect_url",
 		"three_ds_level",
+		"variant",
 	}
 	marshalToMap := func(t *testing.T, obj *ListCheckoutConfigurationsResponseDataItem) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
@@ -10817,7 +10817,7 @@ func TestOptionalNullableRoundTripListCheckoutConfigurationsResponseDataItem(t *
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj ListCheckoutConfigurationsResponseDataItem
-		require.NoError(t, json.Unmarshal([]byte(`{"affiliate_code":null,"currency":null,"effective_payment_method_configuration":null,"metadata":null,"payment_method_configuration":null,"plan":null,"purchase_url":null,"redirect_url":null,"three_ds_level":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"affiliate_code":null,"currency":null,"effective_payment_method_configuration":null,"metadata":null,"payment_method_configuration":null,"purchase_url":null,"redirect_url":null,"three_ds_level":null,"variant":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range optionalNullableKeys {
 			value, ok := result[key]
@@ -10852,10 +10852,10 @@ func TestOptionalNullableRoundTripRetrieveCheckoutConfigurationsResponse(t *test
 		"effective_payment_method_configuration",
 		"metadata",
 		"payment_method_configuration",
-		"plan",
 		"purchase_url",
 		"redirect_url",
 		"three_ds_level",
+		"variant",
 	}
 	marshalToMap := func(t *testing.T, obj *RetrieveCheckoutConfigurationsResponse) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
@@ -10868,7 +10868,7 @@ func TestOptionalNullableRoundTripRetrieveCheckoutConfigurationsResponse(t *test
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj RetrieveCheckoutConfigurationsResponse
-		require.NoError(t, json.Unmarshal([]byte(`{"affiliate_code":null,"currency":null,"effective_payment_method_configuration":null,"metadata":null,"payment_method_configuration":null,"plan":null,"purchase_url":null,"redirect_url":null,"three_ds_level":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"affiliate_code":null,"currency":null,"effective_payment_method_configuration":null,"metadata":null,"payment_method_configuration":null,"purchase_url":null,"redirect_url":null,"three_ds_level":null,"variant":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range optionalNullableKeys {
 			value, ok := result[key]
@@ -10912,33 +10912,33 @@ func TestStringCreateCheckoutConfigurationsRequestPaymentMethodConfiguration(t *
 	})
 }
 
-func TestStringCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
+func TestStringCreateCheckoutConfigurationsRequestVariant(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		result := obj.String()
 		assert.NotEmpty(t, result, "String() should return a non-empty representation")
 	})
 
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsRequestPlan
+		var obj *CreateCheckoutConfigurationsRequestVariant
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
 }
 
-func TestStringCreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration(t *testing.T) {
+func TestStringCreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
-		obj := &CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration{}
+		obj := &CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration{}
 		result := obj.String()
 		assert.NotEmpty(t, result, "String() should return a non-empty representation")
 	})
 
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration
+		var obj *CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -10992,17 +10992,17 @@ func TestStringCreateCheckoutConfigurationsResponsePaymentMethodConfiguration(t 
 	})
 }
 
-func TestStringCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
+func TestStringCreateCheckoutConfigurationsResponseVariant(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
 		result := obj.String()
 		assert.NotEmpty(t, result, "String() should return a non-empty representation")
 	})
 
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsResponsePlan
+		var obj *CreateCheckoutConfigurationsResponseVariant
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -11088,17 +11088,17 @@ func TestStringListCheckoutConfigurationsResponseDataItemPaymentMethodConfigurat
 	})
 }
 
-func TestStringListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
+func TestStringListCheckoutConfigurationsResponseDataItemVariant(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
 		result := obj.String()
 		assert.NotEmpty(t, result, "String() should return a non-empty representation")
 	})
 
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *ListCheckoutConfigurationsResponseDataItemPlan
+		var obj *ListCheckoutConfigurationsResponseDataItemVariant
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -11168,17 +11168,17 @@ func TestStringRetrieveCheckoutConfigurationsResponsePaymentMethodConfiguration(
 	})
 }
 
-func TestStringRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
+func TestStringRetrieveCheckoutConfigurationsResponseVariant(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
 		result := obj.String()
 		assert.NotEmpty(t, result, "String() should return a non-empty representation")
 	})
 
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *RetrieveCheckoutConfigurationsResponsePlan
+		var obj *RetrieveCheckoutConfigurationsResponseVariant
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -11206,143 +11206,6 @@ func TestEnumCreateCheckoutConfigurationsRequestMode(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewCreateCheckoutConfigurationsRequestModeFromString("payment")
-		assert.NoError(t, err)
-		ptr := val.Ptr()
-		assert.NotNil(t, ptr)
-		assert.Equal(t, val, *ptr)
-	})
-}
-
-func TestEnumCreateCheckoutConfigurationsRequestPlanPlanType(t *testing.T) {
-	t.Run("NewFromString_renewal", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateCheckoutConfigurationsRequestPlanPlanTypeFromString("renewal")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateCheckoutConfigurationsRequestPlanPlanType("renewal"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_one_time", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateCheckoutConfigurationsRequestPlanPlanTypeFromString("one_time")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateCheckoutConfigurationsRequestPlanPlanType("one_time"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewCreateCheckoutConfigurationsRequestPlanPlanTypeFromString("invalid_value_that_does_not_exist")
-		assert.Error(t, err)
-	})
-
-	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewCreateCheckoutConfigurationsRequestPlanPlanTypeFromString("renewal")
-		assert.NoError(t, err)
-		ptr := val.Ptr()
-		assert.NotNil(t, ptr)
-		assert.Equal(t, val, *ptr)
-	})
-}
-
-func TestEnumCreateCheckoutConfigurationsRequestPlanReleaseMethod(t *testing.T) {
-	t.Run("NewFromString_buy_now", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateCheckoutConfigurationsRequestPlanReleaseMethodFromString("buy_now")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateCheckoutConfigurationsRequestPlanReleaseMethod("buy_now"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_waitlist", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateCheckoutConfigurationsRequestPlanReleaseMethodFromString("waitlist")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateCheckoutConfigurationsRequestPlanReleaseMethod("waitlist"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewCreateCheckoutConfigurationsRequestPlanReleaseMethodFromString("invalid_value_that_does_not_exist")
-		assert.Error(t, err)
-	})
-
-	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewCreateCheckoutConfigurationsRequestPlanReleaseMethodFromString("buy_now")
-		assert.NoError(t, err)
-		ptr := val.Ptr()
-		assert.NotNil(t, ptr)
-		assert.Equal(t, val, *ptr)
-	})
-}
-
-func TestEnumCreateCheckoutConfigurationsRequestPlanThreeDsLevel(t *testing.T) {
-	t.Run("NewFromString_mandate_challenge", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateCheckoutConfigurationsRequestPlanThreeDsLevelFromString("mandate_challenge")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateCheckoutConfigurationsRequestPlanThreeDsLevel("mandate_challenge"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_mandate_if_required", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateCheckoutConfigurationsRequestPlanThreeDsLevelFromString("mandate_if_required")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateCheckoutConfigurationsRequestPlanThreeDsLevel("mandate_if_required"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_frictionless_if_required", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateCheckoutConfigurationsRequestPlanThreeDsLevelFromString("frictionless_if_required")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateCheckoutConfigurationsRequestPlanThreeDsLevel("frictionless_if_required"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewCreateCheckoutConfigurationsRequestPlanThreeDsLevelFromString("invalid_value_that_does_not_exist")
-		assert.Error(t, err)
-	})
-
-	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewCreateCheckoutConfigurationsRequestPlanThreeDsLevelFromString("mandate_challenge")
-		assert.NoError(t, err)
-		ptr := val.Ptr()
-		assert.NotNil(t, ptr)
-		assert.Equal(t, val, *ptr)
-	})
-}
-
-func TestEnumCreateCheckoutConfigurationsRequestPlanVisibility(t *testing.T) {
-	t.Run("NewFromString_visible", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateCheckoutConfigurationsRequestPlanVisibilityFromString("visible")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateCheckoutConfigurationsRequestPlanVisibility("visible"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_hidden", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateCheckoutConfigurationsRequestPlanVisibilityFromString("hidden")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateCheckoutConfigurationsRequestPlanVisibility("hidden"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_archived", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateCheckoutConfigurationsRequestPlanVisibilityFromString("archived")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateCheckoutConfigurationsRequestPlanVisibility("archived"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_quick_link", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateCheckoutConfigurationsRequestPlanVisibilityFromString("quick_link")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateCheckoutConfigurationsRequestPlanVisibility("quick_link"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewCreateCheckoutConfigurationsRequestPlanVisibilityFromString("invalid_value_that_does_not_exist")
-		assert.Error(t, err)
-	})
-
-	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewCreateCheckoutConfigurationsRequestPlanVisibilityFromString("visible")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -11386,6 +11249,143 @@ func TestEnumCreateCheckoutConfigurationsRequestThreeDsLevel(t *testing.T) {
 	})
 }
 
+func TestEnumCreateCheckoutConfigurationsRequestVariantBillingType(t *testing.T) {
+	t.Run("NewFromString_renewal", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCheckoutConfigurationsRequestVariantBillingTypeFromString("renewal")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCheckoutConfigurationsRequestVariantBillingType("renewal"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_one_time", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCheckoutConfigurationsRequestVariantBillingTypeFromString("one_time")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCheckoutConfigurationsRequestVariantBillingType("one_time"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCreateCheckoutConfigurationsRequestVariantBillingTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCreateCheckoutConfigurationsRequestVariantBillingTypeFromString("renewal")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumCreateCheckoutConfigurationsRequestVariantReleaseMethod(t *testing.T) {
+	t.Run("NewFromString_buy_now", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCheckoutConfigurationsRequestVariantReleaseMethodFromString("buy_now")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCheckoutConfigurationsRequestVariantReleaseMethod("buy_now"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_waitlist", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCheckoutConfigurationsRequestVariantReleaseMethodFromString("waitlist")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCheckoutConfigurationsRequestVariantReleaseMethod("waitlist"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCreateCheckoutConfigurationsRequestVariantReleaseMethodFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCreateCheckoutConfigurationsRequestVariantReleaseMethodFromString("buy_now")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumCreateCheckoutConfigurationsRequestVariantThreeDsLevel(t *testing.T) {
+	t.Run("NewFromString_mandate_challenge", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCheckoutConfigurationsRequestVariantThreeDsLevelFromString("mandate_challenge")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCheckoutConfigurationsRequestVariantThreeDsLevel("mandate_challenge"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mandate_if_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCheckoutConfigurationsRequestVariantThreeDsLevelFromString("mandate_if_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCheckoutConfigurationsRequestVariantThreeDsLevel("mandate_if_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_frictionless_if_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCheckoutConfigurationsRequestVariantThreeDsLevelFromString("frictionless_if_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCheckoutConfigurationsRequestVariantThreeDsLevel("frictionless_if_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCreateCheckoutConfigurationsRequestVariantThreeDsLevelFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCreateCheckoutConfigurationsRequestVariantThreeDsLevelFromString("mandate_challenge")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumCreateCheckoutConfigurationsRequestVariantVisibility(t *testing.T) {
+	t.Run("NewFromString_visible", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCheckoutConfigurationsRequestVariantVisibilityFromString("visible")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCheckoutConfigurationsRequestVariantVisibility("visible"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_hidden", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCheckoutConfigurationsRequestVariantVisibilityFromString("hidden")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCheckoutConfigurationsRequestVariantVisibility("hidden"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_archived", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCheckoutConfigurationsRequestVariantVisibilityFromString("archived")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCheckoutConfigurationsRequestVariantVisibility("archived"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_quick_link", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCheckoutConfigurationsRequestVariantVisibilityFromString("quick_link")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCheckoutConfigurationsRequestVariantVisibility("quick_link"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCreateCheckoutConfigurationsRequestVariantVisibilityFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCreateCheckoutConfigurationsRequestVariantVisibilityFromString("visible")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumCreateCheckoutConfigurationsResponseMode(t *testing.T) {
 	t.Run("NewFromString_payment", func(t *testing.T) {
 		t.Parallel()
@@ -11408,143 +11408,6 @@ func TestEnumCreateCheckoutConfigurationsResponseMode(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewCreateCheckoutConfigurationsResponseModeFromString("payment")
-		assert.NoError(t, err)
-		ptr := val.Ptr()
-		assert.NotNil(t, ptr)
-		assert.Equal(t, val, *ptr)
-	})
-}
-
-func TestEnumCreateCheckoutConfigurationsResponsePlanPlanType(t *testing.T) {
-	t.Run("NewFromString_renewal", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateCheckoutConfigurationsResponsePlanPlanTypeFromString("renewal")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateCheckoutConfigurationsResponsePlanPlanType("renewal"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_one_time", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateCheckoutConfigurationsResponsePlanPlanTypeFromString("one_time")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateCheckoutConfigurationsResponsePlanPlanType("one_time"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewCreateCheckoutConfigurationsResponsePlanPlanTypeFromString("invalid_value_that_does_not_exist")
-		assert.Error(t, err)
-	})
-
-	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewCreateCheckoutConfigurationsResponsePlanPlanTypeFromString("renewal")
-		assert.NoError(t, err)
-		ptr := val.Ptr()
-		assert.NotNil(t, ptr)
-		assert.Equal(t, val, *ptr)
-	})
-}
-
-func TestEnumCreateCheckoutConfigurationsResponsePlanReleaseMethod(t *testing.T) {
-	t.Run("NewFromString_buy_now", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateCheckoutConfigurationsResponsePlanReleaseMethodFromString("buy_now")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateCheckoutConfigurationsResponsePlanReleaseMethod("buy_now"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_waitlist", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateCheckoutConfigurationsResponsePlanReleaseMethodFromString("waitlist")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateCheckoutConfigurationsResponsePlanReleaseMethod("waitlist"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewCreateCheckoutConfigurationsResponsePlanReleaseMethodFromString("invalid_value_that_does_not_exist")
-		assert.Error(t, err)
-	})
-
-	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewCreateCheckoutConfigurationsResponsePlanReleaseMethodFromString("buy_now")
-		assert.NoError(t, err)
-		ptr := val.Ptr()
-		assert.NotNil(t, ptr)
-		assert.Equal(t, val, *ptr)
-	})
-}
-
-func TestEnumCreateCheckoutConfigurationsResponsePlanThreeDsLevel(t *testing.T) {
-	t.Run("NewFromString_mandate_challenge", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateCheckoutConfigurationsResponsePlanThreeDsLevelFromString("mandate_challenge")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateCheckoutConfigurationsResponsePlanThreeDsLevel("mandate_challenge"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_mandate_if_required", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateCheckoutConfigurationsResponsePlanThreeDsLevelFromString("mandate_if_required")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateCheckoutConfigurationsResponsePlanThreeDsLevel("mandate_if_required"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_frictionless_if_required", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateCheckoutConfigurationsResponsePlanThreeDsLevelFromString("frictionless_if_required")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateCheckoutConfigurationsResponsePlanThreeDsLevel("frictionless_if_required"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewCreateCheckoutConfigurationsResponsePlanThreeDsLevelFromString("invalid_value_that_does_not_exist")
-		assert.Error(t, err)
-	})
-
-	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewCreateCheckoutConfigurationsResponsePlanThreeDsLevelFromString("mandate_challenge")
-		assert.NoError(t, err)
-		ptr := val.Ptr()
-		assert.NotNil(t, ptr)
-		assert.Equal(t, val, *ptr)
-	})
-}
-
-func TestEnumCreateCheckoutConfigurationsResponsePlanVisibility(t *testing.T) {
-	t.Run("NewFromString_visible", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateCheckoutConfigurationsResponsePlanVisibilityFromString("visible")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateCheckoutConfigurationsResponsePlanVisibility("visible"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_hidden", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateCheckoutConfigurationsResponsePlanVisibilityFromString("hidden")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateCheckoutConfigurationsResponsePlanVisibility("hidden"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_archived", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateCheckoutConfigurationsResponsePlanVisibilityFromString("archived")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateCheckoutConfigurationsResponsePlanVisibility("archived"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_quick_link", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateCheckoutConfigurationsResponsePlanVisibilityFromString("quick_link")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateCheckoutConfigurationsResponsePlanVisibility("quick_link"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewCreateCheckoutConfigurationsResponsePlanVisibilityFromString("invalid_value_that_does_not_exist")
-		assert.Error(t, err)
-	})
-
-	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewCreateCheckoutConfigurationsResponsePlanVisibilityFromString("visible")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -11581,6 +11444,143 @@ func TestEnumCreateCheckoutConfigurationsResponseThreeDsLevel(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewCreateCheckoutConfigurationsResponseThreeDsLevelFromString("mandate_challenge")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumCreateCheckoutConfigurationsResponseVariantBillingType(t *testing.T) {
+	t.Run("NewFromString_renewal", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCheckoutConfigurationsResponseVariantBillingTypeFromString("renewal")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCheckoutConfigurationsResponseVariantBillingType("renewal"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_one_time", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCheckoutConfigurationsResponseVariantBillingTypeFromString("one_time")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCheckoutConfigurationsResponseVariantBillingType("one_time"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCreateCheckoutConfigurationsResponseVariantBillingTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCreateCheckoutConfigurationsResponseVariantBillingTypeFromString("renewal")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumCreateCheckoutConfigurationsResponseVariantReleaseMethod(t *testing.T) {
+	t.Run("NewFromString_buy_now", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCheckoutConfigurationsResponseVariantReleaseMethodFromString("buy_now")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCheckoutConfigurationsResponseVariantReleaseMethod("buy_now"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_waitlist", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCheckoutConfigurationsResponseVariantReleaseMethodFromString("waitlist")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCheckoutConfigurationsResponseVariantReleaseMethod("waitlist"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCreateCheckoutConfigurationsResponseVariantReleaseMethodFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCreateCheckoutConfigurationsResponseVariantReleaseMethodFromString("buy_now")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumCreateCheckoutConfigurationsResponseVariantThreeDsLevel(t *testing.T) {
+	t.Run("NewFromString_mandate_challenge", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCheckoutConfigurationsResponseVariantThreeDsLevelFromString("mandate_challenge")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCheckoutConfigurationsResponseVariantThreeDsLevel("mandate_challenge"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mandate_if_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCheckoutConfigurationsResponseVariantThreeDsLevelFromString("mandate_if_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCheckoutConfigurationsResponseVariantThreeDsLevel("mandate_if_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_frictionless_if_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCheckoutConfigurationsResponseVariantThreeDsLevelFromString("frictionless_if_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCheckoutConfigurationsResponseVariantThreeDsLevel("frictionless_if_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCreateCheckoutConfigurationsResponseVariantThreeDsLevelFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCreateCheckoutConfigurationsResponseVariantThreeDsLevelFromString("mandate_challenge")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumCreateCheckoutConfigurationsResponseVariantVisibility(t *testing.T) {
+	t.Run("NewFromString_visible", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCheckoutConfigurationsResponseVariantVisibilityFromString("visible")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCheckoutConfigurationsResponseVariantVisibility("visible"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_hidden", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCheckoutConfigurationsResponseVariantVisibilityFromString("hidden")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCheckoutConfigurationsResponseVariantVisibility("hidden"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_archived", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCheckoutConfigurationsResponseVariantVisibilityFromString("archived")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCheckoutConfigurationsResponseVariantVisibility("archived"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_quick_link", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCheckoutConfigurationsResponseVariantVisibilityFromString("quick_link")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCheckoutConfigurationsResponseVariantVisibility("quick_link"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCreateCheckoutConfigurationsResponseVariantVisibilityFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCreateCheckoutConfigurationsResponseVariantVisibilityFromString("visible")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -11668,143 +11668,6 @@ func TestEnumListCheckoutConfigurationsResponseDataItemMode(t *testing.T) {
 	})
 }
 
-func TestEnumListCheckoutConfigurationsResponseDataItemPlanPlanType(t *testing.T) {
-	t.Run("NewFromString_renewal", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewListCheckoutConfigurationsResponseDataItemPlanPlanTypeFromString("renewal")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListCheckoutConfigurationsResponseDataItemPlanPlanType("renewal"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_one_time", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewListCheckoutConfigurationsResponseDataItemPlanPlanTypeFromString("one_time")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListCheckoutConfigurationsResponseDataItemPlanPlanType("one_time"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewListCheckoutConfigurationsResponseDataItemPlanPlanTypeFromString("invalid_value_that_does_not_exist")
-		assert.Error(t, err)
-	})
-
-	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewListCheckoutConfigurationsResponseDataItemPlanPlanTypeFromString("renewal")
-		assert.NoError(t, err)
-		ptr := val.Ptr()
-		assert.NotNil(t, ptr)
-		assert.Equal(t, val, *ptr)
-	})
-}
-
-func TestEnumListCheckoutConfigurationsResponseDataItemPlanReleaseMethod(t *testing.T) {
-	t.Run("NewFromString_buy_now", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewListCheckoutConfigurationsResponseDataItemPlanReleaseMethodFromString("buy_now")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListCheckoutConfigurationsResponseDataItemPlanReleaseMethod("buy_now"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_waitlist", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewListCheckoutConfigurationsResponseDataItemPlanReleaseMethodFromString("waitlist")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListCheckoutConfigurationsResponseDataItemPlanReleaseMethod("waitlist"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewListCheckoutConfigurationsResponseDataItemPlanReleaseMethodFromString("invalid_value_that_does_not_exist")
-		assert.Error(t, err)
-	})
-
-	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewListCheckoutConfigurationsResponseDataItemPlanReleaseMethodFromString("buy_now")
-		assert.NoError(t, err)
-		ptr := val.Ptr()
-		assert.NotNil(t, ptr)
-		assert.Equal(t, val, *ptr)
-	})
-}
-
-func TestEnumListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel(t *testing.T) {
-	t.Run("NewFromString_mandate_challenge", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewListCheckoutConfigurationsResponseDataItemPlanThreeDsLevelFromString("mandate_challenge")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel("mandate_challenge"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_mandate_if_required", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewListCheckoutConfigurationsResponseDataItemPlanThreeDsLevelFromString("mandate_if_required")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel("mandate_if_required"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_frictionless_if_required", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewListCheckoutConfigurationsResponseDataItemPlanThreeDsLevelFromString("frictionless_if_required")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel("frictionless_if_required"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewListCheckoutConfigurationsResponseDataItemPlanThreeDsLevelFromString("invalid_value_that_does_not_exist")
-		assert.Error(t, err)
-	})
-
-	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewListCheckoutConfigurationsResponseDataItemPlanThreeDsLevelFromString("mandate_challenge")
-		assert.NoError(t, err)
-		ptr := val.Ptr()
-		assert.NotNil(t, ptr)
-		assert.Equal(t, val, *ptr)
-	})
-}
-
-func TestEnumListCheckoutConfigurationsResponseDataItemPlanVisibility(t *testing.T) {
-	t.Run("NewFromString_visible", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewListCheckoutConfigurationsResponseDataItemPlanVisibilityFromString("visible")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListCheckoutConfigurationsResponseDataItemPlanVisibility("visible"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_hidden", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewListCheckoutConfigurationsResponseDataItemPlanVisibilityFromString("hidden")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListCheckoutConfigurationsResponseDataItemPlanVisibility("hidden"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_archived", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewListCheckoutConfigurationsResponseDataItemPlanVisibilityFromString("archived")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListCheckoutConfigurationsResponseDataItemPlanVisibility("archived"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_quick_link", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewListCheckoutConfigurationsResponseDataItemPlanVisibilityFromString("quick_link")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListCheckoutConfigurationsResponseDataItemPlanVisibility("quick_link"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewListCheckoutConfigurationsResponseDataItemPlanVisibilityFromString("invalid_value_that_does_not_exist")
-		assert.Error(t, err)
-	})
-
-	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewListCheckoutConfigurationsResponseDataItemPlanVisibilityFromString("visible")
-		assert.NoError(t, err)
-		ptr := val.Ptr()
-		assert.NotNil(t, ptr)
-		assert.Equal(t, val, *ptr)
-	})
-}
-
 func TestEnumListCheckoutConfigurationsResponseDataItemThreeDsLevel(t *testing.T) {
 	t.Run("NewFromString_mandate_challenge", func(t *testing.T) {
 		t.Parallel()
@@ -11841,6 +11704,143 @@ func TestEnumListCheckoutConfigurationsResponseDataItemThreeDsLevel(t *testing.T
 	})
 }
 
+func TestEnumListCheckoutConfigurationsResponseDataItemVariantBillingType(t *testing.T) {
+	t.Run("NewFromString_renewal", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListCheckoutConfigurationsResponseDataItemVariantBillingTypeFromString("renewal")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListCheckoutConfigurationsResponseDataItemVariantBillingType("renewal"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_one_time", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListCheckoutConfigurationsResponseDataItemVariantBillingTypeFromString("one_time")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListCheckoutConfigurationsResponseDataItemVariantBillingType("one_time"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewListCheckoutConfigurationsResponseDataItemVariantBillingTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewListCheckoutConfigurationsResponseDataItemVariantBillingTypeFromString("renewal")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumListCheckoutConfigurationsResponseDataItemVariantReleaseMethod(t *testing.T) {
+	t.Run("NewFromString_buy_now", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListCheckoutConfigurationsResponseDataItemVariantReleaseMethodFromString("buy_now")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListCheckoutConfigurationsResponseDataItemVariantReleaseMethod("buy_now"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_waitlist", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListCheckoutConfigurationsResponseDataItemVariantReleaseMethodFromString("waitlist")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListCheckoutConfigurationsResponseDataItemVariantReleaseMethod("waitlist"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewListCheckoutConfigurationsResponseDataItemVariantReleaseMethodFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewListCheckoutConfigurationsResponseDataItemVariantReleaseMethodFromString("buy_now")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumListCheckoutConfigurationsResponseDataItemVariantThreeDsLevel(t *testing.T) {
+	t.Run("NewFromString_mandate_challenge", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListCheckoutConfigurationsResponseDataItemVariantThreeDsLevelFromString("mandate_challenge")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListCheckoutConfigurationsResponseDataItemVariantThreeDsLevel("mandate_challenge"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mandate_if_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListCheckoutConfigurationsResponseDataItemVariantThreeDsLevelFromString("mandate_if_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListCheckoutConfigurationsResponseDataItemVariantThreeDsLevel("mandate_if_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_frictionless_if_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListCheckoutConfigurationsResponseDataItemVariantThreeDsLevelFromString("frictionless_if_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListCheckoutConfigurationsResponseDataItemVariantThreeDsLevel("frictionless_if_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewListCheckoutConfigurationsResponseDataItemVariantThreeDsLevelFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewListCheckoutConfigurationsResponseDataItemVariantThreeDsLevelFromString("mandate_challenge")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumListCheckoutConfigurationsResponseDataItemVariantVisibility(t *testing.T) {
+	t.Run("NewFromString_visible", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListCheckoutConfigurationsResponseDataItemVariantVisibilityFromString("visible")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListCheckoutConfigurationsResponseDataItemVariantVisibility("visible"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_hidden", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListCheckoutConfigurationsResponseDataItemVariantVisibilityFromString("hidden")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListCheckoutConfigurationsResponseDataItemVariantVisibility("hidden"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_archived", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListCheckoutConfigurationsResponseDataItemVariantVisibilityFromString("archived")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListCheckoutConfigurationsResponseDataItemVariantVisibility("archived"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_quick_link", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListCheckoutConfigurationsResponseDataItemVariantVisibilityFromString("quick_link")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListCheckoutConfigurationsResponseDataItemVariantVisibility("quick_link"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewListCheckoutConfigurationsResponseDataItemVariantVisibilityFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewListCheckoutConfigurationsResponseDataItemVariantVisibilityFromString("visible")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumRetrieveCheckoutConfigurationsResponseMode(t *testing.T) {
 	t.Run("NewFromString_payment", func(t *testing.T) {
 		t.Parallel()
@@ -11863,143 +11863,6 @@ func TestEnumRetrieveCheckoutConfigurationsResponseMode(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewRetrieveCheckoutConfigurationsResponseModeFromString("payment")
-		assert.NoError(t, err)
-		ptr := val.Ptr()
-		assert.NotNil(t, ptr)
-		assert.Equal(t, val, *ptr)
-	})
-}
-
-func TestEnumRetrieveCheckoutConfigurationsResponsePlanPlanType(t *testing.T) {
-	t.Run("NewFromString_renewal", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewRetrieveCheckoutConfigurationsResponsePlanPlanTypeFromString("renewal")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, RetrieveCheckoutConfigurationsResponsePlanPlanType("renewal"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_one_time", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewRetrieveCheckoutConfigurationsResponsePlanPlanTypeFromString("one_time")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, RetrieveCheckoutConfigurationsResponsePlanPlanType("one_time"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewRetrieveCheckoutConfigurationsResponsePlanPlanTypeFromString("invalid_value_that_does_not_exist")
-		assert.Error(t, err)
-	})
-
-	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewRetrieveCheckoutConfigurationsResponsePlanPlanTypeFromString("renewal")
-		assert.NoError(t, err)
-		ptr := val.Ptr()
-		assert.NotNil(t, ptr)
-		assert.Equal(t, val, *ptr)
-	})
-}
-
-func TestEnumRetrieveCheckoutConfigurationsResponsePlanReleaseMethod(t *testing.T) {
-	t.Run("NewFromString_buy_now", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewRetrieveCheckoutConfigurationsResponsePlanReleaseMethodFromString("buy_now")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, RetrieveCheckoutConfigurationsResponsePlanReleaseMethod("buy_now"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_waitlist", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewRetrieveCheckoutConfigurationsResponsePlanReleaseMethodFromString("waitlist")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, RetrieveCheckoutConfigurationsResponsePlanReleaseMethod("waitlist"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewRetrieveCheckoutConfigurationsResponsePlanReleaseMethodFromString("invalid_value_that_does_not_exist")
-		assert.Error(t, err)
-	})
-
-	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewRetrieveCheckoutConfigurationsResponsePlanReleaseMethodFromString("buy_now")
-		assert.NoError(t, err)
-		ptr := val.Ptr()
-		assert.NotNil(t, ptr)
-		assert.Equal(t, val, *ptr)
-	})
-}
-
-func TestEnumRetrieveCheckoutConfigurationsResponsePlanThreeDsLevel(t *testing.T) {
-	t.Run("NewFromString_mandate_challenge", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewRetrieveCheckoutConfigurationsResponsePlanThreeDsLevelFromString("mandate_challenge")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, RetrieveCheckoutConfigurationsResponsePlanThreeDsLevel("mandate_challenge"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_mandate_if_required", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewRetrieveCheckoutConfigurationsResponsePlanThreeDsLevelFromString("mandate_if_required")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, RetrieveCheckoutConfigurationsResponsePlanThreeDsLevel("mandate_if_required"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_frictionless_if_required", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewRetrieveCheckoutConfigurationsResponsePlanThreeDsLevelFromString("frictionless_if_required")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, RetrieveCheckoutConfigurationsResponsePlanThreeDsLevel("frictionless_if_required"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewRetrieveCheckoutConfigurationsResponsePlanThreeDsLevelFromString("invalid_value_that_does_not_exist")
-		assert.Error(t, err)
-	})
-
-	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewRetrieveCheckoutConfigurationsResponsePlanThreeDsLevelFromString("mandate_challenge")
-		assert.NoError(t, err)
-		ptr := val.Ptr()
-		assert.NotNil(t, ptr)
-		assert.Equal(t, val, *ptr)
-	})
-}
-
-func TestEnumRetrieveCheckoutConfigurationsResponsePlanVisibility(t *testing.T) {
-	t.Run("NewFromString_visible", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewRetrieveCheckoutConfigurationsResponsePlanVisibilityFromString("visible")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, RetrieveCheckoutConfigurationsResponsePlanVisibility("visible"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_hidden", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewRetrieveCheckoutConfigurationsResponsePlanVisibilityFromString("hidden")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, RetrieveCheckoutConfigurationsResponsePlanVisibility("hidden"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_archived", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewRetrieveCheckoutConfigurationsResponsePlanVisibilityFromString("archived")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, RetrieveCheckoutConfigurationsResponsePlanVisibility("archived"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_quick_link", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewRetrieveCheckoutConfigurationsResponsePlanVisibilityFromString("quick_link")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, RetrieveCheckoutConfigurationsResponsePlanVisibility("quick_link"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewRetrieveCheckoutConfigurationsResponsePlanVisibilityFromString("invalid_value_that_does_not_exist")
-		assert.Error(t, err)
-	})
-
-	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewRetrieveCheckoutConfigurationsResponsePlanVisibilityFromString("visible")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -12043,6 +11906,143 @@ func TestEnumRetrieveCheckoutConfigurationsResponseThreeDsLevel(t *testing.T) {
 	})
 }
 
+func TestEnumRetrieveCheckoutConfigurationsResponseVariantBillingType(t *testing.T) {
+	t.Run("NewFromString_renewal", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveCheckoutConfigurationsResponseVariantBillingTypeFromString("renewal")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveCheckoutConfigurationsResponseVariantBillingType("renewal"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_one_time", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveCheckoutConfigurationsResponseVariantBillingTypeFromString("one_time")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveCheckoutConfigurationsResponseVariantBillingType("one_time"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewRetrieveCheckoutConfigurationsResponseVariantBillingTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewRetrieveCheckoutConfigurationsResponseVariantBillingTypeFromString("renewal")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumRetrieveCheckoutConfigurationsResponseVariantReleaseMethod(t *testing.T) {
+	t.Run("NewFromString_buy_now", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveCheckoutConfigurationsResponseVariantReleaseMethodFromString("buy_now")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveCheckoutConfigurationsResponseVariantReleaseMethod("buy_now"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_waitlist", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveCheckoutConfigurationsResponseVariantReleaseMethodFromString("waitlist")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveCheckoutConfigurationsResponseVariantReleaseMethod("waitlist"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewRetrieveCheckoutConfigurationsResponseVariantReleaseMethodFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewRetrieveCheckoutConfigurationsResponseVariantReleaseMethodFromString("buy_now")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumRetrieveCheckoutConfigurationsResponseVariantThreeDsLevel(t *testing.T) {
+	t.Run("NewFromString_mandate_challenge", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveCheckoutConfigurationsResponseVariantThreeDsLevelFromString("mandate_challenge")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveCheckoutConfigurationsResponseVariantThreeDsLevel("mandate_challenge"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mandate_if_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveCheckoutConfigurationsResponseVariantThreeDsLevelFromString("mandate_if_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveCheckoutConfigurationsResponseVariantThreeDsLevel("mandate_if_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_frictionless_if_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveCheckoutConfigurationsResponseVariantThreeDsLevelFromString("frictionless_if_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveCheckoutConfigurationsResponseVariantThreeDsLevel("frictionless_if_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewRetrieveCheckoutConfigurationsResponseVariantThreeDsLevelFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewRetrieveCheckoutConfigurationsResponseVariantThreeDsLevelFromString("mandate_challenge")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumRetrieveCheckoutConfigurationsResponseVariantVisibility(t *testing.T) {
+	t.Run("NewFromString_visible", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveCheckoutConfigurationsResponseVariantVisibilityFromString("visible")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveCheckoutConfigurationsResponseVariantVisibility("visible"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_hidden", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveCheckoutConfigurationsResponseVariantVisibilityFromString("hidden")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveCheckoutConfigurationsResponseVariantVisibility("hidden"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_archived", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveCheckoutConfigurationsResponseVariantVisibilityFromString("archived")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveCheckoutConfigurationsResponseVariantVisibility("archived"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_quick_link", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveCheckoutConfigurationsResponseVariantVisibilityFromString("quick_link")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveCheckoutConfigurationsResponseVariantVisibility("quick_link"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewRetrieveCheckoutConfigurationsResponseVariantVisibilityFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewRetrieveCheckoutConfigurationsResponseVariantVisibilityFromString("visible")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestExtraPropertiesCreateCheckoutConfigurationsRequestPaymentMethodConfiguration(t *testing.T) {
 	t.Run("GetExtraProperties", func(t *testing.T) {
 		t.Parallel()
@@ -12066,10 +12066,10 @@ func TestExtraPropertiesCreateCheckoutConfigurationsRequestPaymentMethodConfigur
 	})
 }
 
-func TestExtraPropertiesCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
+func TestExtraPropertiesCreateCheckoutConfigurationsRequestVariant(t *testing.T) {
 	t.Run("GetExtraProperties", func(t *testing.T) {
 		t.Parallel()
-		obj := &CreateCheckoutConfigurationsRequestPlan{}
+		obj := &CreateCheckoutConfigurationsRequestVariant{}
 		// Should not panic when calling GetExtraProperties()
 		defer func() {
 			if r := recover(); r != nil {
@@ -12083,16 +12083,16 @@ func TestExtraPropertiesCreateCheckoutConfigurationsRequestPlan(t *testing.T) {
 
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsRequestPlan
+		var obj *CreateCheckoutConfigurationsRequestVariant
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
 }
 
-func TestExtraPropertiesCreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration(t *testing.T) {
+func TestExtraPropertiesCreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration(t *testing.T) {
 	t.Run("GetExtraProperties", func(t *testing.T) {
 		t.Parallel()
-		obj := &CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration{}
+		obj := &CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration{}
 		// Should not panic when calling GetExtraProperties()
 		defer func() {
 			if r := recover(); r != nil {
@@ -12106,7 +12106,7 @@ func TestExtraPropertiesCreateCheckoutConfigurationsRequestPlanPaymentMethodConf
 
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration
+		var obj *CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
@@ -12181,10 +12181,10 @@ func TestExtraPropertiesCreateCheckoutConfigurationsResponsePaymentMethodConfigu
 	})
 }
 
-func TestExtraPropertiesCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
+func TestExtraPropertiesCreateCheckoutConfigurationsResponseVariant(t *testing.T) {
 	t.Run("GetExtraProperties", func(t *testing.T) {
 		t.Parallel()
-		obj := &CreateCheckoutConfigurationsResponsePlan{}
+		obj := &CreateCheckoutConfigurationsResponseVariant{}
 		// Should not panic when calling GetExtraProperties()
 		defer func() {
 			if r := recover(); r != nil {
@@ -12198,7 +12198,7 @@ func TestExtraPropertiesCreateCheckoutConfigurationsResponsePlan(t *testing.T) {
 
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateCheckoutConfigurationsResponsePlan
+		var obj *CreateCheckoutConfigurationsResponseVariant
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
@@ -12319,10 +12319,10 @@ func TestExtraPropertiesListCheckoutConfigurationsResponseDataItemPaymentMethodC
 	})
 }
 
-func TestExtraPropertiesListCheckoutConfigurationsResponseDataItemPlan(t *testing.T) {
+func TestExtraPropertiesListCheckoutConfigurationsResponseDataItemVariant(t *testing.T) {
 	t.Run("GetExtraProperties", func(t *testing.T) {
 		t.Parallel()
-		obj := &ListCheckoutConfigurationsResponseDataItemPlan{}
+		obj := &ListCheckoutConfigurationsResponseDataItemVariant{}
 		// Should not panic when calling GetExtraProperties()
 		defer func() {
 			if r := recover(); r != nil {
@@ -12336,7 +12336,7 @@ func TestExtraPropertiesListCheckoutConfigurationsResponseDataItemPlan(t *testin
 
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *ListCheckoutConfigurationsResponseDataItemPlan
+		var obj *ListCheckoutConfigurationsResponseDataItemVariant
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
@@ -12434,10 +12434,10 @@ func TestExtraPropertiesRetrieveCheckoutConfigurationsResponsePaymentMethodConfi
 	})
 }
 
-func TestExtraPropertiesRetrieveCheckoutConfigurationsResponsePlan(t *testing.T) {
+func TestExtraPropertiesRetrieveCheckoutConfigurationsResponseVariant(t *testing.T) {
 	t.Run("GetExtraProperties", func(t *testing.T) {
 		t.Parallel()
-		obj := &RetrieveCheckoutConfigurationsResponsePlan{}
+		obj := &RetrieveCheckoutConfigurationsResponseVariant{}
 		// Should not panic when calling GetExtraProperties()
 		defer func() {
 			if r := recover(); r != nil {
@@ -12451,7 +12451,7 @@ func TestExtraPropertiesRetrieveCheckoutConfigurationsResponsePlan(t *testing.T)
 
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *RetrieveCheckoutConfigurationsResponsePlan
+		var obj *RetrieveCheckoutConfigurationsResponseVariant
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

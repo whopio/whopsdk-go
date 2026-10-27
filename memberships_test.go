@@ -645,19 +645,19 @@ func TestSettersListMembershipsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetPlanID", func(t *testing.T) {
+	t.Run("SetVariantID", func(t *testing.T) {
 		obj := &ListMembershipsRequest{}
-		var fernTestValuePlanID *string
-		obj.SetPlanID(fernTestValuePlanID)
-		assert.Equal(t, fernTestValuePlanID, obj.PlanID)
+		var fernTestValueVariantID *string
+		obj.SetVariantID(fernTestValueVariantID)
+		assert.Equal(t, fernTestValueVariantID, obj.VariantID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetPlanIDs", func(t *testing.T) {
+	t.Run("SetVariantIDs", func(t *testing.T) {
 		obj := &ListMembershipsRequest{}
-		var fernTestValuePlanIDs []*string
-		obj.SetPlanIDs(fernTestValuePlanIDs)
-		assert.Equal(t, fernTestValuePlanIDs, obj.PlanIDs)
+		var fernTestValueVariantIDs []*string
+		obj.SetVariantIDs(fernTestValueVariantIDs)
+		assert.Equal(t, fernTestValueVariantIDs, obj.VariantIDs)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -984,14 +984,14 @@ func TestSettersMarkExplicitListMembershipsRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetPlanID_MarksExplicit", func(t *testing.T) {
+	t.Run("SetVariantID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListMembershipsRequest{}
-		var fernTestValuePlanID *string
+		var fernTestValueVariantID *string
 
 		// Act
-		obj.SetPlanID(fernTestValuePlanID)
+		obj.SetVariantID(fernTestValueVariantID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1015,14 +1015,14 @@ func TestSettersMarkExplicitListMembershipsRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetPlanIDs_MarksExplicit", func(t *testing.T) {
+	t.Run("SetVariantIDs_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListMembershipsRequest{}
-		var fernTestValuePlanIDs []*string
+		var fernTestValueVariantIDs []*string
 
 		// Act
-		obj.SetPlanIDs(fernTestValuePlanIDs)
+		obj.SetVariantIDs(fernTestValueVariantIDs)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1860,14 +1860,6 @@ func TestSettersMembership(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetPlanID", func(t *testing.T) {
-		obj := &Membership{}
-		var fernTestValuePlanID string
-		obj.SetPlanID(fernTestValuePlanID)
-		assert.Equal(t, fernTestValuePlanID, obj.PlanID)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetProduct", func(t *testing.T) {
 		obj := &Membership{}
 		var fernTestValueProduct *MembershipProduct
@@ -1937,6 +1929,14 @@ func TestSettersMembership(t *testing.T) {
 		var fernTestValueUserID *string
 		obj.SetUserID(fernTestValueUserID)
 		assert.Equal(t, fernTestValueUserID, obj.UserID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetVariantID", func(t *testing.T) {
+		obj := &Membership{}
+		var fernTestValueVariantID string
+		obj.SetVariantID(fernTestValueVariantID)
+		assert.Equal(t, fernTestValueVariantID, obj.VariantID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -2672,29 +2672,6 @@ func TestGettersMembership(t *testing.T) {
 		_ = obj.GetPhoneNumber() // Should return zero value
 	})
 
-	t.Run("GetPlanID", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &Membership{}
-		var expected string
-		obj.PlanID = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetPlanID(), "getter should return the property value")
-	})
-
-	t.Run("GetPlanID_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *Membership
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetPlanID() // Should return zero value
-	})
-
 	t.Run("GetProduct", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -2960,6 +2937,29 @@ func TestGettersMembership(t *testing.T) {
 			}
 		}()
 		_ = obj.GetUserID() // Should return zero value
+	})
+
+	t.Run("GetVariantID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Membership{}
+		var expected string
+		obj.VariantID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetVariantID(), "getter should return the property value")
+	})
+
+	t.Run("GetVariantID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Membership
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetVariantID() // Should return zero value
 	})
 
 }
@@ -3678,37 +3678,6 @@ func TestSettersMarkExplicitMembership(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetPlanID_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &Membership{}
-		var fernTestValuePlanID string
-
-		// Act
-		obj.SetPlanID(fernTestValuePlanID)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
 	t.Run("SetProduct_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -3965,6 +3934,37 @@ func TestSettersMarkExplicitMembership(t *testing.T) {
 
 		// Act
 		obj.SetUserID(fernTestValueUserID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetVariantID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Membership{}
+		var fernTestValueVariantID string
+
+		// Act
+		obj.SetVariantID(fernTestValueVariantID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -5084,11 +5084,11 @@ func TestSettersInviteMembershipsRequestBodyEmail(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetPlanID", func(t *testing.T) {
+	t.Run("SetVariantID", func(t *testing.T) {
 		obj := &InviteMembershipsRequestBodyEmail{}
-		var fernTestValuePlanID string
-		obj.SetPlanID(fernTestValuePlanID)
-		assert.Equal(t, fernTestValuePlanID, obj.PlanID)
+		var fernTestValueVariantID string
+		obj.SetVariantID(fernTestValueVariantID)
+		assert.Equal(t, fernTestValueVariantID, obj.VariantID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -5118,18 +5118,18 @@ func TestGettersInviteMembershipsRequestBodyEmail(t *testing.T) {
 		_ = obj.GetEmail() // Should return zero value
 	})
 
-	t.Run("GetPlanID", func(t *testing.T) {
+	t.Run("GetVariantID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &InviteMembershipsRequestBodyEmail{}
 		var expected string
-		obj.PlanID = expected
+		obj.VariantID = expected
 
 		// Act & Assert
-		assert.Equal(t, expected, obj.GetPlanID(), "getter should return the property value")
+		assert.Equal(t, expected, obj.GetVariantID(), "getter should return the property value")
 	})
 
-	t.Run("GetPlanID_NilReceiver", func(t *testing.T) {
+	t.Run("GetVariantID_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *InviteMembershipsRequestBodyEmail
 		// Should not panic - getters should handle nil receiver gracefully
@@ -5138,7 +5138,7 @@ func TestGettersInviteMembershipsRequestBodyEmail(t *testing.T) {
 				t.Errorf("Getter panicked on nil receiver: %v", r)
 			}
 		}()
-		_ = obj.GetPlanID() // Should return zero value
+		_ = obj.GetVariantID() // Should return zero value
 	})
 
 }
@@ -5175,14 +5175,14 @@ func TestSettersMarkExplicitInviteMembershipsRequestBodyEmail(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetPlanID_MarksExplicit", func(t *testing.T) {
+	t.Run("SetVariantID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &InviteMembershipsRequestBodyEmail{}
-		var fernTestValuePlanID string
+		var fernTestValueVariantID string
 
 		// Act
-		obj.SetPlanID(fernTestValuePlanID)
+		obj.SetVariantID(fernTestValueVariantID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -5209,14 +5209,6 @@ func TestSettersMarkExplicitInviteMembershipsRequestBodyEmail(t *testing.T) {
 }
 
 func TestSettersInviteMembershipsRequestBodyUserID(t *testing.T) {
-	t.Run("SetPlanID", func(t *testing.T) {
-		obj := &InviteMembershipsRequestBodyUserID{}
-		var fernTestValuePlanID string
-		obj.SetPlanID(fernTestValuePlanID)
-		assert.Equal(t, fernTestValuePlanID, obj.PlanID)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetUserID", func(t *testing.T) {
 		obj := &InviteMembershipsRequestBodyUserID{}
 		var fernTestValueUserID string
@@ -5225,32 +5217,17 @@ func TestSettersInviteMembershipsRequestBodyUserID(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetVariantID", func(t *testing.T) {
+		obj := &InviteMembershipsRequestBodyUserID{}
+		var fernTestValueVariantID string
+		obj.SetVariantID(fernTestValueVariantID)
+		assert.Equal(t, fernTestValueVariantID, obj.VariantID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestGettersInviteMembershipsRequestBodyUserID(t *testing.T) {
-	t.Run("GetPlanID", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &InviteMembershipsRequestBodyUserID{}
-		var expected string
-		obj.PlanID = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetPlanID(), "getter should return the property value")
-	})
-
-	t.Run("GetPlanID_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *InviteMembershipsRequestBodyUserID
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetPlanID() // Should return zero value
-	})
-
 	t.Run("GetUserID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -5274,17 +5251,40 @@ func TestGettersInviteMembershipsRequestBodyUserID(t *testing.T) {
 		_ = obj.GetUserID() // Should return zero value
 	})
 
-}
-
-func TestSettersMarkExplicitInviteMembershipsRequestBodyUserID(t *testing.T) {
-	t.Run("SetPlanID_MarksExplicit", func(t *testing.T) {
+	t.Run("GetVariantID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &InviteMembershipsRequestBodyUserID{}
-		var fernTestValuePlanID string
+		var expected string
+		obj.VariantID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetVariantID(), "getter should return the property value")
+	})
+
+	t.Run("GetVariantID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *InviteMembershipsRequestBodyUserID
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetVariantID() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitInviteMembershipsRequestBodyUserID(t *testing.T) {
+	t.Run("SetUserID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &InviteMembershipsRequestBodyUserID{}
+		var fernTestValueUserID string
 
 		// Act
-		obj.SetPlanID(fernTestValuePlanID)
+		obj.SetUserID(fernTestValueUserID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -5308,14 +5308,14 @@ func TestSettersMarkExplicitInviteMembershipsRequestBodyUserID(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetUserID_MarksExplicit", func(t *testing.T) {
+	t.Run("SetVariantID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &InviteMembershipsRequestBodyUserID{}
-		var fernTestValueUserID string
+		var fernTestValueVariantID string
 
 		// Act
-		obj.SetUserID(fernTestValueUserID)
+		obj.SetVariantID(fernTestValueVariantID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

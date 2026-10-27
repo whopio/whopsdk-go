@@ -63,11 +63,11 @@ func TestSettersApproveAllWaitlistEntriesRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetPlanID", func(t *testing.T) {
+	t.Run("SetVariantID", func(t *testing.T) {
 		obj := &ApproveAllWaitlistEntriesRequest{}
-		var fernTestValuePlanID *string
-		obj.SetPlanID(fernTestValuePlanID)
-		assert.Equal(t, fernTestValuePlanID, obj.PlanID)
+		var fernTestValueVariantID *string
+		obj.SetVariantID(fernTestValueVariantID)
+		assert.Equal(t, fernTestValueVariantID, obj.VariantID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -105,14 +105,14 @@ func TestSettersMarkExplicitApproveAllWaitlistEntriesRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetPlanID_MarksExplicit", func(t *testing.T) {
+	t.Run("SetVariantID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ApproveAllWaitlistEntriesRequest{}
-		var fernTestValuePlanID *string
+		var fernTestValueVariantID *string
 
 		// Act
-		obj.SetPlanID(fernTestValuePlanID)
+		obj.SetVariantID(fernTestValueVariantID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -208,11 +208,11 @@ func TestSettersCreateWaitlistEntriesRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetPlanID", func(t *testing.T) {
+	t.Run("SetVariantID", func(t *testing.T) {
 		obj := &CreateWaitlistEntriesRequest{}
-		var fernTestValuePlanID string
-		obj.SetPlanID(fernTestValuePlanID)
-		assert.Equal(t, fernTestValuePlanID, obj.PlanID)
+		var fernTestValueVariantID string
+		obj.SetVariantID(fernTestValueVariantID)
+		assert.Equal(t, fernTestValueVariantID, obj.VariantID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -312,14 +312,14 @@ func TestSettersMarkExplicitCreateWaitlistEntriesRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetPlanID_MarksExplicit", func(t *testing.T) {
+	t.Run("SetVariantID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateWaitlistEntriesRequest{}
-		var fernTestValuePlanID string
+		var fernTestValueVariantID string
 
 		// Act
-		obj.SetPlanID(fernTestValuePlanID)
+		obj.SetVariantID(fernTestValueVariantID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -423,11 +423,11 @@ func TestSettersListWaitlistEntriesRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetPlanID", func(t *testing.T) {
+	t.Run("SetVariantID", func(t *testing.T) {
 		obj := &ListWaitlistEntriesRequest{}
-		var fernTestValuePlanID *string
-		obj.SetPlanID(fernTestValuePlanID)
-		assert.Equal(t, fernTestValuePlanID, obj.PlanID)
+		var fernTestValueVariantID *string
+		obj.SetVariantID(fernTestValueVariantID)
+		assert.Equal(t, fernTestValueVariantID, obj.VariantID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -630,14 +630,14 @@ func TestSettersMarkExplicitListWaitlistEntriesRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetPlanID_MarksExplicit", func(t *testing.T) {
+	t.Run("SetVariantID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListWaitlistEntriesRequest{}
-		var fernTestValuePlanID *string
+		var fernTestValueVariantID *string
 
 		// Act
-		obj.SetPlanID(fernTestValuePlanID)
+		obj.SetVariantID(fernTestValueVariantID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1060,14 +1060,6 @@ func TestSettersWaitlistEntry(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetPlanID", func(t *testing.T) {
-		obj := &WaitlistEntry{}
-		var fernTestValuePlanID string
-		obj.SetPlanID(fernTestValuePlanID)
-		assert.Equal(t, fernTestValuePlanID, obj.PlanID)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetProduct", func(t *testing.T) {
 		obj := &WaitlistEntry{}
 		var fernTestValueProduct *WaitlistEntryProduct
@@ -1121,6 +1113,14 @@ func TestSettersWaitlistEntry(t *testing.T) {
 		var fernTestValueVariant *WaitlistEntryVariant
 		obj.SetVariant(fernTestValueVariant)
 		assert.Equal(t, fernTestValueVariant, obj.Variant)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetVariantID", func(t *testing.T) {
+		obj := &WaitlistEntry{}
+		var fernTestValueVariantID string
+		obj.SetVariantID(fernTestValueVariantID)
+		assert.Equal(t, fernTestValueVariantID, obj.VariantID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -1394,29 +1394,6 @@ func TestGettersWaitlistEntry(t *testing.T) {
 		_ = obj.GetMetadata() // Should return zero value
 	})
 
-	t.Run("GetPlanID", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &WaitlistEntry{}
-		var expected string
-		obj.PlanID = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetPlanID(), "getter should return the property value")
-	})
-
-	t.Run("GetPlanID_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *WaitlistEntry
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetPlanID() // Should return zero value
-	})
-
 	t.Run("GetProduct", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -1616,6 +1593,29 @@ func TestGettersWaitlistEntry(t *testing.T) {
 			}
 		}()
 		_ = obj.GetVariant() // Should return zero value
+	})
+
+	t.Run("GetVariantID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &WaitlistEntry{}
+		var expected string
+		obj.VariantID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetVariantID(), "getter should return the property value")
+	})
+
+	t.Run("GetVariantID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *WaitlistEntry
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetVariantID() // Should return zero value
 	})
 
 }
@@ -1900,37 +1900,6 @@ func TestSettersMarkExplicitWaitlistEntry(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetPlanID_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &WaitlistEntry{}
-		var fernTestValuePlanID string
-
-		// Act
-		obj.SetPlanID(fernTestValuePlanID)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
 	t.Run("SetProduct_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -2125,6 +2094,37 @@ func TestSettersMarkExplicitWaitlistEntry(t *testing.T) {
 
 		// Act
 		obj.SetVariant(fernTestValueVariant)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetVariantID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &WaitlistEntry{}
+		var fernTestValueVariantID string
+
+		// Act
+		obj.SetVariantID(fernTestValueVariantID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -2487,6 +2487,14 @@ func TestSettersWaitlistEntryVariant(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetBillingType", func(t *testing.T) {
+		obj := &WaitlistEntryVariant{}
+		var fernTestValueBillingType WaitlistEntryVariantBillingType
+		obj.SetBillingType(fernTestValueBillingType)
+		assert.Equal(t, fernTestValueBillingType, obj.BillingType)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetDescription", func(t *testing.T) {
 		obj := &WaitlistEntryVariant{}
 		var fernTestValueDescription *string
@@ -2508,14 +2516,6 @@ func TestSettersWaitlistEntryVariant(t *testing.T) {
 		var fernTestValueInitialPrice *Money
 		obj.SetInitialPrice(fernTestValueInitialPrice)
 		assert.Equal(t, fernTestValueInitialPrice, obj.InitialPrice)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetPlanType", func(t *testing.T) {
-		obj := &WaitlistEntryVariant{}
-		var fernTestValuePlanType WaitlistEntryVariantPlanType
-		obj.SetPlanType(fernTestValuePlanType)
-		assert.Equal(t, fernTestValuePlanType, obj.PlanType)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -2577,6 +2577,29 @@ func TestGettersWaitlistEntryVariant(t *testing.T) {
 			}
 		}()
 		_ = obj.GetBillingPeriod() // Should return zero value
+	})
+
+	t.Run("GetBillingType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &WaitlistEntryVariant{}
+		var expected WaitlistEntryVariantBillingType
+		obj.BillingType = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetBillingType(), "getter should return the property value")
+	})
+
+	t.Run("GetBillingType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *WaitlistEntryVariant
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetBillingType() // Should return zero value
 	})
 
 	t.Run("GetDescription", func(t *testing.T) {
@@ -2666,29 +2689,6 @@ func TestGettersWaitlistEntryVariant(t *testing.T) {
 			}
 		}()
 		_ = obj.GetInitialPrice() // Should return zero value
-	})
-
-	t.Run("GetPlanType", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &WaitlistEntryVariant{}
-		var expected WaitlistEntryVariantPlanType
-		obj.PlanType = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetPlanType(), "getter should return the property value")
-	})
-
-	t.Run("GetPlanType_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *WaitlistEntryVariant
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetPlanType() // Should return zero value
 	})
 
 	t.Run("GetRenewalPrice", func(t *testing.T) {
@@ -2824,6 +2824,37 @@ func TestSettersMarkExplicitWaitlistEntryVariant(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetBillingType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &WaitlistEntryVariant{}
+		var fernTestValueBillingType WaitlistEntryVariantBillingType
+
+		// Act
+		obj.SetBillingType(fernTestValueBillingType)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetDescription_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -2894,37 +2925,6 @@ func TestSettersMarkExplicitWaitlistEntryVariant(t *testing.T) {
 
 		// Act
 		obj.SetInitialPrice(fernTestValueInitialPrice)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetPlanType_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &WaitlistEntryVariant{}
-		var fernTestValuePlanType WaitlistEntryVariantPlanType
-
-		// Act
-		obj.SetPlanType(fernTestValuePlanType)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3052,19 +3052,19 @@ func TestSettersApproveAllWaitlistEntriesResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetPlanID", func(t *testing.T) {
-		obj := &ApproveAllWaitlistEntriesResponse{}
-		var fernTestValuePlanID *string
-		obj.SetPlanID(fernTestValuePlanID)
-		assert.Equal(t, fernTestValuePlanID, obj.PlanID)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetQueued", func(t *testing.T) {
 		obj := &ApproveAllWaitlistEntriesResponse{}
 		var fernTestValueQueued bool
 		obj.SetQueued(fernTestValueQueued)
 		assert.Equal(t, fernTestValueQueued, obj.Queued)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetVariantID", func(t *testing.T) {
+		obj := &ApproveAllWaitlistEntriesResponse{}
+		var fernTestValueVariantID *string
+		obj.SetVariantID(fernTestValueVariantID)
+		assert.Equal(t, fernTestValueVariantID, obj.VariantID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -3094,39 +3094,6 @@ func TestGettersApproveAllWaitlistEntriesResponse(t *testing.T) {
 		_ = obj.GetAccountID() // Should return zero value
 	})
 
-	t.Run("GetPlanID", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &ApproveAllWaitlistEntriesResponse{}
-		var expected *string
-		obj.PlanID = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetPlanID(), "getter should return the property value")
-	})
-
-	t.Run("GetPlanID_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &ApproveAllWaitlistEntriesResponse{}
-		obj.PlanID = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetPlanID(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetPlanID_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *ApproveAllWaitlistEntriesResponse
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetPlanID() // Should return zero value
-	})
-
 	t.Run("GetQueued", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -3148,6 +3115,39 @@ func TestGettersApproveAllWaitlistEntriesResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetQueued() // Should return zero value
+	})
+
+	t.Run("GetVariantID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ApproveAllWaitlistEntriesResponse{}
+		var expected *string
+		obj.VariantID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetVariantID(), "getter should return the property value")
+	})
+
+	t.Run("GetVariantID_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ApproveAllWaitlistEntriesResponse{}
+		obj.VariantID = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetVariantID(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetVariantID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ApproveAllWaitlistEntriesResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetVariantID() // Should return zero value
 	})
 
 }
@@ -3184,14 +3184,14 @@ func TestSettersMarkExplicitApproveAllWaitlistEntriesResponse(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetPlanID_MarksExplicit", func(t *testing.T) {
+	t.Run("SetQueued_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ApproveAllWaitlistEntriesResponse{}
-		var fernTestValuePlanID *string
+		var fernTestValueQueued bool
 
 		// Act
-		obj.SetPlanID(fernTestValuePlanID)
+		obj.SetQueued(fernTestValueQueued)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3215,14 +3215,14 @@ func TestSettersMarkExplicitApproveAllWaitlistEntriesResponse(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetQueued_MarksExplicit", func(t *testing.T) {
+	t.Run("SetVariantID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ApproveAllWaitlistEntriesResponse{}
-		var fernTestValueQueued bool
+		var fernTestValueVariantID *string
 
 		// Act
-		obj.SetQueued(fernTestValueQueued)
+		obj.SetVariantID(fernTestValueVariantID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -4077,7 +4077,7 @@ func TestJSONMarshalingWaitlistEntryVariant(t *testing.T) {
 
 func TestRequiredNullableRoundTripApproveAllWaitlistEntriesResponse(t *testing.T) {
 	requiredNullableKeys := []string{
-		"plan_id",
+		"variant_id",
 	}
 	marshalToMap := func(t *testing.T, obj *ApproveAllWaitlistEntriesResponse) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
@@ -4090,7 +4090,7 @@ func TestRequiredNullableRoundTripApproveAllWaitlistEntriesResponse(t *testing.T
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj ApproveAllWaitlistEntriesResponse
-		require.NoError(t, json.Unmarshal([]byte(`{"plan_id":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"variant_id":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -4564,28 +4564,28 @@ func TestEnumWaitlistEntryStatus(t *testing.T) {
 	})
 }
 
-func TestEnumWaitlistEntryVariantPlanType(t *testing.T) {
+func TestEnumWaitlistEntryVariantBillingType(t *testing.T) {
 	t.Run("NewFromString_renewal", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewWaitlistEntryVariantPlanTypeFromString("renewal")
+		val, err := NewWaitlistEntryVariantBillingTypeFromString("renewal")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, WaitlistEntryVariantPlanType("renewal"), val, "enum value should match expected wire value")
+		assert.Equal(t, WaitlistEntryVariantBillingType("renewal"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_one_time", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewWaitlistEntryVariantPlanTypeFromString("one_time")
+		val, err := NewWaitlistEntryVariantBillingTypeFromString("one_time")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, WaitlistEntryVariantPlanType("one_time"), val, "enum value should match expected wire value")
+		assert.Equal(t, WaitlistEntryVariantBillingType("one_time"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewWaitlistEntryVariantPlanTypeFromString("invalid_value_that_does_not_exist")
+		_, err := NewWaitlistEntryVariantBillingTypeFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewWaitlistEntryVariantPlanTypeFromString("renewal")
+		val, err := NewWaitlistEntryVariantBillingTypeFromString("renewal")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

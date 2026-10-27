@@ -1113,14 +1113,6 @@ func TestSettersDispute(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetPlanID", func(t *testing.T) {
-		obj := &Dispute{}
-		var fernTestValuePlanID *string
-		obj.SetPlanID(fernTestValuePlanID)
-		assert.Equal(t, fernTestValuePlanID, obj.PlanID)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetProductID", func(t *testing.T) {
 		obj := &Dispute{}
 		var fernTestValueProductID *string
@@ -1158,6 +1150,14 @@ func TestSettersDispute(t *testing.T) {
 		var fernTestValueUpdatedAt string
 		obj.SetUpdatedAt(fernTestValueUpdatedAt)
 		assert.Equal(t, fernTestValueUpdatedAt, obj.UpdatedAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetVariantID", func(t *testing.T) {
+		obj := &Dispute{}
+		var fernTestValueVariantID *string
+		obj.SetVariantID(fernTestValueVariantID)
+		assert.Equal(t, fernTestValueVariantID, obj.VariantID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -1655,39 +1655,6 @@ func TestGettersDispute(t *testing.T) {
 		_ = obj.GetPayment() // Should return zero value
 	})
 
-	t.Run("GetPlanID", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &Dispute{}
-		var expected *string
-		obj.PlanID = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetPlanID(), "getter should return the property value")
-	})
-
-	t.Run("GetPlanID_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &Dispute{}
-		obj.PlanID = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetPlanID(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetPlanID_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *Dispute
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetPlanID() // Should return zero value
-	})
-
 	t.Run("GetProductID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -1821,6 +1788,39 @@ func TestGettersDispute(t *testing.T) {
 			}
 		}()
 		_ = obj.GetUpdatedAt() // Should return zero value
+	})
+
+	t.Run("GetVariantID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Dispute{}
+		var expected *string
+		obj.VariantID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetVariantID(), "getter should return the property value")
+	})
+
+	t.Run("GetVariantID_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Dispute{}
+		obj.VariantID = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetVariantID(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetVariantID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Dispute
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetVariantID() // Should return zero value
 	})
 
 }
@@ -2353,37 +2353,6 @@ func TestSettersMarkExplicitDispute(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetPlanID_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &Dispute{}
-		var fernTestValuePlanID *string
-
-		// Act
-		obj.SetPlanID(fernTestValuePlanID)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
 	t.Run("SetProductID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -2516,6 +2485,37 @@ func TestSettersMarkExplicitDispute(t *testing.T) {
 
 		// Act
 		obj.SetUpdatedAt(fernTestValueUpdatedAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetVariantID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Dispute{}
+		var fernTestValueVariantID *string
+
+		// Act
+		obj.SetVariantID(fernTestValueVariantID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -12053,9 +12053,9 @@ func TestRequiredNullableRoundTripDispute(t *testing.T) {
 		"evidence_locked_reason",
 		"evidence_submitted_at",
 		"fee",
-		"plan_id",
 		"product_id",
 		"reason_code",
+		"variant_id",
 	}
 	marshalToMap := func(t *testing.T, obj *Dispute) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
@@ -12068,7 +12068,7 @@ func TestRequiredNullableRoundTripDispute(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Dispute
-		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"evidence_due_at":null,"evidence_locked_reason":null,"evidence_submitted_at":null,"fee":null,"plan_id":null,"product_id":null,"reason_code":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"evidence_due_at":null,"evidence_locked_reason":null,"evidence_submitted_at":null,"fee":null,"product_id":null,"reason_code":null,"variant_id":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]

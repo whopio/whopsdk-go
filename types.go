@@ -9866,11 +9866,11 @@ var (
 	checkoutConfigurationFieldMetadata                            = big.NewInt(1 << 6)
 	checkoutConfigurationFieldMode                                = big.NewInt(1 << 7)
 	checkoutConfigurationFieldPaymentMethodConfiguration          = big.NewInt(1 << 8)
-	checkoutConfigurationFieldPlan                                = big.NewInt(1 << 9)
-	checkoutConfigurationFieldPurchaseURL                         = big.NewInt(1 << 10)
-	checkoutConfigurationFieldRedirectURL                         = big.NewInt(1 << 11)
-	checkoutConfigurationFieldThreeDsLevel                        = big.NewInt(1 << 12)
-	checkoutConfigurationFieldUpdatedAt                           = big.NewInt(1 << 13)
+	checkoutConfigurationFieldPurchaseURL                         = big.NewInt(1 << 9)
+	checkoutConfigurationFieldRedirectURL                         = big.NewInt(1 << 10)
+	checkoutConfigurationFieldThreeDsLevel                        = big.NewInt(1 << 11)
+	checkoutConfigurationFieldUpdatedAt                           = big.NewInt(1 << 12)
+	checkoutConfigurationFieldVariant                             = big.NewInt(1 << 13)
 )
 
 // checkoutConfigurationNullableFields maps the wire names of CheckoutConfiguration's nullable fields (required or optional) to their field bits.
@@ -9880,10 +9880,10 @@ var checkoutConfigurationNullableFields = map[string]*big.Int{
 	"effective_payment_method_configuration": checkoutConfigurationFieldEffectivePaymentMethodConfiguration,
 	"metadata":                               checkoutConfigurationFieldMetadata,
 	"payment_method_configuration":           checkoutConfigurationFieldPaymentMethodConfiguration,
-	"plan":                                   checkoutConfigurationFieldPlan,
 	"purchase_url":                           checkoutConfigurationFieldPurchaseURL,
 	"redirect_url":                           checkoutConfigurationFieldRedirectURL,
 	"three_ds_level":                         checkoutConfigurationFieldThreeDsLevel,
+	"variant":                                checkoutConfigurationFieldVariant,
 }
 
 type CheckoutConfiguration struct {
@@ -9904,8 +9904,6 @@ type CheckoutConfiguration struct {
 	Mode CheckoutConfigurationMode `json:"mode" url:"mode"`
 	// Payment method overrides for this checkout. `null` when it uses the variant or platform defaults.
 	PaymentMethodConfiguration map[string]any `json:"payment_method_configuration,omitempty" url:"payment_method_configuration,omitempty"`
-	// Variant used for payment checkout. `null` in setup mode.
-	Plan *CheckoutConfigurationPlan `json:"plan,omitempty" url:"plan,omitempty"`
 	// Checkout URL you can send to customers.
 	PurchaseURL *string `json:"purchase_url,omitempty" url:"purchase_url,omitempty"`
 	// URL customers are sent to after checkout, or `null` when no redirect is configured.
@@ -9914,6 +9912,8 @@ type CheckoutConfiguration struct {
 	ThreeDsLevel *CheckoutConfigurationThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
 	// When the checkout configuration was last updated, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
+	// Variant used for payment checkout. `null` in setup mode.
+	Variant *CheckoutConfigurationVariant `json:"variant,omitempty" url:"variant,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -9985,13 +9985,6 @@ func (c *CheckoutConfiguration) GetPaymentMethodConfiguration() map[string]any {
 	return c.PaymentMethodConfiguration
 }
 
-func (c *CheckoutConfiguration) GetPlan() *CheckoutConfigurationPlan {
-	if c == nil {
-		return nil
-	}
-	return c.Plan
-}
-
 func (c *CheckoutConfiguration) GetPurchaseURL() *string {
 	if c == nil {
 		return nil
@@ -10018,6 +10011,13 @@ func (c *CheckoutConfiguration) GetUpdatedAt() string {
 		return ""
 	}
 	return c.UpdatedAt
+}
+
+func (c *CheckoutConfiguration) GetVariant() *CheckoutConfigurationVariant {
+	if c == nil {
+		return nil
+	}
+	return c.Variant
 }
 
 func (c *CheckoutConfiguration) GetExtraProperties() map[string]interface{} {
@@ -10099,13 +10099,6 @@ func (c *CheckoutConfiguration) SetPaymentMethodConfiguration(paymentMethodConfi
 	c.require(checkoutConfigurationFieldPaymentMethodConfiguration)
 }
 
-// SetPlan sets the Plan field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CheckoutConfiguration) SetPlan(plan *CheckoutConfigurationPlan) {
-	c.Plan = plan
-	c.require(checkoutConfigurationFieldPlan)
-}
-
 // SetPurchaseURL sets the PurchaseURL field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CheckoutConfiguration) SetPurchaseURL(purchaseURL *string) {
@@ -10132,6 +10125,13 @@ func (c *CheckoutConfiguration) SetThreeDsLevel(threeDsLevel *CheckoutConfigurat
 func (c *CheckoutConfiguration) SetUpdatedAt(updatedAt string) {
 	c.UpdatedAt = updatedAt
 	c.require(checkoutConfigurationFieldUpdatedAt)
+}
+
+// SetVariant sets the Variant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckoutConfiguration) SetVariant(variant *CheckoutConfigurationVariant) {
+	c.Variant = variant
+	c.require(checkoutConfigurationFieldVariant)
 }
 
 func (c *CheckoutConfiguration) UnmarshalJSON(data []byte) error {
@@ -11180,396 +11180,6 @@ func (c CheckoutConfigurationMode) Ptr() *CheckoutConfigurationMode {
 	return &c
 }
 
-var (
-	checkoutConfigurationPlanFieldAdaptivePricingEnabled = big.NewInt(1 << 0)
-	checkoutConfigurationPlanFieldBillingPeriod          = big.NewInt(1 << 1)
-	checkoutConfigurationPlanFieldCurrency               = big.NewInt(1 << 2)
-	checkoutConfigurationPlanFieldExpirationDays         = big.NewInt(1 << 3)
-	checkoutConfigurationPlanFieldID                     = big.NewInt(1 << 4)
-	checkoutConfigurationPlanFieldInitialPrice           = big.NewInt(1 << 5)
-	checkoutConfigurationPlanFieldPlanType               = big.NewInt(1 << 6)
-	checkoutConfigurationPlanFieldReleaseMethod          = big.NewInt(1 << 7)
-	checkoutConfigurationPlanFieldRenewalPrice           = big.NewInt(1 << 8)
-	checkoutConfigurationPlanFieldThreeDsLevel           = big.NewInt(1 << 9)
-	checkoutConfigurationPlanFieldTrialPeriodDays        = big.NewInt(1 << 10)
-	checkoutConfigurationPlanFieldVisibility             = big.NewInt(1 << 11)
-)
-
-// checkoutConfigurationPlanNullableFields maps the wire names of CheckoutConfigurationPlan's nullable fields (required or optional) to their field bits.
-var checkoutConfigurationPlanNullableFields = map[string]*big.Int{
-	"billing_period":    checkoutConfigurationPlanFieldBillingPeriod,
-	"expiration_days":   checkoutConfigurationPlanFieldExpirationDays,
-	"three_ds_level":    checkoutConfigurationPlanFieldThreeDsLevel,
-	"trial_period_days": checkoutConfigurationPlanFieldTrialPeriodDays,
-}
-
-type CheckoutConfigurationPlan struct {
-	// Whether this variant accepts local currency payments via adaptive pricing.
-	AdaptivePricingEnabled bool `json:"adaptive_pricing_enabled" url:"adaptive_pricing_enabled"`
-	// Recurring billing interval in days.
-	BillingPeriod *int `json:"billing_period,omitempty" url:"billing_period,omitempty"`
-	// Three-letter ISO currency code for the variant's prices.
-	Currency string `json:"currency" url:"currency"`
-	// Access duration in days for expiration-based variants.
-	ExpirationDays *int `json:"expiration_days,omitempty" url:"expiration_days,omitempty"`
-	// Variant ID, prefixed `plan_`.
-	ID string `json:"id" url:"id"`
-	// Initial purchase price in the variant currency.
-	InitialPrice float64 `json:"initial_price" url:"initial_price"`
-	// Billing model for the variant.
-	PlanType CheckoutConfigurationPlanPlanType `json:"plan_type" url:"plan_type"`
-	// Sales method for the variant.
-	ReleaseMethod CheckoutConfigurationPlanReleaseMethod `json:"release_method" url:"release_method"`
-	// Recurring price charged each billing period.
-	RenewalPrice float64 `json:"renewal_price" url:"renewal_price"`
-	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
-	ThreeDsLevel *CheckoutConfigurationPlanThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
-	// Free trial days before the first renewal charge.
-	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
-	// Whether the variant is visible to customers or hidden from public view.
-	Visibility CheckoutConfigurationPlanVisibility `json:"visibility" url:"visibility"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CheckoutConfigurationPlan) GetAdaptivePricingEnabled() bool {
-	if c == nil {
-		return false
-	}
-	return c.AdaptivePricingEnabled
-}
-
-func (c *CheckoutConfigurationPlan) GetBillingPeriod() *int {
-	if c == nil {
-		return nil
-	}
-	return c.BillingPeriod
-}
-
-func (c *CheckoutConfigurationPlan) GetCurrency() string {
-	if c == nil {
-		return ""
-	}
-	return c.Currency
-}
-
-func (c *CheckoutConfigurationPlan) GetExpirationDays() *int {
-	if c == nil {
-		return nil
-	}
-	return c.ExpirationDays
-}
-
-func (c *CheckoutConfigurationPlan) GetID() string {
-	if c == nil {
-		return ""
-	}
-	return c.ID
-}
-
-func (c *CheckoutConfigurationPlan) GetInitialPrice() float64 {
-	if c == nil {
-		return 0
-	}
-	return c.InitialPrice
-}
-
-func (c *CheckoutConfigurationPlan) GetPlanType() CheckoutConfigurationPlanPlanType {
-	if c == nil {
-		return ""
-	}
-	return c.PlanType
-}
-
-func (c *CheckoutConfigurationPlan) GetReleaseMethod() CheckoutConfigurationPlanReleaseMethod {
-	if c == nil {
-		return ""
-	}
-	return c.ReleaseMethod
-}
-
-func (c *CheckoutConfigurationPlan) GetRenewalPrice() float64 {
-	if c == nil {
-		return 0
-	}
-	return c.RenewalPrice
-}
-
-func (c *CheckoutConfigurationPlan) GetThreeDsLevel() *CheckoutConfigurationPlanThreeDsLevel {
-	if c == nil {
-		return nil
-	}
-	return c.ThreeDsLevel
-}
-
-func (c *CheckoutConfigurationPlan) GetTrialPeriodDays() *int {
-	if c == nil {
-		return nil
-	}
-	return c.TrialPeriodDays
-}
-
-func (c *CheckoutConfigurationPlan) GetVisibility() CheckoutConfigurationPlanVisibility {
-	if c == nil {
-		return ""
-	}
-	return c.Visibility
-}
-
-func (c *CheckoutConfigurationPlan) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CheckoutConfigurationPlan) require(field *big.Int) {
-	next := new(big.Int)
-	if c.explicitFields != nil {
-		next.Set(c.explicitFields)
-	}
-	next.Or(next, field)
-	c.explicitFields = next
-}
-
-// SetAdaptivePricingEnabled sets the AdaptivePricingEnabled field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CheckoutConfigurationPlan) SetAdaptivePricingEnabled(adaptivePricingEnabled bool) {
-	c.AdaptivePricingEnabled = adaptivePricingEnabled
-	c.require(checkoutConfigurationPlanFieldAdaptivePricingEnabled)
-}
-
-// SetBillingPeriod sets the BillingPeriod field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CheckoutConfigurationPlan) SetBillingPeriod(billingPeriod *int) {
-	c.BillingPeriod = billingPeriod
-	c.require(checkoutConfigurationPlanFieldBillingPeriod)
-}
-
-// SetCurrency sets the Currency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CheckoutConfigurationPlan) SetCurrency(currency string) {
-	c.Currency = currency
-	c.require(checkoutConfigurationPlanFieldCurrency)
-}
-
-// SetExpirationDays sets the ExpirationDays field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CheckoutConfigurationPlan) SetExpirationDays(expirationDays *int) {
-	c.ExpirationDays = expirationDays
-	c.require(checkoutConfigurationPlanFieldExpirationDays)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CheckoutConfigurationPlan) SetID(id string) {
-	c.ID = id
-	c.require(checkoutConfigurationPlanFieldID)
-}
-
-// SetInitialPrice sets the InitialPrice field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CheckoutConfigurationPlan) SetInitialPrice(initialPrice float64) {
-	c.InitialPrice = initialPrice
-	c.require(checkoutConfigurationPlanFieldInitialPrice)
-}
-
-// SetPlanType sets the PlanType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CheckoutConfigurationPlan) SetPlanType(planType CheckoutConfigurationPlanPlanType) {
-	c.PlanType = planType
-	c.require(checkoutConfigurationPlanFieldPlanType)
-}
-
-// SetReleaseMethod sets the ReleaseMethod field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CheckoutConfigurationPlan) SetReleaseMethod(releaseMethod CheckoutConfigurationPlanReleaseMethod) {
-	c.ReleaseMethod = releaseMethod
-	c.require(checkoutConfigurationPlanFieldReleaseMethod)
-}
-
-// SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CheckoutConfigurationPlan) SetRenewalPrice(renewalPrice float64) {
-	c.RenewalPrice = renewalPrice
-	c.require(checkoutConfigurationPlanFieldRenewalPrice)
-}
-
-// SetThreeDsLevel sets the ThreeDsLevel field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CheckoutConfigurationPlan) SetThreeDsLevel(threeDsLevel *CheckoutConfigurationPlanThreeDsLevel) {
-	c.ThreeDsLevel = threeDsLevel
-	c.require(checkoutConfigurationPlanFieldThreeDsLevel)
-}
-
-// SetTrialPeriodDays sets the TrialPeriodDays field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CheckoutConfigurationPlan) SetTrialPeriodDays(trialPeriodDays *int) {
-	c.TrialPeriodDays = trialPeriodDays
-	c.require(checkoutConfigurationPlanFieldTrialPeriodDays)
-}
-
-// SetVisibility sets the Visibility field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CheckoutConfigurationPlan) SetVisibility(visibility CheckoutConfigurationPlanVisibility) {
-	c.Visibility = visibility
-	c.require(checkoutConfigurationPlanFieldVisibility)
-}
-
-func (c *CheckoutConfigurationPlan) UnmarshalJSON(data []byte) error {
-	type unmarshaler CheckoutConfigurationPlan
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CheckoutConfigurationPlan(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, checkoutConfigurationPlanNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		c.require(presentFields)
-	}
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CheckoutConfigurationPlan) MarshalJSON() ([]byte, error) {
-	type embed CheckoutConfigurationPlan
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CheckoutConfigurationPlan) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-// Billing model for the variant.
-type CheckoutConfigurationPlanPlanType string
-
-const (
-	CheckoutConfigurationPlanPlanTypeRenewal CheckoutConfigurationPlanPlanType = "renewal"
-	CheckoutConfigurationPlanPlanTypeOneTime CheckoutConfigurationPlanPlanType = "one_time"
-)
-
-func NewCheckoutConfigurationPlanPlanTypeFromString(s string) (CheckoutConfigurationPlanPlanType, error) {
-	switch s {
-	case "renewal":
-		return CheckoutConfigurationPlanPlanTypeRenewal, nil
-	case "one_time":
-		return CheckoutConfigurationPlanPlanTypeOneTime, nil
-	}
-	var t CheckoutConfigurationPlanPlanType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CheckoutConfigurationPlanPlanType) Ptr() *CheckoutConfigurationPlanPlanType {
-	return &c
-}
-
-// Sales method for the variant.
-type CheckoutConfigurationPlanReleaseMethod string
-
-const (
-	CheckoutConfigurationPlanReleaseMethodBuyNow   CheckoutConfigurationPlanReleaseMethod = "buy_now"
-	CheckoutConfigurationPlanReleaseMethodWaitlist CheckoutConfigurationPlanReleaseMethod = "waitlist"
-)
-
-func NewCheckoutConfigurationPlanReleaseMethodFromString(s string) (CheckoutConfigurationPlanReleaseMethod, error) {
-	switch s {
-	case "buy_now":
-		return CheckoutConfigurationPlanReleaseMethodBuyNow, nil
-	case "waitlist":
-		return CheckoutConfigurationPlanReleaseMethodWaitlist, nil
-	}
-	var t CheckoutConfigurationPlanReleaseMethod
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CheckoutConfigurationPlanReleaseMethod) Ptr() *CheckoutConfigurationPlanReleaseMethod {
-	return &c
-}
-
-// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
-type CheckoutConfigurationPlanThreeDsLevel string
-
-const (
-	CheckoutConfigurationPlanThreeDsLevelMandateChallenge       CheckoutConfigurationPlanThreeDsLevel = "mandate_challenge"
-	CheckoutConfigurationPlanThreeDsLevelMandateIfRequired      CheckoutConfigurationPlanThreeDsLevel = "mandate_if_required"
-	CheckoutConfigurationPlanThreeDsLevelFrictionlessIfRequired CheckoutConfigurationPlanThreeDsLevel = "frictionless_if_required"
-)
-
-func NewCheckoutConfigurationPlanThreeDsLevelFromString(s string) (CheckoutConfigurationPlanThreeDsLevel, error) {
-	switch s {
-	case "mandate_challenge":
-		return CheckoutConfigurationPlanThreeDsLevelMandateChallenge, nil
-	case "mandate_if_required":
-		return CheckoutConfigurationPlanThreeDsLevelMandateIfRequired, nil
-	case "frictionless_if_required":
-		return CheckoutConfigurationPlanThreeDsLevelFrictionlessIfRequired, nil
-	}
-	var t CheckoutConfigurationPlanThreeDsLevel
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CheckoutConfigurationPlanThreeDsLevel) Ptr() *CheckoutConfigurationPlanThreeDsLevel {
-	return &c
-}
-
-// Whether the variant is visible to customers or hidden from public view.
-type CheckoutConfigurationPlanVisibility string
-
-const (
-	CheckoutConfigurationPlanVisibilityVisible   CheckoutConfigurationPlanVisibility = "visible"
-	CheckoutConfigurationPlanVisibilityHidden    CheckoutConfigurationPlanVisibility = "hidden"
-	CheckoutConfigurationPlanVisibilityArchived  CheckoutConfigurationPlanVisibility = "archived"
-	CheckoutConfigurationPlanVisibilityQuickLink CheckoutConfigurationPlanVisibility = "quick_link"
-)
-
-func NewCheckoutConfigurationPlanVisibilityFromString(s string) (CheckoutConfigurationPlanVisibility, error) {
-	switch s {
-	case "visible":
-		return CheckoutConfigurationPlanVisibilityVisible, nil
-	case "hidden":
-		return CheckoutConfigurationPlanVisibilityHidden, nil
-	case "archived":
-		return CheckoutConfigurationPlanVisibilityArchived, nil
-	case "quick_link":
-		return CheckoutConfigurationPlanVisibilityQuickLink, nil
-	}
-	var t CheckoutConfigurationPlanVisibility
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CheckoutConfigurationPlanVisibility) Ptr() *CheckoutConfigurationPlanVisibility {
-	return &c
-}
-
 // 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the variant policy.
 type CheckoutConfigurationThreeDsLevel string
 
@@ -11593,6 +11203,396 @@ func NewCheckoutConfigurationThreeDsLevelFromString(s string) (CheckoutConfigura
 }
 
 func (c CheckoutConfigurationThreeDsLevel) Ptr() *CheckoutConfigurationThreeDsLevel {
+	return &c
+}
+
+var (
+	checkoutConfigurationVariantFieldAdaptivePricingEnabled = big.NewInt(1 << 0)
+	checkoutConfigurationVariantFieldBillingPeriod          = big.NewInt(1 << 1)
+	checkoutConfigurationVariantFieldBillingType            = big.NewInt(1 << 2)
+	checkoutConfigurationVariantFieldCurrency               = big.NewInt(1 << 3)
+	checkoutConfigurationVariantFieldExpirationDays         = big.NewInt(1 << 4)
+	checkoutConfigurationVariantFieldID                     = big.NewInt(1 << 5)
+	checkoutConfigurationVariantFieldInitialPrice           = big.NewInt(1 << 6)
+	checkoutConfigurationVariantFieldReleaseMethod          = big.NewInt(1 << 7)
+	checkoutConfigurationVariantFieldRenewalPrice           = big.NewInt(1 << 8)
+	checkoutConfigurationVariantFieldThreeDsLevel           = big.NewInt(1 << 9)
+	checkoutConfigurationVariantFieldTrialPeriodDays        = big.NewInt(1 << 10)
+	checkoutConfigurationVariantFieldVisibility             = big.NewInt(1 << 11)
+)
+
+// checkoutConfigurationVariantNullableFields maps the wire names of CheckoutConfigurationVariant's nullable fields (required or optional) to their field bits.
+var checkoutConfigurationVariantNullableFields = map[string]*big.Int{
+	"billing_period":    checkoutConfigurationVariantFieldBillingPeriod,
+	"expiration_days":   checkoutConfigurationVariantFieldExpirationDays,
+	"three_ds_level":    checkoutConfigurationVariantFieldThreeDsLevel,
+	"trial_period_days": checkoutConfigurationVariantFieldTrialPeriodDays,
+}
+
+type CheckoutConfigurationVariant struct {
+	// Whether this variant accepts local currency payments via adaptive pricing.
+	AdaptivePricingEnabled bool `json:"adaptive_pricing_enabled" url:"adaptive_pricing_enabled"`
+	// Recurring billing interval in days.
+	BillingPeriod *int `json:"billing_period,omitempty" url:"billing_period,omitempty"`
+	// Billing model for the variant.
+	BillingType CheckoutConfigurationVariantBillingType `json:"billing_type" url:"billing_type"`
+	// Three-letter ISO currency code for the variant's prices.
+	Currency string `json:"currency" url:"currency"`
+	// Access duration in days for expiration-based variants.
+	ExpirationDays *int `json:"expiration_days,omitempty" url:"expiration_days,omitempty"`
+	// Variant ID, prefixed `plan_`.
+	ID string `json:"id" url:"id"`
+	// Initial purchase price in the variant currency.
+	InitialPrice float64 `json:"initial_price" url:"initial_price"`
+	// Sales method for the variant.
+	ReleaseMethod CheckoutConfigurationVariantReleaseMethod `json:"release_method" url:"release_method"`
+	// Recurring price charged each billing period.
+	RenewalPrice float64 `json:"renewal_price" url:"renewal_price"`
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
+	ThreeDsLevel *CheckoutConfigurationVariantThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
+	// Free trial days before the first renewal charge.
+	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
+	// Whether the variant is visible to customers or hidden from public view.
+	Visibility CheckoutConfigurationVariantVisibility `json:"visibility" url:"visibility"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CheckoutConfigurationVariant) GetAdaptivePricingEnabled() bool {
+	if c == nil {
+		return false
+	}
+	return c.AdaptivePricingEnabled
+}
+
+func (c *CheckoutConfigurationVariant) GetBillingPeriod() *int {
+	if c == nil {
+		return nil
+	}
+	return c.BillingPeriod
+}
+
+func (c *CheckoutConfigurationVariant) GetBillingType() CheckoutConfigurationVariantBillingType {
+	if c == nil {
+		return ""
+	}
+	return c.BillingType
+}
+
+func (c *CheckoutConfigurationVariant) GetCurrency() string {
+	if c == nil {
+		return ""
+	}
+	return c.Currency
+}
+
+func (c *CheckoutConfigurationVariant) GetExpirationDays() *int {
+	if c == nil {
+		return nil
+	}
+	return c.ExpirationDays
+}
+
+func (c *CheckoutConfigurationVariant) GetID() string {
+	if c == nil {
+		return ""
+	}
+	return c.ID
+}
+
+func (c *CheckoutConfigurationVariant) GetInitialPrice() float64 {
+	if c == nil {
+		return 0
+	}
+	return c.InitialPrice
+}
+
+func (c *CheckoutConfigurationVariant) GetReleaseMethod() CheckoutConfigurationVariantReleaseMethod {
+	if c == nil {
+		return ""
+	}
+	return c.ReleaseMethod
+}
+
+func (c *CheckoutConfigurationVariant) GetRenewalPrice() float64 {
+	if c == nil {
+		return 0
+	}
+	return c.RenewalPrice
+}
+
+func (c *CheckoutConfigurationVariant) GetThreeDsLevel() *CheckoutConfigurationVariantThreeDsLevel {
+	if c == nil {
+		return nil
+	}
+	return c.ThreeDsLevel
+}
+
+func (c *CheckoutConfigurationVariant) GetTrialPeriodDays() *int {
+	if c == nil {
+		return nil
+	}
+	return c.TrialPeriodDays
+}
+
+func (c *CheckoutConfigurationVariant) GetVisibility() CheckoutConfigurationVariantVisibility {
+	if c == nil {
+		return ""
+	}
+	return c.Visibility
+}
+
+func (c *CheckoutConfigurationVariant) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CheckoutConfigurationVariant) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetAdaptivePricingEnabled sets the AdaptivePricingEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckoutConfigurationVariant) SetAdaptivePricingEnabled(adaptivePricingEnabled bool) {
+	c.AdaptivePricingEnabled = adaptivePricingEnabled
+	c.require(checkoutConfigurationVariantFieldAdaptivePricingEnabled)
+}
+
+// SetBillingPeriod sets the BillingPeriod field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckoutConfigurationVariant) SetBillingPeriod(billingPeriod *int) {
+	c.BillingPeriod = billingPeriod
+	c.require(checkoutConfigurationVariantFieldBillingPeriod)
+}
+
+// SetBillingType sets the BillingType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckoutConfigurationVariant) SetBillingType(billingType CheckoutConfigurationVariantBillingType) {
+	c.BillingType = billingType
+	c.require(checkoutConfigurationVariantFieldBillingType)
+}
+
+// SetCurrency sets the Currency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckoutConfigurationVariant) SetCurrency(currency string) {
+	c.Currency = currency
+	c.require(checkoutConfigurationVariantFieldCurrency)
+}
+
+// SetExpirationDays sets the ExpirationDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckoutConfigurationVariant) SetExpirationDays(expirationDays *int) {
+	c.ExpirationDays = expirationDays
+	c.require(checkoutConfigurationVariantFieldExpirationDays)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckoutConfigurationVariant) SetID(id string) {
+	c.ID = id
+	c.require(checkoutConfigurationVariantFieldID)
+}
+
+// SetInitialPrice sets the InitialPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckoutConfigurationVariant) SetInitialPrice(initialPrice float64) {
+	c.InitialPrice = initialPrice
+	c.require(checkoutConfigurationVariantFieldInitialPrice)
+}
+
+// SetReleaseMethod sets the ReleaseMethod field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckoutConfigurationVariant) SetReleaseMethod(releaseMethod CheckoutConfigurationVariantReleaseMethod) {
+	c.ReleaseMethod = releaseMethod
+	c.require(checkoutConfigurationVariantFieldReleaseMethod)
+}
+
+// SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckoutConfigurationVariant) SetRenewalPrice(renewalPrice float64) {
+	c.RenewalPrice = renewalPrice
+	c.require(checkoutConfigurationVariantFieldRenewalPrice)
+}
+
+// SetThreeDsLevel sets the ThreeDsLevel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckoutConfigurationVariant) SetThreeDsLevel(threeDsLevel *CheckoutConfigurationVariantThreeDsLevel) {
+	c.ThreeDsLevel = threeDsLevel
+	c.require(checkoutConfigurationVariantFieldThreeDsLevel)
+}
+
+// SetTrialPeriodDays sets the TrialPeriodDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckoutConfigurationVariant) SetTrialPeriodDays(trialPeriodDays *int) {
+	c.TrialPeriodDays = trialPeriodDays
+	c.require(checkoutConfigurationVariantFieldTrialPeriodDays)
+}
+
+// SetVisibility sets the Visibility field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckoutConfigurationVariant) SetVisibility(visibility CheckoutConfigurationVariantVisibility) {
+	c.Visibility = visibility
+	c.require(checkoutConfigurationVariantFieldVisibility)
+}
+
+func (c *CheckoutConfigurationVariant) UnmarshalJSON(data []byte) error {
+	type unmarshaler CheckoutConfigurationVariant
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CheckoutConfigurationVariant(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, checkoutConfigurationVariantNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CheckoutConfigurationVariant) MarshalJSON() ([]byte, error) {
+	type embed CheckoutConfigurationVariant
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CheckoutConfigurationVariant) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// Billing model for the variant.
+type CheckoutConfigurationVariantBillingType string
+
+const (
+	CheckoutConfigurationVariantBillingTypeRenewal CheckoutConfigurationVariantBillingType = "renewal"
+	CheckoutConfigurationVariantBillingTypeOneTime CheckoutConfigurationVariantBillingType = "one_time"
+)
+
+func NewCheckoutConfigurationVariantBillingTypeFromString(s string) (CheckoutConfigurationVariantBillingType, error) {
+	switch s {
+	case "renewal":
+		return CheckoutConfigurationVariantBillingTypeRenewal, nil
+	case "one_time":
+		return CheckoutConfigurationVariantBillingTypeOneTime, nil
+	}
+	var t CheckoutConfigurationVariantBillingType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CheckoutConfigurationVariantBillingType) Ptr() *CheckoutConfigurationVariantBillingType {
+	return &c
+}
+
+// Sales method for the variant.
+type CheckoutConfigurationVariantReleaseMethod string
+
+const (
+	CheckoutConfigurationVariantReleaseMethodBuyNow   CheckoutConfigurationVariantReleaseMethod = "buy_now"
+	CheckoutConfigurationVariantReleaseMethodWaitlist CheckoutConfigurationVariantReleaseMethod = "waitlist"
+)
+
+func NewCheckoutConfigurationVariantReleaseMethodFromString(s string) (CheckoutConfigurationVariantReleaseMethod, error) {
+	switch s {
+	case "buy_now":
+		return CheckoutConfigurationVariantReleaseMethodBuyNow, nil
+	case "waitlist":
+		return CheckoutConfigurationVariantReleaseMethodWaitlist, nil
+	}
+	var t CheckoutConfigurationVariantReleaseMethod
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CheckoutConfigurationVariantReleaseMethod) Ptr() *CheckoutConfigurationVariantReleaseMethod {
+	return &c
+}
+
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
+type CheckoutConfigurationVariantThreeDsLevel string
+
+const (
+	CheckoutConfigurationVariantThreeDsLevelMandateChallenge       CheckoutConfigurationVariantThreeDsLevel = "mandate_challenge"
+	CheckoutConfigurationVariantThreeDsLevelMandateIfRequired      CheckoutConfigurationVariantThreeDsLevel = "mandate_if_required"
+	CheckoutConfigurationVariantThreeDsLevelFrictionlessIfRequired CheckoutConfigurationVariantThreeDsLevel = "frictionless_if_required"
+)
+
+func NewCheckoutConfigurationVariantThreeDsLevelFromString(s string) (CheckoutConfigurationVariantThreeDsLevel, error) {
+	switch s {
+	case "mandate_challenge":
+		return CheckoutConfigurationVariantThreeDsLevelMandateChallenge, nil
+	case "mandate_if_required":
+		return CheckoutConfigurationVariantThreeDsLevelMandateIfRequired, nil
+	case "frictionless_if_required":
+		return CheckoutConfigurationVariantThreeDsLevelFrictionlessIfRequired, nil
+	}
+	var t CheckoutConfigurationVariantThreeDsLevel
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CheckoutConfigurationVariantThreeDsLevel) Ptr() *CheckoutConfigurationVariantThreeDsLevel {
+	return &c
+}
+
+// Whether the variant is visible to customers or hidden from public view.
+type CheckoutConfigurationVariantVisibility string
+
+const (
+	CheckoutConfigurationVariantVisibilityVisible   CheckoutConfigurationVariantVisibility = "visible"
+	CheckoutConfigurationVariantVisibilityHidden    CheckoutConfigurationVariantVisibility = "hidden"
+	CheckoutConfigurationVariantVisibilityArchived  CheckoutConfigurationVariantVisibility = "archived"
+	CheckoutConfigurationVariantVisibilityQuickLink CheckoutConfigurationVariantVisibility = "quick_link"
+)
+
+func NewCheckoutConfigurationVariantVisibilityFromString(s string) (CheckoutConfigurationVariantVisibility, error) {
+	switch s {
+	case "visible":
+		return CheckoutConfigurationVariantVisibilityVisible, nil
+	case "hidden":
+		return CheckoutConfigurationVariantVisibilityHidden, nil
+	case "archived":
+		return CheckoutConfigurationVariantVisibilityArchived, nil
+	case "quick_link":
+		return CheckoutConfigurationVariantVisibilityQuickLink, nil
+	}
+	var t CheckoutConfigurationVariantVisibility
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CheckoutConfigurationVariantVisibility) Ptr() *CheckoutConfigurationVariantVisibility {
 	return &c
 }
 
@@ -25552,6 +25552,5964 @@ func (i InvoicesSortableColumns) Ptr() *InvoicesSortableColumns {
 }
 
 var (
+	ledgerActivityFieldAccount         = big.NewInt(1 << 0)
+	ledgerActivityFieldAmount          = big.NewInt(1 << 1)
+	ledgerActivityFieldAvailableAt     = big.NewInt(1 << 2)
+	ledgerActivityFieldCurrency        = big.NewInt(1 << 3)
+	ledgerActivityFieldID              = big.NewInt(1 << 4)
+	ledgerActivityFieldLedgerAccountID = big.NewInt(1 << 5)
+	ledgerActivityFieldLineType        = big.NewInt(1 << 6)
+	ledgerActivityFieldObject          = big.NewInt(1 << 7)
+	ledgerActivityFieldPayment         = big.NewInt(1 << 8)
+	ledgerActivityFieldPaymentID       = big.NewInt(1 << 9)
+	ledgerActivityFieldPlanID          = big.NewInt(1 << 10)
+	ledgerActivityFieldPlanName        = big.NewInt(1 << 11)
+	ledgerActivityFieldPostedAt        = big.NewInt(1 << 12)
+	ledgerActivityFieldProductID       = big.NewInt(1 << 13)
+	ledgerActivityFieldProductName     = big.NewInt(1 << 14)
+	ledgerActivityFieldResource        = big.NewInt(1 << 15)
+	ledgerActivityFieldSource          = big.NewInt(1 << 16)
+	ledgerActivityFieldUsdAmount       = big.NewInt(1 << 17)
+	ledgerActivityFieldUserEmail       = big.NewInt(1 << 18)
+	ledgerActivityFieldUserID          = big.NewInt(1 << 19)
+	ledgerActivityFieldUserName        = big.NewInt(1 << 20)
+)
+
+// ledgerActivityNullableFields maps the wire names of LedgerActivity's nullable fields (required or optional) to their field bits.
+var ledgerActivityNullableFields = map[string]*big.Int{
+	"available_at":      ledgerActivityFieldAvailableAt,
+	"ledger_account_id": ledgerActivityFieldLedgerAccountID,
+	"payment":           ledgerActivityFieldPayment,
+	"payment_id":        ledgerActivityFieldPaymentID,
+	"plan_id":           ledgerActivityFieldPlanID,
+	"plan_name":         ledgerActivityFieldPlanName,
+	"product_id":        ledgerActivityFieldProductID,
+	"product_name":      ledgerActivityFieldProductName,
+	"resource":          ledgerActivityFieldResource,
+	"source":            ledgerActivityFieldSource,
+	"usd_amount":        ledgerActivityFieldUsdAmount,
+	"user_email":        ledgerActivityFieldUserEmail,
+	"user_id":           ledgerActivityFieldUserID,
+	"user_name":         ledgerActivityFieldUserName,
+}
+
+type LedgerActivity struct {
+	// The viewer account that owns this row's ledger. Present only when the response aggregates owned accounts (include_owned_accounts=true); omitted otherwise.
+	Account *LedgerActivityAccount `json:"account,omitempty" url:"account,omitempty"`
+	// Signed amount in the currency's smallest precision units.
+	Amount string `json:"amount" url:"amount"`
+	// ISO 8601 timestamp when this activity affects available funds: 00:00:00 UTC on the scheduled release date for credits and debits in a pending good-funds release bucket; the posted time for credits and debits to settled available funds, including refunds, disputes and payouts. Null for activity outside these paths, including on-chain rows. The available_after/before filters use its UTC date; default activity excludes some movements, including opt-in reserves.
+	AvailableAt *time.Time `json:"available_at,omitempty" url:"available_at,omitempty"`
+	// Currency for this ledger activity.
+	Currency *LedgerActivityCurrency `json:"currency" url:"currency"`
+	// Ledger activity ID.
+	ID string `json:"id" url:"id"`
+	// The ledger account (a ldgr_ identifier) this row belongs to. Present only when the response aggregates owned accounts (include_owned_accounts=true); omitted otherwise. Pair it with `account` to scope drawers and dashboard links to the owning business.
+	LedgerAccountID *string `json:"ledger_account_id,omitempty" url:"ledger_account_id,omitempty"`
+	// The ledger line category this activity was posted under.
+	LineType LedgerActivityLineType `json:"line_type" url:"line_type"`
+	Object   LedgerActivityObject   `json:"object" url:"object"`
+	// Payment related to this ledger activity. Included when rich resource hydration is enabled and the movement is tied to a payment.
+	Payment *LedgerActivityPayment `json:"payment,omitempty" url:"payment,omitempty"`
+	// Payment ID for any payment-related activity, including refunds and disputes.
+	PaymentID *string `json:"payment_id,omitempty" url:"payment_id,omitempty"`
+	// ID of the variant associated with the payment, when applicable.
+	PlanID *string `json:"plan_id,omitempty" url:"plan_id,omitempty"`
+	// Name of the variant associated with the payment, when applicable.
+	PlanName *string `json:"plan_name,omitempty" url:"plan_name,omitempty"`
+	// When the activity posted to the ledger.
+	PostedAt time.Time `json:"posted_at" url:"posted_at"`
+	// ID of the product associated with the payment, when applicable.
+	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
+	// Name of the product associated with the payment, when applicable.
+	ProductName *string `json:"product_name,omitempty" url:"product_name,omitempty"`
+	// Resource associated with this ledger activity.
+	Resource *LedgerActivityResource `json:"resource,omitempty" url:"resource,omitempty"`
+	// Source of this ledger activity. Platform markup fees use object platform_fee and the ledger activity ID.
+	Source *LedgerActivitySource `json:"source,omitempty" url:"source,omitempty"`
+	// Dollar value of this movement as a decimal string, signed like `amount`. Converted from the posted amount at the rate that was live when the line posted — the same pricing the wallet balance chart and the financial reports use — so a crypto row carries its dollar value too. `null` for a currency Whop holds no exchange rate for.
+	UsdAmount *string `json:"usd_amount,omitempty" url:"usd_amount,omitempty"`
+	// Email of the customer associated with the payment. Requires member:email:read.
+	UserEmail *string `json:"user_email,omitempty" url:"user_email,omitempty"`
+	// ID of the customer associated with the payment.
+	UserID *string `json:"user_id,omitempty" url:"user_id,omitempty"`
+	// Display name of the customer associated with the payment.
+	UserName *string `json:"user_name,omitempty" url:"user_name,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LedgerActivity) GetAccount() *LedgerActivityAccount {
+	if l == nil {
+		return nil
+	}
+	return l.Account
+}
+
+func (l *LedgerActivity) GetAmount() string {
+	if l == nil {
+		return ""
+	}
+	return l.Amount
+}
+
+func (l *LedgerActivity) GetAvailableAt() *time.Time {
+	if l == nil {
+		return nil
+	}
+	return l.AvailableAt
+}
+
+func (l *LedgerActivity) GetCurrency() *LedgerActivityCurrency {
+	if l == nil {
+		return nil
+	}
+	return l.Currency
+}
+
+func (l *LedgerActivity) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LedgerActivity) GetLedgerAccountID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.LedgerAccountID
+}
+
+func (l *LedgerActivity) GetLineType() LedgerActivityLineType {
+	if l == nil {
+		return ""
+	}
+	return l.LineType
+}
+
+func (l *LedgerActivity) GetObject() LedgerActivityObject {
+	if l == nil {
+		return ""
+	}
+	return l.Object
+}
+
+func (l *LedgerActivity) GetPayment() *LedgerActivityPayment {
+	if l == nil {
+		return nil
+	}
+	return l.Payment
+}
+
+func (l *LedgerActivity) GetPaymentID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.PaymentID
+}
+
+func (l *LedgerActivity) GetPlanID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.PlanID
+}
+
+func (l *LedgerActivity) GetPlanName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.PlanName
+}
+
+func (l *LedgerActivity) GetPostedAt() time.Time {
+	if l == nil {
+		return time.Time{}
+	}
+	return l.PostedAt
+}
+
+func (l *LedgerActivity) GetProductID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ProductID
+}
+
+func (l *LedgerActivity) GetProductName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ProductName
+}
+
+func (l *LedgerActivity) GetResource() *LedgerActivityResource {
+	if l == nil {
+		return nil
+	}
+	return l.Resource
+}
+
+func (l *LedgerActivity) GetSource() *LedgerActivitySource {
+	if l == nil {
+		return nil
+	}
+	return l.Source
+}
+
+func (l *LedgerActivity) GetUsdAmount() *string {
+	if l == nil {
+		return nil
+	}
+	return l.UsdAmount
+}
+
+func (l *LedgerActivity) GetUserEmail() *string {
+	if l == nil {
+		return nil
+	}
+	return l.UserEmail
+}
+
+func (l *LedgerActivity) GetUserID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.UserID
+}
+
+func (l *LedgerActivity) GetUserName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.UserName
+}
+
+func (l *LedgerActivity) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LedgerActivity) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetAccount sets the Account field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivity) SetAccount(account *LedgerActivityAccount) {
+	l.Account = account
+	l.require(ledgerActivityFieldAccount)
+}
+
+// SetAmount sets the Amount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivity) SetAmount(amount string) {
+	l.Amount = amount
+	l.require(ledgerActivityFieldAmount)
+}
+
+// SetAvailableAt sets the AvailableAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivity) SetAvailableAt(availableAt *time.Time) {
+	l.AvailableAt = availableAt
+	l.require(ledgerActivityFieldAvailableAt)
+}
+
+// SetCurrency sets the Currency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivity) SetCurrency(currency *LedgerActivityCurrency) {
+	l.Currency = currency
+	l.require(ledgerActivityFieldCurrency)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivity) SetID(id string) {
+	l.ID = id
+	l.require(ledgerActivityFieldID)
+}
+
+// SetLedgerAccountID sets the LedgerAccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivity) SetLedgerAccountID(ledgerAccountID *string) {
+	l.LedgerAccountID = ledgerAccountID
+	l.require(ledgerActivityFieldLedgerAccountID)
+}
+
+// SetLineType sets the LineType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivity) SetLineType(lineType LedgerActivityLineType) {
+	l.LineType = lineType
+	l.require(ledgerActivityFieldLineType)
+}
+
+// SetObject sets the Object field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivity) SetObject(object LedgerActivityObject) {
+	l.Object = object
+	l.require(ledgerActivityFieldObject)
+}
+
+// SetPayment sets the Payment field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivity) SetPayment(payment *LedgerActivityPayment) {
+	l.Payment = payment
+	l.require(ledgerActivityFieldPayment)
+}
+
+// SetPaymentID sets the PaymentID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivity) SetPaymentID(paymentID *string) {
+	l.PaymentID = paymentID
+	l.require(ledgerActivityFieldPaymentID)
+}
+
+// SetPlanID sets the PlanID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivity) SetPlanID(planID *string) {
+	l.PlanID = planID
+	l.require(ledgerActivityFieldPlanID)
+}
+
+// SetPlanName sets the PlanName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivity) SetPlanName(planName *string) {
+	l.PlanName = planName
+	l.require(ledgerActivityFieldPlanName)
+}
+
+// SetPostedAt sets the PostedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivity) SetPostedAt(postedAt time.Time) {
+	l.PostedAt = postedAt
+	l.require(ledgerActivityFieldPostedAt)
+}
+
+// SetProductID sets the ProductID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivity) SetProductID(productID *string) {
+	l.ProductID = productID
+	l.require(ledgerActivityFieldProductID)
+}
+
+// SetProductName sets the ProductName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivity) SetProductName(productName *string) {
+	l.ProductName = productName
+	l.require(ledgerActivityFieldProductName)
+}
+
+// SetResource sets the Resource field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivity) SetResource(resource *LedgerActivityResource) {
+	l.Resource = resource
+	l.require(ledgerActivityFieldResource)
+}
+
+// SetSource sets the Source field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivity) SetSource(source *LedgerActivitySource) {
+	l.Source = source
+	l.require(ledgerActivityFieldSource)
+}
+
+// SetUsdAmount sets the UsdAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivity) SetUsdAmount(usdAmount *string) {
+	l.UsdAmount = usdAmount
+	l.require(ledgerActivityFieldUsdAmount)
+}
+
+// SetUserEmail sets the UserEmail field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivity) SetUserEmail(userEmail *string) {
+	l.UserEmail = userEmail
+	l.require(ledgerActivityFieldUserEmail)
+}
+
+// SetUserID sets the UserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivity) SetUserID(userID *string) {
+	l.UserID = userID
+	l.require(ledgerActivityFieldUserID)
+}
+
+// SetUserName sets the UserName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivity) SetUserName(userName *string) {
+	l.UserName = userName
+	l.require(ledgerActivityFieldUserName)
+}
+
+func (l *LedgerActivity) UnmarshalJSON(data []byte) error {
+	type embed LedgerActivity
+	var unmarshaler = struct {
+		embed
+		AvailableAt *internal.DateTime `json:"available_at,omitempty"`
+		PostedAt    *internal.DateTime `json:"posted_at"`
+	}{
+		embed: embed(*l),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*l = LedgerActivity(unmarshaler.embed)
+	l.AvailableAt = unmarshaler.AvailableAt.TimePtr()
+	l.PostedAt = unmarshaler.PostedAt.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivityNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LedgerActivity) MarshalJSON() ([]byte, error) {
+	type embed LedgerActivity
+	var marshaler = struct {
+		embed
+		AvailableAt *internal.DateTime `json:"available_at,omitempty"`
+		PostedAt    *internal.DateTime `json:"posted_at"`
+	}{
+		embed:       embed(*l),
+		AvailableAt: internal.NewOptionalDateTime(l.AvailableAt),
+		PostedAt:    internal.NewDateTime(l.PostedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LedgerActivity) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+// The viewer account that owns this row's ledger. Present only when the response aggregates owned accounts (include_owned_accounts=true); omitted otherwise.
+type LedgerActivityAccount struct {
+	Object  string
+	Account *LedgerActivityAccountAccount
+	User    *LedgerActivityAccountUser
+
+	rawJSON json.RawMessage
+}
+
+func (l *LedgerActivityAccount) GetObject() string {
+	if l == nil {
+		return ""
+	}
+	return l.Object
+}
+
+func (l *LedgerActivityAccount) GetAccount() *LedgerActivityAccountAccount {
+	if l == nil {
+		return nil
+	}
+	return l.Account
+}
+
+func (l *LedgerActivityAccount) GetUser() *LedgerActivityAccountUser {
+	if l == nil {
+		return nil
+	}
+	return l.User
+}
+
+func (l *LedgerActivityAccount) UnmarshalJSON(data []byte) error {
+	var unmarshaler struct {
+		Object string `json:"object"`
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	l.Object = unmarshaler.Object
+	if unmarshaler.Object == "" {
+		return fmt.Errorf("%T did not include discriminant object", l)
+	}
+	switch unmarshaler.Object {
+	case "account":
+		value := new(LedgerActivityAccountAccount)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		l.Account = value
+	case "user":
+		value := new(LedgerActivityAccountUser)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		l.User = value
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l LedgerActivityAccount) MarshalJSON() ([]byte, error) {
+	if err := l.validate(); err != nil {
+		return nil, err
+	}
+	if l.Account != nil {
+		return internal.MarshalJSONWithExtraProperty(l.Account, "object", "account")
+	}
+	if l.User != nil {
+		return internal.MarshalJSONWithExtraProperty(l.User, "object", "user")
+	}
+	if len(l.rawJSON) > 0 {
+		return l.rawJSON, nil
+	}
+	return nil, fmt.Errorf("type %T does not define a non-empty union type", l)
+}
+
+type LedgerActivityAccountVisitor interface {
+	VisitAccount(*LedgerActivityAccountAccount) error
+	VisitUser(*LedgerActivityAccountUser) error
+}
+
+func (l *LedgerActivityAccount) Accept(visitor LedgerActivityAccountVisitor) error {
+	if l.Account != nil {
+		return visitor.VisitAccount(l.Account)
+	}
+	if l.User != nil {
+		return visitor.VisitUser(l.User)
+	}
+	return fmt.Errorf("type %T does not define a non-empty union type", l)
+}
+
+func (l *LedgerActivityAccount) validate() error {
+	if l == nil {
+		return fmt.Errorf("type %T is nil", l)
+	}
+	var fields []string
+	if l.Account != nil {
+		fields = append(fields, "account")
+	}
+	if l.User != nil {
+		fields = append(fields, "user")
+	}
+	if len(fields) == 0 {
+		if l.Object != "" {
+			if len(l.rawJSON) > 0 {
+				return nil
+			}
+			return fmt.Errorf("type %T defines a discriminant set to %q but the field is not set", l, l.Object)
+		}
+		return fmt.Errorf("type %T is empty", l)
+	}
+	if len(fields) > 1 {
+		return fmt.Errorf("type %T defines values for %s, but only one value is allowed", l, fields)
+	}
+	if l.Object != "" {
+		field := fields[0]
+		if l.Object != field {
+			return fmt.Errorf(
+				"type %T defines a discriminant set to %q, but it does not match the %T field; either remove or update the discriminant to match",
+				l,
+				l.Object,
+				l,
+			)
+		}
+	}
+	return nil
+}
+
+var (
+	ledgerActivityAccountAccountFieldID      = big.NewInt(1 << 0)
+	ledgerActivityAccountAccountFieldLogoURL = big.NewInt(1 << 1)
+	ledgerActivityAccountAccountFieldRoute   = big.NewInt(1 << 2)
+	ledgerActivityAccountAccountFieldTitle   = big.NewInt(1 << 3)
+)
+
+// ledgerActivityAccountAccountNullableFields maps the wire names of LedgerActivityAccountAccount's nullable fields (required or optional) to their field bits.
+var ledgerActivityAccountAccountNullableFields = map[string]*big.Int{
+	"logo_url": ledgerActivityAccountAccountFieldLogoURL,
+	"route":    ledgerActivityAccountAccountFieldRoute,
+	"title":    ledgerActivityAccountAccountFieldTitle,
+}
+
+type LedgerActivityAccountAccount struct {
+	// Account ID.
+	ID string `json:"id" url:"id"`
+	// Account logo URL.
+	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
+	// Account route.
+	Route *string `json:"route,omitempty" url:"route,omitempty"`
+	// Account display name.
+	Title *string `json:"title,omitempty" url:"title,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LedgerActivityAccountAccount) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LedgerActivityAccountAccount) GetLogoURL() *string {
+	if l == nil {
+		return nil
+	}
+	return l.LogoURL
+}
+
+func (l *LedgerActivityAccountAccount) GetRoute() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Route
+}
+
+func (l *LedgerActivityAccountAccount) GetTitle() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Title
+}
+
+func (l *LedgerActivityAccountAccount) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LedgerActivityAccountAccount) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityAccountAccount) SetID(id string) {
+	l.ID = id
+	l.require(ledgerActivityAccountAccountFieldID)
+}
+
+// SetLogoURL sets the LogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityAccountAccount) SetLogoURL(logoURL *string) {
+	l.LogoURL = logoURL
+	l.require(ledgerActivityAccountAccountFieldLogoURL)
+}
+
+// SetRoute sets the Route field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityAccountAccount) SetRoute(route *string) {
+	l.Route = route
+	l.require(ledgerActivityAccountAccountFieldRoute)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityAccountAccount) SetTitle(title *string) {
+	l.Title = title
+	l.require(ledgerActivityAccountAccountFieldTitle)
+}
+
+func (l *LedgerActivityAccountAccount) UnmarshalJSON(data []byte) error {
+	type unmarshaler LedgerActivityAccountAccount
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LedgerActivityAccountAccount(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivityAccountAccountNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LedgerActivityAccountAccount) MarshalJSON() ([]byte, error) {
+	type embed LedgerActivityAccountAccount
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LedgerActivityAccountAccount) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	ledgerActivityAccountUserFieldID                = big.NewInt(1 << 0)
+	ledgerActivityAccountUserFieldName              = big.NewInt(1 << 1)
+	ledgerActivityAccountUserFieldProfilePictureURL = big.NewInt(1 << 2)
+	ledgerActivityAccountUserFieldUsername          = big.NewInt(1 << 3)
+)
+
+// ledgerActivityAccountUserNullableFields maps the wire names of LedgerActivityAccountUser's nullable fields (required or optional) to their field bits.
+var ledgerActivityAccountUserNullableFields = map[string]*big.Int{
+	"name":                ledgerActivityAccountUserFieldName,
+	"profile_picture_url": ledgerActivityAccountUserFieldProfilePictureURL,
+	"username":            ledgerActivityAccountUserFieldUsername,
+}
+
+type LedgerActivityAccountUser struct {
+	// User ID.
+	ID string `json:"id" url:"id"`
+	// User display name.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// User profile image URL.
+	ProfilePictureURL *string `json:"profile_picture_url,omitempty" url:"profile_picture_url,omitempty"`
+	// User's username.
+	Username *string `json:"username,omitempty" url:"username,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LedgerActivityAccountUser) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LedgerActivityAccountUser) GetName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Name
+}
+
+func (l *LedgerActivityAccountUser) GetProfilePictureURL() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ProfilePictureURL
+}
+
+func (l *LedgerActivityAccountUser) GetUsername() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Username
+}
+
+func (l *LedgerActivityAccountUser) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LedgerActivityAccountUser) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityAccountUser) SetID(id string) {
+	l.ID = id
+	l.require(ledgerActivityAccountUserFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityAccountUser) SetName(name *string) {
+	l.Name = name
+	l.require(ledgerActivityAccountUserFieldName)
+}
+
+// SetProfilePictureURL sets the ProfilePictureURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityAccountUser) SetProfilePictureURL(profilePictureURL *string) {
+	l.ProfilePictureURL = profilePictureURL
+	l.require(ledgerActivityAccountUserFieldProfilePictureURL)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityAccountUser) SetUsername(username *string) {
+	l.Username = username
+	l.require(ledgerActivityAccountUserFieldUsername)
+}
+
+func (l *LedgerActivityAccountUser) UnmarshalJSON(data []byte) error {
+	type unmarshaler LedgerActivityAccountUser
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LedgerActivityAccountUser(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivityAccountUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LedgerActivityAccountUser) MarshalJSON() ([]byte, error) {
+	type embed LedgerActivityAccountUser
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LedgerActivityAccountUser) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	ledgerActivityCurrencyFieldCode      = big.NewInt(1 << 0)
+	ledgerActivityCurrencyFieldPrecision = big.NewInt(1 << 1)
+)
+
+// Currency for this ledger activity.
+type LedgerActivityCurrency struct {
+	// Currency code.
+	Code string `json:"code" url:"code"`
+	// Precision factor for the currency, for example `100000000` for USD.
+	Precision string `json:"precision" url:"precision"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LedgerActivityCurrency) GetCode() string {
+	if l == nil {
+		return ""
+	}
+	return l.Code
+}
+
+func (l *LedgerActivityCurrency) GetPrecision() string {
+	if l == nil {
+		return ""
+	}
+	return l.Precision
+}
+
+func (l *LedgerActivityCurrency) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LedgerActivityCurrency) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetCode sets the Code field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityCurrency) SetCode(code string) {
+	l.Code = code
+	l.require(ledgerActivityCurrencyFieldCode)
+}
+
+// SetPrecision sets the Precision field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityCurrency) SetPrecision(precision string) {
+	l.Precision = precision
+	l.require(ledgerActivityCurrencyFieldPrecision)
+}
+
+func (l *LedgerActivityCurrency) UnmarshalJSON(data []byte) error {
+	type unmarshaler LedgerActivityCurrency
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LedgerActivityCurrency(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LedgerActivityCurrency) MarshalJSON() ([]byte, error) {
+	type embed LedgerActivityCurrency
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LedgerActivityCurrency) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+// The ledger line category this activity was posted under.
+type LedgerActivityLineType string
+
+const (
+	LedgerActivityLineTypePspPaymentReceivable                      LedgerActivityLineType = "psp_payment_receivable"
+	LedgerActivityLineTypePaymentGross                              LedgerActivityLineType = "payment_gross"
+	LedgerActivityLineTypeTopup                                     LedgerActivityLineType = "topup"
+	LedgerActivityLineTypeTopupFee                                  LedgerActivityLineType = "topup_fee"
+	LedgerActivityLineTypePaymentGrossReversal                      LedgerActivityLineType = "payment_gross_reversal"
+	LedgerActivityLineTypeTopupReversal                             LedgerActivityLineType = "topup_reversal"
+	LedgerActivityLineTypePaymentRefund                             LedgerActivityLineType = "payment_refund"
+	LedgerActivityLineTypePaymentRefundReversal                     LedgerActivityLineType = "payment_refund_reversal"
+	LedgerActivityLineTypePlatformBalancePayment                    LedgerActivityLineType = "platform_balance_payment"
+	LedgerActivityLineTypePlatformBalancePaymentRefund              LedgerActivityLineType = "platform_balance_payment_refund"
+	LedgerActivityLineTypeAdSpendPurchase                           LedgerActivityLineType = "ad_spend_purchase"
+	LedgerActivityLineTypePspRefundPayable                          LedgerActivityLineType = "psp_refund_payable"
+	LedgerActivityLineTypePassthroughGmv                            LedgerActivityLineType = "passthrough_gmv"
+	LedgerActivityLineTypePassthroughGmvOffset                      LedgerActivityLineType = "passthrough_gmv_offset"
+	LedgerActivityLineTypeInstallmentDefault                        LedgerActivityLineType = "installment_default"
+	LedgerActivityLineTypeAggregatedFee                             LedgerActivityLineType = "aggregated_fee"
+	LedgerActivityLineTypePaymentProcessingFixedFee                 LedgerActivityLineType = "payment_processing_fixed_fee"
+	LedgerActivityLineTypePaymentProcessingPercentageFee            LedgerActivityLineType = "payment_processing_percentage_fee"
+	LedgerActivityLineTypeBillingPercentageFee                      LedgerActivityLineType = "billing_percentage_fee"
+	LedgerActivityLineTypeCrossBorderPercentageFee                  LedgerActivityLineType = "cross_border_percentage_fee"
+	LedgerActivityLineTypeFxPercentageFee                           LedgerActivityLineType = "fx_percentage_fee"
+	LedgerActivityLineTypeOrchestrationPercentageFee                LedgerActivityLineType = "orchestration_percentage_fee"
+	LedgerActivityLineTypeRevsharePercentageFee                     LedgerActivityLineType = "revshare_percentage_fee"
+	LedgerActivityLineTypeStripeDomesticProcessingFee               LedgerActivityLineType = "stripe_domestic_processing_fee"
+	LedgerActivityLineTypeStripeInternationalProcessingFee          LedgerActivityLineType = "stripe_international_processing_fee"
+	LedgerActivityLineTypeThreeDsFixedFee                           LedgerActivityLineType = "three_ds_fixed_fee"
+	LedgerActivityLineTypeWhopProcessingFee                         LedgerActivityLineType = "whop_processing_fee"
+	LedgerActivityLineTypeEconomicIntelligencePercentageFee         LedgerActivityLineType = "economic_intelligence_percentage_fee"
+	LedgerActivityLineTypeHighRiskMerchantFee                       LedgerActivityLineType = "high_risk_merchant_fee"
+	LedgerActivityLineTypeFraudPreventionFee                        LedgerActivityLineType = "fraud_prevention_fee"
+	LedgerActivityLineTypeBuyerFee                                  LedgerActivityLineType = "buyer_fee"
+	LedgerActivityLineTypeSalesTaxFee                               LedgerActivityLineType = "sales_tax_fee"
+	LedgerActivityLineTypePayoutFee                                 LedgerActivityLineType = "payout_fee"
+	LedgerActivityLineTypeAffiliateFee                              LedgerActivityLineType = "affiliate_fee"
+	LedgerActivityLineTypeMarketplaceAffiliateFee                   LedgerActivityLineType = "marketplace_affiliate_fee"
+	LedgerActivityLineTypeApplicationFee                            LedgerActivityLineType = "application_fee"
+	LedgerActivityLineTypePlatformMarkupFee                         LedgerActivityLineType = "platform_markup_fee"
+	LedgerActivityLineTypePlatformMarkupFeePayout                   LedgerActivityLineType = "platform_markup_fee_payout"
+	LedgerActivityLineTypeSalesTaxRemittance                        LedgerActivityLineType = "sales_tax_remittance"
+	LedgerActivityLineTypeSalesTaxRemittanceReversal                LedgerActivityLineType = "sales_tax_remittance_reversal"
+	LedgerActivityLineTypeSalesTaxCollected                         LedgerActivityLineType = "sales_tax_collected"
+	LedgerActivityLineTypeSalesTaxCollectedReversal                 LedgerActivityLineType = "sales_tax_collected_reversal"
+	LedgerActivityLineTypeSalesTaxRemitted                          LedgerActivityLineType = "sales_tax_remitted"
+	LedgerActivityLineTypePaymentDispute                            LedgerActivityLineType = "payment_dispute"
+	LedgerActivityLineTypePaymentDisputeAdjustment                  LedgerActivityLineType = "payment_dispute_adjustment"
+	LedgerActivityLineTypePaymentDisputeFee                         LedgerActivityLineType = "payment_dispute_fee"
+	LedgerActivityLineTypePaymentDisputeReversal                    LedgerActivityLineType = "payment_dispute_reversal"
+	LedgerActivityLineTypePlatformCoveredDispute                    LedgerActivityLineType = "platform_covered_dispute"
+	LedgerActivityLineTypeDisputeAlertFee                           LedgerActivityLineType = "dispute_alert_fee"
+	LedgerActivityLineTypeDisputeRepresentmentFee                   LedgerActivityLineType = "dispute_representment_fee"
+	LedgerActivityLineTypePaymentReturnFee                          LedgerActivityLineType = "payment_return_fee"
+	LedgerActivityLineTypeDisputeHoldAdjustment                     LedgerActivityLineType = "dispute_hold_adjustment"
+	LedgerActivityLineTypeDisputeHoldBlocked                        LedgerActivityLineType = "dispute_hold_blocked"
+	LedgerActivityLineTypePspDisputePayable                         LedgerActivityLineType = "psp_dispute_payable"
+	LedgerActivityLineTypeWithdrawal                                LedgerActivityLineType = "withdrawal"
+	LedgerActivityLineTypeWithdrawalPayable                         LedgerActivityLineType = "withdrawal_payable"
+	LedgerActivityLineTypeWithdrawalPayableReversal                 LedgerActivityLineType = "withdrawal_payable_reversal"
+	LedgerActivityLineTypeWithdrawalFee                             LedgerActivityLineType = "withdrawal_fee"
+	LedgerActivityLineTypeWithdrawalFeeReversal                     LedgerActivityLineType = "withdrawal_fee_reversal"
+	LedgerActivityLineTypeWithdrawalMarkupFee                       LedgerActivityLineType = "withdrawal_markup_fee"
+	LedgerActivityLineTypeWithdrawalMarkupFeeReversal               LedgerActivityLineType = "withdrawal_markup_fee_reversal"
+	LedgerActivityLineTypeWithdrawalMarkupFeePayout                 LedgerActivityLineType = "withdrawal_markup_fee_payout"
+	LedgerActivityLineTypeWithdrawalMarkupFeePayoutReversal         LedgerActivityLineType = "withdrawal_markup_fee_payout_reversal"
+	LedgerActivityLineTypeWithdrawalReversal                        LedgerActivityLineType = "withdrawal_reversal"
+	LedgerActivityLineTypeWithdrawalClawback                        LedgerActivityLineType = "withdrawal_clawback"
+	LedgerActivityLineTypeWithdrawalClawbackReversal                LedgerActivityLineType = "withdrawal_clawback_reversal"
+	LedgerActivityLineTypePayoutReceivable                          LedgerActivityLineType = "payout_receivable"
+	LedgerActivityLineTypeWithdrawalReclassification                LedgerActivityLineType = "withdrawal_reclassification"
+	LedgerActivityLineTypeClawbackReceivable                        LedgerActivityLineType = "clawback_receivable"
+	LedgerActivityLineTypeClawbackReceivableReversal                LedgerActivityLineType = "clawback_receivable_reversal"
+	LedgerActivityLineTypeTreasuryPayin                             LedgerActivityLineType = "treasury_payin"
+	LedgerActivityLineTypeTreasuryPayinReceivable                   LedgerActivityLineType = "treasury_payin_receivable"
+	LedgerActivityLineTypeOnchainDeposit                            LedgerActivityLineType = "onchain_deposit"
+	LedgerActivityLineTypeOnchainDepositOffset                      LedgerActivityLineType = "onchain_deposit_offset"
+	LedgerActivityLineTypeOnchainWithdrawal                         LedgerActivityLineType = "onchain_withdrawal"
+	LedgerActivityLineTypeOnchainWithdrawalOffset                   LedgerActivityLineType = "onchain_withdrawal_offset"
+	LedgerActivityLineTypeTradingAccountWithdrawal                  LedgerActivityLineType = "trading_account_withdrawal"
+	LedgerActivityLineTypeTradingAccountWithdrawalOffset            LedgerActivityLineType = "trading_account_withdrawal_offset"
+	LedgerActivityLineTypeTradingAccountDeposit                     LedgerActivityLineType = "trading_account_deposit"
+	LedgerActivityLineTypeTradingAccountDepositOffset               LedgerActivityLineType = "trading_account_deposit_offset"
+	LedgerActivityLineTypeOnchainWalletTransferOutgoing             LedgerActivityLineType = "onchain_wallet_transfer_outgoing"
+	LedgerActivityLineTypeOnchainWalletTransferIncoming             LedgerActivityLineType = "onchain_wallet_transfer_incoming"
+	LedgerActivityLineTypeOnchainPlatformTransferOutgoing           LedgerActivityLineType = "onchain_platform_transfer_outgoing"
+	LedgerActivityLineTypeOnchainPlatformTransferIncoming           LedgerActivityLineType = "onchain_platform_transfer_incoming"
+	LedgerActivityLineTypeOnchainInternalTransferOutgoing           LedgerActivityLineType = "onchain_internal_transfer_outgoing"
+	LedgerActivityLineTypeOnchainInternalTransferIncoming           LedgerActivityLineType = "onchain_internal_transfer_incoming"
+	LedgerActivityLineTypeOnchainSwapSource                         LedgerActivityLineType = "onchain_swap_source"
+	LedgerActivityLineTypeOnchainSwapTarget                         LedgerActivityLineType = "onchain_swap_target"
+	LedgerActivityLineTypeOnchainSwapOffset                         LedgerActivityLineType = "onchain_swap_offset"
+	LedgerActivityLineTypeWhopSwapFeeReceived                       LedgerActivityLineType = "whop_swap_fee_received"
+	LedgerActivityLineTypeSwapFee                                   LedgerActivityLineType = "swap_fee"
+	LedgerActivityLineTypeInternalWithdrawal                        LedgerActivityLineType = "internal_withdrawal"
+	LedgerActivityLineTypeInternalWithdrawalReversal                LedgerActivityLineType = "internal_withdrawal_reversal"
+	LedgerActivityLineTypeInternalWithdrawalPayable                 LedgerActivityLineType = "internal_withdrawal_payable"
+	LedgerActivityLineTypeInternalWithdrawalPayableReversal         LedgerActivityLineType = "internal_withdrawal_payable_reversal"
+	LedgerActivityLineTypeInternalWithdrawalFee                     LedgerActivityLineType = "internal_withdrawal_fee"
+	LedgerActivityLineTypeInternalWithdrawalFeeReversal             LedgerActivityLineType = "internal_withdrawal_fee_reversal"
+	LedgerActivityLineTypeInternalWithdrawalMarkupFee               LedgerActivityLineType = "internal_withdrawal_markup_fee"
+	LedgerActivityLineTypeInternalWithdrawalMarkupFeeReversal       LedgerActivityLineType = "internal_withdrawal_markup_fee_reversal"
+	LedgerActivityLineTypeInternalWithdrawalMarkupFeePayout         LedgerActivityLineType = "internal_withdrawal_markup_fee_payout"
+	LedgerActivityLineTypeInternalWithdrawalMarkupFeePayoutReversal LedgerActivityLineType = "internal_withdrawal_markup_fee_payout_reversal"
+	LedgerActivityLineTypeInternalWithdrawalInTransit               LedgerActivityLineType = "internal_withdrawal_in_transit"
+	LedgerActivityLineTypeInternalWithdrawalComplete                LedgerActivityLineType = "internal_withdrawal_complete"
+	LedgerActivityLineTypeInternalWithdrawalInTransitReversal       LedgerActivityLineType = "internal_withdrawal_in_transit_reversal"
+	LedgerActivityLineTypeCardLoadTransfer                          LedgerActivityLineType = "card_load_transfer"
+	LedgerActivityLineTypeCardLoadDeposit                           LedgerActivityLineType = "card_load_deposit"
+	LedgerActivityLineTypeCardUnloadTransfer                        LedgerActivityLineType = "card_unload_transfer"
+	LedgerActivityLineTypeCardUnloadDeposit                         LedgerActivityLineType = "card_unload_deposit"
+	LedgerActivityLineTypeExternalCardLoadDeposit                   LedgerActivityLineType = "external_card_load_deposit"
+	LedgerActivityLineTypeExternalCardLoadOffset                    LedgerActivityLineType = "external_card_load_offset"
+	LedgerActivityLineTypeCardSpendAuthorization                    LedgerActivityLineType = "card_spend_authorization"
+	LedgerActivityLineTypeCardSpendAuthorizationHold                LedgerActivityLineType = "card_spend_authorization_hold"
+	LedgerActivityLineTypeCardSpendCapture                          LedgerActivityLineType = "card_spend_capture"
+	LedgerActivityLineTypeCardSpendCaptureOffset                    LedgerActivityLineType = "card_spend_capture_offset"
+	LedgerActivityLineTypeCardSpendAuthorizationVoid                LedgerActivityLineType = "card_spend_authorization_void"
+	LedgerActivityLineTypeCardSpendAuthorizationVoidRelease         LedgerActivityLineType = "card_spend_authorization_void_release"
+	LedgerActivityLineTypeCardSpendRefund                           LedgerActivityLineType = "card_spend_refund"
+	LedgerActivityLineTypeCardSpendRefundOffset                     LedgerActivityLineType = "card_spend_refund_offset"
+	LedgerActivityLineTypeCashback                                  LedgerActivityLineType = "cashback"
+	LedgerActivityLineTypeCashbackExpense                           LedgerActivityLineType = "cashback_expense"
+	LedgerActivityLineTypeCashbackFunding                           LedgerActivityLineType = "cashback_funding"
+	LedgerActivityLineTypeCardInterchangeReceivable                 LedgerActivityLineType = "card_interchange_receivable"
+	LedgerActivityLineTypeCardInterchange                           LedgerActivityLineType = "card_interchange"
+	LedgerActivityLineTypeAccountSettlement                         LedgerActivityLineType = "account_settlement"
+	LedgerActivityLineTypeCurrencyConversionOutgoing                LedgerActivityLineType = "currency_conversion_outgoing"
+	LedgerActivityLineTypeCurrencyConversionIncoming                LedgerActivityLineType = "currency_conversion_incoming"
+	LedgerActivityLineTypeBalanceReservation                        LedgerActivityLineType = "balance_reservation"
+	LedgerActivityLineTypeBalanceReservationHold                    LedgerActivityLineType = "balance_reservation_hold"
+	LedgerActivityLineTypeBalanceReservationReversal                LedgerActivityLineType = "balance_reservation_reversal"
+	LedgerActivityLineTypeBalanceReservationRelease                 LedgerActivityLineType = "balance_reservation_release"
+	LedgerActivityLineTypeBadDebtOffset                             LedgerActivityLineType = "bad_debt_offset"
+	LedgerActivityLineTypeBadDebtExpense                            LedgerActivityLineType = "bad_debt_expense"
+	LedgerActivityLineTypePlatformCreditsPayment                    LedgerActivityLineType = "platform_credits_payment"
+	LedgerActivityLineTypePlatformCreditsPaymentRefund              LedgerActivityLineType = "platform_credits_payment_refund"
+	LedgerActivityLineTypePlatformCreditsGranted                    LedgerActivityLineType = "platform_credits_granted"
+	LedgerActivityLineTypePlatformBalanceTransferOutgoing           LedgerActivityLineType = "platform_balance_transfer_outgoing"
+	LedgerActivityLineTypePlatformBalanceTransferIncoming           LedgerActivityLineType = "platform_balance_transfer_incoming"
+	LedgerActivityLineTypeInternalBalanceTransferOutgoing           LedgerActivityLineType = "internal_balance_transfer_outgoing"
+	LedgerActivityLineTypeInternalBalanceTransferIncoming           LedgerActivityLineType = "internal_balance_transfer_incoming"
+	LedgerActivityLineTypePlatformBalanceTransferFee                LedgerActivityLineType = "platform_balance_transfer_fee"
+	LedgerActivityLineTypeConnectedAccountClawback                  LedgerActivityLineType = "connected_account_clawback"
+	LedgerActivityLineTypeConnectedAccountNegativeBalance           LedgerActivityLineType = "connected_account_negative_balance"
+	LedgerActivityLineTypeAdPublisherPayout                         LedgerActivityLineType = "ad_publisher_payout"
+	LedgerActivityLineTypeAdPublisherPayoutReceived                 LedgerActivityLineType = "ad_publisher_payout_received"
+	LedgerActivityLineTypeCompanyReferral                           LedgerActivityLineType = "company_referral"
+	LedgerActivityLineTypePlatformAffiliatePayment                  LedgerActivityLineType = "platform_affiliate_payment"
+	LedgerActivityLineTypePlatformAffiliatePaymentReversal          LedgerActivityLineType = "platform_affiliate_payment_reversal"
+	LedgerActivityLineTypeOnboardingReward                          LedgerActivityLineType = "onboarding_reward"
+	LedgerActivityLineTypePartnerGrantReward                        LedgerActivityLineType = "partner_grant_reward"
+	LedgerActivityLineTypePaymentRevshare                           LedgerActivityLineType = "payment_revshare"
+	LedgerActivityLineTypePaymentRevsharePayout                     LedgerActivityLineType = "payment_revshare_payout"
+	LedgerActivityLineTypePaymentRevshareReversal                   LedgerActivityLineType = "payment_revshare_reversal"
+	LedgerActivityLineTypePaymentRevshareRefund                     LedgerActivityLineType = "payment_revshare_refund"
+	LedgerActivityLineTypePaymentReferral                           LedgerActivityLineType = "payment_referral"
+	LedgerActivityLineTypePaymentReferralPayable                    LedgerActivityLineType = "payment_referral_payable"
+	LedgerActivityLineTypePaymentReferralReversal                   LedgerActivityLineType = "payment_referral_reversal"
+	LedgerActivityLineTypePaymentReferralRefund                     LedgerActivityLineType = "payment_referral_refund"
+	LedgerActivityLineTypeApplicationFeePayable                     LedgerActivityLineType = "application_fee_payable"
+	LedgerActivityLineTypeApplicationFeePayout                      LedgerActivityLineType = "application_fee_payout"
+	LedgerActivityLineTypePlatformEarning                           LedgerActivityLineType = "platform_earning"
+	LedgerActivityLineTypeAirdrop                                   LedgerActivityLineType = "airdrop"
+	LedgerActivityLineTypeAirdropReversal                           LedgerActivityLineType = "airdrop_reversal"
+	LedgerActivityLineTypeAirdropExpense                            LedgerActivityLineType = "airdrop_expense"
+	LedgerActivityLineTypeAirdropExpenseReversal                    LedgerActivityLineType = "airdrop_expense_reversal"
+	LedgerActivityLineTypeAirdropLinkFunded                         LedgerActivityLineType = "airdrop_link_funded"
+	LedgerActivityLineTypeAirdropLinkCanceled                       LedgerActivityLineType = "airdrop_link_canceled"
+	LedgerActivityLineTypeAirdropLinkReturned                       LedgerActivityLineType = "airdrop_link_returned"
+	LedgerActivityLineTypeAirdropLinkClaimed                        LedgerActivityLineType = "airdrop_link_claimed"
+	LedgerActivityLineTypeAirdropLinkRedeemed                       LedgerActivityLineType = "airdrop_link_redeemed"
+	LedgerActivityLineTypeAirdropLinkCreated                        LedgerActivityLineType = "airdrop_link_created"
+	LedgerActivityLineTypeResolutionCenterRefund                    LedgerActivityLineType = "resolution_center_refund"
+	LedgerActivityLineTypeAdFundingDisbursement                     LedgerActivityLineType = "ad_funding_disbursement"
+	LedgerActivityLineTypeAdCampaignBudget                          LedgerActivityLineType = "ad_campaign_budget"
+	LedgerActivityLineTypeAdsCardSpread                             LedgerActivityLineType = "ads_card_spread"
+	LedgerActivityLineTypeAdSpendCharge                             LedgerActivityLineType = "ad_spend_charge"
+	LedgerActivityLineTypeAdNetworkCost                             LedgerActivityLineType = "ad_network_cost"
+	LedgerActivityLineTypeAdSpendMargin                             LedgerActivityLineType = "ad_spend_margin"
+	LedgerActivityLineTypeAdIncomeExpense                           LedgerActivityLineType = "ad_income_expense"
+	LedgerActivityLineTypeAdIncomeReceipt                           LedgerActivityLineType = "ad_income_receipt"
+	LedgerActivityLineTypeAdBudgetRelease                           LedgerActivityLineType = "ad_budget_release"
+	LedgerActivityLineTypeAdNetworkSettlement                       LedgerActivityLineType = "ad_network_settlement"
+	LedgerActivityLineTypeAdAffiliatePayout                         LedgerActivityLineType = "ad_affiliate_payout"
+	LedgerActivityLineTypeAdAffiliatePayoutReceived                 LedgerActivityLineType = "ad_affiliate_payout_received"
+	LedgerActivityLineTypeAdBalanceFundingReceipt                   LedgerActivityLineType = "ad_balance_funding_receipt"
+	LedgerActivityLineTypeMiscReversal                              LedgerActivityLineType = "misc_reversal"
+	LedgerActivityLineTypeFxGainLoss                                LedgerActivityLineType = "fx_gain_loss"
+	LedgerActivityLineTypeFxMarkup                                  LedgerActivityLineType = "fx_markup"
+	LedgerActivityLineTypeLegacyCryptoPayment                       LedgerActivityLineType = "legacy_crypto_payment"
+	LedgerActivityLineTypeLegacyPayment                             LedgerActivityLineType = "legacy_payment"
+	LedgerActivityLineTypeLegacyPaymentRefund                       LedgerActivityLineType = "legacy_payment_refund"
+	LedgerActivityLineTypeLicenseSale                               LedgerActivityLineType = "license_sale"
+	LedgerActivityLineTypeLicenseSaleCommission                     LedgerActivityLineType = "license_sale_commission"
+	LedgerActivityLineTypeLicenseSaleRevenue                        LedgerActivityLineType = "license_sale_revenue"
+	LedgerActivityLineTypeSoftwareRentalRevshare                    LedgerActivityLineType = "software_rental_revshare"
+	LedgerActivityLineTypeSoftwareRentalTransaction                 LedgerActivityLineType = "software_rental_transaction"
+	LedgerActivityLineTypeMiscPurchase                              LedgerActivityLineType = "misc_purchase"
+	LedgerActivityLineTypeMiscRefund                                LedgerActivityLineType = "misc_refund"
+	LedgerActivityLineTypeReferralBonus                             LedgerActivityLineType = "referral_bonus"
+	LedgerActivityLineTypePromoReversal                             LedgerActivityLineType = "promo_reversal"
+	LedgerActivityLineTypePaymentReceivableSettlement               LedgerActivityLineType = "payment_receivable_settlement"
+	LedgerActivityLineTypePlatformEarningSettlement                 LedgerActivityLineType = "platform_earning_settlement"
+	LedgerActivityLineTypePlatformEarningUnreconciledClearing       LedgerActivityLineType = "platform_earning_unreconciled_clearing"
+	LedgerActivityLineTypePaymentReceivableClearing                 LedgerActivityLineType = "payment_receivable_clearing"
+	LedgerActivityLineTypePaymentReceivableReversal                 LedgerActivityLineType = "payment_receivable_reversal"
+	LedgerActivityLineTypePaymentUnreconciledClearing               LedgerActivityLineType = "payment_unreconciled_clearing"
+	LedgerActivityLineTypePaymentUnreconciledReversal               LedgerActivityLineType = "payment_unreconciled_reversal"
+	LedgerActivityLineTypeSettlementShortfallLoss                   LedgerActivityLineType = "settlement_shortfall_loss"
+	LedgerActivityLineTypeFxSettlementGainLoss                      LedgerActivityLineType = "fx_settlement_gain_loss"
+	LedgerActivityLineTypeSettlementRoundingVariance                LedgerActivityLineType = "settlement_rounding_variance"
+	LedgerActivityLineTypePspPayoutSettlement                       LedgerActivityLineType = "psp_payout_settlement"
+	LedgerActivityLineTypePspPayoutDeposit                          LedgerActivityLineType = "psp_payout_deposit"
+	LedgerActivityLineTypePspPayoutReceivable                       LedgerActivityLineType = "psp_payout_receivable"
+	LedgerActivityLineTypePspPayoutReceivableClearing               LedgerActivityLineType = "psp_payout_receivable_clearing"
+	LedgerActivityLineTypePayoutUnreconciledClearing                LedgerActivityLineType = "payout_unreconciled_clearing"
+	LedgerActivityLineTypePspCurrencyConversionOutgoing             LedgerActivityLineType = "psp_currency_conversion_outgoing"
+	LedgerActivityLineTypePspCurrencyConversionIncoming             LedgerActivityLineType = "psp_currency_conversion_incoming"
+	LedgerActivityLineTypePspCurrencyConversionReceivable           LedgerActivityLineType = "psp_currency_conversion_receivable"
+	LedgerActivityLineTypePspCurrencyConversionReceivableClearing   LedgerActivityLineType = "psp_currency_conversion_receivable_clearing"
+	LedgerActivityLineTypePspFxAdjustment                           LedgerActivityLineType = "psp_fx_adjustment"
+	LedgerActivityLineTypeRefundSettlement                          LedgerActivityLineType = "refund_settlement"
+	LedgerActivityLineTypeRefundSettlementReversal                  LedgerActivityLineType = "refund_settlement_reversal"
+	LedgerActivityLineTypeRefundPayableClearing                     LedgerActivityLineType = "refund_payable_clearing"
+	LedgerActivityLineTypeRefundPayableReversal                     LedgerActivityLineType = "refund_payable_reversal"
+	LedgerActivityLineTypeRefundUnreconciledClearing                LedgerActivityLineType = "refund_unreconciled_clearing"
+	LedgerActivityLineTypeRefundUnreconciledReversal                LedgerActivityLineType = "refund_unreconciled_reversal"
+	LedgerActivityLineTypePspAccountDebit                           LedgerActivityLineType = "psp_account_debit"
+	LedgerActivityLineTypePaymentRefundFee                          LedgerActivityLineType = "payment_refund_fee"
+	LedgerActivityLineTypeDisputeSettlement                         LedgerActivityLineType = "dispute_settlement"
+	LedgerActivityLineTypeDisputeSettlementReversal                 LedgerActivityLineType = "dispute_settlement_reversal"
+	LedgerActivityLineTypeDisputePayableClearing                    LedgerActivityLineType = "dispute_payable_clearing"
+	LedgerActivityLineTypeDisputePayableReversal                    LedgerActivityLineType = "dispute_payable_reversal"
+	LedgerActivityLineTypeDisputeUnreconciledClearing               LedgerActivityLineType = "dispute_unreconciled_clearing"
+	LedgerActivityLineTypeDisputeUnreconciledReversal               LedgerActivityLineType = "dispute_unreconciled_reversal"
+	LedgerActivityLineTypePspReserveHold                            LedgerActivityLineType = "psp_reserve_hold"
+	LedgerActivityLineTypePspReserveRelease                         LedgerActivityLineType = "psp_reserve_release"
+	LedgerActivityLineTypePspDisputeFee                             LedgerActivityLineType = "psp_dispute_fee"
+	LedgerActivityLineTypePspDisputeAlertFee                        LedgerActivityLineType = "psp_dispute_alert_fee"
+	LedgerActivityLineTypePspRefundFee                              LedgerActivityLineType = "psp_refund_fee"
+	LedgerActivityLineTypePspAccountUpdaterFee                      LedgerActivityLineType = "psp_account_updater_fee"
+	LedgerActivityLineTypePspAdjustedProcessingFee                  LedgerActivityLineType = "psp_adjusted_processing_fee"
+	LedgerActivityLineTypePspAuthenticationFee                      LedgerActivityLineType = "psp_authentication_fee"
+	LedgerActivityLineTypePspCommissionFee                          LedgerActivityLineType = "psp_commission_fee"
+	LedgerActivityLineTypePspFixedFee                               LedgerActivityLineType = "psp_fixed_fee"
+	LedgerActivityLineTypePspGatewayFee                             LedgerActivityLineType = "psp_gateway_fee"
+	LedgerActivityLineTypePspInterchangeFee                         LedgerActivityLineType = "psp_interchange_fee"
+	LedgerActivityLineTypePspInvoiceTaxFee                          LedgerActivityLineType = "psp_invoice_tax_fee"
+	LedgerActivityLineTypePspMarkupFee                              LedgerActivityLineType = "psp_markup_fee"
+	LedgerActivityLineTypePspNetworkTokenFee                        LedgerActivityLineType = "psp_network_token_fee"
+	LedgerActivityLineTypePspOptimizationFee                        LedgerActivityLineType = "psp_optimization_fee"
+	LedgerActivityLineTypePspPaymentMethodFee                       LedgerActivityLineType = "psp_payment_method_fee"
+	LedgerActivityLineTypePspPayoutFee                              LedgerActivityLineType = "psp_payout_fee"
+	LedgerActivityLineTypePspProcessingFee                          LedgerActivityLineType = "psp_processing_fee"
+	LedgerActivityLineTypePspRiskFee                                LedgerActivityLineType = "psp_risk_fee"
+	LedgerActivityLineTypePspSchemeFee                              LedgerActivityLineType = "psp_scheme_fee"
+	LedgerActivityLineTypePspVariableFee                            LedgerActivityLineType = "psp_variable_fee"
+	LedgerActivityLineTypePspBillingFee                             LedgerActivityLineType = "psp_billing_fee"
+	LedgerActivityLineTypePspTaxServiceFee                          LedgerActivityLineType = "psp_tax_service_fee"
+	LedgerActivityLineTypePspConnectFee                             LedgerActivityLineType = "psp_connect_fee"
+	LedgerActivityLineTypeExternalAccountConnectionFee              LedgerActivityLineType = "external_account_connection_fee"
+	LedgerActivityLineTypePspExternalAccountConnectionFee           LedgerActivityLineType = "psp_external_account_connection_fee"
+	LedgerActivityLineTypePspInvoicingFee                           LedgerActivityLineType = "psp_invoicing_fee"
+	LedgerActivityLineTypePspTerminalFee                            LedgerActivityLineType = "psp_terminal_fee"
+	LedgerActivityLineTypeTreasuryFee                               LedgerActivityLineType = "treasury_fee"
+	LedgerActivityLineTypePspTreasuryFee                            LedgerActivityLineType = "psp_treasury_fee"
+	LedgerActivityLineTypeAcceleratedSettlementFee                  LedgerActivityLineType = "accelerated_settlement_fee"
+	LedgerActivityLineTypePspAcceleratedSettlementFee               LedgerActivityLineType = "psp_accelerated_settlement_fee"
+	LedgerActivityLineTypePspReceivablePooled                       LedgerActivityLineType = "psp_receivable_pooled"
+	LedgerActivityLineTypePspPoolSettlement                         LedgerActivityLineType = "psp_pool_settlement"
+	LedgerActivityLineTypePspPoolClearing                           LedgerActivityLineType = "psp_pool_clearing"
+	LedgerActivityLineTypePspPoolRefundSettlement                   LedgerActivityLineType = "psp_pool_refund_settlement"
+	LedgerActivityLineTypePspPoolRefundClearing                     LedgerActivityLineType = "psp_pool_refund_clearing"
+	LedgerActivityLineTypePspCorrection                             LedgerActivityLineType = "psp_correction"
+	LedgerActivityLineTypePspPayinSettlement                        LedgerActivityLineType = "psp_payin_settlement"
+	LedgerActivityLineTypePspPayinClearing                          LedgerActivityLineType = "psp_payin_clearing"
+	LedgerActivityLineTypePspBankPullSettlement                     LedgerActivityLineType = "psp_bank_pull_settlement"
+	LedgerActivityLineTypePspBankPullClearing                       LedgerActivityLineType = "psp_bank_pull_clearing"
+	LedgerActivityLineTypePspPoolDisputeSettlement                  LedgerActivityLineType = "psp_pool_dispute_settlement"
+	LedgerActivityLineTypePspPayoutConsolidation                    LedgerActivityLineType = "psp_payout_consolidation"
+	LedgerActivityLineTypePspWithholdingTax                         LedgerActivityLineType = "psp_withholding_tax"
+	LedgerActivityLineTypePspPayoutSettlementReversal               LedgerActivityLineType = "psp_payout_settlement_reversal"
+	LedgerActivityLineTypePspTransferSettlement                     LedgerActivityLineType = "psp_transfer_settlement"
+	LedgerActivityLineTypePspTransferSettlementReversal             LedgerActivityLineType = "psp_transfer_settlement_reversal"
+	LedgerActivityLineTypePspCollectionSettlement                   LedgerActivityLineType = "psp_collection_settlement"
+	LedgerActivityLineTypePayoutSubsidy                             LedgerActivityLineType = "payout_subsidy"
+	LedgerActivityLineTypeWithdrawalTopupAdjustment                 LedgerActivityLineType = "withdrawal_topup_adjustment"
+	LedgerActivityLineTypeWithdrawalPayableClearing                 LedgerActivityLineType = "withdrawal_payable_clearing"
+	LedgerActivityLineTypeWithdrawalPayableClearingReversal         LedgerActivityLineType = "withdrawal_payable_clearing_reversal"
+	LedgerActivityLineTypeIdentityVerificationFee                   LedgerActivityLineType = "identity_verification_fee"
+	LedgerActivityLineTypePspIdentityVerificationFee                LedgerActivityLineType = "psp_identity_verification_fee"
+	LedgerActivityLineTypeTaxFilingFee                              LedgerActivityLineType = "tax_filing_fee"
+	LedgerActivityLineTypePspTaxFilingFee                           LedgerActivityLineType = "psp_tax_filing_fee"
+	LedgerActivityLineTypePspServiceFee                             LedgerActivityLineType = "psp_service_fee"
+	LedgerActivityLineTypeRecipientWalletLoad                       LedgerActivityLineType = "recipient_wallet_load"
+	LedgerActivityLineTypePspRecipientWalletLoad                    LedgerActivityLineType = "psp_recipient_wallet_load"
+	LedgerActivityLineTypeDisputeManagementFee                      LedgerActivityLineType = "dispute_management_fee"
+	LedgerActivityLineTypePspDisputeManagementFee                   LedgerActivityLineType = "psp_dispute_management_fee"
+	LedgerActivityLineTypePspClawbackSettlement                     LedgerActivityLineType = "psp_clawback_settlement"
+	LedgerActivityLineTypePspClawbackSettlementReversal             LedgerActivityLineType = "psp_clawback_settlement_reversal"
+	LedgerActivityLineTypeClawbackReceivableSettlement              LedgerActivityLineType = "clawback_receivable_settlement"
+	LedgerActivityLineTypeClawbackReceivableSettlementReversal      LedgerActivityLineType = "clawback_receivable_settlement_reversal"
+	LedgerActivityLineTypeClawbackFee                               LedgerActivityLineType = "clawback_fee"
+	LedgerActivityLineTypePspClawbackFee                            LedgerActivityLineType = "psp_clawback_fee"
+	LedgerActivityLineTypeBankTransfer                              LedgerActivityLineType = "bank_transfer"
+	LedgerActivityLineTypeDeposit                                   LedgerActivityLineType = "deposit"
+	LedgerActivityLineTypeWalletTransferIncoming                    LedgerActivityLineType = "wallet_transfer_incoming"
+	LedgerActivityLineTypeWalletTransferOutgoing                    LedgerActivityLineType = "wallet_transfer_outgoing"
+	LedgerActivityLineTypeSwapSource                                LedgerActivityLineType = "swap_source"
+	LedgerActivityLineTypeSwapTarget                                LedgerActivityLineType = "swap_target"
+)
+
+func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, error) {
+	switch s {
+	case "psp_payment_receivable":
+		return LedgerActivityLineTypePspPaymentReceivable, nil
+	case "payment_gross":
+		return LedgerActivityLineTypePaymentGross, nil
+	case "topup":
+		return LedgerActivityLineTypeTopup, nil
+	case "topup_fee":
+		return LedgerActivityLineTypeTopupFee, nil
+	case "payment_gross_reversal":
+		return LedgerActivityLineTypePaymentGrossReversal, nil
+	case "topup_reversal":
+		return LedgerActivityLineTypeTopupReversal, nil
+	case "payment_refund":
+		return LedgerActivityLineTypePaymentRefund, nil
+	case "payment_refund_reversal":
+		return LedgerActivityLineTypePaymentRefundReversal, nil
+	case "platform_balance_payment":
+		return LedgerActivityLineTypePlatformBalancePayment, nil
+	case "platform_balance_payment_refund":
+		return LedgerActivityLineTypePlatformBalancePaymentRefund, nil
+	case "ad_spend_purchase":
+		return LedgerActivityLineTypeAdSpendPurchase, nil
+	case "psp_refund_payable":
+		return LedgerActivityLineTypePspRefundPayable, nil
+	case "passthrough_gmv":
+		return LedgerActivityLineTypePassthroughGmv, nil
+	case "passthrough_gmv_offset":
+		return LedgerActivityLineTypePassthroughGmvOffset, nil
+	case "installment_default":
+		return LedgerActivityLineTypeInstallmentDefault, nil
+	case "aggregated_fee":
+		return LedgerActivityLineTypeAggregatedFee, nil
+	case "payment_processing_fixed_fee":
+		return LedgerActivityLineTypePaymentProcessingFixedFee, nil
+	case "payment_processing_percentage_fee":
+		return LedgerActivityLineTypePaymentProcessingPercentageFee, nil
+	case "billing_percentage_fee":
+		return LedgerActivityLineTypeBillingPercentageFee, nil
+	case "cross_border_percentage_fee":
+		return LedgerActivityLineTypeCrossBorderPercentageFee, nil
+	case "fx_percentage_fee":
+		return LedgerActivityLineTypeFxPercentageFee, nil
+	case "orchestration_percentage_fee":
+		return LedgerActivityLineTypeOrchestrationPercentageFee, nil
+	case "revshare_percentage_fee":
+		return LedgerActivityLineTypeRevsharePercentageFee, nil
+	case "stripe_domestic_processing_fee":
+		return LedgerActivityLineTypeStripeDomesticProcessingFee, nil
+	case "stripe_international_processing_fee":
+		return LedgerActivityLineTypeStripeInternationalProcessingFee, nil
+	case "three_ds_fixed_fee":
+		return LedgerActivityLineTypeThreeDsFixedFee, nil
+	case "whop_processing_fee":
+		return LedgerActivityLineTypeWhopProcessingFee, nil
+	case "economic_intelligence_percentage_fee":
+		return LedgerActivityLineTypeEconomicIntelligencePercentageFee, nil
+	case "high_risk_merchant_fee":
+		return LedgerActivityLineTypeHighRiskMerchantFee, nil
+	case "fraud_prevention_fee":
+		return LedgerActivityLineTypeFraudPreventionFee, nil
+	case "buyer_fee":
+		return LedgerActivityLineTypeBuyerFee, nil
+	case "sales_tax_fee":
+		return LedgerActivityLineTypeSalesTaxFee, nil
+	case "payout_fee":
+		return LedgerActivityLineTypePayoutFee, nil
+	case "affiliate_fee":
+		return LedgerActivityLineTypeAffiliateFee, nil
+	case "marketplace_affiliate_fee":
+		return LedgerActivityLineTypeMarketplaceAffiliateFee, nil
+	case "application_fee":
+		return LedgerActivityLineTypeApplicationFee, nil
+	case "platform_markup_fee":
+		return LedgerActivityLineTypePlatformMarkupFee, nil
+	case "platform_markup_fee_payout":
+		return LedgerActivityLineTypePlatformMarkupFeePayout, nil
+	case "sales_tax_remittance":
+		return LedgerActivityLineTypeSalesTaxRemittance, nil
+	case "sales_tax_remittance_reversal":
+		return LedgerActivityLineTypeSalesTaxRemittanceReversal, nil
+	case "sales_tax_collected":
+		return LedgerActivityLineTypeSalesTaxCollected, nil
+	case "sales_tax_collected_reversal":
+		return LedgerActivityLineTypeSalesTaxCollectedReversal, nil
+	case "sales_tax_remitted":
+		return LedgerActivityLineTypeSalesTaxRemitted, nil
+	case "payment_dispute":
+		return LedgerActivityLineTypePaymentDispute, nil
+	case "payment_dispute_adjustment":
+		return LedgerActivityLineTypePaymentDisputeAdjustment, nil
+	case "payment_dispute_fee":
+		return LedgerActivityLineTypePaymentDisputeFee, nil
+	case "payment_dispute_reversal":
+		return LedgerActivityLineTypePaymentDisputeReversal, nil
+	case "platform_covered_dispute":
+		return LedgerActivityLineTypePlatformCoveredDispute, nil
+	case "dispute_alert_fee":
+		return LedgerActivityLineTypeDisputeAlertFee, nil
+	case "dispute_representment_fee":
+		return LedgerActivityLineTypeDisputeRepresentmentFee, nil
+	case "payment_return_fee":
+		return LedgerActivityLineTypePaymentReturnFee, nil
+	case "dispute_hold_adjustment":
+		return LedgerActivityLineTypeDisputeHoldAdjustment, nil
+	case "dispute_hold_blocked":
+		return LedgerActivityLineTypeDisputeHoldBlocked, nil
+	case "psp_dispute_payable":
+		return LedgerActivityLineTypePspDisputePayable, nil
+	case "withdrawal":
+		return LedgerActivityLineTypeWithdrawal, nil
+	case "withdrawal_payable":
+		return LedgerActivityLineTypeWithdrawalPayable, nil
+	case "withdrawal_payable_reversal":
+		return LedgerActivityLineTypeWithdrawalPayableReversal, nil
+	case "withdrawal_fee":
+		return LedgerActivityLineTypeWithdrawalFee, nil
+	case "withdrawal_fee_reversal":
+		return LedgerActivityLineTypeWithdrawalFeeReversal, nil
+	case "withdrawal_markup_fee":
+		return LedgerActivityLineTypeWithdrawalMarkupFee, nil
+	case "withdrawal_markup_fee_reversal":
+		return LedgerActivityLineTypeWithdrawalMarkupFeeReversal, nil
+	case "withdrawal_markup_fee_payout":
+		return LedgerActivityLineTypeWithdrawalMarkupFeePayout, nil
+	case "withdrawal_markup_fee_payout_reversal":
+		return LedgerActivityLineTypeWithdrawalMarkupFeePayoutReversal, nil
+	case "withdrawal_reversal":
+		return LedgerActivityLineTypeWithdrawalReversal, nil
+	case "withdrawal_clawback":
+		return LedgerActivityLineTypeWithdrawalClawback, nil
+	case "withdrawal_clawback_reversal":
+		return LedgerActivityLineTypeWithdrawalClawbackReversal, nil
+	case "payout_receivable":
+		return LedgerActivityLineTypePayoutReceivable, nil
+	case "withdrawal_reclassification":
+		return LedgerActivityLineTypeWithdrawalReclassification, nil
+	case "clawback_receivable":
+		return LedgerActivityLineTypeClawbackReceivable, nil
+	case "clawback_receivable_reversal":
+		return LedgerActivityLineTypeClawbackReceivableReversal, nil
+	case "treasury_payin":
+		return LedgerActivityLineTypeTreasuryPayin, nil
+	case "treasury_payin_receivable":
+		return LedgerActivityLineTypeTreasuryPayinReceivable, nil
+	case "onchain_deposit":
+		return LedgerActivityLineTypeOnchainDeposit, nil
+	case "onchain_deposit_offset":
+		return LedgerActivityLineTypeOnchainDepositOffset, nil
+	case "onchain_withdrawal":
+		return LedgerActivityLineTypeOnchainWithdrawal, nil
+	case "onchain_withdrawal_offset":
+		return LedgerActivityLineTypeOnchainWithdrawalOffset, nil
+	case "trading_account_withdrawal":
+		return LedgerActivityLineTypeTradingAccountWithdrawal, nil
+	case "trading_account_withdrawal_offset":
+		return LedgerActivityLineTypeTradingAccountWithdrawalOffset, nil
+	case "trading_account_deposit":
+		return LedgerActivityLineTypeTradingAccountDeposit, nil
+	case "trading_account_deposit_offset":
+		return LedgerActivityLineTypeTradingAccountDepositOffset, nil
+	case "onchain_wallet_transfer_outgoing":
+		return LedgerActivityLineTypeOnchainWalletTransferOutgoing, nil
+	case "onchain_wallet_transfer_incoming":
+		return LedgerActivityLineTypeOnchainWalletTransferIncoming, nil
+	case "onchain_platform_transfer_outgoing":
+		return LedgerActivityLineTypeOnchainPlatformTransferOutgoing, nil
+	case "onchain_platform_transfer_incoming":
+		return LedgerActivityLineTypeOnchainPlatformTransferIncoming, nil
+	case "onchain_internal_transfer_outgoing":
+		return LedgerActivityLineTypeOnchainInternalTransferOutgoing, nil
+	case "onchain_internal_transfer_incoming":
+		return LedgerActivityLineTypeOnchainInternalTransferIncoming, nil
+	case "onchain_swap_source":
+		return LedgerActivityLineTypeOnchainSwapSource, nil
+	case "onchain_swap_target":
+		return LedgerActivityLineTypeOnchainSwapTarget, nil
+	case "onchain_swap_offset":
+		return LedgerActivityLineTypeOnchainSwapOffset, nil
+	case "whop_swap_fee_received":
+		return LedgerActivityLineTypeWhopSwapFeeReceived, nil
+	case "swap_fee":
+		return LedgerActivityLineTypeSwapFee, nil
+	case "internal_withdrawal":
+		return LedgerActivityLineTypeInternalWithdrawal, nil
+	case "internal_withdrawal_reversal":
+		return LedgerActivityLineTypeInternalWithdrawalReversal, nil
+	case "internal_withdrawal_payable":
+		return LedgerActivityLineTypeInternalWithdrawalPayable, nil
+	case "internal_withdrawal_payable_reversal":
+		return LedgerActivityLineTypeInternalWithdrawalPayableReversal, nil
+	case "internal_withdrawal_fee":
+		return LedgerActivityLineTypeInternalWithdrawalFee, nil
+	case "internal_withdrawal_fee_reversal":
+		return LedgerActivityLineTypeInternalWithdrawalFeeReversal, nil
+	case "internal_withdrawal_markup_fee":
+		return LedgerActivityLineTypeInternalWithdrawalMarkupFee, nil
+	case "internal_withdrawal_markup_fee_reversal":
+		return LedgerActivityLineTypeInternalWithdrawalMarkupFeeReversal, nil
+	case "internal_withdrawal_markup_fee_payout":
+		return LedgerActivityLineTypeInternalWithdrawalMarkupFeePayout, nil
+	case "internal_withdrawal_markup_fee_payout_reversal":
+		return LedgerActivityLineTypeInternalWithdrawalMarkupFeePayoutReversal, nil
+	case "internal_withdrawal_in_transit":
+		return LedgerActivityLineTypeInternalWithdrawalInTransit, nil
+	case "internal_withdrawal_complete":
+		return LedgerActivityLineTypeInternalWithdrawalComplete, nil
+	case "internal_withdrawal_in_transit_reversal":
+		return LedgerActivityLineTypeInternalWithdrawalInTransitReversal, nil
+	case "card_load_transfer":
+		return LedgerActivityLineTypeCardLoadTransfer, nil
+	case "card_load_deposit":
+		return LedgerActivityLineTypeCardLoadDeposit, nil
+	case "card_unload_transfer":
+		return LedgerActivityLineTypeCardUnloadTransfer, nil
+	case "card_unload_deposit":
+		return LedgerActivityLineTypeCardUnloadDeposit, nil
+	case "external_card_load_deposit":
+		return LedgerActivityLineTypeExternalCardLoadDeposit, nil
+	case "external_card_load_offset":
+		return LedgerActivityLineTypeExternalCardLoadOffset, nil
+	case "card_spend_authorization":
+		return LedgerActivityLineTypeCardSpendAuthorization, nil
+	case "card_spend_authorization_hold":
+		return LedgerActivityLineTypeCardSpendAuthorizationHold, nil
+	case "card_spend_capture":
+		return LedgerActivityLineTypeCardSpendCapture, nil
+	case "card_spend_capture_offset":
+		return LedgerActivityLineTypeCardSpendCaptureOffset, nil
+	case "card_spend_authorization_void":
+		return LedgerActivityLineTypeCardSpendAuthorizationVoid, nil
+	case "card_spend_authorization_void_release":
+		return LedgerActivityLineTypeCardSpendAuthorizationVoidRelease, nil
+	case "card_spend_refund":
+		return LedgerActivityLineTypeCardSpendRefund, nil
+	case "card_spend_refund_offset":
+		return LedgerActivityLineTypeCardSpendRefundOffset, nil
+	case "cashback":
+		return LedgerActivityLineTypeCashback, nil
+	case "cashback_expense":
+		return LedgerActivityLineTypeCashbackExpense, nil
+	case "cashback_funding":
+		return LedgerActivityLineTypeCashbackFunding, nil
+	case "card_interchange_receivable":
+		return LedgerActivityLineTypeCardInterchangeReceivable, nil
+	case "card_interchange":
+		return LedgerActivityLineTypeCardInterchange, nil
+	case "account_settlement":
+		return LedgerActivityLineTypeAccountSettlement, nil
+	case "currency_conversion_outgoing":
+		return LedgerActivityLineTypeCurrencyConversionOutgoing, nil
+	case "currency_conversion_incoming":
+		return LedgerActivityLineTypeCurrencyConversionIncoming, nil
+	case "balance_reservation":
+		return LedgerActivityLineTypeBalanceReservation, nil
+	case "balance_reservation_hold":
+		return LedgerActivityLineTypeBalanceReservationHold, nil
+	case "balance_reservation_reversal":
+		return LedgerActivityLineTypeBalanceReservationReversal, nil
+	case "balance_reservation_release":
+		return LedgerActivityLineTypeBalanceReservationRelease, nil
+	case "bad_debt_offset":
+		return LedgerActivityLineTypeBadDebtOffset, nil
+	case "bad_debt_expense":
+		return LedgerActivityLineTypeBadDebtExpense, nil
+	case "platform_credits_payment":
+		return LedgerActivityLineTypePlatformCreditsPayment, nil
+	case "platform_credits_payment_refund":
+		return LedgerActivityLineTypePlatformCreditsPaymentRefund, nil
+	case "platform_credits_granted":
+		return LedgerActivityLineTypePlatformCreditsGranted, nil
+	case "platform_balance_transfer_outgoing":
+		return LedgerActivityLineTypePlatformBalanceTransferOutgoing, nil
+	case "platform_balance_transfer_incoming":
+		return LedgerActivityLineTypePlatformBalanceTransferIncoming, nil
+	case "internal_balance_transfer_outgoing":
+		return LedgerActivityLineTypeInternalBalanceTransferOutgoing, nil
+	case "internal_balance_transfer_incoming":
+		return LedgerActivityLineTypeInternalBalanceTransferIncoming, nil
+	case "platform_balance_transfer_fee":
+		return LedgerActivityLineTypePlatformBalanceTransferFee, nil
+	case "connected_account_clawback":
+		return LedgerActivityLineTypeConnectedAccountClawback, nil
+	case "connected_account_negative_balance":
+		return LedgerActivityLineTypeConnectedAccountNegativeBalance, nil
+	case "ad_publisher_payout":
+		return LedgerActivityLineTypeAdPublisherPayout, nil
+	case "ad_publisher_payout_received":
+		return LedgerActivityLineTypeAdPublisherPayoutReceived, nil
+	case "company_referral":
+		return LedgerActivityLineTypeCompanyReferral, nil
+	case "platform_affiliate_payment":
+		return LedgerActivityLineTypePlatformAffiliatePayment, nil
+	case "platform_affiliate_payment_reversal":
+		return LedgerActivityLineTypePlatformAffiliatePaymentReversal, nil
+	case "onboarding_reward":
+		return LedgerActivityLineTypeOnboardingReward, nil
+	case "partner_grant_reward":
+		return LedgerActivityLineTypePartnerGrantReward, nil
+	case "payment_revshare":
+		return LedgerActivityLineTypePaymentRevshare, nil
+	case "payment_revshare_payout":
+		return LedgerActivityLineTypePaymentRevsharePayout, nil
+	case "payment_revshare_reversal":
+		return LedgerActivityLineTypePaymentRevshareReversal, nil
+	case "payment_revshare_refund":
+		return LedgerActivityLineTypePaymentRevshareRefund, nil
+	case "payment_referral":
+		return LedgerActivityLineTypePaymentReferral, nil
+	case "payment_referral_payable":
+		return LedgerActivityLineTypePaymentReferralPayable, nil
+	case "payment_referral_reversal":
+		return LedgerActivityLineTypePaymentReferralReversal, nil
+	case "payment_referral_refund":
+		return LedgerActivityLineTypePaymentReferralRefund, nil
+	case "application_fee_payable":
+		return LedgerActivityLineTypeApplicationFeePayable, nil
+	case "application_fee_payout":
+		return LedgerActivityLineTypeApplicationFeePayout, nil
+	case "platform_earning":
+		return LedgerActivityLineTypePlatformEarning, nil
+	case "airdrop":
+		return LedgerActivityLineTypeAirdrop, nil
+	case "airdrop_reversal":
+		return LedgerActivityLineTypeAirdropReversal, nil
+	case "airdrop_expense":
+		return LedgerActivityLineTypeAirdropExpense, nil
+	case "airdrop_expense_reversal":
+		return LedgerActivityLineTypeAirdropExpenseReversal, nil
+	case "airdrop_link_funded":
+		return LedgerActivityLineTypeAirdropLinkFunded, nil
+	case "airdrop_link_canceled":
+		return LedgerActivityLineTypeAirdropLinkCanceled, nil
+	case "airdrop_link_returned":
+		return LedgerActivityLineTypeAirdropLinkReturned, nil
+	case "airdrop_link_claimed":
+		return LedgerActivityLineTypeAirdropLinkClaimed, nil
+	case "airdrop_link_redeemed":
+		return LedgerActivityLineTypeAirdropLinkRedeemed, nil
+	case "airdrop_link_created":
+		return LedgerActivityLineTypeAirdropLinkCreated, nil
+	case "resolution_center_refund":
+		return LedgerActivityLineTypeResolutionCenterRefund, nil
+	case "ad_funding_disbursement":
+		return LedgerActivityLineTypeAdFundingDisbursement, nil
+	case "ad_campaign_budget":
+		return LedgerActivityLineTypeAdCampaignBudget, nil
+	case "ads_card_spread":
+		return LedgerActivityLineTypeAdsCardSpread, nil
+	case "ad_spend_charge":
+		return LedgerActivityLineTypeAdSpendCharge, nil
+	case "ad_network_cost":
+		return LedgerActivityLineTypeAdNetworkCost, nil
+	case "ad_spend_margin":
+		return LedgerActivityLineTypeAdSpendMargin, nil
+	case "ad_income_expense":
+		return LedgerActivityLineTypeAdIncomeExpense, nil
+	case "ad_income_receipt":
+		return LedgerActivityLineTypeAdIncomeReceipt, nil
+	case "ad_budget_release":
+		return LedgerActivityLineTypeAdBudgetRelease, nil
+	case "ad_network_settlement":
+		return LedgerActivityLineTypeAdNetworkSettlement, nil
+	case "ad_affiliate_payout":
+		return LedgerActivityLineTypeAdAffiliatePayout, nil
+	case "ad_affiliate_payout_received":
+		return LedgerActivityLineTypeAdAffiliatePayoutReceived, nil
+	case "ad_balance_funding_receipt":
+		return LedgerActivityLineTypeAdBalanceFundingReceipt, nil
+	case "misc_reversal":
+		return LedgerActivityLineTypeMiscReversal, nil
+	case "fx_gain_loss":
+		return LedgerActivityLineTypeFxGainLoss, nil
+	case "fx_markup":
+		return LedgerActivityLineTypeFxMarkup, nil
+	case "legacy_crypto_payment":
+		return LedgerActivityLineTypeLegacyCryptoPayment, nil
+	case "legacy_payment":
+		return LedgerActivityLineTypeLegacyPayment, nil
+	case "legacy_payment_refund":
+		return LedgerActivityLineTypeLegacyPaymentRefund, nil
+	case "license_sale":
+		return LedgerActivityLineTypeLicenseSale, nil
+	case "license_sale_commission":
+		return LedgerActivityLineTypeLicenseSaleCommission, nil
+	case "license_sale_revenue":
+		return LedgerActivityLineTypeLicenseSaleRevenue, nil
+	case "software_rental_revshare":
+		return LedgerActivityLineTypeSoftwareRentalRevshare, nil
+	case "software_rental_transaction":
+		return LedgerActivityLineTypeSoftwareRentalTransaction, nil
+	case "misc_purchase":
+		return LedgerActivityLineTypeMiscPurchase, nil
+	case "misc_refund":
+		return LedgerActivityLineTypeMiscRefund, nil
+	case "referral_bonus":
+		return LedgerActivityLineTypeReferralBonus, nil
+	case "promo_reversal":
+		return LedgerActivityLineTypePromoReversal, nil
+	case "payment_receivable_settlement":
+		return LedgerActivityLineTypePaymentReceivableSettlement, nil
+	case "platform_earning_settlement":
+		return LedgerActivityLineTypePlatformEarningSettlement, nil
+	case "platform_earning_unreconciled_clearing":
+		return LedgerActivityLineTypePlatformEarningUnreconciledClearing, nil
+	case "payment_receivable_clearing":
+		return LedgerActivityLineTypePaymentReceivableClearing, nil
+	case "payment_receivable_reversal":
+		return LedgerActivityLineTypePaymentReceivableReversal, nil
+	case "payment_unreconciled_clearing":
+		return LedgerActivityLineTypePaymentUnreconciledClearing, nil
+	case "payment_unreconciled_reversal":
+		return LedgerActivityLineTypePaymentUnreconciledReversal, nil
+	case "settlement_shortfall_loss":
+		return LedgerActivityLineTypeSettlementShortfallLoss, nil
+	case "fx_settlement_gain_loss":
+		return LedgerActivityLineTypeFxSettlementGainLoss, nil
+	case "settlement_rounding_variance":
+		return LedgerActivityLineTypeSettlementRoundingVariance, nil
+	case "psp_payout_settlement":
+		return LedgerActivityLineTypePspPayoutSettlement, nil
+	case "psp_payout_deposit":
+		return LedgerActivityLineTypePspPayoutDeposit, nil
+	case "psp_payout_receivable":
+		return LedgerActivityLineTypePspPayoutReceivable, nil
+	case "psp_payout_receivable_clearing":
+		return LedgerActivityLineTypePspPayoutReceivableClearing, nil
+	case "payout_unreconciled_clearing":
+		return LedgerActivityLineTypePayoutUnreconciledClearing, nil
+	case "psp_currency_conversion_outgoing":
+		return LedgerActivityLineTypePspCurrencyConversionOutgoing, nil
+	case "psp_currency_conversion_incoming":
+		return LedgerActivityLineTypePspCurrencyConversionIncoming, nil
+	case "psp_currency_conversion_receivable":
+		return LedgerActivityLineTypePspCurrencyConversionReceivable, nil
+	case "psp_currency_conversion_receivable_clearing":
+		return LedgerActivityLineTypePspCurrencyConversionReceivableClearing, nil
+	case "psp_fx_adjustment":
+		return LedgerActivityLineTypePspFxAdjustment, nil
+	case "refund_settlement":
+		return LedgerActivityLineTypeRefundSettlement, nil
+	case "refund_settlement_reversal":
+		return LedgerActivityLineTypeRefundSettlementReversal, nil
+	case "refund_payable_clearing":
+		return LedgerActivityLineTypeRefundPayableClearing, nil
+	case "refund_payable_reversal":
+		return LedgerActivityLineTypeRefundPayableReversal, nil
+	case "refund_unreconciled_clearing":
+		return LedgerActivityLineTypeRefundUnreconciledClearing, nil
+	case "refund_unreconciled_reversal":
+		return LedgerActivityLineTypeRefundUnreconciledReversal, nil
+	case "psp_account_debit":
+		return LedgerActivityLineTypePspAccountDebit, nil
+	case "payment_refund_fee":
+		return LedgerActivityLineTypePaymentRefundFee, nil
+	case "dispute_settlement":
+		return LedgerActivityLineTypeDisputeSettlement, nil
+	case "dispute_settlement_reversal":
+		return LedgerActivityLineTypeDisputeSettlementReversal, nil
+	case "dispute_payable_clearing":
+		return LedgerActivityLineTypeDisputePayableClearing, nil
+	case "dispute_payable_reversal":
+		return LedgerActivityLineTypeDisputePayableReversal, nil
+	case "dispute_unreconciled_clearing":
+		return LedgerActivityLineTypeDisputeUnreconciledClearing, nil
+	case "dispute_unreconciled_reversal":
+		return LedgerActivityLineTypeDisputeUnreconciledReversal, nil
+	case "psp_reserve_hold":
+		return LedgerActivityLineTypePspReserveHold, nil
+	case "psp_reserve_release":
+		return LedgerActivityLineTypePspReserveRelease, nil
+	case "psp_dispute_fee":
+		return LedgerActivityLineTypePspDisputeFee, nil
+	case "psp_dispute_alert_fee":
+		return LedgerActivityLineTypePspDisputeAlertFee, nil
+	case "psp_refund_fee":
+		return LedgerActivityLineTypePspRefundFee, nil
+	case "psp_account_updater_fee":
+		return LedgerActivityLineTypePspAccountUpdaterFee, nil
+	case "psp_adjusted_processing_fee":
+		return LedgerActivityLineTypePspAdjustedProcessingFee, nil
+	case "psp_authentication_fee":
+		return LedgerActivityLineTypePspAuthenticationFee, nil
+	case "psp_commission_fee":
+		return LedgerActivityLineTypePspCommissionFee, nil
+	case "psp_fixed_fee":
+		return LedgerActivityLineTypePspFixedFee, nil
+	case "psp_gateway_fee":
+		return LedgerActivityLineTypePspGatewayFee, nil
+	case "psp_interchange_fee":
+		return LedgerActivityLineTypePspInterchangeFee, nil
+	case "psp_invoice_tax_fee":
+		return LedgerActivityLineTypePspInvoiceTaxFee, nil
+	case "psp_markup_fee":
+		return LedgerActivityLineTypePspMarkupFee, nil
+	case "psp_network_token_fee":
+		return LedgerActivityLineTypePspNetworkTokenFee, nil
+	case "psp_optimization_fee":
+		return LedgerActivityLineTypePspOptimizationFee, nil
+	case "psp_payment_method_fee":
+		return LedgerActivityLineTypePspPaymentMethodFee, nil
+	case "psp_payout_fee":
+		return LedgerActivityLineTypePspPayoutFee, nil
+	case "psp_processing_fee":
+		return LedgerActivityLineTypePspProcessingFee, nil
+	case "psp_risk_fee":
+		return LedgerActivityLineTypePspRiskFee, nil
+	case "psp_scheme_fee":
+		return LedgerActivityLineTypePspSchemeFee, nil
+	case "psp_variable_fee":
+		return LedgerActivityLineTypePspVariableFee, nil
+	case "psp_billing_fee":
+		return LedgerActivityLineTypePspBillingFee, nil
+	case "psp_tax_service_fee":
+		return LedgerActivityLineTypePspTaxServiceFee, nil
+	case "psp_connect_fee":
+		return LedgerActivityLineTypePspConnectFee, nil
+	case "external_account_connection_fee":
+		return LedgerActivityLineTypeExternalAccountConnectionFee, nil
+	case "psp_external_account_connection_fee":
+		return LedgerActivityLineTypePspExternalAccountConnectionFee, nil
+	case "psp_invoicing_fee":
+		return LedgerActivityLineTypePspInvoicingFee, nil
+	case "psp_terminal_fee":
+		return LedgerActivityLineTypePspTerminalFee, nil
+	case "treasury_fee":
+		return LedgerActivityLineTypeTreasuryFee, nil
+	case "psp_treasury_fee":
+		return LedgerActivityLineTypePspTreasuryFee, nil
+	case "accelerated_settlement_fee":
+		return LedgerActivityLineTypeAcceleratedSettlementFee, nil
+	case "psp_accelerated_settlement_fee":
+		return LedgerActivityLineTypePspAcceleratedSettlementFee, nil
+	case "psp_receivable_pooled":
+		return LedgerActivityLineTypePspReceivablePooled, nil
+	case "psp_pool_settlement":
+		return LedgerActivityLineTypePspPoolSettlement, nil
+	case "psp_pool_clearing":
+		return LedgerActivityLineTypePspPoolClearing, nil
+	case "psp_pool_refund_settlement":
+		return LedgerActivityLineTypePspPoolRefundSettlement, nil
+	case "psp_pool_refund_clearing":
+		return LedgerActivityLineTypePspPoolRefundClearing, nil
+	case "psp_correction":
+		return LedgerActivityLineTypePspCorrection, nil
+	case "psp_payin_settlement":
+		return LedgerActivityLineTypePspPayinSettlement, nil
+	case "psp_payin_clearing":
+		return LedgerActivityLineTypePspPayinClearing, nil
+	case "psp_bank_pull_settlement":
+		return LedgerActivityLineTypePspBankPullSettlement, nil
+	case "psp_bank_pull_clearing":
+		return LedgerActivityLineTypePspBankPullClearing, nil
+	case "psp_pool_dispute_settlement":
+		return LedgerActivityLineTypePspPoolDisputeSettlement, nil
+	case "psp_payout_consolidation":
+		return LedgerActivityLineTypePspPayoutConsolidation, nil
+	case "psp_withholding_tax":
+		return LedgerActivityLineTypePspWithholdingTax, nil
+	case "psp_payout_settlement_reversal":
+		return LedgerActivityLineTypePspPayoutSettlementReversal, nil
+	case "psp_transfer_settlement":
+		return LedgerActivityLineTypePspTransferSettlement, nil
+	case "psp_transfer_settlement_reversal":
+		return LedgerActivityLineTypePspTransferSettlementReversal, nil
+	case "psp_collection_settlement":
+		return LedgerActivityLineTypePspCollectionSettlement, nil
+	case "payout_subsidy":
+		return LedgerActivityLineTypePayoutSubsidy, nil
+	case "withdrawal_topup_adjustment":
+		return LedgerActivityLineTypeWithdrawalTopupAdjustment, nil
+	case "withdrawal_payable_clearing":
+		return LedgerActivityLineTypeWithdrawalPayableClearing, nil
+	case "withdrawal_payable_clearing_reversal":
+		return LedgerActivityLineTypeWithdrawalPayableClearingReversal, nil
+	case "identity_verification_fee":
+		return LedgerActivityLineTypeIdentityVerificationFee, nil
+	case "psp_identity_verification_fee":
+		return LedgerActivityLineTypePspIdentityVerificationFee, nil
+	case "tax_filing_fee":
+		return LedgerActivityLineTypeTaxFilingFee, nil
+	case "psp_tax_filing_fee":
+		return LedgerActivityLineTypePspTaxFilingFee, nil
+	case "psp_service_fee":
+		return LedgerActivityLineTypePspServiceFee, nil
+	case "recipient_wallet_load":
+		return LedgerActivityLineTypeRecipientWalletLoad, nil
+	case "psp_recipient_wallet_load":
+		return LedgerActivityLineTypePspRecipientWalletLoad, nil
+	case "dispute_management_fee":
+		return LedgerActivityLineTypeDisputeManagementFee, nil
+	case "psp_dispute_management_fee":
+		return LedgerActivityLineTypePspDisputeManagementFee, nil
+	case "psp_clawback_settlement":
+		return LedgerActivityLineTypePspClawbackSettlement, nil
+	case "psp_clawback_settlement_reversal":
+		return LedgerActivityLineTypePspClawbackSettlementReversal, nil
+	case "clawback_receivable_settlement":
+		return LedgerActivityLineTypeClawbackReceivableSettlement, nil
+	case "clawback_receivable_settlement_reversal":
+		return LedgerActivityLineTypeClawbackReceivableSettlementReversal, nil
+	case "clawback_fee":
+		return LedgerActivityLineTypeClawbackFee, nil
+	case "psp_clawback_fee":
+		return LedgerActivityLineTypePspClawbackFee, nil
+	case "bank_transfer":
+		return LedgerActivityLineTypeBankTransfer, nil
+	case "deposit":
+		return LedgerActivityLineTypeDeposit, nil
+	case "wallet_transfer_incoming":
+		return LedgerActivityLineTypeWalletTransferIncoming, nil
+	case "wallet_transfer_outgoing":
+		return LedgerActivityLineTypeWalletTransferOutgoing, nil
+	case "swap_source":
+		return LedgerActivityLineTypeSwapSource, nil
+	case "swap_target":
+		return LedgerActivityLineTypeSwapTarget, nil
+	}
+	var t LedgerActivityLineType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LedgerActivityLineType) Ptr() *LedgerActivityLineType {
+	return &l
+}
+
+type LedgerActivityObject string
+
+const (
+	LedgerActivityObjectLedgerActivity LedgerActivityObject = "ledger_activity"
+)
+
+func NewLedgerActivityObjectFromString(s string) (LedgerActivityObject, error) {
+	switch s {
+	case "ledger_activity":
+		return LedgerActivityObjectLedgerActivity, nil
+	}
+	var t LedgerActivityObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LedgerActivityObject) Ptr() *LedgerActivityObject {
+	return &l
+}
+
+var (
+	ledgerActivityPaymentFieldAmount            = big.NewInt(1 << 0)
+	ledgerActivityPaymentFieldCardBrand         = big.NewInt(1 << 1)
+	ledgerActivityPaymentFieldCardLast4         = big.NewInt(1 << 2)
+	ledgerActivityPaymentFieldCreatedAt         = big.NewInt(1 << 3)
+	ledgerActivityPaymentFieldID                = big.NewInt(1 << 4)
+	ledgerActivityPaymentFieldObject            = big.NewInt(1 << 5)
+	ledgerActivityPaymentFieldPaymentMethodType = big.NewInt(1 << 6)
+	ledgerActivityPaymentFieldPaymentProcessor  = big.NewInt(1 << 7)
+	ledgerActivityPaymentFieldPlan              = big.NewInt(1 << 8)
+	ledgerActivityPaymentFieldProduct           = big.NewInt(1 << 9)
+	ledgerActivityPaymentFieldUser              = big.NewInt(1 << 10)
+)
+
+// ledgerActivityPaymentNullableFields maps the wire names of LedgerActivityPayment's nullable fields (required or optional) to their field bits.
+var ledgerActivityPaymentNullableFields = map[string]*big.Int{
+	"amount":              ledgerActivityPaymentFieldAmount,
+	"card_brand":          ledgerActivityPaymentFieldCardBrand,
+	"card_last4":          ledgerActivityPaymentFieldCardLast4,
+	"payment_method_type": ledgerActivityPaymentFieldPaymentMethodType,
+	"payment_processor":   ledgerActivityPaymentFieldPaymentProcessor,
+	"plan":                ledgerActivityPaymentFieldPlan,
+	"product":             ledgerActivityPaymentFieldProduct,
+	"user":                ledgerActivityPaymentFieldUser,
+}
+
+type LedgerActivityPayment struct {
+	// Total charged by the payment.
+	Amount *Money `json:"amount,omitempty" url:"amount,omitempty"`
+	// Card brand, when the customer paid by card.
+	CardBrand *string `json:"card_brand,omitempty" url:"card_brand,omitempty"`
+	// Last four digits of the card, when the customer paid by card.
+	CardLast4 *string `json:"card_last4,omitempty" url:"card_last4,omitempty"`
+	// When the payment was created.
+	CreatedAt time.Time `json:"created_at" url:"created_at"`
+	// Payment ID, prefixed `pay_`.
+	ID     string                      `json:"id" url:"id"`
+	Object LedgerActivityPaymentObject `json:"object" url:"object"`
+	// How the customer paid, such as `card` or `paypal`.
+	PaymentMethodType *string `json:"payment_method_type,omitempty" url:"payment_method_type,omitempty"`
+	// Processor that handled the payment, such as `stripe`.
+	PaymentProcessor *string `json:"payment_processor,omitempty" url:"payment_processor,omitempty"`
+	// Variant associated with the payment, when applicable.
+	Plan *LedgerActivityPaymentPlan `json:"plan,omitempty" url:"plan,omitempty"`
+	// Product associated with the payment, when applicable.
+	Product *LedgerActivityPaymentProduct `json:"product,omitempty" url:"product,omitempty"`
+	// Customer associated with the payment. Email requires member:email:read.
+	User *LedgerActivityPaymentUser `json:"user,omitempty" url:"user,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LedgerActivityPayment) GetAmount() *Money {
+	if l == nil {
+		return nil
+	}
+	return l.Amount
+}
+
+func (l *LedgerActivityPayment) GetCardBrand() *string {
+	if l == nil {
+		return nil
+	}
+	return l.CardBrand
+}
+
+func (l *LedgerActivityPayment) GetCardLast4() *string {
+	if l == nil {
+		return nil
+	}
+	return l.CardLast4
+}
+
+func (l *LedgerActivityPayment) GetCreatedAt() time.Time {
+	if l == nil {
+		return time.Time{}
+	}
+	return l.CreatedAt
+}
+
+func (l *LedgerActivityPayment) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LedgerActivityPayment) GetObject() LedgerActivityPaymentObject {
+	if l == nil {
+		return ""
+	}
+	return l.Object
+}
+
+func (l *LedgerActivityPayment) GetPaymentMethodType() *string {
+	if l == nil {
+		return nil
+	}
+	return l.PaymentMethodType
+}
+
+func (l *LedgerActivityPayment) GetPaymentProcessor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.PaymentProcessor
+}
+
+func (l *LedgerActivityPayment) GetPlan() *LedgerActivityPaymentPlan {
+	if l == nil {
+		return nil
+	}
+	return l.Plan
+}
+
+func (l *LedgerActivityPayment) GetProduct() *LedgerActivityPaymentProduct {
+	if l == nil {
+		return nil
+	}
+	return l.Product
+}
+
+func (l *LedgerActivityPayment) GetUser() *LedgerActivityPaymentUser {
+	if l == nil {
+		return nil
+	}
+	return l.User
+}
+
+func (l *LedgerActivityPayment) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LedgerActivityPayment) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetAmount sets the Amount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPayment) SetAmount(amount *Money) {
+	l.Amount = amount
+	l.require(ledgerActivityPaymentFieldAmount)
+}
+
+// SetCardBrand sets the CardBrand field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPayment) SetCardBrand(cardBrand *string) {
+	l.CardBrand = cardBrand
+	l.require(ledgerActivityPaymentFieldCardBrand)
+}
+
+// SetCardLast4 sets the CardLast4 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPayment) SetCardLast4(cardLast4 *string) {
+	l.CardLast4 = cardLast4
+	l.require(ledgerActivityPaymentFieldCardLast4)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPayment) SetCreatedAt(createdAt time.Time) {
+	l.CreatedAt = createdAt
+	l.require(ledgerActivityPaymentFieldCreatedAt)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPayment) SetID(id string) {
+	l.ID = id
+	l.require(ledgerActivityPaymentFieldID)
+}
+
+// SetObject sets the Object field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPayment) SetObject(object LedgerActivityPaymentObject) {
+	l.Object = object
+	l.require(ledgerActivityPaymentFieldObject)
+}
+
+// SetPaymentMethodType sets the PaymentMethodType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPayment) SetPaymentMethodType(paymentMethodType *string) {
+	l.PaymentMethodType = paymentMethodType
+	l.require(ledgerActivityPaymentFieldPaymentMethodType)
+}
+
+// SetPaymentProcessor sets the PaymentProcessor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPayment) SetPaymentProcessor(paymentProcessor *string) {
+	l.PaymentProcessor = paymentProcessor
+	l.require(ledgerActivityPaymentFieldPaymentProcessor)
+}
+
+// SetPlan sets the Plan field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPayment) SetPlan(plan *LedgerActivityPaymentPlan) {
+	l.Plan = plan
+	l.require(ledgerActivityPaymentFieldPlan)
+}
+
+// SetProduct sets the Product field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPayment) SetProduct(product *LedgerActivityPaymentProduct) {
+	l.Product = product
+	l.require(ledgerActivityPaymentFieldProduct)
+}
+
+// SetUser sets the User field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPayment) SetUser(user *LedgerActivityPaymentUser) {
+	l.User = user
+	l.require(ledgerActivityPaymentFieldUser)
+}
+
+func (l *LedgerActivityPayment) UnmarshalJSON(data []byte) error {
+	type embed LedgerActivityPayment
+	var unmarshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"created_at"`
+	}{
+		embed: embed(*l),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*l = LedgerActivityPayment(unmarshaler.embed)
+	l.CreatedAt = unmarshaler.CreatedAt.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivityPaymentNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LedgerActivityPayment) MarshalJSON() ([]byte, error) {
+	type embed LedgerActivityPayment
+	var marshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"created_at"`
+	}{
+		embed:     embed(*l),
+		CreatedAt: internal.NewDateTime(l.CreatedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LedgerActivityPayment) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LedgerActivityPaymentObject string
+
+const (
+	LedgerActivityPaymentObjectPayment LedgerActivityPaymentObject = "payment"
+)
+
+func NewLedgerActivityPaymentObjectFromString(s string) (LedgerActivityPaymentObject, error) {
+	switch s {
+	case "payment":
+		return LedgerActivityPaymentObjectPayment, nil
+	}
+	var t LedgerActivityPaymentObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LedgerActivityPaymentObject) Ptr() *LedgerActivityPaymentObject {
+	return &l
+}
+
+var (
+	ledgerActivityPaymentPlanFieldID   = big.NewInt(1 << 0)
+	ledgerActivityPaymentPlanFieldName = big.NewInt(1 << 1)
+)
+
+// ledgerActivityPaymentPlanNullableFields maps the wire names of LedgerActivityPaymentPlan's nullable fields (required or optional) to their field bits.
+var ledgerActivityPaymentPlanNullableFields = map[string]*big.Int{
+	"name": ledgerActivityPaymentPlanFieldName,
+}
+
+// Variant associated with the payment, when applicable.
+type LedgerActivityPaymentPlan struct {
+	// Variant ID, prefixed `plan_`.
+	ID string `json:"id" url:"id"`
+	// Variant name.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LedgerActivityPaymentPlan) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LedgerActivityPaymentPlan) GetName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Name
+}
+
+func (l *LedgerActivityPaymentPlan) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LedgerActivityPaymentPlan) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPaymentPlan) SetID(id string) {
+	l.ID = id
+	l.require(ledgerActivityPaymentPlanFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPaymentPlan) SetName(name *string) {
+	l.Name = name
+	l.require(ledgerActivityPaymentPlanFieldName)
+}
+
+func (l *LedgerActivityPaymentPlan) UnmarshalJSON(data []byte) error {
+	type unmarshaler LedgerActivityPaymentPlan
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LedgerActivityPaymentPlan(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivityPaymentPlanNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LedgerActivityPaymentPlan) MarshalJSON() ([]byte, error) {
+	type embed LedgerActivityPaymentPlan
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LedgerActivityPaymentPlan) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	ledgerActivityPaymentProductFieldID   = big.NewInt(1 << 0)
+	ledgerActivityPaymentProductFieldName = big.NewInt(1 << 1)
+)
+
+// Product associated with the payment, when applicable.
+type LedgerActivityPaymentProduct struct {
+	// Product ID, prefixed `prod_`.
+	ID string `json:"id" url:"id"`
+	// Product name.
+	Name string `json:"name" url:"name"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LedgerActivityPaymentProduct) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LedgerActivityPaymentProduct) GetName() string {
+	if l == nil {
+		return ""
+	}
+	return l.Name
+}
+
+func (l *LedgerActivityPaymentProduct) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LedgerActivityPaymentProduct) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPaymentProduct) SetID(id string) {
+	l.ID = id
+	l.require(ledgerActivityPaymentProductFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPaymentProduct) SetName(name string) {
+	l.Name = name
+	l.require(ledgerActivityPaymentProductFieldName)
+}
+
+func (l *LedgerActivityPaymentProduct) UnmarshalJSON(data []byte) error {
+	type unmarshaler LedgerActivityPaymentProduct
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LedgerActivityPaymentProduct(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LedgerActivityPaymentProduct) MarshalJSON() ([]byte, error) {
+	type embed LedgerActivityPaymentProduct
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LedgerActivityPaymentProduct) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	ledgerActivityPaymentUserFieldEmail = big.NewInt(1 << 0)
+	ledgerActivityPaymentUserFieldID    = big.NewInt(1 << 1)
+	ledgerActivityPaymentUserFieldName  = big.NewInt(1 << 2)
+)
+
+// ledgerActivityPaymentUserNullableFields maps the wire names of LedgerActivityPaymentUser's nullable fields (required or optional) to their field bits.
+var ledgerActivityPaymentUserNullableFields = map[string]*big.Int{
+	"email": ledgerActivityPaymentUserFieldEmail,
+}
+
+// Customer associated with the payment. Email requires member:email:read.
+type LedgerActivityPaymentUser struct {
+	// Customer email, or null without member:email:read.
+	Email *string `json:"email,omitempty" url:"email,omitempty"`
+	// Customer ID, prefixed `user_`.
+	ID string `json:"id" url:"id"`
+	// Customer display name.
+	Name string `json:"name" url:"name"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LedgerActivityPaymentUser) GetEmail() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Email
+}
+
+func (l *LedgerActivityPaymentUser) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LedgerActivityPaymentUser) GetName() string {
+	if l == nil {
+		return ""
+	}
+	return l.Name
+}
+
+func (l *LedgerActivityPaymentUser) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LedgerActivityPaymentUser) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPaymentUser) SetEmail(email *string) {
+	l.Email = email
+	l.require(ledgerActivityPaymentUserFieldEmail)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPaymentUser) SetID(id string) {
+	l.ID = id
+	l.require(ledgerActivityPaymentUserFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPaymentUser) SetName(name string) {
+	l.Name = name
+	l.require(ledgerActivityPaymentUserFieldName)
+}
+
+func (l *LedgerActivityPaymentUser) UnmarshalJSON(data []byte) error {
+	type unmarshaler LedgerActivityPaymentUser
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LedgerActivityPaymentUser(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivityPaymentUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LedgerActivityPaymentUser) MarshalJSON() ([]byte, error) {
+	type embed LedgerActivityPaymentUser
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LedgerActivityPaymentUser) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+// Resource associated with this ledger activity.
+type LedgerActivityResource struct {
+	LedgerActivityResourceLogoURL          *LedgerActivityResourceLogoURL
+	LedgerActivityResourceName             *LedgerActivityResourceName
+	LedgerActivityResourceTwo              *LedgerActivityResourceTwo
+	LedgerActivityResourceOwner            *LedgerActivityResourceOwner
+	LedgerActivityResourceBank             *LedgerActivityResourceBank
+	LedgerActivityResourceAccountReference *LedgerActivityResourceAccountReference
+	LedgerActivityResourceAuthorizedAt     *LedgerActivityResourceAuthorizedAt
+
+	typ string
+}
+
+func (l *LedgerActivityResource) GetLedgerActivityResourceLogoURL() *LedgerActivityResourceLogoURL {
+	if l == nil {
+		return nil
+	}
+	return l.LedgerActivityResourceLogoURL
+}
+
+func (l *LedgerActivityResource) GetLedgerActivityResourceName() *LedgerActivityResourceName {
+	if l == nil {
+		return nil
+	}
+	return l.LedgerActivityResourceName
+}
+
+func (l *LedgerActivityResource) GetLedgerActivityResourceTwo() *LedgerActivityResourceTwo {
+	if l == nil {
+		return nil
+	}
+	return l.LedgerActivityResourceTwo
+}
+
+func (l *LedgerActivityResource) GetLedgerActivityResourceOwner() *LedgerActivityResourceOwner {
+	if l == nil {
+		return nil
+	}
+	return l.LedgerActivityResourceOwner
+}
+
+func (l *LedgerActivityResource) GetLedgerActivityResourceBank() *LedgerActivityResourceBank {
+	if l == nil {
+		return nil
+	}
+	return l.LedgerActivityResourceBank
+}
+
+func (l *LedgerActivityResource) GetLedgerActivityResourceAccountReference() *LedgerActivityResourceAccountReference {
+	if l == nil {
+		return nil
+	}
+	return l.LedgerActivityResourceAccountReference
+}
+
+func (l *LedgerActivityResource) GetLedgerActivityResourceAuthorizedAt() *LedgerActivityResourceAuthorizedAt {
+	if l == nil {
+		return nil
+	}
+	return l.LedgerActivityResourceAuthorizedAt
+}
+
+func (l *LedgerActivityResource) UnmarshalJSON(data []byte) error {
+	if internal.MatchesObjectKeys(data, []string{"id", "logo_url", "object", "route", "title"}, []string{"id", "object"}) {
+		valueLedgerActivityResourceLogoURL := new(LedgerActivityResourceLogoURL)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceLogoURL); err == nil {
+			l.typ = "LedgerActivityResourceLogoURL"
+			l.LedgerActivityResourceLogoURL = valueLedgerActivityResourceLogoURL
+			return nil
+		}
+	}
+	if internal.MatchesObjectKeys(data, []string{"id", "name", "object", "profile_picture_url", "username"}, []string{"id", "object"}) {
+		valueLedgerActivityResourceName := new(LedgerActivityResourceName)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceName); err == nil {
+			l.typ = "LedgerActivityResourceName"
+			l.LedgerActivityResourceName = valueLedgerActivityResourceName
+			return nil
+		}
+	}
+	if internal.MatchesObjectKeys(data, []string{"id", "object", "status", "title"}, []string{"id", "object", "status", "title"}) {
+		valueLedgerActivityResourceTwo := new(LedgerActivityResourceTwo)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceTwo); err == nil {
+			l.typ = "LedgerActivityResourceTwo"
+			l.LedgerActivityResourceTwo = valueLedgerActivityResourceTwo
+			return nil
+		}
+	}
+	if internal.MatchesObjectKeys(data, []string{"id", "object", "owner"}, []string{"id", "object"}) {
+		valueLedgerActivityResourceOwner := new(LedgerActivityResourceOwner)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceOwner); err == nil {
+			l.typ = "LedgerActivityResourceOwner"
+			l.LedgerActivityResourceOwner = valueLedgerActivityResourceOwner
+			return nil
+		}
+	}
+	if internal.MatchesObjectKeys(data, []string{"bank", "card", "email_identifier", "gateway_type", "id", "object", "payment_method_type"}, []string{"id", "object"}) {
+		valueLedgerActivityResourceBank := new(LedgerActivityResourceBank)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceBank); err == nil {
+			l.typ = "LedgerActivityResourceBank"
+			l.LedgerActivityResourceBank = valueLedgerActivityResourceBank
+			return nil
+		}
+	}
+	if internal.MatchesObjectKeys(data, []string{"account_reference", "destination_currency_code", "id", "institution_name", "nickname", "object", "provider"}, []string{"id", "object"}) {
+		valueLedgerActivityResourceAccountReference := new(LedgerActivityResourceAccountReference)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceAccountReference); err == nil {
+			l.typ = "LedgerActivityResourceAccountReference"
+			l.LedgerActivityResourceAccountReference = valueLedgerActivityResourceAccountReference
+			return nil
+		}
+	}
+	if internal.MatchesObjectKeys(data, []string{"authorized_at", "card_id", "cashback_usd", "declined_reason", "id", "local_amount", "local_currency", "merchant_category", "merchant_icon_url", "merchant_name", "object", "posted_at", "status", "usd_amount"}, []string{"id", "object"}) {
+		valueLedgerActivityResourceAuthorizedAt := new(LedgerActivityResourceAuthorizedAt)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceAuthorizedAt); err == nil {
+			l.typ = "LedgerActivityResourceAuthorizedAt"
+			l.LedgerActivityResourceAuthorizedAt = valueLedgerActivityResourceAuthorizedAt
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"id", "object"}) {
+		valueLedgerActivityResourceLogoURL := new(LedgerActivityResourceLogoURL)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceLogoURL); err == nil {
+			l.typ = "LedgerActivityResourceLogoURL"
+			l.LedgerActivityResourceLogoURL = valueLedgerActivityResourceLogoURL
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"id", "object"}) {
+		valueLedgerActivityResourceName := new(LedgerActivityResourceName)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceName); err == nil {
+			l.typ = "LedgerActivityResourceName"
+			l.LedgerActivityResourceName = valueLedgerActivityResourceName
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"id", "object", "status", "title"}) {
+		valueLedgerActivityResourceTwo := new(LedgerActivityResourceTwo)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceTwo); err == nil {
+			l.typ = "LedgerActivityResourceTwo"
+			l.LedgerActivityResourceTwo = valueLedgerActivityResourceTwo
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"id", "object"}) {
+		valueLedgerActivityResourceOwner := new(LedgerActivityResourceOwner)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceOwner); err == nil {
+			l.typ = "LedgerActivityResourceOwner"
+			l.LedgerActivityResourceOwner = valueLedgerActivityResourceOwner
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"id", "object"}) {
+		valueLedgerActivityResourceBank := new(LedgerActivityResourceBank)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceBank); err == nil {
+			l.typ = "LedgerActivityResourceBank"
+			l.LedgerActivityResourceBank = valueLedgerActivityResourceBank
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"id", "object"}) {
+		valueLedgerActivityResourceAccountReference := new(LedgerActivityResourceAccountReference)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceAccountReference); err == nil {
+			l.typ = "LedgerActivityResourceAccountReference"
+			l.LedgerActivityResourceAccountReference = valueLedgerActivityResourceAccountReference
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"id", "object"}) {
+		valueLedgerActivityResourceAuthorizedAt := new(LedgerActivityResourceAuthorizedAt)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceAuthorizedAt); err == nil {
+			l.typ = "LedgerActivityResourceAuthorizedAt"
+			l.LedgerActivityResourceAuthorizedAt = valueLedgerActivityResourceAuthorizedAt
+			return nil
+		}
+	}
+	valueLedgerActivityResourceLogoURL := new(LedgerActivityResourceLogoURL)
+	if err := json.Unmarshal(data, &valueLedgerActivityResourceLogoURL); err == nil {
+		l.typ = "LedgerActivityResourceLogoURL"
+		l.LedgerActivityResourceLogoURL = valueLedgerActivityResourceLogoURL
+		return nil
+	}
+	valueLedgerActivityResourceName := new(LedgerActivityResourceName)
+	if err := json.Unmarshal(data, &valueLedgerActivityResourceName); err == nil {
+		l.typ = "LedgerActivityResourceName"
+		l.LedgerActivityResourceName = valueLedgerActivityResourceName
+		return nil
+	}
+	valueLedgerActivityResourceTwo := new(LedgerActivityResourceTwo)
+	if err := json.Unmarshal(data, &valueLedgerActivityResourceTwo); err == nil {
+		l.typ = "LedgerActivityResourceTwo"
+		l.LedgerActivityResourceTwo = valueLedgerActivityResourceTwo
+		return nil
+	}
+	valueLedgerActivityResourceOwner := new(LedgerActivityResourceOwner)
+	if err := json.Unmarshal(data, &valueLedgerActivityResourceOwner); err == nil {
+		l.typ = "LedgerActivityResourceOwner"
+		l.LedgerActivityResourceOwner = valueLedgerActivityResourceOwner
+		return nil
+	}
+	valueLedgerActivityResourceBank := new(LedgerActivityResourceBank)
+	if err := json.Unmarshal(data, &valueLedgerActivityResourceBank); err == nil {
+		l.typ = "LedgerActivityResourceBank"
+		l.LedgerActivityResourceBank = valueLedgerActivityResourceBank
+		return nil
+	}
+	valueLedgerActivityResourceAccountReference := new(LedgerActivityResourceAccountReference)
+	if err := json.Unmarshal(data, &valueLedgerActivityResourceAccountReference); err == nil {
+		l.typ = "LedgerActivityResourceAccountReference"
+		l.LedgerActivityResourceAccountReference = valueLedgerActivityResourceAccountReference
+		return nil
+	}
+	valueLedgerActivityResourceAuthorizedAt := new(LedgerActivityResourceAuthorizedAt)
+	if err := json.Unmarshal(data, &valueLedgerActivityResourceAuthorizedAt); err == nil {
+		l.typ = "LedgerActivityResourceAuthorizedAt"
+		l.LedgerActivityResourceAuthorizedAt = valueLedgerActivityResourceAuthorizedAt
+		return nil
+	}
+	return fmt.Errorf("%s cannot be deserialized as a %T", data, l)
+}
+
+func (l LedgerActivityResource) MarshalJSON() ([]byte, error) {
+	if l.typ == "LedgerActivityResourceLogoURL" || l.LedgerActivityResourceLogoURL != nil {
+		return json.Marshal(l.LedgerActivityResourceLogoURL)
+	}
+	if l.typ == "LedgerActivityResourceName" || l.LedgerActivityResourceName != nil {
+		return json.Marshal(l.LedgerActivityResourceName)
+	}
+	if l.typ == "LedgerActivityResourceTwo" || l.LedgerActivityResourceTwo != nil {
+		return json.Marshal(l.LedgerActivityResourceTwo)
+	}
+	if l.typ == "LedgerActivityResourceOwner" || l.LedgerActivityResourceOwner != nil {
+		return json.Marshal(l.LedgerActivityResourceOwner)
+	}
+	if l.typ == "LedgerActivityResourceBank" || l.LedgerActivityResourceBank != nil {
+		return json.Marshal(l.LedgerActivityResourceBank)
+	}
+	if l.typ == "LedgerActivityResourceAccountReference" || l.LedgerActivityResourceAccountReference != nil {
+		return json.Marshal(l.LedgerActivityResourceAccountReference)
+	}
+	if l.typ == "LedgerActivityResourceAuthorizedAt" || l.LedgerActivityResourceAuthorizedAt != nil {
+		return json.Marshal(l.LedgerActivityResourceAuthorizedAt)
+	}
+	return nil, fmt.Errorf("type %T does not include a non-empty union type", l)
+}
+
+type LedgerActivityResourceVisitor interface {
+	VisitLedgerActivityResourceLogoURL(*LedgerActivityResourceLogoURL) error
+	VisitLedgerActivityResourceName(*LedgerActivityResourceName) error
+	VisitLedgerActivityResourceTwo(*LedgerActivityResourceTwo) error
+	VisitLedgerActivityResourceOwner(*LedgerActivityResourceOwner) error
+	VisitLedgerActivityResourceBank(*LedgerActivityResourceBank) error
+	VisitLedgerActivityResourceAccountReference(*LedgerActivityResourceAccountReference) error
+	VisitLedgerActivityResourceAuthorizedAt(*LedgerActivityResourceAuthorizedAt) error
+}
+
+func (l *LedgerActivityResource) Accept(visitor LedgerActivityResourceVisitor) error {
+	if l.typ == "LedgerActivityResourceLogoURL" || l.LedgerActivityResourceLogoURL != nil {
+		return visitor.VisitLedgerActivityResourceLogoURL(l.LedgerActivityResourceLogoURL)
+	}
+	if l.typ == "LedgerActivityResourceName" || l.LedgerActivityResourceName != nil {
+		return visitor.VisitLedgerActivityResourceName(l.LedgerActivityResourceName)
+	}
+	if l.typ == "LedgerActivityResourceTwo" || l.LedgerActivityResourceTwo != nil {
+		return visitor.VisitLedgerActivityResourceTwo(l.LedgerActivityResourceTwo)
+	}
+	if l.typ == "LedgerActivityResourceOwner" || l.LedgerActivityResourceOwner != nil {
+		return visitor.VisitLedgerActivityResourceOwner(l.LedgerActivityResourceOwner)
+	}
+	if l.typ == "LedgerActivityResourceBank" || l.LedgerActivityResourceBank != nil {
+		return visitor.VisitLedgerActivityResourceBank(l.LedgerActivityResourceBank)
+	}
+	if l.typ == "LedgerActivityResourceAccountReference" || l.LedgerActivityResourceAccountReference != nil {
+		return visitor.VisitLedgerActivityResourceAccountReference(l.LedgerActivityResourceAccountReference)
+	}
+	if l.typ == "LedgerActivityResourceAuthorizedAt" || l.LedgerActivityResourceAuthorizedAt != nil {
+		return visitor.VisitLedgerActivityResourceAuthorizedAt(l.LedgerActivityResourceAuthorizedAt)
+	}
+	return fmt.Errorf("type %T does not include a non-empty union type", l)
+}
+
+var (
+	ledgerActivityResourceAccountReferenceFieldAccountReference        = big.NewInt(1 << 0)
+	ledgerActivityResourceAccountReferenceFieldDestinationCurrencyCode = big.NewInt(1 << 1)
+	ledgerActivityResourceAccountReferenceFieldID                      = big.NewInt(1 << 2)
+	ledgerActivityResourceAccountReferenceFieldInstitutionName         = big.NewInt(1 << 3)
+	ledgerActivityResourceAccountReferenceFieldNickname                = big.NewInt(1 << 4)
+	ledgerActivityResourceAccountReferenceFieldObject                  = big.NewInt(1 << 5)
+	ledgerActivityResourceAccountReferenceFieldProvider                = big.NewInt(1 << 6)
+)
+
+// ledgerActivityResourceAccountReferenceNullableFields maps the wire names of LedgerActivityResourceAccountReference's nullable fields (required or optional) to their field bits.
+var ledgerActivityResourceAccountReferenceNullableFields = map[string]*big.Int{
+	"account_reference":         ledgerActivityResourceAccountReferenceFieldAccountReference,
+	"destination_currency_code": ledgerActivityResourceAccountReferenceFieldDestinationCurrencyCode,
+	"institution_name":          ledgerActivityResourceAccountReferenceFieldInstitutionName,
+	"nickname":                  ledgerActivityResourceAccountReferenceFieldNickname,
+	"provider":                  ledgerActivityResourceAccountReferenceFieldProvider,
+}
+
+type LedgerActivityResourceAccountReference struct {
+	// Masked account reference.
+	AccountReference *string `json:"account_reference,omitempty" url:"account_reference,omitempty"`
+	// Destination currency code.
+	DestinationCurrencyCode *string `json:"destination_currency_code,omitempty" url:"destination_currency_code,omitempty"`
+	// Payout method ID.
+	ID string `json:"id" url:"id"`
+	// Payout institution name.
+	InstitutionName *string `json:"institution_name,omitempty" url:"institution_name,omitempty"`
+	// Payout method nickname.
+	Nickname *string                                      `json:"nickname,omitempty" url:"nickname,omitempty"`
+	Object   LedgerActivityResourceAccountReferenceObject `json:"object" url:"object"`
+	// Payout provider.
+	Provider *string `json:"provider,omitempty" url:"provider,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LedgerActivityResourceAccountReference) GetAccountReference() *string {
+	if l == nil {
+		return nil
+	}
+	return l.AccountReference
+}
+
+func (l *LedgerActivityResourceAccountReference) GetDestinationCurrencyCode() *string {
+	if l == nil {
+		return nil
+	}
+	return l.DestinationCurrencyCode
+}
+
+func (l *LedgerActivityResourceAccountReference) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LedgerActivityResourceAccountReference) GetInstitutionName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.InstitutionName
+}
+
+func (l *LedgerActivityResourceAccountReference) GetNickname() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Nickname
+}
+
+func (l *LedgerActivityResourceAccountReference) GetObject() LedgerActivityResourceAccountReferenceObject {
+	if l == nil {
+		return ""
+	}
+	return l.Object
+}
+
+func (l *LedgerActivityResourceAccountReference) GetProvider() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Provider
+}
+
+func (l *LedgerActivityResourceAccountReference) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LedgerActivityResourceAccountReference) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetAccountReference sets the AccountReference field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceAccountReference) SetAccountReference(accountReference *string) {
+	l.AccountReference = accountReference
+	l.require(ledgerActivityResourceAccountReferenceFieldAccountReference)
+}
+
+// SetDestinationCurrencyCode sets the DestinationCurrencyCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceAccountReference) SetDestinationCurrencyCode(destinationCurrencyCode *string) {
+	l.DestinationCurrencyCode = destinationCurrencyCode
+	l.require(ledgerActivityResourceAccountReferenceFieldDestinationCurrencyCode)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceAccountReference) SetID(id string) {
+	l.ID = id
+	l.require(ledgerActivityResourceAccountReferenceFieldID)
+}
+
+// SetInstitutionName sets the InstitutionName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceAccountReference) SetInstitutionName(institutionName *string) {
+	l.InstitutionName = institutionName
+	l.require(ledgerActivityResourceAccountReferenceFieldInstitutionName)
+}
+
+// SetNickname sets the Nickname field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceAccountReference) SetNickname(nickname *string) {
+	l.Nickname = nickname
+	l.require(ledgerActivityResourceAccountReferenceFieldNickname)
+}
+
+// SetObject sets the Object field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceAccountReference) SetObject(object LedgerActivityResourceAccountReferenceObject) {
+	l.Object = object
+	l.require(ledgerActivityResourceAccountReferenceFieldObject)
+}
+
+// SetProvider sets the Provider field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceAccountReference) SetProvider(provider *string) {
+	l.Provider = provider
+	l.require(ledgerActivityResourceAccountReferenceFieldProvider)
+}
+
+func (l *LedgerActivityResourceAccountReference) UnmarshalJSON(data []byte) error {
+	type unmarshaler LedgerActivityResourceAccountReference
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LedgerActivityResourceAccountReference(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivityResourceAccountReferenceNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LedgerActivityResourceAccountReference) MarshalJSON() ([]byte, error) {
+	type embed LedgerActivityResourceAccountReference
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LedgerActivityResourceAccountReference) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LedgerActivityResourceAccountReferenceObject string
+
+const (
+	LedgerActivityResourceAccountReferenceObjectPayoutMethod LedgerActivityResourceAccountReferenceObject = "payout_method"
+)
+
+func NewLedgerActivityResourceAccountReferenceObjectFromString(s string) (LedgerActivityResourceAccountReferenceObject, error) {
+	switch s {
+	case "payout_method":
+		return LedgerActivityResourceAccountReferenceObjectPayoutMethod, nil
+	}
+	var t LedgerActivityResourceAccountReferenceObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LedgerActivityResourceAccountReferenceObject) Ptr() *LedgerActivityResourceAccountReferenceObject {
+	return &l
+}
+
+var (
+	ledgerActivityResourceAuthorizedAtFieldAuthorizedAt     = big.NewInt(1 << 0)
+	ledgerActivityResourceAuthorizedAtFieldCardID           = big.NewInt(1 << 1)
+	ledgerActivityResourceAuthorizedAtFieldCashbackUsd      = big.NewInt(1 << 2)
+	ledgerActivityResourceAuthorizedAtFieldDeclinedReason   = big.NewInt(1 << 3)
+	ledgerActivityResourceAuthorizedAtFieldID               = big.NewInt(1 << 4)
+	ledgerActivityResourceAuthorizedAtFieldLocalAmount      = big.NewInt(1 << 5)
+	ledgerActivityResourceAuthorizedAtFieldLocalCurrency    = big.NewInt(1 << 6)
+	ledgerActivityResourceAuthorizedAtFieldMerchantCategory = big.NewInt(1 << 7)
+	ledgerActivityResourceAuthorizedAtFieldMerchantIconURL  = big.NewInt(1 << 8)
+	ledgerActivityResourceAuthorizedAtFieldMerchantName     = big.NewInt(1 << 9)
+	ledgerActivityResourceAuthorizedAtFieldObject           = big.NewInt(1 << 10)
+	ledgerActivityResourceAuthorizedAtFieldPostedAt         = big.NewInt(1 << 11)
+	ledgerActivityResourceAuthorizedAtFieldStatus           = big.NewInt(1 << 12)
+	ledgerActivityResourceAuthorizedAtFieldUsdAmount        = big.NewInt(1 << 13)
+)
+
+// ledgerActivityResourceAuthorizedAtNullableFields maps the wire names of LedgerActivityResourceAuthorizedAt's nullable fields (required or optional) to their field bits.
+var ledgerActivityResourceAuthorizedAtNullableFields = map[string]*big.Int{
+	"authorized_at":     ledgerActivityResourceAuthorizedAtFieldAuthorizedAt,
+	"card_id":           ledgerActivityResourceAuthorizedAtFieldCardID,
+	"cashback_usd":      ledgerActivityResourceAuthorizedAtFieldCashbackUsd,
+	"declined_reason":   ledgerActivityResourceAuthorizedAtFieldDeclinedReason,
+	"local_amount":      ledgerActivityResourceAuthorizedAtFieldLocalAmount,
+	"local_currency":    ledgerActivityResourceAuthorizedAtFieldLocalCurrency,
+	"merchant_category": ledgerActivityResourceAuthorizedAtFieldMerchantCategory,
+	"merchant_icon_url": ledgerActivityResourceAuthorizedAtFieldMerchantIconURL,
+	"merchant_name":     ledgerActivityResourceAuthorizedAtFieldMerchantName,
+	"posted_at":         ledgerActivityResourceAuthorizedAtFieldPostedAt,
+	"status":            ledgerActivityResourceAuthorizedAtFieldStatus,
+	"usd_amount":        ledgerActivityResourceAuthorizedAtFieldUsdAmount,
+}
+
+type LedgerActivityResourceAuthorizedAt struct {
+	// ISO 8601 timestamp the transaction was authorized.
+	AuthorizedAt *time.Time `json:"authorized_at,omitempty" url:"authorized_at,omitempty"`
+	// Identifier of the card that the transaction was charged to.
+	CardID *string `json:"card_id,omitempty" url:"card_id,omitempty"`
+	// Cashback earned on this transaction as a USD decimal string. Zero for declined or ineligible transactions; null when cashback has not been computed yet.
+	CashbackUsd *string `json:"cashback_usd,omitempty" url:"cashback_usd,omitempty"`
+	// Reason the transaction was declined (when status is declined).
+	DeclinedReason *string `json:"declined_reason,omitempty" url:"declined_reason,omitempty"`
+	// Card transaction ID.
+	ID string `json:"id" url:"id"`
+	// Amount the merchant charged in their local currency, as a decimal string. Pair with local_currency.
+	LocalAmount *string `json:"local_amount,omitempty" url:"local_amount,omitempty"`
+	// ISO 4217 currency code of the merchant-charged amount in local_amount.
+	LocalCurrency *string `json:"local_currency,omitempty" url:"local_currency,omitempty"`
+	// Merchant category.
+	MerchantCategory *string `json:"merchant_category,omitempty" url:"merchant_category,omitempty"`
+	// Merchant icon URL.
+	MerchantIconURL *string `json:"merchant_icon_url,omitempty" url:"merchant_icon_url,omitempty"`
+	// Merchant display name.
+	MerchantName *string                                  `json:"merchant_name,omitempty" url:"merchant_name,omitempty"`
+	Object       LedgerActivityResourceAuthorizedAtObject `json:"object" url:"object"`
+	// ISO 8601 timestamp the transaction was settled by the card network.
+	PostedAt *time.Time `json:"posted_at,omitempty" url:"posted_at,omitempty"`
+	// Current card transaction status.
+	Status *string `json:"status,omitempty" url:"status,omitempty"`
+	// The processor-settled USD amount as a decimal string.
+	UsdAmount *string `json:"usd_amount,omitempty" url:"usd_amount,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LedgerActivityResourceAuthorizedAt) GetAuthorizedAt() *time.Time {
+	if l == nil {
+		return nil
+	}
+	return l.AuthorizedAt
+}
+
+func (l *LedgerActivityResourceAuthorizedAt) GetCardID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.CardID
+}
+
+func (l *LedgerActivityResourceAuthorizedAt) GetCashbackUsd() *string {
+	if l == nil {
+		return nil
+	}
+	return l.CashbackUsd
+}
+
+func (l *LedgerActivityResourceAuthorizedAt) GetDeclinedReason() *string {
+	if l == nil {
+		return nil
+	}
+	return l.DeclinedReason
+}
+
+func (l *LedgerActivityResourceAuthorizedAt) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LedgerActivityResourceAuthorizedAt) GetLocalAmount() *string {
+	if l == nil {
+		return nil
+	}
+	return l.LocalAmount
+}
+
+func (l *LedgerActivityResourceAuthorizedAt) GetLocalCurrency() *string {
+	if l == nil {
+		return nil
+	}
+	return l.LocalCurrency
+}
+
+func (l *LedgerActivityResourceAuthorizedAt) GetMerchantCategory() *string {
+	if l == nil {
+		return nil
+	}
+	return l.MerchantCategory
+}
+
+func (l *LedgerActivityResourceAuthorizedAt) GetMerchantIconURL() *string {
+	if l == nil {
+		return nil
+	}
+	return l.MerchantIconURL
+}
+
+func (l *LedgerActivityResourceAuthorizedAt) GetMerchantName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.MerchantName
+}
+
+func (l *LedgerActivityResourceAuthorizedAt) GetObject() LedgerActivityResourceAuthorizedAtObject {
+	if l == nil {
+		return ""
+	}
+	return l.Object
+}
+
+func (l *LedgerActivityResourceAuthorizedAt) GetPostedAt() *time.Time {
+	if l == nil {
+		return nil
+	}
+	return l.PostedAt
+}
+
+func (l *LedgerActivityResourceAuthorizedAt) GetStatus() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Status
+}
+
+func (l *LedgerActivityResourceAuthorizedAt) GetUsdAmount() *string {
+	if l == nil {
+		return nil
+	}
+	return l.UsdAmount
+}
+
+func (l *LedgerActivityResourceAuthorizedAt) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LedgerActivityResourceAuthorizedAt) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetAuthorizedAt sets the AuthorizedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceAuthorizedAt) SetAuthorizedAt(authorizedAt *time.Time) {
+	l.AuthorizedAt = authorizedAt
+	l.require(ledgerActivityResourceAuthorizedAtFieldAuthorizedAt)
+}
+
+// SetCardID sets the CardID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceAuthorizedAt) SetCardID(cardID *string) {
+	l.CardID = cardID
+	l.require(ledgerActivityResourceAuthorizedAtFieldCardID)
+}
+
+// SetCashbackUsd sets the CashbackUsd field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceAuthorizedAt) SetCashbackUsd(cashbackUsd *string) {
+	l.CashbackUsd = cashbackUsd
+	l.require(ledgerActivityResourceAuthorizedAtFieldCashbackUsd)
+}
+
+// SetDeclinedReason sets the DeclinedReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceAuthorizedAt) SetDeclinedReason(declinedReason *string) {
+	l.DeclinedReason = declinedReason
+	l.require(ledgerActivityResourceAuthorizedAtFieldDeclinedReason)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceAuthorizedAt) SetID(id string) {
+	l.ID = id
+	l.require(ledgerActivityResourceAuthorizedAtFieldID)
+}
+
+// SetLocalAmount sets the LocalAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceAuthorizedAt) SetLocalAmount(localAmount *string) {
+	l.LocalAmount = localAmount
+	l.require(ledgerActivityResourceAuthorizedAtFieldLocalAmount)
+}
+
+// SetLocalCurrency sets the LocalCurrency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceAuthorizedAt) SetLocalCurrency(localCurrency *string) {
+	l.LocalCurrency = localCurrency
+	l.require(ledgerActivityResourceAuthorizedAtFieldLocalCurrency)
+}
+
+// SetMerchantCategory sets the MerchantCategory field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceAuthorizedAt) SetMerchantCategory(merchantCategory *string) {
+	l.MerchantCategory = merchantCategory
+	l.require(ledgerActivityResourceAuthorizedAtFieldMerchantCategory)
+}
+
+// SetMerchantIconURL sets the MerchantIconURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceAuthorizedAt) SetMerchantIconURL(merchantIconURL *string) {
+	l.MerchantIconURL = merchantIconURL
+	l.require(ledgerActivityResourceAuthorizedAtFieldMerchantIconURL)
+}
+
+// SetMerchantName sets the MerchantName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceAuthorizedAt) SetMerchantName(merchantName *string) {
+	l.MerchantName = merchantName
+	l.require(ledgerActivityResourceAuthorizedAtFieldMerchantName)
+}
+
+// SetObject sets the Object field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceAuthorizedAt) SetObject(object LedgerActivityResourceAuthorizedAtObject) {
+	l.Object = object
+	l.require(ledgerActivityResourceAuthorizedAtFieldObject)
+}
+
+// SetPostedAt sets the PostedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceAuthorizedAt) SetPostedAt(postedAt *time.Time) {
+	l.PostedAt = postedAt
+	l.require(ledgerActivityResourceAuthorizedAtFieldPostedAt)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceAuthorizedAt) SetStatus(status *string) {
+	l.Status = status
+	l.require(ledgerActivityResourceAuthorizedAtFieldStatus)
+}
+
+// SetUsdAmount sets the UsdAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceAuthorizedAt) SetUsdAmount(usdAmount *string) {
+	l.UsdAmount = usdAmount
+	l.require(ledgerActivityResourceAuthorizedAtFieldUsdAmount)
+}
+
+func (l *LedgerActivityResourceAuthorizedAt) UnmarshalJSON(data []byte) error {
+	type embed LedgerActivityResourceAuthorizedAt
+	var unmarshaler = struct {
+		embed
+		AuthorizedAt *internal.DateTime `json:"authorized_at,omitempty"`
+		PostedAt     *internal.DateTime `json:"posted_at,omitempty"`
+	}{
+		embed: embed(*l),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*l = LedgerActivityResourceAuthorizedAt(unmarshaler.embed)
+	l.AuthorizedAt = unmarshaler.AuthorizedAt.TimePtr()
+	l.PostedAt = unmarshaler.PostedAt.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivityResourceAuthorizedAtNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LedgerActivityResourceAuthorizedAt) MarshalJSON() ([]byte, error) {
+	type embed LedgerActivityResourceAuthorizedAt
+	var marshaler = struct {
+		embed
+		AuthorizedAt *internal.DateTime `json:"authorized_at,omitempty"`
+		PostedAt     *internal.DateTime `json:"posted_at,omitempty"`
+	}{
+		embed:        embed(*l),
+		AuthorizedAt: internal.NewOptionalDateTime(l.AuthorizedAt),
+		PostedAt:     internal.NewOptionalDateTime(l.PostedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LedgerActivityResourceAuthorizedAt) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LedgerActivityResourceAuthorizedAtObject string
+
+const (
+	LedgerActivityResourceAuthorizedAtObjectCardTransaction LedgerActivityResourceAuthorizedAtObject = "card_transaction"
+)
+
+func NewLedgerActivityResourceAuthorizedAtObjectFromString(s string) (LedgerActivityResourceAuthorizedAtObject, error) {
+	switch s {
+	case "card_transaction":
+		return LedgerActivityResourceAuthorizedAtObjectCardTransaction, nil
+	}
+	var t LedgerActivityResourceAuthorizedAtObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LedgerActivityResourceAuthorizedAtObject) Ptr() *LedgerActivityResourceAuthorizedAtObject {
+	return &l
+}
+
+var (
+	ledgerActivityResourceBankFieldBank              = big.NewInt(1 << 0)
+	ledgerActivityResourceBankFieldCard              = big.NewInt(1 << 1)
+	ledgerActivityResourceBankFieldEmailIdentifier   = big.NewInt(1 << 2)
+	ledgerActivityResourceBankFieldGatewayType       = big.NewInt(1 << 3)
+	ledgerActivityResourceBankFieldID                = big.NewInt(1 << 4)
+	ledgerActivityResourceBankFieldObject            = big.NewInt(1 << 5)
+	ledgerActivityResourceBankFieldPaymentMethodType = big.NewInt(1 << 6)
+)
+
+// ledgerActivityResourceBankNullableFields maps the wire names of LedgerActivityResourceBank's nullable fields (required or optional) to their field bits.
+var ledgerActivityResourceBankNullableFields = map[string]*big.Int{
+	"bank":                ledgerActivityResourceBankFieldBank,
+	"card":                ledgerActivityResourceBankFieldCard,
+	"email_identifier":    ledgerActivityResourceBankFieldEmailIdentifier,
+	"gateway_type":        ledgerActivityResourceBankFieldGatewayType,
+	"payment_method_type": ledgerActivityResourceBankFieldPaymentMethodType,
+}
+
+type LedgerActivityResourceBank struct {
+	Bank *LedgerActivityResourceBankBank `json:"bank,omitempty" url:"bank,omitempty"`
+	Card *LedgerActivityResourceBankCard `json:"card,omitempty" url:"card,omitempty"`
+	// Email identifier for email-based payment methods.
+	EmailIdentifier *string `json:"email_identifier,omitempty" url:"email_identifier,omitempty"`
+	// Payment gateway type.
+	GatewayType *string `json:"gateway_type,omitempty" url:"gateway_type,omitempty"`
+	// Payment method ID.
+	ID     string                           `json:"id" url:"id"`
+	Object LedgerActivityResourceBankObject `json:"object" url:"object"`
+	// Payment method type.
+	PaymentMethodType *string `json:"payment_method_type,omitempty" url:"payment_method_type,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LedgerActivityResourceBank) GetBank() *LedgerActivityResourceBankBank {
+	if l == nil {
+		return nil
+	}
+	return l.Bank
+}
+
+func (l *LedgerActivityResourceBank) GetCard() *LedgerActivityResourceBankCard {
+	if l == nil {
+		return nil
+	}
+	return l.Card
+}
+
+func (l *LedgerActivityResourceBank) GetEmailIdentifier() *string {
+	if l == nil {
+		return nil
+	}
+	return l.EmailIdentifier
+}
+
+func (l *LedgerActivityResourceBank) GetGatewayType() *string {
+	if l == nil {
+		return nil
+	}
+	return l.GatewayType
+}
+
+func (l *LedgerActivityResourceBank) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LedgerActivityResourceBank) GetObject() LedgerActivityResourceBankObject {
+	if l == nil {
+		return ""
+	}
+	return l.Object
+}
+
+func (l *LedgerActivityResourceBank) GetPaymentMethodType() *string {
+	if l == nil {
+		return nil
+	}
+	return l.PaymentMethodType
+}
+
+func (l *LedgerActivityResourceBank) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LedgerActivityResourceBank) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetBank sets the Bank field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceBank) SetBank(bank *LedgerActivityResourceBankBank) {
+	l.Bank = bank
+	l.require(ledgerActivityResourceBankFieldBank)
+}
+
+// SetCard sets the Card field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceBank) SetCard(card *LedgerActivityResourceBankCard) {
+	l.Card = card
+	l.require(ledgerActivityResourceBankFieldCard)
+}
+
+// SetEmailIdentifier sets the EmailIdentifier field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceBank) SetEmailIdentifier(emailIdentifier *string) {
+	l.EmailIdentifier = emailIdentifier
+	l.require(ledgerActivityResourceBankFieldEmailIdentifier)
+}
+
+// SetGatewayType sets the GatewayType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceBank) SetGatewayType(gatewayType *string) {
+	l.GatewayType = gatewayType
+	l.require(ledgerActivityResourceBankFieldGatewayType)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceBank) SetID(id string) {
+	l.ID = id
+	l.require(ledgerActivityResourceBankFieldID)
+}
+
+// SetObject sets the Object field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceBank) SetObject(object LedgerActivityResourceBankObject) {
+	l.Object = object
+	l.require(ledgerActivityResourceBankFieldObject)
+}
+
+// SetPaymentMethodType sets the PaymentMethodType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceBank) SetPaymentMethodType(paymentMethodType *string) {
+	l.PaymentMethodType = paymentMethodType
+	l.require(ledgerActivityResourceBankFieldPaymentMethodType)
+}
+
+func (l *LedgerActivityResourceBank) UnmarshalJSON(data []byte) error {
+	type unmarshaler LedgerActivityResourceBank
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LedgerActivityResourceBank(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivityResourceBankNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LedgerActivityResourceBank) MarshalJSON() ([]byte, error) {
+	type embed LedgerActivityResourceBank
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LedgerActivityResourceBank) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	ledgerActivityResourceBankBankFieldAccountName = big.NewInt(1 << 0)
+	ledgerActivityResourceBankBankFieldAccountType = big.NewInt(1 << 1)
+	ledgerActivityResourceBankBankFieldBankName    = big.NewInt(1 << 2)
+	ledgerActivityResourceBankBankFieldLast4       = big.NewInt(1 << 3)
+)
+
+// ledgerActivityResourceBankBankNullableFields maps the wire names of LedgerActivityResourceBankBank's nullable fields (required or optional) to their field bits.
+var ledgerActivityResourceBankBankNullableFields = map[string]*big.Int{
+	"account_name": ledgerActivityResourceBankBankFieldAccountName,
+	"account_type": ledgerActivityResourceBankBankFieldAccountType,
+	"bank_name":    ledgerActivityResourceBankBankFieldBankName,
+	"last4":        ledgerActivityResourceBankBankFieldLast4,
+}
+
+type LedgerActivityResourceBankBank struct {
+	// Bank account holder name.
+	AccountName *string `json:"account_name,omitempty" url:"account_name,omitempty"`
+	// Bank account type.
+	AccountType *string `json:"account_type,omitempty" url:"account_type,omitempty"`
+	// Bank name.
+	BankName *string `json:"bank_name,omitempty" url:"bank_name,omitempty"`
+	// Last four digits of the bank account.
+	Last4 *string `json:"last4,omitempty" url:"last4,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LedgerActivityResourceBankBank) GetAccountName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.AccountName
+}
+
+func (l *LedgerActivityResourceBankBank) GetAccountType() *string {
+	if l == nil {
+		return nil
+	}
+	return l.AccountType
+}
+
+func (l *LedgerActivityResourceBankBank) GetBankName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.BankName
+}
+
+func (l *LedgerActivityResourceBankBank) GetLast4() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Last4
+}
+
+func (l *LedgerActivityResourceBankBank) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LedgerActivityResourceBankBank) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetAccountName sets the AccountName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceBankBank) SetAccountName(accountName *string) {
+	l.AccountName = accountName
+	l.require(ledgerActivityResourceBankBankFieldAccountName)
+}
+
+// SetAccountType sets the AccountType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceBankBank) SetAccountType(accountType *string) {
+	l.AccountType = accountType
+	l.require(ledgerActivityResourceBankBankFieldAccountType)
+}
+
+// SetBankName sets the BankName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceBankBank) SetBankName(bankName *string) {
+	l.BankName = bankName
+	l.require(ledgerActivityResourceBankBankFieldBankName)
+}
+
+// SetLast4 sets the Last4 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceBankBank) SetLast4(last4 *string) {
+	l.Last4 = last4
+	l.require(ledgerActivityResourceBankBankFieldLast4)
+}
+
+func (l *LedgerActivityResourceBankBank) UnmarshalJSON(data []byte) error {
+	type unmarshaler LedgerActivityResourceBankBank
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LedgerActivityResourceBankBank(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivityResourceBankBankNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LedgerActivityResourceBankBank) MarshalJSON() ([]byte, error) {
+	type embed LedgerActivityResourceBankBank
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LedgerActivityResourceBankBank) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	ledgerActivityResourceBankCardFieldBrand    = big.NewInt(1 << 0)
+	ledgerActivityResourceBankCardFieldExpMonth = big.NewInt(1 << 1)
+	ledgerActivityResourceBankCardFieldExpYear  = big.NewInt(1 << 2)
+	ledgerActivityResourceBankCardFieldLast4    = big.NewInt(1 << 3)
+)
+
+// ledgerActivityResourceBankCardNullableFields maps the wire names of LedgerActivityResourceBankCard's nullable fields (required or optional) to their field bits.
+var ledgerActivityResourceBankCardNullableFields = map[string]*big.Int{
+	"brand":     ledgerActivityResourceBankCardFieldBrand,
+	"exp_month": ledgerActivityResourceBankCardFieldExpMonth,
+	"exp_year":  ledgerActivityResourceBankCardFieldExpYear,
+	"last4":     ledgerActivityResourceBankCardFieldLast4,
+}
+
+type LedgerActivityResourceBankCard struct {
+	// Card brand.
+	Brand *string `json:"brand,omitempty" url:"brand,omitempty"`
+	// Card expiration month.
+	ExpMonth *int `json:"exp_month,omitempty" url:"exp_month,omitempty"`
+	// Card expiration year.
+	ExpYear *int `json:"exp_year,omitempty" url:"exp_year,omitempty"`
+	// Last four digits of the card.
+	Last4 *string `json:"last4,omitempty" url:"last4,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LedgerActivityResourceBankCard) GetBrand() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Brand
+}
+
+func (l *LedgerActivityResourceBankCard) GetExpMonth() *int {
+	if l == nil {
+		return nil
+	}
+	return l.ExpMonth
+}
+
+func (l *LedgerActivityResourceBankCard) GetExpYear() *int {
+	if l == nil {
+		return nil
+	}
+	return l.ExpYear
+}
+
+func (l *LedgerActivityResourceBankCard) GetLast4() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Last4
+}
+
+func (l *LedgerActivityResourceBankCard) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LedgerActivityResourceBankCard) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetBrand sets the Brand field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceBankCard) SetBrand(brand *string) {
+	l.Brand = brand
+	l.require(ledgerActivityResourceBankCardFieldBrand)
+}
+
+// SetExpMonth sets the ExpMonth field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceBankCard) SetExpMonth(expMonth *int) {
+	l.ExpMonth = expMonth
+	l.require(ledgerActivityResourceBankCardFieldExpMonth)
+}
+
+// SetExpYear sets the ExpYear field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceBankCard) SetExpYear(expYear *int) {
+	l.ExpYear = expYear
+	l.require(ledgerActivityResourceBankCardFieldExpYear)
+}
+
+// SetLast4 sets the Last4 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceBankCard) SetLast4(last4 *string) {
+	l.Last4 = last4
+	l.require(ledgerActivityResourceBankCardFieldLast4)
+}
+
+func (l *LedgerActivityResourceBankCard) UnmarshalJSON(data []byte) error {
+	type unmarshaler LedgerActivityResourceBankCard
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LedgerActivityResourceBankCard(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivityResourceBankCardNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LedgerActivityResourceBankCard) MarshalJSON() ([]byte, error) {
+	type embed LedgerActivityResourceBankCard
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LedgerActivityResourceBankCard) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LedgerActivityResourceBankObject string
+
+const (
+	LedgerActivityResourceBankObjectPaymentMethod LedgerActivityResourceBankObject = "payment_method"
+)
+
+func NewLedgerActivityResourceBankObjectFromString(s string) (LedgerActivityResourceBankObject, error) {
+	switch s {
+	case "payment_method":
+		return LedgerActivityResourceBankObjectPaymentMethod, nil
+	}
+	var t LedgerActivityResourceBankObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LedgerActivityResourceBankObject) Ptr() *LedgerActivityResourceBankObject {
+	return &l
+}
+
+var (
+	ledgerActivityResourceLogoURLFieldID      = big.NewInt(1 << 0)
+	ledgerActivityResourceLogoURLFieldLogoURL = big.NewInt(1 << 1)
+	ledgerActivityResourceLogoURLFieldObject  = big.NewInt(1 << 2)
+	ledgerActivityResourceLogoURLFieldRoute   = big.NewInt(1 << 3)
+	ledgerActivityResourceLogoURLFieldTitle   = big.NewInt(1 << 4)
+)
+
+// ledgerActivityResourceLogoURLNullableFields maps the wire names of LedgerActivityResourceLogoURL's nullable fields (required or optional) to their field bits.
+var ledgerActivityResourceLogoURLNullableFields = map[string]*big.Int{
+	"logo_url": ledgerActivityResourceLogoURLFieldLogoURL,
+	"route":    ledgerActivityResourceLogoURLFieldRoute,
+	"title":    ledgerActivityResourceLogoURLFieldTitle,
+}
+
+type LedgerActivityResourceLogoURL struct {
+	// Account ID.
+	ID string `json:"id" url:"id"`
+	// Account logo URL.
+	LogoURL *string                             `json:"logo_url,omitempty" url:"logo_url,omitempty"`
+	Object  LedgerActivityResourceLogoURLObject `json:"object" url:"object"`
+	// Account route.
+	Route *string `json:"route,omitempty" url:"route,omitempty"`
+	// Account display name.
+	Title *string `json:"title,omitempty" url:"title,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LedgerActivityResourceLogoURL) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LedgerActivityResourceLogoURL) GetLogoURL() *string {
+	if l == nil {
+		return nil
+	}
+	return l.LogoURL
+}
+
+func (l *LedgerActivityResourceLogoURL) GetObject() LedgerActivityResourceLogoURLObject {
+	if l == nil {
+		return ""
+	}
+	return l.Object
+}
+
+func (l *LedgerActivityResourceLogoURL) GetRoute() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Route
+}
+
+func (l *LedgerActivityResourceLogoURL) GetTitle() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Title
+}
+
+func (l *LedgerActivityResourceLogoURL) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LedgerActivityResourceLogoURL) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceLogoURL) SetID(id string) {
+	l.ID = id
+	l.require(ledgerActivityResourceLogoURLFieldID)
+}
+
+// SetLogoURL sets the LogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceLogoURL) SetLogoURL(logoURL *string) {
+	l.LogoURL = logoURL
+	l.require(ledgerActivityResourceLogoURLFieldLogoURL)
+}
+
+// SetObject sets the Object field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceLogoURL) SetObject(object LedgerActivityResourceLogoURLObject) {
+	l.Object = object
+	l.require(ledgerActivityResourceLogoURLFieldObject)
+}
+
+// SetRoute sets the Route field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceLogoURL) SetRoute(route *string) {
+	l.Route = route
+	l.require(ledgerActivityResourceLogoURLFieldRoute)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceLogoURL) SetTitle(title *string) {
+	l.Title = title
+	l.require(ledgerActivityResourceLogoURLFieldTitle)
+}
+
+func (l *LedgerActivityResourceLogoURL) UnmarshalJSON(data []byte) error {
+	type unmarshaler LedgerActivityResourceLogoURL
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LedgerActivityResourceLogoURL(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivityResourceLogoURLNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LedgerActivityResourceLogoURL) MarshalJSON() ([]byte, error) {
+	type embed LedgerActivityResourceLogoURL
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LedgerActivityResourceLogoURL) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LedgerActivityResourceLogoURLObject string
+
+const (
+	LedgerActivityResourceLogoURLObjectAccount LedgerActivityResourceLogoURLObject = "account"
+)
+
+func NewLedgerActivityResourceLogoURLObjectFromString(s string) (LedgerActivityResourceLogoURLObject, error) {
+	switch s {
+	case "account":
+		return LedgerActivityResourceLogoURLObjectAccount, nil
+	}
+	var t LedgerActivityResourceLogoURLObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LedgerActivityResourceLogoURLObject) Ptr() *LedgerActivityResourceLogoURLObject {
+	return &l
+}
+
+var (
+	ledgerActivityResourceNameFieldID                = big.NewInt(1 << 0)
+	ledgerActivityResourceNameFieldName              = big.NewInt(1 << 1)
+	ledgerActivityResourceNameFieldObject            = big.NewInt(1 << 2)
+	ledgerActivityResourceNameFieldProfilePictureURL = big.NewInt(1 << 3)
+	ledgerActivityResourceNameFieldUsername          = big.NewInt(1 << 4)
+)
+
+// ledgerActivityResourceNameNullableFields maps the wire names of LedgerActivityResourceName's nullable fields (required or optional) to their field bits.
+var ledgerActivityResourceNameNullableFields = map[string]*big.Int{
+	"name":                ledgerActivityResourceNameFieldName,
+	"profile_picture_url": ledgerActivityResourceNameFieldProfilePictureURL,
+	"username":            ledgerActivityResourceNameFieldUsername,
+}
+
+type LedgerActivityResourceName struct {
+	// User ID.
+	ID string `json:"id" url:"id"`
+	// User display name.
+	Name   *string                          `json:"name,omitempty" url:"name,omitempty"`
+	Object LedgerActivityResourceNameObject `json:"object" url:"object"`
+	// User profile image URL.
+	ProfilePictureURL *string `json:"profile_picture_url,omitempty" url:"profile_picture_url,omitempty"`
+	// User's username.
+	Username *string `json:"username,omitempty" url:"username,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LedgerActivityResourceName) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LedgerActivityResourceName) GetName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Name
+}
+
+func (l *LedgerActivityResourceName) GetObject() LedgerActivityResourceNameObject {
+	if l == nil {
+		return ""
+	}
+	return l.Object
+}
+
+func (l *LedgerActivityResourceName) GetProfilePictureURL() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ProfilePictureURL
+}
+
+func (l *LedgerActivityResourceName) GetUsername() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Username
+}
+
+func (l *LedgerActivityResourceName) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LedgerActivityResourceName) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceName) SetID(id string) {
+	l.ID = id
+	l.require(ledgerActivityResourceNameFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceName) SetName(name *string) {
+	l.Name = name
+	l.require(ledgerActivityResourceNameFieldName)
+}
+
+// SetObject sets the Object field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceName) SetObject(object LedgerActivityResourceNameObject) {
+	l.Object = object
+	l.require(ledgerActivityResourceNameFieldObject)
+}
+
+// SetProfilePictureURL sets the ProfilePictureURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceName) SetProfilePictureURL(profilePictureURL *string) {
+	l.ProfilePictureURL = profilePictureURL
+	l.require(ledgerActivityResourceNameFieldProfilePictureURL)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceName) SetUsername(username *string) {
+	l.Username = username
+	l.require(ledgerActivityResourceNameFieldUsername)
+}
+
+func (l *LedgerActivityResourceName) UnmarshalJSON(data []byte) error {
+	type unmarshaler LedgerActivityResourceName
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LedgerActivityResourceName(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivityResourceNameNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LedgerActivityResourceName) MarshalJSON() ([]byte, error) {
+	type embed LedgerActivityResourceName
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LedgerActivityResourceName) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LedgerActivityResourceNameObject string
+
+const (
+	LedgerActivityResourceNameObjectUser LedgerActivityResourceNameObject = "user"
+)
+
+func NewLedgerActivityResourceNameObjectFromString(s string) (LedgerActivityResourceNameObject, error) {
+	switch s {
+	case "user":
+		return LedgerActivityResourceNameObjectUser, nil
+	}
+	var t LedgerActivityResourceNameObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LedgerActivityResourceNameObject) Ptr() *LedgerActivityResourceNameObject {
+	return &l
+}
+
+var (
+	ledgerActivityResourceOwnerFieldID     = big.NewInt(1 << 0)
+	ledgerActivityResourceOwnerFieldObject = big.NewInt(1 << 1)
+	ledgerActivityResourceOwnerFieldOwner  = big.NewInt(1 << 2)
+)
+
+// ledgerActivityResourceOwnerNullableFields maps the wire names of LedgerActivityResourceOwner's nullable fields (required or optional) to their field bits.
+var ledgerActivityResourceOwnerNullableFields = map[string]*big.Int{
+	"owner": ledgerActivityResourceOwnerFieldOwner,
+}
+
+type LedgerActivityResourceOwner struct {
+	// Ledger account ID.
+	ID     string                            `json:"id" url:"id"`
+	Object LedgerActivityResourceOwnerObject `json:"object" url:"object"`
+	Owner  *LedgerActivityResourceOwnerOwner `json:"owner,omitempty" url:"owner,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LedgerActivityResourceOwner) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LedgerActivityResourceOwner) GetObject() LedgerActivityResourceOwnerObject {
+	if l == nil {
+		return ""
+	}
+	return l.Object
+}
+
+func (l *LedgerActivityResourceOwner) GetOwner() *LedgerActivityResourceOwnerOwner {
+	if l == nil {
+		return nil
+	}
+	return l.Owner
+}
+
+func (l *LedgerActivityResourceOwner) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LedgerActivityResourceOwner) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceOwner) SetID(id string) {
+	l.ID = id
+	l.require(ledgerActivityResourceOwnerFieldID)
+}
+
+// SetObject sets the Object field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceOwner) SetObject(object LedgerActivityResourceOwnerObject) {
+	l.Object = object
+	l.require(ledgerActivityResourceOwnerFieldObject)
+}
+
+// SetOwner sets the Owner field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceOwner) SetOwner(owner *LedgerActivityResourceOwnerOwner) {
+	l.Owner = owner
+	l.require(ledgerActivityResourceOwnerFieldOwner)
+}
+
+func (l *LedgerActivityResourceOwner) UnmarshalJSON(data []byte) error {
+	type unmarshaler LedgerActivityResourceOwner
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LedgerActivityResourceOwner(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivityResourceOwnerNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LedgerActivityResourceOwner) MarshalJSON() ([]byte, error) {
+	type embed LedgerActivityResourceOwner
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LedgerActivityResourceOwner) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LedgerActivityResourceOwnerObject string
+
+const (
+	LedgerActivityResourceOwnerObjectLedgerAccount LedgerActivityResourceOwnerObject = "ledger_account"
+)
+
+func NewLedgerActivityResourceOwnerObjectFromString(s string) (LedgerActivityResourceOwnerObject, error) {
+	switch s {
+	case "ledger_account":
+		return LedgerActivityResourceOwnerObjectLedgerAccount, nil
+	}
+	var t LedgerActivityResourceOwnerObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LedgerActivityResourceOwnerObject) Ptr() *LedgerActivityResourceOwnerObject {
+	return &l
+}
+
+type LedgerActivityResourceOwnerOwner struct {
+	LedgerActivityResourceOwnerOwnerLogoURL *LedgerActivityResourceOwnerOwnerLogoURL
+	LedgerActivityResourceOwnerOwnerName    *LedgerActivityResourceOwnerOwnerName
+
+	typ string
+}
+
+func (l *LedgerActivityResourceOwnerOwner) GetLedgerActivityResourceOwnerOwnerLogoURL() *LedgerActivityResourceOwnerOwnerLogoURL {
+	if l == nil {
+		return nil
+	}
+	return l.LedgerActivityResourceOwnerOwnerLogoURL
+}
+
+func (l *LedgerActivityResourceOwnerOwner) GetLedgerActivityResourceOwnerOwnerName() *LedgerActivityResourceOwnerOwnerName {
+	if l == nil {
+		return nil
+	}
+	return l.LedgerActivityResourceOwnerOwnerName
+}
+
+func (l *LedgerActivityResourceOwnerOwner) UnmarshalJSON(data []byte) error {
+	if internal.MatchesObjectKeys(data, []string{"id", "logo_url", "object", "route", "title"}, []string{"id", "object"}) {
+		valueLedgerActivityResourceOwnerOwnerLogoURL := new(LedgerActivityResourceOwnerOwnerLogoURL)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceOwnerOwnerLogoURL); err == nil {
+			l.typ = "LedgerActivityResourceOwnerOwnerLogoURL"
+			l.LedgerActivityResourceOwnerOwnerLogoURL = valueLedgerActivityResourceOwnerOwnerLogoURL
+			return nil
+		}
+	}
+	if internal.MatchesObjectKeys(data, []string{"id", "name", "object", "profile_picture_url", "username"}, []string{"id", "object"}) {
+		valueLedgerActivityResourceOwnerOwnerName := new(LedgerActivityResourceOwnerOwnerName)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceOwnerOwnerName); err == nil {
+			l.typ = "LedgerActivityResourceOwnerOwnerName"
+			l.LedgerActivityResourceOwnerOwnerName = valueLedgerActivityResourceOwnerOwnerName
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"id", "object"}) {
+		valueLedgerActivityResourceOwnerOwnerLogoURL := new(LedgerActivityResourceOwnerOwnerLogoURL)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceOwnerOwnerLogoURL); err == nil {
+			l.typ = "LedgerActivityResourceOwnerOwnerLogoURL"
+			l.LedgerActivityResourceOwnerOwnerLogoURL = valueLedgerActivityResourceOwnerOwnerLogoURL
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"id", "object"}) {
+		valueLedgerActivityResourceOwnerOwnerName := new(LedgerActivityResourceOwnerOwnerName)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceOwnerOwnerName); err == nil {
+			l.typ = "LedgerActivityResourceOwnerOwnerName"
+			l.LedgerActivityResourceOwnerOwnerName = valueLedgerActivityResourceOwnerOwnerName
+			return nil
+		}
+	}
+	valueLedgerActivityResourceOwnerOwnerLogoURL := new(LedgerActivityResourceOwnerOwnerLogoURL)
+	if err := json.Unmarshal(data, &valueLedgerActivityResourceOwnerOwnerLogoURL); err == nil {
+		l.typ = "LedgerActivityResourceOwnerOwnerLogoURL"
+		l.LedgerActivityResourceOwnerOwnerLogoURL = valueLedgerActivityResourceOwnerOwnerLogoURL
+		return nil
+	}
+	valueLedgerActivityResourceOwnerOwnerName := new(LedgerActivityResourceOwnerOwnerName)
+	if err := json.Unmarshal(data, &valueLedgerActivityResourceOwnerOwnerName); err == nil {
+		l.typ = "LedgerActivityResourceOwnerOwnerName"
+		l.LedgerActivityResourceOwnerOwnerName = valueLedgerActivityResourceOwnerOwnerName
+		return nil
+	}
+	return fmt.Errorf("%s cannot be deserialized as a %T", data, l)
+}
+
+func (l LedgerActivityResourceOwnerOwner) MarshalJSON() ([]byte, error) {
+	if l.typ == "LedgerActivityResourceOwnerOwnerLogoURL" || l.LedgerActivityResourceOwnerOwnerLogoURL != nil {
+		return json.Marshal(l.LedgerActivityResourceOwnerOwnerLogoURL)
+	}
+	if l.typ == "LedgerActivityResourceOwnerOwnerName" || l.LedgerActivityResourceOwnerOwnerName != nil {
+		return json.Marshal(l.LedgerActivityResourceOwnerOwnerName)
+	}
+	return nil, fmt.Errorf("type %T does not include a non-empty union type", l)
+}
+
+type LedgerActivityResourceOwnerOwnerVisitor interface {
+	VisitLedgerActivityResourceOwnerOwnerLogoURL(*LedgerActivityResourceOwnerOwnerLogoURL) error
+	VisitLedgerActivityResourceOwnerOwnerName(*LedgerActivityResourceOwnerOwnerName) error
+}
+
+func (l *LedgerActivityResourceOwnerOwner) Accept(visitor LedgerActivityResourceOwnerOwnerVisitor) error {
+	if l.typ == "LedgerActivityResourceOwnerOwnerLogoURL" || l.LedgerActivityResourceOwnerOwnerLogoURL != nil {
+		return visitor.VisitLedgerActivityResourceOwnerOwnerLogoURL(l.LedgerActivityResourceOwnerOwnerLogoURL)
+	}
+	if l.typ == "LedgerActivityResourceOwnerOwnerName" || l.LedgerActivityResourceOwnerOwnerName != nil {
+		return visitor.VisitLedgerActivityResourceOwnerOwnerName(l.LedgerActivityResourceOwnerOwnerName)
+	}
+	return fmt.Errorf("type %T does not include a non-empty union type", l)
+}
+
+var (
+	ledgerActivityResourceOwnerOwnerLogoURLFieldID      = big.NewInt(1 << 0)
+	ledgerActivityResourceOwnerOwnerLogoURLFieldLogoURL = big.NewInt(1 << 1)
+	ledgerActivityResourceOwnerOwnerLogoURLFieldObject  = big.NewInt(1 << 2)
+	ledgerActivityResourceOwnerOwnerLogoURLFieldRoute   = big.NewInt(1 << 3)
+	ledgerActivityResourceOwnerOwnerLogoURLFieldTitle   = big.NewInt(1 << 4)
+)
+
+// ledgerActivityResourceOwnerOwnerLogoURLNullableFields maps the wire names of LedgerActivityResourceOwnerOwnerLogoURL's nullable fields (required or optional) to their field bits.
+var ledgerActivityResourceOwnerOwnerLogoURLNullableFields = map[string]*big.Int{
+	"logo_url": ledgerActivityResourceOwnerOwnerLogoURLFieldLogoURL,
+	"route":    ledgerActivityResourceOwnerOwnerLogoURLFieldRoute,
+	"title":    ledgerActivityResourceOwnerOwnerLogoURLFieldTitle,
+}
+
+type LedgerActivityResourceOwnerOwnerLogoURL struct {
+	// Account ID.
+	ID string `json:"id" url:"id"`
+	// Account logo URL.
+	LogoURL *string                                       `json:"logo_url,omitempty" url:"logo_url,omitempty"`
+	Object  LedgerActivityResourceOwnerOwnerLogoURLObject `json:"object" url:"object"`
+	// Account route.
+	Route *string `json:"route,omitempty" url:"route,omitempty"`
+	// Account display name.
+	Title *string `json:"title,omitempty" url:"title,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LedgerActivityResourceOwnerOwnerLogoURL) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LedgerActivityResourceOwnerOwnerLogoURL) GetLogoURL() *string {
+	if l == nil {
+		return nil
+	}
+	return l.LogoURL
+}
+
+func (l *LedgerActivityResourceOwnerOwnerLogoURL) GetObject() LedgerActivityResourceOwnerOwnerLogoURLObject {
+	if l == nil {
+		return ""
+	}
+	return l.Object
+}
+
+func (l *LedgerActivityResourceOwnerOwnerLogoURL) GetRoute() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Route
+}
+
+func (l *LedgerActivityResourceOwnerOwnerLogoURL) GetTitle() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Title
+}
+
+func (l *LedgerActivityResourceOwnerOwnerLogoURL) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LedgerActivityResourceOwnerOwnerLogoURL) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceOwnerOwnerLogoURL) SetID(id string) {
+	l.ID = id
+	l.require(ledgerActivityResourceOwnerOwnerLogoURLFieldID)
+}
+
+// SetLogoURL sets the LogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceOwnerOwnerLogoURL) SetLogoURL(logoURL *string) {
+	l.LogoURL = logoURL
+	l.require(ledgerActivityResourceOwnerOwnerLogoURLFieldLogoURL)
+}
+
+// SetObject sets the Object field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceOwnerOwnerLogoURL) SetObject(object LedgerActivityResourceOwnerOwnerLogoURLObject) {
+	l.Object = object
+	l.require(ledgerActivityResourceOwnerOwnerLogoURLFieldObject)
+}
+
+// SetRoute sets the Route field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceOwnerOwnerLogoURL) SetRoute(route *string) {
+	l.Route = route
+	l.require(ledgerActivityResourceOwnerOwnerLogoURLFieldRoute)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceOwnerOwnerLogoURL) SetTitle(title *string) {
+	l.Title = title
+	l.require(ledgerActivityResourceOwnerOwnerLogoURLFieldTitle)
+}
+
+func (l *LedgerActivityResourceOwnerOwnerLogoURL) UnmarshalJSON(data []byte) error {
+	type unmarshaler LedgerActivityResourceOwnerOwnerLogoURL
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LedgerActivityResourceOwnerOwnerLogoURL(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivityResourceOwnerOwnerLogoURLNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LedgerActivityResourceOwnerOwnerLogoURL) MarshalJSON() ([]byte, error) {
+	type embed LedgerActivityResourceOwnerOwnerLogoURL
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LedgerActivityResourceOwnerOwnerLogoURL) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LedgerActivityResourceOwnerOwnerLogoURLObject string
+
+const (
+	LedgerActivityResourceOwnerOwnerLogoURLObjectAccount LedgerActivityResourceOwnerOwnerLogoURLObject = "account"
+)
+
+func NewLedgerActivityResourceOwnerOwnerLogoURLObjectFromString(s string) (LedgerActivityResourceOwnerOwnerLogoURLObject, error) {
+	switch s {
+	case "account":
+		return LedgerActivityResourceOwnerOwnerLogoURLObjectAccount, nil
+	}
+	var t LedgerActivityResourceOwnerOwnerLogoURLObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LedgerActivityResourceOwnerOwnerLogoURLObject) Ptr() *LedgerActivityResourceOwnerOwnerLogoURLObject {
+	return &l
+}
+
+var (
+	ledgerActivityResourceOwnerOwnerNameFieldID                = big.NewInt(1 << 0)
+	ledgerActivityResourceOwnerOwnerNameFieldName              = big.NewInt(1 << 1)
+	ledgerActivityResourceOwnerOwnerNameFieldObject            = big.NewInt(1 << 2)
+	ledgerActivityResourceOwnerOwnerNameFieldProfilePictureURL = big.NewInt(1 << 3)
+	ledgerActivityResourceOwnerOwnerNameFieldUsername          = big.NewInt(1 << 4)
+)
+
+// ledgerActivityResourceOwnerOwnerNameNullableFields maps the wire names of LedgerActivityResourceOwnerOwnerName's nullable fields (required or optional) to their field bits.
+var ledgerActivityResourceOwnerOwnerNameNullableFields = map[string]*big.Int{
+	"name":                ledgerActivityResourceOwnerOwnerNameFieldName,
+	"profile_picture_url": ledgerActivityResourceOwnerOwnerNameFieldProfilePictureURL,
+	"username":            ledgerActivityResourceOwnerOwnerNameFieldUsername,
+}
+
+type LedgerActivityResourceOwnerOwnerName struct {
+	// User ID.
+	ID string `json:"id" url:"id"`
+	// User display name.
+	Name   *string                                    `json:"name,omitempty" url:"name,omitempty"`
+	Object LedgerActivityResourceOwnerOwnerNameObject `json:"object" url:"object"`
+	// User profile image URL.
+	ProfilePictureURL *string `json:"profile_picture_url,omitempty" url:"profile_picture_url,omitempty"`
+	// User's username.
+	Username *string `json:"username,omitempty" url:"username,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LedgerActivityResourceOwnerOwnerName) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LedgerActivityResourceOwnerOwnerName) GetName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Name
+}
+
+func (l *LedgerActivityResourceOwnerOwnerName) GetObject() LedgerActivityResourceOwnerOwnerNameObject {
+	if l == nil {
+		return ""
+	}
+	return l.Object
+}
+
+func (l *LedgerActivityResourceOwnerOwnerName) GetProfilePictureURL() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ProfilePictureURL
+}
+
+func (l *LedgerActivityResourceOwnerOwnerName) GetUsername() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Username
+}
+
+func (l *LedgerActivityResourceOwnerOwnerName) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LedgerActivityResourceOwnerOwnerName) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceOwnerOwnerName) SetID(id string) {
+	l.ID = id
+	l.require(ledgerActivityResourceOwnerOwnerNameFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceOwnerOwnerName) SetName(name *string) {
+	l.Name = name
+	l.require(ledgerActivityResourceOwnerOwnerNameFieldName)
+}
+
+// SetObject sets the Object field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceOwnerOwnerName) SetObject(object LedgerActivityResourceOwnerOwnerNameObject) {
+	l.Object = object
+	l.require(ledgerActivityResourceOwnerOwnerNameFieldObject)
+}
+
+// SetProfilePictureURL sets the ProfilePictureURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceOwnerOwnerName) SetProfilePictureURL(profilePictureURL *string) {
+	l.ProfilePictureURL = profilePictureURL
+	l.require(ledgerActivityResourceOwnerOwnerNameFieldProfilePictureURL)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceOwnerOwnerName) SetUsername(username *string) {
+	l.Username = username
+	l.require(ledgerActivityResourceOwnerOwnerNameFieldUsername)
+}
+
+func (l *LedgerActivityResourceOwnerOwnerName) UnmarshalJSON(data []byte) error {
+	type unmarshaler LedgerActivityResourceOwnerOwnerName
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LedgerActivityResourceOwnerOwnerName(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivityResourceOwnerOwnerNameNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LedgerActivityResourceOwnerOwnerName) MarshalJSON() ([]byte, error) {
+	type embed LedgerActivityResourceOwnerOwnerName
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LedgerActivityResourceOwnerOwnerName) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LedgerActivityResourceOwnerOwnerNameObject string
+
+const (
+	LedgerActivityResourceOwnerOwnerNameObjectUser LedgerActivityResourceOwnerOwnerNameObject = "user"
+)
+
+func NewLedgerActivityResourceOwnerOwnerNameObjectFromString(s string) (LedgerActivityResourceOwnerOwnerNameObject, error) {
+	switch s {
+	case "user":
+		return LedgerActivityResourceOwnerOwnerNameObjectUser, nil
+	}
+	var t LedgerActivityResourceOwnerOwnerNameObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LedgerActivityResourceOwnerOwnerNameObject) Ptr() *LedgerActivityResourceOwnerOwnerNameObject {
+	return &l
+}
+
+var (
+	ledgerActivityResourceTwoFieldID     = big.NewInt(1 << 0)
+	ledgerActivityResourceTwoFieldObject = big.NewInt(1 << 1)
+	ledgerActivityResourceTwoFieldStatus = big.NewInt(1 << 2)
+	ledgerActivityResourceTwoFieldTitle  = big.NewInt(1 << 3)
+)
+
+type LedgerActivityResourceTwo struct {
+	// Bounty ID.
+	ID     string                          `json:"id" url:"id"`
+	Object LedgerActivityResourceTwoObject `json:"object" url:"object"`
+	// Bounty lifecycle status.
+	Status string `json:"status" url:"status"`
+	// Bounty title.
+	Title string `json:"title" url:"title"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LedgerActivityResourceTwo) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LedgerActivityResourceTwo) GetObject() LedgerActivityResourceTwoObject {
+	if l == nil {
+		return ""
+	}
+	return l.Object
+}
+
+func (l *LedgerActivityResourceTwo) GetStatus() string {
+	if l == nil {
+		return ""
+	}
+	return l.Status
+}
+
+func (l *LedgerActivityResourceTwo) GetTitle() string {
+	if l == nil {
+		return ""
+	}
+	return l.Title
+}
+
+func (l *LedgerActivityResourceTwo) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LedgerActivityResourceTwo) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceTwo) SetID(id string) {
+	l.ID = id
+	l.require(ledgerActivityResourceTwoFieldID)
+}
+
+// SetObject sets the Object field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceTwo) SetObject(object LedgerActivityResourceTwoObject) {
+	l.Object = object
+	l.require(ledgerActivityResourceTwoFieldObject)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceTwo) SetStatus(status string) {
+	l.Status = status
+	l.require(ledgerActivityResourceTwoFieldStatus)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceTwo) SetTitle(title string) {
+	l.Title = title
+	l.require(ledgerActivityResourceTwoFieldTitle)
+}
+
+func (l *LedgerActivityResourceTwo) UnmarshalJSON(data []byte) error {
+	type unmarshaler LedgerActivityResourceTwo
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LedgerActivityResourceTwo(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LedgerActivityResourceTwo) MarshalJSON() ([]byte, error) {
+	type embed LedgerActivityResourceTwo
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LedgerActivityResourceTwo) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LedgerActivityResourceTwoObject string
+
+const (
+	LedgerActivityResourceTwoObjectBounty LedgerActivityResourceTwoObject = "bounty"
+)
+
+func NewLedgerActivityResourceTwoObjectFromString(s string) (LedgerActivityResourceTwoObject, error) {
+	switch s {
+	case "bounty":
+		return LedgerActivityResourceTwoObjectBounty, nil
+	}
+	var t LedgerActivityResourceTwoObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LedgerActivityResourceTwoObject) Ptr() *LedgerActivityResourceTwoObject {
+	return &l
+}
+
+var (
+	ledgerActivitySourceFieldAmountFloat         = big.NewInt(1 << 0)
+	ledgerActivitySourceFieldCardBrand           = big.NewInt(1 << 1)
+	ledgerActivitySourceFieldChain               = big.NewInt(1 << 2)
+	ledgerActivitySourceFieldClaimURL            = big.NewInt(1 << 3)
+	ledgerActivitySourceFieldCreatedAt           = big.NewInt(1 << 4)
+	ledgerActivitySourceFieldCreatedByUser       = big.NewInt(1 << 5)
+	ledgerActivitySourceFieldEstimatedArrival    = big.NewInt(1 << 6)
+	ledgerActivitySourceFieldFeeAmount           = big.NewInt(1 << 7)
+	ledgerActivitySourceFieldFeeKind             = big.NewInt(1 << 8)
+	ledgerActivitySourceFieldFeeType             = big.NewInt(1 << 9)
+	ledgerActivitySourceFieldFromAmount          = big.NewInt(1 << 10)
+	ledgerActivitySourceFieldFromCurrency        = big.NewInt(1 << 11)
+	ledgerActivitySourceFieldID                  = big.NewInt(1 << 12)
+	ledgerActivitySourceFieldNotes               = big.NewInt(1 << 13)
+	ledgerActivitySourceFieldObject              = big.NewInt(1 << 14)
+	ledgerActivitySourceFieldPayerName           = big.NewInt(1 << 15)
+	ledgerActivitySourceFieldPaymentAmount       = big.NewInt(1 << 16)
+	ledgerActivitySourceFieldPaymentMethodType   = big.NewInt(1 << 17)
+	ledgerActivitySourceFieldPaymentProcessor    = big.NewInt(1 << 18)
+	ledgerActivitySourceFieldPayoutAmount        = big.NewInt(1 << 19)
+	ledgerActivitySourceFieldPayoutDestination   = big.NewInt(1 << 20)
+	ledgerActivitySourceFieldPayoutTokenNickname = big.NewInt(1 << 21)
+	ledgerActivitySourceFieldReason              = big.NewInt(1 << 22)
+	ledgerActivitySourceFieldRiskReviewHold      = big.NewInt(1 << 23)
+	ledgerActivitySourceFieldSenderAddress       = big.NewInt(1 << 24)
+	ledgerActivitySourceFieldStatus              = big.NewInt(1 << 25)
+	ledgerActivitySourceFieldToAmount            = big.NewInt(1 << 26)
+	ledgerActivitySourceFieldToCurrency          = big.NewInt(1 << 27)
+	ledgerActivitySourceFieldTraceCode           = big.NewInt(1 << 28)
+	ledgerActivitySourceFieldTxHash              = big.NewInt(1 << 29)
+)
+
+// ledgerActivitySourceNullableFields maps the wire names of LedgerActivitySource's nullable fields (required or optional) to their field bits.
+var ledgerActivitySourceNullableFields = map[string]*big.Int{
+	"amount_float":          ledgerActivitySourceFieldAmountFloat,
+	"card_brand":            ledgerActivitySourceFieldCardBrand,
+	"chain":                 ledgerActivitySourceFieldChain,
+	"claim_url":             ledgerActivitySourceFieldClaimURL,
+	"created_at":            ledgerActivitySourceFieldCreatedAt,
+	"created_by_user":       ledgerActivitySourceFieldCreatedByUser,
+	"estimated_arrival":     ledgerActivitySourceFieldEstimatedArrival,
+	"fee_amount":            ledgerActivitySourceFieldFeeAmount,
+	"fee_kind":              ledgerActivitySourceFieldFeeKind,
+	"fee_type":              ledgerActivitySourceFieldFeeType,
+	"from_amount":           ledgerActivitySourceFieldFromAmount,
+	"from_currency":         ledgerActivitySourceFieldFromCurrency,
+	"notes":                 ledgerActivitySourceFieldNotes,
+	"payer_name":            ledgerActivitySourceFieldPayerName,
+	"payment_amount":        ledgerActivitySourceFieldPaymentAmount,
+	"payment_method_type":   ledgerActivitySourceFieldPaymentMethodType,
+	"payment_processor":     ledgerActivitySourceFieldPaymentProcessor,
+	"payout_amount":         ledgerActivitySourceFieldPayoutAmount,
+	"payout_destination":    ledgerActivitySourceFieldPayoutDestination,
+	"payout_token_nickname": ledgerActivitySourceFieldPayoutTokenNickname,
+	"reason":                ledgerActivitySourceFieldReason,
+	"risk_review_hold":      ledgerActivitySourceFieldRiskReviewHold,
+	"sender_address":        ledgerActivitySourceFieldSenderAddress,
+	"status":                ledgerActivitySourceFieldStatus,
+	"to_amount":             ledgerActivitySourceFieldToAmount,
+	"to_currency":           ledgerActivitySourceFieldToCurrency,
+	"trace_code":            ledgerActivitySourceFieldTraceCode,
+	"tx_hash":               ledgerActivitySourceFieldTxHash,
+}
+
+// Source of this ledger activity. Platform markup fees use object platform_fee and the ledger activity ID.
+type LedgerActivitySource struct {
+	// Payout amount as a decimal number in the destination currency (payout sources only; requires payout:withdrawal:read).
+	AmountFloat *float64 `json:"amount_float,omitempty" url:"amount_float,omitempty"`
+	// Card brand used by the payment source.
+	CardBrand *string `json:"card_brand,omitempty" url:"card_brand,omitempty"`
+	// Chain the deposit landed on, for example plasma (onchain_transaction sources only).
+	Chain *string `json:"chain,omitempty" url:"chain,omitempty"`
+	// The airdrop's claim URL. Null unless the caller can manage claim links on the funding company or withdraw from the funding personal balance.
+	ClaimURL *string `json:"claim_url,omitempty" url:"claim_url,omitempty"`
+	// Payout creation time as an ISO 8601 timestamp (payout sources only; requires payout:withdrawal:read).
+	CreatedAt *time.Time `json:"created_at,omitempty" url:"created_at,omitempty"`
+	// User who requested the withdrawal. Null for system-generated withdrawals or without payout:withdrawal:read.
+	CreatedByUser *UserSummary `json:"created_by_user,omitempty" url:"created_by_user,omitempty"`
+	// Estimated arrival as an ISO 8601 timestamp (payout sources only; requires payout:withdrawal:read).
+	EstimatedArrival *time.Time `json:"estimated_arrival,omitempty" url:"estimated_arrival,omitempty"`
+	// Total withdrawal fees, including markup fees. Requires payout:withdrawal:read.
+	FeeAmount *Money `json:"fee_amount,omitempty" url:"fee_amount,omitempty"`
+	// Action that generated a platform markup fee: deposit, swap, transfer, card_spend, or payout. Present for platform_markup_fee and platform_markup_fee_payout, including when include_resource is false. Null when the originating action is unavailable; omitted on other source types.
+	FeeKind *LedgerActivitySourceFeeKind `json:"fee_kind,omitempty" url:"fee_kind,omitempty"`
+	// Whether withdrawal fees are inclusive or exclusive. Requires payout:withdrawal:read.
+	FeeType *LedgerActivitySourceFeeType `json:"fee_type,omitempty" url:"fee_type,omitempty"`
+	// Amount converted out of from_currency as a decimal string (swap sources only).
+	FromAmount *string `json:"from_amount,omitempty" url:"from_amount,omitempty"`
+	// Lowercase currency code converted from (swap sources only).
+	FromCurrency *string `json:"from_currency,omitempty" url:"from_currency,omitempty"`
+	ID           string  `json:"id" url:"id"`
+	// Memo attached to the transfer, payout, or bank_deposit source, or null when none was provided (on payout sources requires payout:withdrawal:read).
+	Notes  *string `json:"notes,omitempty" url:"notes,omitempty"`
+	Object string  `json:"object" url:"object"`
+	// On payout sources, the name of the entity processing the payout (requires payout:withdrawal:read). On bank_deposit sources, the name of the account that sent the deposit.
+	PayerName *string `json:"payer_name,omitempty" url:"payer_name,omitempty"`
+	// Total charged by the payment source.
+	PaymentAmount *Money `json:"payment_amount,omitempty" url:"payment_amount,omitempty"`
+	// Payment method used by the payment source. On bank_deposit sources, the transfer rail: `wire`, `ach`, or `rtp`.
+	PaymentMethodType *string `json:"payment_method_type,omitempty" url:"payment_method_type,omitempty"`
+	// Processor used by the payment source.
+	PaymentProcessor *string `json:"payment_processor,omitempty" url:"payment_processor,omitempty"`
+	// Withdrawal principal sent to the destination, excluding fees, in the withdrawal currency. Requires payout:withdrawal:read.
+	PayoutAmount *Money `json:"payout_amount,omitempty" url:"payout_amount,omitempty"`
+	// Payout destination display info (payout sources only).
+	PayoutDestination *LedgerActivitySourcePayoutDestination `json:"payout_destination,omitempty" url:"payout_destination,omitempty"`
+	// Saved payout destination nickname (payout sources only).
+	PayoutTokenNickname *string `json:"payout_token_nickname,omitempty" url:"payout_token_nickname,omitempty"`
+	// Why the activity happened. On transfer sources this is the transfer reason, for example pool_top_up or bounty_return. On payout sources it explains why the payout was canceled, denied, or failed (requires payout:withdrawal:read); null while the payout is progressing normally.
+	Reason *string `json:"reason,omitempty" url:"reason,omitempty"`
+	// Whether this payout is currently held for manual risk review (payout sources only; requires payout:withdrawal:read).
+	RiskReviewHold *bool `json:"risk_review_hold,omitempty" url:"risk_review_hold,omitempty"`
+	// On onchain_transaction sources, the sender wallet address or onramp provider identifier. On bank_deposit sources, the last four digits of the sending bank account, such as `••••1547`.
+	SenderAddress *string `json:"sender_address,omitempty" url:"sender_address,omitempty"`
+	// Lifecycle status. On payout sources this is the payout status (requires payout:withdrawal:read); on airdrop_link sources it is the claim-link status (ungated); on payment and top-up sources it is the friendly payment status such as succeeded/pending/failed (ungated); on bank_deposit sources it is succeeded, reversal_in_progress or reversed (ungated).
+	Status *string `json:"status,omitempty" url:"status,omitempty"`
+	// Amount received in to_currency as a decimal string (swap sources only).
+	ToAmount *string `json:"to_amount,omitempty" url:"to_amount,omitempty"`
+	// Lowercase currency code converted to (swap sources only).
+	ToCurrency *string `json:"to_currency,omitempty" url:"to_currency,omitempty"`
+	// Bank trace reference for the withdrawal. Requires payout:withdrawal:read.
+	TraceCode *string `json:"trace_code,omitempty" url:"trace_code,omitempty"`
+	// On-chain transaction hash (onchain_transaction and swap sources only).
+	TxHash *string `json:"tx_hash,omitempty" url:"tx_hash,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	ExtraProperties map[string]interface{} `json:"-" url:"-"`
+
+	rawJSON json.RawMessage
+}
+
+func (l *LedgerActivitySource) GetAmountFloat() *float64 {
+	if l == nil {
+		return nil
+	}
+	return l.AmountFloat
+}
+
+func (l *LedgerActivitySource) GetCardBrand() *string {
+	if l == nil {
+		return nil
+	}
+	return l.CardBrand
+}
+
+func (l *LedgerActivitySource) GetChain() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Chain
+}
+
+func (l *LedgerActivitySource) GetClaimURL() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ClaimURL
+}
+
+func (l *LedgerActivitySource) GetCreatedAt() *time.Time {
+	if l == nil {
+		return nil
+	}
+	return l.CreatedAt
+}
+
+func (l *LedgerActivitySource) GetCreatedByUser() *UserSummary {
+	if l == nil {
+		return nil
+	}
+	return l.CreatedByUser
+}
+
+func (l *LedgerActivitySource) GetEstimatedArrival() *time.Time {
+	if l == nil {
+		return nil
+	}
+	return l.EstimatedArrival
+}
+
+func (l *LedgerActivitySource) GetFeeAmount() *Money {
+	if l == nil {
+		return nil
+	}
+	return l.FeeAmount
+}
+
+func (l *LedgerActivitySource) GetFeeKind() *LedgerActivitySourceFeeKind {
+	if l == nil {
+		return nil
+	}
+	return l.FeeKind
+}
+
+func (l *LedgerActivitySource) GetFeeType() *LedgerActivitySourceFeeType {
+	if l == nil {
+		return nil
+	}
+	return l.FeeType
+}
+
+func (l *LedgerActivitySource) GetFromAmount() *string {
+	if l == nil {
+		return nil
+	}
+	return l.FromAmount
+}
+
+func (l *LedgerActivitySource) GetFromCurrency() *string {
+	if l == nil {
+		return nil
+	}
+	return l.FromCurrency
+}
+
+func (l *LedgerActivitySource) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LedgerActivitySource) GetNotes() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Notes
+}
+
+func (l *LedgerActivitySource) GetObject() string {
+	if l == nil {
+		return ""
+	}
+	return l.Object
+}
+
+func (l *LedgerActivitySource) GetPayerName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.PayerName
+}
+
+func (l *LedgerActivitySource) GetPaymentAmount() *Money {
+	if l == nil {
+		return nil
+	}
+	return l.PaymentAmount
+}
+
+func (l *LedgerActivitySource) GetPaymentMethodType() *string {
+	if l == nil {
+		return nil
+	}
+	return l.PaymentMethodType
+}
+
+func (l *LedgerActivitySource) GetPaymentProcessor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.PaymentProcessor
+}
+
+func (l *LedgerActivitySource) GetPayoutAmount() *Money {
+	if l == nil {
+		return nil
+	}
+	return l.PayoutAmount
+}
+
+func (l *LedgerActivitySource) GetPayoutDestination() *LedgerActivitySourcePayoutDestination {
+	if l == nil {
+		return nil
+	}
+	return l.PayoutDestination
+}
+
+func (l *LedgerActivitySource) GetPayoutTokenNickname() *string {
+	if l == nil {
+		return nil
+	}
+	return l.PayoutTokenNickname
+}
+
+func (l *LedgerActivitySource) GetReason() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Reason
+}
+
+func (l *LedgerActivitySource) GetRiskReviewHold() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.RiskReviewHold
+}
+
+func (l *LedgerActivitySource) GetSenderAddress() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SenderAddress
+}
+
+func (l *LedgerActivitySource) GetStatus() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Status
+}
+
+func (l *LedgerActivitySource) GetToAmount() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ToAmount
+}
+
+func (l *LedgerActivitySource) GetToCurrency() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ToCurrency
+}
+
+func (l *LedgerActivitySource) GetTraceCode() *string {
+	if l == nil {
+		return nil
+	}
+	return l.TraceCode
+}
+
+func (l *LedgerActivitySource) GetTxHash() *string {
+	if l == nil {
+		return nil
+	}
+	return l.TxHash
+}
+
+func (l *LedgerActivitySource) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.ExtraProperties
+}
+
+func (l *LedgerActivitySource) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetAmountFloat sets the AmountFloat field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetAmountFloat(amountFloat *float64) {
+	l.AmountFloat = amountFloat
+	l.require(ledgerActivitySourceFieldAmountFloat)
+}
+
+// SetCardBrand sets the CardBrand field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetCardBrand(cardBrand *string) {
+	l.CardBrand = cardBrand
+	l.require(ledgerActivitySourceFieldCardBrand)
+}
+
+// SetChain sets the Chain field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetChain(chain *string) {
+	l.Chain = chain
+	l.require(ledgerActivitySourceFieldChain)
+}
+
+// SetClaimURL sets the ClaimURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetClaimURL(claimURL *string) {
+	l.ClaimURL = claimURL
+	l.require(ledgerActivitySourceFieldClaimURL)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetCreatedAt(createdAt *time.Time) {
+	l.CreatedAt = createdAt
+	l.require(ledgerActivitySourceFieldCreatedAt)
+}
+
+// SetCreatedByUser sets the CreatedByUser field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetCreatedByUser(createdByUser *UserSummary) {
+	l.CreatedByUser = createdByUser
+	l.require(ledgerActivitySourceFieldCreatedByUser)
+}
+
+// SetEstimatedArrival sets the EstimatedArrival field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetEstimatedArrival(estimatedArrival *time.Time) {
+	l.EstimatedArrival = estimatedArrival
+	l.require(ledgerActivitySourceFieldEstimatedArrival)
+}
+
+// SetFeeAmount sets the FeeAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetFeeAmount(feeAmount *Money) {
+	l.FeeAmount = feeAmount
+	l.require(ledgerActivitySourceFieldFeeAmount)
+}
+
+// SetFeeKind sets the FeeKind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetFeeKind(feeKind *LedgerActivitySourceFeeKind) {
+	l.FeeKind = feeKind
+	l.require(ledgerActivitySourceFieldFeeKind)
+}
+
+// SetFeeType sets the FeeType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetFeeType(feeType *LedgerActivitySourceFeeType) {
+	l.FeeType = feeType
+	l.require(ledgerActivitySourceFieldFeeType)
+}
+
+// SetFromAmount sets the FromAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetFromAmount(fromAmount *string) {
+	l.FromAmount = fromAmount
+	l.require(ledgerActivitySourceFieldFromAmount)
+}
+
+// SetFromCurrency sets the FromCurrency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetFromCurrency(fromCurrency *string) {
+	l.FromCurrency = fromCurrency
+	l.require(ledgerActivitySourceFieldFromCurrency)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetID(id string) {
+	l.ID = id
+	l.require(ledgerActivitySourceFieldID)
+}
+
+// SetNotes sets the Notes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetNotes(notes *string) {
+	l.Notes = notes
+	l.require(ledgerActivitySourceFieldNotes)
+}
+
+// SetObject sets the Object field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetObject(object string) {
+	l.Object = object
+	l.require(ledgerActivitySourceFieldObject)
+}
+
+// SetPayerName sets the PayerName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetPayerName(payerName *string) {
+	l.PayerName = payerName
+	l.require(ledgerActivitySourceFieldPayerName)
+}
+
+// SetPaymentAmount sets the PaymentAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetPaymentAmount(paymentAmount *Money) {
+	l.PaymentAmount = paymentAmount
+	l.require(ledgerActivitySourceFieldPaymentAmount)
+}
+
+// SetPaymentMethodType sets the PaymentMethodType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetPaymentMethodType(paymentMethodType *string) {
+	l.PaymentMethodType = paymentMethodType
+	l.require(ledgerActivitySourceFieldPaymentMethodType)
+}
+
+// SetPaymentProcessor sets the PaymentProcessor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetPaymentProcessor(paymentProcessor *string) {
+	l.PaymentProcessor = paymentProcessor
+	l.require(ledgerActivitySourceFieldPaymentProcessor)
+}
+
+// SetPayoutAmount sets the PayoutAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetPayoutAmount(payoutAmount *Money) {
+	l.PayoutAmount = payoutAmount
+	l.require(ledgerActivitySourceFieldPayoutAmount)
+}
+
+// SetPayoutDestination sets the PayoutDestination field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetPayoutDestination(payoutDestination *LedgerActivitySourcePayoutDestination) {
+	l.PayoutDestination = payoutDestination
+	l.require(ledgerActivitySourceFieldPayoutDestination)
+}
+
+// SetPayoutTokenNickname sets the PayoutTokenNickname field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetPayoutTokenNickname(payoutTokenNickname *string) {
+	l.PayoutTokenNickname = payoutTokenNickname
+	l.require(ledgerActivitySourceFieldPayoutTokenNickname)
+}
+
+// SetReason sets the Reason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetReason(reason *string) {
+	l.Reason = reason
+	l.require(ledgerActivitySourceFieldReason)
+}
+
+// SetRiskReviewHold sets the RiskReviewHold field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetRiskReviewHold(riskReviewHold *bool) {
+	l.RiskReviewHold = riskReviewHold
+	l.require(ledgerActivitySourceFieldRiskReviewHold)
+}
+
+// SetSenderAddress sets the SenderAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetSenderAddress(senderAddress *string) {
+	l.SenderAddress = senderAddress
+	l.require(ledgerActivitySourceFieldSenderAddress)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetStatus(status *string) {
+	l.Status = status
+	l.require(ledgerActivitySourceFieldStatus)
+}
+
+// SetToAmount sets the ToAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetToAmount(toAmount *string) {
+	l.ToAmount = toAmount
+	l.require(ledgerActivitySourceFieldToAmount)
+}
+
+// SetToCurrency sets the ToCurrency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetToCurrency(toCurrency *string) {
+	l.ToCurrency = toCurrency
+	l.require(ledgerActivitySourceFieldToCurrency)
+}
+
+// SetTraceCode sets the TraceCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetTraceCode(traceCode *string) {
+	l.TraceCode = traceCode
+	l.require(ledgerActivitySourceFieldTraceCode)
+}
+
+// SetTxHash sets the TxHash field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetTxHash(txHash *string) {
+	l.TxHash = txHash
+	l.require(ledgerActivitySourceFieldTxHash)
+}
+
+func (l *LedgerActivitySource) UnmarshalJSON(data []byte) error {
+	type embed LedgerActivitySource
+	var unmarshaler = struct {
+		embed
+		CreatedAt        *internal.DateTime `json:"created_at,omitempty"`
+		EstimatedArrival *internal.DateTime `json:"estimated_arrival,omitempty"`
+	}{
+		embed: embed(*l),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*l = LedgerActivitySource(unmarshaler.embed)
+	l.CreatedAt = unmarshaler.CreatedAt.TimePtr()
+	l.EstimatedArrival = unmarshaler.EstimatedArrival.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.ExtraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivitySourceNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LedgerActivitySource) MarshalJSON() ([]byte, error) {
+	type embed LedgerActivitySource
+	var marshaler = struct {
+		embed
+		CreatedAt        *internal.DateTime `json:"created_at,omitempty"`
+		EstimatedArrival *internal.DateTime `json:"estimated_arrival,omitempty"`
+	}{
+		embed:            embed(*l),
+		CreatedAt:        internal.NewOptionalDateTime(l.CreatedAt),
+		EstimatedArrival: internal.NewOptionalDateTime(l.EstimatedArrival),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return internal.MarshalJSONWithExtraProperties(explicitMarshaler, l.ExtraProperties)
+}
+
+func (l *LedgerActivitySource) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+// Action that generated a platform markup fee: deposit, swap, transfer, card_spend, or payout. Present for platform_markup_fee and platform_markup_fee_payout, including when include_resource is false. Null when the originating action is unavailable; omitted on other source types.
+type LedgerActivitySourceFeeKind string
+
+const (
+	LedgerActivitySourceFeeKindPayout    LedgerActivitySourceFeeKind = "payout"
+	LedgerActivitySourceFeeKindTransfer  LedgerActivitySourceFeeKind = "transfer"
+	LedgerActivitySourceFeeKindDeposit   LedgerActivitySourceFeeKind = "deposit"
+	LedgerActivitySourceFeeKindSwap      LedgerActivitySourceFeeKind = "swap"
+	LedgerActivitySourceFeeKindCardSpend LedgerActivitySourceFeeKind = "card_spend"
+)
+
+func NewLedgerActivitySourceFeeKindFromString(s string) (LedgerActivitySourceFeeKind, error) {
+	switch s {
+	case "payout":
+		return LedgerActivitySourceFeeKindPayout, nil
+	case "transfer":
+		return LedgerActivitySourceFeeKindTransfer, nil
+	case "deposit":
+		return LedgerActivitySourceFeeKindDeposit, nil
+	case "swap":
+		return LedgerActivitySourceFeeKindSwap, nil
+	case "card_spend":
+		return LedgerActivitySourceFeeKindCardSpend, nil
+	}
+	var t LedgerActivitySourceFeeKind
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LedgerActivitySourceFeeKind) Ptr() *LedgerActivitySourceFeeKind {
+	return &l
+}
+
+// Whether withdrawal fees are inclusive or exclusive. Requires payout:withdrawal:read.
+type LedgerActivitySourceFeeType string
+
+const (
+	LedgerActivitySourceFeeTypeExclusive LedgerActivitySourceFeeType = "exclusive"
+	LedgerActivitySourceFeeTypeInclusive LedgerActivitySourceFeeType = "inclusive"
+)
+
+func NewLedgerActivitySourceFeeTypeFromString(s string) (LedgerActivitySourceFeeType, error) {
+	switch s {
+	case "exclusive":
+		return LedgerActivitySourceFeeTypeExclusive, nil
+	case "inclusive":
+		return LedgerActivitySourceFeeTypeInclusive, nil
+	}
+	var t LedgerActivitySourceFeeType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LedgerActivitySourceFeeType) Ptr() *LedgerActivitySourceFeeType {
+	return &l
+}
+
+var (
+	ledgerActivitySourcePayoutDestinationFieldIconURL   = big.NewInt(1 << 0)
+	ledgerActivitySourcePayoutDestinationFieldPayerName = big.NewInt(1 << 1)
+)
+
+// ledgerActivitySourcePayoutDestinationNullableFields maps the wire names of LedgerActivitySourcePayoutDestination's nullable fields (required or optional) to their field bits.
+var ledgerActivitySourcePayoutDestinationNullableFields = map[string]*big.Int{
+	"icon_url":   ledgerActivitySourcePayoutDestinationFieldIconURL,
+	"payer_name": ledgerActivitySourcePayoutDestinationFieldPayerName,
+}
+
+// Payout destination display info (payout sources only).
+type LedgerActivitySourcePayoutDestination struct {
+	IconURL   *string `json:"icon_url,omitempty" url:"icon_url,omitempty"`
+	PayerName *string `json:"payer_name,omitempty" url:"payer_name,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LedgerActivitySourcePayoutDestination) GetIconURL() *string {
+	if l == nil {
+		return nil
+	}
+	return l.IconURL
+}
+
+func (l *LedgerActivitySourcePayoutDestination) GetPayerName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.PayerName
+}
+
+func (l *LedgerActivitySourcePayoutDestination) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LedgerActivitySourcePayoutDestination) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetIconURL sets the IconURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySourcePayoutDestination) SetIconURL(iconURL *string) {
+	l.IconURL = iconURL
+	l.require(ledgerActivitySourcePayoutDestinationFieldIconURL)
+}
+
+// SetPayerName sets the PayerName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySourcePayoutDestination) SetPayerName(payerName *string) {
+	l.PayerName = payerName
+	l.require(ledgerActivitySourcePayoutDestinationFieldPayerName)
+}
+
+func (l *LedgerActivitySourcePayoutDestination) UnmarshalJSON(data []byte) error {
+	type unmarshaler LedgerActivitySourcePayoutDestination
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LedgerActivitySourcePayoutDestination(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivitySourcePayoutDestinationNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LedgerActivitySourcePayoutDestination) MarshalJSON() ([]byte, error) {
+	type embed LedgerActivitySourcePayoutDestination
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LedgerActivitySourcePayoutDestination) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
 	legacyInvoiceFieldAutomaticallyFinalizesAt    = big.NewInt(1 << 0)
 	legacyInvoiceFieldChargeBuyerFee              = big.NewInt(1 << 1)
 	legacyInvoiceFieldCollectionMethod            = big.NewInt(1 << 2)
@@ -36188,35 +42146,35 @@ var (
 	paymentFieldPaymentMethodType          = big.NewInt(1 << 31)
 	paymentFieldPaymentRuleMatches         = big.NewInt(1 << 32)
 	paymentFieldPaymentsFailed             = big.NewInt(1 << 33)
-	paymentFieldPlanID                     = big.NewInt(1 << 34)
-	paymentFieldPresentmentRefundedAmount  = big.NewInt(1 << 35)
-	paymentFieldPresentmentTaxAmount       = big.NewInt(1 << 36)
-	paymentFieldPresentmentTotal           = big.NewInt(1 << 37)
-	paymentFieldProductID                  = big.NewInt(1 << 38)
-	paymentFieldPromoCodeID                = big.NewInt(1 << 39)
-	paymentFieldQuoteID                    = big.NewInt(1 << 40)
-	paymentFieldRecoveryURL                = big.NewInt(1 << 41)
-	paymentFieldRefundable                 = big.NewInt(1 << 42)
-	paymentFieldRefundedAmount             = big.NewInt(1 << 43)
-	paymentFieldRefundedAt                 = big.NewInt(1 << 44)
-	paymentFieldResponseDueAt              = big.NewInt(1 << 45)
-	paymentFieldRetryable                  = big.NewInt(1 << 46)
-	paymentFieldRiskScore                  = big.NewInt(1 << 47)
-	paymentFieldRiskSignals                = big.NewInt(1 << 48)
-	paymentFieldSettlementTimeAt           = big.NewInt(1 << 49)
-	paymentFieldShipmentID                 = big.NewInt(1 << 50)
-	paymentFieldShippingAddress            = big.NewInt(1 << 51)
-	paymentFieldStatus                     = big.NewInt(1 << 52)
-	paymentFieldSubstatus                  = big.NewInt(1 << 53)
-	paymentFieldSubtotal                   = big.NewInt(1 << 54)
-	paymentFieldTaxAmount                  = big.NewInt(1 << 55)
-	paymentFieldTaxBehavior                = big.NewInt(1 << 56)
-	paymentFieldTaxRefundedAmount          = big.NewInt(1 << 57)
-	paymentFieldThreeDsVerified            = big.NewInt(1 << 58)
-	paymentFieldTotal                      = big.NewInt(1 << 59)
-	paymentFieldUpdatedAt                  = big.NewInt(1 << 60)
-	paymentFieldUsdTotal                   = big.NewInt(1 << 61)
-	paymentFieldUser                       = big.NewInt(1 << 62)
+	paymentFieldPresentmentRefundedAmount  = big.NewInt(1 << 34)
+	paymentFieldPresentmentTaxAmount       = big.NewInt(1 << 35)
+	paymentFieldPresentmentTotal           = big.NewInt(1 << 36)
+	paymentFieldProductID                  = big.NewInt(1 << 37)
+	paymentFieldPromoCodeID                = big.NewInt(1 << 38)
+	paymentFieldQuoteID                    = big.NewInt(1 << 39)
+	paymentFieldRecoveryURL                = big.NewInt(1 << 40)
+	paymentFieldRefundable                 = big.NewInt(1 << 41)
+	paymentFieldRefundedAmount             = big.NewInt(1 << 42)
+	paymentFieldRefundedAt                 = big.NewInt(1 << 43)
+	paymentFieldResponseDueAt              = big.NewInt(1 << 44)
+	paymentFieldRetryable                  = big.NewInt(1 << 45)
+	paymentFieldRiskScore                  = big.NewInt(1 << 46)
+	paymentFieldRiskSignals                = big.NewInt(1 << 47)
+	paymentFieldSettlementTimeAt           = big.NewInt(1 << 48)
+	paymentFieldShipmentID                 = big.NewInt(1 << 49)
+	paymentFieldShippingAddress            = big.NewInt(1 << 50)
+	paymentFieldStatus                     = big.NewInt(1 << 51)
+	paymentFieldSubstatus                  = big.NewInt(1 << 52)
+	paymentFieldSubtotal                   = big.NewInt(1 << 53)
+	paymentFieldTaxAmount                  = big.NewInt(1 << 54)
+	paymentFieldTaxBehavior                = big.NewInt(1 << 55)
+	paymentFieldTaxRefundedAmount          = big.NewInt(1 << 56)
+	paymentFieldThreeDsVerified            = big.NewInt(1 << 57)
+	paymentFieldTotal                      = big.NewInt(1 << 58)
+	paymentFieldUpdatedAt                  = big.NewInt(1 << 59)
+	paymentFieldUsdTotal                   = big.NewInt(1 << 60)
+	paymentFieldUser                       = big.NewInt(1 << 61)
+	paymentFieldVariantID                  = big.NewInt(1 << 62)
 	paymentFieldVerificationChecks         = big.NewInt(0).Lsh(big.NewInt(1), 63)
 	paymentFieldVoidable                   = big.NewInt(0).Lsh(big.NewInt(1), 64)
 )
@@ -36248,7 +42206,6 @@ var paymentNullableFields = map[string]*big.Int{
 	"payment_instrument":           paymentFieldPaymentInstrument,
 	"payment_method_id":            paymentFieldPaymentMethodID,
 	"payment_method_type":          paymentFieldPaymentMethodType,
-	"plan_id":                      paymentFieldPlanID,
 	"presentment_refunded_amount":  paymentFieldPresentmentRefundedAmount,
 	"presentment_tax_amount":       paymentFieldPresentmentTaxAmount,
 	"presentment_total":            paymentFieldPresentmentTotal,
@@ -36270,6 +42227,7 @@ var paymentNullableFields = map[string]*big.Int{
 	"total":                        paymentFieldTotal,
 	"usd_total":                    paymentFieldUsdTotal,
 	"user":                         paymentFieldUser,
+	"variant_id":                   paymentFieldVariantID,
 	"verification_checks":          paymentFieldVerificationChecks,
 }
 
@@ -36339,8 +42297,6 @@ type Payment struct {
 	PaymentRuleMatches []*PaymentRuleMatch `json:"payment_rule_matches" url:"payment_rule_matches"`
 	// How many charge attempts have failed on this payment.
 	PaymentsFailed float64 `json:"payments_failed" url:"payments_failed"`
-	// The variant that was charged, prefixed `plan_`.
-	PlanID *string `json:"plan_id,omitempty" url:"plan_id,omitempty"`
 	// How much has been refunded so far, in the currency presented to the buyer. Zero when nothing has been refunded.
 	PresentmentRefundedAmount *Money `json:"presentment_refunded_amount,omitempty" url:"presentment_refunded_amount,omitempty"`
 	// The sales tax or VAT collected, in the currency presented to the buyer. Null when no tax applied.
@@ -36398,6 +42354,8 @@ type Payment struct {
 	UsdTotal *Money `json:"usd_total,omitempty" url:"usd_total,omitempty"`
 	// The buyer. Null when the payment belongs to a company buyer rather than a user.
 	User *UserSummary `json:"user,omitempty" url:"user,omitempty"`
+	// The variant that was charged, prefixed `plan_`.
+	VariantID *string `json:"variant_id,omitempty" url:"variant_id,omitempty"`
 	// The Address Verification Service (AVS), cardholder name, and Card Verification Value (CVV/CVC) results, or null when the processor returned none.
 	VerificationChecks *PaymentVerificationChecks `json:"verification_checks,omitempty" url:"verification_checks,omitempty"`
 	// True when the payment can be voided or canceled. The request is rejected if the payment is no longer eligible — see `POST /payments/{id}/void`.
@@ -36648,13 +42606,6 @@ func (p *Payment) GetPaymentsFailed() float64 {
 	return p.PaymentsFailed
 }
 
-func (p *Payment) GetPlanID() *string {
-	if p == nil {
-		return nil
-	}
-	return p.PlanID
-}
-
 func (p *Payment) GetPresentmentRefundedAmount() *Money {
 	if p == nil {
 		return nil
@@ -36849,6 +42800,13 @@ func (p *Payment) GetUser() *UserSummary {
 		return nil
 	}
 	return p.User
+}
+
+func (p *Payment) GetVariantID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.VariantID
 }
 
 func (p *Payment) GetVerificationChecks() *PaymentVerificationChecks {
@@ -37119,13 +43077,6 @@ func (p *Payment) SetPaymentsFailed(paymentsFailed float64) {
 	p.require(paymentFieldPaymentsFailed)
 }
 
-// SetPlanID sets the PlanID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetPlanID(planID *string) {
-	p.PlanID = planID
-	p.require(paymentFieldPlanID)
-}
-
 // SetPresentmentRefundedAmount sets the PresentmentRefundedAmount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *Payment) SetPresentmentRefundedAmount(presentmentRefundedAmount *Money) {
@@ -37320,6 +43271,13 @@ func (p *Payment) SetUsdTotal(usdTotal *Money) {
 func (p *Payment) SetUser(user *UserSummary) {
 	p.User = user
 	p.require(paymentFieldUser)
+}
+
+// SetVariantID sets the VariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Payment) SetVariantID(variantID *string) {
+	p.VariantID = variantID
+	p.require(paymentFieldVariantID)
 }
 
 // SetVerificationChecks sets the VerificationChecks field and marks it as non-optional;
@@ -38535,10 +44493,10 @@ func (p PaymentHoldType) Ptr() *PaymentHoldType {
 
 var (
 	paymentInputFieldAccountID   = big.NewInt(1 << 0)
-	paymentInputFieldPlan        = big.NewInt(1 << 1)
-	paymentInputFieldPlanID      = big.NewInt(1 << 2)
-	paymentInputFieldPromoCode   = big.NewInt(1 << 3)
-	paymentInputFieldPromoCodeID = big.NewInt(1 << 4)
+	paymentInputFieldPromoCode   = big.NewInt(1 << 1)
+	paymentInputFieldPromoCodeID = big.NewInt(1 << 2)
+	paymentInputFieldVariant     = big.NewInt(1 << 3)
+	paymentInputFieldVariantID   = big.NewInt(1 << 4)
 )
 
 // paymentInputNullableFields maps the wire names of PaymentInput's nullable fields (required or optional) to their field bits.
@@ -38551,14 +44509,14 @@ var paymentInputNullableFields = map[string]*big.Int{
 type PaymentInput struct {
 	// The account the purchase belongs to, prefixed `biz_`.
 	AccountID string `json:"account_id" url:"account_id"`
-	// The variant purchased, described by its attributes instead of an id: the variant with exactly these attributes is used, and one is created when none exists. Mutually exclusive with `plan_id` and `line_items`. Creating a variant requires `plan:create`; creating or updating a product requires the corresponding product permission.
-	Plan *PaymentInputPlan `json:"plan,omitempty" url:"plan,omitempty"`
-	// The variant purchased, prefixed `plan_`. It must belong to the account. Mutually exclusive with `plan` and `line_items`.
-	PlanID *string `json:"plan_id,omitempty" url:"plan_id,omitempty"`
 	// The promo code as the buyer typed it, matched within the account regardless of case and surrounding spaces, as checkout matches it. It must be valid for the variant. Send it or `promo_code_id`, not both; an empty or whitespace-only string counts as not sent. A code the account does not have, or one that is no longer active, is refused before anything is written, with the error code `promo_invalid`. A code this purchase cannot use, such as one with no uses left or one restricted to other variants, products or buyers, is refused with `promo_invalid` too, and the error's message says why.
 	PromoCode *string `json:"promo_code,omitempty" url:"promo_code,omitempty"`
 	// An active promo code to apply, prefixed `promo_`. It must belong to the account and be valid for the variant. Send it or `promo_code`, not both. A code this purchase cannot use is refused with the error code `promo_invalid`, and the error's message says why.
 	PromoCodeID *string `json:"promo_code_id,omitempty" url:"promo_code_id,omitempty"`
+	// The variant purchased, described by its attributes instead of an id: the variant with exactly these attributes is used, and one is created when none exists. Mutually exclusive with `variant_id` and `line_items`. Creating a variant requires `plan:create`; creating or updating a product requires the corresponding product permission.
+	Variant *PaymentInputVariant `json:"variant,omitempty" url:"variant,omitempty"`
+	// The variant purchased, prefixed `plan_`. It must belong to the account. Mutually exclusive with `variant` and `line_items`.
+	VariantID *string `json:"variant_id,omitempty" url:"variant_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -38574,20 +44532,6 @@ func (p *PaymentInput) GetAccountID() string {
 	return p.AccountID
 }
 
-func (p *PaymentInput) GetPlan() *PaymentInputPlan {
-	if p == nil {
-		return nil
-	}
-	return p.Plan
-}
-
-func (p *PaymentInput) GetPlanID() *string {
-	if p == nil {
-		return nil
-	}
-	return p.PlanID
-}
-
 func (p *PaymentInput) GetPromoCode() *string {
 	if p == nil {
 		return nil
@@ -38600,6 +44544,20 @@ func (p *PaymentInput) GetPromoCodeID() *string {
 		return nil
 	}
 	return p.PromoCodeID
+}
+
+func (p *PaymentInput) GetVariant() *PaymentInputVariant {
+	if p == nil {
+		return nil
+	}
+	return p.Variant
+}
+
+func (p *PaymentInput) GetVariantID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.VariantID
 }
 
 func (p *PaymentInput) GetExtraProperties() map[string]interface{} {
@@ -38625,20 +44583,6 @@ func (p *PaymentInput) SetAccountID(accountID string) {
 	p.require(paymentInputFieldAccountID)
 }
 
-// SetPlan sets the Plan field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInput) SetPlan(plan *PaymentInputPlan) {
-	p.Plan = plan
-	p.require(paymentInputFieldPlan)
-}
-
-// SetPlanID sets the PlanID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInput) SetPlanID(planID *string) {
-	p.PlanID = planID
-	p.require(paymentInputFieldPlanID)
-}
-
 // SetPromoCode sets the PromoCode field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *PaymentInput) SetPromoCode(promoCode *string) {
@@ -38651,6 +44595,20 @@ func (p *PaymentInput) SetPromoCode(promoCode *string) {
 func (p *PaymentInput) SetPromoCodeID(promoCodeID *string) {
 	p.PromoCodeID = promoCodeID
 	p.require(paymentInputFieldPromoCodeID)
+}
+
+// SetVariant sets the Variant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInput) SetVariant(variant *PaymentInputVariant) {
+	p.Variant = variant
+	p.require(paymentInputFieldVariant)
+}
+
+// SetVariantID sets the VariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInput) SetVariantID(variantID *string) {
+	p.VariantID = variantID
+	p.require(paymentInputFieldVariantID)
 }
 
 func (p *PaymentInput) UnmarshalJSON(data []byte) error {
@@ -38703,55 +44661,57 @@ func (p *PaymentInput) String() string {
 }
 
 var (
-	paymentInputPlanFieldAllowMultipleQuantity = big.NewInt(1 << 0)
-	paymentInputPlanFieldApplicationFeeAmount  = big.NewInt(1 << 1)
-	paymentInputPlanFieldBillingPeriod         = big.NewInt(1 << 2)
-	paymentInputPlanFieldCurrency              = big.NewInt(1 << 3)
-	paymentInputPlanFieldDescription           = big.NewInt(1 << 4)
-	paymentInputPlanFieldExpirationDays        = big.NewInt(1 << 5)
-	paymentInputPlanFieldForceCreateNewPlan    = big.NewInt(1 << 6)
-	paymentInputPlanFieldInitialPrice          = big.NewInt(1 << 7)
-	paymentInputPlanFieldInternalNotes         = big.NewInt(1 << 8)
-	paymentInputPlanFieldOverrideTaxType       = big.NewInt(1 << 9)
-	paymentInputPlanFieldPlanType              = big.NewInt(1 << 10)
-	paymentInputPlanFieldProduct               = big.NewInt(1 << 11)
-	paymentInputPlanFieldProductID             = big.NewInt(1 << 12)
-	paymentInputPlanFieldRenewalPrice          = big.NewInt(1 << 13)
-	paymentInputPlanFieldTitle                 = big.NewInt(1 << 14)
-	paymentInputPlanFieldTrialPeriodDays       = big.NewInt(1 << 15)
-	paymentInputPlanFieldVisibility            = big.NewInt(1 << 16)
+	paymentInputVariantFieldAllowMultipleQuantity = big.NewInt(1 << 0)
+	paymentInputVariantFieldApplicationFeeAmount  = big.NewInt(1 << 1)
+	paymentInputVariantFieldBillingPeriod         = big.NewInt(1 << 2)
+	paymentInputVariantFieldBillingType           = big.NewInt(1 << 3)
+	paymentInputVariantFieldCurrency              = big.NewInt(1 << 4)
+	paymentInputVariantFieldDescription           = big.NewInt(1 << 5)
+	paymentInputVariantFieldExpirationDays        = big.NewInt(1 << 6)
+	paymentInputVariantFieldForceCreateNewPlan    = big.NewInt(1 << 7)
+	paymentInputVariantFieldInitialPrice          = big.NewInt(1 << 8)
+	paymentInputVariantFieldInternalNotes         = big.NewInt(1 << 9)
+	paymentInputVariantFieldOverrideTaxType       = big.NewInt(1 << 10)
+	paymentInputVariantFieldProduct               = big.NewInt(1 << 11)
+	paymentInputVariantFieldProductID             = big.NewInt(1 << 12)
+	paymentInputVariantFieldRenewalPrice          = big.NewInt(1 << 13)
+	paymentInputVariantFieldTitle                 = big.NewInt(1 << 14)
+	paymentInputVariantFieldTrialPeriodDays       = big.NewInt(1 << 15)
+	paymentInputVariantFieldVisibility            = big.NewInt(1 << 16)
 )
 
-// paymentInputPlanNullableFields maps the wire names of PaymentInputPlan's nullable fields (required or optional) to their field bits.
-var paymentInputPlanNullableFields = map[string]*big.Int{
-	"allow_multiple_quantity": paymentInputPlanFieldAllowMultipleQuantity,
-	"application_fee_amount":  paymentInputPlanFieldApplicationFeeAmount,
-	"billing_period":          paymentInputPlanFieldBillingPeriod,
-	"description":             paymentInputPlanFieldDescription,
-	"expiration_days":         paymentInputPlanFieldExpirationDays,
-	"force_create_new_plan":   paymentInputPlanFieldForceCreateNewPlan,
-	"initial_price":           paymentInputPlanFieldInitialPrice,
-	"internal_notes":          paymentInputPlanFieldInternalNotes,
-	"override_tax_type":       paymentInputPlanFieldOverrideTaxType,
-	"plan_type":               paymentInputPlanFieldPlanType,
-	"product":                 paymentInputPlanFieldProduct,
-	"product_id":              paymentInputPlanFieldProductID,
-	"renewal_price":           paymentInputPlanFieldRenewalPrice,
-	"title":                   paymentInputPlanFieldTitle,
-	"trial_period_days":       paymentInputPlanFieldTrialPeriodDays,
-	"visibility":              paymentInputPlanFieldVisibility,
+// paymentInputVariantNullableFields maps the wire names of PaymentInputVariant's nullable fields (required or optional) to their field bits.
+var paymentInputVariantNullableFields = map[string]*big.Int{
+	"allow_multiple_quantity": paymentInputVariantFieldAllowMultipleQuantity,
+	"application_fee_amount":  paymentInputVariantFieldApplicationFeeAmount,
+	"billing_period":          paymentInputVariantFieldBillingPeriod,
+	"billing_type":            paymentInputVariantFieldBillingType,
+	"description":             paymentInputVariantFieldDescription,
+	"expiration_days":         paymentInputVariantFieldExpirationDays,
+	"force_create_new_plan":   paymentInputVariantFieldForceCreateNewPlan,
+	"initial_price":           paymentInputVariantFieldInitialPrice,
+	"internal_notes":          paymentInputVariantFieldInternalNotes,
+	"override_tax_type":       paymentInputVariantFieldOverrideTaxType,
+	"product":                 paymentInputVariantFieldProduct,
+	"product_id":              paymentInputVariantFieldProductID,
+	"renewal_price":           paymentInputVariantFieldRenewalPrice,
+	"title":                   paymentInputVariantFieldTitle,
+	"trial_period_days":       paymentInputVariantFieldTrialPeriodDays,
+	"visibility":              paymentInputVariantFieldVisibility,
 }
 
-// The variant purchased, described by its attributes instead of an id: the variant with exactly these attributes is used, and one is created when none exists. Mutually exclusive with `plan_id` and `line_items`. Creating a variant requires `plan:create`; creating or updating a product requires the corresponding product permission.
-type PaymentInputPlan struct {
+// The variant purchased, described by its attributes instead of an id: the variant with exactly these attributes is used, and one is created when none exists. Mutually exclusive with `variant_id` and `line_items`. Creating a variant requires `plan:create`; creating or updating a product requires the corresponding product permission.
+type PaymentInputVariant struct {
 	// Whether more than one unit can be purchased in an order.
 	AllowMultipleQuantity *bool `json:"allow_multiple_quantity,omitempty" url:"allow_multiple_quantity,omitempty"`
 	// Application fee the platform collects per unit, in the variant currency (5.00 means $5.00 for USD). Must be positive and below the initial price for one-time variants or renewal price for recurring variants. Paid to the parent account alongside other processing fees; collection is capped to remaining proceeds. Applies to subsequent payments on recurring variants. Only valid for connected accounts with a parent account.
 	ApplicationFeeAmount *float64 `json:"application_fee_amount,omitempty" url:"application_fee_amount,omitempty"`
 	// Recurring billing interval in days.
 	BillingPeriod *int `json:"billing_period,omitempty" url:"billing_period,omitempty"`
+	// Billing model for the variant.
+	BillingType *PaymentInputVariantBillingType `json:"billing_type,omitempty" url:"billing_type,omitempty"`
 	// Currency code for the variant prices.
-	Currency PaymentInputPlanCurrency `json:"currency" url:"currency"`
+	Currency PaymentInputVariantCurrency `json:"currency" url:"currency"`
 	// Variant description.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
 	// Days until access expires.
@@ -38763,11 +44723,9 @@ type PaymentInputPlan struct {
 	// Internal notes for the account.
 	InternalNotes *string `json:"internal_notes,omitempty" url:"internal_notes,omitempty"`
 	// Whether the variant's price includes tax: `inclusive` (tax is included in the price), `exclusive` (tax is added on top), or `unspecified`. Omit it or pass `null` to use the account's tax setting. On an account enrolled in the Whop tax service, `inclusive` or `exclusive` replaces the account's setting and `unspecified` keeps it. Otherwise it applies only where the account is the merchant of record: `inclusive` or `exclusive` replaces the account's setting when the account collects tax, and `unspecified` means the variant collects no tax. Where Whop is the merchant of record, the account's setting applies. Variants that differ only in this value are different variants.
-	OverrideTaxType *PaymentInputPlanOverrideTaxType `json:"override_tax_type,omitempty" url:"override_tax_type,omitempty"`
-	// Billing model for the variant.
-	PlanType *PaymentInputPlanPlanType `json:"plan_type,omitempty" url:"plan_type,omitempty"`
+	OverrideTaxType *PaymentInputVariantOverrideTaxType `json:"override_tax_type,omitempty" url:"override_tax_type,omitempty"`
 	// Find or create a product by external identifier. Mutually exclusive with product_id.
-	Product *PaymentInputPlanProduct `json:"product,omitempty" url:"product,omitempty"`
+	Product *PaymentInputVariantProduct `json:"product,omitempty" url:"product,omitempty"`
 	// Existing product ID belonging to the account, prefixed `prod_`. Mutually exclusive with `product`.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// Recurring price in the variant currency.
@@ -38777,7 +44735,7 @@ type PaymentInputPlan struct {
 	// Free trial days before renewal.
 	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
 	// Whether the variant is visible to customers.
-	Visibility *PaymentInputPlanVisibility `json:"visibility,omitempty" url:"visibility,omitempty"`
+	Visibility *PaymentInputVariantVisibility `json:"visibility,omitempty" url:"visibility,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -38786,133 +44744,133 @@ type PaymentInputPlan struct {
 	rawJSON         json.RawMessage
 }
 
-func (p *PaymentInputPlan) GetAllowMultipleQuantity() *bool {
+func (p *PaymentInputVariant) GetAllowMultipleQuantity() *bool {
 	if p == nil {
 		return nil
 	}
 	return p.AllowMultipleQuantity
 }
 
-func (p *PaymentInputPlan) GetApplicationFeeAmount() *float64 {
+func (p *PaymentInputVariant) GetApplicationFeeAmount() *float64 {
 	if p == nil {
 		return nil
 	}
 	return p.ApplicationFeeAmount
 }
 
-func (p *PaymentInputPlan) GetBillingPeriod() *int {
+func (p *PaymentInputVariant) GetBillingPeriod() *int {
 	if p == nil {
 		return nil
 	}
 	return p.BillingPeriod
 }
 
-func (p *PaymentInputPlan) GetCurrency() PaymentInputPlanCurrency {
+func (p *PaymentInputVariant) GetBillingType() *PaymentInputVariantBillingType {
+	if p == nil {
+		return nil
+	}
+	return p.BillingType
+}
+
+func (p *PaymentInputVariant) GetCurrency() PaymentInputVariantCurrency {
 	if p == nil {
 		return ""
 	}
 	return p.Currency
 }
 
-func (p *PaymentInputPlan) GetDescription() *string {
+func (p *PaymentInputVariant) GetDescription() *string {
 	if p == nil {
 		return nil
 	}
 	return p.Description
 }
 
-func (p *PaymentInputPlan) GetExpirationDays() *int {
+func (p *PaymentInputVariant) GetExpirationDays() *int {
 	if p == nil {
 		return nil
 	}
 	return p.ExpirationDays
 }
 
-func (p *PaymentInputPlan) GetForceCreateNewPlan() *bool {
+func (p *PaymentInputVariant) GetForceCreateNewPlan() *bool {
 	if p == nil {
 		return nil
 	}
 	return p.ForceCreateNewPlan
 }
 
-func (p *PaymentInputPlan) GetInitialPrice() *float64 {
+func (p *PaymentInputVariant) GetInitialPrice() *float64 {
 	if p == nil {
 		return nil
 	}
 	return p.InitialPrice
 }
 
-func (p *PaymentInputPlan) GetInternalNotes() *string {
+func (p *PaymentInputVariant) GetInternalNotes() *string {
 	if p == nil {
 		return nil
 	}
 	return p.InternalNotes
 }
 
-func (p *PaymentInputPlan) GetOverrideTaxType() *PaymentInputPlanOverrideTaxType {
+func (p *PaymentInputVariant) GetOverrideTaxType() *PaymentInputVariantOverrideTaxType {
 	if p == nil {
 		return nil
 	}
 	return p.OverrideTaxType
 }
 
-func (p *PaymentInputPlan) GetPlanType() *PaymentInputPlanPlanType {
-	if p == nil {
-		return nil
-	}
-	return p.PlanType
-}
-
-func (p *PaymentInputPlan) GetProduct() *PaymentInputPlanProduct {
+func (p *PaymentInputVariant) GetProduct() *PaymentInputVariantProduct {
 	if p == nil {
 		return nil
 	}
 	return p.Product
 }
 
-func (p *PaymentInputPlan) GetProductID() *string {
+func (p *PaymentInputVariant) GetProductID() *string {
 	if p == nil {
 		return nil
 	}
 	return p.ProductID
 }
 
-func (p *PaymentInputPlan) GetRenewalPrice() *float64 {
+func (p *PaymentInputVariant) GetRenewalPrice() *float64 {
 	if p == nil {
 		return nil
 	}
 	return p.RenewalPrice
 }
 
-func (p *PaymentInputPlan) GetTitle() *string {
+func (p *PaymentInputVariant) GetTitle() *string {
 	if p == nil {
 		return nil
 	}
 	return p.Title
 }
 
-func (p *PaymentInputPlan) GetTrialPeriodDays() *int {
+func (p *PaymentInputVariant) GetTrialPeriodDays() *int {
 	if p == nil {
 		return nil
 	}
 	return p.TrialPeriodDays
 }
 
-func (p *PaymentInputPlan) GetVisibility() *PaymentInputPlanVisibility {
+func (p *PaymentInputVariant) GetVisibility() *PaymentInputVariantVisibility {
 	if p == nil {
 		return nil
 	}
 	return p.Visibility
 }
 
-func (p *PaymentInputPlan) GetExtraProperties() map[string]interface{} {
+func (p *PaymentInputVariant) GetExtraProperties() map[string]interface{} {
 	if p == nil {
 		return nil
 	}
 	return p.extraProperties
 }
 
-func (p *PaymentInputPlan) require(field *big.Int) {
+func (p *PaymentInputVariant) require(field *big.Int) {
 	next := new(big.Int)
 	if p.explicitFields != nil {
 		next.Set(p.explicitFields)
@@ -38923,136 +44881,136 @@ func (p *PaymentInputPlan) require(field *big.Int) {
 
 // SetAllowMultipleQuantity sets the AllowMultipleQuantity field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInputPlan) SetAllowMultipleQuantity(allowMultipleQuantity *bool) {
+func (p *PaymentInputVariant) SetAllowMultipleQuantity(allowMultipleQuantity *bool) {
 	p.AllowMultipleQuantity = allowMultipleQuantity
-	p.require(paymentInputPlanFieldAllowMultipleQuantity)
+	p.require(paymentInputVariantFieldAllowMultipleQuantity)
 }
 
 // SetApplicationFeeAmount sets the ApplicationFeeAmount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInputPlan) SetApplicationFeeAmount(applicationFeeAmount *float64) {
+func (p *PaymentInputVariant) SetApplicationFeeAmount(applicationFeeAmount *float64) {
 	p.ApplicationFeeAmount = applicationFeeAmount
-	p.require(paymentInputPlanFieldApplicationFeeAmount)
+	p.require(paymentInputVariantFieldApplicationFeeAmount)
 }
 
 // SetBillingPeriod sets the BillingPeriod field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInputPlan) SetBillingPeriod(billingPeriod *int) {
+func (p *PaymentInputVariant) SetBillingPeriod(billingPeriod *int) {
 	p.BillingPeriod = billingPeriod
-	p.require(paymentInputPlanFieldBillingPeriod)
+	p.require(paymentInputVariantFieldBillingPeriod)
+}
+
+// SetBillingType sets the BillingType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputVariant) SetBillingType(billingType *PaymentInputVariantBillingType) {
+	p.BillingType = billingType
+	p.require(paymentInputVariantFieldBillingType)
 }
 
 // SetCurrency sets the Currency field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInputPlan) SetCurrency(currency PaymentInputPlanCurrency) {
+func (p *PaymentInputVariant) SetCurrency(currency PaymentInputVariantCurrency) {
 	p.Currency = currency
-	p.require(paymentInputPlanFieldCurrency)
+	p.require(paymentInputVariantFieldCurrency)
 }
 
 // SetDescription sets the Description field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInputPlan) SetDescription(description *string) {
+func (p *PaymentInputVariant) SetDescription(description *string) {
 	p.Description = description
-	p.require(paymentInputPlanFieldDescription)
+	p.require(paymentInputVariantFieldDescription)
 }
 
 // SetExpirationDays sets the ExpirationDays field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInputPlan) SetExpirationDays(expirationDays *int) {
+func (p *PaymentInputVariant) SetExpirationDays(expirationDays *int) {
 	p.ExpirationDays = expirationDays
-	p.require(paymentInputPlanFieldExpirationDays)
+	p.require(paymentInputVariantFieldExpirationDays)
 }
 
 // SetForceCreateNewPlan sets the ForceCreateNewPlan field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInputPlan) SetForceCreateNewPlan(forceCreateNewPlan *bool) {
+func (p *PaymentInputVariant) SetForceCreateNewPlan(forceCreateNewPlan *bool) {
 	p.ForceCreateNewPlan = forceCreateNewPlan
-	p.require(paymentInputPlanFieldForceCreateNewPlan)
+	p.require(paymentInputVariantFieldForceCreateNewPlan)
 }
 
 // SetInitialPrice sets the InitialPrice field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInputPlan) SetInitialPrice(initialPrice *float64) {
+func (p *PaymentInputVariant) SetInitialPrice(initialPrice *float64) {
 	p.InitialPrice = initialPrice
-	p.require(paymentInputPlanFieldInitialPrice)
+	p.require(paymentInputVariantFieldInitialPrice)
 }
 
 // SetInternalNotes sets the InternalNotes field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInputPlan) SetInternalNotes(internalNotes *string) {
+func (p *PaymentInputVariant) SetInternalNotes(internalNotes *string) {
 	p.InternalNotes = internalNotes
-	p.require(paymentInputPlanFieldInternalNotes)
+	p.require(paymentInputVariantFieldInternalNotes)
 }
 
 // SetOverrideTaxType sets the OverrideTaxType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInputPlan) SetOverrideTaxType(overrideTaxType *PaymentInputPlanOverrideTaxType) {
+func (p *PaymentInputVariant) SetOverrideTaxType(overrideTaxType *PaymentInputVariantOverrideTaxType) {
 	p.OverrideTaxType = overrideTaxType
-	p.require(paymentInputPlanFieldOverrideTaxType)
-}
-
-// SetPlanType sets the PlanType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInputPlan) SetPlanType(planType *PaymentInputPlanPlanType) {
-	p.PlanType = planType
-	p.require(paymentInputPlanFieldPlanType)
+	p.require(paymentInputVariantFieldOverrideTaxType)
 }
 
 // SetProduct sets the Product field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInputPlan) SetProduct(product *PaymentInputPlanProduct) {
+func (p *PaymentInputVariant) SetProduct(product *PaymentInputVariantProduct) {
 	p.Product = product
-	p.require(paymentInputPlanFieldProduct)
+	p.require(paymentInputVariantFieldProduct)
 }
 
 // SetProductID sets the ProductID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInputPlan) SetProductID(productID *string) {
+func (p *PaymentInputVariant) SetProductID(productID *string) {
 	p.ProductID = productID
-	p.require(paymentInputPlanFieldProductID)
+	p.require(paymentInputVariantFieldProductID)
 }
 
 // SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInputPlan) SetRenewalPrice(renewalPrice *float64) {
+func (p *PaymentInputVariant) SetRenewalPrice(renewalPrice *float64) {
 	p.RenewalPrice = renewalPrice
-	p.require(paymentInputPlanFieldRenewalPrice)
+	p.require(paymentInputVariantFieldRenewalPrice)
 }
 
 // SetTitle sets the Title field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInputPlan) SetTitle(title *string) {
+func (p *PaymentInputVariant) SetTitle(title *string) {
 	p.Title = title
-	p.require(paymentInputPlanFieldTitle)
+	p.require(paymentInputVariantFieldTitle)
 }
 
 // SetTrialPeriodDays sets the TrialPeriodDays field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInputPlan) SetTrialPeriodDays(trialPeriodDays *int) {
+func (p *PaymentInputVariant) SetTrialPeriodDays(trialPeriodDays *int) {
 	p.TrialPeriodDays = trialPeriodDays
-	p.require(paymentInputPlanFieldTrialPeriodDays)
+	p.require(paymentInputVariantFieldTrialPeriodDays)
 }
 
 // SetVisibility sets the Visibility field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInputPlan) SetVisibility(visibility *PaymentInputPlanVisibility) {
+func (p *PaymentInputVariant) SetVisibility(visibility *PaymentInputVariantVisibility) {
 	p.Visibility = visibility
-	p.require(paymentInputPlanFieldVisibility)
+	p.require(paymentInputVariantFieldVisibility)
 }
 
-func (p *PaymentInputPlan) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentInputPlan
+func (p *PaymentInputVariant) UnmarshalJSON(data []byte) error {
+	type unmarshaler PaymentInputVariant
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*p = PaymentInputPlan(value)
+	*p = PaymentInputVariant(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *p)
 	if err != nil {
 		return err
 	}
 	p.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, paymentInputPlanNullableFields)
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, paymentInputVariantNullableFields)
 	if err != nil {
 		return err
 	}
@@ -39063,8 +45021,8 @@ func (p *PaymentInputPlan) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (p *PaymentInputPlan) MarshalJSON() ([]byte, error) {
-	type embed PaymentInputPlan
+func (p *PaymentInputVariant) MarshalJSON() ([]byte, error) {
+	type embed PaymentInputVariant
 	var marshaler = struct {
 		embed
 	}{
@@ -39074,7 +45032,7 @@ func (p *PaymentInputPlan) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (p *PaymentInputPlan) String() string {
+func (p *PaymentInputVariant) String() string {
 	if p == nil {
 		return "<nil>"
 	}
@@ -39089,372 +45047,372 @@ func (p *PaymentInputPlan) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// Currency code for the variant prices.
-type PaymentInputPlanCurrency string
+// Billing model for the variant.
+type PaymentInputVariantBillingType string
 
 const (
-	PaymentInputPlanCurrencyUsd     PaymentInputPlanCurrency = "usd"
-	PaymentInputPlanCurrencySgd     PaymentInputPlanCurrency = "sgd"
-	PaymentInputPlanCurrencyInr     PaymentInputPlanCurrency = "inr"
-	PaymentInputPlanCurrencyAud     PaymentInputPlanCurrency = "aud"
-	PaymentInputPlanCurrencyBrl     PaymentInputPlanCurrency = "brl"
-	PaymentInputPlanCurrencyCad     PaymentInputPlanCurrency = "cad"
-	PaymentInputPlanCurrencyDkk     PaymentInputPlanCurrency = "dkk"
-	PaymentInputPlanCurrencyEur     PaymentInputPlanCurrency = "eur"
-	PaymentInputPlanCurrencyNok     PaymentInputPlanCurrency = "nok"
-	PaymentInputPlanCurrencyGbp     PaymentInputPlanCurrency = "gbp"
-	PaymentInputPlanCurrencySek     PaymentInputPlanCurrency = "sek"
-	PaymentInputPlanCurrencyChf     PaymentInputPlanCurrency = "chf"
-	PaymentInputPlanCurrencyHkd     PaymentInputPlanCurrency = "hkd"
-	PaymentInputPlanCurrencyHuf     PaymentInputPlanCurrency = "huf"
-	PaymentInputPlanCurrencyJpy     PaymentInputPlanCurrency = "jpy"
-	PaymentInputPlanCurrencyMxn     PaymentInputPlanCurrency = "mxn"
-	PaymentInputPlanCurrencyMyr     PaymentInputPlanCurrency = "myr"
-	PaymentInputPlanCurrencyPln     PaymentInputPlanCurrency = "pln"
-	PaymentInputPlanCurrencyCzk     PaymentInputPlanCurrency = "czk"
-	PaymentInputPlanCurrencyNzd     PaymentInputPlanCurrency = "nzd"
-	PaymentInputPlanCurrencyAed     PaymentInputPlanCurrency = "aed"
-	PaymentInputPlanCurrencyEth     PaymentInputPlanCurrency = "eth"
-	PaymentInputPlanCurrencyApe     PaymentInputPlanCurrency = "ape"
-	PaymentInputPlanCurrencyCop     PaymentInputPlanCurrency = "cop"
-	PaymentInputPlanCurrencyRon     PaymentInputPlanCurrency = "ron"
-	PaymentInputPlanCurrencyThb     PaymentInputPlanCurrency = "thb"
-	PaymentInputPlanCurrencyBgn     PaymentInputPlanCurrency = "bgn"
-	PaymentInputPlanCurrencyIdr     PaymentInputPlanCurrency = "idr"
-	PaymentInputPlanCurrencyDop     PaymentInputPlanCurrency = "dop"
-	PaymentInputPlanCurrencyPhp     PaymentInputPlanCurrency = "php"
-	PaymentInputPlanCurrencyTry     PaymentInputPlanCurrency = "try"
-	PaymentInputPlanCurrencyKrw     PaymentInputPlanCurrency = "krw"
-	PaymentInputPlanCurrencyTwd     PaymentInputPlanCurrency = "twd"
-	PaymentInputPlanCurrencyVnd     PaymentInputPlanCurrency = "vnd"
-	PaymentInputPlanCurrencyPkr     PaymentInputPlanCurrency = "pkr"
-	PaymentInputPlanCurrencyClp     PaymentInputPlanCurrency = "clp"
-	PaymentInputPlanCurrencyUyu     PaymentInputPlanCurrency = "uyu"
-	PaymentInputPlanCurrencyArs     PaymentInputPlanCurrency = "ars"
-	PaymentInputPlanCurrencyZar     PaymentInputPlanCurrency = "zar"
-	PaymentInputPlanCurrencyDzd     PaymentInputPlanCurrency = "dzd"
-	PaymentInputPlanCurrencyTnd     PaymentInputPlanCurrency = "tnd"
-	PaymentInputPlanCurrencyMad     PaymentInputPlanCurrency = "mad"
-	PaymentInputPlanCurrencyKes     PaymentInputPlanCurrency = "kes"
-	PaymentInputPlanCurrencyKwd     PaymentInputPlanCurrency = "kwd"
-	PaymentInputPlanCurrencyJod     PaymentInputPlanCurrency = "jod"
-	PaymentInputPlanCurrencyAll     PaymentInputPlanCurrency = "all"
-	PaymentInputPlanCurrencyXcd     PaymentInputPlanCurrency = "xcd"
-	PaymentInputPlanCurrencyAmd     PaymentInputPlanCurrency = "amd"
-	PaymentInputPlanCurrencyBsd     PaymentInputPlanCurrency = "bsd"
-	PaymentInputPlanCurrencyBhd     PaymentInputPlanCurrency = "bhd"
-	PaymentInputPlanCurrencyBob     PaymentInputPlanCurrency = "bob"
-	PaymentInputPlanCurrencyBam     PaymentInputPlanCurrency = "bam"
-	PaymentInputPlanCurrencyKhr     PaymentInputPlanCurrency = "khr"
-	PaymentInputPlanCurrencyCrc     PaymentInputPlanCurrency = "crc"
-	PaymentInputPlanCurrencyXof     PaymentInputPlanCurrency = "xof"
-	PaymentInputPlanCurrencyEgp     PaymentInputPlanCurrency = "egp"
-	PaymentInputPlanCurrencyEtb     PaymentInputPlanCurrency = "etb"
-	PaymentInputPlanCurrencyGmd     PaymentInputPlanCurrency = "gmd"
-	PaymentInputPlanCurrencyGhs     PaymentInputPlanCurrency = "ghs"
-	PaymentInputPlanCurrencyGtq     PaymentInputPlanCurrency = "gtq"
-	PaymentInputPlanCurrencyGyd     PaymentInputPlanCurrency = "gyd"
-	PaymentInputPlanCurrencyIls     PaymentInputPlanCurrency = "ils"
-	PaymentInputPlanCurrencyJmd     PaymentInputPlanCurrency = "jmd"
-	PaymentInputPlanCurrencyMop     PaymentInputPlanCurrency = "mop"
-	PaymentInputPlanCurrencyMga     PaymentInputPlanCurrency = "mga"
-	PaymentInputPlanCurrencyMur     PaymentInputPlanCurrency = "mur"
-	PaymentInputPlanCurrencyMdl     PaymentInputPlanCurrency = "mdl"
-	PaymentInputPlanCurrencyMnt     PaymentInputPlanCurrency = "mnt"
-	PaymentInputPlanCurrencyNad     PaymentInputPlanCurrency = "nad"
-	PaymentInputPlanCurrencyNgn     PaymentInputPlanCurrency = "ngn"
-	PaymentInputPlanCurrencyMkd     PaymentInputPlanCurrency = "mkd"
-	PaymentInputPlanCurrencyOmr     PaymentInputPlanCurrency = "omr"
-	PaymentInputPlanCurrencyPyg     PaymentInputPlanCurrency = "pyg"
-	PaymentInputPlanCurrencyPen     PaymentInputPlanCurrency = "pen"
-	PaymentInputPlanCurrencyQar     PaymentInputPlanCurrency = "qar"
-	PaymentInputPlanCurrencyRwf     PaymentInputPlanCurrency = "rwf"
-	PaymentInputPlanCurrencySar     PaymentInputPlanCurrency = "sar"
-	PaymentInputPlanCurrencyRsd     PaymentInputPlanCurrency = "rsd"
-	PaymentInputPlanCurrencyLkr     PaymentInputPlanCurrency = "lkr"
-	PaymentInputPlanCurrencyTzs     PaymentInputPlanCurrency = "tzs"
-	PaymentInputPlanCurrencyTtd     PaymentInputPlanCurrency = "ttd"
-	PaymentInputPlanCurrencyUzs     PaymentInputPlanCurrency = "uzs"
-	PaymentInputPlanCurrencyRub     PaymentInputPlanCurrency = "rub"
-	PaymentInputPlanCurrencyBtc     PaymentInputPlanCurrency = "btc"
-	PaymentInputPlanCurrencyCny     PaymentInputPlanCurrency = "cny"
-	PaymentInputPlanCurrencyUsdt    PaymentInputPlanCurrency = "usdt"
-	PaymentInputPlanCurrencyKzt     PaymentInputPlanCurrency = "kzt"
-	PaymentInputPlanCurrencyAwg     PaymentInputPlanCurrency = "awg"
-	PaymentInputPlanCurrencyWhopUsd PaymentInputPlanCurrency = "whop_usd"
-	PaymentInputPlanCurrencyXau     PaymentInputPlanCurrency = "xau"
+	PaymentInputVariantBillingTypeRenewal PaymentInputVariantBillingType = "renewal"
+	PaymentInputVariantBillingTypeOneTime PaymentInputVariantBillingType = "one_time"
 )
 
-func NewPaymentInputPlanCurrencyFromString(s string) (PaymentInputPlanCurrency, error) {
+func NewPaymentInputVariantBillingTypeFromString(s string) (PaymentInputVariantBillingType, error) {
 	switch s {
-	case "usd":
-		return PaymentInputPlanCurrencyUsd, nil
-	case "sgd":
-		return PaymentInputPlanCurrencySgd, nil
-	case "inr":
-		return PaymentInputPlanCurrencyInr, nil
-	case "aud":
-		return PaymentInputPlanCurrencyAud, nil
-	case "brl":
-		return PaymentInputPlanCurrencyBrl, nil
-	case "cad":
-		return PaymentInputPlanCurrencyCad, nil
-	case "dkk":
-		return PaymentInputPlanCurrencyDkk, nil
-	case "eur":
-		return PaymentInputPlanCurrencyEur, nil
-	case "nok":
-		return PaymentInputPlanCurrencyNok, nil
-	case "gbp":
-		return PaymentInputPlanCurrencyGbp, nil
-	case "sek":
-		return PaymentInputPlanCurrencySek, nil
-	case "chf":
-		return PaymentInputPlanCurrencyChf, nil
-	case "hkd":
-		return PaymentInputPlanCurrencyHkd, nil
-	case "huf":
-		return PaymentInputPlanCurrencyHuf, nil
-	case "jpy":
-		return PaymentInputPlanCurrencyJpy, nil
-	case "mxn":
-		return PaymentInputPlanCurrencyMxn, nil
-	case "myr":
-		return PaymentInputPlanCurrencyMyr, nil
-	case "pln":
-		return PaymentInputPlanCurrencyPln, nil
-	case "czk":
-		return PaymentInputPlanCurrencyCzk, nil
-	case "nzd":
-		return PaymentInputPlanCurrencyNzd, nil
-	case "aed":
-		return PaymentInputPlanCurrencyAed, nil
-	case "eth":
-		return PaymentInputPlanCurrencyEth, nil
-	case "ape":
-		return PaymentInputPlanCurrencyApe, nil
-	case "cop":
-		return PaymentInputPlanCurrencyCop, nil
-	case "ron":
-		return PaymentInputPlanCurrencyRon, nil
-	case "thb":
-		return PaymentInputPlanCurrencyThb, nil
-	case "bgn":
-		return PaymentInputPlanCurrencyBgn, nil
-	case "idr":
-		return PaymentInputPlanCurrencyIdr, nil
-	case "dop":
-		return PaymentInputPlanCurrencyDop, nil
-	case "php":
-		return PaymentInputPlanCurrencyPhp, nil
-	case "try":
-		return PaymentInputPlanCurrencyTry, nil
-	case "krw":
-		return PaymentInputPlanCurrencyKrw, nil
-	case "twd":
-		return PaymentInputPlanCurrencyTwd, nil
-	case "vnd":
-		return PaymentInputPlanCurrencyVnd, nil
-	case "pkr":
-		return PaymentInputPlanCurrencyPkr, nil
-	case "clp":
-		return PaymentInputPlanCurrencyClp, nil
-	case "uyu":
-		return PaymentInputPlanCurrencyUyu, nil
-	case "ars":
-		return PaymentInputPlanCurrencyArs, nil
-	case "zar":
-		return PaymentInputPlanCurrencyZar, nil
-	case "dzd":
-		return PaymentInputPlanCurrencyDzd, nil
-	case "tnd":
-		return PaymentInputPlanCurrencyTnd, nil
-	case "mad":
-		return PaymentInputPlanCurrencyMad, nil
-	case "kes":
-		return PaymentInputPlanCurrencyKes, nil
-	case "kwd":
-		return PaymentInputPlanCurrencyKwd, nil
-	case "jod":
-		return PaymentInputPlanCurrencyJod, nil
-	case "all":
-		return PaymentInputPlanCurrencyAll, nil
-	case "xcd":
-		return PaymentInputPlanCurrencyXcd, nil
-	case "amd":
-		return PaymentInputPlanCurrencyAmd, nil
-	case "bsd":
-		return PaymentInputPlanCurrencyBsd, nil
-	case "bhd":
-		return PaymentInputPlanCurrencyBhd, nil
-	case "bob":
-		return PaymentInputPlanCurrencyBob, nil
-	case "bam":
-		return PaymentInputPlanCurrencyBam, nil
-	case "khr":
-		return PaymentInputPlanCurrencyKhr, nil
-	case "crc":
-		return PaymentInputPlanCurrencyCrc, nil
-	case "xof":
-		return PaymentInputPlanCurrencyXof, nil
-	case "egp":
-		return PaymentInputPlanCurrencyEgp, nil
-	case "etb":
-		return PaymentInputPlanCurrencyEtb, nil
-	case "gmd":
-		return PaymentInputPlanCurrencyGmd, nil
-	case "ghs":
-		return PaymentInputPlanCurrencyGhs, nil
-	case "gtq":
-		return PaymentInputPlanCurrencyGtq, nil
-	case "gyd":
-		return PaymentInputPlanCurrencyGyd, nil
-	case "ils":
-		return PaymentInputPlanCurrencyIls, nil
-	case "jmd":
-		return PaymentInputPlanCurrencyJmd, nil
-	case "mop":
-		return PaymentInputPlanCurrencyMop, nil
-	case "mga":
-		return PaymentInputPlanCurrencyMga, nil
-	case "mur":
-		return PaymentInputPlanCurrencyMur, nil
-	case "mdl":
-		return PaymentInputPlanCurrencyMdl, nil
-	case "mnt":
-		return PaymentInputPlanCurrencyMnt, nil
-	case "nad":
-		return PaymentInputPlanCurrencyNad, nil
-	case "ngn":
-		return PaymentInputPlanCurrencyNgn, nil
-	case "mkd":
-		return PaymentInputPlanCurrencyMkd, nil
-	case "omr":
-		return PaymentInputPlanCurrencyOmr, nil
-	case "pyg":
-		return PaymentInputPlanCurrencyPyg, nil
-	case "pen":
-		return PaymentInputPlanCurrencyPen, nil
-	case "qar":
-		return PaymentInputPlanCurrencyQar, nil
-	case "rwf":
-		return PaymentInputPlanCurrencyRwf, nil
-	case "sar":
-		return PaymentInputPlanCurrencySar, nil
-	case "rsd":
-		return PaymentInputPlanCurrencyRsd, nil
-	case "lkr":
-		return PaymentInputPlanCurrencyLkr, nil
-	case "tzs":
-		return PaymentInputPlanCurrencyTzs, nil
-	case "ttd":
-		return PaymentInputPlanCurrencyTtd, nil
-	case "uzs":
-		return PaymentInputPlanCurrencyUzs, nil
-	case "rub":
-		return PaymentInputPlanCurrencyRub, nil
-	case "btc":
-		return PaymentInputPlanCurrencyBtc, nil
-	case "cny":
-		return PaymentInputPlanCurrencyCny, nil
-	case "usdt":
-		return PaymentInputPlanCurrencyUsdt, nil
-	case "kzt":
-		return PaymentInputPlanCurrencyKzt, nil
-	case "awg":
-		return PaymentInputPlanCurrencyAwg, nil
-	case "whop_usd":
-		return PaymentInputPlanCurrencyWhopUsd, nil
-	case "xau":
-		return PaymentInputPlanCurrencyXau, nil
+	case "renewal":
+		return PaymentInputVariantBillingTypeRenewal, nil
+	case "one_time":
+		return PaymentInputVariantBillingTypeOneTime, nil
 	}
-	var t PaymentInputPlanCurrency
+	var t PaymentInputVariantBillingType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (p PaymentInputPlanCurrency) Ptr() *PaymentInputPlanCurrency {
+func (p PaymentInputVariantBillingType) Ptr() *PaymentInputVariantBillingType {
+	return &p
+}
+
+// Currency code for the variant prices.
+type PaymentInputVariantCurrency string
+
+const (
+	PaymentInputVariantCurrencyUsd     PaymentInputVariantCurrency = "usd"
+	PaymentInputVariantCurrencySgd     PaymentInputVariantCurrency = "sgd"
+	PaymentInputVariantCurrencyInr     PaymentInputVariantCurrency = "inr"
+	PaymentInputVariantCurrencyAud     PaymentInputVariantCurrency = "aud"
+	PaymentInputVariantCurrencyBrl     PaymentInputVariantCurrency = "brl"
+	PaymentInputVariantCurrencyCad     PaymentInputVariantCurrency = "cad"
+	PaymentInputVariantCurrencyDkk     PaymentInputVariantCurrency = "dkk"
+	PaymentInputVariantCurrencyEur     PaymentInputVariantCurrency = "eur"
+	PaymentInputVariantCurrencyNok     PaymentInputVariantCurrency = "nok"
+	PaymentInputVariantCurrencyGbp     PaymentInputVariantCurrency = "gbp"
+	PaymentInputVariantCurrencySek     PaymentInputVariantCurrency = "sek"
+	PaymentInputVariantCurrencyChf     PaymentInputVariantCurrency = "chf"
+	PaymentInputVariantCurrencyHkd     PaymentInputVariantCurrency = "hkd"
+	PaymentInputVariantCurrencyHuf     PaymentInputVariantCurrency = "huf"
+	PaymentInputVariantCurrencyJpy     PaymentInputVariantCurrency = "jpy"
+	PaymentInputVariantCurrencyMxn     PaymentInputVariantCurrency = "mxn"
+	PaymentInputVariantCurrencyMyr     PaymentInputVariantCurrency = "myr"
+	PaymentInputVariantCurrencyPln     PaymentInputVariantCurrency = "pln"
+	PaymentInputVariantCurrencyCzk     PaymentInputVariantCurrency = "czk"
+	PaymentInputVariantCurrencyNzd     PaymentInputVariantCurrency = "nzd"
+	PaymentInputVariantCurrencyAed     PaymentInputVariantCurrency = "aed"
+	PaymentInputVariantCurrencyEth     PaymentInputVariantCurrency = "eth"
+	PaymentInputVariantCurrencyApe     PaymentInputVariantCurrency = "ape"
+	PaymentInputVariantCurrencyCop     PaymentInputVariantCurrency = "cop"
+	PaymentInputVariantCurrencyRon     PaymentInputVariantCurrency = "ron"
+	PaymentInputVariantCurrencyThb     PaymentInputVariantCurrency = "thb"
+	PaymentInputVariantCurrencyBgn     PaymentInputVariantCurrency = "bgn"
+	PaymentInputVariantCurrencyIdr     PaymentInputVariantCurrency = "idr"
+	PaymentInputVariantCurrencyDop     PaymentInputVariantCurrency = "dop"
+	PaymentInputVariantCurrencyPhp     PaymentInputVariantCurrency = "php"
+	PaymentInputVariantCurrencyTry     PaymentInputVariantCurrency = "try"
+	PaymentInputVariantCurrencyKrw     PaymentInputVariantCurrency = "krw"
+	PaymentInputVariantCurrencyTwd     PaymentInputVariantCurrency = "twd"
+	PaymentInputVariantCurrencyVnd     PaymentInputVariantCurrency = "vnd"
+	PaymentInputVariantCurrencyPkr     PaymentInputVariantCurrency = "pkr"
+	PaymentInputVariantCurrencyClp     PaymentInputVariantCurrency = "clp"
+	PaymentInputVariantCurrencyUyu     PaymentInputVariantCurrency = "uyu"
+	PaymentInputVariantCurrencyArs     PaymentInputVariantCurrency = "ars"
+	PaymentInputVariantCurrencyZar     PaymentInputVariantCurrency = "zar"
+	PaymentInputVariantCurrencyDzd     PaymentInputVariantCurrency = "dzd"
+	PaymentInputVariantCurrencyTnd     PaymentInputVariantCurrency = "tnd"
+	PaymentInputVariantCurrencyMad     PaymentInputVariantCurrency = "mad"
+	PaymentInputVariantCurrencyKes     PaymentInputVariantCurrency = "kes"
+	PaymentInputVariantCurrencyKwd     PaymentInputVariantCurrency = "kwd"
+	PaymentInputVariantCurrencyJod     PaymentInputVariantCurrency = "jod"
+	PaymentInputVariantCurrencyAll     PaymentInputVariantCurrency = "all"
+	PaymentInputVariantCurrencyXcd     PaymentInputVariantCurrency = "xcd"
+	PaymentInputVariantCurrencyAmd     PaymentInputVariantCurrency = "amd"
+	PaymentInputVariantCurrencyBsd     PaymentInputVariantCurrency = "bsd"
+	PaymentInputVariantCurrencyBhd     PaymentInputVariantCurrency = "bhd"
+	PaymentInputVariantCurrencyBob     PaymentInputVariantCurrency = "bob"
+	PaymentInputVariantCurrencyBam     PaymentInputVariantCurrency = "bam"
+	PaymentInputVariantCurrencyKhr     PaymentInputVariantCurrency = "khr"
+	PaymentInputVariantCurrencyCrc     PaymentInputVariantCurrency = "crc"
+	PaymentInputVariantCurrencyXof     PaymentInputVariantCurrency = "xof"
+	PaymentInputVariantCurrencyEgp     PaymentInputVariantCurrency = "egp"
+	PaymentInputVariantCurrencyEtb     PaymentInputVariantCurrency = "etb"
+	PaymentInputVariantCurrencyGmd     PaymentInputVariantCurrency = "gmd"
+	PaymentInputVariantCurrencyGhs     PaymentInputVariantCurrency = "ghs"
+	PaymentInputVariantCurrencyGtq     PaymentInputVariantCurrency = "gtq"
+	PaymentInputVariantCurrencyGyd     PaymentInputVariantCurrency = "gyd"
+	PaymentInputVariantCurrencyIls     PaymentInputVariantCurrency = "ils"
+	PaymentInputVariantCurrencyJmd     PaymentInputVariantCurrency = "jmd"
+	PaymentInputVariantCurrencyMop     PaymentInputVariantCurrency = "mop"
+	PaymentInputVariantCurrencyMga     PaymentInputVariantCurrency = "mga"
+	PaymentInputVariantCurrencyMur     PaymentInputVariantCurrency = "mur"
+	PaymentInputVariantCurrencyMdl     PaymentInputVariantCurrency = "mdl"
+	PaymentInputVariantCurrencyMnt     PaymentInputVariantCurrency = "mnt"
+	PaymentInputVariantCurrencyNad     PaymentInputVariantCurrency = "nad"
+	PaymentInputVariantCurrencyNgn     PaymentInputVariantCurrency = "ngn"
+	PaymentInputVariantCurrencyMkd     PaymentInputVariantCurrency = "mkd"
+	PaymentInputVariantCurrencyOmr     PaymentInputVariantCurrency = "omr"
+	PaymentInputVariantCurrencyPyg     PaymentInputVariantCurrency = "pyg"
+	PaymentInputVariantCurrencyPen     PaymentInputVariantCurrency = "pen"
+	PaymentInputVariantCurrencyQar     PaymentInputVariantCurrency = "qar"
+	PaymentInputVariantCurrencyRwf     PaymentInputVariantCurrency = "rwf"
+	PaymentInputVariantCurrencySar     PaymentInputVariantCurrency = "sar"
+	PaymentInputVariantCurrencyRsd     PaymentInputVariantCurrency = "rsd"
+	PaymentInputVariantCurrencyLkr     PaymentInputVariantCurrency = "lkr"
+	PaymentInputVariantCurrencyTzs     PaymentInputVariantCurrency = "tzs"
+	PaymentInputVariantCurrencyTtd     PaymentInputVariantCurrency = "ttd"
+	PaymentInputVariantCurrencyUzs     PaymentInputVariantCurrency = "uzs"
+	PaymentInputVariantCurrencyRub     PaymentInputVariantCurrency = "rub"
+	PaymentInputVariantCurrencyBtc     PaymentInputVariantCurrency = "btc"
+	PaymentInputVariantCurrencyCny     PaymentInputVariantCurrency = "cny"
+	PaymentInputVariantCurrencyUsdt    PaymentInputVariantCurrency = "usdt"
+	PaymentInputVariantCurrencyKzt     PaymentInputVariantCurrency = "kzt"
+	PaymentInputVariantCurrencyAwg     PaymentInputVariantCurrency = "awg"
+	PaymentInputVariantCurrencyWhopUsd PaymentInputVariantCurrency = "whop_usd"
+	PaymentInputVariantCurrencyXau     PaymentInputVariantCurrency = "xau"
+)
+
+func NewPaymentInputVariantCurrencyFromString(s string) (PaymentInputVariantCurrency, error) {
+	switch s {
+	case "usd":
+		return PaymentInputVariantCurrencyUsd, nil
+	case "sgd":
+		return PaymentInputVariantCurrencySgd, nil
+	case "inr":
+		return PaymentInputVariantCurrencyInr, nil
+	case "aud":
+		return PaymentInputVariantCurrencyAud, nil
+	case "brl":
+		return PaymentInputVariantCurrencyBrl, nil
+	case "cad":
+		return PaymentInputVariantCurrencyCad, nil
+	case "dkk":
+		return PaymentInputVariantCurrencyDkk, nil
+	case "eur":
+		return PaymentInputVariantCurrencyEur, nil
+	case "nok":
+		return PaymentInputVariantCurrencyNok, nil
+	case "gbp":
+		return PaymentInputVariantCurrencyGbp, nil
+	case "sek":
+		return PaymentInputVariantCurrencySek, nil
+	case "chf":
+		return PaymentInputVariantCurrencyChf, nil
+	case "hkd":
+		return PaymentInputVariantCurrencyHkd, nil
+	case "huf":
+		return PaymentInputVariantCurrencyHuf, nil
+	case "jpy":
+		return PaymentInputVariantCurrencyJpy, nil
+	case "mxn":
+		return PaymentInputVariantCurrencyMxn, nil
+	case "myr":
+		return PaymentInputVariantCurrencyMyr, nil
+	case "pln":
+		return PaymentInputVariantCurrencyPln, nil
+	case "czk":
+		return PaymentInputVariantCurrencyCzk, nil
+	case "nzd":
+		return PaymentInputVariantCurrencyNzd, nil
+	case "aed":
+		return PaymentInputVariantCurrencyAed, nil
+	case "eth":
+		return PaymentInputVariantCurrencyEth, nil
+	case "ape":
+		return PaymentInputVariantCurrencyApe, nil
+	case "cop":
+		return PaymentInputVariantCurrencyCop, nil
+	case "ron":
+		return PaymentInputVariantCurrencyRon, nil
+	case "thb":
+		return PaymentInputVariantCurrencyThb, nil
+	case "bgn":
+		return PaymentInputVariantCurrencyBgn, nil
+	case "idr":
+		return PaymentInputVariantCurrencyIdr, nil
+	case "dop":
+		return PaymentInputVariantCurrencyDop, nil
+	case "php":
+		return PaymentInputVariantCurrencyPhp, nil
+	case "try":
+		return PaymentInputVariantCurrencyTry, nil
+	case "krw":
+		return PaymentInputVariantCurrencyKrw, nil
+	case "twd":
+		return PaymentInputVariantCurrencyTwd, nil
+	case "vnd":
+		return PaymentInputVariantCurrencyVnd, nil
+	case "pkr":
+		return PaymentInputVariantCurrencyPkr, nil
+	case "clp":
+		return PaymentInputVariantCurrencyClp, nil
+	case "uyu":
+		return PaymentInputVariantCurrencyUyu, nil
+	case "ars":
+		return PaymentInputVariantCurrencyArs, nil
+	case "zar":
+		return PaymentInputVariantCurrencyZar, nil
+	case "dzd":
+		return PaymentInputVariantCurrencyDzd, nil
+	case "tnd":
+		return PaymentInputVariantCurrencyTnd, nil
+	case "mad":
+		return PaymentInputVariantCurrencyMad, nil
+	case "kes":
+		return PaymentInputVariantCurrencyKes, nil
+	case "kwd":
+		return PaymentInputVariantCurrencyKwd, nil
+	case "jod":
+		return PaymentInputVariantCurrencyJod, nil
+	case "all":
+		return PaymentInputVariantCurrencyAll, nil
+	case "xcd":
+		return PaymentInputVariantCurrencyXcd, nil
+	case "amd":
+		return PaymentInputVariantCurrencyAmd, nil
+	case "bsd":
+		return PaymentInputVariantCurrencyBsd, nil
+	case "bhd":
+		return PaymentInputVariantCurrencyBhd, nil
+	case "bob":
+		return PaymentInputVariantCurrencyBob, nil
+	case "bam":
+		return PaymentInputVariantCurrencyBam, nil
+	case "khr":
+		return PaymentInputVariantCurrencyKhr, nil
+	case "crc":
+		return PaymentInputVariantCurrencyCrc, nil
+	case "xof":
+		return PaymentInputVariantCurrencyXof, nil
+	case "egp":
+		return PaymentInputVariantCurrencyEgp, nil
+	case "etb":
+		return PaymentInputVariantCurrencyEtb, nil
+	case "gmd":
+		return PaymentInputVariantCurrencyGmd, nil
+	case "ghs":
+		return PaymentInputVariantCurrencyGhs, nil
+	case "gtq":
+		return PaymentInputVariantCurrencyGtq, nil
+	case "gyd":
+		return PaymentInputVariantCurrencyGyd, nil
+	case "ils":
+		return PaymentInputVariantCurrencyIls, nil
+	case "jmd":
+		return PaymentInputVariantCurrencyJmd, nil
+	case "mop":
+		return PaymentInputVariantCurrencyMop, nil
+	case "mga":
+		return PaymentInputVariantCurrencyMga, nil
+	case "mur":
+		return PaymentInputVariantCurrencyMur, nil
+	case "mdl":
+		return PaymentInputVariantCurrencyMdl, nil
+	case "mnt":
+		return PaymentInputVariantCurrencyMnt, nil
+	case "nad":
+		return PaymentInputVariantCurrencyNad, nil
+	case "ngn":
+		return PaymentInputVariantCurrencyNgn, nil
+	case "mkd":
+		return PaymentInputVariantCurrencyMkd, nil
+	case "omr":
+		return PaymentInputVariantCurrencyOmr, nil
+	case "pyg":
+		return PaymentInputVariantCurrencyPyg, nil
+	case "pen":
+		return PaymentInputVariantCurrencyPen, nil
+	case "qar":
+		return PaymentInputVariantCurrencyQar, nil
+	case "rwf":
+		return PaymentInputVariantCurrencyRwf, nil
+	case "sar":
+		return PaymentInputVariantCurrencySar, nil
+	case "rsd":
+		return PaymentInputVariantCurrencyRsd, nil
+	case "lkr":
+		return PaymentInputVariantCurrencyLkr, nil
+	case "tzs":
+		return PaymentInputVariantCurrencyTzs, nil
+	case "ttd":
+		return PaymentInputVariantCurrencyTtd, nil
+	case "uzs":
+		return PaymentInputVariantCurrencyUzs, nil
+	case "rub":
+		return PaymentInputVariantCurrencyRub, nil
+	case "btc":
+		return PaymentInputVariantCurrencyBtc, nil
+	case "cny":
+		return PaymentInputVariantCurrencyCny, nil
+	case "usdt":
+		return PaymentInputVariantCurrencyUsdt, nil
+	case "kzt":
+		return PaymentInputVariantCurrencyKzt, nil
+	case "awg":
+		return PaymentInputVariantCurrencyAwg, nil
+	case "whop_usd":
+		return PaymentInputVariantCurrencyWhopUsd, nil
+	case "xau":
+		return PaymentInputVariantCurrencyXau, nil
+	}
+	var t PaymentInputVariantCurrency
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PaymentInputVariantCurrency) Ptr() *PaymentInputVariantCurrency {
 	return &p
 }
 
 // Whether the variant's price includes tax: `inclusive` (tax is included in the price), `exclusive` (tax is added on top), or `unspecified`. Omit it or pass `null` to use the account's tax setting. On an account enrolled in the Whop tax service, `inclusive` or `exclusive` replaces the account's setting and `unspecified` keeps it. Otherwise it applies only where the account is the merchant of record: `inclusive` or `exclusive` replaces the account's setting when the account collects tax, and `unspecified` means the variant collects no tax. Where Whop is the merchant of record, the account's setting applies. Variants that differ only in this value are different variants.
-type PaymentInputPlanOverrideTaxType string
+type PaymentInputVariantOverrideTaxType string
 
 const (
-	PaymentInputPlanOverrideTaxTypeExclusive   PaymentInputPlanOverrideTaxType = "exclusive"
-	PaymentInputPlanOverrideTaxTypeInclusive   PaymentInputPlanOverrideTaxType = "inclusive"
-	PaymentInputPlanOverrideTaxTypeUnspecified PaymentInputPlanOverrideTaxType = "unspecified"
+	PaymentInputVariantOverrideTaxTypeExclusive   PaymentInputVariantOverrideTaxType = "exclusive"
+	PaymentInputVariantOverrideTaxTypeInclusive   PaymentInputVariantOverrideTaxType = "inclusive"
+	PaymentInputVariantOverrideTaxTypeUnspecified PaymentInputVariantOverrideTaxType = "unspecified"
 )
 
-func NewPaymentInputPlanOverrideTaxTypeFromString(s string) (PaymentInputPlanOverrideTaxType, error) {
+func NewPaymentInputVariantOverrideTaxTypeFromString(s string) (PaymentInputVariantOverrideTaxType, error) {
 	switch s {
 	case "exclusive":
-		return PaymentInputPlanOverrideTaxTypeExclusive, nil
+		return PaymentInputVariantOverrideTaxTypeExclusive, nil
 	case "inclusive":
-		return PaymentInputPlanOverrideTaxTypeInclusive, nil
+		return PaymentInputVariantOverrideTaxTypeInclusive, nil
 	case "unspecified":
-		return PaymentInputPlanOverrideTaxTypeUnspecified, nil
+		return PaymentInputVariantOverrideTaxTypeUnspecified, nil
 	}
-	var t PaymentInputPlanOverrideTaxType
+	var t PaymentInputVariantOverrideTaxType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (p PaymentInputPlanOverrideTaxType) Ptr() *PaymentInputPlanOverrideTaxType {
-	return &p
-}
-
-// Billing model for the variant.
-type PaymentInputPlanPlanType string
-
-const (
-	PaymentInputPlanPlanTypeRenewal PaymentInputPlanPlanType = "renewal"
-	PaymentInputPlanPlanTypeOneTime PaymentInputPlanPlanType = "one_time"
-)
-
-func NewPaymentInputPlanPlanTypeFromString(s string) (PaymentInputPlanPlanType, error) {
-	switch s {
-	case "renewal":
-		return PaymentInputPlanPlanTypeRenewal, nil
-	case "one_time":
-		return PaymentInputPlanPlanTypeOneTime, nil
-	}
-	var t PaymentInputPlanPlanType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PaymentInputPlanPlanType) Ptr() *PaymentInputPlanPlanType {
+func (p PaymentInputVariantOverrideTaxType) Ptr() *PaymentInputVariantOverrideTaxType {
 	return &p
 }
 
 var (
-	paymentInputPlanProductFieldCollectShippingAddress    = big.NewInt(1 << 0)
-	paymentInputPlanProductFieldCustomStatementDescriptor = big.NewInt(1 << 1)
-	paymentInputPlanProductFieldDescription               = big.NewInt(1 << 2)
-	paymentInputPlanProductFieldExternalIdentifier        = big.NewInt(1 << 3)
-	paymentInputPlanProductFieldGlobalAffiliatePercentage = big.NewInt(1 << 4)
-	paymentInputPlanProductFieldGlobalAffiliateStatus     = big.NewInt(1 << 5)
-	paymentInputPlanProductFieldHeadline                  = big.NewInt(1 << 6)
-	paymentInputPlanProductFieldProductTaxCodeID          = big.NewInt(1 << 7)
-	paymentInputPlanProductFieldRedirectPurchaseURL       = big.NewInt(1 << 8)
-	paymentInputPlanProductFieldRoute                     = big.NewInt(1 << 9)
-	paymentInputPlanProductFieldTitle                     = big.NewInt(1 << 10)
-	paymentInputPlanProductFieldVisibility                = big.NewInt(1 << 11)
+	paymentInputVariantProductFieldCollectShippingAddress    = big.NewInt(1 << 0)
+	paymentInputVariantProductFieldCustomStatementDescriptor = big.NewInt(1 << 1)
+	paymentInputVariantProductFieldDescription               = big.NewInt(1 << 2)
+	paymentInputVariantProductFieldExternalIdentifier        = big.NewInt(1 << 3)
+	paymentInputVariantProductFieldGlobalAffiliatePercentage = big.NewInt(1 << 4)
+	paymentInputVariantProductFieldGlobalAffiliateStatus     = big.NewInt(1 << 5)
+	paymentInputVariantProductFieldHeadline                  = big.NewInt(1 << 6)
+	paymentInputVariantProductFieldProductTaxCodeID          = big.NewInt(1 << 7)
+	paymentInputVariantProductFieldRedirectPurchaseURL       = big.NewInt(1 << 8)
+	paymentInputVariantProductFieldRoute                     = big.NewInt(1 << 9)
+	paymentInputVariantProductFieldTitle                     = big.NewInt(1 << 10)
+	paymentInputVariantProductFieldVisibility                = big.NewInt(1 << 11)
 )
 
-// paymentInputPlanProductNullableFields maps the wire names of PaymentInputPlanProduct's nullable fields (required or optional) to their field bits.
-var paymentInputPlanProductNullableFields = map[string]*big.Int{
-	"collect_shipping_address":    paymentInputPlanProductFieldCollectShippingAddress,
-	"custom_statement_descriptor": paymentInputPlanProductFieldCustomStatementDescriptor,
-	"description":                 paymentInputPlanProductFieldDescription,
-	"global_affiliate_percentage": paymentInputPlanProductFieldGlobalAffiliatePercentage,
-	"global_affiliate_status":     paymentInputPlanProductFieldGlobalAffiliateStatus,
-	"headline":                    paymentInputPlanProductFieldHeadline,
-	"product_tax_code_id":         paymentInputPlanProductFieldProductTaxCodeID,
-	"redirect_purchase_url":       paymentInputPlanProductFieldRedirectPurchaseURL,
-	"route":                       paymentInputPlanProductFieldRoute,
+// paymentInputVariantProductNullableFields maps the wire names of PaymentInputVariantProduct's nullable fields (required or optional) to their field bits.
+var paymentInputVariantProductNullableFields = map[string]*big.Int{
+	"collect_shipping_address":    paymentInputVariantProductFieldCollectShippingAddress,
+	"custom_statement_descriptor": paymentInputVariantProductFieldCustomStatementDescriptor,
+	"description":                 paymentInputVariantProductFieldDescription,
+	"global_affiliate_percentage": paymentInputVariantProductFieldGlobalAffiliatePercentage,
+	"global_affiliate_status":     paymentInputVariantProductFieldGlobalAffiliateStatus,
+	"headline":                    paymentInputVariantProductFieldHeadline,
+	"product_tax_code_id":         paymentInputVariantProductFieldProductTaxCodeID,
+	"redirect_purchase_url":       paymentInputVariantProductFieldRedirectPurchaseURL,
+	"route":                       paymentInputVariantProductFieldRoute,
 }
 
 // Find or create a product by external identifier. Mutually exclusive with product_id.
-type PaymentInputPlanProduct struct {
+type PaymentInputVariantProduct struct {
 	// Whether to collect a shipping address at checkout.
 	CollectShippingAddress *bool `json:"collect_shipping_address,omitempty" url:"collect_shipping_address,omitempty"`
 	// Custom card statement descriptor for the product, starting with WHOP*.
@@ -39466,7 +45424,7 @@ type PaymentInputPlanProduct struct {
 	// Percentage of revenue paid to global affiliates.
 	GlobalAffiliatePercentage *float64 `json:"global_affiliate_percentage,omitempty" url:"global_affiliate_percentage,omitempty"`
 	// Global affiliate program status.
-	GlobalAffiliateStatus *PaymentInputPlanProductGlobalAffiliateStatus `json:"global_affiliate_status,omitempty" url:"global_affiliate_status,omitempty"`
+	GlobalAffiliateStatus *PaymentInputVariantProductGlobalAffiliateStatus `json:"global_affiliate_status,omitempty" url:"global_affiliate_status,omitempty"`
 	// Product headline.
 	Headline *string `json:"headline,omitempty" url:"headline,omitempty"`
 	// Product tax code identifier.
@@ -39478,7 +45436,7 @@ type PaymentInputPlanProduct struct {
 	// Product title.
 	Title string `json:"title" url:"title"`
 	// Product visibility. Defaults to hidden.
-	Visibility *PaymentInputPlanProductVisibility `json:"visibility,omitempty" url:"visibility,omitempty"`
+	Visibility *PaymentInputVariantProductVisibility `json:"visibility,omitempty" url:"visibility,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -39487,98 +45445,98 @@ type PaymentInputPlanProduct struct {
 	rawJSON         json.RawMessage
 }
 
-func (p *PaymentInputPlanProduct) GetCollectShippingAddress() *bool {
+func (p *PaymentInputVariantProduct) GetCollectShippingAddress() *bool {
 	if p == nil {
 		return nil
 	}
 	return p.CollectShippingAddress
 }
 
-func (p *PaymentInputPlanProduct) GetCustomStatementDescriptor() *string {
+func (p *PaymentInputVariantProduct) GetCustomStatementDescriptor() *string {
 	if p == nil {
 		return nil
 	}
 	return p.CustomStatementDescriptor
 }
 
-func (p *PaymentInputPlanProduct) GetDescription() *string {
+func (p *PaymentInputVariantProduct) GetDescription() *string {
 	if p == nil {
 		return nil
 	}
 	return p.Description
 }
 
-func (p *PaymentInputPlanProduct) GetExternalIdentifier() string {
+func (p *PaymentInputVariantProduct) GetExternalIdentifier() string {
 	if p == nil {
 		return ""
 	}
 	return p.ExternalIdentifier
 }
 
-func (p *PaymentInputPlanProduct) GetGlobalAffiliatePercentage() *float64 {
+func (p *PaymentInputVariantProduct) GetGlobalAffiliatePercentage() *float64 {
 	if p == nil {
 		return nil
 	}
 	return p.GlobalAffiliatePercentage
 }
 
-func (p *PaymentInputPlanProduct) GetGlobalAffiliateStatus() *PaymentInputPlanProductGlobalAffiliateStatus {
+func (p *PaymentInputVariantProduct) GetGlobalAffiliateStatus() *PaymentInputVariantProductGlobalAffiliateStatus {
 	if p == nil {
 		return nil
 	}
 	return p.GlobalAffiliateStatus
 }
 
-func (p *PaymentInputPlanProduct) GetHeadline() *string {
+func (p *PaymentInputVariantProduct) GetHeadline() *string {
 	if p == nil {
 		return nil
 	}
 	return p.Headline
 }
 
-func (p *PaymentInputPlanProduct) GetProductTaxCodeID() *string {
+func (p *PaymentInputVariantProduct) GetProductTaxCodeID() *string {
 	if p == nil {
 		return nil
 	}
 	return p.ProductTaxCodeID
 }
 
-func (p *PaymentInputPlanProduct) GetRedirectPurchaseURL() *string {
+func (p *PaymentInputVariantProduct) GetRedirectPurchaseURL() *string {
 	if p == nil {
 		return nil
 	}
 	return p.RedirectPurchaseURL
 }
 
-func (p *PaymentInputPlanProduct) GetRoute() *string {
+func (p *PaymentInputVariantProduct) GetRoute() *string {
 	if p == nil {
 		return nil
 	}
 	return p.Route
 }
 
-func (p *PaymentInputPlanProduct) GetTitle() string {
+func (p *PaymentInputVariantProduct) GetTitle() string {
 	if p == nil {
 		return ""
 	}
 	return p.Title
 }
 
-func (p *PaymentInputPlanProduct) GetVisibility() *PaymentInputPlanProductVisibility {
+func (p *PaymentInputVariantProduct) GetVisibility() *PaymentInputVariantProductVisibility {
 	if p == nil {
 		return nil
 	}
 	return p.Visibility
 }
 
-func (p *PaymentInputPlanProduct) GetExtraProperties() map[string]interface{} {
+func (p *PaymentInputVariantProduct) GetExtraProperties() map[string]interface{} {
 	if p == nil {
 		return nil
 	}
 	return p.extraProperties
 }
 
-func (p *PaymentInputPlanProduct) require(field *big.Int) {
+func (p *PaymentInputVariantProduct) require(field *big.Int) {
 	next := new(big.Int)
 	if p.explicitFields != nil {
 		next.Set(p.explicitFields)
@@ -39589,101 +45547,101 @@ func (p *PaymentInputPlanProduct) require(field *big.Int) {
 
 // SetCollectShippingAddress sets the CollectShippingAddress field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInputPlanProduct) SetCollectShippingAddress(collectShippingAddress *bool) {
+func (p *PaymentInputVariantProduct) SetCollectShippingAddress(collectShippingAddress *bool) {
 	p.CollectShippingAddress = collectShippingAddress
-	p.require(paymentInputPlanProductFieldCollectShippingAddress)
+	p.require(paymentInputVariantProductFieldCollectShippingAddress)
 }
 
 // SetCustomStatementDescriptor sets the CustomStatementDescriptor field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInputPlanProduct) SetCustomStatementDescriptor(customStatementDescriptor *string) {
+func (p *PaymentInputVariantProduct) SetCustomStatementDescriptor(customStatementDescriptor *string) {
 	p.CustomStatementDescriptor = customStatementDescriptor
-	p.require(paymentInputPlanProductFieldCustomStatementDescriptor)
+	p.require(paymentInputVariantProductFieldCustomStatementDescriptor)
 }
 
 // SetDescription sets the Description field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInputPlanProduct) SetDescription(description *string) {
+func (p *PaymentInputVariantProduct) SetDescription(description *string) {
 	p.Description = description
-	p.require(paymentInputPlanProductFieldDescription)
+	p.require(paymentInputVariantProductFieldDescription)
 }
 
 // SetExternalIdentifier sets the ExternalIdentifier field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInputPlanProduct) SetExternalIdentifier(externalIdentifier string) {
+func (p *PaymentInputVariantProduct) SetExternalIdentifier(externalIdentifier string) {
 	p.ExternalIdentifier = externalIdentifier
-	p.require(paymentInputPlanProductFieldExternalIdentifier)
+	p.require(paymentInputVariantProductFieldExternalIdentifier)
 }
 
 // SetGlobalAffiliatePercentage sets the GlobalAffiliatePercentage field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInputPlanProduct) SetGlobalAffiliatePercentage(globalAffiliatePercentage *float64) {
+func (p *PaymentInputVariantProduct) SetGlobalAffiliatePercentage(globalAffiliatePercentage *float64) {
 	p.GlobalAffiliatePercentage = globalAffiliatePercentage
-	p.require(paymentInputPlanProductFieldGlobalAffiliatePercentage)
+	p.require(paymentInputVariantProductFieldGlobalAffiliatePercentage)
 }
 
 // SetGlobalAffiliateStatus sets the GlobalAffiliateStatus field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInputPlanProduct) SetGlobalAffiliateStatus(globalAffiliateStatus *PaymentInputPlanProductGlobalAffiliateStatus) {
+func (p *PaymentInputVariantProduct) SetGlobalAffiliateStatus(globalAffiliateStatus *PaymentInputVariantProductGlobalAffiliateStatus) {
 	p.GlobalAffiliateStatus = globalAffiliateStatus
-	p.require(paymentInputPlanProductFieldGlobalAffiliateStatus)
+	p.require(paymentInputVariantProductFieldGlobalAffiliateStatus)
 }
 
 // SetHeadline sets the Headline field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInputPlanProduct) SetHeadline(headline *string) {
+func (p *PaymentInputVariantProduct) SetHeadline(headline *string) {
 	p.Headline = headline
-	p.require(paymentInputPlanProductFieldHeadline)
+	p.require(paymentInputVariantProductFieldHeadline)
 }
 
 // SetProductTaxCodeID sets the ProductTaxCodeID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInputPlanProduct) SetProductTaxCodeID(productTaxCodeID *string) {
+func (p *PaymentInputVariantProduct) SetProductTaxCodeID(productTaxCodeID *string) {
 	p.ProductTaxCodeID = productTaxCodeID
-	p.require(paymentInputPlanProductFieldProductTaxCodeID)
+	p.require(paymentInputVariantProductFieldProductTaxCodeID)
 }
 
 // SetRedirectPurchaseURL sets the RedirectPurchaseURL field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInputPlanProduct) SetRedirectPurchaseURL(redirectPurchaseURL *string) {
+func (p *PaymentInputVariantProduct) SetRedirectPurchaseURL(redirectPurchaseURL *string) {
 	p.RedirectPurchaseURL = redirectPurchaseURL
-	p.require(paymentInputPlanProductFieldRedirectPurchaseURL)
+	p.require(paymentInputVariantProductFieldRedirectPurchaseURL)
 }
 
 // SetRoute sets the Route field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInputPlanProduct) SetRoute(route *string) {
+func (p *PaymentInputVariantProduct) SetRoute(route *string) {
 	p.Route = route
-	p.require(paymentInputPlanProductFieldRoute)
+	p.require(paymentInputVariantProductFieldRoute)
 }
 
 // SetTitle sets the Title field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInputPlanProduct) SetTitle(title string) {
+func (p *PaymentInputVariantProduct) SetTitle(title string) {
 	p.Title = title
-	p.require(paymentInputPlanProductFieldTitle)
+	p.require(paymentInputVariantProductFieldTitle)
 }
 
 // SetVisibility sets the Visibility field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInputPlanProduct) SetVisibility(visibility *PaymentInputPlanProductVisibility) {
+func (p *PaymentInputVariantProduct) SetVisibility(visibility *PaymentInputVariantProductVisibility) {
 	p.Visibility = visibility
-	p.require(paymentInputPlanProductFieldVisibility)
+	p.require(paymentInputVariantProductFieldVisibility)
 }
 
-func (p *PaymentInputPlanProduct) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentInputPlanProduct
+func (p *PaymentInputVariantProduct) UnmarshalJSON(data []byte) error {
+	type unmarshaler PaymentInputVariantProduct
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*p = PaymentInputPlanProduct(value)
+	*p = PaymentInputVariantProduct(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *p)
 	if err != nil {
 		return err
 	}
 	p.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, paymentInputPlanProductNullableFields)
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, paymentInputVariantProductNullableFields)
 	if err != nil {
 		return err
 	}
@@ -39694,8 +45652,8 @@ func (p *PaymentInputPlanProduct) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (p *PaymentInputPlanProduct) MarshalJSON() ([]byte, error) {
-	type embed PaymentInputPlanProduct
+func (p *PaymentInputVariantProduct) MarshalJSON() ([]byte, error) {
+	type embed PaymentInputVariantProduct
 	var marshaler = struct {
 		embed
 	}{
@@ -39705,7 +45663,7 @@ func (p *PaymentInputPlanProduct) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (p *PaymentInputPlanProduct) String() string {
+func (p *PaymentInputVariantProduct) String() string {
 	if p == nil {
 		return "<nil>"
 	}
@@ -39721,83 +45679,83 @@ func (p *PaymentInputPlanProduct) String() string {
 }
 
 // Global affiliate program status.
-type PaymentInputPlanProductGlobalAffiliateStatus string
+type PaymentInputVariantProductGlobalAffiliateStatus string
 
 const (
-	PaymentInputPlanProductGlobalAffiliateStatusEnabled  PaymentInputPlanProductGlobalAffiliateStatus = "enabled"
-	PaymentInputPlanProductGlobalAffiliateStatusDisabled PaymentInputPlanProductGlobalAffiliateStatus = "disabled"
+	PaymentInputVariantProductGlobalAffiliateStatusEnabled  PaymentInputVariantProductGlobalAffiliateStatus = "enabled"
+	PaymentInputVariantProductGlobalAffiliateStatusDisabled PaymentInputVariantProductGlobalAffiliateStatus = "disabled"
 )
 
-func NewPaymentInputPlanProductGlobalAffiliateStatusFromString(s string) (PaymentInputPlanProductGlobalAffiliateStatus, error) {
+func NewPaymentInputVariantProductGlobalAffiliateStatusFromString(s string) (PaymentInputVariantProductGlobalAffiliateStatus, error) {
 	switch s {
 	case "enabled":
-		return PaymentInputPlanProductGlobalAffiliateStatusEnabled, nil
+		return PaymentInputVariantProductGlobalAffiliateStatusEnabled, nil
 	case "disabled":
-		return PaymentInputPlanProductGlobalAffiliateStatusDisabled, nil
+		return PaymentInputVariantProductGlobalAffiliateStatusDisabled, nil
 	}
-	var t PaymentInputPlanProductGlobalAffiliateStatus
+	var t PaymentInputVariantProductGlobalAffiliateStatus
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (p PaymentInputPlanProductGlobalAffiliateStatus) Ptr() *PaymentInputPlanProductGlobalAffiliateStatus {
+func (p PaymentInputVariantProductGlobalAffiliateStatus) Ptr() *PaymentInputVariantProductGlobalAffiliateStatus {
 	return &p
 }
 
 // Product visibility. Defaults to hidden.
-type PaymentInputPlanProductVisibility string
+type PaymentInputVariantProductVisibility string
 
 const (
-	PaymentInputPlanProductVisibilityVisible   PaymentInputPlanProductVisibility = "visible"
-	PaymentInputPlanProductVisibilityHidden    PaymentInputPlanProductVisibility = "hidden"
-	PaymentInputPlanProductVisibilityArchived  PaymentInputPlanProductVisibility = "archived"
-	PaymentInputPlanProductVisibilityQuickLink PaymentInputPlanProductVisibility = "quick_link"
+	PaymentInputVariantProductVisibilityVisible   PaymentInputVariantProductVisibility = "visible"
+	PaymentInputVariantProductVisibilityHidden    PaymentInputVariantProductVisibility = "hidden"
+	PaymentInputVariantProductVisibilityArchived  PaymentInputVariantProductVisibility = "archived"
+	PaymentInputVariantProductVisibilityQuickLink PaymentInputVariantProductVisibility = "quick_link"
 )
 
-func NewPaymentInputPlanProductVisibilityFromString(s string) (PaymentInputPlanProductVisibility, error) {
+func NewPaymentInputVariantProductVisibilityFromString(s string) (PaymentInputVariantProductVisibility, error) {
 	switch s {
 	case "visible":
-		return PaymentInputPlanProductVisibilityVisible, nil
+		return PaymentInputVariantProductVisibilityVisible, nil
 	case "hidden":
-		return PaymentInputPlanProductVisibilityHidden, nil
+		return PaymentInputVariantProductVisibilityHidden, nil
 	case "archived":
-		return PaymentInputPlanProductVisibilityArchived, nil
+		return PaymentInputVariantProductVisibilityArchived, nil
 	case "quick_link":
-		return PaymentInputPlanProductVisibilityQuickLink, nil
+		return PaymentInputVariantProductVisibilityQuickLink, nil
 	}
-	var t PaymentInputPlanProductVisibility
+	var t PaymentInputVariantProductVisibility
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (p PaymentInputPlanProductVisibility) Ptr() *PaymentInputPlanProductVisibility {
+func (p PaymentInputVariantProductVisibility) Ptr() *PaymentInputVariantProductVisibility {
 	return &p
 }
 
 // Whether the variant is visible to customers.
-type PaymentInputPlanVisibility string
+type PaymentInputVariantVisibility string
 
 const (
-	PaymentInputPlanVisibilityVisible   PaymentInputPlanVisibility = "visible"
-	PaymentInputPlanVisibilityHidden    PaymentInputPlanVisibility = "hidden"
-	PaymentInputPlanVisibilityArchived  PaymentInputPlanVisibility = "archived"
-	PaymentInputPlanVisibilityQuickLink PaymentInputPlanVisibility = "quick_link"
+	PaymentInputVariantVisibilityVisible   PaymentInputVariantVisibility = "visible"
+	PaymentInputVariantVisibilityHidden    PaymentInputVariantVisibility = "hidden"
+	PaymentInputVariantVisibilityArchived  PaymentInputVariantVisibility = "archived"
+	PaymentInputVariantVisibilityQuickLink PaymentInputVariantVisibility = "quick_link"
 )
 
-func NewPaymentInputPlanVisibilityFromString(s string) (PaymentInputPlanVisibility, error) {
+func NewPaymentInputVariantVisibilityFromString(s string) (PaymentInputVariantVisibility, error) {
 	switch s {
 	case "visible":
-		return PaymentInputPlanVisibilityVisible, nil
+		return PaymentInputVariantVisibilityVisible, nil
 	case "hidden":
-		return PaymentInputPlanVisibilityHidden, nil
+		return PaymentInputVariantVisibilityHidden, nil
 	case "archived":
-		return PaymentInputPlanVisibilityArchived, nil
+		return PaymentInputVariantVisibilityArchived, nil
 	case "quick_link":
-		return PaymentInputPlanVisibilityQuickLink, nil
+		return PaymentInputVariantVisibilityQuickLink, nil
 	}
-	var t PaymentInputPlanVisibility
+	var t PaymentInputVariantVisibility
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (p PaymentInputPlanVisibility) Ptr() *PaymentInputPlanVisibility {
+func (p PaymentInputVariantVisibility) Ptr() *PaymentInputVariantVisibility {
 	return &p
 }
 
@@ -54987,25 +60945,25 @@ func (p PublicBountySubmissionStatus) Ptr() *PublicBountySubmissionStatus {
 var (
 	receiptLineItemFieldID           = big.NewInt(1 << 0)
 	receiptLineItemFieldLabel        = big.NewInt(1 << 1)
-	receiptLineItemFieldPlanID       = big.NewInt(1 << 2)
-	receiptLineItemFieldPlanTitle    = big.NewInt(1 << 3)
-	receiptLineItemFieldProductID    = big.NewInt(1 << 4)
-	receiptLineItemFieldProductTitle = big.NewInt(1 << 5)
-	receiptLineItemFieldQuantity     = big.NewInt(1 << 6)
-	receiptLineItemFieldSku          = big.NewInt(1 << 7)
-	receiptLineItemFieldSubtotal     = big.NewInt(1 << 8)
+	receiptLineItemFieldProductID    = big.NewInt(1 << 2)
+	receiptLineItemFieldProductTitle = big.NewInt(1 << 3)
+	receiptLineItemFieldQuantity     = big.NewInt(1 << 4)
+	receiptLineItemFieldSku          = big.NewInt(1 << 5)
+	receiptLineItemFieldSubtotal     = big.NewInt(1 << 6)
+	receiptLineItemFieldVariantID    = big.NewInt(1 << 7)
+	receiptLineItemFieldVariantTitle = big.NewInt(1 << 8)
 )
 
 // receiptLineItemNullableFields maps the wire names of ReceiptLineItem's nullable fields (required or optional) to their field bits.
 var receiptLineItemNullableFields = map[string]*big.Int{
 	"id":            receiptLineItemFieldID,
 	"label":         receiptLineItemFieldLabel,
-	"plan_id":       receiptLineItemFieldPlanID,
-	"plan_title":    receiptLineItemFieldPlanTitle,
 	"product_id":    receiptLineItemFieldProductID,
 	"product_title": receiptLineItemFieldProductTitle,
 	"sku":           receiptLineItemFieldSku,
 	"subtotal":      receiptLineItemFieldSubtotal,
+	"variant_id":    receiptLineItemFieldVariantID,
+	"variant_title": receiptLineItemFieldVariantTitle,
 }
 
 type ReceiptLineItem struct {
@@ -55013,10 +60971,6 @@ type ReceiptLineItem struct {
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
 	// The item's name as shown at checkout — the product title, else the variant title.
 	Label *string `json:"label,omitempty" url:"label,omitempty"`
-	// The variant bought, prefixed `plan_`. Null when the variant has since been deleted.
-	PlanID *string `json:"plan_id,omitempty" url:"plan_id,omitempty"`
-	// The variant's current title, or `null` when the variant has been deleted or has no title.
-	PlanTitle *string `json:"plan_title,omitempty" url:"plan_title,omitempty"`
 	// The product the variant belongs to, prefixed `prod_`. On a payment that predates item snapshots this falls back to the variant's product, so it can be set where the parent's own `product_id` is null. Null for a variant with no product.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// The product's current title, or `null` when the item has no product.
@@ -55027,6 +60981,10 @@ type ReceiptLineItem struct {
 	Sku *string `json:"sku,omitempty" url:"sku,omitempty"`
 	// The recorded amount for this item's full quantity, before discounts, tax, and fees, in its purchase currency. Returns `null` when no item amount was recorded.
 	Subtotal *Money `json:"subtotal,omitempty" url:"subtotal,omitempty"`
+	// The variant bought, prefixed `plan_`. Null when the variant has since been deleted.
+	VariantID *string `json:"variant_id,omitempty" url:"variant_id,omitempty"`
+	// The variant's current title, or `null` when the variant has been deleted or has no title.
+	VariantTitle *string `json:"variant_title,omitempty" url:"variant_title,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -55047,20 +61005,6 @@ func (r *ReceiptLineItem) GetLabel() *string {
 		return nil
 	}
 	return r.Label
-}
-
-func (r *ReceiptLineItem) GetPlanID() *string {
-	if r == nil {
-		return nil
-	}
-	return r.PlanID
-}
-
-func (r *ReceiptLineItem) GetPlanTitle() *string {
-	if r == nil {
-		return nil
-	}
-	return r.PlanTitle
 }
 
 func (r *ReceiptLineItem) GetProductID() *string {
@@ -55098,6 +61042,20 @@ func (r *ReceiptLineItem) GetSubtotal() *Money {
 	return r.Subtotal
 }
 
+func (r *ReceiptLineItem) GetVariantID() *string {
+	if r == nil {
+		return nil
+	}
+	return r.VariantID
+}
+
+func (r *ReceiptLineItem) GetVariantTitle() *string {
+	if r == nil {
+		return nil
+	}
+	return r.VariantTitle
+}
+
 func (r *ReceiptLineItem) GetExtraProperties() map[string]interface{} {
 	if r == nil {
 		return nil
@@ -55126,20 +61084,6 @@ func (r *ReceiptLineItem) SetID(id *string) {
 func (r *ReceiptLineItem) SetLabel(label *string) {
 	r.Label = label
 	r.require(receiptLineItemFieldLabel)
-}
-
-// SetPlanID sets the PlanID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ReceiptLineItem) SetPlanID(planID *string) {
-	r.PlanID = planID
-	r.require(receiptLineItemFieldPlanID)
-}
-
-// SetPlanTitle sets the PlanTitle field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ReceiptLineItem) SetPlanTitle(planTitle *string) {
-	r.PlanTitle = planTitle
-	r.require(receiptLineItemFieldPlanTitle)
 }
 
 // SetProductID sets the ProductID field and marks it as non-optional;
@@ -55175,6 +61119,20 @@ func (r *ReceiptLineItem) SetSku(sku *string) {
 func (r *ReceiptLineItem) SetSubtotal(subtotal *Money) {
 	r.Subtotal = subtotal
 	r.require(receiptLineItemFieldSubtotal)
+}
+
+// SetVariantID sets the VariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReceiptLineItem) SetVariantID(variantID *string) {
+	r.VariantID = variantID
+	r.require(receiptLineItemFieldVariantID)
+}
+
+// SetVariantTitle sets the VariantTitle field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReceiptLineItem) SetVariantTitle(variantTitle *string) {
+	r.VariantTitle = variantTitle
+	r.require(receiptLineItemFieldVariantTitle)
 }
 
 func (r *ReceiptLineItem) UnmarshalJSON(data []byte) error {

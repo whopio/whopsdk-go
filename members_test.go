@@ -67,11 +67,11 @@ func TestSettersListMembersRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetPlanIDs", func(t *testing.T) {
+	t.Run("SetVariantIDs", func(t *testing.T) {
 		obj := &ListMembersRequest{}
-		var fernTestValuePlanIDs []*string
-		obj.SetPlanIDs(fernTestValuePlanIDs)
-		assert.Equal(t, fernTestValuePlanIDs, obj.PlanIDs)
+		var fernTestValueVariantIDs []*string
+		obj.SetVariantIDs(fernTestValueVariantIDs)
+		assert.Equal(t, fernTestValueVariantIDs, obj.VariantIDs)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -375,14 +375,14 @@ func TestSettersMarkExplicitListMembersRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetPlanIDs_MarksExplicit", func(t *testing.T) {
+	t.Run("SetVariantIDs_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListMembersRequest{}
-		var fernTestValuePlanIDs []*string
+		var fernTestValueVariantIDs []*string
 
 		// Act
-		obj.SetPlanIDs(fernTestValuePlanIDs)
+		obj.SetVariantIDs(fernTestValueVariantIDs)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
