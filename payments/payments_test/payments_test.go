@@ -94,7 +94,7 @@ func TestPaymentsListWithWireMock(
 				"eur",
 			),
 		},
-		PlanIDs: []*string{
+		VariantIDs: []*string{
 			whopsdk.String(
 				"plan_xxxxxxxxxxxxx",
 			),
@@ -114,7 +114,7 @@ func TestPaymentsListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestPaymentsListWithWireMock", "GET", "/payments", map[string]interface{}{"currencies": "eur", "plan_ids": "plan_xxxxxxxxxxxxx", "product_ids": "prod_xxxxxxxxxxxxx"}, 1)
+	VerifyRequestCount(t, "TestPaymentsListWithWireMock", "GET", "/payments", map[string]interface{}{"currencies": "eur", "variant_ids": "plan_xxxxxxxxxxxxx", "product_ids": "prod_xxxxxxxxxxxxx"}, 1)
 }
 
 func TestPaymentsCreateWithWireMock(
@@ -160,7 +160,7 @@ func TestPaymentsSummaryWithWireMock(
 				"usd",
 			),
 		},
-		PlanIDs: []*string{
+		VariantIDs: []*string{
 			whopsdk.String(
 				"plan_xxxxxxxxxxxxx",
 			),
@@ -180,7 +180,7 @@ func TestPaymentsSummaryWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestPaymentsSummaryWithWireMock", "GET", "/payments/summary", map[string]interface{}{"currencies": "usd", "plan_ids": "plan_xxxxxxxxxxxxx", "product_ids": "prod_xxxxxxxxxxxxx"}, 1)
+	VerifyRequestCount(t, "TestPaymentsSummaryWithWireMock", "GET", "/payments/summary", map[string]interface{}{"currencies": "usd", "variant_ids": "plan_xxxxxxxxxxxxx", "product_ids": "prod_xxxxxxxxxxxxx"}, 1)
 }
 
 func TestPaymentsRetrieveWithWireMock(

@@ -18,7 +18,7 @@ var (
 	listMembersRequestFieldMostRecentActions = big.NewInt(1 << 4)
 	listMembersRequestFieldMembershipStatus  = big.NewInt(1 << 5)
 	listMembersRequestFieldProductIDs        = big.NewInt(1 << 6)
-	listMembersRequestFieldPlanIDs           = big.NewInt(1 << 7)
+	listMembersRequestFieldVariantIDs        = big.NewInt(1 << 7)
 	listMembersRequestFieldPromoCodeIDs      = big.NewInt(1 << 8)
 	listMembersRequestFieldQuery             = big.NewInt(1 << 9)
 	listMembersRequestFieldCreatedAfter      = big.NewInt(1 << 10)
@@ -42,12 +42,12 @@ type ListMembersRequest struct {
 	UserIDs []*string `json:"-" url:"user_ids,omitempty"`
 	// Only return members whose `most_recent_action` is one of these values.
 	MostRecentActions []*ListMembersRequestMostRecentActionsItem `json:"-" url:"most_recent_actions,omitempty"`
-	// `active` returns members holding at least one membership that currently grants access; `inactive` returns members holding at least one membership that does not. Combined with `product_ids`, `plan_ids`, or `promo_code_ids`, one membership must match all of them.
+	// `active` returns members holding at least one membership that currently grants access; `inactive` returns members holding at least one membership that does not. Combined with `product_ids`, `variant_ids`, or `promo_code_ids`, one membership must match all of them.
 	MembershipStatus *ListMembersRequestMembershipStatus `json:"-" url:"membership_status,omitempty"`
 	// Only return members holding a membership to one of these products, prefixed `prod_`. Unknown IDs match nothing.
 	ProductIDs []*string `json:"-" url:"product_ids,omitempty"`
-	// Only return members holding a membership on one of these plans, prefixed `plan_`. Unknown IDs match nothing.
-	PlanIDs []*string `json:"-" url:"plan_ids,omitempty"`
+	// Only return members holding a membership on one of these variants, prefixed `plan_`. Unknown IDs match nothing.
+	VariantIDs []*string `json:"-" url:"variant_ids,omitempty"`
 	// Only return members holding a membership bought with one of these promo codes, prefixed `promo_`. Unknown IDs match nothing.
 	PromoCodeIDs []*string `json:"-" url:"promo_code_ids,omitempty"`
 	// Search members by name or username. An exact email address also matches when the credential holds the member:email:read scope.
@@ -131,11 +131,11 @@ func (l *ListMembersRequest) SetProductIDs(productIDs []*string) {
 	l.require(listMembersRequestFieldProductIDs)
 }
 
-// SetPlanIDs sets the PlanIDs field and marks it as non-optional;
+// SetVariantIDs sets the VariantIDs field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListMembersRequest) SetPlanIDs(planIDs []*string) {
-	l.PlanIDs = planIDs
-	l.require(listMembersRequestFieldPlanIDs)
+func (l *ListMembersRequest) SetVariantIDs(variantIDs []*string) {
+	l.VariantIDs = variantIDs
+	l.require(listMembersRequestFieldVariantIDs)
 }
 
 // SetPromoCodeIDs sets the PromoCodeIDs field and marks it as non-optional;

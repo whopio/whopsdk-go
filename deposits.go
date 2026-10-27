@@ -99,6 +99,85 @@ func (c *CreateDepositsRequest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
+var (
+	reverseDepositsRequestFieldID        = big.NewInt(1 << 0)
+	reverseDepositsRequestFieldAccountID = big.NewInt(1 << 1)
+	reverseDepositsRequestFieldMetadata  = big.NewInt(1 << 2)
+	reverseDepositsRequestFieldUserID    = big.NewInt(1 << 3)
+)
+
+type ReverseDepositsRequest struct {
+	// The ID of the bank deposit to reverse, prefixed `vbt_`.
+	ID string `json:"-" url:"-"`
+	// The business that received the deposit, prefixed `biz_`. Pass this or `user_id`.
+	AccountID *string `json:"account_id,omitempty" url:"-"`
+	// Custom metadata to store with the reversal.
+	Metadata map[string]*ReverseDepositsRequestMetadataValue `json:"metadata,omitempty" url:"-"`
+	// The user that received the deposit, prefixed `user_`. Pass this or `account_id`.
+	UserID *string `json:"user_id,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (r *ReverseDepositsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReverseDepositsRequest) SetID(id string) {
+	r.ID = id
+	r.require(reverseDepositsRequestFieldID)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReverseDepositsRequest) SetAccountID(accountID *string) {
+	r.AccountID = accountID
+	r.require(reverseDepositsRequestFieldAccountID)
+}
+
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReverseDepositsRequest) SetMetadata(metadata map[string]*ReverseDepositsRequestMetadataValue) {
+	r.Metadata = metadata
+	r.require(reverseDepositsRequestFieldMetadata)
+}
+
+// SetUserID sets the UserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReverseDepositsRequest) SetUserID(userID *string) {
+	r.UserID = userID
+	r.require(reverseDepositsRequestFieldUserID)
+}
+
+func (r *ReverseDepositsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler ReverseDepositsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*r = ReverseDepositsRequest(body)
+	return nil
+}
+
+func (r *ReverseDepositsRequest) MarshalJSON() ([]byte, error) {
+	type embed ReverseDepositsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
 type CreateDepositsRequestMetadataValue struct {
 	String  string
 	Double  float64
@@ -1655,4 +1734,87 @@ func NewPostDepositSucceededPayloadTypeFromString(s string) (PostDepositSucceede
 
 func (p PostDepositSucceededPayloadType) Ptr() *PostDepositSucceededPayloadType {
 	return &p
+}
+
+type ReverseDepositsRequestMetadataValue struct {
+	String  string
+	Double  float64
+	Boolean bool
+
+	typ string
+}
+
+func (r *ReverseDepositsRequestMetadataValue) GetString() string {
+	if r == nil {
+		return ""
+	}
+	return r.String
+}
+
+func (r *ReverseDepositsRequestMetadataValue) GetDouble() float64 {
+	if r == nil {
+		return 0
+	}
+	return r.Double
+}
+
+func (r *ReverseDepositsRequestMetadataValue) GetBoolean() bool {
+	if r == nil {
+		return false
+	}
+	return r.Boolean
+}
+
+func (r *ReverseDepositsRequestMetadataValue) UnmarshalJSON(data []byte) error {
+	var valueString string
+	if err := json.Unmarshal(data, &valueString); err == nil {
+		r.typ = "String"
+		r.String = valueString
+		return nil
+	}
+	var valueDouble float64
+	if err := json.Unmarshal(data, &valueDouble); err == nil {
+		r.typ = "Double"
+		r.Double = valueDouble
+		return nil
+	}
+	var valueBoolean bool
+	if err := json.Unmarshal(data, &valueBoolean); err == nil {
+		r.typ = "Boolean"
+		r.Boolean = valueBoolean
+		return nil
+	}
+	return fmt.Errorf("%s cannot be deserialized as a %T", data, r)
+}
+
+func (r ReverseDepositsRequestMetadataValue) MarshalJSON() ([]byte, error) {
+	if r.typ == "String" || r.String != "" {
+		return json.Marshal(r.String)
+	}
+	if r.typ == "Double" || r.Double != 0 {
+		return json.Marshal(r.Double)
+	}
+	if r.typ == "Boolean" || r.Boolean != false {
+		return json.Marshal(r.Boolean)
+	}
+	return nil, fmt.Errorf("type %T does not include a non-empty union type", r)
+}
+
+type ReverseDepositsRequestMetadataValueVisitor interface {
+	VisitString(string) error
+	VisitDouble(float64) error
+	VisitBoolean(bool) error
+}
+
+func (r *ReverseDepositsRequestMetadataValue) Accept(visitor ReverseDepositsRequestMetadataValueVisitor) error {
+	if r.typ == "String" || r.String != "" {
+		return visitor.VisitString(r.String)
+	}
+	if r.typ == "Double" || r.Double != 0 {
+		return visitor.VisitDouble(r.Double)
+	}
+	if r.typ == "Boolean" || r.Boolean != false {
+		return visitor.VisitBoolean(r.Boolean)
+	}
+	return fmt.Errorf("type %T does not include a non-empty union type", r)
 }

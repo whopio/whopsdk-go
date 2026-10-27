@@ -22,19 +22,19 @@ var (
 type CreatePaymentQuotesRequest struct {
 	// The account the purchase belongs to, prefixed `biz_`.
 	AccountID string `json:"account_id" url:"-"`
-	// The variant purchased, described by its attributes instead of an id: the variant with exactly these attributes is used, and one is created when none exists. Mutually exclusive with `plan_id` and `line_items`. Creating a variant requires `plan:create`; creating or updating a product requires the corresponding product permission.
-	Plan *PaymentInputPlan `json:"plan,omitempty" url:"-"`
-	// The variant purchased, prefixed `plan_`. It must belong to the account. Mutually exclusive with `plan` and `line_items`.
-	PlanID *string `json:"plan_id,omitempty" url:"-"`
 	// The promo code as the buyer typed it, matched within the account regardless of case and surrounding spaces, as checkout matches it. It must be valid for the variant. Send it or `promo_code_id`, not both; an empty or whitespace-only string counts as not sent. A code the account does not have, or one that is no longer active, is refused before anything is written, with the error code `promo_invalid`. A code this purchase cannot use, such as one with no uses left or one restricted to other variants, products or buyers, is refused with `promo_invalid` too, and the error's message says why.
 	PromoCode *string `json:"promo_code,omitempty" url:"-"`
 	// An active promo code to apply, prefixed `promo_`. It must belong to the account and be valid for the variant. Send it or `promo_code`, not both. A code this purchase cannot use is refused with the error code `promo_invalid`, and the error's message says why.
 	PromoCodeID *string `json:"promo_code_id,omitempty" url:"-"`
+	// The variant purchased, described by its attributes instead of an id: the variant with exactly these attributes is used, and one is created when none exists. Mutually exclusive with `variant_id` and `line_items`. Creating a variant requires `plan:create`; creating or updating a product requires the corresponding product permission.
+	Variant *PaymentInputVariant `json:"variant,omitempty" url:"-"`
+	// The variant purchased, prefixed `plan_`. It must belong to the account. Mutually exclusive with `variant` and `line_items`.
+	VariantID *string `json:"variant_id,omitempty" url:"-"`
 	// The buyer's billing address. Where tax is calculated when no shipping address is given, and the address a tax registration belongs to. A seller that collects tax on this purchase needs the buyer located by a `country` here, on `shipping_address`, a `presentment_country`, or an `ip_address`; without one the quote is refused with `quote_location_required`. Only the keys you supply are kept. The payment that consumes the quote must put the buyer in the same place, by country, state and postal code, through its own `shipping_address` or its confirmation token's billing address, or it is refused with `quote_mismatch`.
 	Address *CreatePaymentQuotesRequestAddress `json:"address,omitempty" url:"-"`
 	// The buyer's IP address, when your server makes the call on their behalf. Locates the buyer when neither address carries a country and no `presentment_country` is sent. A quote located this way (`located_by` is `ip_address`) is a preview: a payment refuses it with `quote_preview_only`, so quote again with the buyer's address before paying. Also where `presentment_currency` `auto` and `recommended_currencies` find the buyer's local currency, and where a payment method must be able to collect it.
 	IPAddress *string `json:"ip_address,omitempty" url:"-"`
-	// What the buyer is purchasing. Each entry names an existing variant by plan_id. Several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency.
+	// What the buyer is purchasing. Each entry names an existing variant by `variant_id`. Several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency.
 	LineItems []*CreatePaymentQuotesRequestLineItemsItem `json:"line_items,omitempty" url:"-"`
 	// The country to price the purchase for, as an ISO 3166-1 alpha-2 code such as `JP`, when the buyer chose one: a store's country picker. Prices in the currency `auto` would pick for a buyer in that country, so send it instead of `presentment_currency`, never with it. Whether a payment method can collect that currency is still judged where the buyer is: by `ip_address`, and by this country only without one. With no address that carries a country, tax is estimated for this country (`located_by` is `presentment_country`) at the country level, and a quote located this way is a preview a payment refuses with `quote_preview_only`. Send it only once the buyer has chosen a country: without it, an `ip_address` estimates more precisely, such as for a US state. For a country Whop has no currency for, the quote is priced as `auto` for the buyer's `ip_address`, and tax is still estimated for the country.
 	PresentmentCountry *string `json:"presentment_country,omitempty" url:"-"`
@@ -617,23 +617,21 @@ func (p *PaymentQuote) String() string {
 
 var (
 	paymentQuoteLineItemFieldDiscount  = big.NewInt(1 << 0)
-	paymentQuoteLineItemFieldPlanID    = big.NewInt(1 << 1)
-	paymentQuoteLineItemFieldQuantity  = big.NewInt(1 << 2)
-	paymentQuoteLineItemFieldSubtotal  = big.NewInt(1 << 3)
-	paymentQuoteLineItemFieldTaxAmount = big.NewInt(1 << 4)
-	paymentQuoteLineItemFieldTotal     = big.NewInt(1 << 5)
+	paymentQuoteLineItemFieldQuantity  = big.NewInt(1 << 1)
+	paymentQuoteLineItemFieldSubtotal  = big.NewInt(1 << 2)
+	paymentQuoteLineItemFieldTaxAmount = big.NewInt(1 << 3)
+	paymentQuoteLineItemFieldTotal     = big.NewInt(1 << 4)
+	paymentQuoteLineItemFieldVariantID = big.NewInt(1 << 5)
 )
 
 // paymentQuoteLineItemNullableFields maps the wire names of PaymentQuoteLineItem's nullable fields (required or optional) to their field bits.
 var paymentQuoteLineItemNullableFields = map[string]*big.Int{
-	"plan_id": paymentQuoteLineItemFieldPlanID,
+	"variant_id": paymentQuoteLineItemFieldVariantID,
 }
 
 type PaymentQuoteLineItem struct {
 	// The promo code's share on this line. Zero without a code.
 	Discount *Money `json:"discount" url:"discount"`
-	// The variant this line prices, prefixed `plan_`. Null when the purchase describes the variant by `plan` and no variant with those attributes exists yet: the payment that consumes the quote creates it, and the line names it from then on.
-	PlanID *string `json:"plan_id,omitempty" url:"plan_id,omitempty"`
 	// How many units of the variant the line covers.
 	Quantity int `json:"quantity" url:"quantity"`
 	// The line's price before the promo code's share and tax; `subtotal` minus `discount` is what the line comes to after the discount. The lines' subtotals sum to the quote's `subtotal`.
@@ -642,6 +640,8 @@ type PaymentQuoteLineItem struct {
 	TaxAmount *Money `json:"tax_amount" url:"tax_amount"`
 	// `subtotal` minus `discount`, plus `tax_amount` when tax is added on top, or without it when the price already includes it.
 	Total *Money `json:"total" url:"total"`
+	// The variant this line prices, prefixed `plan_`. Null when the purchase describes the variant by `variant` and no variant with those attributes exists yet: the payment that consumes the quote creates it, and the line names it from then on.
+	VariantID *string `json:"variant_id,omitempty" url:"variant_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -655,13 +655,6 @@ func (p *PaymentQuoteLineItem) GetDiscount() *Money {
 		return nil
 	}
 	return p.Discount
-}
-
-func (p *PaymentQuoteLineItem) GetPlanID() *string {
-	if p == nil {
-		return nil
-	}
-	return p.PlanID
 }
 
 func (p *PaymentQuoteLineItem) GetQuantity() int {
@@ -692,6 +685,13 @@ func (p *PaymentQuoteLineItem) GetTotal() *Money {
 	return p.Total
 }
 
+func (p *PaymentQuoteLineItem) GetVariantID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.VariantID
+}
+
 func (p *PaymentQuoteLineItem) GetExtraProperties() map[string]interface{} {
 	if p == nil {
 		return nil
@@ -713,13 +713,6 @@ func (p *PaymentQuoteLineItem) require(field *big.Int) {
 func (p *PaymentQuoteLineItem) SetDiscount(discount *Money) {
 	p.Discount = discount
 	p.require(paymentQuoteLineItemFieldDiscount)
-}
-
-// SetPlanID sets the PlanID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentQuoteLineItem) SetPlanID(planID *string) {
-	p.PlanID = planID
-	p.require(paymentQuoteLineItemFieldPlanID)
 }
 
 // SetQuantity sets the Quantity field and marks it as non-optional;
@@ -748,6 +741,13 @@ func (p *PaymentQuoteLineItem) SetTaxAmount(taxAmount *Money) {
 func (p *PaymentQuoteLineItem) SetTotal(total *Money) {
 	p.Total = total
 	p.require(paymentQuoteLineItemFieldTotal)
+}
+
+// SetVariantID sets the VariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentQuoteLineItem) SetVariantID(variantID *string) {
+	p.VariantID = variantID
+	p.require(paymentQuoteLineItemFieldVariantID)
 }
 
 func (p *PaymentQuoteLineItem) UnmarshalJSON(data []byte) error {
@@ -1546,8 +1546,8 @@ func (c *CreatePaymentQuotesRequestAddress) String() string {
 }
 
 var (
-	createPaymentQuotesRequestLineItemsItemFieldPlanID   = big.NewInt(1 << 0)
-	createPaymentQuotesRequestLineItemsItemFieldQuantity = big.NewInt(1 << 1)
+	createPaymentQuotesRequestLineItemsItemFieldQuantity  = big.NewInt(1 << 0)
+	createPaymentQuotesRequestLineItemsItemFieldVariantID = big.NewInt(1 << 1)
 )
 
 // createPaymentQuotesRequestLineItemsItemNullableFields maps the wire names of CreatePaymentQuotesRequestLineItemsItem's nullable fields (required or optional) to their field bits.
@@ -1556,10 +1556,10 @@ var createPaymentQuotesRequestLineItemsItemNullableFields = map[string]*big.Int{
 }
 
 type CreatePaymentQuotesRequestLineItemsItem struct {
-	// An existing variant to charge for, prefixed `plan_`. Each variant may appear once — use `quantity` for multiple units.
-	PlanID string `json:"plan_id" url:"plan_id"`
 	// How many units of the variant to purchase. Defaults to 1; more than 1 requires the variant to allow multiple quantities.
 	Quantity *int `json:"quantity,omitempty" url:"quantity,omitempty"`
+	// An existing variant to charge for, prefixed `plan_`. Each variant may appear once — use `quantity` for multiple units.
+	VariantID string `json:"variant_id" url:"variant_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1568,18 +1568,18 @@ type CreatePaymentQuotesRequestLineItemsItem struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreatePaymentQuotesRequestLineItemsItem) GetPlanID() string {
-	if c == nil {
-		return ""
-	}
-	return c.PlanID
-}
-
 func (c *CreatePaymentQuotesRequestLineItemsItem) GetQuantity() *int {
 	if c == nil {
 		return nil
 	}
 	return c.Quantity
+}
+
+func (c *CreatePaymentQuotesRequestLineItemsItem) GetVariantID() string {
+	if c == nil {
+		return ""
+	}
+	return c.VariantID
 }
 
 func (c *CreatePaymentQuotesRequestLineItemsItem) GetExtraProperties() map[string]interface{} {
@@ -1598,18 +1598,18 @@ func (c *CreatePaymentQuotesRequestLineItemsItem) require(field *big.Int) {
 	c.explicitFields = next
 }
 
-// SetPlanID sets the PlanID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentQuotesRequestLineItemsItem) SetPlanID(planID string) {
-	c.PlanID = planID
-	c.require(createPaymentQuotesRequestLineItemsItemFieldPlanID)
-}
-
 // SetQuantity sets the Quantity field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreatePaymentQuotesRequestLineItemsItem) SetQuantity(quantity *int) {
 	c.Quantity = quantity
 	c.require(createPaymentQuotesRequestLineItemsItemFieldQuantity)
+}
+
+// SetVariantID sets the VariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentQuotesRequestLineItemsItem) SetVariantID(variantID string) {
+	c.VariantID = variantID
+	c.require(createPaymentQuotesRequestLineItemsItemFieldVariantID)
 }
 
 func (c *CreatePaymentQuotesRequestLineItemsItem) UnmarshalJSON(data []byte) error {

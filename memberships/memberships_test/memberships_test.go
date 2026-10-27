@@ -97,7 +97,7 @@ func TestMembershipsListWithWireMock(
 				"prod_xxxxxxxxxxxxx",
 			),
 		},
-		PlanIDs: []*string{
+		VariantIDs: []*string{
 			whopsdk.String(
 				"plan_xxxxxxxxxxxxx",
 			),
@@ -117,7 +117,7 @@ func TestMembershipsListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestMembershipsListWithWireMock", "GET", "/memberships", map[string]interface{}{"external_account": "discord_123456789012345678", "product_ids": "prod_xxxxxxxxxxxxx", "plan_ids": "plan_xxxxxxxxxxxxx", "promo_code_ids": "promo_xxxxxxxxxxxxxx"}, 1)
+	VerifyRequestCount(t, "TestMembershipsListWithWireMock", "GET", "/memberships", map[string]interface{}{"external_account": "discord_123456789012345678", "product_ids": "prod_xxxxxxxxxxxxx", "variant_ids": "plan_xxxxxxxxxxxxx", "promo_code_ids": "promo_xxxxxxxxxxxxxx"}, 1)
 }
 
 func TestMembershipsInviteWithWireMock(
@@ -133,8 +133,8 @@ func TestMembershipsInviteWithWireMock(
 	)
 	request := &whopsdk.InviteMembershipsRequestBody{
 		InviteMembershipsRequestBodyUserID: &whopsdk.InviteMembershipsRequestBodyUserID{
-			PlanID: "plan_xxxxxxxxxxxxxx",
-			UserID: "user_xxxxxxxxxxxxxx",
+			UserID:    "user_xxxxxxxxxxxxxx",
+			VariantID: "plan_xxxxxxxxxxxxxx",
 		},
 	}
 	_, invocationErr := client.Memberships.Invite(
