@@ -41,20 +41,22 @@ func (c *CapturePaymentsRequest) SetID(id string) {
 var (
 	createPaymentsRequestFieldAffiliateCode           = big.NewInt(1 << 0)
 	createPaymentsRequestFieldAutoCaptureAfterMinutes = big.NewInt(1 << 1)
-	createPaymentsRequestFieldCapture                 = big.NewInt(1 << 2)
-	createPaymentsRequestFieldConfirmationToken       = big.NewInt(1 << 3)
-	createPaymentsRequestFieldEmail                   = big.NewInt(1 << 4)
-	createPaymentsRequestFieldIPAddress               = big.NewInt(1 << 5)
-	createPaymentsRequestFieldLineItems               = big.NewInt(1 << 6)
-	createPaymentsRequestFieldMemberID                = big.NewInt(1 << 7)
-	createPaymentsRequestFieldMetadata                = big.NewInt(1 << 8)
-	createPaymentsRequestFieldOffSession              = big.NewInt(1 << 9)
-	createPaymentsRequestFieldPaymentMethod           = big.NewInt(1 << 10)
-	createPaymentsRequestFieldPaymentMethodID         = big.NewInt(1 << 11)
-	createPaymentsRequestFieldQuoteID                 = big.NewInt(1 << 12)
-	createPaymentsRequestFieldReturnURL               = big.NewInt(1 << 13)
-	createPaymentsRequestFieldShippingAddress         = big.NewInt(1 << 14)
-	createPaymentsRequestFieldStatementDescriptor     = big.NewInt(1 << 15)
+	createPaymentsRequestFieldBillingAddress          = big.NewInt(1 << 2)
+	createPaymentsRequestFieldCapture                 = big.NewInt(1 << 3)
+	createPaymentsRequestFieldConfirmationToken       = big.NewInt(1 << 4)
+	createPaymentsRequestFieldEmail                   = big.NewInt(1 << 5)
+	createPaymentsRequestFieldIPAddress               = big.NewInt(1 << 6)
+	createPaymentsRequestFieldLineItems               = big.NewInt(1 << 7)
+	createPaymentsRequestFieldMemberID                = big.NewInt(1 << 8)
+	createPaymentsRequestFieldMetadata                = big.NewInt(1 << 9)
+	createPaymentsRequestFieldOffSession              = big.NewInt(1 << 10)
+	createPaymentsRequestFieldPaymentMethod           = big.NewInt(1 << 11)
+	createPaymentsRequestFieldPaymentMethodID         = big.NewInt(1 << 12)
+	createPaymentsRequestFieldQuoteID                 = big.NewInt(1 << 13)
+	createPaymentsRequestFieldReturnURL               = big.NewInt(1 << 14)
+	createPaymentsRequestFieldSetupFutureUsage        = big.NewInt(1 << 15)
+	createPaymentsRequestFieldShippingAddress         = big.NewInt(1 << 16)
+	createPaymentsRequestFieldStatementDescriptor     = big.NewInt(1 << 17)
 )
 
 type CreatePaymentsRequest struct {
@@ -68,34 +70,38 @@ type CreatePaymentsRequest struct {
 	PromoCode *string `json:"promo_code,omitempty" url:"-"`
 	// An active promo code to apply, prefixed `promo_`. It must belong to the account and be valid for the variant. Send it or `promo_code`, not both. A code this purchase cannot use is refused with the error code `promo_invalid`, and the error's message says why.
 	PromoCodeID *string `json:"promo_code_id,omitempty" url:"-"`
-	// The code an affiliate link carries, which is the affiliate's username. The affiliate is credited for this payment as on a checkout session. A code naming no one eligible to earn on the product is ignored, and the payment goes ahead. A promo code with its own affiliate takes precedence. No affiliate is credited on a variant without a product or on a purchase of several variants. At most 255 characters. Not supported with `payment_method`.
+	// The code an affiliate link carries, which is the affiliate's username. The affiliate is credited for this payment as on a checkout session. A code naming no one eligible to earn on the product is ignored, and the payment goes ahead. A promo code with its own affiliate takes precedence. No affiliate is credited on a variant without a product or on a purchase of several variants. At most 255 characters. Not supported with a `card_present` `payment_method`.
 	AffiliateCode *string `json:"affiliate_code,omitempty" url:"-"`
 	// Minutes after authorization at which Whop captures the hold automatically unless it has been voided. Requires `capture: false`. Between 5 and 5760 (4 days).
 	AutoCaptureAfterMinutes *int `json:"auto_capture_after_minutes,omitempty" url:"-"`
+	// The buyer's billing address, returned on the payment as `billing_address` and used to calculate tax when Whop calculates it for the account. Only with a `paypal` `payment_method`. Only the keys you supply are kept.
+	BillingAddress *CreatePaymentsRequestBillingAddress `json:"billing_address,omitempty" url:"-"`
 	// Whether to capture a card payment immediately. Defaults to true. Pass false to place an authorization hold that must be captured in full within five days via the capture endpoint, or automatically after `auto_capture_after_minutes`.
 	Capture *bool `json:"capture,omitempty" url:"-"`
 	// A confirmation token describing a payment method the buyer just supplied. Provide this instead of `member_id` and `payment_method_id`; the buyer is resolved from the token's billing email, or from `email`. The buyer may still have a step to complete — poll the payment's status for what to do next.
 	ConfirmationToken *string `json:"confirmation_token,omitempty" url:"-"`
-	// The buyer's email, resolving or creating the user the payment belongs to. With `confirmation_token` it overrides the email the token carries, and is ignored when the token was created by a signed-in buyer; with `payment_method` it names a buyer the point of sale already knows, otherwise the sale belongs to a guest until a buyer is attached. Ignored with `member_id`.
+	// The buyer's email, resolving or creating the user the payment belongs to. With `confirmation_token` it overrides the email the token carries, and is ignored when the token was created by a signed-in buyer; with a `card_present` `payment_method` it names a buyer the point of sale already knows, otherwise the sale belongs to a guest until a buyer is attached; with a `paypal` `payment_method` it names the buyer and is required unless `member_id` is provided. Ignored with `member_id`.
 	Email *string `json:"email,omitempty" url:"-"`
 	// The buyer's IPv4 or IPv6 address, used to assess the charge's risk and passed to the processor. Ignored unless a saved payment method is charged with `off_session` set to false.
 	IPAddress *string `json:"ip_address,omitempty" url:"-"`
 	// What the buyer is purchasing. Each entry takes exactly one of `plan_id` or an inline `plan`. One entry charges that variant; several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency. Mutually exclusive with `plan_id` and `plan`.
 	LineItems []*CreatePaymentsRequestLineItemsItem `json:"line_items,omitempty" url:"-"`
-	// The member to charge, prefixed `mber_`. Required with `payment_method_id` unless `confirmation_token` is provided.
+	// The member to charge, prefixed `mber_`. Required with `payment_method_id` unless `confirmation_token` is provided. With a `paypal` `payment_method` it names the buyer instead of `email`, and must belong to a user.
 	MemberID *string `json:"member_id,omitempty" url:"-"`
 	// Custom metadata to attach to the payment.
 	Metadata map[string]*string `json:"metadata,omitempty" url:"-"`
 	// Whether the buyer is absent from your checkout and can't authenticate. Pass true when you charge the card without the buyer, such as a renewal on your own schedule. Pass false when the buyer is present, such as a one-click upsell right after checkout: the charge is processed as a customer-initiated card-on-file payment, and if the issuer asks the buyer to authenticate, the payment's status is `requires_action` with a `next_action` to send them to, after which they return to `return_url`. From API version 2026-10-07-1 it defaults to false when `return_url` is provided and to true otherwise; before that version it defaults to true. A saved Apple Pay, Google Pay or PayPal payment method is always charged with `off_session` true. Ignored unless `member_id` and `payment_method_id` are provided.
 	OffSession *bool `json:"off_session,omitempty" url:"-"`
-	// A payment method collected on the seller's device rather than described by a confirmation token. `type` names it and the member named after it carries what the device needs. Today only `card_present` (Tap to Pay): nothing is collected on this call, the payment is created first and the reader then collects against it with the client secret the status endpoint serves in `next_action`. Mutually exclusive with `confirmation_token`, `member_id` and `payment_method_id`.
+	// A payment method named on this call rather than described by a confirmation token. `type` names it and the member named after it carries its details. Nothing is collected on this call: the payment is created first and the buyer or device then acts on the `next_action` the status endpoint serves. `card_present` (Tap to Pay): the reader collects against the payment with the client secret in `next_action`. `paypal`: the buyer approves on PayPal's page, reached through a `redirect` `next_action`, then returns to `return_url`; `member_id` or `email` names the buyer. Mutually exclusive with `confirmation_token` and `payment_method_id`, and with `member_id` except for `paypal`.
 	PaymentMethod *CreatePaymentsRequestPaymentMethod `json:"payment_method,omitempty" url:"-"`
 	// The stored payment method to charge, prefixed `payt_`. It must belong to the member. Required unless `confirmation_token` is provided.
 	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
 	// A payment quote from `POST /payment_quotes`, prefixed `pq_`. The payment charges exactly the quote: its purchase (its variants and quantities, or the `plan` it priced), which this body may then omit, its promo code, and its tax, the quote's `tax_amount` rather than a figure calculated now. Omit it, or send null, to have tax calculated when the payment is charged. The quote must belong to `account_id`. A purchase field you omit or send as null takes the quote's value; the buyer's email, the addresses and the payment method are this request's own, never the quote's. Whatever you do send must describe the quoted purchase: the same variants, quantities and promo code. A quote that priced `plan` takes only the same `plan` you sent to `POST /payment_quotes` (or omit the purchase to take the quoted one), never `plan_id` or `line_items`, and a quote that priced variants by id never takes `plan`. Unless the quote located no buyer (`located_by` is null), the address the payment carries (its shipping address, else its billing address) must put the buyer where the quote priced tax, by country, state and postal code; otherwise the payment is refused with 400 before the payment method is used. A quote located by IP address or by the country the buyer chose (`located_by` is `ip_address` or `presentment_country`) is a preview and cannot be paid. A quote is consumed by one payment: a declined payment keeps it and can be retried; a new payment needs a new quote. A quote cannot be charged by a processor that doesn't take quotes, such as a seller's own connected PayPal account; such a payment is refused before the payment method is used. A quote priced in a `presentment_currency` is charged in that currency at the quote's `exchange_rate`. A payment refused over its quote carries an error `code`. `quote_expired`: the quote has expired; quote again. `quote_tax_unavailable`: the quote could not price tax; quote again, or omit `quote_id`. `quote_preview_only`: the quote was located by IP address or by the country the buyer chose; quote again with the buyer's address. `quote_in_use` (409): another payment holds the quote. `quote_mismatch`: the purchase or the buyer's address is not the one quoted. `quote_rate_expired`: the exchange rate the quote was priced at has moved too far to charge; quote again. `payment_method_currency_unsupported`: the payment method cannot pay in the quote's currency; use another method, or quote again in another currency. `quote_processor_unsupported`: the payment would be processed by a processor that doesn't take quotes, such as a seller's own connected PayPal account; use another method, or omit `quote_id` to have tax calculated when the payment is charged.
 	QuoteID *string `json:"quote_id,omitempty" url:"-"`
-	// Where the buyer continues after completing an off-site step such as 3D Secure. An absolute https URL without credentials, at most 2,048 characters. Required when a saved payment method is charged with `off_session` false; otherwise ignored unless `confirmation_token` is provided.
+	// Where the buyer continues after completing an off-site step such as 3D Secure. An absolute https URL without credentials, at most 2,048 characters. Required when a saved payment method is charged with `off_session` false; otherwise ignored unless `confirmation_token` or a `paypal` `payment_method` is provided.
 	ReturnURL *string `json:"return_url,omitempty" url:"-"`
+	// Attests that the buyer was told the payment method will be saved for later charges, and saves it once they approve, so it can be charged with `member_id` and `payment_method_id`. PayPal shows the buyer the agreement to future charges on its approval page. Omit it for a one-time payment that saves nothing. Ignored unless a `paypal` `payment_method` is provided.
+	SetupFutureUsage *CreatePaymentsRequestSetupFutureUsage `json:"setup_future_usage,omitempty" url:"-"`
 	// Where physical goods ship, returned on the payment as `shipping_address`. Only the keys you supply are kept; omit it for digital goods.
 	ShippingAddress *CreatePaymentsRequestShippingAddress `json:"shipping_address,omitempty" url:"-"`
 	// Overrides the text on the buyer's card statement for this payment only. Takes precedence over the product's and account's custom descriptors, and changes neither. Must start with `WHOP*` unless the business processes as the merchant of record. For businesses processing as the merchant of record, omit the `WHOP*` prefix; the descriptor appears as provided. Must be 5-22 characters, contain at least one letter, and use only Latin letters, numbers, spaces, underscores, hyphens, or asterisks.
@@ -126,6 +132,13 @@ func (c *CreatePaymentsRequest) SetAffiliateCode(affiliateCode *string) {
 func (c *CreatePaymentsRequest) SetAutoCaptureAfterMinutes(autoCaptureAfterMinutes *int) {
 	c.AutoCaptureAfterMinutes = autoCaptureAfterMinutes
 	c.require(createPaymentsRequestFieldAutoCaptureAfterMinutes)
+}
+
+// SetBillingAddress sets the BillingAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequest) SetBillingAddress(billingAddress *CreatePaymentsRequestBillingAddress) {
+	c.BillingAddress = billingAddress
+	c.require(createPaymentsRequestFieldBillingAddress)
 }
 
 // SetCapture sets the Capture field and marks it as non-optional;
@@ -210,6 +223,13 @@ func (c *CreatePaymentsRequest) SetQuoteID(quoteID *string) {
 func (c *CreatePaymentsRequest) SetReturnURL(returnURL *string) {
 	c.ReturnURL = returnURL
 	c.require(createPaymentsRequestFieldReturnURL)
+}
+
+// SetSetupFutureUsage sets the SetupFutureUsage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequest) SetSetupFutureUsage(setupFutureUsage *CreatePaymentsRequestSetupFutureUsage) {
+	c.SetupFutureUsage = setupFutureUsage
+	c.require(createPaymentsRequestFieldSetupFutureUsage)
 }
 
 // SetShippingAddress sets the ShippingAddress field and marks it as non-optional;
@@ -2363,6 +2383,214 @@ func (p PaymentStatusStatus) Ptr() *PaymentStatusStatus {
 	return &p
 }
 
+var (
+	createPaymentsRequestBillingAddressFieldCity       = big.NewInt(1 << 0)
+	createPaymentsRequestBillingAddressFieldCountry    = big.NewInt(1 << 1)
+	createPaymentsRequestBillingAddressFieldLine1      = big.NewInt(1 << 2)
+	createPaymentsRequestBillingAddressFieldLine2      = big.NewInt(1 << 3)
+	createPaymentsRequestBillingAddressFieldName       = big.NewInt(1 << 4)
+	createPaymentsRequestBillingAddressFieldPostalCode = big.NewInt(1 << 5)
+	createPaymentsRequestBillingAddressFieldState      = big.NewInt(1 << 6)
+)
+
+// createPaymentsRequestBillingAddressNullableFields maps the wire names of CreatePaymentsRequestBillingAddress's nullable fields (required or optional) to their field bits.
+var createPaymentsRequestBillingAddressNullableFields = map[string]*big.Int{
+	"city":        createPaymentsRequestBillingAddressFieldCity,
+	"country":     createPaymentsRequestBillingAddressFieldCountry,
+	"line1":       createPaymentsRequestBillingAddressFieldLine1,
+	"line2":       createPaymentsRequestBillingAddressFieldLine2,
+	"name":        createPaymentsRequestBillingAddressFieldName,
+	"postal_code": createPaymentsRequestBillingAddressFieldPostalCode,
+	"state":       createPaymentsRequestBillingAddressFieldState,
+}
+
+// The buyer's billing address, returned on the payment as `billing_address` and used to calculate tax when Whop calculates it for the account. Only with a `paypal` `payment_method`. Only the keys you supply are kept.
+type CreatePaymentsRequestBillingAddress struct {
+	// City name.
+	City *string `json:"city,omitempty" url:"city,omitempty"`
+	// ISO 3166-1 alpha-2 country code, such as `US`.
+	Country *string `json:"country,omitempty" url:"country,omitempty"`
+	// First line of the street address.
+	Line1 *string `json:"line1,omitempty" url:"line1,omitempty"`
+	// Second line of the street address.
+	Line2 *string `json:"line2,omitempty" url:"line2,omitempty"`
+	// The buyer's full name.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// Postal or ZIP code.
+	PostalCode *string `json:"postal_code,omitempty" url:"postal_code,omitempty"`
+	// State, province, or region code, such as `CA`.
+	State *string `json:"state,omitempty" url:"state,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreatePaymentsRequestBillingAddress) GetCity() *string {
+	if c == nil {
+		return nil
+	}
+	return c.City
+}
+
+func (c *CreatePaymentsRequestBillingAddress) GetCountry() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Country
+}
+
+func (c *CreatePaymentsRequestBillingAddress) GetLine1() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Line1
+}
+
+func (c *CreatePaymentsRequestBillingAddress) GetLine2() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Line2
+}
+
+func (c *CreatePaymentsRequestBillingAddress) GetName() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Name
+}
+
+func (c *CreatePaymentsRequestBillingAddress) GetPostalCode() *string {
+	if c == nil {
+		return nil
+	}
+	return c.PostalCode
+}
+
+func (c *CreatePaymentsRequestBillingAddress) GetState() *string {
+	if c == nil {
+		return nil
+	}
+	return c.State
+}
+
+func (c *CreatePaymentsRequestBillingAddress) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreatePaymentsRequestBillingAddress) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetCity sets the City field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestBillingAddress) SetCity(city *string) {
+	c.City = city
+	c.require(createPaymentsRequestBillingAddressFieldCity)
+}
+
+// SetCountry sets the Country field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestBillingAddress) SetCountry(country *string) {
+	c.Country = country
+	c.require(createPaymentsRequestBillingAddressFieldCountry)
+}
+
+// SetLine1 sets the Line1 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestBillingAddress) SetLine1(line1 *string) {
+	c.Line1 = line1
+	c.require(createPaymentsRequestBillingAddressFieldLine1)
+}
+
+// SetLine2 sets the Line2 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestBillingAddress) SetLine2(line2 *string) {
+	c.Line2 = line2
+	c.require(createPaymentsRequestBillingAddressFieldLine2)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestBillingAddress) SetName(name *string) {
+	c.Name = name
+	c.require(createPaymentsRequestBillingAddressFieldName)
+}
+
+// SetPostalCode sets the PostalCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestBillingAddress) SetPostalCode(postalCode *string) {
+	c.PostalCode = postalCode
+	c.require(createPaymentsRequestBillingAddressFieldPostalCode)
+}
+
+// SetState sets the State field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestBillingAddress) SetState(state *string) {
+	c.State = state
+	c.require(createPaymentsRequestBillingAddressFieldState)
+}
+
+func (c *CreatePaymentsRequestBillingAddress) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreatePaymentsRequestBillingAddress
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreatePaymentsRequestBillingAddress(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createPaymentsRequestBillingAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreatePaymentsRequestBillingAddress) MarshalJSON() ([]byte, error) {
+	type embed CreatePaymentsRequestBillingAddress
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreatePaymentsRequestBillingAddress) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
 type CreatePaymentsRequestLineItemsItem struct {
 	Unknown any
 
@@ -3508,11 +3736,11 @@ var (
 	createPaymentsRequestPaymentMethodFieldType        = big.NewInt(1 << 1)
 )
 
-// A payment method collected on the seller's device rather than described by a confirmation token. `type` names it and the member named after it carries what the device needs. Today only `card_present` (Tap to Pay): nothing is collected on this call, the payment is created first and the reader then collects against it with the client secret the status endpoint serves in `next_action`. Mutually exclusive with `confirmation_token`, `member_id` and `payment_method_id`.
+// A payment method named on this call rather than described by a confirmation token. `type` names it and the member named after it carries its details. Nothing is collected on this call: the payment is created first and the buyer or device then acts on the `next_action` the status endpoint serves. `card_present` (Tap to Pay): the reader collects against the payment with the client secret in `next_action`. `paypal`: the buyer approves on PayPal's page, reached through a `redirect` `next_action`, then returns to `return_url`; `member_id` or `email` names the buyer. Mutually exclusive with `confirmation_token` and `payment_method_id`, and with `member_id` except for `paypal`.
 type CreatePaymentsRequestPaymentMethod struct {
-	// Present when `type` is `card_present`.
-	CardPresent *CreatePaymentsRequestPaymentMethodCardPresent `json:"card_present" url:"card_present"`
-	// The kind of payment method the device collects; the member named after it carries its details.
+	// Required when `type` is `card_present`.
+	CardPresent *CreatePaymentsRequestPaymentMethodCardPresent `json:"card_present,omitempty" url:"card_present,omitempty"`
+	// The kind of payment method; the member named after it carries its details.
 	Type CreatePaymentsRequestPaymentMethodType `json:"type" url:"type"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -3612,7 +3840,7 @@ var (
 	createPaymentsRequestPaymentMethodCardPresentFieldPlatform = big.NewInt(1 << 0)
 )
 
-// Present when `type` is `card_present`.
+// Required when `type` is `card_present`.
 type CreatePaymentsRequestPaymentMethodCardPresent struct {
 	// Which Tap to Pay SDK collects the payment. Stripe offers Tap to Pay in different countries per platform, so eligibility is checked for the named one, as it is for the connection-token session.
 	Platform CreatePaymentsRequestPaymentMethodCardPresentPlatform `json:"platform" url:"platform"`
@@ -3719,23 +3947,46 @@ func (c CreatePaymentsRequestPaymentMethodCardPresentPlatform) Ptr() *CreatePaym
 	return &c
 }
 
-// The kind of payment method the device collects; the member named after it carries its details.
+// The kind of payment method; the member named after it carries its details.
 type CreatePaymentsRequestPaymentMethodType string
 
 const (
 	CreatePaymentsRequestPaymentMethodTypeCardPresent CreatePaymentsRequestPaymentMethodType = "card_present"
+	CreatePaymentsRequestPaymentMethodTypePaypal      CreatePaymentsRequestPaymentMethodType = "paypal"
 )
 
 func NewCreatePaymentsRequestPaymentMethodTypeFromString(s string) (CreatePaymentsRequestPaymentMethodType, error) {
 	switch s {
 	case "card_present":
 		return CreatePaymentsRequestPaymentMethodTypeCardPresent, nil
+	case "paypal":
+		return CreatePaymentsRequestPaymentMethodTypePaypal, nil
 	}
 	var t CreatePaymentsRequestPaymentMethodType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
 func (c CreatePaymentsRequestPaymentMethodType) Ptr() *CreatePaymentsRequestPaymentMethodType {
+	return &c
+}
+
+// Attests that the buyer was told the payment method will be saved for later charges, and saves it once they approve, so it can be charged with `member_id` and `payment_method_id`. PayPal shows the buyer the agreement to future charges on its approval page. Omit it for a one-time payment that saves nothing. Ignored unless a `paypal` `payment_method` is provided.
+type CreatePaymentsRequestSetupFutureUsage string
+
+const (
+	CreatePaymentsRequestSetupFutureUsageOffSession CreatePaymentsRequestSetupFutureUsage = "off_session"
+)
+
+func NewCreatePaymentsRequestSetupFutureUsageFromString(s string) (CreatePaymentsRequestSetupFutureUsage, error) {
+	switch s {
+	case "off_session":
+		return CreatePaymentsRequestSetupFutureUsageOffSession, nil
+	}
+	var t CreatePaymentsRequestSetupFutureUsage
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreatePaymentsRequestSetupFutureUsage) Ptr() *CreatePaymentsRequestSetupFutureUsage {
 	return &c
 }
 
