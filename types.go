@@ -19026,7 +19026,7 @@ type ExternalAccount struct {
 	Scopes            []string `json:"scopes" url:"scopes"`
 	// The URL where the external account can be accessed on the platform. Null while a Whop-owned account is still being provisioned.
 	URL *string `json:"url,omitempty" url:"url,omitempty"`
-	// The username of the external account on the platform. Null while a Whop-owned account is still being provisioned.
+	// The username of the external account on the platform. Null while a Whop-owned account is still being provisioned, and on platforms without usernames, such as Klaviyo.
 	Username *string `json:"username,omitempty" url:"username,omitempty"`
 	// Whether the external account is verified on the platform.
 	Verified bool `json:"verified" url:"verified"`
@@ -19800,6 +19800,7 @@ const (
 	ExternalAccountParentPlatformFacebook  ExternalAccountParentPlatform = "facebook"
 	ExternalAccountParentPlatformLinkedin  ExternalAccountParentPlatform = "linkedin"
 	ExternalAccountParentPlatformSnapchat  ExternalAccountParentPlatform = "snapchat"
+	ExternalAccountParentPlatformKlaviyo   ExternalAccountParentPlatform = "klaviyo"
 )
 
 func NewExternalAccountParentPlatformFromString(s string) (ExternalAccountParentPlatform, error) {
@@ -19818,6 +19819,8 @@ func NewExternalAccountParentPlatformFromString(s string) (ExternalAccountParent
 		return ExternalAccountParentPlatformLinkedin, nil
 	case "snapchat":
 		return ExternalAccountParentPlatformSnapchat, nil
+	case "klaviyo":
+		return ExternalAccountParentPlatformKlaviyo, nil
 	}
 	var t ExternalAccountParentPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -19864,6 +19867,7 @@ const (
 	ExternalAccountPlatformFacebook  ExternalAccountPlatform = "facebook"
 	ExternalAccountPlatformLinkedin  ExternalAccountPlatform = "linkedin"
 	ExternalAccountPlatformSnapchat  ExternalAccountPlatform = "snapchat"
+	ExternalAccountPlatformKlaviyo   ExternalAccountPlatform = "klaviyo"
 )
 
 func NewExternalAccountPlatformFromString(s string) (ExternalAccountPlatform, error) {
@@ -19882,6 +19886,8 @@ func NewExternalAccountPlatformFromString(s string) (ExternalAccountPlatform, er
 		return ExternalAccountPlatformLinkedin, nil
 	case "snapchat":
 		return ExternalAccountPlatformSnapchat, nil
+	case "klaviyo":
+		return ExternalAccountPlatformKlaviyo, nil
 	}
 	var t ExternalAccountPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

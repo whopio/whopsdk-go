@@ -90,13 +90,16 @@ func (c *ConnectExternalAccountsRequest) MarshalJSON() ([]byte, error) {
 
 var (
 	createExternalAccountsRequestFieldAccountID = big.NewInt(1 << 0)
-	createExternalAccountsRequestFieldPlatform  = big.NewInt(1 << 1)
+	createExternalAccountsRequestFieldAPIKey    = big.NewInt(1 << 1)
+	createExternalAccountsRequestFieldPlatform  = big.NewInt(1 << 2)
 )
 
 type CreateExternalAccountsRequest struct {
 	// The Account (biz_ identifier) to create the external account for. An account-scoped API key may omit this to default to its own account. Account API keys cannot update their own account's branding through Update Account; use a user-authenticated path.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
-	// The platform to create the external account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes.
+	// A private API key for the account on the platform. Required for `klaviyo`, which needs read access to Accounts; not accepted for other platforms. Whop checks the key with the platform before connecting and never returns it.
+	APIKey *string `json:"api_key,omitempty" url:"-"`
+	// The platform to create the external account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes. `klaviyo` connects the account's existing Klaviyo account with the `api_key` you pass.
 	Platform CreateExternalAccountsRequestPlatform `json:"platform" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -117,6 +120,13 @@ func (c *CreateExternalAccountsRequest) require(field *big.Int) {
 func (c *CreateExternalAccountsRequest) SetAccountID(accountID *string) {
 	c.AccountID = accountID
 	c.require(createExternalAccountsRequestFieldAccountID)
+}
+
+// SetAPIKey sets the APIKey field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateExternalAccountsRequest) SetAPIKey(apiKey *string) {
+	c.APIKey = apiKey
+	c.require(createExternalAccountsRequestFieldAPIKey)
 }
 
 // SetPlatform sets the Platform field and marks it as non-optional;
@@ -533,12 +543,13 @@ func (c *ConnectExternalAccountsResponse) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The platform to create the external account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes.
+// The platform to create the external account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes. `klaviyo` connects the account's existing Klaviyo account with the `api_key` you pass.
 type CreateExternalAccountsRequestPlatform string
 
 const (
 	CreateExternalAccountsRequestPlatformFacebook CreateExternalAccountsRequestPlatform = "facebook"
 	CreateExternalAccountsRequestPlatformTiktok   CreateExternalAccountsRequestPlatform = "tiktok"
+	CreateExternalAccountsRequestPlatformKlaviyo  CreateExternalAccountsRequestPlatform = "klaviyo"
 )
 
 func NewCreateExternalAccountsRequestPlatformFromString(s string) (CreateExternalAccountsRequestPlatform, error) {
@@ -547,6 +558,8 @@ func NewCreateExternalAccountsRequestPlatformFromString(s string) (CreateExterna
 		return CreateExternalAccountsRequestPlatformFacebook, nil
 	case "tiktok":
 		return CreateExternalAccountsRequestPlatformTiktok, nil
+	case "klaviyo":
+		return CreateExternalAccountsRequestPlatformKlaviyo, nil
 	}
 	var t CreateExternalAccountsRequestPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -716,6 +729,7 @@ const (
 	ListExternalAccountsRequestPlatformTelegram  ListExternalAccountsRequestPlatform = "telegram"
 	ListExternalAccountsRequestPlatformLinkedin  ListExternalAccountsRequestPlatform = "linkedin"
 	ListExternalAccountsRequestPlatformSnapchat  ListExternalAccountsRequestPlatform = "snapchat"
+	ListExternalAccountsRequestPlatformKlaviyo   ListExternalAccountsRequestPlatform = "klaviyo"
 )
 
 func NewListExternalAccountsRequestPlatformFromString(s string) (ListExternalAccountsRequestPlatform, error) {
@@ -738,6 +752,8 @@ func NewListExternalAccountsRequestPlatformFromString(s string) (ListExternalAcc
 		return ListExternalAccountsRequestPlatformLinkedin, nil
 	case "snapchat":
 		return ListExternalAccountsRequestPlatformSnapchat, nil
+	case "klaviyo":
+		return ListExternalAccountsRequestPlatformKlaviyo, nil
 	}
 	var t ListExternalAccountsRequestPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -770,6 +786,7 @@ type ListExternalAccountsRequestTrustLevel string
 
 const (
 	ListExternalAccountsRequestTrustLevelOauth      ListExternalAccountsRequestTrustLevel = "oauth"
+	ListExternalAccountsRequestTrustLevelAPIKey     ListExternalAccountsRequestTrustLevel = "api_key"
 	ListExternalAccountsRequestTrustLevelVerified   ListExternalAccountsRequestTrustLevel = "verified"
 	ListExternalAccountsRequestTrustLevelAuthorized ListExternalAccountsRequestTrustLevel = "authorized"
 	ListExternalAccountsRequestTrustLevelClaimed    ListExternalAccountsRequestTrustLevel = "claimed"
@@ -780,6 +797,8 @@ func NewListExternalAccountsRequestTrustLevelFromString(s string) (ListExternalA
 	switch s {
 	case "oauth":
 		return ListExternalAccountsRequestTrustLevelOauth, nil
+	case "api_key":
+		return ListExternalAccountsRequestTrustLevelAPIKey, nil
 	case "verified":
 		return ListExternalAccountsRequestTrustLevelVerified, nil
 	case "authorized":
