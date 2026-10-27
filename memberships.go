@@ -1412,10 +1412,11 @@ var (
 	membershipAffiliateFieldAppliesToPayments    = big.NewInt(1 << 0)
 	membershipAffiliateFieldCommissionAmount     = big.NewInt(1 << 1)
 	membershipAffiliateFieldCommissionPercentage = big.NewInt(1 << 2)
-	membershipAffiliateFieldCommissionType       = big.NewInt(1 << 3)
-	membershipAffiliateFieldEnabled              = big.NewInt(1 << 4)
-	membershipAffiliateFieldID                   = big.NewInt(1 << 5)
-	membershipAffiliateFieldUserID               = big.NewInt(1 << 6)
+	membershipAffiliateFieldCommissionSource     = big.NewInt(1 << 3)
+	membershipAffiliateFieldCommissionType       = big.NewInt(1 << 4)
+	membershipAffiliateFieldEnabled              = big.NewInt(1 << 5)
+	membershipAffiliateFieldID                   = big.NewInt(1 << 6)
+	membershipAffiliateFieldUserID               = big.NewInt(1 << 7)
 )
 
 // membershipAffiliateNullableFields maps the wire names of MembershipAffiliate's nullable fields (required or optional) to their field bits.
@@ -1431,6 +1432,8 @@ type MembershipAffiliate struct {
 	CommissionAmount *Money `json:"commission_amount,omitempty" url:"commission_amount,omitempty"`
 	// The percentage commission in percentage points, so `20` means 20%, or `null` for a flat fee.
 	CommissionPercentage *float64 `json:"commission_percentage,omitempty" url:"commission_percentage,omitempty"`
+	// How the commission rate was set: `custom` for a rate set for this affiliate, `member` for the member affiliate rate of the plan or product, `global` for the product's global affiliate rate, or `marketplace` for a Whop marketplace referral.
+	CommissionSource MembershipAffiliateCommissionSource `json:"commission_source" url:"commission_source"`
 	// Whether the commission is a percentage or a flat fee.
 	CommissionType MembershipAffiliateCommissionType `json:"commission_type" url:"commission_type"`
 	// Whether this membership pays affiliate commissions. `false` means the affiliate is kept on the membership but is no longer paid.
@@ -1466,6 +1469,13 @@ func (m *MembershipAffiliate) GetCommissionPercentage() *float64 {
 		return nil
 	}
 	return m.CommissionPercentage
+}
+
+func (m *MembershipAffiliate) GetCommissionSource() MembershipAffiliateCommissionSource {
+	if m == nil {
+		return ""
+	}
+	return m.CommissionSource
 }
 
 func (m *MembershipAffiliate) GetCommissionType() MembershipAffiliateCommissionType {
@@ -1531,6 +1541,13 @@ func (m *MembershipAffiliate) SetCommissionAmount(commissionAmount *Money) {
 func (m *MembershipAffiliate) SetCommissionPercentage(commissionPercentage *float64) {
 	m.CommissionPercentage = commissionPercentage
 	m.require(membershipAffiliateFieldCommissionPercentage)
+}
+
+// SetCommissionSource sets the CommissionSource field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipAffiliate) SetCommissionSource(commissionSource MembershipAffiliateCommissionSource) {
+	m.CommissionSource = commissionSource
+	m.require(membershipAffiliateFieldCommissionSource)
 }
 
 // SetCommissionType sets the CommissionType field and marks it as non-optional;
@@ -1630,6 +1647,35 @@ func NewMembershipAffiliateAppliesToPaymentsFromString(s string) (MembershipAffi
 }
 
 func (m MembershipAffiliateAppliesToPayments) Ptr() *MembershipAffiliateAppliesToPayments {
+	return &m
+}
+
+// How the commission rate was set: `custom` for a rate set for this affiliate, `member` for the member affiliate rate of the plan or product, `global` for the product's global affiliate rate, or `marketplace` for a Whop marketplace referral.
+type MembershipAffiliateCommissionSource string
+
+const (
+	MembershipAffiliateCommissionSourceCustom      MembershipAffiliateCommissionSource = "custom"
+	MembershipAffiliateCommissionSourceMember      MembershipAffiliateCommissionSource = "member"
+	MembershipAffiliateCommissionSourceMarketplace MembershipAffiliateCommissionSource = "marketplace"
+	MembershipAffiliateCommissionSourceGlobal      MembershipAffiliateCommissionSource = "global"
+)
+
+func NewMembershipAffiliateCommissionSourceFromString(s string) (MembershipAffiliateCommissionSource, error) {
+	switch s {
+	case "custom":
+		return MembershipAffiliateCommissionSourceCustom, nil
+	case "member":
+		return MembershipAffiliateCommissionSourceMember, nil
+	case "marketplace":
+		return MembershipAffiliateCommissionSourceMarketplace, nil
+	case "global":
+		return MembershipAffiliateCommissionSourceGlobal, nil
+	}
+	var t MembershipAffiliateCommissionSource
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (m MembershipAffiliateCommissionSource) Ptr() *MembershipAffiliateCommissionSource {
 	return &m
 }
 
