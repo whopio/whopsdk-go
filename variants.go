@@ -94,21 +94,21 @@ var (
 	createVariantsRequestFieldAdaptivePricingEnabled     = big.NewInt(1 << 1)
 	createVariantsRequestFieldAttributes                 = big.NewInt(1 << 2)
 	createVariantsRequestFieldBillingPeriod              = big.NewInt(1 << 3)
-	createVariantsRequestFieldCancelDiscountIntervals    = big.NewInt(1 << 4)
-	createVariantsRequestFieldCancelDiscountPercentage   = big.NewInt(1 << 5)
-	createVariantsRequestFieldCheckoutStyling            = big.NewInt(1 << 6)
-	createVariantsRequestFieldCurrency                   = big.NewInt(1 << 7)
-	createVariantsRequestFieldCustomFields               = big.NewInt(1 << 8)
-	createVariantsRequestFieldDescription                = big.NewInt(1 << 9)
-	createVariantsRequestFieldExpirationDays             = big.NewInt(1 << 10)
-	createVariantsRequestFieldImage                      = big.NewInt(1 << 11)
-	createVariantsRequestFieldInitialPrice               = big.NewInt(1 << 12)
-	createVariantsRequestFieldInternalNotes              = big.NewInt(1 << 13)
-	createVariantsRequestFieldMetadata                   = big.NewInt(1 << 14)
-	createVariantsRequestFieldOfferCancelDiscount        = big.NewInt(1 << 15)
-	createVariantsRequestFieldOverrideTaxType            = big.NewInt(1 << 16)
-	createVariantsRequestFieldPaymentMethodConfiguration = big.NewInt(1 << 17)
-	createVariantsRequestFieldPlanType                   = big.NewInt(1 << 18)
+	createVariantsRequestFieldBillingType                = big.NewInt(1 << 4)
+	createVariantsRequestFieldCancelDiscountIntervals    = big.NewInt(1 << 5)
+	createVariantsRequestFieldCancelDiscountPercentage   = big.NewInt(1 << 6)
+	createVariantsRequestFieldCheckoutStyling            = big.NewInt(1 << 7)
+	createVariantsRequestFieldCurrency                   = big.NewInt(1 << 8)
+	createVariantsRequestFieldCustomFields               = big.NewInt(1 << 9)
+	createVariantsRequestFieldDescription                = big.NewInt(1 << 10)
+	createVariantsRequestFieldExpirationDays             = big.NewInt(1 << 11)
+	createVariantsRequestFieldImage                      = big.NewInt(1 << 12)
+	createVariantsRequestFieldInitialPrice               = big.NewInt(1 << 13)
+	createVariantsRequestFieldInternalNotes              = big.NewInt(1 << 14)
+	createVariantsRequestFieldMetadata                   = big.NewInt(1 << 15)
+	createVariantsRequestFieldOfferCancelDiscount        = big.NewInt(1 << 16)
+	createVariantsRequestFieldOverrideTaxType            = big.NewInt(1 << 17)
+	createVariantsRequestFieldPaymentMethodConfiguration = big.NewInt(1 << 18)
 	createVariantsRequestFieldProductID                  = big.NewInt(1 << 19)
 	createVariantsRequestFieldReleaseMethod              = big.NewInt(1 << 20)
 	createVariantsRequestFieldRenewalPrice               = big.NewInt(1 << 21)
@@ -131,6 +131,8 @@ type CreateVariantsRequest struct {
 	Attributes map[string]any `json:"attributes,omitempty" url:"-"`
 	// Recurring billing interval in days, such as 30 for monthly or 365 for annual.
 	BillingPeriod *int `json:"billing_period,omitempty" url:"-"`
+	// Variant billing type, such as `one_time` or `renewal`.
+	BillingType *string `json:"billing_type,omitempty" url:"-"`
 	// How long the retention discount lasts: `0` forever, `1` the next payment only, or a number of calendar months from when the customer accepts it. Required when `offer_cancel_discount` is true.
 	CancelDiscountIntervals *int `json:"cancel_discount_intervals,omitempty" url:"-"`
 	// Percentage taken off each discounted renewal, as a whole number from 1 to 100. Required when `offer_cancel_discount` is true.
@@ -159,8 +161,6 @@ type CreateVariantsRequest struct {
 	OverrideTaxType *string `json:"override_tax_type,omitempty" url:"-"`
 	// Explicit payment method configuration for the variant. When not provided, the account's defaults apply. Send at least one of `enabled` or `disabled`; an omitted one is empty.
 	PaymentMethodConfiguration *CreateVariantsRequestPaymentMethodConfiguration `json:"payment_method_configuration,omitempty" url:"-"`
-	// Variant billing type, such as `one_time` or `renewal`.
-	PlanType *string `json:"plan_type,omitempty" url:"-"`
 	// The unique identifier of the product to attach this variant to.
 	ProductID *string `json:"product_id,omitempty" url:"-"`
 	// Sales method for this variant.
@@ -223,6 +223,13 @@ func (c *CreateVariantsRequest) SetAttributes(attributes map[string]any) {
 func (c *CreateVariantsRequest) SetBillingPeriod(billingPeriod *int) {
 	c.BillingPeriod = billingPeriod
 	c.require(createVariantsRequestFieldBillingPeriod)
+}
+
+// SetBillingType sets the BillingType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVariantsRequest) SetBillingType(billingType *string) {
+	c.BillingType = billingType
+	c.require(createVariantsRequestFieldBillingType)
 }
 
 // SetCancelDiscountIntervals sets the CancelDiscountIntervals field and marks it as non-optional;
@@ -321,13 +328,6 @@ func (c *CreateVariantsRequest) SetOverrideTaxType(overrideTaxType *string) {
 func (c *CreateVariantsRequest) SetPaymentMethodConfiguration(paymentMethodConfiguration *CreateVariantsRequestPaymentMethodConfiguration) {
 	c.PaymentMethodConfiguration = paymentMethodConfiguration
 	c.require(createVariantsRequestFieldPaymentMethodConfiguration)
-}
-
-// SetPlanType sets the PlanType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateVariantsRequest) SetPlanType(planType *string) {
-	c.PlanType = planType
-	c.require(createVariantsRequestFieldPlanType)
 }
 
 // SetProductID sets the ProductID field and marks it as non-optional;
@@ -462,7 +462,7 @@ var (
 	listVariantsRequestFieldOrder               = big.NewInt(1 << 2)
 	listVariantsRequestFieldReleaseMethods      = big.NewInt(1 << 3)
 	listVariantsRequestFieldVisibilities        = big.NewInt(1 << 4)
-	listVariantsRequestFieldPlanTypes           = big.NewInt(1 << 5)
+	listVariantsRequestFieldBillingTypes        = big.NewInt(1 << 5)
 	listVariantsRequestFieldProductIDs          = big.NewInt(1 << 6)
 	listVariantsRequestFieldCreatedBefore       = big.NewInt(1 << 7)
 	listVariantsRequestFieldCreatedAfter        = big.NewInt(1 << 8)
@@ -487,7 +487,7 @@ type ListVariantsRequest struct {
 	// Filter to only variants matching these visibility states.
 	Visibilities []*string `json:"-" url:"visibilities,omitempty"`
 	// Filter to only variants matching these billing types.
-	PlanTypes []*string `json:"-" url:"plan_types,omitempty"`
+	BillingTypes []*string `json:"-" url:"billing_types,omitempty"`
 	// Filter to only variants belonging to these product identifiers. When `account_id` is omitted, this is required and the response is publicly readable: only visible, non-invoice variants are returned.
 	ProductIDs []*string `json:"-" url:"product_ids,omitempty"`
 	// Only return variants created before this timestamp.
@@ -557,11 +557,11 @@ func (l *ListVariantsRequest) SetVisibilities(visibilities []*string) {
 	l.require(listVariantsRequestFieldVisibilities)
 }
 
-// SetPlanTypes sets the PlanTypes field and marks it as non-optional;
+// SetBillingTypes sets the BillingTypes field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListVariantsRequest) SetPlanTypes(planTypes []*string) {
-	l.PlanTypes = planTypes
-	l.require(listVariantsRequestFieldPlanTypes)
+func (l *ListVariantsRequest) SetBillingTypes(billingTypes []*string) {
+	l.BillingTypes = billingTypes
+	l.require(listVariantsRequestFieldBillingTypes)
 }
 
 // SetProductIDs sets the ProductIDs field and marks it as non-optional;
@@ -697,29 +697,29 @@ var (
 	variantFieldAdaptivePricingEnabled              = big.NewInt(1 << 1)
 	variantFieldAttributes                          = big.NewInt(1 << 2)
 	variantFieldBillingPeriod                       = big.NewInt(1 << 3)
-	variantFieldCancelDiscountIntervals             = big.NewInt(1 << 4)
-	variantFieldCancelDiscountPercentage            = big.NewInt(1 << 5)
-	variantFieldCheckoutStyling                     = big.NewInt(1 << 6)
-	variantFieldCollectTax                          = big.NewInt(1 << 7)
-	variantFieldCreatedAt                           = big.NewInt(1 << 8)
-	variantFieldCurrency                            = big.NewInt(1 << 9)
-	variantFieldCustomFields                        = big.NewInt(1 << 10)
-	variantFieldDeletable                           = big.NewInt(1 << 11)
-	variantFieldDescription                         = big.NewInt(1 << 12)
-	variantFieldEffectivePaymentMethodConfiguration = big.NewInt(1 << 13)
-	variantFieldExpirationDays                      = big.NewInt(1 << 14)
-	variantFieldFormattedPrice                      = big.NewInt(1 << 15)
-	variantFieldID                                  = big.NewInt(1 << 16)
-	variantFieldImage                               = big.NewInt(1 << 17)
-	variantFieldInitialPrice                        = big.NewInt(1 << 18)
-	variantFieldInitialPriceDue                     = big.NewInt(1 << 19)
-	variantFieldInternalNotes                       = big.NewInt(1 << 20)
-	variantFieldInvoice                             = big.NewInt(1 << 21)
-	variantFieldMemberCount                         = big.NewInt(1 << 22)
-	variantFieldMetadata                            = big.NewInt(1 << 23)
-	variantFieldOfferCancelDiscount                 = big.NewInt(1 << 24)
-	variantFieldPaymentMethodConfiguration          = big.NewInt(1 << 25)
-	variantFieldPlanType                            = big.NewInt(1 << 26)
+	variantFieldBillingType                         = big.NewInt(1 << 4)
+	variantFieldCancelDiscountIntervals             = big.NewInt(1 << 5)
+	variantFieldCancelDiscountPercentage            = big.NewInt(1 << 6)
+	variantFieldCheckoutStyling                     = big.NewInt(1 << 7)
+	variantFieldCollectTax                          = big.NewInt(1 << 8)
+	variantFieldCreatedAt                           = big.NewInt(1 << 9)
+	variantFieldCurrency                            = big.NewInt(1 << 10)
+	variantFieldCustomFields                        = big.NewInt(1 << 11)
+	variantFieldDeletable                           = big.NewInt(1 << 12)
+	variantFieldDescription                         = big.NewInt(1 << 13)
+	variantFieldEffectivePaymentMethodConfiguration = big.NewInt(1 << 14)
+	variantFieldExpirationDays                      = big.NewInt(1 << 15)
+	variantFieldFormattedPrice                      = big.NewInt(1 << 16)
+	variantFieldID                                  = big.NewInt(1 << 17)
+	variantFieldImage                               = big.NewInt(1 << 18)
+	variantFieldInitialPrice                        = big.NewInt(1 << 19)
+	variantFieldInitialPriceDue                     = big.NewInt(1 << 20)
+	variantFieldInternalNotes                       = big.NewInt(1 << 21)
+	variantFieldInvoice                             = big.NewInt(1 << 22)
+	variantFieldMemberCount                         = big.NewInt(1 << 23)
+	variantFieldMetadata                            = big.NewInt(1 << 24)
+	variantFieldOfferCancelDiscount                 = big.NewInt(1 << 25)
+	variantFieldPaymentMethodConfiguration          = big.NewInt(1 << 26)
 	variantFieldProduct                             = big.NewInt(1 << 27)
 	variantFieldPurchaseURL                         = big.NewInt(1 << 28)
 	variantFieldReleaseMethod                       = big.NewInt(1 << 29)
@@ -777,6 +777,8 @@ type Variant struct {
 	Attributes map[string]*string `json:"attributes,omitempty" url:"attributes,omitempty"`
 	// Number of days between recurring charges, such as 30 for monthly or 365 for annual. `null` for one-time variants.
 	BillingPeriod *float64 `json:"billing_period,omitempty" url:"billing_period,omitempty"`
+	// Billing model for this variant.
+	BillingType VariantBillingType `json:"billing_type" url:"billing_type"`
 	// How long the cancellation discount lasts: `0` forever, `1` the next payment only, or a number of calendar months from when the customer accepts it. `null` when none is offered or the actor lacks the `plan:basic:read` scope.
 	CancelDiscountIntervals *float64 `json:"cancel_discount_intervals,omitempty" url:"cancel_discount_intervals,omitempty"`
 	// Cancellation discount as a whole-number percentage. `null` when none is offered or the actor lacks the `plan:basic:read` scope.
@@ -820,8 +822,6 @@ type Variant struct {
 	OfferCancelDiscount *bool `json:"offer_cancel_discount,omitempty" url:"offer_cancel_discount,omitempty"`
 	// Payment method configuration (`enabled`, `disabled`, `include_platform_defaults`); `null` when variant uses default settings.
 	PaymentMethodConfiguration map[string]any `json:"payment_method_configuration,omitempty" url:"payment_method_configuration,omitempty"`
-	// Billing model for this variant.
-	PlanType VariantPlanType `json:"plan_type" url:"plan_type"`
 	// Product this variant belongs to; `null` for standalone variants.
 	Product map[string]any `json:"product,omitempty" url:"product,omitempty"`
 	// URL where customers can purchase this variant directly.
@@ -888,6 +888,13 @@ func (v *Variant) GetBillingPeriod() *float64 {
 		return nil
 	}
 	return v.BillingPeriod
+}
+
+func (v *Variant) GetBillingType() VariantBillingType {
+	if v == nil {
+		return ""
+	}
+	return v.BillingType
 }
 
 func (v *Variant) GetCancelDiscountIntervals() *float64 {
@@ -1042,13 +1049,6 @@ func (v *Variant) GetPaymentMethodConfiguration() map[string]any {
 		return nil
 	}
 	return v.PaymentMethodConfiguration
-}
-
-func (v *Variant) GetPlanType() VariantPlanType {
-	if v == nil {
-		return ""
-	}
-	return v.PlanType
 }
 
 func (v *Variant) GetProduct() map[string]any {
@@ -1207,6 +1207,13 @@ func (v *Variant) SetBillingPeriod(billingPeriod *float64) {
 	v.require(variantFieldBillingPeriod)
 }
 
+// SetBillingType sets the BillingType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (v *Variant) SetBillingType(billingType VariantBillingType) {
+	v.BillingType = billingType
+	v.require(variantFieldBillingType)
+}
+
 // SetCancelDiscountIntervals sets the CancelDiscountIntervals field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (v *Variant) SetCancelDiscountIntervals(cancelDiscountIntervals *float64) {
@@ -1359,13 +1366,6 @@ func (v *Variant) SetOfferCancelDiscount(offerCancelDiscount *bool) {
 func (v *Variant) SetPaymentMethodConfiguration(paymentMethodConfiguration map[string]any) {
 	v.PaymentMethodConfiguration = paymentMethodConfiguration
 	v.require(variantFieldPaymentMethodConfiguration)
-}
-
-// SetPlanType sets the PlanType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (v *Variant) SetPlanType(planType VariantPlanType) {
-	v.PlanType = planType
-	v.require(variantFieldPlanType)
 }
 
 // SetProduct sets the Product field and marks it as non-optional;
@@ -1530,25 +1530,25 @@ func (v *Variant) String() string {
 }
 
 // Billing model for this variant.
-type VariantPlanType string
+type VariantBillingType string
 
 const (
-	VariantPlanTypeRenewal VariantPlanType = "renewal"
-	VariantPlanTypeOneTime VariantPlanType = "one_time"
+	VariantBillingTypeRenewal VariantBillingType = "renewal"
+	VariantBillingTypeOneTime VariantBillingType = "one_time"
 )
 
-func NewVariantPlanTypeFromString(s string) (VariantPlanType, error) {
+func NewVariantBillingTypeFromString(s string) (VariantBillingType, error) {
 	switch s {
 	case "renewal":
-		return VariantPlanTypeRenewal, nil
+		return VariantBillingTypeRenewal, nil
 	case "one_time":
-		return VariantPlanTypeOneTime, nil
+		return VariantBillingTypeOneTime, nil
 	}
-	var t VariantPlanType
+	var t VariantBillingType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (v VariantPlanType) Ptr() *VariantPlanType {
+func (v VariantBillingType) Ptr() *VariantBillingType {
 	return &v
 }
 
