@@ -722,7 +722,7 @@ type AdCampaign struct {
 	CustomEventCounts map[string]any `json:"custom_event_counts" url:"custom_event_counts"`
 	// Conversion value attributed to each custom event, keyed by event name like custom_event_counts. Sums the value passed to whop.track, normalized to USD; events fired without a value contribute 0.
 	CustomEventValues map[string]any `json:"custom_event_values" url:"custom_event_values"`
-	// Whether the campaign's ads are delivering right now, and if not, why. Account billing failures set payment_failed without changing the configured status. Successful payment retry clears that block and recalculates delivery. When several states apply at once, the highest-precedence one is returned.
+	// Whether the campaign's ads are delivering right now, and if not, why. Content review is in_review; a campaign waiting to start is processing. Account billing failures set payment_failed without changing the configured status. Successful payment retry clears that block and recalculates delivery. When several states apply at once, the highest-precedence one is returned.
 	DeliveryStatus AdCampaignDeliveryStatus `json:"delivery_status" url:"delivery_status"`
 	// Google only: the target cost per conversion in USD when `bid_type` is `average_target`. `null` otherwise.
 	DesiredCostPerResult *float64 `json:"desired_cost_per_result,omitempty" url:"desired_cost_per_result,omitempty"`
@@ -1882,7 +1882,7 @@ func (a AdCampaignCampaignType) Ptr() *AdCampaignCampaignType {
 	return &a
 }
 
-// Whether the campaign's ads are delivering right now, and if not, why. Account billing failures set payment_failed without changing the configured status. Successful payment retry clears that block and recalculates delivery. When several states apply at once, the highest-precedence one is returned.
+// Whether the campaign's ads are delivering right now, and if not, why. Content review is in_review; a campaign waiting to start is processing. Account billing failures set payment_failed without changing the configured status. Successful payment retry clears that block and recalculates delivery. When several states apply at once, the highest-precedence one is returned.
 type AdCampaignDeliveryStatus string
 
 const (
@@ -1893,6 +1893,7 @@ const (
 	AdCampaignDeliveryStatusNoAdGroups     AdCampaignDeliveryStatus = "no_ad_groups"
 	AdCampaignDeliveryStatusNoAds          AdCampaignDeliveryStatus = "no_ads"
 	AdCampaignDeliveryStatusPaused         AdCampaignDeliveryStatus = "paused"
+	AdCampaignDeliveryStatusInReview       AdCampaignDeliveryStatus = "in_review"
 	AdCampaignDeliveryStatusLearning       AdCampaignDeliveryStatus = "learning"
 	AdCampaignDeliveryStatusProcessing     AdCampaignDeliveryStatus = "processing"
 	AdCampaignDeliveryStatusIssues         AdCampaignDeliveryStatus = "issues"
@@ -1918,6 +1919,8 @@ func NewAdCampaignDeliveryStatusFromString(s string) (AdCampaignDeliveryStatus, 
 		return AdCampaignDeliveryStatusNoAds, nil
 	case "paused":
 		return AdCampaignDeliveryStatusPaused, nil
+	case "in_review":
+		return AdCampaignDeliveryStatusInReview, nil
 	case "learning":
 		return AdCampaignDeliveryStatusLearning, nil
 	case "processing":
@@ -3198,7 +3201,7 @@ type PostAdCampaignPaymentFailedPayloadData struct {
 	CampaignType PostAdCampaignPaymentFailedPayloadDataCampaignType `json:"campaign_type" url:"campaign_type"`
 	// When the campaign was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
-	// Whether the campaign's ads are delivering right now, and if not, why. Account billing failures set payment_failed without changing the configured status. Successful payment retry clears that block and recalculates delivery. When several states apply at once, the highest-precedence one is returned.
+	// Whether the campaign's ads are delivering right now, and if not, why. Content review is in_review; a campaign waiting to start is processing. Account billing failures set payment_failed without changing the configured status. Successful payment retry clears that block and recalculates delivery. When several states apply at once, the highest-precedence one is returned.
 	DeliveryStatus PostAdCampaignPaymentFailedPayloadDataDeliveryStatus `json:"delivery_status" url:"delivery_status"`
 	// Google only: the target cost per conversion in USD when `bid_type` is `average_target`. `null` otherwise.
 	DesiredCostPerResult *float64 `json:"desired_cost_per_result,omitempty" url:"desired_cost_per_result,omitempty"`
@@ -3684,7 +3687,7 @@ func (p PostAdCampaignPaymentFailedPayloadDataCampaignType) Ptr() *PostAdCampaig
 	return &p
 }
 
-// Whether the campaign's ads are delivering right now, and if not, why. Account billing failures set payment_failed without changing the configured status. Successful payment retry clears that block and recalculates delivery. When several states apply at once, the highest-precedence one is returned.
+// Whether the campaign's ads are delivering right now, and if not, why. Content review is in_review; a campaign waiting to start is processing. Account billing failures set payment_failed without changing the configured status. Successful payment retry clears that block and recalculates delivery. When several states apply at once, the highest-precedence one is returned.
 type PostAdCampaignPaymentFailedPayloadDataDeliveryStatus string
 
 const (
@@ -3695,6 +3698,7 @@ const (
 	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusNoAdGroups     PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "no_ad_groups"
 	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusNoAds          PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "no_ads"
 	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusPaused         PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "paused"
+	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusInReview       PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "in_review"
 	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusLearning       PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "learning"
 	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusProcessing     PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "processing"
 	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusIssues         PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "issues"
@@ -3720,6 +3724,8 @@ func NewPostAdCampaignPaymentFailedPayloadDataDeliveryStatusFromString(s string)
 		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusNoAds, nil
 	case "paused":
 		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusPaused, nil
+	case "in_review":
+		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusInReview, nil
 	case "learning":
 		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusLearning, nil
 	case "processing":
@@ -4204,7 +4210,7 @@ type PostAdCampaignUpdatedPayloadData struct {
 	CampaignType PostAdCampaignUpdatedPayloadDataCampaignType `json:"campaign_type" url:"campaign_type"`
 	// When the campaign was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
-	// Whether the campaign's ads are delivering right now, and if not, why. Account billing failures set payment_failed without changing the configured status. Successful payment retry clears that block and recalculates delivery. When several states apply at once, the highest-precedence one is returned.
+	// Whether the campaign's ads are delivering right now, and if not, why. Content review is in_review; a campaign waiting to start is processing. Account billing failures set payment_failed without changing the configured status. Successful payment retry clears that block and recalculates delivery. When several states apply at once, the highest-precedence one is returned.
 	DeliveryStatus PostAdCampaignUpdatedPayloadDataDeliveryStatus `json:"delivery_status" url:"delivery_status"`
 	// Google only: the target cost per conversion in USD when `bid_type` is `average_target`. `null` otherwise.
 	DesiredCostPerResult *float64 `json:"desired_cost_per_result,omitempty" url:"desired_cost_per_result,omitempty"`
@@ -4690,7 +4696,7 @@ func (p PostAdCampaignUpdatedPayloadDataCampaignType) Ptr() *PostAdCampaignUpdat
 	return &p
 }
 
-// Whether the campaign's ads are delivering right now, and if not, why. Account billing failures set payment_failed without changing the configured status. Successful payment retry clears that block and recalculates delivery. When several states apply at once, the highest-precedence one is returned.
+// Whether the campaign's ads are delivering right now, and if not, why. Content review is in_review; a campaign waiting to start is processing. Account billing failures set payment_failed without changing the configured status. Successful payment retry clears that block and recalculates delivery. When several states apply at once, the highest-precedence one is returned.
 type PostAdCampaignUpdatedPayloadDataDeliveryStatus string
 
 const (
@@ -4701,6 +4707,7 @@ const (
 	PostAdCampaignUpdatedPayloadDataDeliveryStatusNoAdGroups     PostAdCampaignUpdatedPayloadDataDeliveryStatus = "no_ad_groups"
 	PostAdCampaignUpdatedPayloadDataDeliveryStatusNoAds          PostAdCampaignUpdatedPayloadDataDeliveryStatus = "no_ads"
 	PostAdCampaignUpdatedPayloadDataDeliveryStatusPaused         PostAdCampaignUpdatedPayloadDataDeliveryStatus = "paused"
+	PostAdCampaignUpdatedPayloadDataDeliveryStatusInReview       PostAdCampaignUpdatedPayloadDataDeliveryStatus = "in_review"
 	PostAdCampaignUpdatedPayloadDataDeliveryStatusLearning       PostAdCampaignUpdatedPayloadDataDeliveryStatus = "learning"
 	PostAdCampaignUpdatedPayloadDataDeliveryStatusProcessing     PostAdCampaignUpdatedPayloadDataDeliveryStatus = "processing"
 	PostAdCampaignUpdatedPayloadDataDeliveryStatusIssues         PostAdCampaignUpdatedPayloadDataDeliveryStatus = "issues"
@@ -4726,6 +4733,8 @@ func NewPostAdCampaignUpdatedPayloadDataDeliveryStatusFromString(s string) (Post
 		return PostAdCampaignUpdatedPayloadDataDeliveryStatusNoAds, nil
 	case "paused":
 		return PostAdCampaignUpdatedPayloadDataDeliveryStatusPaused, nil
+	case "in_review":
+		return PostAdCampaignUpdatedPayloadDataDeliveryStatusInReview, nil
 	case "learning":
 		return PostAdCampaignUpdatedPayloadDataDeliveryStatusLearning, nil
 	case "processing":
