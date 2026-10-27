@@ -297,11 +297,14 @@ func (r *RetrieveSetupIntentsRequest) SetID(id string) {
 
 var (
 	retrieveStatusSetupIntentsRequestFieldSetupIntentID = big.NewInt(1 << 0)
+	retrieveStatusSetupIntentsRequestFieldClientSecret  = big.NewInt(1 << 1)
 )
 
 type RetrieveStatusSetupIntentsRequest struct {
 	// The unique identifier of the setup intent.
 	SetupIntentID string `json:"-" url:"-"`
+	// The setup's own `client_secret`, for a caller without a secret key.
+	ClientSecret *string `json:"-" url:"client_secret,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -321,6 +324,13 @@ func (r *RetrieveStatusSetupIntentsRequest) require(field *big.Int) {
 func (r *RetrieveStatusSetupIntentsRequest) SetSetupIntentID(setupIntentID string) {
 	r.SetupIntentID = setupIntentID
 	r.require(retrieveStatusSetupIntentsRequestFieldSetupIntentID)
+}
+
+// SetClientSecret sets the ClientSecret field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatusSetupIntentsRequest) SetClientSecret(clientSecret *string) {
+	r.ClientSecret = clientSecret
+	r.require(retrieveStatusSetupIntentsRequestFieldClientSecret)
 }
 
 var (
@@ -1702,12 +1712,15 @@ func (p PostSetupIntentSucceededPayloadType) Ptr() *PostSetupIntentSucceededPayl
 
 var (
 	updateReturnURLSetupIntentsRequestFieldSetupIntentID = big.NewInt(1 << 0)
-	updateReturnURLSetupIntentsRequestFieldReturnURL     = big.NewInt(1 << 1)
+	updateReturnURLSetupIntentsRequestFieldClientSecret  = big.NewInt(1 << 1)
+	updateReturnURLSetupIntentsRequestFieldReturnURL     = big.NewInt(1 << 2)
 )
 
 type UpdateReturnURLSetupIntentsRequest struct {
 	// The unique identifier of the setup intent.
 	SetupIntentID string `json:"-" url:"-"`
+	// The setup's own `client_secret`, for a caller without a secret key.
+	ClientSecret *string `json:"client_secret,omitempty" url:"-"`
 	// Where the buyer continues after completing an off-site step. Must be an absolute https URL without credentials (http is allowed for localhost), at most 2,048 characters.
 	ReturnURL string `json:"return_url" url:"-"`
 
@@ -1729,6 +1742,13 @@ func (u *UpdateReturnURLSetupIntentsRequest) require(field *big.Int) {
 func (u *UpdateReturnURLSetupIntentsRequest) SetSetupIntentID(setupIntentID string) {
 	u.SetupIntentID = setupIntentID
 	u.require(updateReturnURLSetupIntentsRequestFieldSetupIntentID)
+}
+
+// SetClientSecret sets the ClientSecret field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateReturnURLSetupIntentsRequest) SetClientSecret(clientSecret *string) {
+	u.ClientSecret = clientSecret
+	u.require(updateReturnURLSetupIntentsRequestFieldClientSecret)
 }
 
 // SetReturnURL sets the ReturnURL field and marks it as non-optional;

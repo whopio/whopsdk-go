@@ -14624,7 +14624,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"authorized_role\": {\n        \"id\": \"id\",\n        \"name\": \"name\"\n      },\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"direct_reports_count\": 0,\n      \"email\": \"marcus@shinetime.example\",\n      \"id\": \"ausr_xxxxxxxxxxxxxx\",\n      \"is_agent\": false,\n      \"reports_to_id\": \"ausr_xxxxxxxxxxxxxx\",\n      \"role\": \"owner\",\n      \"status\": \"joined\",\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n      \"user\": {\n        \"id\": \"user_xxxxxxxxxxxxxx\",\n        \"name\": \"Dana Whitfield\",\n        \"profile_picture\": {\n          \"url\": \"https://ui-avatars.com/api/\"\n        },\n        \"username\": \"danawhitfield\"\n      }\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"a:WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"authorized_role\": {\n        \"id\": \"aurl_xxxxxxxxxxxxxx\",\n        \"name\": \"community-moderators\"\n      },\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"direct_reports_count\": 0,\n      \"email\": \"marcus@shinetime.example\",\n      \"id\": \"ausr_xxxxxxxxxxxxxx\",\n      \"is_agent\": false,\n      \"reports_to_id\": \"ausr_xxxxxxxxxxxxxx\",\n      \"role\": \"owner\",\n      \"status\": \"joined\",\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n      \"user\": {\n        \"id\": \"user_xxxxxxxxxxxxxx\",\n        \"name\": \"Dana Whitfield\",\n        \"profile_picture\": {\n          \"url\": \"https://ui-avatars.com/api/\"\n        },\n        \"username\": \"danawhitfield\"\n      }\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"a:WyJjdXJzb3IiLDFd\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -14656,7 +14656,7 @@
       },
       "response": {
         "status": 201,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"authorized_role\": {\n    \"id\": \"id\",\n    \"name\": \"name\"\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"direct_reports_count\": 0,\n  \"email\": \"marcus@shinetime.example\",\n  \"id\": \"ausr_xxxxxxxxxxxxxx\",\n  \"is_agent\": false,\n  \"reports_to_id\": \"ausr_xxxxxxxxxxxxxx\",\n  \"role\": \"owner\",\n  \"status\": \"joined\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"user\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  }\n}",
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"authorized_role\": {\n    \"id\": \"aurl_xxxxxxxxxxxxxx\",\n    \"name\": \"community-moderators\"\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"direct_reports_count\": 0,\n  \"email\": \"marcus@shinetime.example\",\n  \"id\": \"ausr_xxxxxxxxxxxxxx\",\n  \"is_agent\": false,\n  \"reports_to_id\": \"ausr_xxxxxxxxxxxxxx\",\n  \"role\": \"owner\",\n  \"status\": \"joined\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"user\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -14692,7 +14692,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"authorized_role\": {\n    \"id\": \"id\",\n    \"name\": \"name\"\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"direct_reports_count\": 0,\n  \"email\": \"marcus@shinetime.example\",\n  \"id\": \"ausr_xxxxxxxxxxxxxx\",\n  \"is_agent\": false,\n  \"reports_to_id\": \"ausr_xxxxxxxxxxxxxx\",\n  \"role\": \"owner\",\n  \"status\": \"joined\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"user\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  }\n}",
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"authorized_role\": {\n    \"id\": \"aurl_xxxxxxxxxxxxxx\",\n    \"name\": \"community-moderators\"\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"direct_reports_count\": 0,\n  \"email\": \"marcus@shinetime.example\",\n  \"id\": \"ausr_xxxxxxxxxxxxxx\",\n  \"is_agent\": false,\n  \"reports_to_id\": \"ausr_xxxxxxxxxxxxxx\",\n  \"role\": \"owner\",\n  \"status\": \"joined\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"user\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -14764,7 +14764,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"authorized_role\": {\n    \"id\": \"id\",\n    \"name\": \"name\"\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"direct_reports_count\": 0,\n  \"email\": \"marcus@shinetime.example\",\n  \"id\": \"ausr_xxxxxxxxxxxxxx\",\n  \"is_agent\": false,\n  \"reports_to_id\": \"ausr_xxxxxxxxxxxxxx\",\n  \"role\": \"owner\",\n  \"status\": \"joined\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"user\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  }\n}",
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"authorized_role\": {\n    \"id\": \"aurl_xxxxxxxxxxxxxx\",\n    \"name\": \"community-moderators\"\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"direct_reports_count\": 0,\n  \"email\": \"marcus@shinetime.example\",\n  \"id\": \"ausr_xxxxxxxxxxxxxx\",\n  \"is_agent\": false,\n  \"reports_to_id\": \"ausr_xxxxxxxxxxxxxx\",\n  \"role\": \"owner\",\n  \"status\": \"joined\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"user\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }

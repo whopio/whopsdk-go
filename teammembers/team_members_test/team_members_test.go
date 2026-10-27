@@ -116,7 +116,10 @@ func TestTeamMembersCreateWithWireMock(
 	)
 	request := &whopsdk.CreateTeamMembersRequest{
 		AccountID: "biz_xxxxxxxxxxxxxx",
-		Role:      whopsdk.CreateTeamMembersRequestRoleOwner,
+		Role:      whopsdk.CreateTeamMembersRequestRoleSalesManager,
+		UserID: whopsdk.String(
+			"user_xxxxxxxxxxxxxx",
+		),
 	}
 	_, invocationErr := client.TeamMembers.Create(
 		context.TODO(),
