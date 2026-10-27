@@ -74,6 +74,8 @@ var (
 	createPasskeysRequestFieldClientDataJSON    = big.NewInt(1 << 1)
 	createPasskeysRequestFieldCredentialID      = big.NewInt(1 << 2)
 	createPasskeysRequestFieldNickname          = big.NewInt(1 << 3)
+	createPasskeysRequestFieldTransports        = big.NewInt(1 << 4)
+	createPasskeysRequestFieldUserHandle        = big.NewInt(1 << 5)
 )
 
 type CreatePasskeysRequest struct {
@@ -85,6 +87,10 @@ type CreatePasskeysRequest struct {
 	CredentialID string `json:"credential_id" url:"-"`
 	// A name for this passkey, usually the device it lives on. 255 characters or fewer.
 	Nickname string `json:"nickname" url:"-"`
+	// The `getTransports()` result from the registration response. Values Whop does not recognize are dropped.
+	Transports []string `json:"transports,omitempty" url:"-"`
+	// The `creation_options.user.id` the passkey was created with. Must match the challenge's options.
+	UserHandle *string `json:"user_handle,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -125,6 +131,20 @@ func (c *CreatePasskeysRequest) SetCredentialID(credentialID string) {
 func (c *CreatePasskeysRequest) SetNickname(nickname string) {
 	c.Nickname = nickname
 	c.require(createPasskeysRequestFieldNickname)
+}
+
+// SetTransports sets the Transports field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePasskeysRequest) SetTransports(transports []string) {
+	c.Transports = transports
+	c.require(createPasskeysRequestFieldTransports)
+}
+
+// SetUserHandle sets the UserHandle field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePasskeysRequest) SetUserHandle(userHandle *string) {
+	c.UserHandle = userHandle
+	c.require(createPasskeysRequestFieldUserHandle)
 }
 
 func (c *CreatePasskeysRequest) UnmarshalJSON(data []byte) error {
@@ -326,93 +346,6 @@ func NewChallengePasskeysRequestChallengeTypeFromString(s string) (ChallengePass
 
 func (c ChallengePasskeysRequestChallengeType) Ptr() *ChallengePasskeysRequestChallengeType {
 	return &c
-}
-
-var (
-	challengePasskeysResponseFieldChallenge = big.NewInt(1 << 0)
-)
-
-type ChallengePasskeysResponse struct {
-	// The challenge to pass to the WebAuthn ceremony, base64url-encoded without padding.
-	Challenge string `json:"challenge" url:"challenge"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *ChallengePasskeysResponse) GetChallenge() string {
-	if c == nil {
-		return ""
-	}
-	return c.Challenge
-}
-
-func (c *ChallengePasskeysResponse) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *ChallengePasskeysResponse) require(field *big.Int) {
-	next := new(big.Int)
-	if c.explicitFields != nil {
-		next.Set(c.explicitFields)
-	}
-	next.Or(next, field)
-	c.explicitFields = next
-}
-
-// SetChallenge sets the Challenge field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *ChallengePasskeysResponse) SetChallenge(challenge string) {
-	c.Challenge = challenge
-	c.require(challengePasskeysResponseFieldChallenge)
-}
-
-func (c *ChallengePasskeysResponse) UnmarshalJSON(data []byte) error {
-	type unmarshaler ChallengePasskeysResponse
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = ChallengePasskeysResponse(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *ChallengePasskeysResponse) MarshalJSON() ([]byte, error) {
-	type embed ChallengePasskeysResponse
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *ChallengePasskeysResponse) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
 }
 
 var (

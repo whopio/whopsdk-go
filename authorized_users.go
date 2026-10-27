@@ -1172,15 +1172,15 @@ var createAuthorizedUsersRequestElevationNullableFields = map[string]*big.Int{
 
 // Re-authentication proof required to perform this sensitive action.
 type CreateAuthorizedUsersRequestElevation struct {
-	// The WebAuthn authenticator data (base64).
+	// Ignored. Kept so existing API clients that send a passkey assertion keep working.
 	AuthenticatorData *string `json:"authenticator_data,omitempty" url:"authenticator_data,omitempty"`
-	// The WebAuthn client data JSON (base64).
+	// Ignored. Kept so existing API clients that send a passkey assertion keep working.
 	ClientDataJSON *string `json:"client_data_json,omitempty" url:"client_data_json,omitempty"`
-	// The WebAuthn credential ID (base64).
+	// Ignored. Kept so existing API clients that send a passkey assertion keep working.
 	CredentialID *string `json:"credential_id,omitempty" url:"credential_id,omitempty"`
 	// The 6-digit code emailed to the user.
 	EmailCode *string `json:"email_code,omitempty" url:"email_code,omitempty"`
-	// The WebAuthn signature (base64).
+	// Ignored. Kept so existing API clients that send a passkey assertion keep working.
 	Signature *string `json:"signature,omitempty" url:"signature,omitempty"`
 	// The 6-digit code from the authenticator app or SMS.
 	TotpCode *string `json:"totp_code,omitempty" url:"totp_code,omitempty"`

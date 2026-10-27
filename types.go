@@ -34742,6 +34742,1327 @@ func (p *Passkey) String() string {
 }
 
 var (
+	passkeyAuthenticatorSelectionFieldRequireResidentKey = big.NewInt(1 << 0)
+	passkeyAuthenticatorSelectionFieldResidentKey        = big.NewInt(1 << 1)
+	passkeyAuthenticatorSelectionFieldUserVerification   = big.NewInt(1 << 2)
+)
+
+type PasskeyAuthenticatorSelection struct {
+	// Always `true`. The older form of `resident_key`, for authenticators that predate it.
+	RequireResidentKey bool `json:"require_resident_key" url:"require_resident_key"`
+	// The authenticator must store a discoverable passkey, so it can sign in without a username.
+	ResidentKey PasskeyAuthenticatorSelectionResidentKey `json:"resident_key" url:"resident_key"`
+	// The authenticator must verify the user, with a biometric or the device's screen lock.
+	UserVerification PasskeyAuthenticatorSelectionUserVerification `json:"user_verification" url:"user_verification"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PasskeyAuthenticatorSelection) GetRequireResidentKey() bool {
+	if p == nil {
+		return false
+	}
+	return p.RequireResidentKey
+}
+
+func (p *PasskeyAuthenticatorSelection) GetResidentKey() PasskeyAuthenticatorSelectionResidentKey {
+	if p == nil {
+		return ""
+	}
+	return p.ResidentKey
+}
+
+func (p *PasskeyAuthenticatorSelection) GetUserVerification() PasskeyAuthenticatorSelectionUserVerification {
+	if p == nil {
+		return ""
+	}
+	return p.UserVerification
+}
+
+func (p *PasskeyAuthenticatorSelection) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PasskeyAuthenticatorSelection) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetRequireResidentKey sets the RequireResidentKey field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PasskeyAuthenticatorSelection) SetRequireResidentKey(requireResidentKey bool) {
+	p.RequireResidentKey = requireResidentKey
+	p.require(passkeyAuthenticatorSelectionFieldRequireResidentKey)
+}
+
+// SetResidentKey sets the ResidentKey field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PasskeyAuthenticatorSelection) SetResidentKey(residentKey PasskeyAuthenticatorSelectionResidentKey) {
+	p.ResidentKey = residentKey
+	p.require(passkeyAuthenticatorSelectionFieldResidentKey)
+}
+
+// SetUserVerification sets the UserVerification field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PasskeyAuthenticatorSelection) SetUserVerification(userVerification PasskeyAuthenticatorSelectionUserVerification) {
+	p.UserVerification = userVerification
+	p.require(passkeyAuthenticatorSelectionFieldUserVerification)
+}
+
+func (p *PasskeyAuthenticatorSelection) UnmarshalJSON(data []byte) error {
+	type unmarshaler PasskeyAuthenticatorSelection
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PasskeyAuthenticatorSelection(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PasskeyAuthenticatorSelection) MarshalJSON() ([]byte, error) {
+	type embed PasskeyAuthenticatorSelection
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PasskeyAuthenticatorSelection) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The authenticator must store a discoverable passkey, so it can sign in without a username.
+type PasskeyAuthenticatorSelectionResidentKey string
+
+const (
+	PasskeyAuthenticatorSelectionResidentKeyRequired PasskeyAuthenticatorSelectionResidentKey = "required"
+)
+
+func NewPasskeyAuthenticatorSelectionResidentKeyFromString(s string) (PasskeyAuthenticatorSelectionResidentKey, error) {
+	switch s {
+	case "required":
+		return PasskeyAuthenticatorSelectionResidentKeyRequired, nil
+	}
+	var t PasskeyAuthenticatorSelectionResidentKey
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PasskeyAuthenticatorSelectionResidentKey) Ptr() *PasskeyAuthenticatorSelectionResidentKey {
+	return &p
+}
+
+// The authenticator must verify the user, with a biometric or the device's screen lock.
+type PasskeyAuthenticatorSelectionUserVerification string
+
+const (
+	PasskeyAuthenticatorSelectionUserVerificationRequired PasskeyAuthenticatorSelectionUserVerification = "required"
+)
+
+func NewPasskeyAuthenticatorSelectionUserVerificationFromString(s string) (PasskeyAuthenticatorSelectionUserVerification, error) {
+	switch s {
+	case "required":
+		return PasskeyAuthenticatorSelectionUserVerificationRequired, nil
+	}
+	var t PasskeyAuthenticatorSelectionUserVerification
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PasskeyAuthenticatorSelectionUserVerification) Ptr() *PasskeyAuthenticatorSelectionUserVerification {
+	return &p
+}
+
+var (
+	passkeyChallengeFieldChallenge       = big.NewInt(1 << 0)
+	passkeyChallengeFieldCreationOptions = big.NewInt(1 << 1)
+	passkeyChallengeFieldRequestOptions  = big.NewInt(1 << 2)
+)
+
+// passkeyChallengeNullableFields maps the wire names of PasskeyChallenge's nullable fields (required or optional) to their field bits.
+var passkeyChallengeNullableFields = map[string]*big.Int{
+	"creation_options": passkeyChallengeFieldCreationOptions,
+	"request_options":  passkeyChallengeFieldRequestOptions,
+}
+
+type PasskeyChallenge struct {
+	// The challenge to pass to the WebAuthn ceremony, base64url-encoded without padding. Also inside the options.
+	Challenge string `json:"challenge" url:"challenge"`
+	// The options for `navigator.credentials.create()` when `challenge_type` is `registration`, otherwise `null`. Convert the keys to camelCase before passing them to the browser.
+	CreationOptions *PasskeyCreationOptions `json:"creation_options,omitempty" url:"creation_options,omitempty"`
+	// The options for `navigator.credentials.get()` when `challenge_type` is `deletion`, otherwise `null`. Convert the keys to camelCase before passing them to the browser.
+	RequestOptions *PasskeyRequestOptions `json:"request_options,omitempty" url:"request_options,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PasskeyChallenge) GetChallenge() string {
+	if p == nil {
+		return ""
+	}
+	return p.Challenge
+}
+
+func (p *PasskeyChallenge) GetCreationOptions() *PasskeyCreationOptions {
+	if p == nil {
+		return nil
+	}
+	return p.CreationOptions
+}
+
+func (p *PasskeyChallenge) GetRequestOptions() *PasskeyRequestOptions {
+	if p == nil {
+		return nil
+	}
+	return p.RequestOptions
+}
+
+func (p *PasskeyChallenge) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PasskeyChallenge) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetChallenge sets the Challenge field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PasskeyChallenge) SetChallenge(challenge string) {
+	p.Challenge = challenge
+	p.require(passkeyChallengeFieldChallenge)
+}
+
+// SetCreationOptions sets the CreationOptions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PasskeyChallenge) SetCreationOptions(creationOptions *PasskeyCreationOptions) {
+	p.CreationOptions = creationOptions
+	p.require(passkeyChallengeFieldCreationOptions)
+}
+
+// SetRequestOptions sets the RequestOptions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PasskeyChallenge) SetRequestOptions(requestOptions *PasskeyRequestOptions) {
+	p.RequestOptions = requestOptions
+	p.require(passkeyChallengeFieldRequestOptions)
+}
+
+func (p *PasskeyChallenge) UnmarshalJSON(data []byte) error {
+	type unmarshaler PasskeyChallenge
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PasskeyChallenge(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, passkeyChallengeNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PasskeyChallenge) MarshalJSON() ([]byte, error) {
+	type embed PasskeyChallenge
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PasskeyChallenge) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	passkeyCreationExtensionsFieldCredProps = big.NewInt(1 << 0)
+)
+
+type PasskeyCreationExtensions struct {
+	// Asks the authenticator to report whether it stored a discoverable passkey.
+	CredProps bool `json:"cred_props" url:"cred_props"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PasskeyCreationExtensions) GetCredProps() bool {
+	if p == nil {
+		return false
+	}
+	return p.CredProps
+}
+
+func (p *PasskeyCreationExtensions) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PasskeyCreationExtensions) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetCredProps sets the CredProps field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PasskeyCreationExtensions) SetCredProps(credProps bool) {
+	p.CredProps = credProps
+	p.require(passkeyCreationExtensionsFieldCredProps)
+}
+
+func (p *PasskeyCreationExtensions) UnmarshalJSON(data []byte) error {
+	type unmarshaler PasskeyCreationExtensions
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PasskeyCreationExtensions(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PasskeyCreationExtensions) MarshalJSON() ([]byte, error) {
+	type embed PasskeyCreationExtensions
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PasskeyCreationExtensions) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	passkeyCreationOptionsFieldAttestation            = big.NewInt(1 << 0)
+	passkeyCreationOptionsFieldAuthenticatorSelection = big.NewInt(1 << 1)
+	passkeyCreationOptionsFieldChallenge              = big.NewInt(1 << 2)
+	passkeyCreationOptionsFieldExcludeCredentials     = big.NewInt(1 << 3)
+	passkeyCreationOptionsFieldExtensions             = big.NewInt(1 << 4)
+	passkeyCreationOptionsFieldPubKeyCredParams       = big.NewInt(1 << 5)
+	passkeyCreationOptionsFieldRp                     = big.NewInt(1 << 6)
+	passkeyCreationOptionsFieldTimeout                = big.NewInt(1 << 7)
+	passkeyCreationOptionsFieldUser                   = big.NewInt(1 << 8)
+)
+
+type PasskeyCreationOptions struct {
+	// Whop does not ask for attestation.
+	Attestation PasskeyCreationOptionsAttestation `json:"attestation" url:"attestation"`
+	// What the authenticator must support.
+	AuthenticatorSelection *PasskeyAuthenticatorSelection `json:"authenticator_selection" url:"authenticator_selection"`
+	// The registration challenge, base64url-encoded without padding.
+	Challenge          string                         `json:"challenge" url:"challenge"`
+	ExcludeCredentials []*PasskeyCredentialDescriptor `json:"exclude_credentials" url:"exclude_credentials"`
+	// The WebAuthn extensions to run.
+	Extensions       *PasskeyCreationExtensions    `json:"extensions" url:"extensions"`
+	PubKeyCredParams []*PasskeyCredentialParameter `json:"pub_key_cred_params" url:"pub_key_cred_params"`
+	// The site the passkey belongs to.
+	Rp *PasskeyRelyingParty `json:"rp" url:"rp"`
+	// How long the ceremony may take, in milliseconds. Matches the challenge's lifetime.
+	Timeout int `json:"timeout" url:"timeout"`
+	// The account the passkey signs in to.
+	User *PasskeyUserEntity `json:"user" url:"user"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PasskeyCreationOptions) GetAttestation() PasskeyCreationOptionsAttestation {
+	if p == nil {
+		return ""
+	}
+	return p.Attestation
+}
+
+func (p *PasskeyCreationOptions) GetAuthenticatorSelection() *PasskeyAuthenticatorSelection {
+	if p == nil {
+		return nil
+	}
+	return p.AuthenticatorSelection
+}
+
+func (p *PasskeyCreationOptions) GetChallenge() string {
+	if p == nil {
+		return ""
+	}
+	return p.Challenge
+}
+
+func (p *PasskeyCreationOptions) GetExcludeCredentials() []*PasskeyCredentialDescriptor {
+	if p == nil {
+		return nil
+	}
+	return p.ExcludeCredentials
+}
+
+func (p *PasskeyCreationOptions) GetExtensions() *PasskeyCreationExtensions {
+	if p == nil {
+		return nil
+	}
+	return p.Extensions
+}
+
+func (p *PasskeyCreationOptions) GetPubKeyCredParams() []*PasskeyCredentialParameter {
+	if p == nil {
+		return nil
+	}
+	return p.PubKeyCredParams
+}
+
+func (p *PasskeyCreationOptions) GetRp() *PasskeyRelyingParty {
+	if p == nil {
+		return nil
+	}
+	return p.Rp
+}
+
+func (p *PasskeyCreationOptions) GetTimeout() int {
+	if p == nil {
+		return 0
+	}
+	return p.Timeout
+}
+
+func (p *PasskeyCreationOptions) GetUser() *PasskeyUserEntity {
+	if p == nil {
+		return nil
+	}
+	return p.User
+}
+
+func (p *PasskeyCreationOptions) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PasskeyCreationOptions) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetAttestation sets the Attestation field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PasskeyCreationOptions) SetAttestation(attestation PasskeyCreationOptionsAttestation) {
+	p.Attestation = attestation
+	p.require(passkeyCreationOptionsFieldAttestation)
+}
+
+// SetAuthenticatorSelection sets the AuthenticatorSelection field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PasskeyCreationOptions) SetAuthenticatorSelection(authenticatorSelection *PasskeyAuthenticatorSelection) {
+	p.AuthenticatorSelection = authenticatorSelection
+	p.require(passkeyCreationOptionsFieldAuthenticatorSelection)
+}
+
+// SetChallenge sets the Challenge field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PasskeyCreationOptions) SetChallenge(challenge string) {
+	p.Challenge = challenge
+	p.require(passkeyCreationOptionsFieldChallenge)
+}
+
+// SetExcludeCredentials sets the ExcludeCredentials field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PasskeyCreationOptions) SetExcludeCredentials(excludeCredentials []*PasskeyCredentialDescriptor) {
+	p.ExcludeCredentials = excludeCredentials
+	p.require(passkeyCreationOptionsFieldExcludeCredentials)
+}
+
+// SetExtensions sets the Extensions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PasskeyCreationOptions) SetExtensions(extensions *PasskeyCreationExtensions) {
+	p.Extensions = extensions
+	p.require(passkeyCreationOptionsFieldExtensions)
+}
+
+// SetPubKeyCredParams sets the PubKeyCredParams field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PasskeyCreationOptions) SetPubKeyCredParams(pubKeyCredParams []*PasskeyCredentialParameter) {
+	p.PubKeyCredParams = pubKeyCredParams
+	p.require(passkeyCreationOptionsFieldPubKeyCredParams)
+}
+
+// SetRp sets the Rp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PasskeyCreationOptions) SetRp(rp *PasskeyRelyingParty) {
+	p.Rp = rp
+	p.require(passkeyCreationOptionsFieldRp)
+}
+
+// SetTimeout sets the Timeout field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PasskeyCreationOptions) SetTimeout(timeout int) {
+	p.Timeout = timeout
+	p.require(passkeyCreationOptionsFieldTimeout)
+}
+
+// SetUser sets the User field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PasskeyCreationOptions) SetUser(user *PasskeyUserEntity) {
+	p.User = user
+	p.require(passkeyCreationOptionsFieldUser)
+}
+
+func (p *PasskeyCreationOptions) UnmarshalJSON(data []byte) error {
+	type unmarshaler PasskeyCreationOptions
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PasskeyCreationOptions(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PasskeyCreationOptions) MarshalJSON() ([]byte, error) {
+	type embed PasskeyCreationOptions
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PasskeyCreationOptions) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// Whop does not ask for attestation.
+type PasskeyCreationOptionsAttestation string
+
+const (
+	PasskeyCreationOptionsAttestationNone PasskeyCreationOptionsAttestation = "none"
+)
+
+func NewPasskeyCreationOptionsAttestationFromString(s string) (PasskeyCreationOptionsAttestation, error) {
+	switch s {
+	case "none":
+		return PasskeyCreationOptionsAttestationNone, nil
+	}
+	var t PasskeyCreationOptionsAttestation
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PasskeyCreationOptionsAttestation) Ptr() *PasskeyCreationOptionsAttestation {
+	return &p
+}
+
+var (
+	passkeyCredentialDescriptorFieldID         = big.NewInt(1 << 0)
+	passkeyCredentialDescriptorFieldTransports = big.NewInt(1 << 1)
+	passkeyCredentialDescriptorFieldType       = big.NewInt(1 << 2)
+)
+
+type PasskeyCredentialDescriptor struct {
+	// The WebAuthn credential ID, base64url-encoded.
+	ID         string                                      `json:"id" url:"id"`
+	Transports []PasskeyCredentialDescriptorTransportsItem `json:"transports" url:"transports"`
+	// Always `public-key`.
+	Type PasskeyCredentialDescriptorType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PasskeyCredentialDescriptor) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PasskeyCredentialDescriptor) GetTransports() []PasskeyCredentialDescriptorTransportsItem {
+	if p == nil {
+		return nil
+	}
+	return p.Transports
+}
+
+func (p *PasskeyCredentialDescriptor) GetType() PasskeyCredentialDescriptorType {
+	if p == nil {
+		return ""
+	}
+	return p.Type
+}
+
+func (p *PasskeyCredentialDescriptor) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PasskeyCredentialDescriptor) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PasskeyCredentialDescriptor) SetID(id string) {
+	p.ID = id
+	p.require(passkeyCredentialDescriptorFieldID)
+}
+
+// SetTransports sets the Transports field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PasskeyCredentialDescriptor) SetTransports(transports []PasskeyCredentialDescriptorTransportsItem) {
+	p.Transports = transports
+	p.require(passkeyCredentialDescriptorFieldTransports)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PasskeyCredentialDescriptor) SetType(type_ PasskeyCredentialDescriptorType) {
+	p.Type = type_
+	p.require(passkeyCredentialDescriptorFieldType)
+}
+
+func (p *PasskeyCredentialDescriptor) UnmarshalJSON(data []byte) error {
+	type unmarshaler PasskeyCredentialDescriptor
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PasskeyCredentialDescriptor(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PasskeyCredentialDescriptor) MarshalJSON() ([]byte, error) {
+	type embed PasskeyCredentialDescriptor
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PasskeyCredentialDescriptor) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// How the authenticator holding this passkey can be reached, as it reported at registration. Empty when unknown.
+type PasskeyCredentialDescriptorTransportsItem string
+
+const (
+	PasskeyCredentialDescriptorTransportsItemBle       PasskeyCredentialDescriptorTransportsItem = "ble"
+	PasskeyCredentialDescriptorTransportsItemHybrid    PasskeyCredentialDescriptorTransportsItem = "hybrid"
+	PasskeyCredentialDescriptorTransportsItemInternal  PasskeyCredentialDescriptorTransportsItem = "internal"
+	PasskeyCredentialDescriptorTransportsItemNfc       PasskeyCredentialDescriptorTransportsItem = "nfc"
+	PasskeyCredentialDescriptorTransportsItemSmartCard PasskeyCredentialDescriptorTransportsItem = "smart-card"
+	PasskeyCredentialDescriptorTransportsItemUsb       PasskeyCredentialDescriptorTransportsItem = "usb"
+)
+
+func NewPasskeyCredentialDescriptorTransportsItemFromString(s string) (PasskeyCredentialDescriptorTransportsItem, error) {
+	switch s {
+	case "ble":
+		return PasskeyCredentialDescriptorTransportsItemBle, nil
+	case "hybrid":
+		return PasskeyCredentialDescriptorTransportsItemHybrid, nil
+	case "internal":
+		return PasskeyCredentialDescriptorTransportsItemInternal, nil
+	case "nfc":
+		return PasskeyCredentialDescriptorTransportsItemNfc, nil
+	case "smart-card":
+		return PasskeyCredentialDescriptorTransportsItemSmartCard, nil
+	case "usb":
+		return PasskeyCredentialDescriptorTransportsItemUsb, nil
+	}
+	var t PasskeyCredentialDescriptorTransportsItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PasskeyCredentialDescriptorTransportsItem) Ptr() *PasskeyCredentialDescriptorTransportsItem {
+	return &p
+}
+
+// Always `public-key`.
+type PasskeyCredentialDescriptorType string
+
+const (
+	PasskeyCredentialDescriptorTypePublicKey PasskeyCredentialDescriptorType = "public-key"
+)
+
+func NewPasskeyCredentialDescriptorTypeFromString(s string) (PasskeyCredentialDescriptorType, error) {
+	switch s {
+	case "public-key":
+		return PasskeyCredentialDescriptorTypePublicKey, nil
+	}
+	var t PasskeyCredentialDescriptorType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PasskeyCredentialDescriptorType) Ptr() *PasskeyCredentialDescriptorType {
+	return &p
+}
+
+var (
+	passkeyCredentialParameterFieldAlg  = big.NewInt(1 << 0)
+	passkeyCredentialParameterFieldType = big.NewInt(1 << 1)
+)
+
+type PasskeyCredentialParameter struct {
+	// A COSE algorithm identifier: `-7` is ES256, `-257` is RS256.
+	Alg int `json:"alg" url:"alg"`
+	// Always `public-key`.
+	Type PasskeyCredentialParameterType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PasskeyCredentialParameter) GetAlg() int {
+	if p == nil {
+		return 0
+	}
+	return p.Alg
+}
+
+func (p *PasskeyCredentialParameter) GetType() PasskeyCredentialParameterType {
+	if p == nil {
+		return ""
+	}
+	return p.Type
+}
+
+func (p *PasskeyCredentialParameter) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PasskeyCredentialParameter) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetAlg sets the Alg field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PasskeyCredentialParameter) SetAlg(alg int) {
+	p.Alg = alg
+	p.require(passkeyCredentialParameterFieldAlg)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PasskeyCredentialParameter) SetType(type_ PasskeyCredentialParameterType) {
+	p.Type = type_
+	p.require(passkeyCredentialParameterFieldType)
+}
+
+func (p *PasskeyCredentialParameter) UnmarshalJSON(data []byte) error {
+	type unmarshaler PasskeyCredentialParameter
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PasskeyCredentialParameter(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PasskeyCredentialParameter) MarshalJSON() ([]byte, error) {
+	type embed PasskeyCredentialParameter
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PasskeyCredentialParameter) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// Always `public-key`.
+type PasskeyCredentialParameterType string
+
+const (
+	PasskeyCredentialParameterTypePublicKey PasskeyCredentialParameterType = "public-key"
+)
+
+func NewPasskeyCredentialParameterTypeFromString(s string) (PasskeyCredentialParameterType, error) {
+	switch s {
+	case "public-key":
+		return PasskeyCredentialParameterTypePublicKey, nil
+	}
+	var t PasskeyCredentialParameterType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PasskeyCredentialParameterType) Ptr() *PasskeyCredentialParameterType {
+	return &p
+}
+
+var (
+	passkeyRelyingPartyFieldID   = big.NewInt(1 << 0)
+	passkeyRelyingPartyFieldName = big.NewInt(1 << 1)
+)
+
+type PasskeyRelyingParty struct {
+	// The relying party ID, the domain passkeys are bound to.
+	ID string `json:"id" url:"id"`
+	// The site name an authenticator may show.
+	Name string `json:"name" url:"name"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PasskeyRelyingParty) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PasskeyRelyingParty) GetName() string {
+	if p == nil {
+		return ""
+	}
+	return p.Name
+}
+
+func (p *PasskeyRelyingParty) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PasskeyRelyingParty) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PasskeyRelyingParty) SetID(id string) {
+	p.ID = id
+	p.require(passkeyRelyingPartyFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PasskeyRelyingParty) SetName(name string) {
+	p.Name = name
+	p.require(passkeyRelyingPartyFieldName)
+}
+
+func (p *PasskeyRelyingParty) UnmarshalJSON(data []byte) error {
+	type unmarshaler PasskeyRelyingParty
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PasskeyRelyingParty(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PasskeyRelyingParty) MarshalJSON() ([]byte, error) {
+	type embed PasskeyRelyingParty
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PasskeyRelyingParty) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	passkeyRequestOptionsFieldAllowCredentials = big.NewInt(1 << 0)
+	passkeyRequestOptionsFieldChallenge        = big.NewInt(1 << 1)
+	passkeyRequestOptionsFieldRpID             = big.NewInt(1 << 2)
+	passkeyRequestOptionsFieldTimeout          = big.NewInt(1 << 3)
+	passkeyRequestOptionsFieldUserVerification = big.NewInt(1 << 4)
+)
+
+type PasskeyRequestOptions struct {
+	AllowCredentials []*PasskeyCredentialDescriptor `json:"allow_credentials" url:"allow_credentials"`
+	// The assertion challenge, base64url-encoded without padding.
+	Challenge string `json:"challenge" url:"challenge"`
+	// The site the passkey belongs to.
+	RpID string `json:"rp_id" url:"rp_id"`
+	// How long the ceremony may take, in milliseconds. Matches the challenge's lifetime.
+	Timeout int `json:"timeout" url:"timeout"`
+	// The authenticator must verify the user, with a biometric or the device's screen lock.
+	UserVerification PasskeyRequestOptionsUserVerification `json:"user_verification" url:"user_verification"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PasskeyRequestOptions) GetAllowCredentials() []*PasskeyCredentialDescriptor {
+	if p == nil {
+		return nil
+	}
+	return p.AllowCredentials
+}
+
+func (p *PasskeyRequestOptions) GetChallenge() string {
+	if p == nil {
+		return ""
+	}
+	return p.Challenge
+}
+
+func (p *PasskeyRequestOptions) GetRpID() string {
+	if p == nil {
+		return ""
+	}
+	return p.RpID
+}
+
+func (p *PasskeyRequestOptions) GetTimeout() int {
+	if p == nil {
+		return 0
+	}
+	return p.Timeout
+}
+
+func (p *PasskeyRequestOptions) GetUserVerification() PasskeyRequestOptionsUserVerification {
+	if p == nil {
+		return ""
+	}
+	return p.UserVerification
+}
+
+func (p *PasskeyRequestOptions) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PasskeyRequestOptions) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetAllowCredentials sets the AllowCredentials field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PasskeyRequestOptions) SetAllowCredentials(allowCredentials []*PasskeyCredentialDescriptor) {
+	p.AllowCredentials = allowCredentials
+	p.require(passkeyRequestOptionsFieldAllowCredentials)
+}
+
+// SetChallenge sets the Challenge field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PasskeyRequestOptions) SetChallenge(challenge string) {
+	p.Challenge = challenge
+	p.require(passkeyRequestOptionsFieldChallenge)
+}
+
+// SetRpID sets the RpID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PasskeyRequestOptions) SetRpID(rpID string) {
+	p.RpID = rpID
+	p.require(passkeyRequestOptionsFieldRpID)
+}
+
+// SetTimeout sets the Timeout field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PasskeyRequestOptions) SetTimeout(timeout int) {
+	p.Timeout = timeout
+	p.require(passkeyRequestOptionsFieldTimeout)
+}
+
+// SetUserVerification sets the UserVerification field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PasskeyRequestOptions) SetUserVerification(userVerification PasskeyRequestOptionsUserVerification) {
+	p.UserVerification = userVerification
+	p.require(passkeyRequestOptionsFieldUserVerification)
+}
+
+func (p *PasskeyRequestOptions) UnmarshalJSON(data []byte) error {
+	type unmarshaler PasskeyRequestOptions
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PasskeyRequestOptions(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PasskeyRequestOptions) MarshalJSON() ([]byte, error) {
+	type embed PasskeyRequestOptions
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PasskeyRequestOptions) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The authenticator must verify the user, with a biometric or the device's screen lock.
+type PasskeyRequestOptionsUserVerification string
+
+const (
+	PasskeyRequestOptionsUserVerificationRequired PasskeyRequestOptionsUserVerification = "required"
+)
+
+func NewPasskeyRequestOptionsUserVerificationFromString(s string) (PasskeyRequestOptionsUserVerification, error) {
+	switch s {
+	case "required":
+		return PasskeyRequestOptionsUserVerificationRequired, nil
+	}
+	var t PasskeyRequestOptionsUserVerification
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PasskeyRequestOptionsUserVerification) Ptr() *PasskeyRequestOptionsUserVerification {
+	return &p
+}
+
+var (
+	passkeyUserEntityFieldDisplayName = big.NewInt(1 << 0)
+	passkeyUserEntityFieldID          = big.NewInt(1 << 1)
+	passkeyUserEntityFieldName        = big.NewInt(1 << 2)
+)
+
+type PasskeyUserEntity struct {
+	// The account's name, or its email address when it has none, for passkey pickers that show one.
+	DisplayName string `json:"display_name" url:"display_name"`
+	// The account's passkey user handle, base64url-encoded. Random, the same for every passkey on the account, and never a Whop ID. Send it back as `user_handle` when you register the passkey.
+	ID string `json:"id" url:"id"`
+	// The account's email address, the identifier a passkey picker shows.
+	Name string `json:"name" url:"name"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PasskeyUserEntity) GetDisplayName() string {
+	if p == nil {
+		return ""
+	}
+	return p.DisplayName
+}
+
+func (p *PasskeyUserEntity) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PasskeyUserEntity) GetName() string {
+	if p == nil {
+		return ""
+	}
+	return p.Name
+}
+
+func (p *PasskeyUserEntity) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PasskeyUserEntity) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetDisplayName sets the DisplayName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PasskeyUserEntity) SetDisplayName(displayName string) {
+	p.DisplayName = displayName
+	p.require(passkeyUserEntityFieldDisplayName)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PasskeyUserEntity) SetID(id string) {
+	p.ID = id
+	p.require(passkeyUserEntityFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PasskeyUserEntity) SetName(name string) {
+	p.Name = name
+	p.require(passkeyUserEntityFieldName)
+}
+
+func (p *PasskeyUserEntity) UnmarshalJSON(data []byte) error {
+	type unmarshaler PasskeyUserEntity
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PasskeyUserEntity(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PasskeyUserEntity) MarshalJSON() ([]byte, error) {
+	type embed PasskeyUserEntity
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PasskeyUserEntity) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
 	paymentFieldAccountID                  = big.NewInt(1 << 0)
 	paymentFieldAmountAfterFees            = big.NewInt(1 << 1)
 	paymentFieldAutoCaptureAt              = big.NewInt(1 << 2)
