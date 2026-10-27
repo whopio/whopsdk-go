@@ -44445,6 +44445,22 @@ client.Accounts.Fees.Update(
 <dl>
 <dd>
 
+**achDispute:** `*accounts.UpdateFeesRequestAchDispute` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**achReturn:** `*accounts.UpdateFeesRequestAchReturn` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **bankDeposit:** `*accounts.UpdateFeesRequestBankDeposit` — The fields of a fee the caller may change. Only the keys sent are replaced.
     
 </dd>
@@ -44646,6 +44662,22 @@ client.Accounts.Fees.Update(
 <dd>
 
 **revshare:** `*accounts.UpdateFeesRequestRevshare` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sepaDispute:** `*accounts.UpdateFeesRequestSepaDispute` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sepaReturn:** `*accounts.UpdateFeesRequestSepaReturn` — The fields of a fee the caller may change. Only the keys sent are replaced.
     
 </dd>
 </dl>

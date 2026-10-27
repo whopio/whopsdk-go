@@ -1361,6 +1361,7 @@ const (
 	PaymentFeeOriginApplicationFee                    PaymentFeeOrigin = "application_fee"
 	PaymentFeeOriginHighRiskMerchantFee               PaymentFeeOrigin = "high_risk_merchant_fee"
 	PaymentFeeOriginEconomicIntelligencePercentageFee PaymentFeeOrigin = "economic_intelligence_percentage_fee"
+	PaymentFeeOriginPaymentReturnFee                  PaymentFeeOrigin = "payment_return_fee"
 )
 
 func NewPaymentFeeOriginFromString(s string) (PaymentFeeOrigin, error) {
@@ -1433,6 +1434,8 @@ func NewPaymentFeeOriginFromString(s string) (PaymentFeeOrigin, error) {
 		return PaymentFeeOriginHighRiskMerchantFee, nil
 	case "economic_intelligence_percentage_fee":
 		return PaymentFeeOriginEconomicIntelligencePercentageFee, nil
+	case "payment_return_fee":
+		return PaymentFeeOriginPaymentReturnFee, nil
 	}
 	var t PaymentFeeOrigin
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

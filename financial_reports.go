@@ -316,6 +316,7 @@ const (
 	RetrieveFinancialReportsRequestLineTypesItemPaymentReferralReversal                   RetrieveFinancialReportsRequestLineTypesItem = "payment_referral_reversal"
 	RetrieveFinancialReportsRequestLineTypesItemPaymentRefund                             RetrieveFinancialReportsRequestLineTypesItem = "payment_refund"
 	RetrieveFinancialReportsRequestLineTypesItemPaymentRefundReversal                     RetrieveFinancialReportsRequestLineTypesItem = "payment_refund_reversal"
+	RetrieveFinancialReportsRequestLineTypesItemPaymentReturnFee                          RetrieveFinancialReportsRequestLineTypesItem = "payment_return_fee"
 	RetrieveFinancialReportsRequestLineTypesItemPaymentRevshare                           RetrieveFinancialReportsRequestLineTypesItem = "payment_revshare"
 	RetrieveFinancialReportsRequestLineTypesItemPaymentRevsharePayout                     RetrieveFinancialReportsRequestLineTypesItem = "payment_revshare_payout"
 	RetrieveFinancialReportsRequestLineTypesItemPaymentRevshareRefund                     RetrieveFinancialReportsRequestLineTypesItem = "payment_revshare_refund"
@@ -559,6 +560,8 @@ func NewRetrieveFinancialReportsRequestLineTypesItemFromString(s string) (Retrie
 		return RetrieveFinancialReportsRequestLineTypesItemPaymentRefund, nil
 	case "payment_refund_reversal":
 		return RetrieveFinancialReportsRequestLineTypesItemPaymentRefundReversal, nil
+	case "payment_return_fee":
+		return RetrieveFinancialReportsRequestLineTypesItemPaymentReturnFee, nil
 	case "payment_revshare":
 		return RetrieveFinancialReportsRequestLineTypesItemPaymentRevshare, nil
 	case "payment_revshare_payout":
@@ -1599,6 +1602,7 @@ const (
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPaymentRefund                             RetrieveFinancialReportsResponseRowsItemLineCategory = "payment_refund"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPaymentRefundFee                          RetrieveFinancialReportsResponseRowsItemLineCategory = "payment_refund_fee"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPaymentRefundReversal                     RetrieveFinancialReportsResponseRowsItemLineCategory = "payment_refund_reversal"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPaymentReturnFee                          RetrieveFinancialReportsResponseRowsItemLineCategory = "payment_return_fee"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPaymentRevshare                           RetrieveFinancialReportsResponseRowsItemLineCategory = "payment_revshare"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPaymentRevsharePayout                     RetrieveFinancialReportsResponseRowsItemLineCategory = "payment_revshare_payout"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPaymentRevshareRefund                     RetrieveFinancialReportsResponseRowsItemLineCategory = "payment_revshare_refund"
@@ -2065,6 +2069,8 @@ func NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString(s string)
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPaymentRefundFee, nil
 	case "payment_refund_reversal":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPaymentRefundReversal, nil
+	case "payment_return_fee":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPaymentReturnFee, nil
 	case "payment_revshare":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPaymentRevshare, nil
 	case "payment_revshare_payout":

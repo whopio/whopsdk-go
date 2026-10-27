@@ -3307,36 +3307,40 @@ func (a AccountFeeUnadjustableReason) Ptr() *AccountFeeUnadjustableReason {
 
 var (
 	accountFeesFieldAccountID            = big.NewInt(1 << 0)
-	accountFeesFieldBankDeposit          = big.NewInt(1 << 1)
-	accountFeesFieldBilling              = big.NewInt(1 << 2)
-	accountFeesFieldBuyer                = big.NewInt(1 << 3)
-	accountFeesFieldCardProcessing       = big.NewInt(1 << 4)
-	accountFeesFieldChildMarkups         = big.NewInt(1 << 5)
-	accountFeesFieldCoveredPayoutFees    = big.NewInt(1 << 6)
-	accountFeesFieldCrossBorder          = big.NewInt(1 << 7)
-	accountFeesFieldDispute              = big.NewInt(1 << 8)
-	accountFeesFieldDisputeAlert         = big.NewInt(1 << 9)
-	accountFeesFieldDisputeAlertCdrn     = big.NewInt(1 << 10)
-	accountFeesFieldDisputeAlertEthoca   = big.NewInt(1 << 11)
-	accountFeesFieldDisputeAlertRdr      = big.NewInt(1 << 12)
-	accountFeesFieldDisputeRepresentment = big.NewInt(1 << 13)
-	accountFeesFieldForeignExchange      = big.NewInt(1 << 14)
-	accountFeesFieldFraudScreening       = big.NewInt(1 << 15)
-	accountFeesFieldHighRisk             = big.NewInt(1 << 16)
-	accountFeesFieldMarketplace          = big.NewInt(1 << 17)
-	accountFeesFieldMarkups              = big.NewInt(1 << 18)
-	accountFeesFieldOrchestration        = big.NewInt(1 << 19)
-	accountFeesFieldParentAccountID      = big.NewInt(1 << 20)
-	accountFeesFieldPaymentMethods       = big.NewInt(1 << 21)
-	accountFeesFieldPayouts              = big.NewInt(1 << 22)
-	accountFeesFieldPendingAutoTopup     = big.NewInt(1 << 23)
-	accountFeesFieldPlatformProcessing   = big.NewInt(1 << 24)
-	accountFeesFieldPoolPayout           = big.NewInt(1 << 25)
-	accountFeesFieldRevshare             = big.NewInt(1 << 26)
-	accountFeesFieldTaxCalculation       = big.NewInt(1 << 27)
-	accountFeesFieldTaxService           = big.NewInt(1 << 28)
-	accountFeesFieldThreeDs              = big.NewInt(1 << 29)
-	accountFeesFieldTransfers            = big.NewInt(1 << 30)
+	accountFeesFieldAchDispute           = big.NewInt(1 << 1)
+	accountFeesFieldAchReturn            = big.NewInt(1 << 2)
+	accountFeesFieldBankDeposit          = big.NewInt(1 << 3)
+	accountFeesFieldBilling              = big.NewInt(1 << 4)
+	accountFeesFieldBuyer                = big.NewInt(1 << 5)
+	accountFeesFieldCardProcessing       = big.NewInt(1 << 6)
+	accountFeesFieldChildMarkups         = big.NewInt(1 << 7)
+	accountFeesFieldCoveredPayoutFees    = big.NewInt(1 << 8)
+	accountFeesFieldCrossBorder          = big.NewInt(1 << 9)
+	accountFeesFieldDispute              = big.NewInt(1 << 10)
+	accountFeesFieldDisputeAlert         = big.NewInt(1 << 11)
+	accountFeesFieldDisputeAlertCdrn     = big.NewInt(1 << 12)
+	accountFeesFieldDisputeAlertEthoca   = big.NewInt(1 << 13)
+	accountFeesFieldDisputeAlertRdr      = big.NewInt(1 << 14)
+	accountFeesFieldDisputeRepresentment = big.NewInt(1 << 15)
+	accountFeesFieldForeignExchange      = big.NewInt(1 << 16)
+	accountFeesFieldFraudScreening       = big.NewInt(1 << 17)
+	accountFeesFieldHighRisk             = big.NewInt(1 << 18)
+	accountFeesFieldMarketplace          = big.NewInt(1 << 19)
+	accountFeesFieldMarkups              = big.NewInt(1 << 20)
+	accountFeesFieldOrchestration        = big.NewInt(1 << 21)
+	accountFeesFieldParentAccountID      = big.NewInt(1 << 22)
+	accountFeesFieldPaymentMethods       = big.NewInt(1 << 23)
+	accountFeesFieldPayouts              = big.NewInt(1 << 24)
+	accountFeesFieldPendingAutoTopup     = big.NewInt(1 << 25)
+	accountFeesFieldPlatformProcessing   = big.NewInt(1 << 26)
+	accountFeesFieldPoolPayout           = big.NewInt(1 << 27)
+	accountFeesFieldRevshare             = big.NewInt(1 << 28)
+	accountFeesFieldSepaDispute          = big.NewInt(1 << 29)
+	accountFeesFieldSepaReturn           = big.NewInt(1 << 30)
+	accountFeesFieldTaxCalculation       = big.NewInt(1 << 31)
+	accountFeesFieldTaxService           = big.NewInt(1 << 32)
+	accountFeesFieldThreeDs              = big.NewInt(1 << 33)
+	accountFeesFieldTransfers            = big.NewInt(1 << 34)
 )
 
 // accountFeesNullableFields maps the wire names of AccountFees's nullable fields (required or optional) to their field bits.
@@ -3349,6 +3353,10 @@ var accountFeesNullableFields = map[string]*big.Int{
 type AccountFees struct {
 	// The account these fees are charged to, prefixed `biz_`.
 	AccountID string `json:"account_id" url:"account_id"`
+	// Charged when the account holder disputes an ACH payment.
+	AchDispute *AccountFee `json:"ach_dispute" url:"ach_dispute"`
+	// Charged when an ACH payment is returned by the buyer's bank.
+	AchReturn *AccountFee `json:"ach_return" url:"ach_return"`
 	// Charged on bank deposits into the account's balance.
 	BankDeposit *AccountFee `json:"bank_deposit" url:"bank_deposit"`
 	// Charged on recurring billing.
@@ -3401,6 +3409,10 @@ type AccountFees struct {
 	PoolPayout *AccountFee `json:"pool_payout" url:"pool_payout"`
 	// Charged on payments where the account shares revenue with revshare affiliates.
 	Revshare *AccountFee `json:"revshare" url:"revshare"`
+	// Charged when the account holder disputes a SEPA Direct Debit payment.
+	SepaDispute *AccountFee `json:"sepa_dispute" url:"sepa_dispute"`
+	// Charged when a SEPA Direct Debit payment is returned by the buyer's bank.
+	SepaReturn *AccountFee `json:"sepa_return" url:"sepa_return"`
 	// Charged when tax is calculated on a payment.
 	TaxCalculation *AccountFee `json:"tax_calculation" url:"tax_calculation"`
 	// Charged when Whop collects and remits tax on the account's behalf.
@@ -3422,6 +3434,20 @@ func (a *AccountFees) GetAccountID() string {
 		return ""
 	}
 	return a.AccountID
+}
+
+func (a *AccountFees) GetAchDispute() *AccountFee {
+	if a == nil {
+		return nil
+	}
+	return a.AchDispute
+}
+
+func (a *AccountFees) GetAchReturn() *AccountFee {
+	if a == nil {
+		return nil
+	}
+	return a.AchReturn
 }
 
 func (a *AccountFees) GetBankDeposit() *AccountFee {
@@ -3606,6 +3632,20 @@ func (a *AccountFees) GetRevshare() *AccountFee {
 	return a.Revshare
 }
 
+func (a *AccountFees) GetSepaDispute() *AccountFee {
+	if a == nil {
+		return nil
+	}
+	return a.SepaDispute
+}
+
+func (a *AccountFees) GetSepaReturn() *AccountFee {
+	if a == nil {
+		return nil
+	}
+	return a.SepaReturn
+}
+
 func (a *AccountFees) GetTaxCalculation() *AccountFee {
 	if a == nil {
 		return nil
@@ -3655,6 +3695,20 @@ func (a *AccountFees) require(field *big.Int) {
 func (a *AccountFees) SetAccountID(accountID string) {
 	a.AccountID = accountID
 	a.require(accountFeesFieldAccountID)
+}
+
+// SetAchDispute sets the AchDispute field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetAchDispute(achDispute *AccountFee) {
+	a.AchDispute = achDispute
+	a.require(accountFeesFieldAchDispute)
+}
+
+// SetAchReturn sets the AchReturn field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetAchReturn(achReturn *AccountFee) {
+	a.AchReturn = achReturn
+	a.require(accountFeesFieldAchReturn)
 }
 
 // SetBankDeposit sets the BankDeposit field and marks it as non-optional;
@@ -3837,6 +3891,20 @@ func (a *AccountFees) SetPoolPayout(poolPayout *AccountFee) {
 func (a *AccountFees) SetRevshare(revshare *AccountFee) {
 	a.Revshare = revshare
 	a.require(accountFeesFieldRevshare)
+}
+
+// SetSepaDispute sets the SepaDispute field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetSepaDispute(sepaDispute *AccountFee) {
+	a.SepaDispute = sepaDispute
+	a.require(accountFeesFieldSepaDispute)
+}
+
+// SetSepaReturn sets the SepaReturn field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetSepaReturn(sepaReturn *AccountFee) {
+	a.SepaReturn = sepaReturn
+	a.require(accountFeesFieldSepaReturn)
 }
 
 // SetTaxCalculation sets the TaxCalculation field and marks it as non-optional;
@@ -63294,6 +63362,7 @@ const (
 	SpecificFeeOriginsApplicationFee                    SpecificFeeOrigins = "application_fee"
 	SpecificFeeOriginsHighRiskMerchantFee               SpecificFeeOrigins = "high_risk_merchant_fee"
 	SpecificFeeOriginsEconomicIntelligencePercentageFee SpecificFeeOrigins = "economic_intelligence_percentage_fee"
+	SpecificFeeOriginsPaymentReturnFee                  SpecificFeeOrigins = "payment_return_fee"
 )
 
 func NewSpecificFeeOriginsFromString(s string) (SpecificFeeOrigins, error) {
@@ -63366,6 +63435,8 @@ func NewSpecificFeeOriginsFromString(s string) (SpecificFeeOrigins, error) {
 		return SpecificFeeOriginsHighRiskMerchantFee, nil
 	case "economic_intelligence_percentage_fee":
 		return SpecificFeeOriginsEconomicIntelligencePercentageFee, nil
+	case "payment_return_fee":
+		return SpecificFeeOriginsPaymentReturnFee, nil
 	}
 	var t SpecificFeeOrigins
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

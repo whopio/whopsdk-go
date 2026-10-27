@@ -38,6 +38,510 @@ func (r *RetrieveFeesRequest) SetAccountID(accountID string) {
 }
 
 var (
+	updateFeesRequestAchDisputeFieldFixed      = big.NewInt(1 << 0)
+	updateFeesRequestAchDisputeFieldPercentage = big.NewInt(1 << 1)
+	updateFeesRequestAchDisputeFieldRegions    = big.NewInt(1 << 2)
+)
+
+// updateFeesRequestAchDisputeNullableFields maps the wire names of UpdateFeesRequestAchDispute's nullable fields (required or optional) to their field bits.
+var updateFeesRequestAchDisputeNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestAchDisputeFieldFixed,
+	"percentage": updateFeesRequestAchDisputeFieldPercentage,
+}
+
+// The fields of a fee the caller may change. Only the keys sent are replaced.
+type UpdateFeesRequestAchDispute struct {
+	// The new amount per event in US dollars. `null` clears the custom amount.
+	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
+	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
+	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
+	// Changes for the other regions the fee varies by, keyed by region. Only accepted on a fee whose `regions` is non-empty.
+	Regions map[string]*UpdateFeesRequestAchDisputeRegionsValue `json:"regions,omitempty" url:"regions,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateFeesRequestAchDispute) GetFixed() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.Fixed
+}
+
+func (u *UpdateFeesRequestAchDispute) GetPercentage() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.Percentage
+}
+
+func (u *UpdateFeesRequestAchDispute) GetRegions() map[string]*UpdateFeesRequestAchDisputeRegionsValue {
+	if u == nil {
+		return nil
+	}
+	return u.Regions
+}
+
+func (u *UpdateFeesRequestAchDispute) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateFeesRequestAchDispute) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetFixed sets the Fixed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestAchDispute) SetFixed(fixed *float64) {
+	u.Fixed = fixed
+	u.require(updateFeesRequestAchDisputeFieldFixed)
+}
+
+// SetPercentage sets the Percentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestAchDispute) SetPercentage(percentage *float64) {
+	u.Percentage = percentage
+	u.require(updateFeesRequestAchDisputeFieldPercentage)
+}
+
+// SetRegions sets the Regions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestAchDispute) SetRegions(regions map[string]*UpdateFeesRequestAchDisputeRegionsValue) {
+	u.Regions = regions
+	u.require(updateFeesRequestAchDisputeFieldRegions)
+}
+
+func (u *UpdateFeesRequestAchDispute) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateFeesRequestAchDispute
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateFeesRequestAchDispute(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestAchDisputeNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateFeesRequestAchDispute) MarshalJSON() ([]byte, error) {
+	type embed UpdateFeesRequestAchDispute
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateFeesRequestAchDispute) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateFeesRequestAchDisputeRegionsValueFieldFixed      = big.NewInt(1 << 0)
+	updateFeesRequestAchDisputeRegionsValueFieldPercentage = big.NewInt(1 << 1)
+)
+
+// updateFeesRequestAchDisputeRegionsValueNullableFields maps the wire names of UpdateFeesRequestAchDisputeRegionsValue's nullable fields (required or optional) to their field bits.
+var updateFeesRequestAchDisputeRegionsValueNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestAchDisputeRegionsValueFieldFixed,
+	"percentage": updateFeesRequestAchDisputeRegionsValueFieldPercentage,
+}
+
+type UpdateFeesRequestAchDisputeRegionsValue struct {
+	// The new amount per event in US dollars. `null` clears the custom amount.
+	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
+	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
+	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateFeesRequestAchDisputeRegionsValue) GetFixed() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.Fixed
+}
+
+func (u *UpdateFeesRequestAchDisputeRegionsValue) GetPercentage() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.Percentage
+}
+
+func (u *UpdateFeesRequestAchDisputeRegionsValue) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateFeesRequestAchDisputeRegionsValue) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetFixed sets the Fixed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestAchDisputeRegionsValue) SetFixed(fixed *float64) {
+	u.Fixed = fixed
+	u.require(updateFeesRequestAchDisputeRegionsValueFieldFixed)
+}
+
+// SetPercentage sets the Percentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestAchDisputeRegionsValue) SetPercentage(percentage *float64) {
+	u.Percentage = percentage
+	u.require(updateFeesRequestAchDisputeRegionsValueFieldPercentage)
+}
+
+func (u *UpdateFeesRequestAchDisputeRegionsValue) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateFeesRequestAchDisputeRegionsValue
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateFeesRequestAchDisputeRegionsValue(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestAchDisputeRegionsValueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateFeesRequestAchDisputeRegionsValue) MarshalJSON() ([]byte, error) {
+	type embed UpdateFeesRequestAchDisputeRegionsValue
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateFeesRequestAchDisputeRegionsValue) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateFeesRequestAchReturnFieldFixed      = big.NewInt(1 << 0)
+	updateFeesRequestAchReturnFieldPercentage = big.NewInt(1 << 1)
+	updateFeesRequestAchReturnFieldRegions    = big.NewInt(1 << 2)
+)
+
+// updateFeesRequestAchReturnNullableFields maps the wire names of UpdateFeesRequestAchReturn's nullable fields (required or optional) to their field bits.
+var updateFeesRequestAchReturnNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestAchReturnFieldFixed,
+	"percentage": updateFeesRequestAchReturnFieldPercentage,
+}
+
+// The fields of a fee the caller may change. Only the keys sent are replaced.
+type UpdateFeesRequestAchReturn struct {
+	// The new amount per event in US dollars. `null` clears the custom amount.
+	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
+	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
+	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
+	// Changes for the other regions the fee varies by, keyed by region. Only accepted on a fee whose `regions` is non-empty.
+	Regions map[string]*UpdateFeesRequestAchReturnRegionsValue `json:"regions,omitempty" url:"regions,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateFeesRequestAchReturn) GetFixed() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.Fixed
+}
+
+func (u *UpdateFeesRequestAchReturn) GetPercentage() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.Percentage
+}
+
+func (u *UpdateFeesRequestAchReturn) GetRegions() map[string]*UpdateFeesRequestAchReturnRegionsValue {
+	if u == nil {
+		return nil
+	}
+	return u.Regions
+}
+
+func (u *UpdateFeesRequestAchReturn) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateFeesRequestAchReturn) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetFixed sets the Fixed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestAchReturn) SetFixed(fixed *float64) {
+	u.Fixed = fixed
+	u.require(updateFeesRequestAchReturnFieldFixed)
+}
+
+// SetPercentage sets the Percentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestAchReturn) SetPercentage(percentage *float64) {
+	u.Percentage = percentage
+	u.require(updateFeesRequestAchReturnFieldPercentage)
+}
+
+// SetRegions sets the Regions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestAchReturn) SetRegions(regions map[string]*UpdateFeesRequestAchReturnRegionsValue) {
+	u.Regions = regions
+	u.require(updateFeesRequestAchReturnFieldRegions)
+}
+
+func (u *UpdateFeesRequestAchReturn) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateFeesRequestAchReturn
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateFeesRequestAchReturn(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestAchReturnNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateFeesRequestAchReturn) MarshalJSON() ([]byte, error) {
+	type embed UpdateFeesRequestAchReturn
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateFeesRequestAchReturn) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateFeesRequestAchReturnRegionsValueFieldFixed      = big.NewInt(1 << 0)
+	updateFeesRequestAchReturnRegionsValueFieldPercentage = big.NewInt(1 << 1)
+)
+
+// updateFeesRequestAchReturnRegionsValueNullableFields maps the wire names of UpdateFeesRequestAchReturnRegionsValue's nullable fields (required or optional) to their field bits.
+var updateFeesRequestAchReturnRegionsValueNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestAchReturnRegionsValueFieldFixed,
+	"percentage": updateFeesRequestAchReturnRegionsValueFieldPercentage,
+}
+
+type UpdateFeesRequestAchReturnRegionsValue struct {
+	// The new amount per event in US dollars. `null` clears the custom amount.
+	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
+	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
+	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateFeesRequestAchReturnRegionsValue) GetFixed() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.Fixed
+}
+
+func (u *UpdateFeesRequestAchReturnRegionsValue) GetPercentage() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.Percentage
+}
+
+func (u *UpdateFeesRequestAchReturnRegionsValue) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateFeesRequestAchReturnRegionsValue) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetFixed sets the Fixed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestAchReturnRegionsValue) SetFixed(fixed *float64) {
+	u.Fixed = fixed
+	u.require(updateFeesRequestAchReturnRegionsValueFieldFixed)
+}
+
+// SetPercentage sets the Percentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestAchReturnRegionsValue) SetPercentage(percentage *float64) {
+	u.Percentage = percentage
+	u.require(updateFeesRequestAchReturnRegionsValueFieldPercentage)
+}
+
+func (u *UpdateFeesRequestAchReturnRegionsValue) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateFeesRequestAchReturnRegionsValue
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateFeesRequestAchReturnRegionsValue(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestAchReturnRegionsValueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateFeesRequestAchReturnRegionsValue) MarshalJSON() ([]byte, error) {
+	type embed UpdateFeesRequestAchReturnRegionsValue
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateFeesRequestAchReturnRegionsValue) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
 	updateFeesRequestBankDepositFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestBankDepositFieldPercentage = big.NewInt(1 << 1)
 	updateFeesRequestBankDepositFieldRegions    = big.NewInt(1 << 2)
@@ -7385,6 +7889,510 @@ func (u *UpdateFeesRequestRevshareRegionsValue) String() string {
 }
 
 var (
+	updateFeesRequestSepaDisputeFieldFixed      = big.NewInt(1 << 0)
+	updateFeesRequestSepaDisputeFieldPercentage = big.NewInt(1 << 1)
+	updateFeesRequestSepaDisputeFieldRegions    = big.NewInt(1 << 2)
+)
+
+// updateFeesRequestSepaDisputeNullableFields maps the wire names of UpdateFeesRequestSepaDispute's nullable fields (required or optional) to their field bits.
+var updateFeesRequestSepaDisputeNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestSepaDisputeFieldFixed,
+	"percentage": updateFeesRequestSepaDisputeFieldPercentage,
+}
+
+// The fields of a fee the caller may change. Only the keys sent are replaced.
+type UpdateFeesRequestSepaDispute struct {
+	// The new amount per event in US dollars. `null` clears the custom amount.
+	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
+	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
+	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
+	// Changes for the other regions the fee varies by, keyed by region. Only accepted on a fee whose `regions` is non-empty.
+	Regions map[string]*UpdateFeesRequestSepaDisputeRegionsValue `json:"regions,omitempty" url:"regions,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateFeesRequestSepaDispute) GetFixed() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.Fixed
+}
+
+func (u *UpdateFeesRequestSepaDispute) GetPercentage() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.Percentage
+}
+
+func (u *UpdateFeesRequestSepaDispute) GetRegions() map[string]*UpdateFeesRequestSepaDisputeRegionsValue {
+	if u == nil {
+		return nil
+	}
+	return u.Regions
+}
+
+func (u *UpdateFeesRequestSepaDispute) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateFeesRequestSepaDispute) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetFixed sets the Fixed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestSepaDispute) SetFixed(fixed *float64) {
+	u.Fixed = fixed
+	u.require(updateFeesRequestSepaDisputeFieldFixed)
+}
+
+// SetPercentage sets the Percentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestSepaDispute) SetPercentage(percentage *float64) {
+	u.Percentage = percentage
+	u.require(updateFeesRequestSepaDisputeFieldPercentage)
+}
+
+// SetRegions sets the Regions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestSepaDispute) SetRegions(regions map[string]*UpdateFeesRequestSepaDisputeRegionsValue) {
+	u.Regions = regions
+	u.require(updateFeesRequestSepaDisputeFieldRegions)
+}
+
+func (u *UpdateFeesRequestSepaDispute) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateFeesRequestSepaDispute
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateFeesRequestSepaDispute(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestSepaDisputeNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateFeesRequestSepaDispute) MarshalJSON() ([]byte, error) {
+	type embed UpdateFeesRequestSepaDispute
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateFeesRequestSepaDispute) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateFeesRequestSepaDisputeRegionsValueFieldFixed      = big.NewInt(1 << 0)
+	updateFeesRequestSepaDisputeRegionsValueFieldPercentage = big.NewInt(1 << 1)
+)
+
+// updateFeesRequestSepaDisputeRegionsValueNullableFields maps the wire names of UpdateFeesRequestSepaDisputeRegionsValue's nullable fields (required or optional) to their field bits.
+var updateFeesRequestSepaDisputeRegionsValueNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestSepaDisputeRegionsValueFieldFixed,
+	"percentage": updateFeesRequestSepaDisputeRegionsValueFieldPercentage,
+}
+
+type UpdateFeesRequestSepaDisputeRegionsValue struct {
+	// The new amount per event in US dollars. `null` clears the custom amount.
+	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
+	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
+	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateFeesRequestSepaDisputeRegionsValue) GetFixed() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.Fixed
+}
+
+func (u *UpdateFeesRequestSepaDisputeRegionsValue) GetPercentage() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.Percentage
+}
+
+func (u *UpdateFeesRequestSepaDisputeRegionsValue) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateFeesRequestSepaDisputeRegionsValue) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetFixed sets the Fixed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestSepaDisputeRegionsValue) SetFixed(fixed *float64) {
+	u.Fixed = fixed
+	u.require(updateFeesRequestSepaDisputeRegionsValueFieldFixed)
+}
+
+// SetPercentage sets the Percentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestSepaDisputeRegionsValue) SetPercentage(percentage *float64) {
+	u.Percentage = percentage
+	u.require(updateFeesRequestSepaDisputeRegionsValueFieldPercentage)
+}
+
+func (u *UpdateFeesRequestSepaDisputeRegionsValue) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateFeesRequestSepaDisputeRegionsValue
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateFeesRequestSepaDisputeRegionsValue(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestSepaDisputeRegionsValueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateFeesRequestSepaDisputeRegionsValue) MarshalJSON() ([]byte, error) {
+	type embed UpdateFeesRequestSepaDisputeRegionsValue
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateFeesRequestSepaDisputeRegionsValue) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateFeesRequestSepaReturnFieldFixed      = big.NewInt(1 << 0)
+	updateFeesRequestSepaReturnFieldPercentage = big.NewInt(1 << 1)
+	updateFeesRequestSepaReturnFieldRegions    = big.NewInt(1 << 2)
+)
+
+// updateFeesRequestSepaReturnNullableFields maps the wire names of UpdateFeesRequestSepaReturn's nullable fields (required or optional) to their field bits.
+var updateFeesRequestSepaReturnNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestSepaReturnFieldFixed,
+	"percentage": updateFeesRequestSepaReturnFieldPercentage,
+}
+
+// The fields of a fee the caller may change. Only the keys sent are replaced.
+type UpdateFeesRequestSepaReturn struct {
+	// The new amount per event in US dollars. `null` clears the custom amount.
+	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
+	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
+	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
+	// Changes for the other regions the fee varies by, keyed by region. Only accepted on a fee whose `regions` is non-empty.
+	Regions map[string]*UpdateFeesRequestSepaReturnRegionsValue `json:"regions,omitempty" url:"regions,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateFeesRequestSepaReturn) GetFixed() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.Fixed
+}
+
+func (u *UpdateFeesRequestSepaReturn) GetPercentage() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.Percentage
+}
+
+func (u *UpdateFeesRequestSepaReturn) GetRegions() map[string]*UpdateFeesRequestSepaReturnRegionsValue {
+	if u == nil {
+		return nil
+	}
+	return u.Regions
+}
+
+func (u *UpdateFeesRequestSepaReturn) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateFeesRequestSepaReturn) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetFixed sets the Fixed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestSepaReturn) SetFixed(fixed *float64) {
+	u.Fixed = fixed
+	u.require(updateFeesRequestSepaReturnFieldFixed)
+}
+
+// SetPercentage sets the Percentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestSepaReturn) SetPercentage(percentage *float64) {
+	u.Percentage = percentage
+	u.require(updateFeesRequestSepaReturnFieldPercentage)
+}
+
+// SetRegions sets the Regions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestSepaReturn) SetRegions(regions map[string]*UpdateFeesRequestSepaReturnRegionsValue) {
+	u.Regions = regions
+	u.require(updateFeesRequestSepaReturnFieldRegions)
+}
+
+func (u *UpdateFeesRequestSepaReturn) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateFeesRequestSepaReturn
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateFeesRequestSepaReturn(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestSepaReturnNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateFeesRequestSepaReturn) MarshalJSON() ([]byte, error) {
+	type embed UpdateFeesRequestSepaReturn
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateFeesRequestSepaReturn) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateFeesRequestSepaReturnRegionsValueFieldFixed      = big.NewInt(1 << 0)
+	updateFeesRequestSepaReturnRegionsValueFieldPercentage = big.NewInt(1 << 1)
+)
+
+// updateFeesRequestSepaReturnRegionsValueNullableFields maps the wire names of UpdateFeesRequestSepaReturnRegionsValue's nullable fields (required or optional) to their field bits.
+var updateFeesRequestSepaReturnRegionsValueNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestSepaReturnRegionsValueFieldFixed,
+	"percentage": updateFeesRequestSepaReturnRegionsValueFieldPercentage,
+}
+
+type UpdateFeesRequestSepaReturnRegionsValue struct {
+	// The new amount per event in US dollars. `null` clears the custom amount.
+	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
+	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
+	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateFeesRequestSepaReturnRegionsValue) GetFixed() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.Fixed
+}
+
+func (u *UpdateFeesRequestSepaReturnRegionsValue) GetPercentage() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.Percentage
+}
+
+func (u *UpdateFeesRequestSepaReturnRegionsValue) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateFeesRequestSepaReturnRegionsValue) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetFixed sets the Fixed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestSepaReturnRegionsValue) SetFixed(fixed *float64) {
+	u.Fixed = fixed
+	u.require(updateFeesRequestSepaReturnRegionsValueFieldFixed)
+}
+
+// SetPercentage sets the Percentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestSepaReturnRegionsValue) SetPercentage(percentage *float64) {
+	u.Percentage = percentage
+	u.require(updateFeesRequestSepaReturnRegionsValueFieldPercentage)
+}
+
+func (u *UpdateFeesRequestSepaReturnRegionsValue) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateFeesRequestSepaReturnRegionsValue
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateFeesRequestSepaReturnRegionsValue(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestSepaReturnRegionsValueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateFeesRequestSepaReturnRegionsValue) MarshalJSON() ([]byte, error) {
+	type embed UpdateFeesRequestSepaReturnRegionsValue
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateFeesRequestSepaReturnRegionsValue) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
 	updateFeesRequestTaxCalculationFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestTaxCalculationFieldPercentage = big.NewInt(1 << 1)
 	updateFeesRequestTaxCalculationFieldRegions    = big.NewInt(1 << 2)
@@ -8394,41 +9402,49 @@ func (u *UpdateFeesRequestTransfersRegionsValue) String() string {
 
 var (
 	updateFeesRequestFieldAccountID            = big.NewInt(1 << 0)
-	updateFeesRequestFieldBankDeposit          = big.NewInt(1 << 1)
-	updateFeesRequestFieldBilling              = big.NewInt(1 << 2)
-	updateFeesRequestFieldBuyer                = big.NewInt(1 << 3)
-	updateFeesRequestFieldCardProcessing       = big.NewInt(1 << 4)
-	updateFeesRequestFieldChildMarkups         = big.NewInt(1 << 5)
-	updateFeesRequestFieldCoveredPayoutFees    = big.NewInt(1 << 6)
-	updateFeesRequestFieldCrossBorder          = big.NewInt(1 << 7)
-	updateFeesRequestFieldDispute              = big.NewInt(1 << 8)
-	updateFeesRequestFieldDisputeAlert         = big.NewInt(1 << 9)
-	updateFeesRequestFieldDisputeAlertCdrn     = big.NewInt(1 << 10)
-	updateFeesRequestFieldDisputeAlertEthoca   = big.NewInt(1 << 11)
-	updateFeesRequestFieldDisputeAlertRdr      = big.NewInt(1 << 12)
-	updateFeesRequestFieldDisputeRepresentment = big.NewInt(1 << 13)
-	updateFeesRequestFieldForeignExchange      = big.NewInt(1 << 14)
-	updateFeesRequestFieldFraudScreening       = big.NewInt(1 << 15)
-	updateFeesRequestFieldHighRisk             = big.NewInt(1 << 16)
-	updateFeesRequestFieldMarketplace          = big.NewInt(1 << 17)
-	updateFeesRequestFieldMarkups              = big.NewInt(1 << 18)
-	updateFeesRequestFieldNotes                = big.NewInt(1 << 19)
-	updateFeesRequestFieldOrchestration        = big.NewInt(1 << 20)
-	updateFeesRequestFieldPaymentMethods       = big.NewInt(1 << 21)
-	updateFeesRequestFieldPayouts              = big.NewInt(1 << 22)
-	updateFeesRequestFieldPendingAutoTopup     = big.NewInt(1 << 23)
-	updateFeesRequestFieldPlatformProcessing   = big.NewInt(1 << 24)
-	updateFeesRequestFieldPoolPayout           = big.NewInt(1 << 25)
-	updateFeesRequestFieldRevshare             = big.NewInt(1 << 26)
-	updateFeesRequestFieldTaxCalculation       = big.NewInt(1 << 27)
-	updateFeesRequestFieldTaxService           = big.NewInt(1 << 28)
-	updateFeesRequestFieldThreeDs              = big.NewInt(1 << 29)
-	updateFeesRequestFieldTransfers            = big.NewInt(1 << 30)
+	updateFeesRequestFieldAchDispute           = big.NewInt(1 << 1)
+	updateFeesRequestFieldAchReturn            = big.NewInt(1 << 2)
+	updateFeesRequestFieldBankDeposit          = big.NewInt(1 << 3)
+	updateFeesRequestFieldBilling              = big.NewInt(1 << 4)
+	updateFeesRequestFieldBuyer                = big.NewInt(1 << 5)
+	updateFeesRequestFieldCardProcessing       = big.NewInt(1 << 6)
+	updateFeesRequestFieldChildMarkups         = big.NewInt(1 << 7)
+	updateFeesRequestFieldCoveredPayoutFees    = big.NewInt(1 << 8)
+	updateFeesRequestFieldCrossBorder          = big.NewInt(1 << 9)
+	updateFeesRequestFieldDispute              = big.NewInt(1 << 10)
+	updateFeesRequestFieldDisputeAlert         = big.NewInt(1 << 11)
+	updateFeesRequestFieldDisputeAlertCdrn     = big.NewInt(1 << 12)
+	updateFeesRequestFieldDisputeAlertEthoca   = big.NewInt(1 << 13)
+	updateFeesRequestFieldDisputeAlertRdr      = big.NewInt(1 << 14)
+	updateFeesRequestFieldDisputeRepresentment = big.NewInt(1 << 15)
+	updateFeesRequestFieldForeignExchange      = big.NewInt(1 << 16)
+	updateFeesRequestFieldFraudScreening       = big.NewInt(1 << 17)
+	updateFeesRequestFieldHighRisk             = big.NewInt(1 << 18)
+	updateFeesRequestFieldMarketplace          = big.NewInt(1 << 19)
+	updateFeesRequestFieldMarkups              = big.NewInt(1 << 20)
+	updateFeesRequestFieldNotes                = big.NewInt(1 << 21)
+	updateFeesRequestFieldOrchestration        = big.NewInt(1 << 22)
+	updateFeesRequestFieldPaymentMethods       = big.NewInt(1 << 23)
+	updateFeesRequestFieldPayouts              = big.NewInt(1 << 24)
+	updateFeesRequestFieldPendingAutoTopup     = big.NewInt(1 << 25)
+	updateFeesRequestFieldPlatformProcessing   = big.NewInt(1 << 26)
+	updateFeesRequestFieldPoolPayout           = big.NewInt(1 << 27)
+	updateFeesRequestFieldRevshare             = big.NewInt(1 << 28)
+	updateFeesRequestFieldSepaDispute          = big.NewInt(1 << 29)
+	updateFeesRequestFieldSepaReturn           = big.NewInt(1 << 30)
+	updateFeesRequestFieldTaxCalculation       = big.NewInt(1 << 31)
+	updateFeesRequestFieldTaxService           = big.NewInt(1 << 32)
+	updateFeesRequestFieldThreeDs              = big.NewInt(1 << 33)
+	updateFeesRequestFieldTransfers            = big.NewInt(1 << 34)
 )
 
 type UpdateFeesRequest struct {
 	// Account ID, prefixed `biz_`.
 	AccountID string `json:"-" url:"-"`
+	// The fields of a fee the caller may change. Only the keys sent are replaced.
+	AchDispute *UpdateFeesRequestAchDispute `json:"ach_dispute,omitempty" url:"-"`
+	// The fields of a fee the caller may change. Only the keys sent are replaced.
+	AchReturn *UpdateFeesRequestAchReturn `json:"ach_return,omitempty" url:"-"`
 	// The fields of a fee the caller may change. Only the keys sent are replaced.
 	BankDeposit *UpdateFeesRequestBankDeposit `json:"bank_deposit,omitempty" url:"-"`
 	// The fields of a fee the caller may change. Only the keys sent are replaced.
@@ -8482,6 +9498,10 @@ type UpdateFeesRequest struct {
 	// The fields of a fee the caller may change. Only the keys sent are replaced.
 	Revshare *UpdateFeesRequestRevshare `json:"revshare,omitempty" url:"-"`
 	// The fields of a fee the caller may change. Only the keys sent are replaced.
+	SepaDispute *UpdateFeesRequestSepaDispute `json:"sepa_dispute,omitempty" url:"-"`
+	// The fields of a fee the caller may change. Only the keys sent are replaced.
+	SepaReturn *UpdateFeesRequestSepaReturn `json:"sepa_return,omitempty" url:"-"`
+	// The fields of a fee the caller may change. Only the keys sent are replaced.
 	TaxCalculation *UpdateFeesRequestTaxCalculation `json:"tax_calculation,omitempty" url:"-"`
 	// The fields of a fee the caller may change. Only the keys sent are replaced.
 	TaxService *UpdateFeesRequestTaxService `json:"tax_service,omitempty" url:"-"`
@@ -8508,6 +9528,20 @@ func (u *UpdateFeesRequest) require(field *big.Int) {
 func (u *UpdateFeesRequest) SetAccountID(accountID string) {
 	u.AccountID = accountID
 	u.require(updateFeesRequestFieldAccountID)
+}
+
+// SetAchDispute sets the AchDispute field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequest) SetAchDispute(achDispute *UpdateFeesRequestAchDispute) {
+	u.AchDispute = achDispute
+	u.require(updateFeesRequestFieldAchDispute)
+}
+
+// SetAchReturn sets the AchReturn field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequest) SetAchReturn(achReturn *UpdateFeesRequestAchReturn) {
+	u.AchReturn = achReturn
+	u.require(updateFeesRequestFieldAchReturn)
 }
 
 // SetBankDeposit sets the BankDeposit field and marks it as non-optional;
@@ -8690,6 +9724,20 @@ func (u *UpdateFeesRequest) SetPoolPayout(poolPayout *UpdateFeesRequestPoolPayou
 func (u *UpdateFeesRequest) SetRevshare(revshare *UpdateFeesRequestRevshare) {
 	u.Revshare = revshare
 	u.require(updateFeesRequestFieldRevshare)
+}
+
+// SetSepaDispute sets the SepaDispute field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequest) SetSepaDispute(sepaDispute *UpdateFeesRequestSepaDispute) {
+	u.SepaDispute = sepaDispute
+	u.require(updateFeesRequestFieldSepaDispute)
+}
+
+// SetSepaReturn sets the SepaReturn field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequest) SetSepaReturn(sepaReturn *UpdateFeesRequestSepaReturn) {
+	u.SepaReturn = sepaReturn
+	u.require(updateFeesRequestFieldSepaReturn)
 }
 
 // SetTaxCalculation sets the TaxCalculation field and marks it as non-optional;
