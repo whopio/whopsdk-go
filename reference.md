@@ -20365,7 +20365,7 @@ client.ExternalAccounts.List(
 <dl>
 <dd>
 
-Creates or returns a Whop-managed Facebook page or TikTok account for an account.
+Creates or returns a Whop-managed Facebook page or TikTok account for an account, or connects the account's existing Klaviyo account with a private API key.
 </dd>
 </dl>
 </dd>
@@ -20409,7 +20409,15 @@ client.ExternalAccounts.Create(
 <dl>
 <dd>
 
-**platform:** `whopsdk.CreateExternalAccountsRequestPlatform` — The platform to create the external account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes.
+**apiKey:** `*string` — A private API key for the account on the platform. Required for `klaviyo`, which needs read access to Accounts; not accepted for other platforms. Whop checks the key with the platform before connecting and never returns it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**platform:** `whopsdk.CreateExternalAccountsRequestPlatform` — The platform to create the external account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes. `klaviyo` connects the account's existing Klaviyo account with the `api_key` you pass.
     
 </dd>
 </dl>
@@ -37754,7 +37762,15 @@ client.SocialAccounts.Create(
 <dl>
 <dd>
 
-**platform:** `whopsdk.CreateSocialAccountsRequestPlatform` — The platform to create the external account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes.
+**apiKey:** `*string` — A private API key for the account on the platform. Required for `klaviyo`, which needs read access to Accounts; not accepted for other platforms. Whop checks the key with the platform before connecting and never returns it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**platform:** `whopsdk.CreateSocialAccountsRequestPlatform` — The platform to create the external account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes. `klaviyo` connects the account's existing Klaviyo account with the `api_key` you pass.
     
 </dd>
 </dl>

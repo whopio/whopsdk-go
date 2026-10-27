@@ -159,13 +159,16 @@ func (c *ConnectSocialAccountsRequest) MarshalJSON() ([]byte, error) {
 
 var (
 	createSocialAccountsRequestFieldAccountID = big.NewInt(1 << 0)
-	createSocialAccountsRequestFieldPlatform  = big.NewInt(1 << 1)
+	createSocialAccountsRequestFieldAPIKey    = big.NewInt(1 << 1)
+	createSocialAccountsRequestFieldPlatform  = big.NewInt(1 << 2)
 )
 
 type CreateSocialAccountsRequest struct {
 	// The Account (biz_ identifier) to create the external account for. An account-scoped API key may omit this to default to its own account. Account API keys cannot update their own account's branding through Update Account; use a user-authenticated path.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
-	// The platform to create the external account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes.
+	// A private API key for the account on the platform. Required for `klaviyo`, which needs read access to Accounts; not accepted for other platforms. Whop checks the key with the platform before connecting and never returns it.
+	APIKey *string `json:"api_key,omitempty" url:"-"`
+	// The platform to create the external account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes. `klaviyo` connects the account's existing Klaviyo account with the `api_key` you pass.
 	Platform CreateSocialAccountsRequestPlatform `json:"platform" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -186,6 +189,13 @@ func (c *CreateSocialAccountsRequest) require(field *big.Int) {
 func (c *CreateSocialAccountsRequest) SetAccountID(accountID *string) {
 	c.AccountID = accountID
 	c.require(createSocialAccountsRequestFieldAccountID)
+}
+
+// SetAPIKey sets the APIKey field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateSocialAccountsRequest) SetAPIKey(apiKey *string) {
+	c.APIKey = apiKey
+	c.require(createSocialAccountsRequestFieldAPIKey)
 }
 
 // SetPlatform sets the Platform field and marks it as non-optional;
@@ -715,7 +725,7 @@ type SocialAccount struct {
 	Scopes            []string `json:"scopes" url:"scopes"`
 	// The URL where the social account can be accessed on the platform. Null while a Whop-owned account is still being provisioned.
 	URL *string `json:"url,omitempty" url:"url,omitempty"`
-	// The username of the social account on the platform. Null while a Whop-owned account is still being provisioned.
+	// The username of the social account on the platform. Null while a Whop-owned account is still being provisioned, and on platforms without usernames, such as Klaviyo.
 	Username *string `json:"username,omitempty" url:"username,omitempty"`
 	// Whether the social account is verified on the platform.
 	Verified bool `json:"verified" url:"verified"`
@@ -1491,6 +1501,7 @@ const (
 	SocialAccountParentPlatformTelegram  SocialAccountParentPlatform = "telegram"
 	SocialAccountParentPlatformLinkedin  SocialAccountParentPlatform = "linkedin"
 	SocialAccountParentPlatformSnapchat  SocialAccountParentPlatform = "snapchat"
+	SocialAccountParentPlatformKlaviyo   SocialAccountParentPlatform = "klaviyo"
 )
 
 func NewSocialAccountParentPlatformFromString(s string) (SocialAccountParentPlatform, error) {
@@ -1513,6 +1524,8 @@ func NewSocialAccountParentPlatformFromString(s string) (SocialAccountParentPlat
 		return SocialAccountParentPlatformLinkedin, nil
 	case "snapchat":
 		return SocialAccountParentPlatformSnapchat, nil
+	case "klaviyo":
+		return SocialAccountParentPlatformKlaviyo, nil
 	}
 	var t SocialAccountParentPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1561,6 +1574,7 @@ const (
 	SocialAccountPlatformTelegram  SocialAccountPlatform = "telegram"
 	SocialAccountPlatformLinkedin  SocialAccountPlatform = "linkedin"
 	SocialAccountPlatformSnapchat  SocialAccountPlatform = "snapchat"
+	SocialAccountPlatformKlaviyo   SocialAccountPlatform = "klaviyo"
 )
 
 func NewSocialAccountPlatformFromString(s string) (SocialAccountPlatform, error) {
@@ -1583,6 +1597,8 @@ func NewSocialAccountPlatformFromString(s string) (SocialAccountPlatform, error)
 		return SocialAccountPlatformLinkedin, nil
 	case "snapchat":
 		return SocialAccountPlatformSnapchat, nil
+	case "klaviyo":
+		return SocialAccountPlatformKlaviyo, nil
 	}
 	var t SocialAccountPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -2117,12 +2133,13 @@ func (c *ConnectSocialAccountsResponse) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The platform to create the external account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes.
+// The platform to create the external account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes. `klaviyo` connects the account's existing Klaviyo account with the `api_key` you pass.
 type CreateSocialAccountsRequestPlatform string
 
 const (
 	CreateSocialAccountsRequestPlatformFacebook CreateSocialAccountsRequestPlatform = "facebook"
 	CreateSocialAccountsRequestPlatformTiktok   CreateSocialAccountsRequestPlatform = "tiktok"
+	CreateSocialAccountsRequestPlatformKlaviyo  CreateSocialAccountsRequestPlatform = "klaviyo"
 )
 
 func NewCreateSocialAccountsRequestPlatformFromString(s string) (CreateSocialAccountsRequestPlatform, error) {
@@ -2131,6 +2148,8 @@ func NewCreateSocialAccountsRequestPlatformFromString(s string) (CreateSocialAcc
 		return CreateSocialAccountsRequestPlatformFacebook, nil
 	case "tiktok":
 		return CreateSocialAccountsRequestPlatformTiktok, nil
+	case "klaviyo":
+		return CreateSocialAccountsRequestPlatformKlaviyo, nil
 	}
 	var t CreateSocialAccountsRequestPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -2384,6 +2403,7 @@ const (
 	ListSocialAccountsRequestPlatformTelegram  ListSocialAccountsRequestPlatform = "telegram"
 	ListSocialAccountsRequestPlatformLinkedin  ListSocialAccountsRequestPlatform = "linkedin"
 	ListSocialAccountsRequestPlatformSnapchat  ListSocialAccountsRequestPlatform = "snapchat"
+	ListSocialAccountsRequestPlatformKlaviyo   ListSocialAccountsRequestPlatform = "klaviyo"
 )
 
 func NewListSocialAccountsRequestPlatformFromString(s string) (ListSocialAccountsRequestPlatform, error) {
@@ -2406,6 +2426,8 @@ func NewListSocialAccountsRequestPlatformFromString(s string) (ListSocialAccount
 		return ListSocialAccountsRequestPlatformLinkedin, nil
 	case "snapchat":
 		return ListSocialAccountsRequestPlatformSnapchat, nil
+	case "klaviyo":
+		return ListSocialAccountsRequestPlatformKlaviyo, nil
 	}
 	var t ListSocialAccountsRequestPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -2438,6 +2460,7 @@ type ListSocialAccountsRequestTrustLevel string
 
 const (
 	ListSocialAccountsRequestTrustLevelOauth      ListSocialAccountsRequestTrustLevel = "oauth"
+	ListSocialAccountsRequestTrustLevelAPIKey     ListSocialAccountsRequestTrustLevel = "api_key"
 	ListSocialAccountsRequestTrustLevelVerified   ListSocialAccountsRequestTrustLevel = "verified"
 	ListSocialAccountsRequestTrustLevelAuthorized ListSocialAccountsRequestTrustLevel = "authorized"
 	ListSocialAccountsRequestTrustLevelClaimed    ListSocialAccountsRequestTrustLevel = "claimed"
@@ -2448,6 +2471,8 @@ func NewListSocialAccountsRequestTrustLevelFromString(s string) (ListSocialAccou
 	switch s {
 	case "oauth":
 		return ListSocialAccountsRequestTrustLevelOauth, nil
+	case "api_key":
+		return ListSocialAccountsRequestTrustLevelAPIKey, nil
 	case "verified":
 		return ListSocialAccountsRequestTrustLevelVerified, nil
 	case "authorized":
