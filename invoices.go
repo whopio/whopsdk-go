@@ -46,7 +46,7 @@ type CreateInvoicesRequest struct {
 	MemberID *string `json:"member_id,omitempty" url:"-"`
 	// Up to 50 caller-owned string key/value pairs.
 	Metadata map[string]string `json:"metadata,omitempty" url:"-"`
-	// A saved payment method belonging to the member. Issuing the invoice charges it.
+	// A saved payment method belonging to the member, prefixed `payt_`. Sending the invoice emails it now and charges this method on `due_at`, or right away when there is no `due_at` or it has passed. Issuing the invoice without sending it charges right away.
 	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
 	// Email addresses saved for invoice delivery, independent of the billed customer. Saving them sends no email. Defaults to the customer email when omitted on create. Can be updated on draft, open, or uncollectible invoices.
 	RecipientEmails []string `json:"recipient_emails,omitempty" url:"-"`
@@ -518,29 +518,31 @@ var (
 	invoiceFieldPaidAt             = big.NewInt(1 << 19)
 	invoiceFieldPaymentMethodID    = big.NewInt(1 << 20)
 	invoiceFieldRecipientEmails    = big.NewInt(1 << 21)
-	invoiceFieldScheduledSendAt    = big.NewInt(1 << 22)
-	invoiceFieldStatus             = big.NewInt(1 << 23)
-	invoiceFieldSubtotal           = big.NewInt(1 << 24)
-	invoiceFieldTaxAmount          = big.NewInt(1 << 25)
-	invoiceFieldTotal              = big.NewInt(1 << 26)
-	invoiceFieldTotalsStatus       = big.NewInt(1 << 27)
-	invoiceFieldUpdatedAt          = big.NewInt(1 << 28)
+	invoiceFieldScheduledChargeAt  = big.NewInt(1 << 22)
+	invoiceFieldScheduledSendAt    = big.NewInt(1 << 23)
+	invoiceFieldStatus             = big.NewInt(1 << 24)
+	invoiceFieldSubtotal           = big.NewInt(1 << 25)
+	invoiceFieldTaxAmount          = big.NewInt(1 << 26)
+	invoiceFieldTotal              = big.NewInt(1 << 27)
+	invoiceFieldTotalsStatus       = big.NewInt(1 << 28)
+	invoiceFieldUpdatedAt          = big.NewInt(1 << 29)
 )
 
 // invoiceNullableFields maps the wire names of Invoice's nullable fields (required or optional) to their field bits.
 var invoiceNullableFields = map[string]*big.Int{
-	"billing_address":    invoiceFieldBillingAddress,
-	"checkout_link":      invoiceFieldCheckoutLink,
-	"customer_name":      invoiceFieldCustomerName,
-	"due_at":             invoiceFieldDueAt,
-	"email_address":      invoiceFieldEmailAddress,
-	"invoice_prefix":     invoiceFieldInvoicePrefix,
-	"mailing_address_id": invoiceFieldMailingAddressID,
-	"member_id":          invoiceFieldMemberID,
-	"paid_at":            invoiceFieldPaidAt,
-	"payment_method_id":  invoiceFieldPaymentMethodID,
-	"scheduled_send_at":  invoiceFieldScheduledSendAt,
-	"tax_amount":         invoiceFieldTaxAmount,
+	"billing_address":     invoiceFieldBillingAddress,
+	"checkout_link":       invoiceFieldCheckoutLink,
+	"customer_name":       invoiceFieldCustomerName,
+	"due_at":              invoiceFieldDueAt,
+	"email_address":       invoiceFieldEmailAddress,
+	"invoice_prefix":      invoiceFieldInvoicePrefix,
+	"mailing_address_id":  invoiceFieldMailingAddressID,
+	"member_id":           invoiceFieldMemberID,
+	"paid_at":             invoiceFieldPaidAt,
+	"payment_method_id":   invoiceFieldPaymentMethodID,
+	"scheduled_charge_at": invoiceFieldScheduledChargeAt,
+	"scheduled_send_at":   invoiceFieldScheduledSendAt,
+	"tax_amount":          invoiceFieldTaxAmount,
 }
 
 type Invoice struct {
@@ -550,30 +552,32 @@ type Invoice struct {
 	BuyerFeeAmount     *Money          `json:"buyer_fee_amount" url:"buyer_fee_amount"`
 	BuyerFeePercentage float64         `json:"buyer_fee_percentage" url:"buyer_fee_percentage"`
 	// A signed link that opens this invoice in a checkout session so the buyer can pay it: pass it as `link` to `POST /checkout_sessions`. Present once the invoice is issued and open; null while it is a draft, once it is paid or void, for an invoice with no product, and when you lack `payment:charge`.
-	CheckoutLink     *string             `json:"checkout_link,omitempty" url:"checkout_link,omitempty"`
-	CreatedAt        string              `json:"created_at" url:"created_at"`
-	CustomerName     *string             `json:"customer_name,omitempty" url:"customer_name,omitempty"`
-	DueAt            *string             `json:"due_at,omitempty" url:"due_at,omitempty"`
-	EmailAddress     *string             `json:"email_address,omitempty" url:"email_address,omitempty"`
-	ID               string              `json:"id" url:"id"`
-	InvoicePrefix    *string             `json:"invoice_prefix,omitempty" url:"invoice_prefix,omitempty"`
-	LineItems        []*InvoiceLineItem  `json:"line_items" url:"line_items"`
-	MailingAddressID *string             `json:"mailing_address_id,omitempty" url:"mailing_address_id,omitempty"`
-	MemberID         *string             `json:"member_id,omitempty" url:"member_id,omitempty"`
-	Metadata         map[string]string   `json:"metadata" url:"metadata"`
-	Number           string              `json:"number" url:"number"`
-	Object           InvoiceObject       `json:"object" url:"object"`
-	Overdue          bool                `json:"overdue" url:"overdue"`
-	PaidAt           *string             `json:"paid_at,omitempty" url:"paid_at,omitempty"`
-	PaymentMethodID  *string             `json:"payment_method_id,omitempty" url:"payment_method_id,omitempty"`
-	RecipientEmails  []string            `json:"recipient_emails" url:"recipient_emails"`
-	ScheduledSendAt  *string             `json:"scheduled_send_at,omitempty" url:"scheduled_send_at,omitempty"`
-	Status           InvoiceStatus       `json:"status" url:"status"`
-	Subtotal         *Money              `json:"subtotal" url:"subtotal"`
-	TaxAmount        *Money              `json:"tax_amount,omitempty" url:"tax_amount,omitempty"`
-	Total            *Money              `json:"total" url:"total"`
-	TotalsStatus     InvoiceTotalsStatus `json:"totals_status" url:"totals_status"`
-	UpdatedAt        string              `json:"updated_at" url:"updated_at"`
+	CheckoutLink     *string            `json:"checkout_link,omitempty" url:"checkout_link,omitempty"`
+	CreatedAt        string             `json:"created_at" url:"created_at"`
+	CustomerName     *string            `json:"customer_name,omitempty" url:"customer_name,omitempty"`
+	DueAt            *string            `json:"due_at,omitempty" url:"due_at,omitempty"`
+	EmailAddress     *string            `json:"email_address,omitempty" url:"email_address,omitempty"`
+	ID               string             `json:"id" url:"id"`
+	InvoicePrefix    *string            `json:"invoice_prefix,omitempty" url:"invoice_prefix,omitempty"`
+	LineItems        []*InvoiceLineItem `json:"line_items" url:"line_items"`
+	MailingAddressID *string            `json:"mailing_address_id,omitempty" url:"mailing_address_id,omitempty"`
+	MemberID         *string            `json:"member_id,omitempty" url:"member_id,omitempty"`
+	Metadata         map[string]string  `json:"metadata" url:"metadata"`
+	Number           string             `json:"number" url:"number"`
+	Object           InvoiceObject      `json:"object" url:"object"`
+	Overdue          bool               `json:"overdue" url:"overdue"`
+	PaidAt           *string            `json:"paid_at,omitempty" url:"paid_at,omitempty"`
+	PaymentMethodID  *string            `json:"payment_method_id,omitempty" url:"payment_method_id,omitempty"`
+	RecipientEmails  []string           `json:"recipient_emails" url:"recipient_emails"`
+	// When the invoice's saved payment method will be charged, as an ISO 8601 timestamp. Set to `due_at` when an invoice with a `payment_method_id` is sent before it is due; `null` otherwise, once the charge starts, and once the invoice is paid, void, or uncollectible.
+	ScheduledChargeAt *string             `json:"scheduled_charge_at,omitempty" url:"scheduled_charge_at,omitempty"`
+	ScheduledSendAt   *string             `json:"scheduled_send_at,omitempty" url:"scheduled_send_at,omitempty"`
+	Status            InvoiceStatus       `json:"status" url:"status"`
+	Subtotal          *Money              `json:"subtotal" url:"subtotal"`
+	TaxAmount         *Money              `json:"tax_amount,omitempty" url:"tax_amount,omitempty"`
+	Total             *Money              `json:"total" url:"total"`
+	TotalsStatus      InvoiceTotalsStatus `json:"totals_status" url:"totals_status"`
+	UpdatedAt         string              `json:"updated_at" url:"updated_at"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -734,6 +738,13 @@ func (i *Invoice) GetRecipientEmails() []string {
 		return nil
 	}
 	return i.RecipientEmails
+}
+
+func (i *Invoice) GetScheduledChargeAt() *string {
+	if i == nil {
+		return nil
+	}
+	return i.ScheduledChargeAt
 }
 
 func (i *Invoice) GetScheduledSendAt() *string {
@@ -953,6 +964,13 @@ func (i *Invoice) SetPaymentMethodID(paymentMethodID *string) {
 func (i *Invoice) SetRecipientEmails(recipientEmails []string) {
 	i.RecipientEmails = recipientEmails
 	i.require(invoiceFieldRecipientEmails)
+}
+
+// SetScheduledChargeAt sets the ScheduledChargeAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *Invoice) SetScheduledChargeAt(scheduledChargeAt *string) {
+	i.ScheduledChargeAt = scheduledChargeAt
+	i.require(invoiceFieldScheduledChargeAt)
 }
 
 // SetScheduledSendAt sets the ScheduledSendAt field and marks it as non-optional;
@@ -5911,7 +5929,7 @@ type UpdateInvoicesRequest struct {
 	MemberID *string `json:"member_id,omitempty" url:"-"`
 	// Up to 50 caller-owned string key/value pairs.
 	Metadata map[string]string `json:"metadata,omitempty" url:"-"`
-	// A saved payment method belonging to the member. Issuing the invoice charges it.
+	// A saved payment method belonging to the member, prefixed `payt_`. Sending the invoice emails it now and charges this method on `due_at`, or right away when there is no `due_at` or it has passed. Issuing the invoice without sending it charges right away.
 	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
 	// Email addresses saved for invoice delivery, independent of the billed customer. Saving them sends no email. Defaults to the customer email when omitted on create. Can be updated on draft, open, or uncollectible invoices.
 	RecipientEmails []string `json:"recipient_emails,omitempty" url:"-"`
