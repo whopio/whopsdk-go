@@ -3212,6 +3212,13 @@ func TestEnumCreateExportsRequestResource(t *testing.T) {
 		assert.Equal(t, CreateExportsRequestResource("products"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_receipt_invoices", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateExportsRequestResourceFromString("receipt_invoices")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateExportsRequestResource("receipt_invoices"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_resolution_center_cases", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewCreateExportsRequestResourceFromString("resolution_center_cases")
@@ -3477,6 +3484,13 @@ func TestEnumExportResource(t *testing.T) {
 		val, err := NewExportResourceFromString("products")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ExportResource("products"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_receipt_invoices", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExportResourceFromString("receipt_invoices")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExportResource("receipt_invoices"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_resolution_center_cases", func(t *testing.T) {
@@ -3859,6 +3873,13 @@ func TestEnumListExportsRequestResource(t *testing.T) {
 		val, err := NewListExportsRequestResourceFromString("products")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListExportsRequestResource("products"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_receipt_invoices", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListExportsRequestResourceFromString("receipt_invoices")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListExportsRequestResource("receipt_invoices"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_resolution_center_cases", func(t *testing.T) {

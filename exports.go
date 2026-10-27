@@ -456,6 +456,7 @@ const (
 	ExportResourcePeople                 ExportResource = "people"
 	ExportResourcePlans                  ExportResource = "plans"
 	ExportResourceProducts               ExportResource = "products"
+	ExportResourceReceiptInvoices        ExportResource = "receipt_invoices"
 	ExportResourceResolutionCenterCases  ExportResource = "resolution_center_cases"
 	ExportResourceShipments              ExportResource = "shipments"
 	ExportResourceSocialAccounts         ExportResource = "social_accounts"
@@ -516,6 +517,8 @@ func NewExportResourceFromString(s string) (ExportResource, error) {
 		return ExportResourcePlans, nil
 	case "products":
 		return ExportResourceProducts, nil
+	case "receipt_invoices":
+		return ExportResourceReceiptInvoices, nil
 	case "resolution_center_cases":
 		return ExportResourceResolutionCenterCases, nil
 	case "shipments":
@@ -619,6 +622,7 @@ const (
 	CreateExportsRequestResourcePeople                 CreateExportsRequestResource = "people"
 	CreateExportsRequestResourcePlans                  CreateExportsRequestResource = "plans"
 	CreateExportsRequestResourceProducts               CreateExportsRequestResource = "products"
+	CreateExportsRequestResourceReceiptInvoices        CreateExportsRequestResource = "receipt_invoices"
 	CreateExportsRequestResourceResolutionCenterCases  CreateExportsRequestResource = "resolution_center_cases"
 	CreateExportsRequestResourceShipments              CreateExportsRequestResource = "shipments"
 	CreateExportsRequestResourceSocialAccounts         CreateExportsRequestResource = "social_accounts"
@@ -677,6 +681,8 @@ func NewCreateExportsRequestResourceFromString(s string) (CreateExportsRequestRe
 		return CreateExportsRequestResourcePlans, nil
 	case "products":
 		return CreateExportsRequestResourceProducts, nil
+	case "receipt_invoices":
+		return CreateExportsRequestResourceReceiptInvoices, nil
 	case "resolution_center_cases":
 		return CreateExportsRequestResourceResolutionCenterCases, nil
 	case "shipments":
@@ -784,6 +790,7 @@ const (
 	ListExportsRequestResourcePeople                 ListExportsRequestResource = "people"
 	ListExportsRequestResourcePlans                  ListExportsRequestResource = "plans"
 	ListExportsRequestResourceProducts               ListExportsRequestResource = "products"
+	ListExportsRequestResourceReceiptInvoices        ListExportsRequestResource = "receipt_invoices"
 	ListExportsRequestResourceResolutionCenterCases  ListExportsRequestResource = "resolution_center_cases"
 	ListExportsRequestResourceShipments              ListExportsRequestResource = "shipments"
 	ListExportsRequestResourceSocialAccounts         ListExportsRequestResource = "social_accounts"
@@ -844,6 +851,8 @@ func NewListExportsRequestResourceFromString(s string) (ListExportsRequestResour
 		return ListExportsRequestResourcePlans, nil
 	case "products":
 		return ListExportsRequestResourceProducts, nil
+	case "receipt_invoices":
+		return ListExportsRequestResourceReceiptInvoices, nil
 	case "resolution_center_cases":
 		return ListExportsRequestResourceResolutionCenterCases, nil
 	case "shipments":
