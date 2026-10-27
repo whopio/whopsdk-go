@@ -95,16 +95,19 @@ func (a AccessPassTypes) Ptr() *AccessPassTypes {
 }
 
 var (
-	accountBalanceBreakdownFieldAvailable          = big.NewInt(1 << 0)
-	accountBalanceBreakdownFieldInTransit          = big.NewInt(1 << 1)
-	accountBalanceBreakdownFieldPending            = big.NewInt(1 << 2)
-	accountBalanceBreakdownFieldPendingSettlements = big.NewInt(1 << 3)
-	accountBalanceBreakdownFieldReserve            = big.NewInt(1 << 4)
+	accountBalanceBreakdownFieldAvailable           = big.NewInt(1 << 0)
+	accountBalanceBreakdownFieldFinishingSettlement = big.NewInt(1 << 1)
+	accountBalanceBreakdownFieldInTransit           = big.NewInt(1 << 2)
+	accountBalanceBreakdownFieldPending             = big.NewInt(1 << 3)
+	accountBalanceBreakdownFieldPendingSettlements  = big.NewInt(1 << 4)
+	accountBalanceBreakdownFieldReserve             = big.NewInt(1 << 5)
 )
 
 type AccountBalanceBreakdown struct {
 	// Amount you can spend, send, or withdraw now, in native units, as a decimal string.
 	Available string `json:"available" url:"available"`
+	// The part of `pending` that has already settled and is waiting to move into the account's crypto wallet or Whop Card, where it becomes `available`. The move usually starts within the hour; while it runs, the amount is reported in `in_transit` instead. Money moved only to top up the account's retained minimum balance is not included. In native units, as a decimal string.
+	FinishingSettlement string `json:"finishing_settlement" url:"finishing_settlement"`
 	// Amount moving between the account's own destinations, such as a card top-up. In native units, as a decimal string.
 	InTransit string `json:"in_transit" url:"in_transit"`
 	// Amount from recent payments still settling, in native units, as a decimal string.
@@ -125,6 +128,13 @@ func (a *AccountBalanceBreakdown) GetAvailable() string {
 		return ""
 	}
 	return a.Available
+}
+
+func (a *AccountBalanceBreakdown) GetFinishingSettlement() string {
+	if a == nil {
+		return ""
+	}
+	return a.FinishingSettlement
 }
 
 func (a *AccountBalanceBreakdown) GetInTransit() string {
@@ -176,6 +186,13 @@ func (a *AccountBalanceBreakdown) require(field *big.Int) {
 func (a *AccountBalanceBreakdown) SetAvailable(available string) {
 	a.Available = available
 	a.require(accountBalanceBreakdownFieldAvailable)
+}
+
+// SetFinishingSettlement sets the FinishingSettlement field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountBalanceBreakdown) SetFinishingSettlement(finishingSettlement string) {
+	a.FinishingSettlement = finishingSettlement
+	a.require(accountBalanceBreakdownFieldFinishingSettlement)
 }
 
 // SetInTransit sets the InTransit field and marks it as non-optional;
