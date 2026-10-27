@@ -12289,6 +12289,13 @@ func TestEnumAdCampaignDeliveryStatus(t *testing.T) {
 		assert.Equal(t, AdCampaignDeliveryStatus("paused"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_in_review", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAdCampaignDeliveryStatusFromString("in_review")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AdCampaignDeliveryStatus("in_review"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_learning", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewAdCampaignDeliveryStatusFromString("learning")
@@ -13348,6 +13355,13 @@ func TestEnumPostAdCampaignPaymentFailedPayloadDataDeliveryStatus(t *testing.T) 
 		assert.Equal(t, PostAdCampaignPaymentFailedPayloadDataDeliveryStatus("paused"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_in_review", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostAdCampaignPaymentFailedPayloadDataDeliveryStatusFromString("in_review")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostAdCampaignPaymentFailedPayloadDataDeliveryStatus("in_review"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_learning", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewPostAdCampaignPaymentFailedPayloadDataDeliveryStatusFromString("learning")
@@ -13854,6 +13868,13 @@ func TestEnumPostAdCampaignUpdatedPayloadDataDeliveryStatus(t *testing.T) {
 		val, err := NewPostAdCampaignUpdatedPayloadDataDeliveryStatusFromString("paused")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, PostAdCampaignUpdatedPayloadDataDeliveryStatus("paused"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_in_review", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostAdCampaignUpdatedPayloadDataDeliveryStatusFromString("in_review")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostAdCampaignUpdatedPayloadDataDeliveryStatus("in_review"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_learning", func(t *testing.T) {
