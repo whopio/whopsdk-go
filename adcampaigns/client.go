@@ -202,7 +202,7 @@ func (c *Client) Delete(
 	return response.Body, nil
 }
 
-// Updates an ad campaign's settings, or launches a draft campaign by setting `status` to `active`. The objective and desired cost per result are fixed at creation and cannot be changed.
+// Updates an ad campaign's settings, or launches a draft campaign by setting `status` to `active`. The objective is fixed at creation and cannot be changed.
 //
 // Example:
 //
