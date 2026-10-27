@@ -761,13 +761,16 @@ func (r *RefundPaymentsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	resumePaymentsRequestFieldPaymentID = big.NewInt(1 << 0)
-	resumePaymentsRequestFieldReturnURL = big.NewInt(1 << 1)
+	resumePaymentsRequestFieldPaymentID    = big.NewInt(1 << 0)
+	resumePaymentsRequestFieldClientSecret = big.NewInt(1 << 1)
+	resumePaymentsRequestFieldReturnURL    = big.NewInt(1 << 2)
 )
 
 type ResumePaymentsRequest struct {
 	// The unique identifier of the payment.
 	PaymentID string `json:"-" url:"-"`
+	// The payment's own `client_secret`, for a buyer without a token.
+	ClientSecret *string `json:"client_secret,omitempty" url:"-"`
 	// Where the buyer continues after completing an off-site step. Must be an absolute https URL without credentials (http is allowed for localhost), at most 2,048 characters. Defaults to Whop's hosted verification page. Ignored when the payment is not waiting on authentication.
 	ReturnURL *string `json:"return_url,omitempty" url:"-"`
 
@@ -789,6 +792,13 @@ func (r *ResumePaymentsRequest) require(field *big.Int) {
 func (r *ResumePaymentsRequest) SetPaymentID(paymentID string) {
 	r.PaymentID = paymentID
 	r.require(resumePaymentsRequestFieldPaymentID)
+}
+
+// SetClientSecret sets the ClientSecret field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResumePaymentsRequest) SetClientSecret(clientSecret *string) {
+	r.ClientSecret = clientSecret
+	r.require(resumePaymentsRequestFieldClientSecret)
 }
 
 // SetReturnURL sets the ReturnURL field and marks it as non-optional;
@@ -848,12 +858,15 @@ func (r *RetrievePaymentsRequest) SetID(id string) {
 }
 
 var (
-	retrieveStatusPaymentsRequestFieldPaymentID = big.NewInt(1 << 0)
+	retrieveStatusPaymentsRequestFieldPaymentID    = big.NewInt(1 << 0)
+	retrieveStatusPaymentsRequestFieldClientSecret = big.NewInt(1 << 1)
 )
 
 type RetrieveStatusPaymentsRequest struct {
 	// The unique identifier of the payment.
 	PaymentID string `json:"-" url:"-"`
+	// The payment's own `client_secret`, for a caller without a secret key.
+	ClientSecret *string `json:"-" url:"client_secret,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -873,6 +886,13 @@ func (r *RetrieveStatusPaymentsRequest) require(field *big.Int) {
 func (r *RetrieveStatusPaymentsRequest) SetPaymentID(paymentID string) {
 	r.PaymentID = paymentID
 	r.require(retrieveStatusPaymentsRequestFieldPaymentID)
+}
+
+// SetClientSecret sets the ClientSecret field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatusPaymentsRequest) SetClientSecret(clientSecret *string) {
+	r.ClientSecret = clientSecret
+	r.require(retrieveStatusPaymentsRequestFieldClientSecret)
 }
 
 var (
@@ -9363,13 +9383,16 @@ func (u *UpdatePaymentsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	updateReturnURLPaymentsRequestFieldPaymentID = big.NewInt(1 << 0)
-	updateReturnURLPaymentsRequestFieldReturnURL = big.NewInt(1 << 1)
+	updateReturnURLPaymentsRequestFieldPaymentID    = big.NewInt(1 << 0)
+	updateReturnURLPaymentsRequestFieldClientSecret = big.NewInt(1 << 1)
+	updateReturnURLPaymentsRequestFieldReturnURL    = big.NewInt(1 << 2)
 )
 
 type UpdateReturnURLPaymentsRequest struct {
 	// The unique identifier of the payment.
 	PaymentID string `json:"-" url:"-"`
+	// The payment's own `client_secret`, for a caller without a secret key.
+	ClientSecret *string `json:"client_secret,omitempty" url:"-"`
 	// Where the buyer continues after completing an off-site step. Must be an absolute https URL without credentials (http is allowed for localhost), at most 2,048 characters.
 	ReturnURL string `json:"return_url" url:"-"`
 
@@ -9391,6 +9414,13 @@ func (u *UpdateReturnURLPaymentsRequest) require(field *big.Int) {
 func (u *UpdateReturnURLPaymentsRequest) SetPaymentID(paymentID string) {
 	u.PaymentID = paymentID
 	u.require(updateReturnURLPaymentsRequestFieldPaymentID)
+}
+
+// SetClientSecret sets the ClientSecret field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateReturnURLPaymentsRequest) SetClientSecret(clientSecret *string) {
+	u.ClientSecret = clientSecret
+	u.require(updateReturnURLPaymentsRequestFieldClientSecret)
 }
 
 // SetReturnURL sets the ReturnURL field and marks it as non-optional;

@@ -215,6 +215,13 @@ func (r *RawClient) RetrieveStatus(
 		baseURL+"/setup_intents/%v/status",
 		request.SetupIntentID,
 	)
+	queryParams, err := internal.QueryValues(request)
+	if err != nil {
+		return nil, err
+	}
+	if len(queryParams) > 0 {
+		endpointURL += "?" + queryParams.Encode()
+	}
 	headers := internal.MergeHeaders(
 		r.options.ToHeader(),
 		options.ToHeader(),
