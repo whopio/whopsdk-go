@@ -1778,7 +1778,7 @@ var createInvoicesRequestItemsItemVariantNullableFields = map[string]*big.Int{
 
 // Find or create a variant inline by its attributes, using the payment API properties. Requires plan:create.
 type CreateInvoicesRequestItemsItemVariant struct {
-	// Whether more than one unit can be purchased in an order.
+	// Whether more than one unit can be purchased in an order. Renewal variants cannot enable it. When `false`, checkouts, carts, and invoices reject a quantity above 1.
 	AllowMultipleQuantity *bool `json:"allow_multiple_quantity,omitempty" url:"allow_multiple_quantity,omitempty"`
 	// Application fee the platform collects per unit, in the variant currency (5.00 means $5.00 for USD). Must be positive and below the initial price for one-time variants or renewal price for recurring variants. Paid to the parent account alongside other processing fees; collection is capped to remaining proceeds. Applies to subsequent payments on recurring variants. Only valid for connected accounts with a parent account.
 	ApplicationFeeAmount *float64 `json:"application_fee_amount,omitempty" url:"application_fee_amount,omitempty"`
@@ -4796,7 +4796,7 @@ var updateInvoicesRequestItemsItemVariantNullableFields = map[string]*big.Int{
 
 // Find or create a variant inline by its attributes, using the payment API properties. Requires plan:create.
 type UpdateInvoicesRequestItemsItemVariant struct {
-	// Whether more than one unit can be purchased in an order.
+	// Whether more than one unit can be purchased in an order. Renewal variants cannot enable it. When `false`, checkouts, carts, and invoices reject a quantity above 1.
 	AllowMultipleQuantity *bool `json:"allow_multiple_quantity,omitempty" url:"allow_multiple_quantity,omitempty"`
 	// Application fee the platform collects per unit, in the variant currency (5.00 means $5.00 for USD). Must be positive and below the initial price for one-time variants or renewal price for recurring variants. Paid to the parent account alongside other processing fees; collection is capped to remaining proceeds. Applies to subsequent payments on recurring variants. Only valid for connected accounts with a parent account.
 	ApplicationFeeAmount *float64 `json:"application_fee_amount,omitempty" url:"application_fee_amount,omitempty"`
