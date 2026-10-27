@@ -44702,7 +44702,7 @@ var paymentInputVariantNullableFields = map[string]*big.Int{
 
 // The variant purchased, described by its attributes instead of an id: the variant with exactly these attributes is used, and one is created when none exists. Mutually exclusive with `variant_id` and `line_items`. Creating a variant requires `plan:create`; creating or updating a product requires the corresponding product permission.
 type PaymentInputVariant struct {
-	// Whether more than one unit can be purchased in an order.
+	// Whether more than one unit can be purchased in an order. Renewal variants cannot enable it. When `false`, checkouts, carts, and invoices reject a quantity above 1.
 	AllowMultipleQuantity *bool `json:"allow_multiple_quantity,omitempty" url:"allow_multiple_quantity,omitempty"`
 	// Application fee the platform collects per unit, in the variant currency (5.00 means $5.00 for USD). Must be positive and below the initial price for one-time variants or renewal price for recurring variants. Paid to the parent account alongside other processing fees; collection is capped to remaining proceeds. Applies to subsequent payments on recurring variants. Only valid for connected accounts with a parent account.
 	ApplicationFeeAmount *float64 `json:"application_fee_amount,omitempty" url:"application_fee_amount,omitempty"`
@@ -73745,43 +73745,44 @@ func (v *V1ErrorResponseError) String() string {
 var (
 	variantListItemFieldAccount                    = big.NewInt(1 << 0)
 	variantListItemFieldAdaptivePricingEnabled     = big.NewInt(1 << 1)
-	variantListItemFieldAttributes                 = big.NewInt(1 << 2)
-	variantListItemFieldBillingPeriod              = big.NewInt(1 << 3)
-	variantListItemFieldBillingType                = big.NewInt(1 << 4)
-	variantListItemFieldCancelDiscountIntervals    = big.NewInt(1 << 5)
-	variantListItemFieldCancelDiscountPercentage   = big.NewInt(1 << 6)
-	variantListItemFieldCheckoutStyling            = big.NewInt(1 << 7)
-	variantListItemFieldCreatedAt                  = big.NewInt(1 << 8)
-	variantListItemFieldCurrency                   = big.NewInt(1 << 9)
-	variantListItemFieldCustomFields               = big.NewInt(1 << 10)
-	variantListItemFieldDescription                = big.NewInt(1 << 11)
-	variantListItemFieldExpirationDays             = big.NewInt(1 << 12)
-	variantListItemFieldFormattedPrice             = big.NewInt(1 << 13)
-	variantListItemFieldID                         = big.NewInt(1 << 14)
-	variantListItemFieldImage                      = big.NewInt(1 << 15)
-	variantListItemFieldInitialPrice               = big.NewInt(1 << 16)
-	variantListItemFieldInitialPriceDue            = big.NewInt(1 << 17)
-	variantListItemFieldInternalNotes              = big.NewInt(1 << 18)
-	variantListItemFieldInvoice                    = big.NewInt(1 << 19)
-	variantListItemFieldMemberCount                = big.NewInt(1 << 20)
-	variantListItemFieldMetadata                   = big.NewInt(1 << 21)
-	variantListItemFieldOfferCancelDiscount        = big.NewInt(1 << 22)
-	variantListItemFieldPaymentMethodConfiguration = big.NewInt(1 << 23)
-	variantListItemFieldProduct                    = big.NewInt(1 << 24)
-	variantListItemFieldPurchaseURL                = big.NewInt(1 << 25)
-	variantListItemFieldReleaseMethod              = big.NewInt(1 << 26)
-	variantListItemFieldRenewalPrice               = big.NewInt(1 << 27)
-	variantListItemFieldSku                        = big.NewInt(1 << 28)
-	variantListItemFieldSplitPayRequiredPayments   = big.NewInt(1 << 29)
-	variantListItemFieldStock                      = big.NewInt(1 << 30)
-	variantListItemFieldStrikeThroughInitialPrice  = big.NewInt(1 << 31)
-	variantListItemFieldStrikeThroughRenewalPrice  = big.NewInt(1 << 32)
-	variantListItemFieldThreeDsLevel               = big.NewInt(1 << 33)
-	variantListItemFieldTitle                      = big.NewInt(1 << 34)
-	variantListItemFieldTrialPeriodDays            = big.NewInt(1 << 35)
-	variantListItemFieldUnlimitedStock             = big.NewInt(1 << 36)
-	variantListItemFieldUpdatedAt                  = big.NewInt(1 << 37)
-	variantListItemFieldVisibility                 = big.NewInt(1 << 38)
+	variantListItemFieldAllowMultipleQuantity      = big.NewInt(1 << 2)
+	variantListItemFieldAttributes                 = big.NewInt(1 << 3)
+	variantListItemFieldBillingPeriod              = big.NewInt(1 << 4)
+	variantListItemFieldBillingType                = big.NewInt(1 << 5)
+	variantListItemFieldCancelDiscountIntervals    = big.NewInt(1 << 6)
+	variantListItemFieldCancelDiscountPercentage   = big.NewInt(1 << 7)
+	variantListItemFieldCheckoutStyling            = big.NewInt(1 << 8)
+	variantListItemFieldCreatedAt                  = big.NewInt(1 << 9)
+	variantListItemFieldCurrency                   = big.NewInt(1 << 10)
+	variantListItemFieldCustomFields               = big.NewInt(1 << 11)
+	variantListItemFieldDescription                = big.NewInt(1 << 12)
+	variantListItemFieldExpirationDays             = big.NewInt(1 << 13)
+	variantListItemFieldFormattedPrice             = big.NewInt(1 << 14)
+	variantListItemFieldID                         = big.NewInt(1 << 15)
+	variantListItemFieldImage                      = big.NewInt(1 << 16)
+	variantListItemFieldInitialPrice               = big.NewInt(1 << 17)
+	variantListItemFieldInitialPriceDue            = big.NewInt(1 << 18)
+	variantListItemFieldInternalNotes              = big.NewInt(1 << 19)
+	variantListItemFieldInvoice                    = big.NewInt(1 << 20)
+	variantListItemFieldMemberCount                = big.NewInt(1 << 21)
+	variantListItemFieldMetadata                   = big.NewInt(1 << 22)
+	variantListItemFieldOfferCancelDiscount        = big.NewInt(1 << 23)
+	variantListItemFieldPaymentMethodConfiguration = big.NewInt(1 << 24)
+	variantListItemFieldProduct                    = big.NewInt(1 << 25)
+	variantListItemFieldPurchaseURL                = big.NewInt(1 << 26)
+	variantListItemFieldReleaseMethod              = big.NewInt(1 << 27)
+	variantListItemFieldRenewalPrice               = big.NewInt(1 << 28)
+	variantListItemFieldSku                        = big.NewInt(1 << 29)
+	variantListItemFieldSplitPayRequiredPayments   = big.NewInt(1 << 30)
+	variantListItemFieldStock                      = big.NewInt(1 << 31)
+	variantListItemFieldStrikeThroughInitialPrice  = big.NewInt(1 << 32)
+	variantListItemFieldStrikeThroughRenewalPrice  = big.NewInt(1 << 33)
+	variantListItemFieldThreeDsLevel               = big.NewInt(1 << 34)
+	variantListItemFieldTitle                      = big.NewInt(1 << 35)
+	variantListItemFieldTrialPeriodDays            = big.NewInt(1 << 36)
+	variantListItemFieldUnlimitedStock             = big.NewInt(1 << 37)
+	variantListItemFieldUpdatedAt                  = big.NewInt(1 << 38)
+	variantListItemFieldVisibility                 = big.NewInt(1 << 39)
 )
 
 // variantListItemNullableFields maps the wire names of VariantListItem's nullable fields (required or optional) to their field bits.
@@ -73817,6 +73818,8 @@ type VariantListItem struct {
 	Account *AccountSummary `json:"account,omitempty" url:"account,omitempty"`
 	// Whether adaptive pricing is enabled for this variant. Raw setting — does not check processor compatibility or feature flags.
 	AdaptivePricingEnabled bool `json:"adaptive_pricing_enabled" url:"adaptive_pricing_enabled"`
+	// Whether more than one unit can be purchased in an order. Renewal variants cannot enable it. When `false`, checkouts, carts, and invoices reject a quantity above 1.
+	AllowMultipleQuantity bool `json:"allow_multiple_quantity" url:"allow_multiple_quantity"`
 	// Attribute values that distinguish this variant within its product, as a map of attribute name to value, e.g. `{"color": "Blue", "size": "Large"}`. Names are snake_case identifiers and come back in alphabetical order. Every attributed variant on a product carries the same attribute names and a distinct set of values; the product lists the full option set as `variant_attributes`. `null` when the variant has no attributes.
 	Attributes map[string]*string `json:"attributes,omitempty" url:"attributes,omitempty"`
 	// Number of days between recurring charges, such as 30 for monthly or 365 for annual. `null` for one-time variants.
@@ -73910,6 +73913,13 @@ func (v *VariantListItem) GetAdaptivePricingEnabled() bool {
 		return false
 	}
 	return v.AdaptivePricingEnabled
+}
+
+func (v *VariantListItem) GetAllowMultipleQuantity() bool {
+	if v == nil {
+		return false
+	}
+	return v.AllowMultipleQuantity
 }
 
 func (v *VariantListItem) GetAttributes() map[string]*string {
@@ -74199,6 +74209,13 @@ func (v *VariantListItem) SetAccount(account *AccountSummary) {
 func (v *VariantListItem) SetAdaptivePricingEnabled(adaptivePricingEnabled bool) {
 	v.AdaptivePricingEnabled = adaptivePricingEnabled
 	v.require(variantListItemFieldAdaptivePricingEnabled)
+}
+
+// SetAllowMultipleQuantity sets the AllowMultipleQuantity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (v *VariantListItem) SetAllowMultipleQuantity(allowMultipleQuantity bool) {
+	v.AllowMultipleQuantity = allowMultipleQuantity
+	v.require(variantListItemFieldAllowMultipleQuantity)
 }
 
 // SetAttributes sets the Attributes field and marks it as non-optional;

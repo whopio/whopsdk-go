@@ -143501,6 +143501,14 @@ func TestSettersVariantListItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetAllowMultipleQuantity", func(t *testing.T) {
+		obj := &VariantListItem{}
+		var fernTestValueAllowMultipleQuantity bool
+		obj.SetAllowMultipleQuantity(fernTestValueAllowMultipleQuantity)
+		assert.Equal(t, fernTestValueAllowMultipleQuantity, obj.AllowMultipleQuantity)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetAttributes", func(t *testing.T) {
 		obj := &VariantListItem{}
 		var fernTestValueAttributes map[string]*string
@@ -143854,6 +143862,29 @@ func TestGettersVariantListItem(t *testing.T) {
 			}
 		}()
 		_ = obj.GetAdaptivePricingEnabled() // Should return zero value
+	})
+
+	t.Run("GetAllowMultipleQuantity", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &VariantListItem{}
+		var expected bool
+		obj.AllowMultipleQuantity = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAllowMultipleQuantity(), "getter should return the property value")
+	})
+
+	t.Run("GetAllowMultipleQuantity_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *VariantListItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAllowMultipleQuantity() // Should return zero value
 	})
 
 	t.Run("GetAttributes", func(t *testing.T) {
@@ -144999,6 +145030,37 @@ func TestSettersMarkExplicitVariantListItem(t *testing.T) {
 
 		// Act
 		obj.SetAdaptivePricingEnabled(fernTestValueAdaptivePricingEnabled)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetAllowMultipleQuantity_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &VariantListItem{}
+		var fernTestValueAllowMultipleQuantity bool
+
+		// Act
+		obj.SetAllowMultipleQuantity(fernTestValueAllowMultipleQuantity)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
