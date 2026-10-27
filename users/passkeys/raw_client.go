@@ -89,7 +89,7 @@ func (r *RawClient) Challenge(
 	ctx context.Context,
 	request *users.ChallengePasskeysRequest,
 	opts ...option.RequestOption,
-) (*core.Response[*users.ChallengePasskeysResponse], error) {
+) (*core.Response[*whopsdk.PasskeyChallenge], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -110,7 +110,7 @@ func (r *RawClient) Challenge(
 		options.ToHeader(),
 	)
 	headers.Add("Content-Type", "application/json")
-	var response *users.ChallengePasskeysResponse
+	var response *whopsdk.PasskeyChallenge
 	raw, err := r.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -130,7 +130,7 @@ func (r *RawClient) Challenge(
 	if err != nil {
 		return nil, err
 	}
-	return &core.Response[*users.ChallengePasskeysResponse]{
+	return &core.Response[*whopsdk.PasskeyChallenge]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,

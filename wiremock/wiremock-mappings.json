@@ -17915,7 +17915,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"challenge\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
+        "body": "{\n  \"challenge\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n  \"creation_options\": {\n    \"attestation\": \"none\",\n    \"authenticator_selection\": {\n      \"require_resident_key\": true,\n      \"resident_key\": \"required\",\n      \"user_verification\": \"required\"\n    },\n    \"challenge\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n    \"exclude_credentials\": [\n      {\n        \"id\": \"bGFwdG9wLWNyZWRlbnRpYWw\",\n        \"transports\": [\n          \"ble\"\n        ],\n        \"type\": \"public-key\"\n      }\n    ],\n    \"extensions\": {\n      \"cred_props\": true\n    },\n    \"pub_key_cred_params\": [\n      {\n        \"alg\": -257,\n        \"type\": \"public-key\"\n      }\n    ],\n    \"rp\": {\n      \"id\": \"localhost\",\n      \"name\": \"Whop\"\n    },\n    \"timeout\": 300000,\n    \"user\": {\n      \"display_name\": \"Jack Sharkey the 1st\",\n      \"id\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n      \"name\": \"marcus@shinetime.example\"\n    }\n  },\n  \"request_options\": {\n    \"allow_credentials\": [\n      {\n        \"id\": \"bGFwdG9wLWNyZWRlbnRpYWw\",\n        \"transports\": [\n          \"ble\"\n        ],\n        \"type\": \"public-key\"\n      }\n    ],\n    \"challenge\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n    \"rp_id\": \"localhost\",\n    \"timeout\": 300000,\n    \"user_verification\": \"required\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
