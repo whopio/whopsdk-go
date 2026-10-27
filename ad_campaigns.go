@@ -42,7 +42,7 @@ type CreateAdCampaignsRequest struct {
 	BudgetType *CreateAdCampaignsRequestBudgetType `json:"budget_type,omitempty" url:"-"`
 	// The kind of campaign to create. `standard` is the ad network's standard campaign; `search` shows text ads on search results for the ad groups' keywords. Defaults to `standard`. Can't be changed after creation.
 	CampaignType *CreateAdCampaignsRequestCampaignType `json:"campaign_type,omitempty" url:"-"`
-	// Cost per result to aim for (`average_target`) or never exceed (`maximum_target`). Only for campaigns that own the budget.
+	// The cost per result, in USD, you want this campaign to achieve. A target only: it is not a bid, cost cap, or bid cap, and doesn't change how the campaign's ads bid. Ad groups set cost and bid caps with their own `desired_cost_per_result`. Omit or send `null` for no target.
 	DesiredCostPerResult *float64 `json:"desired_cost_per_result,omitempty" url:"-"`
 	// When the campaign stops delivering, as an ISO 8601 timestamp. Only for campaigns that own the budget.
 	EndsAt *string `json:"ends_at,omitempty" url:"-"`
@@ -724,7 +724,7 @@ type AdCampaign struct {
 	CustomEventValues map[string]any `json:"custom_event_values" url:"custom_event_values"`
 	// Whether the campaign's ads are delivering right now, and if not, why. Content review is in_review; a campaign waiting to start is processing. Account billing failures set payment_failed without changing the configured status. Successful payment retry clears that block and recalculates delivery. When several states apply at once, the highest-precedence one is returned.
 	DeliveryStatus AdCampaignDeliveryStatus `json:"delivery_status" url:"delivery_status"`
-	// Google only: the target cost per conversion in USD when `bid_type` is `average_target`. `null` otherwise.
+	// The cost per result, in USD, the advertiser wants this campaign to achieve. A target only: it is not a bid, cost cap, or bid cap, and doesn't change how the campaign's ads bid. `null` when no target is set.
 	DesiredCostPerResult *float64 `json:"desired_cost_per_result,omitempty" url:"desired_cost_per_result,omitempty"`
 	// Google only: when the campaign stops delivering, as an ISO 8601 timestamp. `null` runs it until paused.
 	EndsAt *string `json:"ends_at,omitempty" url:"ends_at,omitempty"`
@@ -3203,7 +3203,7 @@ type PostAdCampaignPaymentFailedPayloadData struct {
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Whether the campaign's ads are delivering right now, and if not, why. Content review is in_review; a campaign waiting to start is processing. Account billing failures set payment_failed without changing the configured status. Successful payment retry clears that block and recalculates delivery. When several states apply at once, the highest-precedence one is returned.
 	DeliveryStatus PostAdCampaignPaymentFailedPayloadDataDeliveryStatus `json:"delivery_status" url:"delivery_status"`
-	// Google only: the target cost per conversion in USD when `bid_type` is `average_target`. `null` otherwise.
+	// The cost per result, in USD, the advertiser wants this campaign to achieve. A target only: it is not a bid, cost cap, or bid cap, and doesn't change how the campaign's ads bid. `null` when no target is set.
 	DesiredCostPerResult *float64 `json:"desired_cost_per_result,omitempty" url:"desired_cost_per_result,omitempty"`
 	// Google only: when the campaign stops delivering, as an ISO 8601 timestamp. `null` runs it until paused.
 	EndsAt *string `json:"ends_at,omitempty" url:"ends_at,omitempty"`
@@ -4212,7 +4212,7 @@ type PostAdCampaignUpdatedPayloadData struct {
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Whether the campaign's ads are delivering right now, and if not, why. Content review is in_review; a campaign waiting to start is processing. Account billing failures set payment_failed without changing the configured status. Successful payment retry clears that block and recalculates delivery. When several states apply at once, the highest-precedence one is returned.
 	DeliveryStatus PostAdCampaignUpdatedPayloadDataDeliveryStatus `json:"delivery_status" url:"delivery_status"`
-	// Google only: the target cost per conversion in USD when `bid_type` is `average_target`. `null` otherwise.
+	// The cost per result, in USD, the advertiser wants this campaign to achieve. A target only: it is not a bid, cost cap, or bid cap, and doesn't change how the campaign's ads bid. `null` when no target is set.
 	DesiredCostPerResult *float64 `json:"desired_cost_per_result,omitempty" url:"desired_cost_per_result,omitempty"`
 	// Google only: when the campaign stops delivering, as an ISO 8601 timestamp. `null` runs it until paused.
 	EndsAt *string `json:"ends_at,omitempty" url:"ends_at,omitempty"`
@@ -5137,19 +5137,20 @@ func (u *UnpauseAdCampaignsRequest) SetID(id string) {
 }
 
 var (
-	updateAdCampaignsRequestFieldAdsPlatform         = big.NewInt(1 << 0)
-	updateAdCampaignsRequestFieldID                  = big.NewInt(1 << 1)
-	updateAdCampaignsRequestFieldBidType             = big.NewInt(1 << 2)
-	updateAdCampaignsRequestFieldBudgetAmount        = big.NewInt(1 << 3)
-	updateAdCampaignsRequestFieldBudgetAmountLocal   = big.NewInt(1 << 4)
-	updateAdCampaignsRequestFieldBudgetOptimization  = big.NewInt(1 << 5)
-	updateAdCampaignsRequestFieldBudgetType          = big.NewInt(1 << 6)
-	updateAdCampaignsRequestFieldCampaignType        = big.NewInt(1 << 7)
-	updateAdCampaignsRequestFieldEndsAt              = big.NewInt(1 << 8)
-	updateAdCampaignsRequestFieldSpecialAdCategories = big.NewInt(1 << 9)
-	updateAdCampaignsRequestFieldStartsAt            = big.NewInt(1 << 10)
-	updateAdCampaignsRequestFieldStatus              = big.NewInt(1 << 11)
-	updateAdCampaignsRequestFieldTitle               = big.NewInt(1 << 12)
+	updateAdCampaignsRequestFieldAdsPlatform          = big.NewInt(1 << 0)
+	updateAdCampaignsRequestFieldID                   = big.NewInt(1 << 1)
+	updateAdCampaignsRequestFieldBidType              = big.NewInt(1 << 2)
+	updateAdCampaignsRequestFieldBudgetAmount         = big.NewInt(1 << 3)
+	updateAdCampaignsRequestFieldBudgetAmountLocal    = big.NewInt(1 << 4)
+	updateAdCampaignsRequestFieldBudgetOptimization   = big.NewInt(1 << 5)
+	updateAdCampaignsRequestFieldBudgetType           = big.NewInt(1 << 6)
+	updateAdCampaignsRequestFieldCampaignType         = big.NewInt(1 << 7)
+	updateAdCampaignsRequestFieldDesiredCostPerResult = big.NewInt(1 << 8)
+	updateAdCampaignsRequestFieldEndsAt               = big.NewInt(1 << 9)
+	updateAdCampaignsRequestFieldSpecialAdCategories  = big.NewInt(1 << 10)
+	updateAdCampaignsRequestFieldStartsAt             = big.NewInt(1 << 11)
+	updateAdCampaignsRequestFieldStatus               = big.NewInt(1 << 12)
+	updateAdCampaignsRequestFieldTitle                = big.NewInt(1 << 13)
 )
 
 type UpdateAdCampaignsRequest struct {
@@ -5169,6 +5170,8 @@ type UpdateAdCampaignsRequest struct {
 	BudgetType *UpdateAdCampaignsRequestBudgetType `json:"budget_type,omitempty" url:"-"`
 	// Accepted only when it matches the campaign's current type, so a read can be sent back unchanged. The type is fixed at creation.
 	CampaignType *UpdateAdCampaignsRequestCampaignType `json:"campaign_type,omitempty" url:"-"`
+	// The cost per result, in USD, you want this campaign to achieve. A target only: it is not a bid, cost cap, or bid cap, and doesn't change how the campaign's ads bid. Ad groups set cost and bid caps with their own `desired_cost_per_result`. `null` clears it.
+	DesiredCostPerResult *float64 `json:"desired_cost_per_result,omitempty" url:"-"`
 	// When the campaign stops delivering, as an ISO 8601 timestamp. Only for campaigns that own the budget.
 	EndsAt *string `json:"ends_at,omitempty" url:"-"`
 	// Regulated categories the campaign falls under. Editable on any campaign, draft or launched; pass an empty array to clear.
@@ -5247,6 +5250,13 @@ func (u *UpdateAdCampaignsRequest) SetBudgetType(budgetType *UpdateAdCampaignsRe
 func (u *UpdateAdCampaignsRequest) SetCampaignType(campaignType *UpdateAdCampaignsRequestCampaignType) {
 	u.CampaignType = campaignType
 	u.require(updateAdCampaignsRequestFieldCampaignType)
+}
+
+// SetDesiredCostPerResult sets the DesiredCostPerResult field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdCampaignsRequest) SetDesiredCostPerResult(desiredCostPerResult *float64) {
+	u.DesiredCostPerResult = desiredCostPerResult
+	u.require(updateAdCampaignsRequestFieldDesiredCostPerResult)
 }
 
 // SetEndsAt sets the EndsAt field and marks it as non-optional;
