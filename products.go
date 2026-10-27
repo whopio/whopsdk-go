@@ -281,7 +281,7 @@ var (
 	listProductsRequestFieldAccountID                = big.NewInt(1 << 0)
 	listProductsRequestFieldQuery                    = big.NewInt(1 << 1)
 	listProductsRequestFieldMarketplaceCategoryRoute = big.NewInt(1 << 2)
-	listProductsRequestFieldPlanTypes                = big.NewInt(1 << 3)
+	listProductsRequestFieldBillingTypes             = big.NewInt(1 << 3)
 	listProductsRequestFieldPriceMinimum             = big.NewInt(1 << 4)
 	listProductsRequestFieldPriceMaximum             = big.NewInt(1 << 5)
 	listProductsRequestFieldVisibilities             = big.NewInt(1 << 6)
@@ -305,7 +305,7 @@ type ListProductsRequest struct {
 	// Only return marketplace products assigned to this category route, such as `trading`.
 	MarketplaceCategoryRoute *string `json:"-" url:"marketplace_category_route,omitempty"`
 	// Filter to products with a buyable variant of these billing models, such as `one_time` or `renewal`.
-	PlanTypes []*ListProductsRequestPlanTypesItem `json:"-" url:"plan_types,omitempty"`
+	BillingTypes []*ListProductsRequestBillingTypesItem `json:"-" url:"billing_types,omitempty"`
 	// Only return products whose advertised buyable variant has a displayed price of at least this amount. Recurring variants use renewal price.
 	PriceMinimum *float64 `json:"-" url:"price_minimum,omitempty"`
 	// Only return products whose advertised buyable variant has a displayed price of at most this amount. Recurring variants use renewal price.
@@ -367,11 +367,11 @@ func (l *ListProductsRequest) SetMarketplaceCategoryRoute(marketplaceCategoryRou
 	l.require(listProductsRequestFieldMarketplaceCategoryRoute)
 }
 
-// SetPlanTypes sets the PlanTypes field and marks it as non-optional;
+// SetBillingTypes sets the BillingTypes field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListProductsRequest) SetPlanTypes(planTypes []*ListProductsRequestPlanTypesItem) {
-	l.PlanTypes = planTypes
-	l.require(listProductsRequestFieldPlanTypes)
+func (l *ListProductsRequest) SetBillingTypes(billingTypes []*ListProductsRequestBillingTypesItem) {
+	l.BillingTypes = billingTypes
+	l.require(listProductsRequestFieldBillingTypes)
 }
 
 // SetPriceMinimum sets the PriceMinimum field and marks it as non-optional;
@@ -528,7 +528,7 @@ var (
 	productFieldCustomCta                 = big.NewInt(1 << 3)
 	productFieldCustomCtaURL              = big.NewInt(1 << 4)
 	productFieldCustomStatementDescriptor = big.NewInt(1 << 5)
-	productFieldDefaultPlan               = big.NewInt(1 << 6)
+	productFieldDefaultVariant            = big.NewInt(1 << 6)
 	productFieldDescription               = big.NewInt(1 << 7)
 	productFieldExternalIdentifier        = big.NewInt(1 << 8)
 	productFieldGalleryImages             = big.NewInt(1 << 9)
@@ -560,7 +560,7 @@ var productNullableFields = map[string]*big.Int{
 	"custom_cta":                  productFieldCustomCta,
 	"custom_cta_url":              productFieldCustomCtaURL,
 	"custom_statement_descriptor": productFieldCustomStatementDescriptor,
-	"default_plan":                productFieldDefaultPlan,
+	"default_variant":             productFieldDefaultVariant,
 	"description":                 productFieldDescription,
 	"external_identifier":         productFieldExternalIdentifier,
 	"global_affiliate_percentage": productFieldGlobalAffiliatePercentage,
@@ -590,7 +590,7 @@ type Product struct {
 	// Custom text label on customer's bank statement.
 	CustomStatementDescriptor *string `json:"custom_statement_descriptor,omitempty" url:"custom_statement_descriptor,omitempty"`
 	// Buyable variant to show and check out with. The configured default when that variant is buyable, otherwise the first buyable variant in product-page order. `null` when none is buyable.
-	DefaultPlan *ProductPublicPlan `json:"default_plan,omitempty" url:"default_plan,omitempty"`
+	DefaultVariant *ProductPublicVariant `json:"default_variant,omitempty" url:"default_variant,omitempty"`
 	// Written description displayed on the product page. `null` if none is set.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
 	// External identifier stored on the product for your own reference.
@@ -684,11 +684,11 @@ func (p *Product) GetCustomStatementDescriptor() *string {
 	return p.CustomStatementDescriptor
 }
 
-func (p *Product) GetDefaultPlan() *ProductPublicPlan {
+func (p *Product) GetDefaultVariant() *ProductPublicVariant {
 	if p == nil {
 		return nil
 	}
-	return p.DefaultPlan
+	return p.DefaultVariant
 }
 
 func (p *Product) GetDescription() *string {
@@ -910,11 +910,11 @@ func (p *Product) SetCustomStatementDescriptor(customStatementDescriptor *string
 	p.require(productFieldCustomStatementDescriptor)
 }
 
-// SetDefaultPlan sets the DefaultPlan field and marks it as non-optional;
+// SetDefaultVariant sets the DefaultVariant field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Product) SetDefaultPlan(defaultPlan *ProductPublicPlan) {
-	p.DefaultPlan = defaultPlan
-	p.require(productFieldDefaultPlan)
+func (p *Product) SetDefaultVariant(defaultVariant *ProductPublicVariant) {
+	p.DefaultVariant = defaultVariant
+	p.require(productFieldDefaultVariant)
 }
 
 // SetDescription sets the Description field and marks it as non-optional;
@@ -1344,7 +1344,7 @@ var (
 	productListItemFieldAccount               = big.NewInt(1 << 0)
 	productListItemFieldAverageReviewRating   = big.NewInt(1 << 1)
 	productListItemFieldCreatedAt             = big.NewInt(1 << 2)
-	productListItemFieldDefaultPlan           = big.NewInt(1 << 3)
+	productListItemFieldDefaultVariant        = big.NewInt(1 << 3)
 	productListItemFieldDescription           = big.NewInt(1 << 4)
 	productListItemFieldExternalIdentifier    = big.NewInt(1 << 5)
 	productListItemFieldGalleryImages         = big.NewInt(1 << 6)
@@ -1365,7 +1365,7 @@ var (
 // productListItemNullableFields maps the wire names of ProductListItem's nullable fields (required or optional) to their field bits.
 var productListItemNullableFields = map[string]*big.Int{
 	"account":             productListItemFieldAccount,
-	"default_plan":        productListItemFieldDefaultPlan,
+	"default_variant":     productListItemFieldDefaultVariant,
 	"description":         productListItemFieldDescription,
 	"external_identifier": productListItemFieldExternalIdentifier,
 	"headline":            productListItemFieldHeadline,
@@ -1382,7 +1382,7 @@ type ProductListItem struct {
 	// When the product was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Buyable variant to show and check out with. The configured default when that variant is buyable, otherwise the first buyable variant in product-page order. `null` when none is buyable.
-	DefaultPlan *ProductPublicPlan `json:"default_plan,omitempty" url:"default_plan,omitempty"`
+	DefaultVariant *ProductPublicVariant `json:"default_variant,omitempty" url:"default_variant,omitempty"`
 	// Written description displayed on the product page. `null` if none is set.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
 	// External identifier stored on the product for your own reference.
@@ -1440,11 +1440,11 @@ func (p *ProductListItem) GetCreatedAt() string {
 	return p.CreatedAt
 }
 
-func (p *ProductListItem) GetDefaultPlan() *ProductPublicPlan {
+func (p *ProductListItem) GetDefaultVariant() *ProductPublicVariant {
 	if p == nil {
 		return nil
 	}
-	return p.DefaultPlan
+	return p.DefaultVariant
 }
 
 func (p *ProductListItem) GetDescription() *string {
@@ -1589,11 +1589,11 @@ func (p *ProductListItem) SetCreatedAt(createdAt string) {
 	p.require(productListItemFieldCreatedAt)
 }
 
-// SetDefaultPlan sets the DefaultPlan field and marks it as non-optional;
+// SetDefaultVariant sets the DefaultVariant field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *ProductListItem) SetDefaultPlan(defaultPlan *ProductPublicPlan) {
-	p.DefaultPlan = defaultPlan
-	p.require(productListItemFieldDefaultPlan)
+func (p *ProductListItem) SetDefaultVariant(defaultVariant *ProductPublicVariant) {
+	p.DefaultVariant = defaultVariant
+	p.require(productListItemFieldDefaultVariant)
 }
 
 // SetDescription sets the Description field and marks it as non-optional;
@@ -1800,35 +1800,35 @@ func (p ProductMemberAffiliateStatus) Ptr() *ProductMemberAffiliateStatus {
 }
 
 var (
-	productPublicPlanFieldBillingPeriod  = big.NewInt(1 << 0)
-	productPublicPlanFieldExpirationDays = big.NewInt(1 << 1)
-	productPublicPlanFieldID             = big.NewInt(1 << 2)
-	productPublicPlanFieldInitialPrice   = big.NewInt(1 << 3)
-	productPublicPlanFieldPlanType       = big.NewInt(1 << 4)
-	productPublicPlanFieldRenewalPrice   = big.NewInt(1 << 5)
-	productPublicPlanFieldTitle          = big.NewInt(1 << 6)
-	productPublicPlanFieldUnlimitedStock = big.NewInt(1 << 7)
-	productPublicPlanFieldVisibility     = big.NewInt(1 << 8)
+	productPublicVariantFieldBillingPeriod  = big.NewInt(1 << 0)
+	productPublicVariantFieldBillingType    = big.NewInt(1 << 1)
+	productPublicVariantFieldExpirationDays = big.NewInt(1 << 2)
+	productPublicVariantFieldID             = big.NewInt(1 << 3)
+	productPublicVariantFieldInitialPrice   = big.NewInt(1 << 4)
+	productPublicVariantFieldRenewalPrice   = big.NewInt(1 << 5)
+	productPublicVariantFieldTitle          = big.NewInt(1 << 6)
+	productPublicVariantFieldUnlimitedStock = big.NewInt(1 << 7)
+	productPublicVariantFieldVisibility     = big.NewInt(1 << 8)
 )
 
-// productPublicPlanNullableFields maps the wire names of ProductPublicPlan's nullable fields (required or optional) to their field bits.
-var productPublicPlanNullableFields = map[string]*big.Int{
-	"billing_period":  productPublicPlanFieldBillingPeriod,
-	"expiration_days": productPublicPlanFieldExpirationDays,
-	"title":           productPublicPlanFieldTitle,
+// productPublicVariantNullableFields maps the wire names of ProductPublicVariant's nullable fields (required or optional) to their field bits.
+var productPublicVariantNullableFields = map[string]*big.Int{
+	"billing_period":  productPublicVariantFieldBillingPeriod,
+	"expiration_days": productPublicVariantFieldExpirationDays,
+	"title":           productPublicVariantFieldTitle,
 }
 
-type ProductPublicPlan struct {
+type ProductPublicVariant struct {
 	// Number of days between recurring charges, such as 30 for monthly or 365 for annual. `null` for one-time variants.
 	BillingPeriod *float64 `json:"billing_period,omitempty" url:"billing_period,omitempty"`
+	// Billing model for this variant: `one_time` or `renewal`.
+	BillingType ProductPublicVariantBillingType `json:"billing_type" url:"billing_type"`
 	// Access duration in days for expiration-based variants. `null` for variants without an expiration.
 	ExpirationDays *float64 `json:"expiration_days,omitempty" url:"expiration_days,omitempty"`
 	// Variant ID, prefixed `plan_`.
 	ID string `json:"id" url:"id"`
 	// What checkout charges up front. `amount` is `"0.00"` when the first charge is free, such as a trial.
 	InitialPrice *Money `json:"initial_price" url:"initial_price"`
-	// Billing model for this variant: `one_time` or `renewal`.
-	PlanType ProductPublicPlanPlanType `json:"plan_type" url:"plan_type"`
 	// The recurring charge every `billing_period` days. `amount` is `"0.00"` for one-time variants.
 	RenewalPrice *Money `json:"renewal_price" url:"renewal_price"`
 	// Variant display name shown to customers. `null` if no title has been set.
@@ -1836,7 +1836,7 @@ type ProductPublicPlan struct {
 	// Whether the variant has unlimited stock.
 	UnlimitedStock bool `json:"unlimited_stock" url:"unlimited_stock"`
 	// Where this variant can be seen. `visible` variants appear on the product page.
-	Visibility ProductPublicPlanVisibility `json:"visibility" url:"visibility"`
+	Visibility ProductPublicVariantVisibility `json:"visibility" url:"visibility"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1845,77 +1845,77 @@ type ProductPublicPlan struct {
 	rawJSON         json.RawMessage
 }
 
-func (p *ProductPublicPlan) GetBillingPeriod() *float64 {
+func (p *ProductPublicVariant) GetBillingPeriod() *float64 {
 	if p == nil {
 		return nil
 	}
 	return p.BillingPeriod
 }
 
-func (p *ProductPublicPlan) GetExpirationDays() *float64 {
+func (p *ProductPublicVariant) GetBillingType() ProductPublicVariantBillingType {
+	if p == nil {
+		return ""
+	}
+	return p.BillingType
+}
+
+func (p *ProductPublicVariant) GetExpirationDays() *float64 {
 	if p == nil {
 		return nil
 	}
 	return p.ExpirationDays
 }
 
-func (p *ProductPublicPlan) GetID() string {
+func (p *ProductPublicVariant) GetID() string {
 	if p == nil {
 		return ""
 	}
 	return p.ID
 }
 
-func (p *ProductPublicPlan) GetInitialPrice() *Money {
+func (p *ProductPublicVariant) GetInitialPrice() *Money {
 	if p == nil {
 		return nil
 	}
 	return p.InitialPrice
 }
 
-func (p *ProductPublicPlan) GetPlanType() ProductPublicPlanPlanType {
-	if p == nil {
-		return ""
-	}
-	return p.PlanType
-}
-
-func (p *ProductPublicPlan) GetRenewalPrice() *Money {
+func (p *ProductPublicVariant) GetRenewalPrice() *Money {
 	if p == nil {
 		return nil
 	}
 	return p.RenewalPrice
 }
 
-func (p *ProductPublicPlan) GetTitle() *string {
+func (p *ProductPublicVariant) GetTitle() *string {
 	if p == nil {
 		return nil
 	}
 	return p.Title
 }
 
-func (p *ProductPublicPlan) GetUnlimitedStock() bool {
+func (p *ProductPublicVariant) GetUnlimitedStock() bool {
 	if p == nil {
 		return false
 	}
 	return p.UnlimitedStock
 }
 
-func (p *ProductPublicPlan) GetVisibility() ProductPublicPlanVisibility {
+func (p *ProductPublicVariant) GetVisibility() ProductPublicVariantVisibility {
 	if p == nil {
 		return ""
 	}
 	return p.Visibility
 }
 
-func (p *ProductPublicPlan) GetExtraProperties() map[string]interface{} {
+func (p *ProductPublicVariant) GetExtraProperties() map[string]interface{} {
 	if p == nil {
 		return nil
 	}
 	return p.extraProperties
 }
 
-func (p *ProductPublicPlan) require(field *big.Int) {
+func (p *ProductPublicVariant) require(field *big.Int) {
 	next := new(big.Int)
 	if p.explicitFields != nil {
 		next.Set(p.explicitFields)
@@ -1926,80 +1926,80 @@ func (p *ProductPublicPlan) require(field *big.Int) {
 
 // SetBillingPeriod sets the BillingPeriod field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *ProductPublicPlan) SetBillingPeriod(billingPeriod *float64) {
+func (p *ProductPublicVariant) SetBillingPeriod(billingPeriod *float64) {
 	p.BillingPeriod = billingPeriod
-	p.require(productPublicPlanFieldBillingPeriod)
+	p.require(productPublicVariantFieldBillingPeriod)
+}
+
+// SetBillingType sets the BillingType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *ProductPublicVariant) SetBillingType(billingType ProductPublicVariantBillingType) {
+	p.BillingType = billingType
+	p.require(productPublicVariantFieldBillingType)
 }
 
 // SetExpirationDays sets the ExpirationDays field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *ProductPublicPlan) SetExpirationDays(expirationDays *float64) {
+func (p *ProductPublicVariant) SetExpirationDays(expirationDays *float64) {
 	p.ExpirationDays = expirationDays
-	p.require(productPublicPlanFieldExpirationDays)
+	p.require(productPublicVariantFieldExpirationDays)
 }
 
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *ProductPublicPlan) SetID(id string) {
+func (p *ProductPublicVariant) SetID(id string) {
 	p.ID = id
-	p.require(productPublicPlanFieldID)
+	p.require(productPublicVariantFieldID)
 }
 
 // SetInitialPrice sets the InitialPrice field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *ProductPublicPlan) SetInitialPrice(initialPrice *Money) {
+func (p *ProductPublicVariant) SetInitialPrice(initialPrice *Money) {
 	p.InitialPrice = initialPrice
-	p.require(productPublicPlanFieldInitialPrice)
-}
-
-// SetPlanType sets the PlanType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *ProductPublicPlan) SetPlanType(planType ProductPublicPlanPlanType) {
-	p.PlanType = planType
-	p.require(productPublicPlanFieldPlanType)
+	p.require(productPublicVariantFieldInitialPrice)
 }
 
 // SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *ProductPublicPlan) SetRenewalPrice(renewalPrice *Money) {
+func (p *ProductPublicVariant) SetRenewalPrice(renewalPrice *Money) {
 	p.RenewalPrice = renewalPrice
-	p.require(productPublicPlanFieldRenewalPrice)
+	p.require(productPublicVariantFieldRenewalPrice)
 }
 
 // SetTitle sets the Title field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *ProductPublicPlan) SetTitle(title *string) {
+func (p *ProductPublicVariant) SetTitle(title *string) {
 	p.Title = title
-	p.require(productPublicPlanFieldTitle)
+	p.require(productPublicVariantFieldTitle)
 }
 
 // SetUnlimitedStock sets the UnlimitedStock field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *ProductPublicPlan) SetUnlimitedStock(unlimitedStock bool) {
+func (p *ProductPublicVariant) SetUnlimitedStock(unlimitedStock bool) {
 	p.UnlimitedStock = unlimitedStock
-	p.require(productPublicPlanFieldUnlimitedStock)
+	p.require(productPublicVariantFieldUnlimitedStock)
 }
 
 // SetVisibility sets the Visibility field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *ProductPublicPlan) SetVisibility(visibility ProductPublicPlanVisibility) {
+func (p *ProductPublicVariant) SetVisibility(visibility ProductPublicVariantVisibility) {
 	p.Visibility = visibility
-	p.require(productPublicPlanFieldVisibility)
+	p.require(productPublicVariantFieldVisibility)
 }
 
-func (p *ProductPublicPlan) UnmarshalJSON(data []byte) error {
-	type unmarshaler ProductPublicPlan
+func (p *ProductPublicVariant) UnmarshalJSON(data []byte) error {
+	type unmarshaler ProductPublicVariant
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*p = ProductPublicPlan(value)
+	*p = ProductPublicVariant(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *p)
 	if err != nil {
 		return err
 	}
 	p.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, productPublicPlanNullableFields)
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, productPublicVariantNullableFields)
 	if err != nil {
 		return err
 	}
@@ -2010,8 +2010,8 @@ func (p *ProductPublicPlan) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (p *ProductPublicPlan) MarshalJSON() ([]byte, error) {
-	type embed ProductPublicPlan
+func (p *ProductPublicVariant) MarshalJSON() ([]byte, error) {
+	type embed ProductPublicVariant
 	var marshaler = struct {
 		embed
 	}{
@@ -2021,7 +2021,7 @@ func (p *ProductPublicPlan) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (p *ProductPublicPlan) String() string {
+func (p *ProductPublicVariant) String() string {
 	if p == nil {
 		return "<nil>"
 	}
@@ -2037,54 +2037,54 @@ func (p *ProductPublicPlan) String() string {
 }
 
 // Billing model for this variant: `one_time` or `renewal`.
-type ProductPublicPlanPlanType string
+type ProductPublicVariantBillingType string
 
 const (
-	ProductPublicPlanPlanTypeRenewal ProductPublicPlanPlanType = "renewal"
-	ProductPublicPlanPlanTypeOneTime ProductPublicPlanPlanType = "one_time"
+	ProductPublicVariantBillingTypeRenewal ProductPublicVariantBillingType = "renewal"
+	ProductPublicVariantBillingTypeOneTime ProductPublicVariantBillingType = "one_time"
 )
 
-func NewProductPublicPlanPlanTypeFromString(s string) (ProductPublicPlanPlanType, error) {
+func NewProductPublicVariantBillingTypeFromString(s string) (ProductPublicVariantBillingType, error) {
 	switch s {
 	case "renewal":
-		return ProductPublicPlanPlanTypeRenewal, nil
+		return ProductPublicVariantBillingTypeRenewal, nil
 	case "one_time":
-		return ProductPublicPlanPlanTypeOneTime, nil
+		return ProductPublicVariantBillingTypeOneTime, nil
 	}
-	var t ProductPublicPlanPlanType
+	var t ProductPublicVariantBillingType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (p ProductPublicPlanPlanType) Ptr() *ProductPublicPlanPlanType {
+func (p ProductPublicVariantBillingType) Ptr() *ProductPublicVariantBillingType {
 	return &p
 }
 
 // Where this variant can be seen. `visible` variants appear on the product page.
-type ProductPublicPlanVisibility string
+type ProductPublicVariantVisibility string
 
 const (
-	ProductPublicPlanVisibilityVisible   ProductPublicPlanVisibility = "visible"
-	ProductPublicPlanVisibilityHidden    ProductPublicPlanVisibility = "hidden"
-	ProductPublicPlanVisibilityArchived  ProductPublicPlanVisibility = "archived"
-	ProductPublicPlanVisibilityQuickLink ProductPublicPlanVisibility = "quick_link"
+	ProductPublicVariantVisibilityVisible   ProductPublicVariantVisibility = "visible"
+	ProductPublicVariantVisibilityHidden    ProductPublicVariantVisibility = "hidden"
+	ProductPublicVariantVisibilityArchived  ProductPublicVariantVisibility = "archived"
+	ProductPublicVariantVisibilityQuickLink ProductPublicVariantVisibility = "quick_link"
 )
 
-func NewProductPublicPlanVisibilityFromString(s string) (ProductPublicPlanVisibility, error) {
+func NewProductPublicVariantVisibilityFromString(s string) (ProductPublicVariantVisibility, error) {
 	switch s {
 	case "visible":
-		return ProductPublicPlanVisibilityVisible, nil
+		return ProductPublicVariantVisibilityVisible, nil
 	case "hidden":
-		return ProductPublicPlanVisibilityHidden, nil
+		return ProductPublicVariantVisibilityHidden, nil
 	case "archived":
-		return ProductPublicPlanVisibilityArchived, nil
+		return ProductPublicVariantVisibilityArchived, nil
 	case "quick_link":
-		return ProductPublicPlanVisibilityQuickLink, nil
+		return ProductPublicVariantVisibilityQuickLink, nil
 	}
-	var t ProductPublicPlanVisibility
+	var t ProductPublicVariantVisibility
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (p ProductPublicPlanVisibility) Ptr() *ProductPublicPlanVisibility {
+func (p ProductPublicVariantVisibility) Ptr() *ProductPublicVariantVisibility {
 	return &p
 }
 
@@ -2398,6 +2398,28 @@ func (d *DeleteProductsResponse) String() string {
 	return fmt.Sprintf("%#v", d)
 }
 
+type ListProductsRequestBillingTypesItem string
+
+const (
+	ListProductsRequestBillingTypesItemRenewal ListProductsRequestBillingTypesItem = "renewal"
+	ListProductsRequestBillingTypesItemOneTime ListProductsRequestBillingTypesItem = "one_time"
+)
+
+func NewListProductsRequestBillingTypesItemFromString(s string) (ListProductsRequestBillingTypesItem, error) {
+	switch s {
+	case "renewal":
+		return ListProductsRequestBillingTypesItemRenewal, nil
+	case "one_time":
+		return ListProductsRequestBillingTypesItemOneTime, nil
+	}
+	var t ListProductsRequestBillingTypesItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListProductsRequestBillingTypesItem) Ptr() *ListProductsRequestBillingTypesItem {
+	return &l
+}
+
 type ListProductsRequestDirection string
 
 const (
@@ -2417,28 +2439,6 @@ func NewListProductsRequestDirectionFromString(s string) (ListProductsRequestDir
 }
 
 func (l ListProductsRequestDirection) Ptr() *ListProductsRequestDirection {
-	return &l
-}
-
-type ListProductsRequestPlanTypesItem string
-
-const (
-	ListProductsRequestPlanTypesItemRenewal ListProductsRequestPlanTypesItem = "renewal"
-	ListProductsRequestPlanTypesItemOneTime ListProductsRequestPlanTypesItem = "one_time"
-)
-
-func NewListProductsRequestPlanTypesItemFromString(s string) (ListProductsRequestPlanTypesItem, error) {
-	switch s {
-	case "renewal":
-		return ListProductsRequestPlanTypesItemRenewal, nil
-	case "one_time":
-		return ListProductsRequestPlanTypesItemOneTime, nil
-	}
-	var t ListProductsRequestPlanTypesItem
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (l ListProductsRequestPlanTypesItem) Ptr() *ListProductsRequestPlanTypesItem {
 	return &l
 }
 

@@ -32534,7 +32534,7 @@ client.Plans.List(
 <dl>
 <dd>
 
-**planTypes:** `*string` 
+**billingTypes:** `*string` 
     
 </dd>
 </dl>
@@ -32680,6 +32680,14 @@ client.Plans.Create(
 <dl>
 <dd>
 
+**billingType:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **cancelDiscountIntervals:** `*int` 
     
 </dd>
@@ -32785,14 +32793,6 @@ client.Plans.Create(
 <dd>
 
 **paymentMethodConfiguration:** `*whopsdk.CreatePlansRequestPaymentMethodConfiguration` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**planType:** `*string` 
     
 </dd>
 </dl>
@@ -33608,7 +33608,7 @@ client.Products.List(
 <dl>
 <dd>
 
-**planTypes:** `*whopsdk.ListProductsRequestPlanTypesItem` — Filter to products with a buyable variant of these billing models, such as `one_time` or `renewal`.
+**billingTypes:** `*whopsdk.ListProductsRequestBillingTypesItem` — Filter to products with a buyable variant of these billing models, such as `one_time` or `renewal`.
     
 </dd>
 </dl>
@@ -41667,7 +41667,7 @@ request := &whopsdk.ListVariantsRequest{
             "visible",
         ),
     },
-    PlanTypes: []*string{
+    BillingTypes: []*string{
         whopsdk.String(
             "renewal",
         ),
@@ -41745,7 +41745,7 @@ client.Variants.List(
 <dl>
 <dd>
 
-**planTypes:** `*string` — Filter to only variants matching these billing types.
+**billingTypes:** `*string` — Filter to only variants matching these billing types.
     
 </dd>
 </dl>
@@ -41915,6 +41915,14 @@ client.Variants.Create(
 <dl>
 <dd>
 
+**billingType:** `*string` — Variant billing type, such as `one_time` or `renewal`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **cancelDiscountIntervals:** `*int` — How long the retention discount lasts: `0` forever, `1` the next payment only, or a number of calendar months from when the customer accepts it. Required when `offer_cancel_discount` is true.
     
 </dd>
@@ -42020,14 +42028,6 @@ client.Variants.Create(
 <dd>
 
 **paymentMethodConfiguration:** `*whopsdk.CreateVariantsRequestPaymentMethodConfiguration` — Explicit payment method configuration for the variant. When not provided, the account's defaults apply. Send at least one of `enabled` or `disabled`; an omitted one is empty.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**planType:** `*string` — Variant billing type, such as `one_time` or `renewal`.
     
 </dd>
 </dl>

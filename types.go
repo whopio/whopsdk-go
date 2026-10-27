@@ -67789,26 +67789,26 @@ var (
 	variantListItemFieldAdaptivePricingEnabled     = big.NewInt(1 << 1)
 	variantListItemFieldAttributes                 = big.NewInt(1 << 2)
 	variantListItemFieldBillingPeriod              = big.NewInt(1 << 3)
-	variantListItemFieldCancelDiscountIntervals    = big.NewInt(1 << 4)
-	variantListItemFieldCancelDiscountPercentage   = big.NewInt(1 << 5)
-	variantListItemFieldCheckoutStyling            = big.NewInt(1 << 6)
-	variantListItemFieldCreatedAt                  = big.NewInt(1 << 7)
-	variantListItemFieldCurrency                   = big.NewInt(1 << 8)
-	variantListItemFieldCustomFields               = big.NewInt(1 << 9)
-	variantListItemFieldDescription                = big.NewInt(1 << 10)
-	variantListItemFieldExpirationDays             = big.NewInt(1 << 11)
-	variantListItemFieldFormattedPrice             = big.NewInt(1 << 12)
-	variantListItemFieldID                         = big.NewInt(1 << 13)
-	variantListItemFieldImage                      = big.NewInt(1 << 14)
-	variantListItemFieldInitialPrice               = big.NewInt(1 << 15)
-	variantListItemFieldInitialPriceDue            = big.NewInt(1 << 16)
-	variantListItemFieldInternalNotes              = big.NewInt(1 << 17)
-	variantListItemFieldInvoice                    = big.NewInt(1 << 18)
-	variantListItemFieldMemberCount                = big.NewInt(1 << 19)
-	variantListItemFieldMetadata                   = big.NewInt(1 << 20)
-	variantListItemFieldOfferCancelDiscount        = big.NewInt(1 << 21)
-	variantListItemFieldPaymentMethodConfiguration = big.NewInt(1 << 22)
-	variantListItemFieldPlanType                   = big.NewInt(1 << 23)
+	variantListItemFieldBillingType                = big.NewInt(1 << 4)
+	variantListItemFieldCancelDiscountIntervals    = big.NewInt(1 << 5)
+	variantListItemFieldCancelDiscountPercentage   = big.NewInt(1 << 6)
+	variantListItemFieldCheckoutStyling            = big.NewInt(1 << 7)
+	variantListItemFieldCreatedAt                  = big.NewInt(1 << 8)
+	variantListItemFieldCurrency                   = big.NewInt(1 << 9)
+	variantListItemFieldCustomFields               = big.NewInt(1 << 10)
+	variantListItemFieldDescription                = big.NewInt(1 << 11)
+	variantListItemFieldExpirationDays             = big.NewInt(1 << 12)
+	variantListItemFieldFormattedPrice             = big.NewInt(1 << 13)
+	variantListItemFieldID                         = big.NewInt(1 << 14)
+	variantListItemFieldImage                      = big.NewInt(1 << 15)
+	variantListItemFieldInitialPrice               = big.NewInt(1 << 16)
+	variantListItemFieldInitialPriceDue            = big.NewInt(1 << 17)
+	variantListItemFieldInternalNotes              = big.NewInt(1 << 18)
+	variantListItemFieldInvoice                    = big.NewInt(1 << 19)
+	variantListItemFieldMemberCount                = big.NewInt(1 << 20)
+	variantListItemFieldMetadata                   = big.NewInt(1 << 21)
+	variantListItemFieldOfferCancelDiscount        = big.NewInt(1 << 22)
+	variantListItemFieldPaymentMethodConfiguration = big.NewInt(1 << 23)
 	variantListItemFieldProduct                    = big.NewInt(1 << 24)
 	variantListItemFieldPurchaseURL                = big.NewInt(1 << 25)
 	variantListItemFieldReleaseMethod              = big.NewInt(1 << 26)
@@ -67863,6 +67863,8 @@ type VariantListItem struct {
 	Attributes map[string]*string `json:"attributes,omitempty" url:"attributes,omitempty"`
 	// Number of days between recurring charges, such as 30 for monthly or 365 for annual. `null` for one-time variants.
 	BillingPeriod *float64 `json:"billing_period,omitempty" url:"billing_period,omitempty"`
+	// Billing model for this variant.
+	BillingType VariantListItemBillingType `json:"billing_type" url:"billing_type"`
 	// How long the cancellation discount lasts: `0` forever, `1` the next payment only, or a number of calendar months from when the customer accepts it. `null` when none is offered or the actor lacks the `plan:basic:read` scope.
 	CancelDiscountIntervals *float64 `json:"cancel_discount_intervals,omitempty" url:"cancel_discount_intervals,omitempty"`
 	// Cancellation discount as a whole-number percentage. `null` when none is offered or the actor lacks the `plan:basic:read` scope.
@@ -67900,8 +67902,6 @@ type VariantListItem struct {
 	OfferCancelDiscount *bool `json:"offer_cancel_discount,omitempty" url:"offer_cancel_discount,omitempty"`
 	// Payment method configuration (`enabled`, `disabled`, `include_platform_defaults`); `null` when variant uses default settings.
 	PaymentMethodConfiguration map[string]any `json:"payment_method_configuration,omitempty" url:"payment_method_configuration,omitempty"`
-	// Billing model for this variant.
-	PlanType VariantListItemPlanType `json:"plan_type" url:"plan_type"`
 	// Product this variant belongs to; `null` for standalone variants.
 	Product map[string]any `json:"product,omitempty" url:"product,omitempty"`
 	// URL where customers can purchase this variant directly.
@@ -67966,6 +67966,13 @@ func (v *VariantListItem) GetBillingPeriod() *float64 {
 		return nil
 	}
 	return v.BillingPeriod
+}
+
+func (v *VariantListItem) GetBillingType() VariantListItemBillingType {
+	if v == nil {
+		return ""
+	}
+	return v.BillingType
 }
 
 func (v *VariantListItem) GetCancelDiscountIntervals() *float64 {
@@ -68099,13 +68106,6 @@ func (v *VariantListItem) GetPaymentMethodConfiguration() map[string]any {
 		return nil
 	}
 	return v.PaymentMethodConfiguration
-}
-
-func (v *VariantListItem) GetPlanType() VariantListItemPlanType {
-	if v == nil {
-		return ""
-	}
-	return v.PlanType
 }
 
 func (v *VariantListItem) GetProduct() map[string]any {
@@ -68257,6 +68257,13 @@ func (v *VariantListItem) SetBillingPeriod(billingPeriod *float64) {
 	v.require(variantListItemFieldBillingPeriod)
 }
 
+// SetBillingType sets the BillingType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (v *VariantListItem) SetBillingType(billingType VariantListItemBillingType) {
+	v.BillingType = billingType
+	v.require(variantListItemFieldBillingType)
+}
+
 // SetCancelDiscountIntervals sets the CancelDiscountIntervals field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (v *VariantListItem) SetCancelDiscountIntervals(cancelDiscountIntervals *float64) {
@@ -68388,13 +68395,6 @@ func (v *VariantListItem) SetOfferCancelDiscount(offerCancelDiscount *bool) {
 func (v *VariantListItem) SetPaymentMethodConfiguration(paymentMethodConfiguration map[string]any) {
 	v.PaymentMethodConfiguration = paymentMethodConfiguration
 	v.require(variantListItemFieldPaymentMethodConfiguration)
-}
-
-// SetPlanType sets the PlanType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (v *VariantListItem) SetPlanType(planType VariantListItemPlanType) {
-	v.PlanType = planType
-	v.require(variantListItemFieldPlanType)
 }
 
 // SetProduct sets the Product field and marks it as non-optional;
@@ -68552,25 +68552,25 @@ func (v *VariantListItem) String() string {
 }
 
 // Billing model for this variant.
-type VariantListItemPlanType string
+type VariantListItemBillingType string
 
 const (
-	VariantListItemPlanTypeRenewal VariantListItemPlanType = "renewal"
-	VariantListItemPlanTypeOneTime VariantListItemPlanType = "one_time"
+	VariantListItemBillingTypeRenewal VariantListItemBillingType = "renewal"
+	VariantListItemBillingTypeOneTime VariantListItemBillingType = "one_time"
 )
 
-func NewVariantListItemPlanTypeFromString(s string) (VariantListItemPlanType, error) {
+func NewVariantListItemBillingTypeFromString(s string) (VariantListItemBillingType, error) {
 	switch s {
 	case "renewal":
-		return VariantListItemPlanTypeRenewal, nil
+		return VariantListItemBillingTypeRenewal, nil
 	case "one_time":
-		return VariantListItemPlanTypeOneTime, nil
+		return VariantListItemBillingTypeOneTime, nil
 	}
-	var t VariantListItemPlanType
+	var t VariantListItemBillingType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (v VariantListItemPlanType) Ptr() *VariantListItemPlanType {
+func (v VariantListItemBillingType) Ptr() *VariantListItemBillingType {
 	return &v
 }
 
