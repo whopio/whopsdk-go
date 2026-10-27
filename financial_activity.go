@@ -1271,6 +1271,7 @@ const (
 	LedgerActivityLineTypePlatformCoveredDispute                    LedgerActivityLineType = "platform_covered_dispute"
 	LedgerActivityLineTypeDisputeAlertFee                           LedgerActivityLineType = "dispute_alert_fee"
 	LedgerActivityLineTypeDisputeRepresentmentFee                   LedgerActivityLineType = "dispute_representment_fee"
+	LedgerActivityLineTypePaymentReturnFee                          LedgerActivityLineType = "payment_return_fee"
 	LedgerActivityLineTypeDisputeHoldAdjustment                     LedgerActivityLineType = "dispute_hold_adjustment"
 	LedgerActivityLineTypeDisputeHoldBlocked                        LedgerActivityLineType = "dispute_hold_blocked"
 	LedgerActivityLineTypePspDisputePayable                         LedgerActivityLineType = "psp_dispute_payable"
@@ -1632,6 +1633,8 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypeDisputeAlertFee, nil
 	case "dispute_representment_fee":
 		return LedgerActivityLineTypeDisputeRepresentmentFee, nil
+	case "payment_return_fee":
+		return LedgerActivityLineTypePaymentReturnFee, nil
 	case "dispute_hold_adjustment":
 		return LedgerActivityLineTypeDisputeHoldAdjustment, nil
 	case "dispute_hold_blocked":
@@ -6315,6 +6318,7 @@ const (
 	ListFinancialActivityRequestLineTypesItemPaymentReferralReversal                   ListFinancialActivityRequestLineTypesItem = "payment_referral_reversal"
 	ListFinancialActivityRequestLineTypesItemPaymentRefund                             ListFinancialActivityRequestLineTypesItem = "payment_refund"
 	ListFinancialActivityRequestLineTypesItemPaymentRefundReversal                     ListFinancialActivityRequestLineTypesItem = "payment_refund_reversal"
+	ListFinancialActivityRequestLineTypesItemPaymentReturnFee                          ListFinancialActivityRequestLineTypesItem = "payment_return_fee"
 	ListFinancialActivityRequestLineTypesItemPaymentRevshare                           ListFinancialActivityRequestLineTypesItem = "payment_revshare"
 	ListFinancialActivityRequestLineTypesItemPaymentRevsharePayout                     ListFinancialActivityRequestLineTypesItem = "payment_revshare_payout"
 	ListFinancialActivityRequestLineTypesItemPaymentRevshareRefund                     ListFinancialActivityRequestLineTypesItem = "payment_revshare_refund"
@@ -6558,6 +6562,8 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemPaymentRefund, nil
 	case "payment_refund_reversal":
 		return ListFinancialActivityRequestLineTypesItemPaymentRefundReversal, nil
+	case "payment_return_fee":
+		return ListFinancialActivityRequestLineTypesItemPaymentReturnFee, nil
 	case "payment_revshare":
 		return ListFinancialActivityRequestLineTypesItemPaymentRevshare, nil
 	case "payment_revshare_payout":
