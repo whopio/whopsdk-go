@@ -593,6 +593,103 @@ func (p *PauseAdsRequest) SetID(id string) {
 }
 
 var (
+	reportStatsAdsRequestFieldAdID          = big.NewInt(1 << 0)
+	reportStatsAdsRequestFieldClicks        = big.NewInt(1 << 1)
+	reportStatsAdsRequestFieldHourStartedAt = big.NewInt(1 << 2)
+	reportStatsAdsRequestFieldImpressions   = big.NewInt(1 << 3)
+	reportStatsAdsRequestFieldSpend         = big.NewInt(1 << 4)
+)
+
+type ReportStatsAdsRequest struct {
+	// The ad's ID, prefixed `ad_`: the campaign's ad or the runner's copy of it.
+	AdID string `json:"ad_id" url:"-"`
+	// The ad's clicks in the hour so far, at most `impressions`. Zero when left out.
+	Clicks *ReportStatsAdsRequestClicks `json:"clicks,omitempty" url:"-"`
+	// Start of the hour, on the hour, within the last 24 hours.
+	HourStartedAt time.Time `json:"hour_started_at" url:"-"`
+	// The ad's impressions in the hour so far. Zero when left out.
+	Impressions *ReportStatsAdsRequestImpressions `json:"impressions,omitempty" url:"-"`
+	// USD spent on the ad in the hour so far, to the cent.
+	Spend *ReportStatsAdsRequestSpend `json:"spend" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (r *ReportStatsAdsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetAdID sets the AdID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReportStatsAdsRequest) SetAdID(adID string) {
+	r.AdID = adID
+	r.require(reportStatsAdsRequestFieldAdID)
+}
+
+// SetClicks sets the Clicks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReportStatsAdsRequest) SetClicks(clicks *ReportStatsAdsRequestClicks) {
+	r.Clicks = clicks
+	r.require(reportStatsAdsRequestFieldClicks)
+}
+
+// SetHourStartedAt sets the HourStartedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReportStatsAdsRequest) SetHourStartedAt(hourStartedAt time.Time) {
+	r.HourStartedAt = hourStartedAt
+	r.require(reportStatsAdsRequestFieldHourStartedAt)
+}
+
+// SetImpressions sets the Impressions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReportStatsAdsRequest) SetImpressions(impressions *ReportStatsAdsRequestImpressions) {
+	r.Impressions = impressions
+	r.require(reportStatsAdsRequestFieldImpressions)
+}
+
+// SetSpend sets the Spend field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReportStatsAdsRequest) SetSpend(spend *ReportStatsAdsRequestSpend) {
+	r.Spend = spend
+	r.require(reportStatsAdsRequestFieldSpend)
+}
+
+func (r *ReportStatsAdsRequest) UnmarshalJSON(data []byte) error {
+	type embed ReportStatsAdsRequest
+	var body = struct {
+		embed
+		HourStartedAt *internal.DateTime `json:"hour_started_at"`
+	}{
+		embed: embed(*r),
+	}
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*r = ReportStatsAdsRequest(body.embed)
+	r.HourStartedAt = body.HourStartedAt.Time()
+	return nil
+}
+
+func (r *ReportStatsAdsRequest) MarshalJSON() ([]byte, error) {
+	type embed ReportStatsAdsRequest
+	var marshaler = struct {
+		embed
+		HourStartedAt *internal.DateTime `json:"hour_started_at"`
+	}{
+		embed:         embed(*r),
+		HourStartedAt: internal.NewDateTime(r.HourStartedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	retrieveAdsRequestFieldID               = big.NewInt(1 << 0)
 	retrieveAdsRequestFieldStatsFrom        = big.NewInt(1 << 1)
 	retrieveAdsRequestFieldStatsTo          = big.NewInt(1 << 2)
@@ -3236,6 +3333,195 @@ func NewAdResultEventFromString(s string) (AdResultEvent, error) {
 
 func (a AdResultEvent) Ptr() *AdResultEvent {
 	return &a
+}
+
+var (
+	adStatFieldAdCampaignID  = big.NewInt(1 << 0)
+	adStatFieldAdGroupID     = big.NewInt(1 << 1)
+	adStatFieldAdID          = big.NewInt(1 << 2)
+	adStatFieldClicks        = big.NewInt(1 << 3)
+	adStatFieldHourStartedAt = big.NewInt(1 << 4)
+	adStatFieldImpressions   = big.NewInt(1 << 5)
+	adStatFieldSpend         = big.NewInt(1 << 6)
+)
+
+type AdStat struct {
+	// The ID of the ad's campaign, prefixed `adcamp_`.
+	AdCampaignID string `json:"ad_campaign_id" url:"ad_campaign_id"`
+	// The ID of the ad's ad group, prefixed `adgrp_`.
+	AdGroupID string `json:"ad_group_id" url:"ad_group_id"`
+	// The ad's ID, prefixed `ad_`, as sent.
+	AdID string `json:"ad_id" url:"ad_id"`
+	// The ad's clicks in the hour.
+	Clicks int `json:"clicks" url:"clicks"`
+	// Start of the hour, as an ISO 8601 timestamp.
+	HourStartedAt string `json:"hour_started_at" url:"hour_started_at"`
+	// The ad's impressions in the hour.
+	Impressions int `json:"impressions" url:"impressions"`
+	// The spend recorded and paid for the ad in the hour, exactly as reported.
+	Spend *Money `json:"spend" url:"spend"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AdStat) GetAdCampaignID() string {
+	if a == nil {
+		return ""
+	}
+	return a.AdCampaignID
+}
+
+func (a *AdStat) GetAdGroupID() string {
+	if a == nil {
+		return ""
+	}
+	return a.AdGroupID
+}
+
+func (a *AdStat) GetAdID() string {
+	if a == nil {
+		return ""
+	}
+	return a.AdID
+}
+
+func (a *AdStat) GetClicks() int {
+	if a == nil {
+		return 0
+	}
+	return a.Clicks
+}
+
+func (a *AdStat) GetHourStartedAt() string {
+	if a == nil {
+		return ""
+	}
+	return a.HourStartedAt
+}
+
+func (a *AdStat) GetImpressions() int {
+	if a == nil {
+		return 0
+	}
+	return a.Impressions
+}
+
+func (a *AdStat) GetSpend() *Money {
+	if a == nil {
+		return nil
+	}
+	return a.Spend
+}
+
+func (a *AdStat) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AdStat) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetAdCampaignID sets the AdCampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdStat) SetAdCampaignID(adCampaignID string) {
+	a.AdCampaignID = adCampaignID
+	a.require(adStatFieldAdCampaignID)
+}
+
+// SetAdGroupID sets the AdGroupID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdStat) SetAdGroupID(adGroupID string) {
+	a.AdGroupID = adGroupID
+	a.require(adStatFieldAdGroupID)
+}
+
+// SetAdID sets the AdID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdStat) SetAdID(adID string) {
+	a.AdID = adID
+	a.require(adStatFieldAdID)
+}
+
+// SetClicks sets the Clicks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdStat) SetClicks(clicks int) {
+	a.Clicks = clicks
+	a.require(adStatFieldClicks)
+}
+
+// SetHourStartedAt sets the HourStartedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdStat) SetHourStartedAt(hourStartedAt string) {
+	a.HourStartedAt = hourStartedAt
+	a.require(adStatFieldHourStartedAt)
+}
+
+// SetImpressions sets the Impressions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdStat) SetImpressions(impressions int) {
+	a.Impressions = impressions
+	a.require(adStatFieldImpressions)
+}
+
+// SetSpend sets the Spend field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdStat) SetSpend(spend *Money) {
+	a.Spend = spend
+	a.require(adStatFieldSpend)
+}
+
+func (a *AdStat) UnmarshalJSON(data []byte) error {
+	type unmarshaler AdStat
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AdStat(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AdStat) MarshalJSON() ([]byte, error) {
+	type embed AdStat
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AdStat) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
 }
 
 // Whether the ad is enabled. `active` and `paused` are set by you; `in_review` and `rejected` come from ad review.
@@ -7702,6 +7988,195 @@ func NewPostAdUpdatedPayloadTypeFromString(s string) (PostAdUpdatedPayloadType, 
 
 func (p PostAdUpdatedPayloadType) Ptr() *PostAdUpdatedPayloadType {
 	return &p
+}
+
+// The ad's clicks in the hour so far, at most `impressions`. Zero when left out.
+type ReportStatsAdsRequestClicks struct {
+	Integer int
+	String  string
+
+	typ string
+}
+
+func (r *ReportStatsAdsRequestClicks) GetInteger() int {
+	if r == nil {
+		return 0
+	}
+	return r.Integer
+}
+
+func (r *ReportStatsAdsRequestClicks) GetString() string {
+	if r == nil {
+		return ""
+	}
+	return r.String
+}
+
+func (r *ReportStatsAdsRequestClicks) UnmarshalJSON(data []byte) error {
+	var valueInteger int
+	if err := json.Unmarshal(data, &valueInteger); err == nil {
+		r.typ = "Integer"
+		r.Integer = valueInteger
+		return nil
+	}
+	var valueString string
+	if err := json.Unmarshal(data, &valueString); err == nil {
+		r.typ = "String"
+		r.String = valueString
+		return nil
+	}
+	return fmt.Errorf("%s cannot be deserialized as a %T", data, r)
+}
+
+func (r ReportStatsAdsRequestClicks) MarshalJSON() ([]byte, error) {
+	if r.typ == "Integer" || r.Integer != 0 {
+		return json.Marshal(r.Integer)
+	}
+	if r.typ == "String" || r.String != "" {
+		return json.Marshal(r.String)
+	}
+	return nil, fmt.Errorf("type %T does not include a non-empty union type", r)
+}
+
+type ReportStatsAdsRequestClicksVisitor interface {
+	VisitInteger(int) error
+	VisitString(string) error
+}
+
+func (r *ReportStatsAdsRequestClicks) Accept(visitor ReportStatsAdsRequestClicksVisitor) error {
+	if r.typ == "Integer" || r.Integer != 0 {
+		return visitor.VisitInteger(r.Integer)
+	}
+	if r.typ == "String" || r.String != "" {
+		return visitor.VisitString(r.String)
+	}
+	return fmt.Errorf("type %T does not include a non-empty union type", r)
+}
+
+// The ad's impressions in the hour so far. Zero when left out.
+type ReportStatsAdsRequestImpressions struct {
+	Integer int
+	String  string
+
+	typ string
+}
+
+func (r *ReportStatsAdsRequestImpressions) GetInteger() int {
+	if r == nil {
+		return 0
+	}
+	return r.Integer
+}
+
+func (r *ReportStatsAdsRequestImpressions) GetString() string {
+	if r == nil {
+		return ""
+	}
+	return r.String
+}
+
+func (r *ReportStatsAdsRequestImpressions) UnmarshalJSON(data []byte) error {
+	var valueInteger int
+	if err := json.Unmarshal(data, &valueInteger); err == nil {
+		r.typ = "Integer"
+		r.Integer = valueInteger
+		return nil
+	}
+	var valueString string
+	if err := json.Unmarshal(data, &valueString); err == nil {
+		r.typ = "String"
+		r.String = valueString
+		return nil
+	}
+	return fmt.Errorf("%s cannot be deserialized as a %T", data, r)
+}
+
+func (r ReportStatsAdsRequestImpressions) MarshalJSON() ([]byte, error) {
+	if r.typ == "Integer" || r.Integer != 0 {
+		return json.Marshal(r.Integer)
+	}
+	if r.typ == "String" || r.String != "" {
+		return json.Marshal(r.String)
+	}
+	return nil, fmt.Errorf("type %T does not include a non-empty union type", r)
+}
+
+type ReportStatsAdsRequestImpressionsVisitor interface {
+	VisitInteger(int) error
+	VisitString(string) error
+}
+
+func (r *ReportStatsAdsRequestImpressions) Accept(visitor ReportStatsAdsRequestImpressionsVisitor) error {
+	if r.typ == "Integer" || r.Integer != 0 {
+		return visitor.VisitInteger(r.Integer)
+	}
+	if r.typ == "String" || r.String != "" {
+		return visitor.VisitString(r.String)
+	}
+	return fmt.Errorf("type %T does not include a non-empty union type", r)
+}
+
+// USD spent on the ad in the hour so far, to the cent.
+type ReportStatsAdsRequestSpend struct {
+	Double float64
+	String string
+
+	typ string
+}
+
+func (r *ReportStatsAdsRequestSpend) GetDouble() float64 {
+	if r == nil {
+		return 0
+	}
+	return r.Double
+}
+
+func (r *ReportStatsAdsRequestSpend) GetString() string {
+	if r == nil {
+		return ""
+	}
+	return r.String
+}
+
+func (r *ReportStatsAdsRequestSpend) UnmarshalJSON(data []byte) error {
+	var valueDouble float64
+	if err := json.Unmarshal(data, &valueDouble); err == nil {
+		r.typ = "Double"
+		r.Double = valueDouble
+		return nil
+	}
+	var valueString string
+	if err := json.Unmarshal(data, &valueString); err == nil {
+		r.typ = "String"
+		r.String = valueString
+		return nil
+	}
+	return fmt.Errorf("%s cannot be deserialized as a %T", data, r)
+}
+
+func (r ReportStatsAdsRequestSpend) MarshalJSON() ([]byte, error) {
+	if r.typ == "Double" || r.Double != 0 {
+		return json.Marshal(r.Double)
+	}
+	if r.typ == "String" || r.String != "" {
+		return json.Marshal(r.String)
+	}
+	return nil, fmt.Errorf("type %T does not include a non-empty union type", r)
+}
+
+type ReportStatsAdsRequestSpendVisitor interface {
+	VisitDouble(float64) error
+	VisitString(string) error
+}
+
+func (r *ReportStatsAdsRequestSpend) Accept(visitor ReportStatsAdsRequestSpendVisitor) error {
+	if r.typ == "Double" || r.Double != 0 {
+		return visitor.VisitDouble(r.Double)
+	}
+	if r.typ == "String" || r.String != "" {
+		return visitor.VisitString(r.String)
+	}
+	return fmt.Errorf("type %T does not include a non-empty union type", r)
 }
 
 type RetrieveAdsRequestAttributionModel string

@@ -39,6 +39,39 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
+// Records a runner's stats for one of their ads in one hour, and pays them for the spend. Send the ad's totals so far for an hour that started in the last 24 hours; they replace what the ad held for that hour, and its ad group's and campaign's hours are rebuilt from their ads. The spend can go up but never down. Reporting on a campaign starts with the hour of its first recorded report; earlier hours are refused. Spend over what is left of a budget (the runner's share of the day, the campaign's daily budget or the ad group's budget) is refused with the most the ad can record. Takes the runner's Whop session or a user OAuth token with `ad_campaign:update`. A token without that scope gets a 403, and anyone not holding the ad's campaign gets a 404.
+//
+// Example:
+//
+//	request := &whopsdk.ReportStatsAdsRequest{
+//	    AdID: "ad_xxxxxxxxxxxxxx",
+//	    HourStartedAt: whopsdk.MustParseDateTime(
+//	        "2026-01-01T12:00:00Z",
+//	    ),
+//	    Spend: &whopsdk.ReportStatsAdsRequestSpend{
+//	        Double: 1.1,
+//	    },
+//	}
+//	client.Ads.ReportStats(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) ReportStats(
+	ctx context.Context,
+	request *whopsdk.ReportStatsAdsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.AdStat, error) {
+	response, err := c.WithRawResponse.ReportStats(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Lists the ads for an account, with stats over the requested window.
 //
 // Example:
