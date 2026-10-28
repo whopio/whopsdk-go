@@ -228,7 +228,7 @@ func (c *Client) GeneratePdf(
 	return response.Body, nil
 }
 
-// Resolves final tax and opens a draft invoice. An invoice with a `payment_method_id` is then charged to it off-session, as `POST /payments` charges a saved payment method. Issuing an open invoice again retains its totals and charges nothing.
+// Resolves final tax and opens a draft invoice without emailing it. An invoice with a `payment_method_id` is charged to it off-session, as `POST /payments` charges a saved payment method: at `charge_at` if given, otherwise on `due_at` while it is still ahead, otherwise right away (see `scheduled_charge_at`). With a future `due_at` and no `charge_at`, the customer is charged on the due date without being emailed first. Issuing an open invoice again retains its totals and charges nothing.
 //
 // Example:
 //
@@ -282,7 +282,7 @@ func (c *Client) MarkUncollectible(
 	return response.Body, nil
 }
 
-// Issues a draft and emails it to its recipients, with reminders after the due date. A draft with a `payment_method_id` needs `payment:charge`: when its `due_at` is still ahead, it is emailed now and charged to that method on `due_at` (see `scheduled_charge_at`); otherwise it is charged right away instead of emailed. Voiding the invoice, marking it uncollectible, or paying it first cancels the scheduled charge, and its recipients get the payment link if a charge fails. Sending an open invoice emails it again, up to three emails a day including the first send. With `send_at`, the draft is sent at that time instead, and cannot be edited, except its recipients, until it is sent or unscheduled. Each email, reminders included, is sent separately to the customer email shown on the invoice and to each address in `recipient_emails`, so recipients never see each other's addresses.
+// Issues a draft and emails it to its recipients, with reminders after the due date. A draft with a `payment_method_id` needs `payment:charge`: with a `charge_at`, or when its `due_at` is still ahead, it is emailed now and charged to that method at that time (see `scheduled_charge_at`); otherwise it is charged right away instead of emailed. Voiding the invoice, marking it uncollectible, or paying it first cancels the scheduled charge, and its recipients get the payment link if a charge fails. Sending an open invoice emails it again, up to three emails a day including the first send. With `send_at`, the draft is sent at that time instead, and cannot be edited, except its recipients, until it is sent or unscheduled. Each email, reminders included, is sent separately to the customer email shown on the invoice and to each address in `recipient_emails`, so recipients never see each other's addresses.
 //
 // Example:
 //

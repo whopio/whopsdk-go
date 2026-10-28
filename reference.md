@@ -23681,7 +23681,7 @@ client.Invoices.Create(
 <dl>
 <dd>
 
-**paymentMethodID:** `*string` — A saved payment method belonging to the member, prefixed `payt_`. Sending the invoice emails it now and charges this method on `due_at`, or right away when there is no `due_at` or it has passed. Issuing the invoice without sending it charges right away.
+**paymentMethodID:** `*string` — A saved payment method belonging to the member, prefixed `payt_`. Sending or issuing the invoice charges this method at the `charge_at` passed to that call, otherwise on `due_at`, or right away when there is no `due_at` or it has passed. Sending also emails the invoice now when the charge is later; issuing does not.
     
 </dd>
 </dl>
@@ -23873,7 +23873,7 @@ client.Invoices.Update(
 <dl>
 <dd>
 
-**paymentMethodID:** `*string` — A saved payment method belonging to the member, prefixed `payt_`. Sending the invoice emails it now and charges this method on `due_at`, or right away when there is no `due_at` or it has passed. Issuing the invoice without sending it charges right away.
+**paymentMethodID:** `*string` — A saved payment method belonging to the member, prefixed `payt_`. Sending or issuing the invoice charges this method at the `charge_at` passed to that call, otherwise on `due_at`, or right away when there is no `due_at` or it has passed. Sending also emails the invoice now when the charge is later; issuing does not.
     
 </dd>
 </dl>
@@ -23953,7 +23953,7 @@ client.Invoices.GeneratePdf(
 </dl>
 </details>
 
-<details><summary><code>client.Invoices.Issue(ID) -> *whopsdk.Invoice</code></summary>
+<details><summary><code>client.Invoices.Issue(ID, request) -> *whopsdk.Invoice</code></summary>
 <dl>
 <dd>
 
@@ -23965,7 +23965,7 @@ client.Invoices.GeneratePdf(
 <dl>
 <dd>
 
-Resolves final tax and opens a draft invoice. An invoice with a `payment_method_id` is then charged to it off-session, as `POST /payments` charges a saved payment method. Issuing an open invoice again retains its totals and charges nothing.
+Resolves final tax and opens a draft invoice without emailing it. An invoice with a `payment_method_id` is charged to it off-session, as `POST /payments` charges a saved payment method: at `charge_at` if given, otherwise on `due_at` while it is still ahead, otherwise right away (see `scheduled_charge_at`). With a future `due_at` and no `charge_at`, the customer is charged on the due date without being emailed first. Issuing an open invoice again retains its totals and charges nothing.
 </dd>
 </dl>
 </dd>
@@ -24002,6 +24002,14 @@ client.Invoices.Issue(
 <dd>
 
 **id:** `string` — The invoice's pay_ ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**chargeAt:** `*time.Time` — When to charge the draft's `payment_method_id`, as an ISO 8601 timestamp in the future. Only for a draft with a `payment_method_id` and a total above zero. Omit to charge on `due_at` if it is still ahead, or right away otherwise.
     
 </dd>
 </dl>
@@ -24085,7 +24093,7 @@ client.Invoices.MarkUncollectible(
 <dl>
 <dd>
 
-Issues a draft and emails it to its recipients, with reminders after the due date. A draft with a `payment_method_id` needs `payment:charge`: when its `due_at` is still ahead, it is emailed now and charged to that method on `due_at` (see `scheduled_charge_at`); otherwise it is charged right away instead of emailed. Voiding the invoice, marking it uncollectible, or paying it first cancels the scheduled charge, and its recipients get the payment link if a charge fails. Sending an open invoice emails it again, up to three emails a day including the first send. With `send_at`, the draft is sent at that time instead, and cannot be edited, except its recipients, until it is sent or unscheduled. Each email, reminders included, is sent separately to the customer email shown on the invoice and to each address in `recipient_emails`, so recipients never see each other's addresses.
+Issues a draft and emails it to its recipients, with reminders after the due date. A draft with a `payment_method_id` needs `payment:charge`: with a `charge_at`, or when its `due_at` is still ahead, it is emailed now and charged to that method at that time (see `scheduled_charge_at`); otherwise it is charged right away instead of emailed. Voiding the invoice, marking it uncollectible, or paying it first cancels the scheduled charge, and its recipients get the payment link if a charge fails. Sending an open invoice emails it again, up to three emails a day including the first send. With `send_at`, the draft is sent at that time instead, and cannot be edited, except its recipients, until it is sent or unscheduled. Each email, reminders included, is sent separately to the customer email shown on the invoice and to each address in `recipient_emails`, so recipients never see each other's addresses.
 </dd>
 </dl>
 </dd>
@@ -24122,6 +24130,14 @@ client.Invoices.Send(
 <dd>
 
 **id:** `string` — The invoice's pay_ ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**chargeAt:** `*time.Time` — When to charge the draft's `payment_method_id`, as an ISO 8601 timestamp in the future and no earlier than `send_at`. Only for a draft with a `payment_method_id` and a total above zero. Omit to charge on `due_at` if it is still ahead when the draft is sent, or right away otherwise. A scheduled send that runs after `charge_at` charges right away.
     
 </dd>
 </dl>
