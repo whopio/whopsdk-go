@@ -2267,7 +2267,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"action\": \"waitlist_entry:cancel\",\n      \"allowed_on_api_key\": true,\n      \"allowed_on_app\": true,\n      \"allowed_on_user\": true,\n      \"category\": \"category\",\n      \"description\": \"\",\n      \"granted_to_system_roles\": [\n        \"owner\"\n      ],\n      \"name\": \"waitlist_entry:cancel\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"start_cursor\"\n  }\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"action\": \"access_pass:basic:export\",\n      \"allowed_on_api_key\": true,\n      \"allowed_on_app\": true,\n      \"allowed_on_user\": false,\n      \"category\": \"Products\",\n      \"description\": \"Download the account's product list as a CSV.\",\n      \"granted_to_system_roles\": [\n        \"owner\"\n      ],\n      \"name\": \"Export products\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"start_cursor\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -10555,7 +10555,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"certification_complete\": false,\n  \"joined_at\": \"2026-01-01T12:00:00.000Z\",\n  \"payout_rates\": [\n    {\n      \"duration\": {\n        \"unit\": \"day\",\n        \"value\": 600\n      },\n      \"rates\": [\n        {\n          \"income_source\": \"sales\",\n          \"percentage\": 10\n        }\n      ],\n      \"tier\": \"first\"\n    }\n  ],\n  \"referred_businesses_count\": 1,\n  \"referring_partner\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  },\n  \"user\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  },\n  \"verification_waitlist_joined\": false,\n  \"whop_partner_verified_at\": \"whop_partner_verified_at\"\n}",
+        "body": "{\n  \"account_id\": \"account_id\",\n  \"certification_complete\": false,\n  \"joined_at\": \"2026-01-01T12:00:00.000Z\",\n  \"payout_rates\": [\n    {\n      \"duration\": {\n        \"unit\": \"day\",\n        \"value\": 600\n      },\n      \"rates\": [\n        {\n          \"income_source\": \"sales\",\n          \"percentage\": 10\n        }\n      ],\n      \"tier\": \"first\"\n    }\n  ],\n  \"referred_businesses_count\": 1,\n  \"referring_partner\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  },\n  \"user\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  },\n  \"verification_waitlist_joined\": false,\n  \"whop_partner_verified_at\": \"whop_partner_verified_at\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -12182,7 +12182,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"action\": \"waitlist_entry:read\",\n      \"granted\": false\n    }\n  ]\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"action\": \"access_pass:basic:export\",\n      \"granted\": false\n    }\n  ]\n}",
         "headers": {
           "Content-Type": "application/json"
         }

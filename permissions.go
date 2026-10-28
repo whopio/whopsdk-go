@@ -51,18 +51,6 @@ func (l *ListPermissionsRequest) SetActions(actions *string) {
 type PermissionAction string
 
 const (
-	PermissionActionWaitlistEntryRead                 PermissionAction = "waitlist_entry:read"
-	PermissionActionWaitlistEntryCreate               PermissionAction = "waitlist_entry:create"
-	PermissionActionWaitlistEntryCancel               PermissionAction = "waitlist_entry:cancel"
-	PermissionActionReviewDelete                      PermissionAction = "review:delete"
-	PermissionActionExperimentManage                  PermissionAction = "experiment:manage"
-	PermissionActionExperimentRead                    PermissionAction = "experiment:read"
-	PermissionActionDomainManage                      PermissionAction = "domain:manage"
-	PermissionActionDomainRead                        PermissionAction = "domain:read"
-	PermissionActionEmailManage                       PermissionAction = "email:manage"
-	PermissionActionEmailRead                         PermissionAction = "email:read"
-	PermissionActionEmailSend                         PermissionAction = "email:send"
-	PermissionActionAiPromptCreate                    PermissionAction = "ai_prompt:create"
 	PermissionActionAccessPassBasicExport             PermissionAction = "access_pass:basic:export"
 	PermissionActionAccessPassBasicRead               PermissionAction = "access_pass:basic:read"
 	PermissionActionAccessPassControlCenter           PermissionAction = "access_pass:control_center"
@@ -81,84 +69,103 @@ const (
 	PermissionActionAdCampaignStatsRead               PermissionAction = "ad_campaign:stats:read"
 	PermissionActionAdCampaignUpdate                  PermissionAction = "ad_campaign:update"
 	PermissionActionAdPixelManage                     PermissionAction = "ad_pixel:manage"
-	PermissionActionAudienceBasicRead                 PermissionAction = "audience:basic:read"
-	PermissionActionAudienceUpdate                    PermissionAction = "audience:update"
 	PermissionActionAdPublisherRead                   PermissionAction = "ad_publisher:read"
 	PermissionActionAffiliateBasicRead                PermissionAction = "affiliate:basic:read"
 	PermissionActionAffiliateCreate                   PermissionAction = "affiliate:create"
 	PermissionActionAffiliateUpdate                   PermissionAction = "affiliate:update"
+	PermissionActionAiChatCreate                      PermissionAction = "ai_chat:create"
+	PermissionActionAiChatDelete                      PermissionAction = "ai_chat:delete"
+	PermissionActionAiChatRead                        PermissionAction = "ai_chat:read"
+	PermissionActionAiChatUpdate                      PermissionAction = "ai_chat:update"
+	PermissionActionAiPromptCreate                    PermissionAction = "ai_prompt:create"
+	PermissionActionAirdropLinkBasicRead              PermissionAction = "airdrop_link:basic:read"
+	PermissionActionAirdropLinkManage                 PermissionAction = "airdrop_link:manage"
+	PermissionActionAppAuthorizationCreate            PermissionAction = "app_authorization:create"
+	PermissionActionAppAuthorizationDelete            PermissionAction = "app_authorization:delete"
+	PermissionActionAppAuthorizationRead              PermissionAction = "app_authorization:read"
+	PermissionActionAppAuthorizationUpdate            PermissionAction = "app_authorization:update"
+	PermissionActionAudienceBasicRead                 PermissionAction = "audience:basic:read"
+	PermissionActionAudienceUpdate                    PermissionAction = "audience:update"
+	PermissionActionAuthorizedRoleAttach              PermissionAction = "authorized_role:attach"
+	PermissionActionAuthorizedRoleCreate              PermissionAction = "authorized_role:create"
+	PermissionActionAuthorizedRoleDelete              PermissionAction = "authorized_role:delete"
+	PermissionActionAuthorizedRoleDetach              PermissionAction = "authorized_role:detach"
+	PermissionActionAuthorizedRoleUpdate              PermissionAction = "authorized_role:update"
 	PermissionActionAuthorizedUserCreate              PermissionAction = "authorized_user:create"
 	PermissionActionAuthorizedUserDelete              PermissionAction = "authorized_user:delete"
 	PermissionActionAuthorizedUserUpdate              PermissionAction = "authorized_user:update"
-	PermissionActionAuthorizedRoleCreate              PermissionAction = "authorized_role:create"
-	PermissionActionAuthorizedRoleUpdate              PermissionAction = "authorized_role:update"
-	PermissionActionAuthorizedRoleDelete              PermissionAction = "authorized_role:delete"
-	PermissionActionAuthorizedRoleAttach              PermissionAction = "authorized_role:attach"
-	PermissionActionAuthorizedRoleDetach              PermissionAction = "authorized_role:detach"
-	PermissionActionAppAuthorizationCreate            PermissionAction = "app_authorization:create"
-	PermissionActionAppAuthorizationRead              PermissionAction = "app_authorization:read"
-	PermissionActionAppAuthorizationUpdate            PermissionAction = "app_authorization:update"
-	PermissionActionAppAuthorizationDelete            PermissionAction = "app_authorization:delete"
 	PermissionActionBountyBasicRead                   PermissionAction = "bounty:basic:read"
-	PermissionActionBountyCreate                      PermissionAction = "bounty:create"
-	PermissionActionBountyCaptureClipCreate           PermissionAction = "bounty:capture_clip:create"
 	PermissionActionBountyCaptureClipComplete         PermissionAction = "bounty:capture_clip:complete"
+	PermissionActionBountyCaptureClipCreate           PermissionAction = "bounty:capture_clip:create"
 	PermissionActionBountyCaptureClipDiscard          PermissionAction = "bounty:capture_clip:discard"
-	PermissionActionBountyUpdate                      PermissionAction = "bounty:update"
+	PermissionActionBountyCreate                      PermissionAction = "bounty:create"
 	PermissionActionBountySubmissionCreate            PermissionAction = "bounty:submission:create"
 	PermissionActionBountySubmissionDelete            PermissionAction = "bounty:submission:delete"
 	PermissionActionBountySubmissionVote              PermissionAction = "bounty:submission:vote"
+	PermissionActionBountyUpdate                      PermissionAction = "bounty:update"
 	PermissionActionChatManageWebhook                 PermissionAction = "chat:manage_webhook"
-	PermissionActionChatModerate                      PermissionAction = "chat:moderate"
 	PermissionActionChatMessageCreate                 PermissionAction = "chat:message:create"
+	PermissionActionChatModerate                      PermissionAction = "chat:moderate"
 	PermissionActionChatRead                          PermissionAction = "chat:read"
-	PermissionActionDmsRead                           PermissionAction = "dms:read"
-	PermissionActionDmsMessageManage                  PermissionAction = "dms:message:manage"
-	PermissionActionDmsChannelManage                  PermissionAction = "dms:channel:manage"
-	PermissionActionForumPostCreate                   PermissionAction = "forum:post:create"
-	PermissionActionForumRead                         PermissionAction = "forum:read"
-	PermissionActionForumModerate                     PermissionAction = "forum:moderate"
-	PermissionActionCompanyAuthorizedUserRead         PermissionAction = "company:authorized_user:read"
+	PermissionActionCheckoutConfigurationBasicRead    PermissionAction = "checkout_configuration:basic:read"
+	PermissionActionCheckoutConfigurationCreate       PermissionAction = "checkout_configuration:create"
+	PermissionActionCheckoutConfigurationDelete       PermissionAction = "checkout_configuration:delete"
+	PermissionActionCheckoutRequestBasicRead          PermissionAction = "checkout_request:basic:read"
+	PermissionActionCheckoutRequestCreate             PermissionAction = "checkout_request:create"
+	PermissionActionChildCompanyBasicExport           PermissionAction = "child_company:basic:export"
 	PermissionActionCompanyAuthorizedUserEmailRead    PermissionAction = "company:authorized_user:email:read"
-	PermissionActionCompanyBalanceRead                PermissionAction = "company:balance:read"
+	PermissionActionCompanyAuthorizedUserRead         PermissionAction = "company:authorized_user:read"
 	PermissionActionCompanyBalanceExport              PermissionAction = "company:balance:export"
-	PermissionActionCompanyTokenTransactionRead       PermissionAction = "company_token_transaction:read"
-	PermissionActionCompanyTokenTransactionCreate     PermissionAction = "company_token_transaction:create"
+	PermissionActionCompanyBalanceRead                PermissionAction = "company:balance:read"
+	PermissionActionCompanyBasicRead                  PermissionAction = "company:basic:read"
+	PermissionActionCompanyCreate                     PermissionAction = "company:create"
+	PermissionActionCompanyCreateChild                PermissionAction = "company:create_child"
+	PermissionActionCompanyDelete                     PermissionAction = "company:delete"
+	PermissionActionCompanyDeleteChild                PermissionAction = "company:delete_child"
 	PermissionActionCompanyLogRead                    PermissionAction = "company:log:read"
 	PermissionActionCompanyManageCheckout             PermissionAction = "company:manage_checkout"
 	PermissionActionCompanyManageLegal                PermissionAction = "company:manage_legal"
-	PermissionActionCompanyBasicRead                  PermissionAction = "company:basic:read"
-	PermissionActionCompanyUpdate                     PermissionAction = "company:update"
-	PermissionActionCompanyTransferOwnership          PermissionAction = "company:transfer_ownership"
-	PermissionActionCompanyCreate                     PermissionAction = "company:create"
-	PermissionActionCompanyCreateChild                PermissionAction = "company:create_child"
 	PermissionActionCompanySuspendChild               PermissionAction = "company:suspend_child"
-	PermissionActionCompanyDelete                     PermissionAction = "company:delete"
-	PermissionActionCompanyDeleteChild                PermissionAction = "company:delete_child"
+	PermissionActionCompanyTransferOwnership          PermissionAction = "company:transfer_ownership"
+	PermissionActionCompanyUpdate                     PermissionAction = "company:update"
 	PermissionActionCompanyUpdateChildFees            PermissionAction = "company:update_child_fees"
-	PermissionActionChildCompanyBasicExport           PermissionAction = "child_company:basic:export"
-	PermissionActionSocialAccountCreate               PermissionAction = "social_account:create"
-	PermissionActionSocialAccountDelete               PermissionAction = "social_account:delete"
-	PermissionActionSocialAccountRead                 PermissionAction = "social_account:read"
-	PermissionActionSocialLinkUpdate                  PermissionAction = "social_link:update"
-	PermissionActionCustomEmojiUpdate                 PermissionAction = "custom_emoji:update"
+	PermissionActionCompanyTokenTransactionCreate     PermissionAction = "company_token_transaction:create"
+	PermissionActionCompanyTokenTransactionRead       PermissionAction = "company_token_transaction:read"
 	PermissionActionContentRewardsBasicExport         PermissionAction = "content_rewards:basic:export"
 	PermissionActionContentRewardsBasicRead           PermissionAction = "content_rewards:basic:read"
 	PermissionActionContentRewardsCreate              PermissionAction = "content_rewards:create"
 	PermissionActionContentRewardsDelete              PermissionAction = "content_rewards:delete"
 	PermissionActionContentRewardsModerateSubmission  PermissionAction = "content_rewards:moderate_submission"
 	PermissionActionContentRewardsUpdate              PermissionAction = "content_rewards:update"
-	PermissionActionDeveloperBasicRead                PermissionAction = "developer:basic:read"
-	PermissionActionDeveloperCreateApp                PermissionAction = "developer:create_app"
-	PermissionActionDeveloperManageAPIKey             PermissionAction = "developer:manage_api_key"
-	PermissionActionDeveloperManageOauth              PermissionAction = "developer:manage_oauth"
-	PermissionActionDeveloperManageWebhook            PermissionAction = "developer:manage_webhook"
-	PermissionActionDeveloperLogsRead                 PermissionAction = "developer:logs:read"
-	PermissionActionDeveloperManageBuilds             PermissionAction = "developer:manage_builds"
+	PermissionActionCourseAnalyticsRead               PermissionAction = "course_analytics:read"
+	PermissionActionCourseLessonInteractionRead       PermissionAction = "course_lesson_interaction:read"
+	PermissionActionCoursesRead                       PermissionAction = "courses:read"
+	PermissionActionCoursesUpdate                     PermissionAction = "courses:update"
+	PermissionActionCryptoWalletManage                PermissionAction = "crypto_wallet:manage"
+	PermissionActionCryptoWalletSwap                  PermissionAction = "crypto_wallet:swap"
+	PermissionActionCryptoWalletTrade                 PermissionAction = "crypto_wallet:trade"
+	PermissionActionCryptoWalletTradeRead             PermissionAction = "crypto_wallet:trade:read"
+	PermissionActionCustomEmojiUpdate                 PermissionAction = "custom_emoji:update"
 	PermissionActionDeveloperAppInstallationRead      PermissionAction = "developer:app_installation:read"
 	PermissionActionDeveloperAppInstallationUpdate    PermissionAction = "developer:app_installation:update"
+	PermissionActionDeveloperBasicRead                PermissionAction = "developer:basic:read"
+	PermissionActionDeveloperCreateApp                PermissionAction = "developer:create_app"
+	PermissionActionDeveloperLogsRead                 PermissionAction = "developer:logs:read"
+	PermissionActionDeveloperManageAPIKey             PermissionAction = "developer:manage_api_key"
+	PermissionActionDeveloperManageBuilds             PermissionAction = "developer:manage_builds"
+	PermissionActionDeveloperManageOauth              PermissionAction = "developer:manage_oauth"
+	PermissionActionDeveloperManageWebhook            PermissionAction = "developer:manage_webhook"
 	PermissionActionDeveloperUpdateApp                PermissionAction = "developer:update_app"
 	PermissionActionDeveloperUpdateAppAuthorization   PermissionAction = "developer:update_app_authorization"
+	PermissionActionDmsChannelManage                  PermissionAction = "dms:channel:manage"
+	PermissionActionDmsMessageManage                  PermissionAction = "dms:message:manage"
+	PermissionActionDmsRead                           PermissionAction = "dms:read"
+	PermissionActionDomainManage                      PermissionAction = "domain:manage"
+	PermissionActionDomainRead                        PermissionAction = "domain:read"
+	PermissionActionEmail                             PermissionAction = "email"
+	PermissionActionEmailManage                       PermissionAction = "email:manage"
+	PermissionActionEmailRead                         PermissionAction = "email:read"
+	PermissionActionEmailSend                         PermissionAction = "email:send"
 	PermissionActionEventCreate                       PermissionAction = "event:create"
 	PermissionActionExperienceAttach                  PermissionAction = "experience:attach"
 	PermissionActionExperienceCreate                  PermissionAction = "experience:create"
@@ -166,36 +173,64 @@ const (
 	PermissionActionExperienceDetach                  PermissionAction = "experience:detach"
 	PermissionActionExperienceHiddenExperienceRead    PermissionAction = "experience:hidden_experience:read"
 	PermissionActionExperienceUpdate                  PermissionAction = "experience:update"
+	PermissionActionExperimentManage                  PermissionAction = "experiment:manage"
+	PermissionActionExperimentRead                    PermissionAction = "experiment:read"
+	PermissionActionForumModerate                     PermissionAction = "forum:moderate"
+	PermissionActionForumPostCreate                   PermissionAction = "forum:post:create"
+	PermissionActionForumRead                         PermissionAction = "forum:read"
 	PermissionActionIapRead                           PermissionAction = "iap:read"
 	PermissionActionIdentityRead                      PermissionAction = "identity:read"
 	PermissionActionIdentityWrite                     PermissionAction = "identity:write"
 	PermissionActionIncorporationRead                 PermissionAction = "incorporation:read"
 	PermissionActionIncorporationWrite                PermissionAction = "incorporation:write"
+	PermissionActionInvoiceBasicExport                PermissionAction = "invoice:basic:export"
+	PermissionActionInvoiceBasicRead                  PermissionAction = "invoice:basic:read"
+	PermissionActionInvoiceCreate                     PermissionAction = "invoice:create"
+	PermissionActionInvoiceUpdate                     PermissionAction = "invoice:update"
+	PermissionActionLeadBasicExport                   PermissionAction = "lead:basic:export"
+	PermissionActionLeadBasicRead                     PermissionAction = "lead:basic:read"
+	PermissionActionLeadManage                        PermissionAction = "lead:manage"
+	PermissionActionLivestreamChatRead                PermissionAction = "livestream:chat:read"
+	PermissionActionLivestreamChatWrite               PermissionAction = "livestream:chat:write"
 	PermissionActionLivestreamCreate                  PermissionAction = "livestream:create"
 	PermissionActionLivestreamDelete                  PermissionAction = "livestream:delete"
 	PermissionActionLivestreamManageRecording         PermissionAction = "livestream:manage_recording"
-	PermissionActionLivestreamChatRead                PermissionAction = "livestream:chat:read"
-	PermissionActionLivestreamChatWrite               PermissionAction = "livestream:chat:write"
 	PermissionActionLivestreamModerate                PermissionAction = "livestream:moderate"
 	PermissionActionMediaGenerate                     PermissionAction = "media:generate"
 	PermissionActionMediaRead                         PermissionAction = "media:read"
 	PermissionActionMemberBasicExport                 PermissionAction = "member:basic:export"
 	PermissionActionMemberBasicRead                   PermissionAction = "member:basic:read"
 	PermissionActionMemberEmailRead                   PermissionAction = "member:email:read"
-	PermissionActionMemberPhoneRead                   PermissionAction = "member:phone:read"
+	PermissionActionMemberJourneyRead                 PermissionAction = "member:journey:read"
+	PermissionActionMemberManage                      PermissionAction = "member:manage"
+	PermissionActionMemberModerate                    PermissionAction = "member:moderate"
+	PermissionActionMemberPaymentMethodsManage        PermissionAction = "member:payment_methods:manage"
 	PermissionActionMemberPaymentMethodsRead          PermissionAction = "member:payment_methods:read"
 	PermissionActionMemberPaymentMethodsUse           PermissionAction = "member:payment_methods:use"
-	PermissionActionMemberPaymentMethodsManage        PermissionAction = "member:payment_methods:manage"
-	PermissionActionMemberManage                      PermissionAction = "member:manage"
-	PermissionActionMembershipCancel                  PermissionAction = "membership:cancel"
-	PermissionActionMembershipResyncAccess            PermissionAction = "membership:resync_access"
-	PermissionActionMembershipCreate                  PermissionAction = "membership:create"
-	PermissionActionMembershipUpdate                  PermissionAction = "membership:update"
-	PermissionActionMembershipTransfer                PermissionAction = "membership:transfer"
-	PermissionActionMemberModerate                    PermissionAction = "member:moderate"
+	PermissionActionMemberPhoneRead                   PermissionAction = "member:phone:read"
 	PermissionActionMemberStatsExport                 PermissionAction = "member:stats:export"
 	PermissionActionMemberStatsRead                   PermissionAction = "member:stats:read"
-	PermissionActionMemberJourneyRead                 PermissionAction = "member:journey:read"
+	PermissionActionMembershipCancel                  PermissionAction = "membership:cancel"
+	PermissionActionMembershipCreate                  PermissionAction = "membership:create"
+	PermissionActionMembershipResyncAccess            PermissionAction = "membership:resync_access"
+	PermissionActionMembershipTransfer                PermissionAction = "membership:transfer"
+	PermissionActionMembershipUpdate                  PermissionAction = "membership:update"
+	PermissionActionNotificationCreate                PermissionAction = "notification:create"
+	PermissionActionOauthTokenExchange                PermissionAction = "oauth:token_exchange"
+	PermissionActionOpenid                            PermissionAction = "openid"
+	PermissionActionPartnerBasicRead                  PermissionAction = "partner:basic:read"
+	PermissionActionPartnerCommissionAdvanceAccept    PermissionAction = "partner:commission_advance:accept"
+	PermissionActionPartnerCommissionAdvanceUpdate    PermissionAction = "partner:commission_advance:update"
+	PermissionActionPartnerCreate                     PermissionAction = "partner:create"
+	PermissionActionPartnerEmailRead                  PermissionAction = "partner:email:read"
+	PermissionActionPartnerFeesUpdate                 PermissionAction = "partner:fees:update"
+	PermissionActionPartnerHandoff                    PermissionAction = "partner:handoff"
+	PermissionActionPartnerInviteCreate               PermissionAction = "partner:invite:create"
+	PermissionActionPartnerReferralRequestAccept      PermissionAction = "partner:referral_request:accept"
+	PermissionActionPartnerReferralRequestCancel      PermissionAction = "partner:referral_request:cancel"
+	PermissionActionPartnerReferralRequestCreate      PermissionAction = "partner:referral_request:create"
+	PermissionActionPartnerReferralRequestDecline     PermissionAction = "partner:referral_request:decline"
+	PermissionActionPartnerReferralRequestRead        PermissionAction = "partner:referral_request:read"
 	PermissionActionPaymentBasicExport                PermissionAction = "payment:basic:export"
 	PermissionActionPaymentBasicRead                  PermissionAction = "payment:basic:read"
 	PermissionActionPaymentCharge                     PermissionAction = "payment:charge"
@@ -203,25 +238,25 @@ const (
 	PermissionActionPaymentDisputeExport              PermissionAction = "payment:dispute:export"
 	PermissionActionPaymentDisputeRead                PermissionAction = "payment:dispute:read"
 	PermissionActionPaymentDisputeAlertRead           PermissionAction = "payment:dispute_alert:read"
-	PermissionActionPaymentSetupIntentRead            PermissionAction = "payment:setup_intent:read"
-	PermissionActionPaymentSetupIntentManage          PermissionAction = "payment:setup_intent:manage"
 	PermissionActionPaymentManage                     PermissionAction = "payment:manage"
 	PermissionActionPaymentResolutionCenter           PermissionAction = "payment:resolution_center"
 	PermissionActionPaymentResolutionCenterCaseExport PermissionAction = "payment:resolution_center_case:export"
-	PermissionActionPaymentResolutionCenterCaseRead   PermissionAction = "payment:resolution_center_case:read"
 	PermissionActionPaymentResolutionCenterCaseManage PermissionAction = "payment:resolution_center_case:manage"
+	PermissionActionPaymentResolutionCenterCaseRead   PermissionAction = "payment:resolution_center_case:read"
+	PermissionActionPaymentSetupIntentManage          PermissionAction = "payment:setup_intent:manage"
+	PermissionActionPaymentSetupIntentRead            PermissionAction = "payment:setup_intent:read"
+	PermissionActionPayoutAccountRead                 PermissionAction = "payout:account:read"
+	PermissionActionPayoutAccountUpdate               PermissionAction = "payout:account:update"
 	PermissionActionPayoutCreateDestination           PermissionAction = "payout:create_destination"
 	PermissionActionPayoutDeleteDestination           PermissionAction = "payout:delete_destination"
 	PermissionActionPayoutDestinationRead             PermissionAction = "payout:destination:read"
-	PermissionActionPayoutTransferFunds               PermissionAction = "payout:transfer_funds"
-	PermissionActionPayoutTransferRead                PermissionAction = "payout:transfer:read"
 	PermissionActionPayoutTransferExport              PermissionAction = "payout:transfer:export"
+	PermissionActionPayoutTransferRead                PermissionAction = "payout:transfer:read"
+	PermissionActionPayoutTransferFunds               PermissionAction = "payout:transfer_funds"
 	PermissionActionPayoutUpdateDestination           PermissionAction = "payout:update_destination"
 	PermissionActionPayoutWithdrawFunds               PermissionAction = "payout:withdraw_funds"
-	PermissionActionPayoutWithdrawalRead              PermissionAction = "payout:withdrawal:read"
 	PermissionActionPayoutWithdrawalExport            PermissionAction = "payout:withdrawal:export"
-	PermissionActionPayoutAccountRead                 PermissionAction = "payout:account:read"
-	PermissionActionPayoutAccountUpdate               PermissionAction = "payout:account:update"
+	PermissionActionPayoutWithdrawalRead              PermissionAction = "payout:withdrawal:read"
 	PermissionActionPlanBasicExport                   PermissionAction = "plan:basic:export"
 	PermissionActionPlanBasicRead                     PermissionAction = "plan:basic:read"
 	PermissionActionPlanCreate                        PermissionAction = "plan:create"
@@ -229,9 +264,10 @@ const (
 	PermissionActionPlanStatsExport                   PermissionAction = "plan:stats:export"
 	PermissionActionPlanStatsRead                     PermissionAction = "plan:stats:read"
 	PermissionActionPlanUpdate                        PermissionAction = "plan:update"
-	PermissionActionPlanWaitlistManage                PermissionAction = "plan:waitlist:manage"
 	PermissionActionPlanWaitlistExport                PermissionAction = "plan:waitlist:export"
+	PermissionActionPlanWaitlistManage                PermissionAction = "plan:waitlist:manage"
 	PermissionActionPlanWaitlistRead                  PermissionAction = "plan:waitlist:read"
+	PermissionActionProfile                           PermissionAction = "profile"
 	PermissionActionPromoCodeBasicExport              PermissionAction = "promo_code:basic:export"
 	PermissionActionPromoCodeBasicRead                PermissionAction = "promo_code:basic:read"
 	PermissionActionPromoCodeCreate                   PermissionAction = "promo_code:create"
@@ -239,23 +275,17 @@ const (
 	PermissionActionPromoCodeUpdate                   PermissionAction = "promo_code:update"
 	PermissionActionReferralBasicRead                 PermissionAction = "referral:basic:read"
 	PermissionActionReferralPartnerCreate             PermissionAction = "referral:partner:create"
-	PermissionActionPartnerBasicRead                  PermissionAction = "partner:basic:read"
-	PermissionActionPartnerEmailRead                  PermissionAction = "partner:email:read"
-	PermissionActionPartnerInviteCreate               PermissionAction = "partner:invite:create"
-	PermissionActionPartnerFeesUpdate                 PermissionAction = "partner:fees:update"
-	PermissionActionPartnerCommissionAdvanceUpdate    PermissionAction = "partner:commission_advance:update"
-	PermissionActionPartnerCommissionAdvanceAccept    PermissionAction = "partner:commission_advance:accept"
-	PermissionActionPartnerReferralRequestRead        PermissionAction = "partner:referral_request:read"
-	PermissionActionPartnerReferralRequestCreate      PermissionAction = "partner:referral_request:create"
-	PermissionActionPartnerReferralRequestAccept      PermissionAction = "partner:referral_request:accept"
-	PermissionActionPartnerReferralRequestDecline     PermissionAction = "partner:referral_request:decline"
-	PermissionActionPartnerReferralRequestCancel      PermissionAction = "partner:referral_request:cancel"
-	PermissionActionPartnerHandoff                    PermissionAction = "partner:handoff"
-	PermissionActionPartnerCreate                     PermissionAction = "partner:create"
+	PermissionActionReviewDelete                      PermissionAction = "review:delete"
+	PermissionActionShipmentBasicRead                 PermissionAction = "shipment:basic:read"
+	PermissionActionShipmentCreate                    PermissionAction = "shipment:create"
+	PermissionActionSocialAccountCreate               PermissionAction = "social_account:create"
+	PermissionActionSocialAccountDelete               PermissionAction = "social_account:delete"
+	PermissionActionSocialAccountRead                 PermissionAction = "social_account:read"
+	PermissionActionSocialLinkUpdate                  PermissionAction = "social_link:update"
 	PermissionActionStatsRead                         PermissionAction = "stats:read"
-	PermissionActionSupportChatRead                   PermissionAction = "support_chat:read"
 	PermissionActionSupportChatCreate                 PermissionAction = "support_chat:create"
 	PermissionActionSupportChatMessageCreate          PermissionAction = "support_chat:message:create"
+	PermissionActionSupportChatRead                   PermissionAction = "support_chat:read"
 	PermissionActionTrackingLinkBasicExport           PermissionAction = "tracking_link:basic:export"
 	PermissionActionTrackingLinkBasicRead             PermissionAction = "tracking_link:basic:read"
 	PermissionActionTrackingLinkCreate                PermissionAction = "tracking_link:create"
@@ -263,112 +293,58 @@ const (
 	PermissionActionTrackingLinkStatsExport           PermissionAction = "tracking_link:stats:export"
 	PermissionActionTrackingLinkStatsRead             PermissionAction = "tracking_link:stats:read"
 	PermissionActionTrackingLinkUpdate                PermissionAction = "tracking_link:update"
-	PermissionActionCoursesRead                       PermissionAction = "courses:read"
-	PermissionActionCoursesUpdate                     PermissionAction = "courses:update"
-	PermissionActionCourseLessonInteractionRead       PermissionAction = "course_lesson_interaction:read"
-	PermissionActionCourseAnalyticsRead               PermissionAction = "course_analytics:read"
-	PermissionActionLeadBasicRead                     PermissionAction = "lead:basic:read"
-	PermissionActionLeadBasicExport                   PermissionAction = "lead:basic:export"
-	PermissionActionInvoiceCreate                     PermissionAction = "invoice:create"
-	PermissionActionInvoiceBasicRead                  PermissionAction = "invoice:basic:read"
-	PermissionActionInvoiceBasicExport                PermissionAction = "invoice:basic:export"
-	PermissionActionInvoiceUpdate                     PermissionAction = "invoice:update"
-	PermissionActionWebhookReceiveInvoices            PermissionAction = "webhook_receive:invoices"
-	PermissionActionWebhookReceiveSetupIntents        PermissionAction = "webhook_receive:setup_intents"
-	PermissionActionWebhookReceiveWithdrawals         PermissionAction = "webhook_receive:withdrawals"
-	PermissionActionWebhookReceiveSwaps               PermissionAction = "webhook_receive:swaps"
-	PermissionActionWebhookReceiveLedgerAccounts      PermissionAction = "webhook_receive:ledger_accounts"
+	PermissionActionUserAbuseReportCreate             PermissionAction = "user:abuse_report:create"
+	PermissionActionUserAbuseReportRead               PermissionAction = "user:abuse_report:read"
+	PermissionActionUserBalanceRead                   PermissionAction = "user:balance:read"
+	PermissionActionUserEmailRead                     PermissionAction = "user:email:read"
+	PermissionActionUserNotificationsRead             PermissionAction = "user:notifications:read"
+	PermissionActionUserNotificationsUpdate           PermissionAction = "user:notifications:update"
+	PermissionActionUserPaymentCharge                 PermissionAction = "user:payment:charge"
+	PermissionActionUserProfileUpdate                 PermissionAction = "user:profile:update"
+	PermissionActionUserStaffRead                     PermissionAction = "user:staff:read"
+	PermissionActionWaitlistEntryCancel               PermissionAction = "waitlist_entry:cancel"
+	PermissionActionWaitlistEntryCreate               PermissionAction = "waitlist_entry:create"
+	PermissionActionWaitlistEntryRead                 PermissionAction = "waitlist_entry:read"
 	PermissionActionWebhookReceiveAccounts            PermissionAction = "webhook_receive:accounts"
-	PermissionActionWebhookReceiveDeposits            PermissionAction = "webhook_receive:deposits"
-	PermissionActionWebhookReceiveFinancialActivity   PermissionAction = "webhook_receive:financial_activity"
-	PermissionActionWebhookReceiveTransfers           PermissionAction = "webhook_receive:transfers"
-	PermissionActionWebhookReceiveCardTransactions    PermissionAction = "webhook_receive:card_transactions"
-	PermissionActionWebhookReceiveCards               PermissionAction = "webhook_receive:cards"
-	PermissionActionWebhookReceiveCardApplications    PermissionAction = "webhook_receive:card_applications"
-	PermissionActionWebhookReceivePayoutMethods       PermissionAction = "webhook_receive:payout_methods"
-	PermissionActionWebhookReceiveVerifications       PermissionAction = "webhook_receive:verifications"
-	PermissionActionWebhookReceiveIdentityProfiles    PermissionAction = "webhook_receive:identity_profiles"
-	PermissionActionWebhookReceivePayoutAccounts      PermissionAction = "webhook_receive:payout_accounts"
-	PermissionActionWebhookReceiveChat                PermissionAction = "webhook_receive:chat"
-	PermissionActionWebhookReceiveEntries             PermissionAction = "webhook_receive:entries"
 	PermissionActionWebhookReceiveAdCampaigns         PermissionAction = "webhook_receive:ad_campaigns"
 	PermissionActionWebhookReceiveAdGroups            PermissionAction = "webhook_receive:ad_groups"
 	PermissionActionWebhookReceiveAds                 PermissionAction = "webhook_receive:ads"
-	PermissionActionWebhookReceiveProducts            PermissionAction = "webhook_receive:products"
-	PermissionActionWebhookReceivePlans               PermissionAction = "webhook_receive:plans"
-	PermissionActionWebhookReceiveDomains             PermissionAction = "webhook_receive:domains"
-	PermissionActionWebhookReceiveShipments           PermissionAction = "webhook_receive:shipments"
-	PermissionActionWebhookReceiveMembers             PermissionAction = "webhook_receive:members"
-	PermissionActionWebhookReceiveExports             PermissionAction = "webhook_receive:exports"
-	PermissionActionWebhookReceiveCourses             PermissionAction = "webhook_receive:courses"
-	PermissionActionWebhookReceiveMemberships         PermissionAction = "webhook_receive:memberships"
-	PermissionActionWebhookReceivePayments            PermissionAction = "webhook_receive:payments"
-	PermissionActionWebhookReceiveRefunds             PermissionAction = "webhook_receive:refunds"
-	PermissionActionWebhookReceiveDisputes            PermissionAction = "webhook_receive:disputes"
-	PermissionActionWebhookReceiveResolutions         PermissionAction = "webhook_receive:resolutions"
-	PermissionActionWebhookReceiveAppPayments         PermissionAction = "webhook_receive:app_payments"
 	PermissionActionWebhookReceiveAppInstallations    PermissionAction = "webhook_receive:app_installations"
 	PermissionActionWebhookReceiveAppMemberships      PermissionAction = "webhook_receive:app_memberships"
-	PermissionActionShipmentCreate                    PermissionAction = "shipment:create"
-	PermissionActionShipmentBasicRead                 PermissionAction = "shipment:basic:read"
-	PermissionActionCheckoutConfigurationBasicRead    PermissionAction = "checkout_configuration:basic:read"
-	PermissionActionCheckoutConfigurationCreate       PermissionAction = "checkout_configuration:create"
-	PermissionActionCheckoutConfigurationDelete       PermissionAction = "checkout_configuration:delete"
-	PermissionActionCheckoutRequestCreate             PermissionAction = "checkout_request:create"
-	PermissionActionCheckoutRequestBasicRead          PermissionAction = "checkout_request:basic:read"
-	PermissionActionCryptoWalletManage                PermissionAction = "crypto_wallet:manage"
-	PermissionActionCryptoWalletSwap                  PermissionAction = "crypto_wallet:swap"
-	PermissionActionCryptoWalletTrade                 PermissionAction = "crypto_wallet:trade"
-	PermissionActionCryptoWalletTradeRead             PermissionAction = "crypto_wallet:trade:read"
-	PermissionActionAirdropLinkBasicRead              PermissionAction = "airdrop_link:basic:read"
-	PermissionActionAirdropLinkManage                 PermissionAction = "airdrop_link:manage"
-	PermissionActionLeadManage                        PermissionAction = "lead:manage"
-	PermissionActionNotificationCreate                PermissionAction = "notification:create"
-	PermissionActionUserBalanceRead                   PermissionAction = "user:balance:read"
-	PermissionActionUserEmailRead                     PermissionAction = "user:email:read"
-	PermissionActionUserPaymentCharge                 PermissionAction = "user:payment:charge"
-	PermissionActionUserStaffRead                     PermissionAction = "user:staff:read"
-	PermissionActionOauthTokenExchange                PermissionAction = "oauth:token_exchange"
-	PermissionActionOpenid                            PermissionAction = "openid"
-	PermissionActionProfile                           PermissionAction = "profile"
-	PermissionActionEmail                             PermissionAction = "email"
-	PermissionActionAiChatRead                        PermissionAction = "ai_chat:read"
-	PermissionActionAiChatCreate                      PermissionAction = "ai_chat:create"
-	PermissionActionAiChatDelete                      PermissionAction = "ai_chat:delete"
-	PermissionActionAiChatUpdate                      PermissionAction = "ai_chat:update"
-	PermissionActionUserNotificationsRead             PermissionAction = "user:notifications:read"
-	PermissionActionUserAbuseReportCreate             PermissionAction = "user:abuse_report:create"
-	PermissionActionUserAbuseReportRead               PermissionAction = "user:abuse_report:read"
-	PermissionActionUserNotificationsUpdate           PermissionAction = "user:notifications:update"
-	PermissionActionUserProfileUpdate                 PermissionAction = "user:profile:update"
+	PermissionActionWebhookReceiveAppPayments         PermissionAction = "webhook_receive:app_payments"
+	PermissionActionWebhookReceiveCardApplications    PermissionAction = "webhook_receive:card_applications"
+	PermissionActionWebhookReceiveCardTransactions    PermissionAction = "webhook_receive:card_transactions"
+	PermissionActionWebhookReceiveCards               PermissionAction = "webhook_receive:cards"
+	PermissionActionWebhookReceiveChat                PermissionAction = "webhook_receive:chat"
+	PermissionActionWebhookReceiveCourses             PermissionAction = "webhook_receive:courses"
+	PermissionActionWebhookReceiveDeposits            PermissionAction = "webhook_receive:deposits"
+	PermissionActionWebhookReceiveDisputes            PermissionAction = "webhook_receive:disputes"
+	PermissionActionWebhookReceiveDomains             PermissionAction = "webhook_receive:domains"
+	PermissionActionWebhookReceiveEntries             PermissionAction = "webhook_receive:entries"
+	PermissionActionWebhookReceiveExports             PermissionAction = "webhook_receive:exports"
+	PermissionActionWebhookReceiveFinancialActivity   PermissionAction = "webhook_receive:financial_activity"
+	PermissionActionWebhookReceiveIdentityProfiles    PermissionAction = "webhook_receive:identity_profiles"
+	PermissionActionWebhookReceiveInvoices            PermissionAction = "webhook_receive:invoices"
+	PermissionActionWebhookReceiveLedgerAccounts      PermissionAction = "webhook_receive:ledger_accounts"
+	PermissionActionWebhookReceiveMembers             PermissionAction = "webhook_receive:members"
+	PermissionActionWebhookReceiveMemberships         PermissionAction = "webhook_receive:memberships"
+	PermissionActionWebhookReceivePayments            PermissionAction = "webhook_receive:payments"
+	PermissionActionWebhookReceivePayoutAccounts      PermissionAction = "webhook_receive:payout_accounts"
+	PermissionActionWebhookReceivePayoutMethods       PermissionAction = "webhook_receive:payout_methods"
+	PermissionActionWebhookReceivePlans               PermissionAction = "webhook_receive:plans"
+	PermissionActionWebhookReceiveProducts            PermissionAction = "webhook_receive:products"
+	PermissionActionWebhookReceiveRefunds             PermissionAction = "webhook_receive:refunds"
+	PermissionActionWebhookReceiveResolutions         PermissionAction = "webhook_receive:resolutions"
+	PermissionActionWebhookReceiveSetupIntents        PermissionAction = "webhook_receive:setup_intents"
+	PermissionActionWebhookReceiveShipments           PermissionAction = "webhook_receive:shipments"
+	PermissionActionWebhookReceiveSwaps               PermissionAction = "webhook_receive:swaps"
+	PermissionActionWebhookReceiveTransfers           PermissionAction = "webhook_receive:transfers"
+	PermissionActionWebhookReceiveVerifications       PermissionAction = "webhook_receive:verifications"
+	PermissionActionWebhookReceiveWithdrawals         PermissionAction = "webhook_receive:withdrawals"
 )
 
 func NewPermissionActionFromString(s string) (PermissionAction, error) {
 	switch s {
-	case "waitlist_entry:read":
-		return PermissionActionWaitlistEntryRead, nil
-	case "waitlist_entry:create":
-		return PermissionActionWaitlistEntryCreate, nil
-	case "waitlist_entry:cancel":
-		return PermissionActionWaitlistEntryCancel, nil
-	case "review:delete":
-		return PermissionActionReviewDelete, nil
-	case "experiment:manage":
-		return PermissionActionExperimentManage, nil
-	case "experiment:read":
-		return PermissionActionExperimentRead, nil
-	case "domain:manage":
-		return PermissionActionDomainManage, nil
-	case "domain:read":
-		return PermissionActionDomainRead, nil
-	case "email:manage":
-		return PermissionActionEmailManage, nil
-	case "email:read":
-		return PermissionActionEmailRead, nil
-	case "email:send":
-		return PermissionActionEmailSend, nil
-	case "ai_prompt:create":
-		return PermissionActionAiPromptCreate, nil
 	case "access_pass:basic:export":
 		return PermissionActionAccessPassBasicExport, nil
 	case "access_pass:basic:read":
@@ -405,10 +381,6 @@ func NewPermissionActionFromString(s string) (PermissionAction, error) {
 		return PermissionActionAdCampaignUpdate, nil
 	case "ad_pixel:manage":
 		return PermissionActionAdPixelManage, nil
-	case "audience:basic:read":
-		return PermissionActionAudienceBasicRead, nil
-	case "audience:update":
-		return PermissionActionAudienceUpdate, nil
 	case "ad_publisher:read":
 		return PermissionActionAdPublisherRead, nil
 	case "affiliate:basic:read":
@@ -417,116 +389,122 @@ func NewPermissionActionFromString(s string) (PermissionAction, error) {
 		return PermissionActionAffiliateCreate, nil
 	case "affiliate:update":
 		return PermissionActionAffiliateUpdate, nil
+	case "ai_chat:create":
+		return PermissionActionAiChatCreate, nil
+	case "ai_chat:delete":
+		return PermissionActionAiChatDelete, nil
+	case "ai_chat:read":
+		return PermissionActionAiChatRead, nil
+	case "ai_chat:update":
+		return PermissionActionAiChatUpdate, nil
+	case "ai_prompt:create":
+		return PermissionActionAiPromptCreate, nil
+	case "airdrop_link:basic:read":
+		return PermissionActionAirdropLinkBasicRead, nil
+	case "airdrop_link:manage":
+		return PermissionActionAirdropLinkManage, nil
+	case "app_authorization:create":
+		return PermissionActionAppAuthorizationCreate, nil
+	case "app_authorization:delete":
+		return PermissionActionAppAuthorizationDelete, nil
+	case "app_authorization:read":
+		return PermissionActionAppAuthorizationRead, nil
+	case "app_authorization:update":
+		return PermissionActionAppAuthorizationUpdate, nil
+	case "audience:basic:read":
+		return PermissionActionAudienceBasicRead, nil
+	case "audience:update":
+		return PermissionActionAudienceUpdate, nil
+	case "authorized_role:attach":
+		return PermissionActionAuthorizedRoleAttach, nil
+	case "authorized_role:create":
+		return PermissionActionAuthorizedRoleCreate, nil
+	case "authorized_role:delete":
+		return PermissionActionAuthorizedRoleDelete, nil
+	case "authorized_role:detach":
+		return PermissionActionAuthorizedRoleDetach, nil
+	case "authorized_role:update":
+		return PermissionActionAuthorizedRoleUpdate, nil
 	case "authorized_user:create":
 		return PermissionActionAuthorizedUserCreate, nil
 	case "authorized_user:delete":
 		return PermissionActionAuthorizedUserDelete, nil
 	case "authorized_user:update":
 		return PermissionActionAuthorizedUserUpdate, nil
-	case "authorized_role:create":
-		return PermissionActionAuthorizedRoleCreate, nil
-	case "authorized_role:update":
-		return PermissionActionAuthorizedRoleUpdate, nil
-	case "authorized_role:delete":
-		return PermissionActionAuthorizedRoleDelete, nil
-	case "authorized_role:attach":
-		return PermissionActionAuthorizedRoleAttach, nil
-	case "authorized_role:detach":
-		return PermissionActionAuthorizedRoleDetach, nil
-	case "app_authorization:create":
-		return PermissionActionAppAuthorizationCreate, nil
-	case "app_authorization:read":
-		return PermissionActionAppAuthorizationRead, nil
-	case "app_authorization:update":
-		return PermissionActionAppAuthorizationUpdate, nil
-	case "app_authorization:delete":
-		return PermissionActionAppAuthorizationDelete, nil
 	case "bounty:basic:read":
 		return PermissionActionBountyBasicRead, nil
-	case "bounty:create":
-		return PermissionActionBountyCreate, nil
-	case "bounty:capture_clip:create":
-		return PermissionActionBountyCaptureClipCreate, nil
 	case "bounty:capture_clip:complete":
 		return PermissionActionBountyCaptureClipComplete, nil
+	case "bounty:capture_clip:create":
+		return PermissionActionBountyCaptureClipCreate, nil
 	case "bounty:capture_clip:discard":
 		return PermissionActionBountyCaptureClipDiscard, nil
-	case "bounty:update":
-		return PermissionActionBountyUpdate, nil
+	case "bounty:create":
+		return PermissionActionBountyCreate, nil
 	case "bounty:submission:create":
 		return PermissionActionBountySubmissionCreate, nil
 	case "bounty:submission:delete":
 		return PermissionActionBountySubmissionDelete, nil
 	case "bounty:submission:vote":
 		return PermissionActionBountySubmissionVote, nil
+	case "bounty:update":
+		return PermissionActionBountyUpdate, nil
 	case "chat:manage_webhook":
 		return PermissionActionChatManageWebhook, nil
-	case "chat:moderate":
-		return PermissionActionChatModerate, nil
 	case "chat:message:create":
 		return PermissionActionChatMessageCreate, nil
+	case "chat:moderate":
+		return PermissionActionChatModerate, nil
 	case "chat:read":
 		return PermissionActionChatRead, nil
-	case "dms:read":
-		return PermissionActionDmsRead, nil
-	case "dms:message:manage":
-		return PermissionActionDmsMessageManage, nil
-	case "dms:channel:manage":
-		return PermissionActionDmsChannelManage, nil
-	case "forum:post:create":
-		return PermissionActionForumPostCreate, nil
-	case "forum:read":
-		return PermissionActionForumRead, nil
-	case "forum:moderate":
-		return PermissionActionForumModerate, nil
-	case "company:authorized_user:read":
-		return PermissionActionCompanyAuthorizedUserRead, nil
+	case "checkout_configuration:basic:read":
+		return PermissionActionCheckoutConfigurationBasicRead, nil
+	case "checkout_configuration:create":
+		return PermissionActionCheckoutConfigurationCreate, nil
+	case "checkout_configuration:delete":
+		return PermissionActionCheckoutConfigurationDelete, nil
+	case "checkout_request:basic:read":
+		return PermissionActionCheckoutRequestBasicRead, nil
+	case "checkout_request:create":
+		return PermissionActionCheckoutRequestCreate, nil
+	case "child_company:basic:export":
+		return PermissionActionChildCompanyBasicExport, nil
 	case "company:authorized_user:email:read":
 		return PermissionActionCompanyAuthorizedUserEmailRead, nil
-	case "company:balance:read":
-		return PermissionActionCompanyBalanceRead, nil
+	case "company:authorized_user:read":
+		return PermissionActionCompanyAuthorizedUserRead, nil
 	case "company:balance:export":
 		return PermissionActionCompanyBalanceExport, nil
-	case "company_token_transaction:read":
-		return PermissionActionCompanyTokenTransactionRead, nil
-	case "company_token_transaction:create":
-		return PermissionActionCompanyTokenTransactionCreate, nil
+	case "company:balance:read":
+		return PermissionActionCompanyBalanceRead, nil
+	case "company:basic:read":
+		return PermissionActionCompanyBasicRead, nil
+	case "company:create":
+		return PermissionActionCompanyCreate, nil
+	case "company:create_child":
+		return PermissionActionCompanyCreateChild, nil
+	case "company:delete":
+		return PermissionActionCompanyDelete, nil
+	case "company:delete_child":
+		return PermissionActionCompanyDeleteChild, nil
 	case "company:log:read":
 		return PermissionActionCompanyLogRead, nil
 	case "company:manage_checkout":
 		return PermissionActionCompanyManageCheckout, nil
 	case "company:manage_legal":
 		return PermissionActionCompanyManageLegal, nil
-	case "company:basic:read":
-		return PermissionActionCompanyBasicRead, nil
-	case "company:update":
-		return PermissionActionCompanyUpdate, nil
-	case "company:transfer_ownership":
-		return PermissionActionCompanyTransferOwnership, nil
-	case "company:create":
-		return PermissionActionCompanyCreate, nil
-	case "company:create_child":
-		return PermissionActionCompanyCreateChild, nil
 	case "company:suspend_child":
 		return PermissionActionCompanySuspendChild, nil
-	case "company:delete":
-		return PermissionActionCompanyDelete, nil
-	case "company:delete_child":
-		return PermissionActionCompanyDeleteChild, nil
+	case "company:transfer_ownership":
+		return PermissionActionCompanyTransferOwnership, nil
+	case "company:update":
+		return PermissionActionCompanyUpdate, nil
 	case "company:update_child_fees":
 		return PermissionActionCompanyUpdateChildFees, nil
-	case "child_company:basic:export":
-		return PermissionActionChildCompanyBasicExport, nil
-	case "social_account:create":
-		return PermissionActionSocialAccountCreate, nil
-	case "social_account:delete":
-		return PermissionActionSocialAccountDelete, nil
-	case "social_account:read":
-		return PermissionActionSocialAccountRead, nil
-	case "social_link:update":
-		return PermissionActionSocialLinkUpdate, nil
-	case "custom_emoji:update":
-		return PermissionActionCustomEmojiUpdate, nil
+	case "company_token_transaction:create":
+		return PermissionActionCompanyTokenTransactionCreate, nil
+	case "company_token_transaction:read":
+		return PermissionActionCompanyTokenTransactionRead, nil
 	case "content_rewards:basic:export":
 		return PermissionActionContentRewardsBasicExport, nil
 	case "content_rewards:basic:read":
@@ -539,28 +517,64 @@ func NewPermissionActionFromString(s string) (PermissionAction, error) {
 		return PermissionActionContentRewardsModerateSubmission, nil
 	case "content_rewards:update":
 		return PermissionActionContentRewardsUpdate, nil
-	case "developer:basic:read":
-		return PermissionActionDeveloperBasicRead, nil
-	case "developer:create_app":
-		return PermissionActionDeveloperCreateApp, nil
-	case "developer:manage_api_key":
-		return PermissionActionDeveloperManageAPIKey, nil
-	case "developer:manage_oauth":
-		return PermissionActionDeveloperManageOauth, nil
-	case "developer:manage_webhook":
-		return PermissionActionDeveloperManageWebhook, nil
-	case "developer:logs:read":
-		return PermissionActionDeveloperLogsRead, nil
-	case "developer:manage_builds":
-		return PermissionActionDeveloperManageBuilds, nil
+	case "course_analytics:read":
+		return PermissionActionCourseAnalyticsRead, nil
+	case "course_lesson_interaction:read":
+		return PermissionActionCourseLessonInteractionRead, nil
+	case "courses:read":
+		return PermissionActionCoursesRead, nil
+	case "courses:update":
+		return PermissionActionCoursesUpdate, nil
+	case "crypto_wallet:manage":
+		return PermissionActionCryptoWalletManage, nil
+	case "crypto_wallet:swap":
+		return PermissionActionCryptoWalletSwap, nil
+	case "crypto_wallet:trade":
+		return PermissionActionCryptoWalletTrade, nil
+	case "crypto_wallet:trade:read":
+		return PermissionActionCryptoWalletTradeRead, nil
+	case "custom_emoji:update":
+		return PermissionActionCustomEmojiUpdate, nil
 	case "developer:app_installation:read":
 		return PermissionActionDeveloperAppInstallationRead, nil
 	case "developer:app_installation:update":
 		return PermissionActionDeveloperAppInstallationUpdate, nil
+	case "developer:basic:read":
+		return PermissionActionDeveloperBasicRead, nil
+	case "developer:create_app":
+		return PermissionActionDeveloperCreateApp, nil
+	case "developer:logs:read":
+		return PermissionActionDeveloperLogsRead, nil
+	case "developer:manage_api_key":
+		return PermissionActionDeveloperManageAPIKey, nil
+	case "developer:manage_builds":
+		return PermissionActionDeveloperManageBuilds, nil
+	case "developer:manage_oauth":
+		return PermissionActionDeveloperManageOauth, nil
+	case "developer:manage_webhook":
+		return PermissionActionDeveloperManageWebhook, nil
 	case "developer:update_app":
 		return PermissionActionDeveloperUpdateApp, nil
 	case "developer:update_app_authorization":
 		return PermissionActionDeveloperUpdateAppAuthorization, nil
+	case "dms:channel:manage":
+		return PermissionActionDmsChannelManage, nil
+	case "dms:message:manage":
+		return PermissionActionDmsMessageManage, nil
+	case "dms:read":
+		return PermissionActionDmsRead, nil
+	case "domain:manage":
+		return PermissionActionDomainManage, nil
+	case "domain:read":
+		return PermissionActionDomainRead, nil
+	case "email":
+		return PermissionActionEmail, nil
+	case "email:manage":
+		return PermissionActionEmailManage, nil
+	case "email:read":
+		return PermissionActionEmailRead, nil
+	case "email:send":
+		return PermissionActionEmailSend, nil
 	case "event:create":
 		return PermissionActionEventCreate, nil
 	case "experience:attach":
@@ -575,6 +589,16 @@ func NewPermissionActionFromString(s string) (PermissionAction, error) {
 		return PermissionActionExperienceHiddenExperienceRead, nil
 	case "experience:update":
 		return PermissionActionExperienceUpdate, nil
+	case "experiment:manage":
+		return PermissionActionExperimentManage, nil
+	case "experiment:read":
+		return PermissionActionExperimentRead, nil
+	case "forum:moderate":
+		return PermissionActionForumModerate, nil
+	case "forum:post:create":
+		return PermissionActionForumPostCreate, nil
+	case "forum:read":
+		return PermissionActionForumRead, nil
 	case "iap:read":
 		return PermissionActionIapRead, nil
 	case "identity:read":
@@ -585,16 +609,30 @@ func NewPermissionActionFromString(s string) (PermissionAction, error) {
 		return PermissionActionIncorporationRead, nil
 	case "incorporation:write":
 		return PermissionActionIncorporationWrite, nil
+	case "invoice:basic:export":
+		return PermissionActionInvoiceBasicExport, nil
+	case "invoice:basic:read":
+		return PermissionActionInvoiceBasicRead, nil
+	case "invoice:create":
+		return PermissionActionInvoiceCreate, nil
+	case "invoice:update":
+		return PermissionActionInvoiceUpdate, nil
+	case "lead:basic:export":
+		return PermissionActionLeadBasicExport, nil
+	case "lead:basic:read":
+		return PermissionActionLeadBasicRead, nil
+	case "lead:manage":
+		return PermissionActionLeadManage, nil
+	case "livestream:chat:read":
+		return PermissionActionLivestreamChatRead, nil
+	case "livestream:chat:write":
+		return PermissionActionLivestreamChatWrite, nil
 	case "livestream:create":
 		return PermissionActionLivestreamCreate, nil
 	case "livestream:delete":
 		return PermissionActionLivestreamDelete, nil
 	case "livestream:manage_recording":
 		return PermissionActionLivestreamManageRecording, nil
-	case "livestream:chat:read":
-		return PermissionActionLivestreamChatRead, nil
-	case "livestream:chat:write":
-		return PermissionActionLivestreamChatWrite, nil
 	case "livestream:moderate":
 		return PermissionActionLivestreamModerate, nil
 	case "media:generate":
@@ -607,34 +645,66 @@ func NewPermissionActionFromString(s string) (PermissionAction, error) {
 		return PermissionActionMemberBasicRead, nil
 	case "member:email:read":
 		return PermissionActionMemberEmailRead, nil
-	case "member:phone:read":
-		return PermissionActionMemberPhoneRead, nil
+	case "member:journey:read":
+		return PermissionActionMemberJourneyRead, nil
+	case "member:manage":
+		return PermissionActionMemberManage, nil
+	case "member:moderate":
+		return PermissionActionMemberModerate, nil
+	case "member:payment_methods:manage":
+		return PermissionActionMemberPaymentMethodsManage, nil
 	case "member:payment_methods:read":
 		return PermissionActionMemberPaymentMethodsRead, nil
 	case "member:payment_methods:use":
 		return PermissionActionMemberPaymentMethodsUse, nil
-	case "member:payment_methods:manage":
-		return PermissionActionMemberPaymentMethodsManage, nil
-	case "member:manage":
-		return PermissionActionMemberManage, nil
-	case "membership:cancel":
-		return PermissionActionMembershipCancel, nil
-	case "membership:resync_access":
-		return PermissionActionMembershipResyncAccess, nil
-	case "membership:create":
-		return PermissionActionMembershipCreate, nil
-	case "membership:update":
-		return PermissionActionMembershipUpdate, nil
-	case "membership:transfer":
-		return PermissionActionMembershipTransfer, nil
-	case "member:moderate":
-		return PermissionActionMemberModerate, nil
+	case "member:phone:read":
+		return PermissionActionMemberPhoneRead, nil
 	case "member:stats:export":
 		return PermissionActionMemberStatsExport, nil
 	case "member:stats:read":
 		return PermissionActionMemberStatsRead, nil
-	case "member:journey:read":
-		return PermissionActionMemberJourneyRead, nil
+	case "membership:cancel":
+		return PermissionActionMembershipCancel, nil
+	case "membership:create":
+		return PermissionActionMembershipCreate, nil
+	case "membership:resync_access":
+		return PermissionActionMembershipResyncAccess, nil
+	case "membership:transfer":
+		return PermissionActionMembershipTransfer, nil
+	case "membership:update":
+		return PermissionActionMembershipUpdate, nil
+	case "notification:create":
+		return PermissionActionNotificationCreate, nil
+	case "oauth:token_exchange":
+		return PermissionActionOauthTokenExchange, nil
+	case "openid":
+		return PermissionActionOpenid, nil
+	case "partner:basic:read":
+		return PermissionActionPartnerBasicRead, nil
+	case "partner:commission_advance:accept":
+		return PermissionActionPartnerCommissionAdvanceAccept, nil
+	case "partner:commission_advance:update":
+		return PermissionActionPartnerCommissionAdvanceUpdate, nil
+	case "partner:create":
+		return PermissionActionPartnerCreate, nil
+	case "partner:email:read":
+		return PermissionActionPartnerEmailRead, nil
+	case "partner:fees:update":
+		return PermissionActionPartnerFeesUpdate, nil
+	case "partner:handoff":
+		return PermissionActionPartnerHandoff, nil
+	case "partner:invite:create":
+		return PermissionActionPartnerInviteCreate, nil
+	case "partner:referral_request:accept":
+		return PermissionActionPartnerReferralRequestAccept, nil
+	case "partner:referral_request:cancel":
+		return PermissionActionPartnerReferralRequestCancel, nil
+	case "partner:referral_request:create":
+		return PermissionActionPartnerReferralRequestCreate, nil
+	case "partner:referral_request:decline":
+		return PermissionActionPartnerReferralRequestDecline, nil
+	case "partner:referral_request:read":
+		return PermissionActionPartnerReferralRequestRead, nil
 	case "payment:basic:export":
 		return PermissionActionPaymentBasicExport, nil
 	case "payment:basic:read":
@@ -649,44 +719,44 @@ func NewPermissionActionFromString(s string) (PermissionAction, error) {
 		return PermissionActionPaymentDisputeRead, nil
 	case "payment:dispute_alert:read":
 		return PermissionActionPaymentDisputeAlertRead, nil
-	case "payment:setup_intent:read":
-		return PermissionActionPaymentSetupIntentRead, nil
-	case "payment:setup_intent:manage":
-		return PermissionActionPaymentSetupIntentManage, nil
 	case "payment:manage":
 		return PermissionActionPaymentManage, nil
 	case "payment:resolution_center":
 		return PermissionActionPaymentResolutionCenter, nil
 	case "payment:resolution_center_case:export":
 		return PermissionActionPaymentResolutionCenterCaseExport, nil
-	case "payment:resolution_center_case:read":
-		return PermissionActionPaymentResolutionCenterCaseRead, nil
 	case "payment:resolution_center_case:manage":
 		return PermissionActionPaymentResolutionCenterCaseManage, nil
+	case "payment:resolution_center_case:read":
+		return PermissionActionPaymentResolutionCenterCaseRead, nil
+	case "payment:setup_intent:manage":
+		return PermissionActionPaymentSetupIntentManage, nil
+	case "payment:setup_intent:read":
+		return PermissionActionPaymentSetupIntentRead, nil
+	case "payout:account:read":
+		return PermissionActionPayoutAccountRead, nil
+	case "payout:account:update":
+		return PermissionActionPayoutAccountUpdate, nil
 	case "payout:create_destination":
 		return PermissionActionPayoutCreateDestination, nil
 	case "payout:delete_destination":
 		return PermissionActionPayoutDeleteDestination, nil
 	case "payout:destination:read":
 		return PermissionActionPayoutDestinationRead, nil
-	case "payout:transfer_funds":
-		return PermissionActionPayoutTransferFunds, nil
-	case "payout:transfer:read":
-		return PermissionActionPayoutTransferRead, nil
 	case "payout:transfer:export":
 		return PermissionActionPayoutTransferExport, nil
+	case "payout:transfer:read":
+		return PermissionActionPayoutTransferRead, nil
+	case "payout:transfer_funds":
+		return PermissionActionPayoutTransferFunds, nil
 	case "payout:update_destination":
 		return PermissionActionPayoutUpdateDestination, nil
 	case "payout:withdraw_funds":
 		return PermissionActionPayoutWithdrawFunds, nil
-	case "payout:withdrawal:read":
-		return PermissionActionPayoutWithdrawalRead, nil
 	case "payout:withdrawal:export":
 		return PermissionActionPayoutWithdrawalExport, nil
-	case "payout:account:read":
-		return PermissionActionPayoutAccountRead, nil
-	case "payout:account:update":
-		return PermissionActionPayoutAccountUpdate, nil
+	case "payout:withdrawal:read":
+		return PermissionActionPayoutWithdrawalRead, nil
 	case "plan:basic:export":
 		return PermissionActionPlanBasicExport, nil
 	case "plan:basic:read":
@@ -701,12 +771,14 @@ func NewPermissionActionFromString(s string) (PermissionAction, error) {
 		return PermissionActionPlanStatsRead, nil
 	case "plan:update":
 		return PermissionActionPlanUpdate, nil
-	case "plan:waitlist:manage":
-		return PermissionActionPlanWaitlistManage, nil
 	case "plan:waitlist:export":
 		return PermissionActionPlanWaitlistExport, nil
+	case "plan:waitlist:manage":
+		return PermissionActionPlanWaitlistManage, nil
 	case "plan:waitlist:read":
 		return PermissionActionPlanWaitlistRead, nil
+	case "profile":
+		return PermissionActionProfile, nil
 	case "promo_code:basic:export":
 		return PermissionActionPromoCodeBasicExport, nil
 	case "promo_code:basic:read":
@@ -721,40 +793,28 @@ func NewPermissionActionFromString(s string) (PermissionAction, error) {
 		return PermissionActionReferralBasicRead, nil
 	case "referral:partner:create":
 		return PermissionActionReferralPartnerCreate, nil
-	case "partner:basic:read":
-		return PermissionActionPartnerBasicRead, nil
-	case "partner:email:read":
-		return PermissionActionPartnerEmailRead, nil
-	case "partner:invite:create":
-		return PermissionActionPartnerInviteCreate, nil
-	case "partner:fees:update":
-		return PermissionActionPartnerFeesUpdate, nil
-	case "partner:commission_advance:update":
-		return PermissionActionPartnerCommissionAdvanceUpdate, nil
-	case "partner:commission_advance:accept":
-		return PermissionActionPartnerCommissionAdvanceAccept, nil
-	case "partner:referral_request:read":
-		return PermissionActionPartnerReferralRequestRead, nil
-	case "partner:referral_request:create":
-		return PermissionActionPartnerReferralRequestCreate, nil
-	case "partner:referral_request:accept":
-		return PermissionActionPartnerReferralRequestAccept, nil
-	case "partner:referral_request:decline":
-		return PermissionActionPartnerReferralRequestDecline, nil
-	case "partner:referral_request:cancel":
-		return PermissionActionPartnerReferralRequestCancel, nil
-	case "partner:handoff":
-		return PermissionActionPartnerHandoff, nil
-	case "partner:create":
-		return PermissionActionPartnerCreate, nil
+	case "review:delete":
+		return PermissionActionReviewDelete, nil
+	case "shipment:basic:read":
+		return PermissionActionShipmentBasicRead, nil
+	case "shipment:create":
+		return PermissionActionShipmentCreate, nil
+	case "social_account:create":
+		return PermissionActionSocialAccountCreate, nil
+	case "social_account:delete":
+		return PermissionActionSocialAccountDelete, nil
+	case "social_account:read":
+		return PermissionActionSocialAccountRead, nil
+	case "social_link:update":
+		return PermissionActionSocialLinkUpdate, nil
 	case "stats:read":
 		return PermissionActionStatsRead, nil
-	case "support_chat:read":
-		return PermissionActionSupportChatRead, nil
 	case "support_chat:create":
 		return PermissionActionSupportChatCreate, nil
 	case "support_chat:message:create":
 		return PermissionActionSupportChatMessageCreate, nil
+	case "support_chat:read":
+		return PermissionActionSupportChatRead, nil
 	case "tracking_link:basic:export":
 		return PermissionActionTrackingLinkBasicExport, nil
 	case "tracking_link:basic:read":
@@ -769,162 +829,102 @@ func NewPermissionActionFromString(s string) (PermissionAction, error) {
 		return PermissionActionTrackingLinkStatsRead, nil
 	case "tracking_link:update":
 		return PermissionActionTrackingLinkUpdate, nil
-	case "courses:read":
-		return PermissionActionCoursesRead, nil
-	case "courses:update":
-		return PermissionActionCoursesUpdate, nil
-	case "course_lesson_interaction:read":
-		return PermissionActionCourseLessonInteractionRead, nil
-	case "course_analytics:read":
-		return PermissionActionCourseAnalyticsRead, nil
-	case "lead:basic:read":
-		return PermissionActionLeadBasicRead, nil
-	case "lead:basic:export":
-		return PermissionActionLeadBasicExport, nil
-	case "invoice:create":
-		return PermissionActionInvoiceCreate, nil
-	case "invoice:basic:read":
-		return PermissionActionInvoiceBasicRead, nil
-	case "invoice:basic:export":
-		return PermissionActionInvoiceBasicExport, nil
-	case "invoice:update":
-		return PermissionActionInvoiceUpdate, nil
-	case "webhook_receive:invoices":
-		return PermissionActionWebhookReceiveInvoices, nil
-	case "webhook_receive:setup_intents":
-		return PermissionActionWebhookReceiveSetupIntents, nil
-	case "webhook_receive:withdrawals":
-		return PermissionActionWebhookReceiveWithdrawals, nil
-	case "webhook_receive:swaps":
-		return PermissionActionWebhookReceiveSwaps, nil
-	case "webhook_receive:ledger_accounts":
-		return PermissionActionWebhookReceiveLedgerAccounts, nil
+	case "user:abuse_report:create":
+		return PermissionActionUserAbuseReportCreate, nil
+	case "user:abuse_report:read":
+		return PermissionActionUserAbuseReportRead, nil
+	case "user:balance:read":
+		return PermissionActionUserBalanceRead, nil
+	case "user:email:read":
+		return PermissionActionUserEmailRead, nil
+	case "user:notifications:read":
+		return PermissionActionUserNotificationsRead, nil
+	case "user:notifications:update":
+		return PermissionActionUserNotificationsUpdate, nil
+	case "user:payment:charge":
+		return PermissionActionUserPaymentCharge, nil
+	case "user:profile:update":
+		return PermissionActionUserProfileUpdate, nil
+	case "user:staff:read":
+		return PermissionActionUserStaffRead, nil
+	case "waitlist_entry:cancel":
+		return PermissionActionWaitlistEntryCancel, nil
+	case "waitlist_entry:create":
+		return PermissionActionWaitlistEntryCreate, nil
+	case "waitlist_entry:read":
+		return PermissionActionWaitlistEntryRead, nil
 	case "webhook_receive:accounts":
 		return PermissionActionWebhookReceiveAccounts, nil
-	case "webhook_receive:deposits":
-		return PermissionActionWebhookReceiveDeposits, nil
-	case "webhook_receive:financial_activity":
-		return PermissionActionWebhookReceiveFinancialActivity, nil
-	case "webhook_receive:transfers":
-		return PermissionActionWebhookReceiveTransfers, nil
-	case "webhook_receive:card_transactions":
-		return PermissionActionWebhookReceiveCardTransactions, nil
-	case "webhook_receive:cards":
-		return PermissionActionWebhookReceiveCards, nil
-	case "webhook_receive:card_applications":
-		return PermissionActionWebhookReceiveCardApplications, nil
-	case "webhook_receive:payout_methods":
-		return PermissionActionWebhookReceivePayoutMethods, nil
-	case "webhook_receive:verifications":
-		return PermissionActionWebhookReceiveVerifications, nil
-	case "webhook_receive:identity_profiles":
-		return PermissionActionWebhookReceiveIdentityProfiles, nil
-	case "webhook_receive:payout_accounts":
-		return PermissionActionWebhookReceivePayoutAccounts, nil
-	case "webhook_receive:chat":
-		return PermissionActionWebhookReceiveChat, nil
-	case "webhook_receive:entries":
-		return PermissionActionWebhookReceiveEntries, nil
 	case "webhook_receive:ad_campaigns":
 		return PermissionActionWebhookReceiveAdCampaigns, nil
 	case "webhook_receive:ad_groups":
 		return PermissionActionWebhookReceiveAdGroups, nil
 	case "webhook_receive:ads":
 		return PermissionActionWebhookReceiveAds, nil
-	case "webhook_receive:products":
-		return PermissionActionWebhookReceiveProducts, nil
-	case "webhook_receive:plans":
-		return PermissionActionWebhookReceivePlans, nil
-	case "webhook_receive:domains":
-		return PermissionActionWebhookReceiveDomains, nil
-	case "webhook_receive:shipments":
-		return PermissionActionWebhookReceiveShipments, nil
-	case "webhook_receive:members":
-		return PermissionActionWebhookReceiveMembers, nil
-	case "webhook_receive:exports":
-		return PermissionActionWebhookReceiveExports, nil
-	case "webhook_receive:courses":
-		return PermissionActionWebhookReceiveCourses, nil
-	case "webhook_receive:memberships":
-		return PermissionActionWebhookReceiveMemberships, nil
-	case "webhook_receive:payments":
-		return PermissionActionWebhookReceivePayments, nil
-	case "webhook_receive:refunds":
-		return PermissionActionWebhookReceiveRefunds, nil
-	case "webhook_receive:disputes":
-		return PermissionActionWebhookReceiveDisputes, nil
-	case "webhook_receive:resolutions":
-		return PermissionActionWebhookReceiveResolutions, nil
-	case "webhook_receive:app_payments":
-		return PermissionActionWebhookReceiveAppPayments, nil
 	case "webhook_receive:app_installations":
 		return PermissionActionWebhookReceiveAppInstallations, nil
 	case "webhook_receive:app_memberships":
 		return PermissionActionWebhookReceiveAppMemberships, nil
-	case "shipment:create":
-		return PermissionActionShipmentCreate, nil
-	case "shipment:basic:read":
-		return PermissionActionShipmentBasicRead, nil
-	case "checkout_configuration:basic:read":
-		return PermissionActionCheckoutConfigurationBasicRead, nil
-	case "checkout_configuration:create":
-		return PermissionActionCheckoutConfigurationCreate, nil
-	case "checkout_configuration:delete":
-		return PermissionActionCheckoutConfigurationDelete, nil
-	case "checkout_request:create":
-		return PermissionActionCheckoutRequestCreate, nil
-	case "checkout_request:basic:read":
-		return PermissionActionCheckoutRequestBasicRead, nil
-	case "crypto_wallet:manage":
-		return PermissionActionCryptoWalletManage, nil
-	case "crypto_wallet:swap":
-		return PermissionActionCryptoWalletSwap, nil
-	case "crypto_wallet:trade":
-		return PermissionActionCryptoWalletTrade, nil
-	case "crypto_wallet:trade:read":
-		return PermissionActionCryptoWalletTradeRead, nil
-	case "airdrop_link:basic:read":
-		return PermissionActionAirdropLinkBasicRead, nil
-	case "airdrop_link:manage":
-		return PermissionActionAirdropLinkManage, nil
-	case "lead:manage":
-		return PermissionActionLeadManage, nil
-	case "notification:create":
-		return PermissionActionNotificationCreate, nil
-	case "user:balance:read":
-		return PermissionActionUserBalanceRead, nil
-	case "user:email:read":
-		return PermissionActionUserEmailRead, nil
-	case "user:payment:charge":
-		return PermissionActionUserPaymentCharge, nil
-	case "user:staff:read":
-		return PermissionActionUserStaffRead, nil
-	case "oauth:token_exchange":
-		return PermissionActionOauthTokenExchange, nil
-	case "openid":
-		return PermissionActionOpenid, nil
-	case "profile":
-		return PermissionActionProfile, nil
-	case "email":
-		return PermissionActionEmail, nil
-	case "ai_chat:read":
-		return PermissionActionAiChatRead, nil
-	case "ai_chat:create":
-		return PermissionActionAiChatCreate, nil
-	case "ai_chat:delete":
-		return PermissionActionAiChatDelete, nil
-	case "ai_chat:update":
-		return PermissionActionAiChatUpdate, nil
-	case "user:notifications:read":
-		return PermissionActionUserNotificationsRead, nil
-	case "user:abuse_report:create":
-		return PermissionActionUserAbuseReportCreate, nil
-	case "user:abuse_report:read":
-		return PermissionActionUserAbuseReportRead, nil
-	case "user:notifications:update":
-		return PermissionActionUserNotificationsUpdate, nil
-	case "user:profile:update":
-		return PermissionActionUserProfileUpdate, nil
+	case "webhook_receive:app_payments":
+		return PermissionActionWebhookReceiveAppPayments, nil
+	case "webhook_receive:card_applications":
+		return PermissionActionWebhookReceiveCardApplications, nil
+	case "webhook_receive:card_transactions":
+		return PermissionActionWebhookReceiveCardTransactions, nil
+	case "webhook_receive:cards":
+		return PermissionActionWebhookReceiveCards, nil
+	case "webhook_receive:chat":
+		return PermissionActionWebhookReceiveChat, nil
+	case "webhook_receive:courses":
+		return PermissionActionWebhookReceiveCourses, nil
+	case "webhook_receive:deposits":
+		return PermissionActionWebhookReceiveDeposits, nil
+	case "webhook_receive:disputes":
+		return PermissionActionWebhookReceiveDisputes, nil
+	case "webhook_receive:domains":
+		return PermissionActionWebhookReceiveDomains, nil
+	case "webhook_receive:entries":
+		return PermissionActionWebhookReceiveEntries, nil
+	case "webhook_receive:exports":
+		return PermissionActionWebhookReceiveExports, nil
+	case "webhook_receive:financial_activity":
+		return PermissionActionWebhookReceiveFinancialActivity, nil
+	case "webhook_receive:identity_profiles":
+		return PermissionActionWebhookReceiveIdentityProfiles, nil
+	case "webhook_receive:invoices":
+		return PermissionActionWebhookReceiveInvoices, nil
+	case "webhook_receive:ledger_accounts":
+		return PermissionActionWebhookReceiveLedgerAccounts, nil
+	case "webhook_receive:members":
+		return PermissionActionWebhookReceiveMembers, nil
+	case "webhook_receive:memberships":
+		return PermissionActionWebhookReceiveMemberships, nil
+	case "webhook_receive:payments":
+		return PermissionActionWebhookReceivePayments, nil
+	case "webhook_receive:payout_accounts":
+		return PermissionActionWebhookReceivePayoutAccounts, nil
+	case "webhook_receive:payout_methods":
+		return PermissionActionWebhookReceivePayoutMethods, nil
+	case "webhook_receive:plans":
+		return PermissionActionWebhookReceivePlans, nil
+	case "webhook_receive:products":
+		return PermissionActionWebhookReceiveProducts, nil
+	case "webhook_receive:refunds":
+		return PermissionActionWebhookReceiveRefunds, nil
+	case "webhook_receive:resolutions":
+		return PermissionActionWebhookReceiveResolutions, nil
+	case "webhook_receive:setup_intents":
+		return PermissionActionWebhookReceiveSetupIntents, nil
+	case "webhook_receive:shipments":
+		return PermissionActionWebhookReceiveShipments, nil
+	case "webhook_receive:swaps":
+		return PermissionActionWebhookReceiveSwaps, nil
+	case "webhook_receive:transfers":
+		return PermissionActionWebhookReceiveTransfers, nil
+	case "webhook_receive:verifications":
+		return PermissionActionWebhookReceiveVerifications, nil
+	case "webhook_receive:withdrawals":
+		return PermissionActionWebhookReceiveWithdrawals, nil
 	}
 	var t PermissionAction
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

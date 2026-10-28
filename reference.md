@@ -28172,6 +28172,14 @@ client.Partners.Retrieve(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — Return `payout_rates` for this business, prefixed `biz_`, instead of the caller's own: the business's rate rows, else the platform defaults. Requires company:basic:read on that business, which every team member holds. The rest of the profile stays the caller's.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
