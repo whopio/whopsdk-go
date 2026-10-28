@@ -97,7 +97,7 @@ type CreatePayoutsRequest struct {
 	QuoteToken *string `json:"quote_token,omitempty" url:"-"`
 	// How fast the funds should arrive. `instant` is only accepted when the account and payout method are eligible; otherwise the payout is rejected.
 	Speed *CreatePayoutsRequestSpeed `json:"speed,omitempty" url:"-"`
-	// Text that appears on the recipient's bank statement. Must be 5-22 alphanumeric characters (A-Z, a-z, 0-9). Without a `quote_token`, omit or pass `null` to use the default descriptor. With a `quote_token`, set this value when creating the quote; the payout request may omit it but cannot add or change it.
+	// Payment description sent with the payout, such as an invoice number or what it pays for. Must be 5-80 printable ASCII characters (letters, digits, spaces and punctuation); Whop sends it in upper case. Not all countries and banks show it on the recipient's statement, and it is not the sender name. Without a `quote_token`, omit or pass `null` to use the default descriptor. With a `quote_token`, set this value when creating the quote; the payout request may omit it but cannot add or change it.
 	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"-"`
 	// User to pay out from, prefixed `user_`. Provide exactly one of `account_id` or `user_id`.
 	UserID *string `json:"user_id,omitempty" url:"-"`
@@ -257,7 +257,7 @@ type CreateQuotePayoutsRequest struct {
 	RecipientAmount *float64 `json:"recipient_amount,omitempty" url:"-"`
 	// How fast the funds should arrive.
 	Speed *CreateQuotePayoutsRequestSpeed `json:"speed,omitempty" url:"-"`
-	// Text that appears on the recipient's bank statement. Must be 5-22 alphanumeric characters (A-Z, a-z, 0-9). Omit or pass `null` to use the default descriptor.
+	// Payment description sent with the payout, such as an invoice number or what it pays for. Must be 5-80 printable ASCII characters (letters, digits, spaces and punctuation); Whop sends it in upper case. Not all countries and banks show it on the recipient's statement, and it is not the sender name. Omit or pass `null` to use the default descriptor.
 	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"-"`
 	// User to pay out from, prefixed `user_`. Provide exactly one of `account_id` or `user_id`.
 	UserID *string `json:"user_id,omitempty" url:"-"`
@@ -641,7 +641,7 @@ type CancelPayoutsResponse struct {
 	Source *CancelPayoutsResponseSource `json:"source,omitempty" url:"source,omitempty"`
 	// Payout delivery speed.
 	Speed CancelPayoutsResponseSpeed `json:"speed" url:"speed"`
-	// Text that appears on the recipient's bank statement, or `null` if no descriptor was set. When set, 5-22 alphanumeric characters (A-Z, a-z, 0-9).
+	// The payment description sent with the payout, or `null` if no descriptor was set. When set, 5-80 printable ASCII characters.
 	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"statement_descriptor,omitempty"`
 	// Current payout status.
 	Status CancelPayoutsResponseStatus `json:"status" url:"status"`
@@ -1783,7 +1783,7 @@ type CreatePayoutsResponse struct {
 	Source *CreatePayoutsResponseSource `json:"source,omitempty" url:"source,omitempty"`
 	// Payout delivery speed.
 	Speed CreatePayoutsResponseSpeed `json:"speed" url:"speed"`
-	// Text that appears on the recipient's bank statement, or `null` if no descriptor was set. When set, 5-22 alphanumeric characters (A-Z, a-z, 0-9).
+	// The payment description sent with the payout, or `null` if no descriptor was set. When set, 5-80 printable ASCII characters.
 	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"statement_descriptor,omitempty"`
 	// Current payout status, in the same vocabulary as GET /payouts.
 	Status CreatePayoutsResponseStatus `json:"status" url:"status"`
@@ -3580,7 +3580,7 @@ type ListPayoutsResponseDataItem struct {
 	Source *ListPayoutsResponseDataItemSource `json:"source,omitempty" url:"source,omitempty"`
 	// Payout delivery speed.
 	Speed ListPayoutsResponseDataItemSpeed `json:"speed" url:"speed"`
-	// Text that appears on the recipient's bank statement, or `null` if no descriptor was set. When set, 5-22 alphanumeric characters (A-Z, a-z, 0-9).
+	// The payment description sent with the payout, or `null` if no descriptor was set. When set, 5-80 printable ASCII characters.
 	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"statement_descriptor,omitempty"`
 	// Current payout status.
 	Status ListPayoutsResponseDataItemStatus `json:"status" url:"status"`
@@ -5092,7 +5092,7 @@ type PostPayoutCreatedPayloadData struct {
 	Source *PostPayoutCreatedPayloadDataSource `json:"source,omitempty" url:"source,omitempty"`
 	// Payout delivery speed.
 	Speed PostPayoutCreatedPayloadDataSpeed `json:"speed" url:"speed"`
-	// Text that appears on the recipient's bank statement, or `null` if no descriptor was set. When set, 5-22 alphanumeric characters (A-Z, a-z, 0-9).
+	// The payment description sent with the payout, or `null` if no descriptor was set. When set, 5-80 printable ASCII characters.
 	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"statement_descriptor,omitempty"`
 	// Current payout status.
 	Status PostPayoutCreatedPayloadDataStatus `json:"status" url:"status"`
@@ -8404,7 +8404,7 @@ type PostPayoutReversedPayloadData struct {
 	Source *PostPayoutReversedPayloadDataSource `json:"source,omitempty" url:"source,omitempty"`
 	// Payout delivery speed.
 	Speed PostPayoutReversedPayloadDataSpeed `json:"speed" url:"speed"`
-	// Text that appears on the recipient's bank statement, or `null` if no descriptor was set. When set, 5-22 alphanumeric characters (A-Z, a-z, 0-9).
+	// The payment description sent with the payout, or `null` if no descriptor was set. When set, 5-80 printable ASCII characters.
 	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"statement_descriptor,omitempty"`
 	// Current payout status.
 	Status PostPayoutReversedPayloadDataStatus `json:"status" url:"status"`
@@ -9789,7 +9789,7 @@ type PostPayoutUpdatedPayloadData struct {
 	Source *PostPayoutUpdatedPayloadDataSource `json:"source,omitempty" url:"source,omitempty"`
 	// Payout delivery speed.
 	Speed PostPayoutUpdatedPayloadDataSpeed `json:"speed" url:"speed"`
-	// Text that appears on the recipient's bank statement, or `null` if no descriptor was set. When set, 5-22 alphanumeric characters (A-Z, a-z, 0-9).
+	// The payment description sent with the payout, or `null` if no descriptor was set. When set, 5-80 printable ASCII characters.
 	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"statement_descriptor,omitempty"`
 	// Current payout status.
 	Status PostPayoutUpdatedPayloadDataStatus `json:"status" url:"status"`
@@ -10944,7 +10944,7 @@ type RetrievePayoutsResponse struct {
 	Source *RetrievePayoutsResponseSource `json:"source,omitempty" url:"source,omitempty"`
 	// Payout delivery speed.
 	Speed RetrievePayoutsResponseSpeed `json:"speed" url:"speed"`
-	// Text that appears on the recipient's bank statement, or `null` if no descriptor was set. When set, 5-22 alphanumeric characters (A-Z, a-z, 0-9). Only returned to callers with payout:withdrawal:read on the owning ledger.
+	// The payment description sent with the payout, or `null` if no descriptor was set. When set, 5-80 printable ASCII characters. Only returned to callers with payout:withdrawal:read on the owning ledger.
 	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"statement_descriptor,omitempty"`
 	// Current payout status.
 	Status RetrievePayoutsResponseStatus `json:"status" url:"status"`

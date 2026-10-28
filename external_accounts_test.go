@@ -180,6 +180,14 @@ func TestSettersCreateExternalAccountsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetAPIKey", func(t *testing.T) {
+		obj := &CreateExternalAccountsRequest{}
+		var fernTestValueAPIKey *string
+		obj.SetAPIKey(fernTestValueAPIKey)
+		assert.Equal(t, fernTestValueAPIKey, obj.APIKey)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetPlatform", func(t *testing.T) {
 		obj := &CreateExternalAccountsRequest{}
 		var fernTestValuePlatform CreateExternalAccountsRequestPlatform
@@ -199,6 +207,37 @@ func TestSettersMarkExplicitCreateExternalAccountsRequest(t *testing.T) {
 
 		// Act
 		obj.SetAccountID(fernTestValueAccountID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetAPIKey_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateExternalAccountsRequest{}
+		var fernTestValueAPIKey *string
+
+		// Act
+		obj.SetAPIKey(fernTestValueAPIKey)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1904,6 +1943,13 @@ func TestEnumCreateExternalAccountsRequestPlatform(t *testing.T) {
 		assert.Equal(t, CreateExternalAccountsRequestPlatform("tiktok"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_klaviyo", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateExternalAccountsRequestPlatformFromString("klaviyo")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateExternalAccountsRequestPlatform("klaviyo"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewCreateExternalAccountsRequestPlatformFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -2040,6 +2086,13 @@ func TestEnumListExternalAccountsRequestPlatform(t *testing.T) {
 		assert.Equal(t, ListExternalAccountsRequestPlatform("snapchat"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_klaviyo", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListExternalAccountsRequestPlatformFromString("klaviyo")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListExternalAccountsRequestPlatform("klaviyo"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewListExternalAccountsRequestPlatformFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -2082,6 +2135,13 @@ func TestEnumListExternalAccountsRequestTrustLevel(t *testing.T) {
 		val, err := NewListExternalAccountsRequestTrustLevelFromString("oauth")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListExternalAccountsRequestTrustLevel("oauth"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_api_key", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListExternalAccountsRequestTrustLevelFromString("api_key")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListExternalAccountsRequestTrustLevel("api_key"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_verified", func(t *testing.T) {

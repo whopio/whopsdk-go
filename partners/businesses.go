@@ -112,10 +112,12 @@ var (
 	listBusinessesRequestFieldDirection           = big.NewInt(1 << 9)
 	listBusinessesRequestFieldCreatedBefore       = big.NewInt(1 << 10)
 	listBusinessesRequestFieldCreatedAfter        = big.NewInt(1 << 11)
-	listBusinessesRequestFieldReferredUserID      = big.NewInt(1 << 12)
-	listBusinessesRequestFieldReferredUsername    = big.NewInt(1 << 13)
-	listBusinessesRequestFieldTier                = big.NewInt(1 << 14)
-	listBusinessesRequestFieldBusinessPrefixQuery = big.NewInt(1 << 15)
+	listBusinessesRequestFieldFirstSaleBefore     = big.NewInt(1 << 12)
+	listBusinessesRequestFieldFirstSaleAfter      = big.NewInt(1 << 13)
+	listBusinessesRequestFieldReferredUserID      = big.NewInt(1 << 14)
+	listBusinessesRequestFieldReferredUsername    = big.NewInt(1 << 15)
+	listBusinessesRequestFieldTier                = big.NewInt(1 << 16)
+	listBusinessesRequestFieldBusinessPrefixQuery = big.NewInt(1 << 17)
 )
 
 type ListBusinessesRequest struct {
@@ -143,6 +145,10 @@ type ListBusinessesRequest struct {
 	CreatedBefore *string `json:"-" url:"created_before,omitempty"`
 	// Only return partner businesses created after this timestamp.
 	CreatedAfter *string `json:"-" url:"created_after,omitempty"`
+	// Only return partner businesses whose first paid sale above zero happened before this timestamp.
+	FirstSaleBefore *string `json:"-" url:"first_sale_before,omitempty"`
+	// Only return partner businesses whose first paid sale above zero happened after this timestamp. Combined with first_sale_before, this is the net new set: businesses that processed their first $1 inside the window.
+	FirstSaleAfter *string `json:"-" url:"first_sale_after,omitempty"`
 	// Filter to referrals attributed to this user. For first-tier referrals, this is the referred account owner; for second-tier referrals, this is the partner you recruited.
 	ReferredUserID *string `json:"-" url:"referred_user_id,omitempty"`
 	// Filter by the referred user's exact username. Ignored when `referred_user_id` is present.
@@ -247,6 +253,20 @@ func (l *ListBusinessesRequest) SetCreatedBefore(createdBefore *string) {
 func (l *ListBusinessesRequest) SetCreatedAfter(createdAfter *string) {
 	l.CreatedAfter = createdAfter
 	l.require(listBusinessesRequestFieldCreatedAfter)
+}
+
+// SetFirstSaleBefore sets the FirstSaleBefore field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListBusinessesRequest) SetFirstSaleBefore(firstSaleBefore *string) {
+	l.FirstSaleBefore = firstSaleBefore
+	l.require(listBusinessesRequestFieldFirstSaleBefore)
+}
+
+// SetFirstSaleAfter sets the FirstSaleAfter field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListBusinessesRequest) SetFirstSaleAfter(firstSaleAfter *string) {
+	l.FirstSaleAfter = firstSaleAfter
+	l.require(listBusinessesRequestFieldFirstSaleAfter)
 }
 
 // SetReferredUserID sets the ReferredUserID field and marks it as non-optional;
@@ -759,9 +779,10 @@ var (
 	listBusinessesResponseDataItemFieldPayoutPercentages                   = big.NewInt(1 << 12)
 	listBusinessesResponseDataItemFieldReferralExpiresAt                   = big.NewInt(1 << 13)
 	listBusinessesResponseDataItemFieldReferralStartedAt                   = big.NewInt(1 << 14)
-	listBusinessesResponseDataItemFieldSecondTierPartner                   = big.NewInt(1 << 15)
-	listBusinessesResponseDataItemFieldStatus                              = big.NewInt(1 << 16)
-	listBusinessesResponseDataItemFieldVolumeUsd                           = big.NewInt(1 << 17)
+	listBusinessesResponseDataItemFieldReferringBusiness                   = big.NewInt(1 << 15)
+	listBusinessesResponseDataItemFieldSecondTierPartner                   = big.NewInt(1 << 16)
+	listBusinessesResponseDataItemFieldStatus                              = big.NewInt(1 << 17)
+	listBusinessesResponseDataItemFieldVolumeUsd                           = big.NewInt(1 << 18)
 )
 
 // listBusinessesResponseDataItemNullableFields maps the wire names of ListBusinessesResponseDataItem's nullable fields (required or optional) to their field bits.
@@ -774,6 +795,7 @@ var listBusinessesResponseDataItemNullableFields = map[string]*big.Int{
 	"owner":               listBusinessesResponseDataItemFieldOwner,
 	"referral_expires_at": listBusinessesResponseDataItemFieldReferralExpiresAt,
 	"referral_started_at": listBusinessesResponseDataItemFieldReferralStartedAt,
+	"referring_business":  listBusinessesResponseDataItemFieldReferringBusiness,
 	"second_tier_partner": listBusinessesResponseDataItemFieldSecondTierPartner,
 }
 
@@ -806,6 +828,8 @@ type ListBusinessesResponseDataItem struct {
 	ReferralExpiresAt *time.Time `json:"referral_expires_at,omitempty" url:"referral_expires_at,omitempty"`
 	// When the referral became active.
 	ReferralStartedAt *time.Time `json:"referral_started_at,omitempty" url:"referral_started_at,omitempty"`
+	// The partner business whose team member made this referral, the one its commission is paid to. Null for a solo partner's referral.
+	ReferringBusiness *ListBusinessesResponseDataItemReferringBusiness `json:"referring_business,omitempty" url:"referring_business,omitempty"`
 	// The second-tier partner who earns on this business (referred the first-tier partner). Null if there is no active second-tier partner.
 	SecondTierPartner *ListBusinessesResponseDataItemSecondTierPartner `json:"second_tier_partner,omitempty" url:"second_tier_partner,omitempty"`
 	// Current referral status.
@@ -922,6 +946,13 @@ func (l *ListBusinessesResponseDataItem) GetReferralStartedAt() *time.Time {
 		return nil
 	}
 	return l.ReferralStartedAt
+}
+
+func (l *ListBusinessesResponseDataItem) GetReferringBusiness() *ListBusinessesResponseDataItemReferringBusiness {
+	if l == nil {
+		return nil
+	}
+	return l.ReferringBusiness
 }
 
 func (l *ListBusinessesResponseDataItem) GetSecondTierPartner() *ListBusinessesResponseDataItemSecondTierPartner {
@@ -1064,6 +1095,13 @@ func (l *ListBusinessesResponseDataItem) SetReferralExpiresAt(referralExpiresAt 
 func (l *ListBusinessesResponseDataItem) SetReferralStartedAt(referralStartedAt *time.Time) {
 	l.ReferralStartedAt = referralStartedAt
 	l.require(listBusinessesResponseDataItemFieldReferralStartedAt)
+}
+
+// SetReferringBusiness sets the ReferringBusiness field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListBusinessesResponseDataItem) SetReferringBusiness(referringBusiness *ListBusinessesResponseDataItemReferringBusiness) {
+	l.ReferringBusiness = referringBusiness
+	l.require(listBusinessesResponseDataItemFieldReferringBusiness)
 }
 
 // SetSecondTierPartner sets the SecondTierPartner field and marks it as non-optional;
@@ -2376,6 +2414,157 @@ func (l *ListBusinessesResponseDataItemPayoutPercentages) String() string {
 }
 
 var (
+	listBusinessesResponseDataItemReferringBusinessFieldID      = big.NewInt(1 << 0)
+	listBusinessesResponseDataItemReferringBusinessFieldLogoURL = big.NewInt(1 << 1)
+	listBusinessesResponseDataItemReferringBusinessFieldRoute   = big.NewInt(1 << 2)
+	listBusinessesResponseDataItemReferringBusinessFieldTitle   = big.NewInt(1 << 3)
+)
+
+// listBusinessesResponseDataItemReferringBusinessNullableFields maps the wire names of ListBusinessesResponseDataItemReferringBusiness's nullable fields (required or optional) to their field bits.
+var listBusinessesResponseDataItemReferringBusinessNullableFields = map[string]*big.Int{
+	"logo_url": listBusinessesResponseDataItemReferringBusinessFieldLogoURL,
+}
+
+// The partner business whose team member made this referral, the one its commission is paid to. Null for a solo partner's referral.
+type ListBusinessesResponseDataItemReferringBusiness struct {
+	// Referred account ID.
+	ID string `json:"id" url:"id"`
+	// Referred account logo URL.
+	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
+	// Referred account route.
+	Route string `json:"route" url:"route"`
+	// Referred account display name.
+	Title string `json:"title" url:"title"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListBusinessesResponseDataItemReferringBusiness) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *ListBusinessesResponseDataItemReferringBusiness) GetLogoURL() *string {
+	if l == nil {
+		return nil
+	}
+	return l.LogoURL
+}
+
+func (l *ListBusinessesResponseDataItemReferringBusiness) GetRoute() string {
+	if l == nil {
+		return ""
+	}
+	return l.Route
+}
+
+func (l *ListBusinessesResponseDataItemReferringBusiness) GetTitle() string {
+	if l == nil {
+		return ""
+	}
+	return l.Title
+}
+
+func (l *ListBusinessesResponseDataItemReferringBusiness) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListBusinessesResponseDataItemReferringBusiness) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListBusinessesResponseDataItemReferringBusiness) SetID(id string) {
+	l.ID = id
+	l.require(listBusinessesResponseDataItemReferringBusinessFieldID)
+}
+
+// SetLogoURL sets the LogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListBusinessesResponseDataItemReferringBusiness) SetLogoURL(logoURL *string) {
+	l.LogoURL = logoURL
+	l.require(listBusinessesResponseDataItemReferringBusinessFieldLogoURL)
+}
+
+// SetRoute sets the Route field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListBusinessesResponseDataItemReferringBusiness) SetRoute(route string) {
+	l.Route = route
+	l.require(listBusinessesResponseDataItemReferringBusinessFieldRoute)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListBusinessesResponseDataItemReferringBusiness) SetTitle(title string) {
+	l.Title = title
+	l.require(listBusinessesResponseDataItemReferringBusinessFieldTitle)
+}
+
+func (l *ListBusinessesResponseDataItemReferringBusiness) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListBusinessesResponseDataItemReferringBusiness
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListBusinessesResponseDataItemReferringBusiness(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listBusinessesResponseDataItemReferringBusinessNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListBusinessesResponseDataItemReferringBusiness) MarshalJSON() ([]byte, error) {
+	type embed ListBusinessesResponseDataItemReferringBusiness
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListBusinessesResponseDataItemReferringBusiness) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
 	listBusinessesResponseDataItemSecondTierPartnerFieldID             = big.NewInt(1 << 0)
 	listBusinessesResponseDataItemSecondTierPartnerFieldName           = big.NewInt(1 << 1)
 	listBusinessesResponseDataItemSecondTierPartnerFieldProfilePicture = big.NewInt(1 << 2)
@@ -2939,9 +3128,10 @@ var (
 	resendInviteBusinessesResponseFieldPendingOwnerInvites                 = big.NewInt(1 << 13)
 	resendInviteBusinessesResponseFieldReferralExpiresAt                   = big.NewInt(1 << 14)
 	resendInviteBusinessesResponseFieldReferralStartedAt                   = big.NewInt(1 << 15)
-	resendInviteBusinessesResponseFieldSecondTierPartner                   = big.NewInt(1 << 16)
-	resendInviteBusinessesResponseFieldStatus                              = big.NewInt(1 << 17)
-	resendInviteBusinessesResponseFieldVolumeUsd                           = big.NewInt(1 << 18)
+	resendInviteBusinessesResponseFieldReferringBusiness                   = big.NewInt(1 << 16)
+	resendInviteBusinessesResponseFieldSecondTierPartner                   = big.NewInt(1 << 17)
+	resendInviteBusinessesResponseFieldStatus                              = big.NewInt(1 << 18)
+	resendInviteBusinessesResponseFieldVolumeUsd                           = big.NewInt(1 << 19)
 )
 
 // resendInviteBusinessesResponseNullableFields maps the wire names of ResendInviteBusinessesResponse's nullable fields (required or optional) to their field bits.
@@ -2954,6 +3144,7 @@ var resendInviteBusinessesResponseNullableFields = map[string]*big.Int{
 	"owner":               resendInviteBusinessesResponseFieldOwner,
 	"referral_expires_at": resendInviteBusinessesResponseFieldReferralExpiresAt,
 	"referral_started_at": resendInviteBusinessesResponseFieldReferralStartedAt,
+	"referring_business":  resendInviteBusinessesResponseFieldReferringBusiness,
 	"second_tier_partner": resendInviteBusinessesResponseFieldSecondTierPartner,
 }
 
@@ -2988,6 +3179,8 @@ type ResendInviteBusinessesResponse struct {
 	ReferralExpiresAt *time.Time `json:"referral_expires_at,omitempty" url:"referral_expires_at,omitempty"`
 	// When the referral became active.
 	ReferralStartedAt *time.Time `json:"referral_started_at,omitempty" url:"referral_started_at,omitempty"`
+	// The partner business whose team member made this referral, the one its commission is paid to. Null for a solo partner's referral.
+	ReferringBusiness *ResendInviteBusinessesResponseReferringBusiness `json:"referring_business,omitempty" url:"referring_business,omitempty"`
 	// The second-tier partner who earns on this business (referred the first-tier partner). Null if there is no active second-tier partner.
 	SecondTierPartner *ResendInviteBusinessesResponseSecondTierPartner `json:"second_tier_partner,omitempty" url:"second_tier_partner,omitempty"`
 	// Current referral status.
@@ -3111,6 +3304,13 @@ func (r *ResendInviteBusinessesResponse) GetReferralStartedAt() *time.Time {
 		return nil
 	}
 	return r.ReferralStartedAt
+}
+
+func (r *ResendInviteBusinessesResponse) GetReferringBusiness() *ResendInviteBusinessesResponseReferringBusiness {
+	if r == nil {
+		return nil
+	}
+	return r.ReferringBusiness
 }
 
 func (r *ResendInviteBusinessesResponse) GetSecondTierPartner() *ResendInviteBusinessesResponseSecondTierPartner {
@@ -3260,6 +3460,13 @@ func (r *ResendInviteBusinessesResponse) SetReferralExpiresAt(referralExpiresAt 
 func (r *ResendInviteBusinessesResponse) SetReferralStartedAt(referralStartedAt *time.Time) {
 	r.ReferralStartedAt = referralStartedAt
 	r.require(resendInviteBusinessesResponseFieldReferralStartedAt)
+}
+
+// SetReferringBusiness sets the ReferringBusiness field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponse) SetReferringBusiness(referringBusiness *ResendInviteBusinessesResponseReferringBusiness) {
+	r.ReferringBusiness = referringBusiness
+	r.require(resendInviteBusinessesResponseFieldReferringBusiness)
 }
 
 // SetSecondTierPartner sets the SecondTierPartner field and marks it as non-optional;
@@ -4728,6 +4935,157 @@ func (r *ResendInviteBusinessesResponsePendingOwnerInvitesItem) String() string 
 }
 
 var (
+	resendInviteBusinessesResponseReferringBusinessFieldID      = big.NewInt(1 << 0)
+	resendInviteBusinessesResponseReferringBusinessFieldLogoURL = big.NewInt(1 << 1)
+	resendInviteBusinessesResponseReferringBusinessFieldRoute   = big.NewInt(1 << 2)
+	resendInviteBusinessesResponseReferringBusinessFieldTitle   = big.NewInt(1 << 3)
+)
+
+// resendInviteBusinessesResponseReferringBusinessNullableFields maps the wire names of ResendInviteBusinessesResponseReferringBusiness's nullable fields (required or optional) to their field bits.
+var resendInviteBusinessesResponseReferringBusinessNullableFields = map[string]*big.Int{
+	"logo_url": resendInviteBusinessesResponseReferringBusinessFieldLogoURL,
+}
+
+// The partner business whose team member made this referral, the one its commission is paid to. Null for a solo partner's referral.
+type ResendInviteBusinessesResponseReferringBusiness struct {
+	// Referred account ID.
+	ID string `json:"id" url:"id"`
+	// Referred account logo URL.
+	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
+	// Referred account route.
+	Route string `json:"route" url:"route"`
+	// Referred account display name.
+	Title string `json:"title" url:"title"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *ResendInviteBusinessesResponseReferringBusiness) GetID() string {
+	if r == nil {
+		return ""
+	}
+	return r.ID
+}
+
+func (r *ResendInviteBusinessesResponseReferringBusiness) GetLogoURL() *string {
+	if r == nil {
+		return nil
+	}
+	return r.LogoURL
+}
+
+func (r *ResendInviteBusinessesResponseReferringBusiness) GetRoute() string {
+	if r == nil {
+		return ""
+	}
+	return r.Route
+}
+
+func (r *ResendInviteBusinessesResponseReferringBusiness) GetTitle() string {
+	if r == nil {
+		return ""
+	}
+	return r.Title
+}
+
+func (r *ResendInviteBusinessesResponseReferringBusiness) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *ResendInviteBusinessesResponseReferringBusiness) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseReferringBusiness) SetID(id string) {
+	r.ID = id
+	r.require(resendInviteBusinessesResponseReferringBusinessFieldID)
+}
+
+// SetLogoURL sets the LogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseReferringBusiness) SetLogoURL(logoURL *string) {
+	r.LogoURL = logoURL
+	r.require(resendInviteBusinessesResponseReferringBusinessFieldLogoURL)
+}
+
+// SetRoute sets the Route field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseReferringBusiness) SetRoute(route string) {
+	r.Route = route
+	r.require(resendInviteBusinessesResponseReferringBusinessFieldRoute)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseReferringBusiness) SetTitle(title string) {
+	r.Title = title
+	r.require(resendInviteBusinessesResponseReferringBusinessFieldTitle)
+}
+
+func (r *ResendInviteBusinessesResponseReferringBusiness) UnmarshalJSON(data []byte) error {
+	type unmarshaler ResendInviteBusinessesResponseReferringBusiness
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = ResendInviteBusinessesResponseReferringBusiness(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, resendInviteBusinessesResponseReferringBusinessNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *ResendInviteBusinessesResponseReferringBusiness) MarshalJSON() ([]byte, error) {
+	type embed ResendInviteBusinessesResponseReferringBusiness
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *ResendInviteBusinessesResponseReferringBusiness) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+var (
 	resendInviteBusinessesResponseSecondTierPartnerFieldID             = big.NewInt(1 << 0)
 	resendInviteBusinessesResponseSecondTierPartnerFieldName           = big.NewInt(1 << 1)
 	resendInviteBusinessesResponseSecondTierPartnerFieldProfilePicture = big.NewInt(1 << 2)
@@ -5145,9 +5503,10 @@ var (
 	retrieveBusinessesResponseFieldPendingOwnerInvites                 = big.NewInt(1 << 14)
 	retrieveBusinessesResponseFieldReferralExpiresAt                   = big.NewInt(1 << 15)
 	retrieveBusinessesResponseFieldReferralStartedAt                   = big.NewInt(1 << 16)
-	retrieveBusinessesResponseFieldSecondTierPartner                   = big.NewInt(1 << 17)
-	retrieveBusinessesResponseFieldStatus                              = big.NewInt(1 << 18)
-	retrieveBusinessesResponseFieldVolumeUsd                           = big.NewInt(1 << 19)
+	retrieveBusinessesResponseFieldReferringBusiness                   = big.NewInt(1 << 17)
+	retrieveBusinessesResponseFieldSecondTierPartner                   = big.NewInt(1 << 18)
+	retrieveBusinessesResponseFieldStatus                              = big.NewInt(1 << 19)
+	retrieveBusinessesResponseFieldVolumeUsd                           = big.NewInt(1 << 20)
 )
 
 // retrieveBusinessesResponseNullableFields maps the wire names of RetrieveBusinessesResponse's nullable fields (required or optional) to their field bits.
@@ -5161,6 +5520,7 @@ var retrieveBusinessesResponseNullableFields = map[string]*big.Int{
 	"owner":                   retrieveBusinessesResponseFieldOwner,
 	"referral_expires_at":     retrieveBusinessesResponseFieldReferralExpiresAt,
 	"referral_started_at":     retrieveBusinessesResponseFieldReferralStartedAt,
+	"referring_business":      retrieveBusinessesResponseFieldReferringBusiness,
 	"second_tier_partner":     retrieveBusinessesResponseFieldSecondTierPartner,
 }
 
@@ -5197,6 +5557,8 @@ type RetrieveBusinessesResponse struct {
 	ReferralExpiresAt *time.Time `json:"referral_expires_at,omitempty" url:"referral_expires_at,omitempty"`
 	// When the referral became active.
 	ReferralStartedAt *time.Time `json:"referral_started_at,omitempty" url:"referral_started_at,omitempty"`
+	// The partner business whose team member made this referral, the one its commission is paid to. Null for a solo partner's referral.
+	ReferringBusiness *RetrieveBusinessesResponseReferringBusiness `json:"referring_business,omitempty" url:"referring_business,omitempty"`
 	// The second-tier partner who earns on this business (referred the first-tier partner). Null if there is no active second-tier partner.
 	SecondTierPartner *RetrieveBusinessesResponseSecondTierPartner `json:"second_tier_partner,omitempty" url:"second_tier_partner,omitempty"`
 	// Current referral status.
@@ -5327,6 +5689,13 @@ func (r *RetrieveBusinessesResponse) GetReferralStartedAt() *time.Time {
 		return nil
 	}
 	return r.ReferralStartedAt
+}
+
+func (r *RetrieveBusinessesResponse) GetReferringBusiness() *RetrieveBusinessesResponseReferringBusiness {
+	if r == nil {
+		return nil
+	}
+	return r.ReferringBusiness
 }
 
 func (r *RetrieveBusinessesResponse) GetSecondTierPartner() *RetrieveBusinessesResponseSecondTierPartner {
@@ -5483,6 +5852,13 @@ func (r *RetrieveBusinessesResponse) SetReferralExpiresAt(referralExpiresAt *tim
 func (r *RetrieveBusinessesResponse) SetReferralStartedAt(referralStartedAt *time.Time) {
 	r.ReferralStartedAt = referralStartedAt
 	r.require(retrieveBusinessesResponseFieldReferralStartedAt)
+}
+
+// SetReferringBusiness sets the ReferringBusiness field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBusinessesResponse) SetReferringBusiness(referringBusiness *RetrieveBusinessesResponseReferringBusiness) {
+	r.ReferringBusiness = referringBusiness
+	r.require(retrieveBusinessesResponseFieldReferringBusiness)
 }
 
 // SetSecondTierPartner sets the SecondTierPartner field and marks it as non-optional;
@@ -6936,6 +7312,157 @@ func (r *RetrieveBusinessesResponsePendingOwnerInvitesItem) MarshalJSON() ([]byt
 }
 
 func (r *RetrieveBusinessesResponsePendingOwnerInvitesItem) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+var (
+	retrieveBusinessesResponseReferringBusinessFieldID      = big.NewInt(1 << 0)
+	retrieveBusinessesResponseReferringBusinessFieldLogoURL = big.NewInt(1 << 1)
+	retrieveBusinessesResponseReferringBusinessFieldRoute   = big.NewInt(1 << 2)
+	retrieveBusinessesResponseReferringBusinessFieldTitle   = big.NewInt(1 << 3)
+)
+
+// retrieveBusinessesResponseReferringBusinessNullableFields maps the wire names of RetrieveBusinessesResponseReferringBusiness's nullable fields (required or optional) to their field bits.
+var retrieveBusinessesResponseReferringBusinessNullableFields = map[string]*big.Int{
+	"logo_url": retrieveBusinessesResponseReferringBusinessFieldLogoURL,
+}
+
+// The partner business whose team member made this referral, the one its commission is paid to. Null for a solo partner's referral.
+type RetrieveBusinessesResponseReferringBusiness struct {
+	// Referred account ID.
+	ID string `json:"id" url:"id"`
+	// Referred account logo URL.
+	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
+	// Referred account route.
+	Route string `json:"route" url:"route"`
+	// Referred account display name.
+	Title string `json:"title" url:"title"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *RetrieveBusinessesResponseReferringBusiness) GetID() string {
+	if r == nil {
+		return ""
+	}
+	return r.ID
+}
+
+func (r *RetrieveBusinessesResponseReferringBusiness) GetLogoURL() *string {
+	if r == nil {
+		return nil
+	}
+	return r.LogoURL
+}
+
+func (r *RetrieveBusinessesResponseReferringBusiness) GetRoute() string {
+	if r == nil {
+		return ""
+	}
+	return r.Route
+}
+
+func (r *RetrieveBusinessesResponseReferringBusiness) GetTitle() string {
+	if r == nil {
+		return ""
+	}
+	return r.Title
+}
+
+func (r *RetrieveBusinessesResponseReferringBusiness) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *RetrieveBusinessesResponseReferringBusiness) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBusinessesResponseReferringBusiness) SetID(id string) {
+	r.ID = id
+	r.require(retrieveBusinessesResponseReferringBusinessFieldID)
+}
+
+// SetLogoURL sets the LogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBusinessesResponseReferringBusiness) SetLogoURL(logoURL *string) {
+	r.LogoURL = logoURL
+	r.require(retrieveBusinessesResponseReferringBusinessFieldLogoURL)
+}
+
+// SetRoute sets the Route field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBusinessesResponseReferringBusiness) SetRoute(route string) {
+	r.Route = route
+	r.require(retrieveBusinessesResponseReferringBusinessFieldRoute)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBusinessesResponseReferringBusiness) SetTitle(title string) {
+	r.Title = title
+	r.require(retrieveBusinessesResponseReferringBusinessFieldTitle)
+}
+
+func (r *RetrieveBusinessesResponseReferringBusiness) UnmarshalJSON(data []byte) error {
+	type unmarshaler RetrieveBusinessesResponseReferringBusiness
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RetrieveBusinessesResponseReferringBusiness(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveBusinessesResponseReferringBusinessNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RetrieveBusinessesResponseReferringBusiness) MarshalJSON() ([]byte, error) {
+	type embed RetrieveBusinessesResponseReferringBusiness
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *RetrieveBusinessesResponseReferringBusiness) String() string {
 	if r == nil {
 		return "<nil>"
 	}

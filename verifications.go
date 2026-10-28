@@ -63,10 +63,15 @@ func (c *CreateVerificationsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	listVerificationsRequestFieldAccountID = big.NewInt(1 << 0)
-	listVerificationsRequestFieldUserID    = big.NewInt(1 << 1)
-	listVerificationsRequestFieldOrder     = big.NewInt(1 << 2)
-	listVerificationsRequestFieldDirection = big.NewInt(1 << 3)
+	listVerificationsRequestFieldAccountID          = big.NewInt(1 << 0)
+	listVerificationsRequestFieldUserID             = big.NewInt(1 << 1)
+	listVerificationsRequestFieldIncludeSubaccounts = big.NewInt(1 << 2)
+	listVerificationsRequestFieldFirst              = big.NewInt(1 << 3)
+	listVerificationsRequestFieldAfter              = big.NewInt(1 << 4)
+	listVerificationsRequestFieldLast               = big.NewInt(1 << 5)
+	listVerificationsRequestFieldBefore             = big.NewInt(1 << 6)
+	listVerificationsRequestFieldOrder              = big.NewInt(1 << 7)
+	listVerificationsRequestFieldDirection          = big.NewInt(1 << 8)
 )
 
 type ListVerificationsRequest struct {
@@ -74,6 +79,16 @@ type ListVerificationsRequest struct {
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// The caller's own user ID, prefixed `user_`, to list personal verifications. Provide this or `account_id`.
 	UserID *string `json:"-" url:"user_id,omitempty"`
+	// Also cover the account's subaccounts. Requires `account_id`, and is a 400 without it. Lists the verifications of the account and every subaccount in account order, oldest account first, paging forward; `status`, `order`, `direction`, `last` and `before` are a 400. Leaves out removed subaccounts and ones you can't read verifications on. A page can hold fewer than `first` verifications while `has_next_page` is `true`; keep following `end_cursor`. On a subaccount, lists only that account's verifications.
+	IncludeSubaccounts *bool `json:"-" url:"include_subaccounts,omitempty"`
+	// Number of results to return from the start of the range.
+	First *int `json:"-" url:"first,omitempty"`
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+	After *string `json:"-" url:"after,omitempty"`
+	// Number of results to return from the end of the range.
+	Last *int `json:"-" url:"last,omitempty"`
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+	Before *string `json:"-" url:"before,omitempty"`
 	// Field used to sort returned verifications.
 	Order *ListVerificationsRequestOrder `json:"-" url:"order,omitempty"`
 	// Sort direction for returned verifications.
@@ -104,6 +119,41 @@ func (l *ListVerificationsRequest) SetAccountID(accountID *string) {
 func (l *ListVerificationsRequest) SetUserID(userID *string) {
 	l.UserID = userID
 	l.require(listVerificationsRequestFieldUserID)
+}
+
+// SetIncludeSubaccounts sets the IncludeSubaccounts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsRequest) SetIncludeSubaccounts(includeSubaccounts *bool) {
+	l.IncludeSubaccounts = includeSubaccounts
+	l.require(listVerificationsRequestFieldIncludeSubaccounts)
+}
+
+// SetFirst sets the First field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsRequest) SetFirst(first *int) {
+	l.First = first
+	l.require(listVerificationsRequestFieldFirst)
+}
+
+// SetAfter sets the After field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsRequest) SetAfter(after *string) {
+	l.After = after
+	l.require(listVerificationsRequestFieldAfter)
+}
+
+// SetLast sets the Last field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsRequest) SetLast(last *int) {
+	l.Last = last
+	l.require(listVerificationsRequestFieldLast)
+}
+
+// SetBefore sets the Before field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsRequest) SetBefore(before *string) {
+	l.Before = before
+	l.require(listVerificationsRequestFieldBefore)
 }
 
 // SetOrder sets the Order field and marks it as non-optional;
@@ -318,15 +368,15 @@ type CreateVerificationsRequestBodyBusiness struct {
 	Documents *CreateVerificationsRequestBodyBusinessDocuments `json:"documents,omitempty" url:"documents,omitempty"`
 	// First name of the business representative, used to prefill the verification session.
 	FirstName *string `json:"first_name,omitempty" url:"first_name,omitempty"`
-	// Date the business was incorporated, formatted as `YYYY-MM-DD`. Cannot be in the future. Sent to the verification provider and not returned in the response.
+	// Date the business was incorporated, formatted as `YYYY-MM-DD`. Cannot be in the future. Sent to the verification provider and returned in the response; `requested_information` asks for it while it is still missing.
 	IncorporationDate *time.Time `json:"incorporation_date,omitempty" url:"incorporation_date,omitempty" format:"date"`
 	// Last name of the business representative, used to prefill the verification session.
 	LastName *string `json:"last_name,omitempty" url:"last_name,omitempty"`
 	// Owners of the business, up to 10 per request. Once the company details, the company documents, and the owners are in and every new owner's documents were sent, Create Verification sends the business for review: in the request that completes it, as soon as the last owner's documents finish sending in the background, or when called again after Update Verification. Owners can still be added, changed, or removed while the review waits on them.
 	Owners []*CreateVerificationsRequestBodyBusinessOwnersItem `json:"owners,omitempty" url:"owners,omitempty"`
-	// State or region where the business is incorporated. Sent to the verification provider and not returned in the response.
+	// State or region where the business is incorporated. Sent to the verification provider and returned in the response; `requested_information` asks for it while it is still missing.
 	PlaceOfIncorporation *string `json:"place_of_incorporation,omitempty" url:"place_of_incorporation,omitempty"`
-	// Number the business was registered under in its place of incorporation, such as a state file number in the US or a Company Number in the UK. Sent to the verification provider; `registration_number` in the response shows the verified number once the business verification is approved.
+	// Number the business was registered under in its place of incorporation, such as a state file number in the US or a Company Number in the UK. Sent to the verification provider and returned in the response; `requested_information` asks for it while it is still missing.
 	RegistrationNumber *string `json:"registration_number,omitempty" url:"registration_number,omitempty"`
 	// Sumsub share token for a person a partner has already verified, generated by their Sumsub account for Whop's client ID. Reuses that verification instead of collecting anything: Whop imports the shared identity, rechecks it against its own requirements, and returns `approved` when it satisfies them, or `pending` with a `session_url` covering only what is still missing. Requires a Reusable KYC agreement between the partner's Sumsub account and Whop's. Each token works once, and cannot be combined with `documents` or `document_type`.
 	ShareToken *string `json:"share_token,omitempty" url:"share_token,omitempty"`
@@ -668,7 +718,7 @@ var createVerificationsRequestBodyBusinessAddressNullableFields = map[string]*bi
 // Every value accepts `null`, so a form seeded from a previous response can round-trip unset fields unchanged.
 type CreateVerificationsRequestBodyBusinessAddress struct {
 	City *string `json:"city,omitempty" url:"city,omitempty"`
-	// Two-letter ISO 3166-1 country code, for example `US`, `DE`, or `GB`.
+	// Two-letter ISO 3166-1 country code, for example `US`, `DE`, or `GB`. An address in a [sanctioned country or region](/trust-and-safety/trust-safety-overview/sanctioned-countries) is rejected with the error code `address_country_sanctioned`.
 	Country *string `json:"country,omitempty" url:"country,omitempty"`
 	// First line of the street address.
 	Line1 *string `json:"line1,omitempty" url:"line1,omitempty"`
@@ -1262,7 +1312,7 @@ var createVerificationsRequestBodyBusinessOwnersItemAddressNullableFields = map[
 // The new owner's home address, with `line1`, `city`, `state`, and `postal_code`.
 type CreateVerificationsRequestBodyBusinessOwnersItemAddress struct {
 	City *string `json:"city,omitempty" url:"city,omitempty"`
-	// Two-letter ISO 3166-1 country code, for example `US`, `DE`, or `GB`.
+	// Two-letter ISO 3166-1 country code, for example `US`, `DE`, or `GB`. An address in a [sanctioned country or region](/trust-and-safety/trust-safety-overview/sanctioned-countries) is rejected with the error code `address_country_sanctioned`.
 	Country *string `json:"country,omitempty" url:"country,omitempty"`
 	// First line of the street address.
 	Line1 *string `json:"line1,omitempty" url:"line1,omitempty"`
@@ -1485,7 +1535,7 @@ type CreateVerificationsRequestBodyBusinessOwnersItemDocuments struct {
 	ResidencePermitBack *string `json:"residence_permit_back,omitempty" url:"residence_permit_back,omitempty"`
 	// File ID of the front of the residence permit. Required when `document_type` is `residence_permit`.
 	ResidencePermitFront *string `json:"residence_permit_front,omitempty" url:"residence_permit_front,omitempty"`
-	// File ID of a photo of the owner's face. Always required. Must be a JPEG or PNG.
+	// File ID of a photo of the owner's face. Must be a JPEG or PNG. Required, except on Update Verification for an owner whose selfie already passed.
 	Selfie *string `json:"selfie,omitempty" url:"selfie,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -2040,7 +2090,7 @@ var createVerificationsRequestBodyIndividualAddressNullableFields = map[string]*
 // Every value accepts `null`, so a form seeded from a previous response can round-trip unset fields unchanged.
 type CreateVerificationsRequestBodyIndividualAddress struct {
 	City *string `json:"city,omitempty" url:"city,omitempty"`
-	// Two-letter ISO 3166-1 country code, for example `US`, `DE`, or `GB`.
+	// Two-letter ISO 3166-1 country code, for example `US`, `DE`, or `GB`. An address in a [sanctioned country or region](/trust-and-safety/trust-safety-overview/sanctioned-countries) is rejected with the error code `address_country_sanctioned`.
 	Country *string `json:"country,omitempty" url:"country,omitempty"`
 	// First line of the street address.
 	Line1 *string `json:"line1,omitempty" url:"line1,omitempty"`
@@ -2444,43 +2494,50 @@ func (c *CreateVerificationsRequestBodyIndividualDocuments) String() string {
 }
 
 var (
-	createVerificationsResponseFieldAddress              = big.NewInt(1 << 0)
-	createVerificationsResponseFieldBusinessName         = big.NewInt(1 << 1)
-	createVerificationsResponseFieldBusinessStructure    = big.NewInt(1 << 2)
-	createVerificationsResponseFieldCountry              = big.NewInt(1 << 3)
-	createVerificationsResponseFieldCreatedAt            = big.NewInt(1 << 4)
-	createVerificationsResponseFieldDateOfBirth          = big.NewInt(1 << 5)
-	createVerificationsResponseFieldEmail                = big.NewInt(1 << 6)
-	createVerificationsResponseFieldFirstName            = big.NewInt(1 << 7)
-	createVerificationsResponseFieldID                   = big.NewInt(1 << 8)
-	createVerificationsResponseFieldKind                 = big.NewInt(1 << 9)
-	createVerificationsResponseFieldLastName             = big.NewInt(1 << 10)
-	createVerificationsResponseFieldOwners               = big.NewInt(1 << 11)
-	createVerificationsResponseFieldPhone                = big.NewInt(1 << 12)
-	createVerificationsResponseFieldRegistrationNumber   = big.NewInt(1 << 13)
-	createVerificationsResponseFieldRequestedInformation = big.NewInt(1 << 14)
-	createVerificationsResponseFieldRequiredDocuments    = big.NewInt(1 << 15)
-	createVerificationsResponseFieldSessionURL           = big.NewInt(1 << 16)
-	createVerificationsResponseFieldStatus               = big.NewInt(1 << 17)
-	createVerificationsResponseFieldUpdatedAt            = big.NewInt(1 << 18)
+	createVerificationsResponseFieldAccountIDs           = big.NewInt(1 << 0)
+	createVerificationsResponseFieldAddress              = big.NewInt(1 << 1)
+	createVerificationsResponseFieldBusinessName         = big.NewInt(1 << 2)
+	createVerificationsResponseFieldBusinessStructure    = big.NewInt(1 << 3)
+	createVerificationsResponseFieldCountry              = big.NewInt(1 << 4)
+	createVerificationsResponseFieldCreatedAt            = big.NewInt(1 << 5)
+	createVerificationsResponseFieldDateOfBirth          = big.NewInt(1 << 6)
+	createVerificationsResponseFieldEmail                = big.NewInt(1 << 7)
+	createVerificationsResponseFieldFirstName            = big.NewInt(1 << 8)
+	createVerificationsResponseFieldID                   = big.NewInt(1 << 9)
+	createVerificationsResponseFieldIncorporationDate    = big.NewInt(1 << 10)
+	createVerificationsResponseFieldKind                 = big.NewInt(1 << 11)
+	createVerificationsResponseFieldLastName             = big.NewInt(1 << 12)
+	createVerificationsResponseFieldOwners               = big.NewInt(1 << 13)
+	createVerificationsResponseFieldPhone                = big.NewInt(1 << 14)
+	createVerificationsResponseFieldPlaceOfIncorporation = big.NewInt(1 << 15)
+	createVerificationsResponseFieldRegistrationNumber   = big.NewInt(1 << 16)
+	createVerificationsResponseFieldRequestedInformation = big.NewInt(1 << 17)
+	createVerificationsResponseFieldRequiredDocuments    = big.NewInt(1 << 18)
+	createVerificationsResponseFieldSessionURL           = big.NewInt(1 << 19)
+	createVerificationsResponseFieldStatus               = big.NewInt(1 << 20)
+	createVerificationsResponseFieldUpdatedAt            = big.NewInt(1 << 21)
 )
 
 // createVerificationsResponseNullableFields maps the wire names of CreateVerificationsResponse's nullable fields (required or optional) to their field bits.
 var createVerificationsResponseNullableFields = map[string]*big.Int{
-	"address":             createVerificationsResponseFieldAddress,
-	"business_name":       createVerificationsResponseFieldBusinessName,
-	"business_structure":  createVerificationsResponseFieldBusinessStructure,
-	"country":             createVerificationsResponseFieldCountry,
-	"date_of_birth":       createVerificationsResponseFieldDateOfBirth,
-	"email":               createVerificationsResponseFieldEmail,
-	"first_name":          createVerificationsResponseFieldFirstName,
-	"last_name":           createVerificationsResponseFieldLastName,
-	"phone":               createVerificationsResponseFieldPhone,
-	"registration_number": createVerificationsResponseFieldRegistrationNumber,
-	"session_url":         createVerificationsResponseFieldSessionURL,
+	"address":                createVerificationsResponseFieldAddress,
+	"business_name":          createVerificationsResponseFieldBusinessName,
+	"business_structure":     createVerificationsResponseFieldBusinessStructure,
+	"country":                createVerificationsResponseFieldCountry,
+	"date_of_birth":          createVerificationsResponseFieldDateOfBirth,
+	"email":                  createVerificationsResponseFieldEmail,
+	"first_name":             createVerificationsResponseFieldFirstName,
+	"incorporation_date":     createVerificationsResponseFieldIncorporationDate,
+	"last_name":              createVerificationsResponseFieldLastName,
+	"phone":                  createVerificationsResponseFieldPhone,
+	"place_of_incorporation": createVerificationsResponseFieldPlaceOfIncorporation,
+	"registration_number":    createVerificationsResponseFieldRegistrationNumber,
+	"session_url":            createVerificationsResponseFieldSessionURL,
 }
 
 type CreateVerificationsResponse struct {
+	// Accounts this verification was read for, each prefixed `biz_`: the account you listed by, the account or subaccount it belongs to with `include_subaccounts`, or every account you can read that it belongs to when retrieved by ID. Usually one. Empty for a personal verification.
+	AccountIDs []string `json:"account_ids" url:"account_ids"`
 	// Address on the verification profile. `null` when no address is set.
 	Address *CreateVerificationsResponseAddress `json:"address,omitempty" url:"address,omitempty"`
 	// Legal business name.
@@ -2497,16 +2554,20 @@ type CreateVerificationsResponse struct {
 	Email     *string `json:"email,omitempty" url:"email,omitempty"`
 	FirstName *string `json:"first_name,omitempty" url:"first_name,omitempty"`
 	// Verification profile ID, prefixed `idpf_`.
-	ID       *string                          `json:"id,omitempty" url:"id,omitempty"`
-	Kind     *CreateVerificationsResponseKind `json:"kind,omitempty" url:"kind,omitempty"`
-	LastName *string                          `json:"last_name,omitempty" url:"last_name,omitempty"`
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+	// Date the business was incorporated, formatted as `YYYY-MM-DD`, as on file for the business verification. Business verifications only; `null` until it is sent.
+	IncorporationDate *string                          `json:"incorporation_date,omitempty" url:"incorporation_date,omitempty"`
+	Kind              *CreateVerificationsResponseKind `json:"kind,omitempty" url:"kind,omitempty"`
+	LastName          *string                          `json:"last_name,omitempty" url:"last_name,omitempty"`
 	// Owners of the business and the progress of each one's own verification. Empty for individual verifications.
 	Owners []*CreateVerificationsResponseOwnersItem `json:"owners" url:"owners"`
 	// Phone number on the verification profile.
 	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
-	// Number the business was registered under in its place of incorporation, such as a state file number in the US or a Company Number in the UK. Business verifications only; `null` until the business verification is approved.
+	// State or region where the business is incorporated, as on file for the business verification. Business verifications only; `null` until it is sent.
+	PlaceOfIncorporation *string `json:"place_of_incorporation,omitempty" url:"place_of_incorporation,omitempty"`
+	// Number the business was registered under in its place of incorporation, such as a state file number in the US or a Company Number in the UK. Business verifications only; as on file for the business verification, or `null` until it is sent.
 	RegistrationNumber *string `json:"registration_number,omitempty" url:"registration_number,omitempty"`
-	// What Whop still needs before review can continue — one requirement per entry. Answer with Update Verification; nothing from the response is echoed back. Keys that don't apply are omitted.
+	// What Whop still needs before review can continue — one requirement per entry. Answer with Update Verification; nothing from the response is echoed back. Keys that don't apply are omitted. For a business verification created with `documents` or `owners`, this includes the company details and documents still missing before it can be sent for review; each owner's documents are listed under that owner.
 	RequestedInformation []*CreateVerificationsResponseRequestedInformationItem `json:"requested_information,omitempty" url:"requested_information,omitempty"`
 	// Documents for a document-upload verification and their progress. Present only on individual verifications created by sending `documents`. `pending_upload` documents were not accepted yet — send the full set again with another Create Verification call.
 	RequiredDocuments []*CreateVerificationsResponseRequiredDocumentsItem `json:"required_documents,omitempty" url:"required_documents,omitempty"`
@@ -2522,6 +2583,13 @@ type CreateVerificationsResponse struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (c *CreateVerificationsResponse) GetAccountIDs() []string {
+	if c == nil {
+		return nil
+	}
+	return c.AccountIDs
 }
 
 func (c *CreateVerificationsResponse) GetAddress() *CreateVerificationsResponseAddress {
@@ -2587,6 +2655,13 @@ func (c *CreateVerificationsResponse) GetID() *string {
 	return c.ID
 }
 
+func (c *CreateVerificationsResponse) GetIncorporationDate() *string {
+	if c == nil {
+		return nil
+	}
+	return c.IncorporationDate
+}
+
 func (c *CreateVerificationsResponse) GetKind() *CreateVerificationsResponseKind {
 	if c == nil {
 		return nil
@@ -2613,6 +2688,13 @@ func (c *CreateVerificationsResponse) GetPhone() *string {
 		return nil
 	}
 	return c.Phone
+}
+
+func (c *CreateVerificationsResponse) GetPlaceOfIncorporation() *string {
+	if c == nil {
+		return nil
+	}
+	return c.PlaceOfIncorporation
 }
 
 func (c *CreateVerificationsResponse) GetRegistrationNumber() *string {
@@ -2671,6 +2753,13 @@ func (c *CreateVerificationsResponse) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	c.explicitFields = next
+}
+
+// SetAccountIDs sets the AccountIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponse) SetAccountIDs(accountIDs []string) {
+	c.AccountIDs = accountIDs
+	c.require(createVerificationsResponseFieldAccountIDs)
 }
 
 // SetAddress sets the Address field and marks it as non-optional;
@@ -2736,6 +2825,13 @@ func (c *CreateVerificationsResponse) SetID(id *string) {
 	c.require(createVerificationsResponseFieldID)
 }
 
+// SetIncorporationDate sets the IncorporationDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponse) SetIncorporationDate(incorporationDate *string) {
+	c.IncorporationDate = incorporationDate
+	c.require(createVerificationsResponseFieldIncorporationDate)
+}
+
 // SetKind sets the Kind field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateVerificationsResponse) SetKind(kind *CreateVerificationsResponseKind) {
@@ -2762,6 +2858,13 @@ func (c *CreateVerificationsResponse) SetOwners(owners []*CreateVerificationsRes
 func (c *CreateVerificationsResponse) SetPhone(phone *string) {
 	c.Phone = phone
 	c.require(createVerificationsResponseFieldPhone)
+}
+
+// SetPlaceOfIncorporation sets the PlaceOfIncorporation field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponse) SetPlaceOfIncorporation(placeOfIncorporation *string) {
+	c.PlaceOfIncorporation = placeOfIncorporation
+	c.require(createVerificationsResponseFieldPlaceOfIncorporation)
 }
 
 // SetRegistrationNumber sets the RegistrationNumber field and marks it as non-optional;
@@ -3066,29 +3169,36 @@ func (c CreateVerificationsResponseKind) Ptr() *CreateVerificationsResponseKind 
 }
 
 var (
-	createVerificationsResponseOwnersItemFieldFirstName           = big.NewInt(1 << 0)
-	createVerificationsResponseOwnersItemFieldID                  = big.NewInt(1 << 1)
-	createVerificationsResponseOwnersItemFieldLastName            = big.NewInt(1 << 2)
-	createVerificationsResponseOwnersItemFieldOwnershipPercentage = big.NewInt(1 << 3)
-	createVerificationsResponseOwnersItemFieldRequiredDocuments   = big.NewInt(1 << 4)
-	createVerificationsResponseOwnersItemFieldRoles               = big.NewInt(1 << 5)
-	createVerificationsResponseOwnersItemFieldStatus              = big.NewInt(1 << 6)
+	createVerificationsResponseOwnersItemFieldDateOfBirth         = big.NewInt(1 << 0)
+	createVerificationsResponseOwnersItemFieldFirstName           = big.NewInt(1 << 1)
+	createVerificationsResponseOwnersItemFieldID                  = big.NewInt(1 << 2)
+	createVerificationsResponseOwnersItemFieldLastName            = big.NewInt(1 << 3)
+	createVerificationsResponseOwnersItemFieldOwnershipPercentage = big.NewInt(1 << 4)
+	createVerificationsResponseOwnersItemFieldRejectedChecks      = big.NewInt(1 << 5)
+	createVerificationsResponseOwnersItemFieldRequiredDocuments   = big.NewInt(1 << 6)
+	createVerificationsResponseOwnersItemFieldRoles               = big.NewInt(1 << 7)
+	createVerificationsResponseOwnersItemFieldStatus              = big.NewInt(1 << 8)
 )
 
 // createVerificationsResponseOwnersItemNullableFields maps the wire names of CreateVerificationsResponseOwnersItem's nullable fields (required or optional) to their field bits.
 var createVerificationsResponseOwnersItemNullableFields = map[string]*big.Int{
+	"date_of_birth":        createVerificationsResponseOwnersItemFieldDateOfBirth,
 	"first_name":           createVerificationsResponseOwnersItemFieldFirstName,
 	"last_name":            createVerificationsResponseOwnersItemFieldLastName,
 	"ownership_percentage": createVerificationsResponseOwnersItemFieldOwnershipPercentage,
 }
 
 type CreateVerificationsResponseOwnersItem struct {
-	FirstName *string `json:"first_name,omitempty" url:"first_name,omitempty"`
+	// The owner's date of birth on file, formatted as `YYYY-MM-DD`.
+	DateOfBirth *string `json:"date_of_birth,omitempty" url:"date_of_birth,omitempty"`
+	FirstName   *string `json:"first_name,omitempty" url:"first_name,omitempty"`
 	// Owner ID, prefixed `own_`. Send it in Update Verification's `owners` to change or remove the owner, including one added in the hosted session.
 	ID       string  `json:"id" url:"id"`
 	LastName *string `json:"last_name,omitempty" url:"last_name,omitempty"`
 	// Share of the business the person owns, from 0 to 100.
 	OwnershipPercentage *float64 `json:"ownership_percentage,omitempty" url:"ownership_percentage,omitempty"`
+	// What the provider rejected when the owner's verification was sent back: `details` (their name, date of birth, or other details don't match their ID), `identity_document`, or `selfie`. Fix only these with Update Verification. Empty otherwise.
+	RejectedChecks []CreateVerificationsResponseOwnersItemRejectedChecksItem `json:"rejected_checks" url:"rejected_checks"`
 	// The owner's documents and their progress. Empty for an owner added with `verification_id`.
 	RequiredDocuments []*CreateVerificationsResponseOwnersItemRequiredDocumentsItem `json:"required_documents" url:"required_documents"`
 	// What the person is to the business.
@@ -3101,6 +3211,13 @@ type CreateVerificationsResponseOwnersItem struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (c *CreateVerificationsResponseOwnersItem) GetDateOfBirth() *string {
+	if c == nil {
+		return nil
+	}
+	return c.DateOfBirth
 }
 
 func (c *CreateVerificationsResponseOwnersItem) GetFirstName() *string {
@@ -3129,6 +3246,13 @@ func (c *CreateVerificationsResponseOwnersItem) GetOwnershipPercentage() *float6
 		return nil
 	}
 	return c.OwnershipPercentage
+}
+
+func (c *CreateVerificationsResponseOwnersItem) GetRejectedChecks() []CreateVerificationsResponseOwnersItemRejectedChecksItem {
+	if c == nil {
+		return nil
+	}
+	return c.RejectedChecks
 }
 
 func (c *CreateVerificationsResponseOwnersItem) GetRequiredDocuments() []*CreateVerificationsResponseOwnersItemRequiredDocumentsItem {
@@ -3168,6 +3292,13 @@ func (c *CreateVerificationsResponseOwnersItem) require(field *big.Int) {
 	c.explicitFields = next
 }
 
+// SetDateOfBirth sets the DateOfBirth field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponseOwnersItem) SetDateOfBirth(dateOfBirth *string) {
+	c.DateOfBirth = dateOfBirth
+	c.require(createVerificationsResponseOwnersItemFieldDateOfBirth)
+}
+
 // SetFirstName sets the FirstName field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateVerificationsResponseOwnersItem) SetFirstName(firstName *string) {
@@ -3194,6 +3325,13 @@ func (c *CreateVerificationsResponseOwnersItem) SetLastName(lastName *string) {
 func (c *CreateVerificationsResponseOwnersItem) SetOwnershipPercentage(ownershipPercentage *float64) {
 	c.OwnershipPercentage = ownershipPercentage
 	c.require(createVerificationsResponseOwnersItemFieldOwnershipPercentage)
+}
+
+// SetRejectedChecks sets the RejectedChecks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponseOwnersItem) SetRejectedChecks(rejectedChecks []CreateVerificationsResponseOwnersItemRejectedChecksItem) {
+	c.RejectedChecks = rejectedChecks
+	c.require(createVerificationsResponseOwnersItemFieldRejectedChecks)
 }
 
 // SetRequiredDocuments sets the RequiredDocuments field and marks it as non-optional;
@@ -3264,6 +3402,31 @@ func (c *CreateVerificationsResponseOwnersItem) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", c)
+}
+
+type CreateVerificationsResponseOwnersItemRejectedChecksItem string
+
+const (
+	CreateVerificationsResponseOwnersItemRejectedChecksItemDetails          CreateVerificationsResponseOwnersItemRejectedChecksItem = "details"
+	CreateVerificationsResponseOwnersItemRejectedChecksItemIdentityDocument CreateVerificationsResponseOwnersItemRejectedChecksItem = "identity_document"
+	CreateVerificationsResponseOwnersItemRejectedChecksItemSelfie           CreateVerificationsResponseOwnersItemRejectedChecksItem = "selfie"
+)
+
+func NewCreateVerificationsResponseOwnersItemRejectedChecksItemFromString(s string) (CreateVerificationsResponseOwnersItemRejectedChecksItem, error) {
+	switch s {
+	case "details":
+		return CreateVerificationsResponseOwnersItemRejectedChecksItemDetails, nil
+	case "identity_document":
+		return CreateVerificationsResponseOwnersItemRejectedChecksItemIdentityDocument, nil
+	case "selfie":
+		return CreateVerificationsResponseOwnersItemRejectedChecksItemSelfie, nil
+	}
+	var t CreateVerificationsResponseOwnersItemRejectedChecksItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateVerificationsResponseOwnersItemRejectedChecksItem) Ptr() *CreateVerificationsResponseOwnersItemRejectedChecksItem {
+	return &c
 }
 
 var (
@@ -4265,11 +4428,13 @@ func (l ListVerificationsRequestOrder) Ptr() *ListVerificationsRequestOrder {
 }
 
 var (
-	listVerificationsResponseFieldData = big.NewInt(1 << 0)
+	listVerificationsResponseFieldData     = big.NewInt(1 << 0)
+	listVerificationsResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
 type ListVerificationsResponse struct {
-	Data []*ListVerificationsResponseDataItem `json:"data,omitempty" url:"data,omitempty"`
+	Data     []*ListVerificationsResponseDataItem `json:"data" url:"data"`
+	PageInfo *ListVerificationsResponsePageInfo   `json:"page_info" url:"page_info"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -4283,6 +4448,13 @@ func (l *ListVerificationsResponse) GetData() []*ListVerificationsResponseDataIt
 		return nil
 	}
 	return l.Data
+}
+
+func (l *ListVerificationsResponse) GetPageInfo() *ListVerificationsResponsePageInfo {
+	if l == nil {
+		return nil
+	}
+	return l.PageInfo
 }
 
 func (l *ListVerificationsResponse) GetExtraProperties() map[string]interface{} {
@@ -4306,6 +4478,13 @@ func (l *ListVerificationsResponse) require(field *big.Int) {
 func (l *ListVerificationsResponse) SetData(data []*ListVerificationsResponseDataItem) {
 	l.Data = data
 	l.require(listVerificationsResponseFieldData)
+}
+
+// SetPageInfo sets the PageInfo field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponse) SetPageInfo(pageInfo *ListVerificationsResponsePageInfo) {
+	l.PageInfo = pageInfo
+	l.require(listVerificationsResponseFieldPageInfo)
 }
 
 func (l *ListVerificationsResponse) UnmarshalJSON(data []byte) error {
@@ -4351,43 +4530,50 @@ func (l *ListVerificationsResponse) String() string {
 }
 
 var (
-	listVerificationsResponseDataItemFieldAddress              = big.NewInt(1 << 0)
-	listVerificationsResponseDataItemFieldBusinessName         = big.NewInt(1 << 1)
-	listVerificationsResponseDataItemFieldBusinessStructure    = big.NewInt(1 << 2)
-	listVerificationsResponseDataItemFieldCountry              = big.NewInt(1 << 3)
-	listVerificationsResponseDataItemFieldCreatedAt            = big.NewInt(1 << 4)
-	listVerificationsResponseDataItemFieldDateOfBirth          = big.NewInt(1 << 5)
-	listVerificationsResponseDataItemFieldEmail                = big.NewInt(1 << 6)
-	listVerificationsResponseDataItemFieldFirstName            = big.NewInt(1 << 7)
-	listVerificationsResponseDataItemFieldID                   = big.NewInt(1 << 8)
-	listVerificationsResponseDataItemFieldKind                 = big.NewInt(1 << 9)
-	listVerificationsResponseDataItemFieldLastName             = big.NewInt(1 << 10)
-	listVerificationsResponseDataItemFieldOwners               = big.NewInt(1 << 11)
-	listVerificationsResponseDataItemFieldPhone                = big.NewInt(1 << 12)
-	listVerificationsResponseDataItemFieldRegistrationNumber   = big.NewInt(1 << 13)
-	listVerificationsResponseDataItemFieldRequestedInformation = big.NewInt(1 << 14)
-	listVerificationsResponseDataItemFieldRequiredDocuments    = big.NewInt(1 << 15)
-	listVerificationsResponseDataItemFieldSessionURL           = big.NewInt(1 << 16)
-	listVerificationsResponseDataItemFieldStatus               = big.NewInt(1 << 17)
-	listVerificationsResponseDataItemFieldUpdatedAt            = big.NewInt(1 << 18)
+	listVerificationsResponseDataItemFieldAccountIDs           = big.NewInt(1 << 0)
+	listVerificationsResponseDataItemFieldAddress              = big.NewInt(1 << 1)
+	listVerificationsResponseDataItemFieldBusinessName         = big.NewInt(1 << 2)
+	listVerificationsResponseDataItemFieldBusinessStructure    = big.NewInt(1 << 3)
+	listVerificationsResponseDataItemFieldCountry              = big.NewInt(1 << 4)
+	listVerificationsResponseDataItemFieldCreatedAt            = big.NewInt(1 << 5)
+	listVerificationsResponseDataItemFieldDateOfBirth          = big.NewInt(1 << 6)
+	listVerificationsResponseDataItemFieldEmail                = big.NewInt(1 << 7)
+	listVerificationsResponseDataItemFieldFirstName            = big.NewInt(1 << 8)
+	listVerificationsResponseDataItemFieldID                   = big.NewInt(1 << 9)
+	listVerificationsResponseDataItemFieldIncorporationDate    = big.NewInt(1 << 10)
+	listVerificationsResponseDataItemFieldKind                 = big.NewInt(1 << 11)
+	listVerificationsResponseDataItemFieldLastName             = big.NewInt(1 << 12)
+	listVerificationsResponseDataItemFieldOwners               = big.NewInt(1 << 13)
+	listVerificationsResponseDataItemFieldPhone                = big.NewInt(1 << 14)
+	listVerificationsResponseDataItemFieldPlaceOfIncorporation = big.NewInt(1 << 15)
+	listVerificationsResponseDataItemFieldRegistrationNumber   = big.NewInt(1 << 16)
+	listVerificationsResponseDataItemFieldRequestedInformation = big.NewInt(1 << 17)
+	listVerificationsResponseDataItemFieldRequiredDocuments    = big.NewInt(1 << 18)
+	listVerificationsResponseDataItemFieldSessionURL           = big.NewInt(1 << 19)
+	listVerificationsResponseDataItemFieldStatus               = big.NewInt(1 << 20)
+	listVerificationsResponseDataItemFieldUpdatedAt            = big.NewInt(1 << 21)
 )
 
 // listVerificationsResponseDataItemNullableFields maps the wire names of ListVerificationsResponseDataItem's nullable fields (required or optional) to their field bits.
 var listVerificationsResponseDataItemNullableFields = map[string]*big.Int{
-	"address":             listVerificationsResponseDataItemFieldAddress,
-	"business_name":       listVerificationsResponseDataItemFieldBusinessName,
-	"business_structure":  listVerificationsResponseDataItemFieldBusinessStructure,
-	"country":             listVerificationsResponseDataItemFieldCountry,
-	"date_of_birth":       listVerificationsResponseDataItemFieldDateOfBirth,
-	"email":               listVerificationsResponseDataItemFieldEmail,
-	"first_name":          listVerificationsResponseDataItemFieldFirstName,
-	"last_name":           listVerificationsResponseDataItemFieldLastName,
-	"phone":               listVerificationsResponseDataItemFieldPhone,
-	"registration_number": listVerificationsResponseDataItemFieldRegistrationNumber,
-	"session_url":         listVerificationsResponseDataItemFieldSessionURL,
+	"address":                listVerificationsResponseDataItemFieldAddress,
+	"business_name":          listVerificationsResponseDataItemFieldBusinessName,
+	"business_structure":     listVerificationsResponseDataItemFieldBusinessStructure,
+	"country":                listVerificationsResponseDataItemFieldCountry,
+	"date_of_birth":          listVerificationsResponseDataItemFieldDateOfBirth,
+	"email":                  listVerificationsResponseDataItemFieldEmail,
+	"first_name":             listVerificationsResponseDataItemFieldFirstName,
+	"incorporation_date":     listVerificationsResponseDataItemFieldIncorporationDate,
+	"last_name":              listVerificationsResponseDataItemFieldLastName,
+	"phone":                  listVerificationsResponseDataItemFieldPhone,
+	"place_of_incorporation": listVerificationsResponseDataItemFieldPlaceOfIncorporation,
+	"registration_number":    listVerificationsResponseDataItemFieldRegistrationNumber,
+	"session_url":            listVerificationsResponseDataItemFieldSessionURL,
 }
 
 type ListVerificationsResponseDataItem struct {
+	// Accounts this verification was read for, each prefixed `biz_`: the account you listed by, the account or subaccount it belongs to with `include_subaccounts`, or every account you can read that it belongs to when retrieved by ID. Usually one. Empty for a personal verification.
+	AccountIDs []string `json:"account_ids" url:"account_ids"`
 	// Address on the verification profile. `null` when no address is set.
 	Address *ListVerificationsResponseDataItemAddress `json:"address,omitempty" url:"address,omitempty"`
 	// Legal business name.
@@ -4404,16 +4590,20 @@ type ListVerificationsResponseDataItem struct {
 	Email     *string `json:"email,omitempty" url:"email,omitempty"`
 	FirstName *string `json:"first_name,omitempty" url:"first_name,omitempty"`
 	// Verification profile ID, prefixed `idpf_`.
-	ID       *string                                `json:"id,omitempty" url:"id,omitempty"`
-	Kind     *ListVerificationsResponseDataItemKind `json:"kind,omitempty" url:"kind,omitempty"`
-	LastName *string                                `json:"last_name,omitempty" url:"last_name,omitempty"`
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+	// Date the business was incorporated, formatted as `YYYY-MM-DD`, as on file for the business verification. Business verifications only; `null` until it is sent.
+	IncorporationDate *string                                `json:"incorporation_date,omitempty" url:"incorporation_date,omitempty"`
+	Kind              *ListVerificationsResponseDataItemKind `json:"kind,omitempty" url:"kind,omitempty"`
+	LastName          *string                                `json:"last_name,omitempty" url:"last_name,omitempty"`
 	// Owners of the business and the progress of each one's own verification. Empty for individual verifications.
 	Owners []*ListVerificationsResponseDataItemOwnersItem `json:"owners" url:"owners"`
 	// Phone number on the verification profile.
 	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
-	// Number the business was registered under in its place of incorporation, such as a state file number in the US or a Company Number in the UK. Business verifications only; `null` until the business verification is approved.
+	// State or region where the business is incorporated, as on file for the business verification. Business verifications only; `null` until it is sent.
+	PlaceOfIncorporation *string `json:"place_of_incorporation,omitempty" url:"place_of_incorporation,omitempty"`
+	// Number the business was registered under in its place of incorporation, such as a state file number in the US or a Company Number in the UK. Business verifications only; as on file for the business verification, or `null` until it is sent.
 	RegistrationNumber *string `json:"registration_number,omitempty" url:"registration_number,omitempty"`
-	// What Whop still needs before review can continue — one requirement per entry. Answer with Update Verification; nothing from the response is echoed back. Keys that don't apply are omitted.
+	// What Whop still needs before review can continue — one requirement per entry. Answer with Update Verification; nothing from the response is echoed back. Keys that don't apply are omitted. For a business verification created with `documents` or `owners`, this includes the company details and documents still missing before it can be sent for review; each owner's documents are listed under that owner.
 	RequestedInformation []*ListVerificationsResponseDataItemRequestedInformationItem `json:"requested_information,omitempty" url:"requested_information,omitempty"`
 	// Documents for a document-upload verification and their progress. Present only on individual verifications created by sending `documents`. `pending_upload` documents were not accepted yet — send the full set again with another Create Verification call.
 	RequiredDocuments []*ListVerificationsResponseDataItemRequiredDocumentsItem `json:"required_documents,omitempty" url:"required_documents,omitempty"`
@@ -4429,6 +4619,13 @@ type ListVerificationsResponseDataItem struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (l *ListVerificationsResponseDataItem) GetAccountIDs() []string {
+	if l == nil {
+		return nil
+	}
+	return l.AccountIDs
 }
 
 func (l *ListVerificationsResponseDataItem) GetAddress() *ListVerificationsResponseDataItemAddress {
@@ -4494,6 +4691,13 @@ func (l *ListVerificationsResponseDataItem) GetID() *string {
 	return l.ID
 }
 
+func (l *ListVerificationsResponseDataItem) GetIncorporationDate() *string {
+	if l == nil {
+		return nil
+	}
+	return l.IncorporationDate
+}
+
 func (l *ListVerificationsResponseDataItem) GetKind() *ListVerificationsResponseDataItemKind {
 	if l == nil {
 		return nil
@@ -4520,6 +4724,13 @@ func (l *ListVerificationsResponseDataItem) GetPhone() *string {
 		return nil
 	}
 	return l.Phone
+}
+
+func (l *ListVerificationsResponseDataItem) GetPlaceOfIncorporation() *string {
+	if l == nil {
+		return nil
+	}
+	return l.PlaceOfIncorporation
 }
 
 func (l *ListVerificationsResponseDataItem) GetRegistrationNumber() *string {
@@ -4578,6 +4789,13 @@ func (l *ListVerificationsResponseDataItem) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	l.explicitFields = next
+}
+
+// SetAccountIDs sets the AccountIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItem) SetAccountIDs(accountIDs []string) {
+	l.AccountIDs = accountIDs
+	l.require(listVerificationsResponseDataItemFieldAccountIDs)
 }
 
 // SetAddress sets the Address field and marks it as non-optional;
@@ -4643,6 +4861,13 @@ func (l *ListVerificationsResponseDataItem) SetID(id *string) {
 	l.require(listVerificationsResponseDataItemFieldID)
 }
 
+// SetIncorporationDate sets the IncorporationDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItem) SetIncorporationDate(incorporationDate *string) {
+	l.IncorporationDate = incorporationDate
+	l.require(listVerificationsResponseDataItemFieldIncorporationDate)
+}
+
 // SetKind sets the Kind field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListVerificationsResponseDataItem) SetKind(kind *ListVerificationsResponseDataItemKind) {
@@ -4669,6 +4894,13 @@ func (l *ListVerificationsResponseDataItem) SetOwners(owners []*ListVerification
 func (l *ListVerificationsResponseDataItem) SetPhone(phone *string) {
 	l.Phone = phone
 	l.require(listVerificationsResponseDataItemFieldPhone)
+}
+
+// SetPlaceOfIncorporation sets the PlaceOfIncorporation field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItem) SetPlaceOfIncorporation(placeOfIncorporation *string) {
+	l.PlaceOfIncorporation = placeOfIncorporation
+	l.require(listVerificationsResponseDataItemFieldPlaceOfIncorporation)
 }
 
 // SetRegistrationNumber sets the RegistrationNumber field and marks it as non-optional;
@@ -4973,29 +5205,36 @@ func (l ListVerificationsResponseDataItemKind) Ptr() *ListVerificationsResponseD
 }
 
 var (
-	listVerificationsResponseDataItemOwnersItemFieldFirstName           = big.NewInt(1 << 0)
-	listVerificationsResponseDataItemOwnersItemFieldID                  = big.NewInt(1 << 1)
-	listVerificationsResponseDataItemOwnersItemFieldLastName            = big.NewInt(1 << 2)
-	listVerificationsResponseDataItemOwnersItemFieldOwnershipPercentage = big.NewInt(1 << 3)
-	listVerificationsResponseDataItemOwnersItemFieldRequiredDocuments   = big.NewInt(1 << 4)
-	listVerificationsResponseDataItemOwnersItemFieldRoles               = big.NewInt(1 << 5)
-	listVerificationsResponseDataItemOwnersItemFieldStatus              = big.NewInt(1 << 6)
+	listVerificationsResponseDataItemOwnersItemFieldDateOfBirth         = big.NewInt(1 << 0)
+	listVerificationsResponseDataItemOwnersItemFieldFirstName           = big.NewInt(1 << 1)
+	listVerificationsResponseDataItemOwnersItemFieldID                  = big.NewInt(1 << 2)
+	listVerificationsResponseDataItemOwnersItemFieldLastName            = big.NewInt(1 << 3)
+	listVerificationsResponseDataItemOwnersItemFieldOwnershipPercentage = big.NewInt(1 << 4)
+	listVerificationsResponseDataItemOwnersItemFieldRejectedChecks      = big.NewInt(1 << 5)
+	listVerificationsResponseDataItemOwnersItemFieldRequiredDocuments   = big.NewInt(1 << 6)
+	listVerificationsResponseDataItemOwnersItemFieldRoles               = big.NewInt(1 << 7)
+	listVerificationsResponseDataItemOwnersItemFieldStatus              = big.NewInt(1 << 8)
 )
 
 // listVerificationsResponseDataItemOwnersItemNullableFields maps the wire names of ListVerificationsResponseDataItemOwnersItem's nullable fields (required or optional) to their field bits.
 var listVerificationsResponseDataItemOwnersItemNullableFields = map[string]*big.Int{
+	"date_of_birth":        listVerificationsResponseDataItemOwnersItemFieldDateOfBirth,
 	"first_name":           listVerificationsResponseDataItemOwnersItemFieldFirstName,
 	"last_name":            listVerificationsResponseDataItemOwnersItemFieldLastName,
 	"ownership_percentage": listVerificationsResponseDataItemOwnersItemFieldOwnershipPercentage,
 }
 
 type ListVerificationsResponseDataItemOwnersItem struct {
-	FirstName *string `json:"first_name,omitempty" url:"first_name,omitempty"`
+	// The owner's date of birth on file, formatted as `YYYY-MM-DD`.
+	DateOfBirth *string `json:"date_of_birth,omitempty" url:"date_of_birth,omitempty"`
+	FirstName   *string `json:"first_name,omitempty" url:"first_name,omitempty"`
 	// Owner ID, prefixed `own_`. Send it in Update Verification's `owners` to change or remove the owner, including one added in the hosted session.
 	ID       string  `json:"id" url:"id"`
 	LastName *string `json:"last_name,omitempty" url:"last_name,omitempty"`
 	// Share of the business the person owns, from 0 to 100.
 	OwnershipPercentage *float64 `json:"ownership_percentage,omitempty" url:"ownership_percentage,omitempty"`
+	// What the provider rejected when the owner's verification was sent back: `details` (their name, date of birth, or other details don't match their ID), `identity_document`, or `selfie`. Fix only these with Update Verification. Empty otherwise.
+	RejectedChecks []ListVerificationsResponseDataItemOwnersItemRejectedChecksItem `json:"rejected_checks" url:"rejected_checks"`
 	// The owner's documents and their progress. Empty for an owner added with `verification_id`.
 	RequiredDocuments []*ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItem `json:"required_documents" url:"required_documents"`
 	// What the person is to the business.
@@ -5008,6 +5247,13 @@ type ListVerificationsResponseDataItemOwnersItem struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (l *ListVerificationsResponseDataItemOwnersItem) GetDateOfBirth() *string {
+	if l == nil {
+		return nil
+	}
+	return l.DateOfBirth
 }
 
 func (l *ListVerificationsResponseDataItemOwnersItem) GetFirstName() *string {
@@ -5036,6 +5282,13 @@ func (l *ListVerificationsResponseDataItemOwnersItem) GetOwnershipPercentage() *
 		return nil
 	}
 	return l.OwnershipPercentage
+}
+
+func (l *ListVerificationsResponseDataItemOwnersItem) GetRejectedChecks() []ListVerificationsResponseDataItemOwnersItemRejectedChecksItem {
+	if l == nil {
+		return nil
+	}
+	return l.RejectedChecks
 }
 
 func (l *ListVerificationsResponseDataItemOwnersItem) GetRequiredDocuments() []*ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItem {
@@ -5075,6 +5328,13 @@ func (l *ListVerificationsResponseDataItemOwnersItem) require(field *big.Int) {
 	l.explicitFields = next
 }
 
+// SetDateOfBirth sets the DateOfBirth field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItemOwnersItem) SetDateOfBirth(dateOfBirth *string) {
+	l.DateOfBirth = dateOfBirth
+	l.require(listVerificationsResponseDataItemOwnersItemFieldDateOfBirth)
+}
+
 // SetFirstName sets the FirstName field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListVerificationsResponseDataItemOwnersItem) SetFirstName(firstName *string) {
@@ -5101,6 +5361,13 @@ func (l *ListVerificationsResponseDataItemOwnersItem) SetLastName(lastName *stri
 func (l *ListVerificationsResponseDataItemOwnersItem) SetOwnershipPercentage(ownershipPercentage *float64) {
 	l.OwnershipPercentage = ownershipPercentage
 	l.require(listVerificationsResponseDataItemOwnersItemFieldOwnershipPercentage)
+}
+
+// SetRejectedChecks sets the RejectedChecks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItemOwnersItem) SetRejectedChecks(rejectedChecks []ListVerificationsResponseDataItemOwnersItemRejectedChecksItem) {
+	l.RejectedChecks = rejectedChecks
+	l.require(listVerificationsResponseDataItemOwnersItemFieldRejectedChecks)
 }
 
 // SetRequiredDocuments sets the RequiredDocuments field and marks it as non-optional;
@@ -5171,6 +5438,31 @@ func (l *ListVerificationsResponseDataItemOwnersItem) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", l)
+}
+
+type ListVerificationsResponseDataItemOwnersItemRejectedChecksItem string
+
+const (
+	ListVerificationsResponseDataItemOwnersItemRejectedChecksItemDetails          ListVerificationsResponseDataItemOwnersItemRejectedChecksItem = "details"
+	ListVerificationsResponseDataItemOwnersItemRejectedChecksItemIdentityDocument ListVerificationsResponseDataItemOwnersItemRejectedChecksItem = "identity_document"
+	ListVerificationsResponseDataItemOwnersItemRejectedChecksItemSelfie           ListVerificationsResponseDataItemOwnersItemRejectedChecksItem = "selfie"
+)
+
+func NewListVerificationsResponseDataItemOwnersItemRejectedChecksItemFromString(s string) (ListVerificationsResponseDataItemOwnersItemRejectedChecksItem, error) {
+	switch s {
+	case "details":
+		return ListVerificationsResponseDataItemOwnersItemRejectedChecksItemDetails, nil
+	case "identity_document":
+		return ListVerificationsResponseDataItemOwnersItemRejectedChecksItemIdentityDocument, nil
+	case "selfie":
+		return ListVerificationsResponseDataItemOwnersItemRejectedChecksItemSelfie, nil
+	}
+	var t ListVerificationsResponseDataItemOwnersItemRejectedChecksItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListVerificationsResponseDataItemOwnersItemRejectedChecksItem) Ptr() *ListVerificationsResponseDataItemOwnersItemRejectedChecksItem {
+	return &l
 }
 
 var (
@@ -6128,6 +6420,153 @@ func (l ListVerificationsResponseDataItemStatus) Ptr() *ListVerificationsRespons
 }
 
 var (
+	listVerificationsResponsePageInfoFieldEndCursor       = big.NewInt(1 << 0)
+	listVerificationsResponsePageInfoFieldHasNextPage     = big.NewInt(1 << 1)
+	listVerificationsResponsePageInfoFieldHasPreviousPage = big.NewInt(1 << 2)
+	listVerificationsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
+)
+
+// listVerificationsResponsePageInfoNullableFields maps the wire names of ListVerificationsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listVerificationsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listVerificationsResponsePageInfoFieldEndCursor,
+	"start_cursor": listVerificationsResponsePageInfoFieldStartCursor,
+}
+
+type ListVerificationsResponsePageInfo struct {
+	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
+	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
+	HasPreviousPage bool    `json:"has_previous_page" url:"has_previous_page"`
+	StartCursor     *string `json:"start_cursor,omitempty" url:"start_cursor,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListVerificationsResponsePageInfo) GetEndCursor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.EndCursor
+}
+
+func (l *ListVerificationsResponsePageInfo) GetHasNextPage() bool {
+	if l == nil {
+		return false
+	}
+	return l.HasNextPage
+}
+
+func (l *ListVerificationsResponsePageInfo) GetHasPreviousPage() bool {
+	if l == nil {
+		return false
+	}
+	return l.HasPreviousPage
+}
+
+func (l *ListVerificationsResponsePageInfo) GetStartCursor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.StartCursor
+}
+
+func (l *ListVerificationsResponsePageInfo) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListVerificationsResponsePageInfo) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetEndCursor sets the EndCursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponsePageInfo) SetEndCursor(endCursor *string) {
+	l.EndCursor = endCursor
+	l.require(listVerificationsResponsePageInfoFieldEndCursor)
+}
+
+// SetHasNextPage sets the HasNextPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponsePageInfo) SetHasNextPage(hasNextPage bool) {
+	l.HasNextPage = hasNextPage
+	l.require(listVerificationsResponsePageInfoFieldHasNextPage)
+}
+
+// SetHasPreviousPage sets the HasPreviousPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponsePageInfo) SetHasPreviousPage(hasPreviousPage bool) {
+	l.HasPreviousPage = hasPreviousPage
+	l.require(listVerificationsResponsePageInfoFieldHasPreviousPage)
+}
+
+// SetStartCursor sets the StartCursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponsePageInfo) SetStartCursor(startCursor *string) {
+	l.StartCursor = startCursor
+	l.require(listVerificationsResponsePageInfoFieldStartCursor)
+}
+
+func (l *ListVerificationsResponsePageInfo) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListVerificationsResponsePageInfo
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListVerificationsResponsePageInfo(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listVerificationsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListVerificationsResponsePageInfo) MarshalJSON() ([]byte, error) {
+	type embed ListVerificationsResponsePageInfo
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListVerificationsResponsePageInfo) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
 	postIdentityProfileUpdatedPayloadFieldAccountID          = big.NewInt(1 << 0)
 	postIdentityProfileUpdatedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
 	postIdentityProfileUpdatedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
@@ -6747,43 +7186,50 @@ func (p PostVerificationSucceededPayloadType) Ptr() *PostVerificationSucceededPa
 }
 
 var (
-	retrieveVerificationsResponseFieldAddress              = big.NewInt(1 << 0)
-	retrieveVerificationsResponseFieldBusinessName         = big.NewInt(1 << 1)
-	retrieveVerificationsResponseFieldBusinessStructure    = big.NewInt(1 << 2)
-	retrieveVerificationsResponseFieldCountry              = big.NewInt(1 << 3)
-	retrieveVerificationsResponseFieldCreatedAt            = big.NewInt(1 << 4)
-	retrieveVerificationsResponseFieldDateOfBirth          = big.NewInt(1 << 5)
-	retrieveVerificationsResponseFieldEmail                = big.NewInt(1 << 6)
-	retrieveVerificationsResponseFieldFirstName            = big.NewInt(1 << 7)
-	retrieveVerificationsResponseFieldID                   = big.NewInt(1 << 8)
-	retrieveVerificationsResponseFieldKind                 = big.NewInt(1 << 9)
-	retrieveVerificationsResponseFieldLastName             = big.NewInt(1 << 10)
-	retrieveVerificationsResponseFieldOwners               = big.NewInt(1 << 11)
-	retrieveVerificationsResponseFieldPhone                = big.NewInt(1 << 12)
-	retrieveVerificationsResponseFieldRegistrationNumber   = big.NewInt(1 << 13)
-	retrieveVerificationsResponseFieldRequestedInformation = big.NewInt(1 << 14)
-	retrieveVerificationsResponseFieldRequiredDocuments    = big.NewInt(1 << 15)
-	retrieveVerificationsResponseFieldSessionURL           = big.NewInt(1 << 16)
-	retrieveVerificationsResponseFieldStatus               = big.NewInt(1 << 17)
-	retrieveVerificationsResponseFieldUpdatedAt            = big.NewInt(1 << 18)
+	retrieveVerificationsResponseFieldAccountIDs           = big.NewInt(1 << 0)
+	retrieveVerificationsResponseFieldAddress              = big.NewInt(1 << 1)
+	retrieveVerificationsResponseFieldBusinessName         = big.NewInt(1 << 2)
+	retrieveVerificationsResponseFieldBusinessStructure    = big.NewInt(1 << 3)
+	retrieveVerificationsResponseFieldCountry              = big.NewInt(1 << 4)
+	retrieveVerificationsResponseFieldCreatedAt            = big.NewInt(1 << 5)
+	retrieveVerificationsResponseFieldDateOfBirth          = big.NewInt(1 << 6)
+	retrieveVerificationsResponseFieldEmail                = big.NewInt(1 << 7)
+	retrieveVerificationsResponseFieldFirstName            = big.NewInt(1 << 8)
+	retrieveVerificationsResponseFieldID                   = big.NewInt(1 << 9)
+	retrieveVerificationsResponseFieldIncorporationDate    = big.NewInt(1 << 10)
+	retrieveVerificationsResponseFieldKind                 = big.NewInt(1 << 11)
+	retrieveVerificationsResponseFieldLastName             = big.NewInt(1 << 12)
+	retrieveVerificationsResponseFieldOwners               = big.NewInt(1 << 13)
+	retrieveVerificationsResponseFieldPhone                = big.NewInt(1 << 14)
+	retrieveVerificationsResponseFieldPlaceOfIncorporation = big.NewInt(1 << 15)
+	retrieveVerificationsResponseFieldRegistrationNumber   = big.NewInt(1 << 16)
+	retrieveVerificationsResponseFieldRequestedInformation = big.NewInt(1 << 17)
+	retrieveVerificationsResponseFieldRequiredDocuments    = big.NewInt(1 << 18)
+	retrieveVerificationsResponseFieldSessionURL           = big.NewInt(1 << 19)
+	retrieveVerificationsResponseFieldStatus               = big.NewInt(1 << 20)
+	retrieveVerificationsResponseFieldUpdatedAt            = big.NewInt(1 << 21)
 )
 
 // retrieveVerificationsResponseNullableFields maps the wire names of RetrieveVerificationsResponse's nullable fields (required or optional) to their field bits.
 var retrieveVerificationsResponseNullableFields = map[string]*big.Int{
-	"address":             retrieveVerificationsResponseFieldAddress,
-	"business_name":       retrieveVerificationsResponseFieldBusinessName,
-	"business_structure":  retrieveVerificationsResponseFieldBusinessStructure,
-	"country":             retrieveVerificationsResponseFieldCountry,
-	"date_of_birth":       retrieveVerificationsResponseFieldDateOfBirth,
-	"email":               retrieveVerificationsResponseFieldEmail,
-	"first_name":          retrieveVerificationsResponseFieldFirstName,
-	"last_name":           retrieveVerificationsResponseFieldLastName,
-	"phone":               retrieveVerificationsResponseFieldPhone,
-	"registration_number": retrieveVerificationsResponseFieldRegistrationNumber,
-	"session_url":         retrieveVerificationsResponseFieldSessionURL,
+	"address":                retrieveVerificationsResponseFieldAddress,
+	"business_name":          retrieveVerificationsResponseFieldBusinessName,
+	"business_structure":     retrieveVerificationsResponseFieldBusinessStructure,
+	"country":                retrieveVerificationsResponseFieldCountry,
+	"date_of_birth":          retrieveVerificationsResponseFieldDateOfBirth,
+	"email":                  retrieveVerificationsResponseFieldEmail,
+	"first_name":             retrieveVerificationsResponseFieldFirstName,
+	"incorporation_date":     retrieveVerificationsResponseFieldIncorporationDate,
+	"last_name":              retrieveVerificationsResponseFieldLastName,
+	"phone":                  retrieveVerificationsResponseFieldPhone,
+	"place_of_incorporation": retrieveVerificationsResponseFieldPlaceOfIncorporation,
+	"registration_number":    retrieveVerificationsResponseFieldRegistrationNumber,
+	"session_url":            retrieveVerificationsResponseFieldSessionURL,
 }
 
 type RetrieveVerificationsResponse struct {
+	// Accounts this verification was read for, each prefixed `biz_`: the account you listed by, the account or subaccount it belongs to with `include_subaccounts`, or every account you can read that it belongs to when retrieved by ID. Usually one. Empty for a personal verification.
+	AccountIDs []string `json:"account_ids" url:"account_ids"`
 	// Address on the verification profile. `null` when no address is set.
 	Address *RetrieveVerificationsResponseAddress `json:"address,omitempty" url:"address,omitempty"`
 	// Legal business name.
@@ -6800,16 +7246,20 @@ type RetrieveVerificationsResponse struct {
 	Email     *string `json:"email,omitempty" url:"email,omitempty"`
 	FirstName *string `json:"first_name,omitempty" url:"first_name,omitempty"`
 	// Verification profile ID, prefixed `idpf_`.
-	ID       *string                            `json:"id,omitempty" url:"id,omitempty"`
-	Kind     *RetrieveVerificationsResponseKind `json:"kind,omitempty" url:"kind,omitempty"`
-	LastName *string                            `json:"last_name,omitempty" url:"last_name,omitempty"`
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+	// Date the business was incorporated, formatted as `YYYY-MM-DD`, as on file for the business verification. Business verifications only; `null` until it is sent.
+	IncorporationDate *string                            `json:"incorporation_date,omitempty" url:"incorporation_date,omitempty"`
+	Kind              *RetrieveVerificationsResponseKind `json:"kind,omitempty" url:"kind,omitempty"`
+	LastName          *string                            `json:"last_name,omitempty" url:"last_name,omitempty"`
 	// Owners of the business and the progress of each one's own verification. Empty for individual verifications.
 	Owners []*RetrieveVerificationsResponseOwnersItem `json:"owners" url:"owners"`
 	// Phone number on the verification profile.
 	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
-	// Number the business was registered under in its place of incorporation, such as a state file number in the US or a Company Number in the UK. Business verifications only; `null` until the business verification is approved.
+	// State or region where the business is incorporated, as on file for the business verification. Business verifications only; `null` until it is sent.
+	PlaceOfIncorporation *string `json:"place_of_incorporation,omitempty" url:"place_of_incorporation,omitempty"`
+	// Number the business was registered under in its place of incorporation, such as a state file number in the US or a Company Number in the UK. Business verifications only; as on file for the business verification, or `null` until it is sent.
 	RegistrationNumber *string `json:"registration_number,omitempty" url:"registration_number,omitempty"`
-	// What Whop still needs before review can continue — one requirement per entry. Answer with Update Verification; nothing from the response is echoed back. Keys that don't apply are omitted.
+	// What Whop still needs before review can continue — one requirement per entry. Answer with Update Verification; nothing from the response is echoed back. Keys that don't apply are omitted. For a business verification created with `documents` or `owners`, this includes the company details and documents still missing before it can be sent for review; each owner's documents are listed under that owner.
 	RequestedInformation []*RetrieveVerificationsResponseRequestedInformationItem `json:"requested_information,omitempty" url:"requested_information,omitempty"`
 	// Documents for a document-upload verification and their progress. Present only on individual verifications created by sending `documents`. `pending_upload` documents were not accepted yet — send the full set again with another Create Verification call.
 	RequiredDocuments []*RetrieveVerificationsResponseRequiredDocumentsItem `json:"required_documents,omitempty" url:"required_documents,omitempty"`
@@ -6825,6 +7275,13 @@ type RetrieveVerificationsResponse struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (r *RetrieveVerificationsResponse) GetAccountIDs() []string {
+	if r == nil {
+		return nil
+	}
+	return r.AccountIDs
 }
 
 func (r *RetrieveVerificationsResponse) GetAddress() *RetrieveVerificationsResponseAddress {
@@ -6890,6 +7347,13 @@ func (r *RetrieveVerificationsResponse) GetID() *string {
 	return r.ID
 }
 
+func (r *RetrieveVerificationsResponse) GetIncorporationDate() *string {
+	if r == nil {
+		return nil
+	}
+	return r.IncorporationDate
+}
+
 func (r *RetrieveVerificationsResponse) GetKind() *RetrieveVerificationsResponseKind {
 	if r == nil {
 		return nil
@@ -6916,6 +7380,13 @@ func (r *RetrieveVerificationsResponse) GetPhone() *string {
 		return nil
 	}
 	return r.Phone
+}
+
+func (r *RetrieveVerificationsResponse) GetPlaceOfIncorporation() *string {
+	if r == nil {
+		return nil
+	}
+	return r.PlaceOfIncorporation
 }
 
 func (r *RetrieveVerificationsResponse) GetRegistrationNumber() *string {
@@ -6974,6 +7445,13 @@ func (r *RetrieveVerificationsResponse) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	r.explicitFields = next
+}
+
+// SetAccountIDs sets the AccountIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponse) SetAccountIDs(accountIDs []string) {
+	r.AccountIDs = accountIDs
+	r.require(retrieveVerificationsResponseFieldAccountIDs)
 }
 
 // SetAddress sets the Address field and marks it as non-optional;
@@ -7039,6 +7517,13 @@ func (r *RetrieveVerificationsResponse) SetID(id *string) {
 	r.require(retrieveVerificationsResponseFieldID)
 }
 
+// SetIncorporationDate sets the IncorporationDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponse) SetIncorporationDate(incorporationDate *string) {
+	r.IncorporationDate = incorporationDate
+	r.require(retrieveVerificationsResponseFieldIncorporationDate)
+}
+
 // SetKind sets the Kind field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (r *RetrieveVerificationsResponse) SetKind(kind *RetrieveVerificationsResponseKind) {
@@ -7065,6 +7550,13 @@ func (r *RetrieveVerificationsResponse) SetOwners(owners []*RetrieveVerification
 func (r *RetrieveVerificationsResponse) SetPhone(phone *string) {
 	r.Phone = phone
 	r.require(retrieveVerificationsResponseFieldPhone)
+}
+
+// SetPlaceOfIncorporation sets the PlaceOfIncorporation field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponse) SetPlaceOfIncorporation(placeOfIncorporation *string) {
+	r.PlaceOfIncorporation = placeOfIncorporation
+	r.require(retrieveVerificationsResponseFieldPlaceOfIncorporation)
 }
 
 // SetRegistrationNumber sets the RegistrationNumber field and marks it as non-optional;
@@ -7369,29 +7861,36 @@ func (r RetrieveVerificationsResponseKind) Ptr() *RetrieveVerificationsResponseK
 }
 
 var (
-	retrieveVerificationsResponseOwnersItemFieldFirstName           = big.NewInt(1 << 0)
-	retrieveVerificationsResponseOwnersItemFieldID                  = big.NewInt(1 << 1)
-	retrieveVerificationsResponseOwnersItemFieldLastName            = big.NewInt(1 << 2)
-	retrieveVerificationsResponseOwnersItemFieldOwnershipPercentage = big.NewInt(1 << 3)
-	retrieveVerificationsResponseOwnersItemFieldRequiredDocuments   = big.NewInt(1 << 4)
-	retrieveVerificationsResponseOwnersItemFieldRoles               = big.NewInt(1 << 5)
-	retrieveVerificationsResponseOwnersItemFieldStatus              = big.NewInt(1 << 6)
+	retrieveVerificationsResponseOwnersItemFieldDateOfBirth         = big.NewInt(1 << 0)
+	retrieveVerificationsResponseOwnersItemFieldFirstName           = big.NewInt(1 << 1)
+	retrieveVerificationsResponseOwnersItemFieldID                  = big.NewInt(1 << 2)
+	retrieveVerificationsResponseOwnersItemFieldLastName            = big.NewInt(1 << 3)
+	retrieveVerificationsResponseOwnersItemFieldOwnershipPercentage = big.NewInt(1 << 4)
+	retrieveVerificationsResponseOwnersItemFieldRejectedChecks      = big.NewInt(1 << 5)
+	retrieveVerificationsResponseOwnersItemFieldRequiredDocuments   = big.NewInt(1 << 6)
+	retrieveVerificationsResponseOwnersItemFieldRoles               = big.NewInt(1 << 7)
+	retrieveVerificationsResponseOwnersItemFieldStatus              = big.NewInt(1 << 8)
 )
 
 // retrieveVerificationsResponseOwnersItemNullableFields maps the wire names of RetrieveVerificationsResponseOwnersItem's nullable fields (required or optional) to their field bits.
 var retrieveVerificationsResponseOwnersItemNullableFields = map[string]*big.Int{
+	"date_of_birth":        retrieveVerificationsResponseOwnersItemFieldDateOfBirth,
 	"first_name":           retrieveVerificationsResponseOwnersItemFieldFirstName,
 	"last_name":            retrieveVerificationsResponseOwnersItemFieldLastName,
 	"ownership_percentage": retrieveVerificationsResponseOwnersItemFieldOwnershipPercentage,
 }
 
 type RetrieveVerificationsResponseOwnersItem struct {
-	FirstName *string `json:"first_name,omitempty" url:"first_name,omitempty"`
+	// The owner's date of birth on file, formatted as `YYYY-MM-DD`.
+	DateOfBirth *string `json:"date_of_birth,omitempty" url:"date_of_birth,omitempty"`
+	FirstName   *string `json:"first_name,omitempty" url:"first_name,omitempty"`
 	// Owner ID, prefixed `own_`. Send it in Update Verification's `owners` to change or remove the owner, including one added in the hosted session.
 	ID       string  `json:"id" url:"id"`
 	LastName *string `json:"last_name,omitempty" url:"last_name,omitempty"`
 	// Share of the business the person owns, from 0 to 100.
 	OwnershipPercentage *float64 `json:"ownership_percentage,omitempty" url:"ownership_percentage,omitempty"`
+	// What the provider rejected when the owner's verification was sent back: `details` (their name, date of birth, or other details don't match their ID), `identity_document`, or `selfie`. Fix only these with Update Verification. Empty otherwise.
+	RejectedChecks []RetrieveVerificationsResponseOwnersItemRejectedChecksItem `json:"rejected_checks" url:"rejected_checks"`
 	// The owner's documents and their progress. Empty for an owner added with `verification_id`.
 	RequiredDocuments []*RetrieveVerificationsResponseOwnersItemRequiredDocumentsItem `json:"required_documents" url:"required_documents"`
 	// What the person is to the business.
@@ -7404,6 +7903,13 @@ type RetrieveVerificationsResponseOwnersItem struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (r *RetrieveVerificationsResponseOwnersItem) GetDateOfBirth() *string {
+	if r == nil {
+		return nil
+	}
+	return r.DateOfBirth
 }
 
 func (r *RetrieveVerificationsResponseOwnersItem) GetFirstName() *string {
@@ -7432,6 +7938,13 @@ func (r *RetrieveVerificationsResponseOwnersItem) GetOwnershipPercentage() *floa
 		return nil
 	}
 	return r.OwnershipPercentage
+}
+
+func (r *RetrieveVerificationsResponseOwnersItem) GetRejectedChecks() []RetrieveVerificationsResponseOwnersItemRejectedChecksItem {
+	if r == nil {
+		return nil
+	}
+	return r.RejectedChecks
 }
 
 func (r *RetrieveVerificationsResponseOwnersItem) GetRequiredDocuments() []*RetrieveVerificationsResponseOwnersItemRequiredDocumentsItem {
@@ -7471,6 +7984,13 @@ func (r *RetrieveVerificationsResponseOwnersItem) require(field *big.Int) {
 	r.explicitFields = next
 }
 
+// SetDateOfBirth sets the DateOfBirth field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponseOwnersItem) SetDateOfBirth(dateOfBirth *string) {
+	r.DateOfBirth = dateOfBirth
+	r.require(retrieveVerificationsResponseOwnersItemFieldDateOfBirth)
+}
+
 // SetFirstName sets the FirstName field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (r *RetrieveVerificationsResponseOwnersItem) SetFirstName(firstName *string) {
@@ -7497,6 +8017,13 @@ func (r *RetrieveVerificationsResponseOwnersItem) SetLastName(lastName *string) 
 func (r *RetrieveVerificationsResponseOwnersItem) SetOwnershipPercentage(ownershipPercentage *float64) {
 	r.OwnershipPercentage = ownershipPercentage
 	r.require(retrieveVerificationsResponseOwnersItemFieldOwnershipPercentage)
+}
+
+// SetRejectedChecks sets the RejectedChecks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponseOwnersItem) SetRejectedChecks(rejectedChecks []RetrieveVerificationsResponseOwnersItemRejectedChecksItem) {
+	r.RejectedChecks = rejectedChecks
+	r.require(retrieveVerificationsResponseOwnersItemFieldRejectedChecks)
 }
 
 // SetRequiredDocuments sets the RequiredDocuments field and marks it as non-optional;
@@ -7567,6 +8094,31 @@ func (r *RetrieveVerificationsResponseOwnersItem) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", r)
+}
+
+type RetrieveVerificationsResponseOwnersItemRejectedChecksItem string
+
+const (
+	RetrieveVerificationsResponseOwnersItemRejectedChecksItemDetails          RetrieveVerificationsResponseOwnersItemRejectedChecksItem = "details"
+	RetrieveVerificationsResponseOwnersItemRejectedChecksItemIdentityDocument RetrieveVerificationsResponseOwnersItemRejectedChecksItem = "identity_document"
+	RetrieveVerificationsResponseOwnersItemRejectedChecksItemSelfie           RetrieveVerificationsResponseOwnersItemRejectedChecksItem = "selfie"
+)
+
+func NewRetrieveVerificationsResponseOwnersItemRejectedChecksItemFromString(s string) (RetrieveVerificationsResponseOwnersItemRejectedChecksItem, error) {
+	switch s {
+	case "details":
+		return RetrieveVerificationsResponseOwnersItemRejectedChecksItemDetails, nil
+	case "identity_document":
+		return RetrieveVerificationsResponseOwnersItemRejectedChecksItemIdentityDocument, nil
+	case "selfie":
+		return RetrieveVerificationsResponseOwnersItemRejectedChecksItemSelfie, nil
+	}
+	var t RetrieveVerificationsResponseOwnersItemRejectedChecksItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrieveVerificationsResponseOwnersItemRejectedChecksItem) Ptr() *RetrieveVerificationsResponseOwnersItemRejectedChecksItem {
+	return &r
 }
 
 var (
@@ -8639,15 +9191,15 @@ type UpdateVerificationsRequestBodyBusinessAddress struct {
 	Documents *UpdateVerificationsRequestBodyBusinessAddressDocuments `json:"documents,omitempty" url:"documents,omitempty"`
 	// First name of the business representative.
 	FirstName *string `json:"first_name,omitempty" url:"first_name,omitempty"`
-	// Date the business was incorporated, formatted as `YYYY-MM-DD`. Cannot be in the future. Sent to the verification provider and not returned in the response.
+	// Date the business was incorporated, formatted as `YYYY-MM-DD`. Cannot be in the future. Sent to the verification provider and returned in the response; `requested_information` asks for it while it is still missing.
 	IncorporationDate *time.Time `json:"incorporation_date,omitempty" url:"incorporation_date,omitempty" format:"date"`
 	// Last name of the business representative.
 	LastName *string `json:"last_name,omitempty" url:"last_name,omitempty"`
 	// Owners of the business, up to 10 per request. Once the company details, the company documents, and the owners are in and every new owner's documents were sent, Create Verification sends the business for review: in the request that completes it, as soon as the last owner's documents finish sending in the background, or when called again after Update Verification. Owners can still be added, changed, or removed while the review waits on them.
 	Owners []*UpdateVerificationsRequestBodyBusinessAddressOwnersItem `json:"owners,omitempty" url:"owners,omitempty"`
-	// State or region where the business is incorporated. Sent to the verification provider and not returned in the response.
+	// State or region where the business is incorporated. Sent to the verification provider and returned in the response; `requested_information` asks for it while it is still missing.
 	PlaceOfIncorporation *string `json:"place_of_incorporation,omitempty" url:"place_of_incorporation,omitempty"`
-	// Number the business was registered under in its place of incorporation, such as a state file number in the US or a Company Number in the UK. Sent to the verification provider; `registration_number` in the response shows the verified number once the business verification is approved.
+	// Number the business was registered under in its place of incorporation, such as a state file number in the US or a Company Number in the UK. Sent to the verification provider and returned in the response; `requested_information` asks for it while it is still missing.
 	RegistrationNumber *string `json:"registration_number,omitempty" url:"registration_number,omitempty"`
 	// Answers to items in `requested_information`. Each entry pairs the item `id` with one answer payload matching its `type`.
 	RequestedInformation []*UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem `json:"requested_information,omitempty" url:"requested_information,omitempty"`
@@ -8959,7 +9511,7 @@ var updateVerificationsRequestBodyBusinessAddressBusinessAddressNullableFields =
 // Business address.
 type UpdateVerificationsRequestBodyBusinessAddressBusinessAddress struct {
 	City *string `json:"city,omitempty" url:"city,omitempty"`
-	// Two-letter ISO 3166-1 country code, for example `US`, `DE`, or `GB`.
+	// Two-letter ISO 3166-1 country code, for example `US`, `DE`, or `GB`. An address in a [sanctioned country or region](/trust-and-safety/trust-safety-overview/sanctioned-countries) is rejected with the error code `address_country_sanctioned`.
 	Country *string `json:"country,omitempty" url:"country,omitempty"`
 	// First line of the street address.
 	Line1 *string `json:"line1,omitempty" url:"line1,omitempty"`
@@ -9249,7 +9801,7 @@ var (
 	updateVerificationsRequestBodyBusinessAddressOwnersItemFieldVerificationID          = big.NewInt(1 << 14)
 )
 
-// An owner to add, change, or remove. Send `id` to change an owner already on the verification: new `roles` or `ownership_percentage`, or `document_type` and `documents` when the owner's documents are still needed. Send `id` with `remove` set to `true` to remove that owner. Without `id`, the entry adds an owner as it does on Create Verification. Owners left out are not changed.
+// An owner to add, change, or remove. Send `id` to change an owner already on the verification: new `roles` or `ownership_percentage`; corrected details such as `date_of_birth` or `first_name`, or `document_type` and `documents`, while the owner's verification is waiting on them (see `rejected_checks`). Send `id` with `remove` set to `true` to remove that owner. Without `id`, the entry adds an owner as it does on Create Verification. Owners left out are not changed.
 type UpdateVerificationsRequestBodyBusinessAddressOwnersItem struct {
 	// The new owner's home address, with `line1`, `city`, `state`, and `postal_code`.
 	Address *UpdateVerificationsRequestBodyBusinessAddressOwnersItemAddress `json:"address,omitempty" url:"address,omitempty"`
@@ -9587,7 +10139,7 @@ var updateVerificationsRequestBodyBusinessAddressOwnersItemAddressNullableFields
 // The new owner's home address, with `line1`, `city`, `state`, and `postal_code`.
 type UpdateVerificationsRequestBodyBusinessAddressOwnersItemAddress struct {
 	City *string `json:"city,omitempty" url:"city,omitempty"`
-	// Two-letter ISO 3166-1 country code, for example `US`, `DE`, or `GB`.
+	// Two-letter ISO 3166-1 country code, for example `US`, `DE`, or `GB`. An address in a [sanctioned country or region](/trust-and-safety/trust-safety-overview/sanctioned-countries) is rejected with the error code `address_country_sanctioned`.
 	Country *string `json:"country,omitempty" url:"country,omitempty"`
 	// First line of the street address.
 	Line1 *string `json:"line1,omitempty" url:"line1,omitempty"`
@@ -9810,7 +10362,7 @@ type UpdateVerificationsRequestBodyBusinessAddressOwnersItemDocuments struct {
 	ResidencePermitBack *string `json:"residence_permit_back,omitempty" url:"residence_permit_back,omitempty"`
 	// File ID of the front of the residence permit. Required when `document_type` is `residence_permit`.
 	ResidencePermitFront *string `json:"residence_permit_front,omitempty" url:"residence_permit_front,omitempty"`
-	// File ID of a photo of the owner's face. Always required. Must be a JPEG or PNG.
+	// File ID of a photo of the owner's face. Must be a JPEG or PNG. Required, except on Update Verification for an owner whose selfie already passed.
 	Selfie *string `json:"selfie,omitempty" url:"selfie,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -10263,7 +10815,7 @@ var updateVerificationsRequestBodyBusinessAddressRequestedInformationItemAddress
 // Answer for `address` items.
 type UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemAddress struct {
 	City *string `json:"city,omitempty" url:"city,omitempty"`
-	// Two-letter ISO 3166-1 country code, for example `US`, `DE`, or `GB`.
+	// Two-letter ISO 3166-1 country code, for example `US`, `DE`, or `GB`. An address in a [sanctioned country or region](/trust-and-safety/trust-safety-overview/sanctioned-countries) is rejected with the error code `address_country_sanctioned`.
 	Country *string `json:"country,omitempty" url:"country,omitempty"`
 	// First line of the street address.
 	Line1 *string `json:"line1,omitempty" url:"line1,omitempty"`
@@ -10904,7 +11456,7 @@ var updateVerificationsRequestBodyPersonalAddressPersonalAddressNullableFields =
 // Personal address for the individual.
 type UpdateVerificationsRequestBodyPersonalAddressPersonalAddress struct {
 	City *string `json:"city,omitempty" url:"city,omitempty"`
-	// Two-letter ISO 3166-1 country code, for example `US`, `DE`, or `GB`.
+	// Two-letter ISO 3166-1 country code, for example `US`, `DE`, or `GB`. An address in a [sanctioned country or region](/trust-and-safety/trust-safety-overview/sanctioned-countries) is rejected with the error code `address_country_sanctioned`.
 	Country *string `json:"country,omitempty" url:"country,omitempty"`
 	// First line of the street address.
 	Line1 *string `json:"line1,omitempty" url:"line1,omitempty"`
@@ -11316,7 +11868,7 @@ var updateVerificationsRequestBodyPersonalAddressRequestedInformationItemAddress
 // Answer for `address` items.
 type UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItemAddress struct {
 	City *string `json:"city,omitempty" url:"city,omitempty"`
-	// Two-letter ISO 3166-1 country code, for example `US`, `DE`, or `GB`.
+	// Two-letter ISO 3166-1 country code, for example `US`, `DE`, or `GB`. An address in a [sanctioned country or region](/trust-and-safety/trust-safety-overview/sanctioned-countries) is rejected with the error code `address_country_sanctioned`.
 	Country *string `json:"country,omitempty" url:"country,omitempty"`
 	// First line of the street address.
 	Line1 *string `json:"line1,omitempty" url:"line1,omitempty"`
@@ -11697,43 +12249,50 @@ func (u UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItemVal
 }
 
 var (
-	updateVerificationsResponseFieldAddress              = big.NewInt(1 << 0)
-	updateVerificationsResponseFieldBusinessName         = big.NewInt(1 << 1)
-	updateVerificationsResponseFieldBusinessStructure    = big.NewInt(1 << 2)
-	updateVerificationsResponseFieldCountry              = big.NewInt(1 << 3)
-	updateVerificationsResponseFieldCreatedAt            = big.NewInt(1 << 4)
-	updateVerificationsResponseFieldDateOfBirth          = big.NewInt(1 << 5)
-	updateVerificationsResponseFieldEmail                = big.NewInt(1 << 6)
-	updateVerificationsResponseFieldFirstName            = big.NewInt(1 << 7)
-	updateVerificationsResponseFieldID                   = big.NewInt(1 << 8)
-	updateVerificationsResponseFieldKind                 = big.NewInt(1 << 9)
-	updateVerificationsResponseFieldLastName             = big.NewInt(1 << 10)
-	updateVerificationsResponseFieldOwners               = big.NewInt(1 << 11)
-	updateVerificationsResponseFieldPhone                = big.NewInt(1 << 12)
-	updateVerificationsResponseFieldRegistrationNumber   = big.NewInt(1 << 13)
-	updateVerificationsResponseFieldRequestedInformation = big.NewInt(1 << 14)
-	updateVerificationsResponseFieldRequiredDocuments    = big.NewInt(1 << 15)
-	updateVerificationsResponseFieldSessionURL           = big.NewInt(1 << 16)
-	updateVerificationsResponseFieldStatus               = big.NewInt(1 << 17)
-	updateVerificationsResponseFieldUpdatedAt            = big.NewInt(1 << 18)
+	updateVerificationsResponseFieldAccountIDs           = big.NewInt(1 << 0)
+	updateVerificationsResponseFieldAddress              = big.NewInt(1 << 1)
+	updateVerificationsResponseFieldBusinessName         = big.NewInt(1 << 2)
+	updateVerificationsResponseFieldBusinessStructure    = big.NewInt(1 << 3)
+	updateVerificationsResponseFieldCountry              = big.NewInt(1 << 4)
+	updateVerificationsResponseFieldCreatedAt            = big.NewInt(1 << 5)
+	updateVerificationsResponseFieldDateOfBirth          = big.NewInt(1 << 6)
+	updateVerificationsResponseFieldEmail                = big.NewInt(1 << 7)
+	updateVerificationsResponseFieldFirstName            = big.NewInt(1 << 8)
+	updateVerificationsResponseFieldID                   = big.NewInt(1 << 9)
+	updateVerificationsResponseFieldIncorporationDate    = big.NewInt(1 << 10)
+	updateVerificationsResponseFieldKind                 = big.NewInt(1 << 11)
+	updateVerificationsResponseFieldLastName             = big.NewInt(1 << 12)
+	updateVerificationsResponseFieldOwners               = big.NewInt(1 << 13)
+	updateVerificationsResponseFieldPhone                = big.NewInt(1 << 14)
+	updateVerificationsResponseFieldPlaceOfIncorporation = big.NewInt(1 << 15)
+	updateVerificationsResponseFieldRegistrationNumber   = big.NewInt(1 << 16)
+	updateVerificationsResponseFieldRequestedInformation = big.NewInt(1 << 17)
+	updateVerificationsResponseFieldRequiredDocuments    = big.NewInt(1 << 18)
+	updateVerificationsResponseFieldSessionURL           = big.NewInt(1 << 19)
+	updateVerificationsResponseFieldStatus               = big.NewInt(1 << 20)
+	updateVerificationsResponseFieldUpdatedAt            = big.NewInt(1 << 21)
 )
 
 // updateVerificationsResponseNullableFields maps the wire names of UpdateVerificationsResponse's nullable fields (required or optional) to their field bits.
 var updateVerificationsResponseNullableFields = map[string]*big.Int{
-	"address":             updateVerificationsResponseFieldAddress,
-	"business_name":       updateVerificationsResponseFieldBusinessName,
-	"business_structure":  updateVerificationsResponseFieldBusinessStructure,
-	"country":             updateVerificationsResponseFieldCountry,
-	"date_of_birth":       updateVerificationsResponseFieldDateOfBirth,
-	"email":               updateVerificationsResponseFieldEmail,
-	"first_name":          updateVerificationsResponseFieldFirstName,
-	"last_name":           updateVerificationsResponseFieldLastName,
-	"phone":               updateVerificationsResponseFieldPhone,
-	"registration_number": updateVerificationsResponseFieldRegistrationNumber,
-	"session_url":         updateVerificationsResponseFieldSessionURL,
+	"address":                updateVerificationsResponseFieldAddress,
+	"business_name":          updateVerificationsResponseFieldBusinessName,
+	"business_structure":     updateVerificationsResponseFieldBusinessStructure,
+	"country":                updateVerificationsResponseFieldCountry,
+	"date_of_birth":          updateVerificationsResponseFieldDateOfBirth,
+	"email":                  updateVerificationsResponseFieldEmail,
+	"first_name":             updateVerificationsResponseFieldFirstName,
+	"incorporation_date":     updateVerificationsResponseFieldIncorporationDate,
+	"last_name":              updateVerificationsResponseFieldLastName,
+	"phone":                  updateVerificationsResponseFieldPhone,
+	"place_of_incorporation": updateVerificationsResponseFieldPlaceOfIncorporation,
+	"registration_number":    updateVerificationsResponseFieldRegistrationNumber,
+	"session_url":            updateVerificationsResponseFieldSessionURL,
 }
 
 type UpdateVerificationsResponse struct {
+	// Accounts this verification was read for, each prefixed `biz_`: the account you listed by, the account or subaccount it belongs to with `include_subaccounts`, or every account you can read that it belongs to when retrieved by ID. Usually one. Empty for a personal verification.
+	AccountIDs []string `json:"account_ids" url:"account_ids"`
 	// Address on the verification profile. `null` when no address is set.
 	Address *UpdateVerificationsResponseAddress `json:"address,omitempty" url:"address,omitempty"`
 	// Legal business name.
@@ -11750,16 +12309,20 @@ type UpdateVerificationsResponse struct {
 	Email     *string `json:"email,omitempty" url:"email,omitempty"`
 	FirstName *string `json:"first_name,omitempty" url:"first_name,omitempty"`
 	// Verification profile ID, prefixed `idpf_`.
-	ID       *string                          `json:"id,omitempty" url:"id,omitempty"`
-	Kind     *UpdateVerificationsResponseKind `json:"kind,omitempty" url:"kind,omitempty"`
-	LastName *string                          `json:"last_name,omitempty" url:"last_name,omitempty"`
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+	// Date the business was incorporated, formatted as `YYYY-MM-DD`, as on file for the business verification. Business verifications only; `null` until it is sent.
+	IncorporationDate *string                          `json:"incorporation_date,omitempty" url:"incorporation_date,omitempty"`
+	Kind              *UpdateVerificationsResponseKind `json:"kind,omitempty" url:"kind,omitempty"`
+	LastName          *string                          `json:"last_name,omitempty" url:"last_name,omitempty"`
 	// Owners of the business and the progress of each one's own verification. Empty for individual verifications.
 	Owners []*UpdateVerificationsResponseOwnersItem `json:"owners" url:"owners"`
 	// Phone number on the verification profile.
 	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
-	// Number the business was registered under in its place of incorporation, such as a state file number in the US or a Company Number in the UK. Business verifications only; `null` until the business verification is approved.
+	// State or region where the business is incorporated, as on file for the business verification. Business verifications only; `null` until it is sent.
+	PlaceOfIncorporation *string `json:"place_of_incorporation,omitempty" url:"place_of_incorporation,omitempty"`
+	// Number the business was registered under in its place of incorporation, such as a state file number in the US or a Company Number in the UK. Business verifications only; as on file for the business verification, or `null` until it is sent.
 	RegistrationNumber *string `json:"registration_number,omitempty" url:"registration_number,omitempty"`
-	// What Whop still needs before review can continue — one requirement per entry. Answer with Update Verification; nothing from the response is echoed back. Keys that don't apply are omitted.
+	// What Whop still needs before review can continue — one requirement per entry. Answer with Update Verification; nothing from the response is echoed back. Keys that don't apply are omitted. For a business verification created with `documents` or `owners`, this includes the company details and documents still missing before it can be sent for review; each owner's documents are listed under that owner.
 	RequestedInformation []*UpdateVerificationsResponseRequestedInformationItem `json:"requested_information,omitempty" url:"requested_information,omitempty"`
 	// Documents for a document-upload verification and their progress. Present only on individual verifications created by sending `documents`. `pending_upload` documents were not accepted yet — send the full set again with another Create Verification call.
 	RequiredDocuments []*UpdateVerificationsResponseRequiredDocumentsItem `json:"required_documents,omitempty" url:"required_documents,omitempty"`
@@ -11775,6 +12338,13 @@ type UpdateVerificationsResponse struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (u *UpdateVerificationsResponse) GetAccountIDs() []string {
+	if u == nil {
+		return nil
+	}
+	return u.AccountIDs
 }
 
 func (u *UpdateVerificationsResponse) GetAddress() *UpdateVerificationsResponseAddress {
@@ -11840,6 +12410,13 @@ func (u *UpdateVerificationsResponse) GetID() *string {
 	return u.ID
 }
 
+func (u *UpdateVerificationsResponse) GetIncorporationDate() *string {
+	if u == nil {
+		return nil
+	}
+	return u.IncorporationDate
+}
+
 func (u *UpdateVerificationsResponse) GetKind() *UpdateVerificationsResponseKind {
 	if u == nil {
 		return nil
@@ -11866,6 +12443,13 @@ func (u *UpdateVerificationsResponse) GetPhone() *string {
 		return nil
 	}
 	return u.Phone
+}
+
+func (u *UpdateVerificationsResponse) GetPlaceOfIncorporation() *string {
+	if u == nil {
+		return nil
+	}
+	return u.PlaceOfIncorporation
 }
 
 func (u *UpdateVerificationsResponse) GetRegistrationNumber() *string {
@@ -11924,6 +12508,13 @@ func (u *UpdateVerificationsResponse) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	u.explicitFields = next
+}
+
+// SetAccountIDs sets the AccountIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponse) SetAccountIDs(accountIDs []string) {
+	u.AccountIDs = accountIDs
+	u.require(updateVerificationsResponseFieldAccountIDs)
 }
 
 // SetAddress sets the Address field and marks it as non-optional;
@@ -11989,6 +12580,13 @@ func (u *UpdateVerificationsResponse) SetID(id *string) {
 	u.require(updateVerificationsResponseFieldID)
 }
 
+// SetIncorporationDate sets the IncorporationDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponse) SetIncorporationDate(incorporationDate *string) {
+	u.IncorporationDate = incorporationDate
+	u.require(updateVerificationsResponseFieldIncorporationDate)
+}
+
 // SetKind sets the Kind field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateVerificationsResponse) SetKind(kind *UpdateVerificationsResponseKind) {
@@ -12015,6 +12613,13 @@ func (u *UpdateVerificationsResponse) SetOwners(owners []*UpdateVerificationsRes
 func (u *UpdateVerificationsResponse) SetPhone(phone *string) {
 	u.Phone = phone
 	u.require(updateVerificationsResponseFieldPhone)
+}
+
+// SetPlaceOfIncorporation sets the PlaceOfIncorporation field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponse) SetPlaceOfIncorporation(placeOfIncorporation *string) {
+	u.PlaceOfIncorporation = placeOfIncorporation
+	u.require(updateVerificationsResponseFieldPlaceOfIncorporation)
 }
 
 // SetRegistrationNumber sets the RegistrationNumber field and marks it as non-optional;
@@ -12319,29 +12924,36 @@ func (u UpdateVerificationsResponseKind) Ptr() *UpdateVerificationsResponseKind 
 }
 
 var (
-	updateVerificationsResponseOwnersItemFieldFirstName           = big.NewInt(1 << 0)
-	updateVerificationsResponseOwnersItemFieldID                  = big.NewInt(1 << 1)
-	updateVerificationsResponseOwnersItemFieldLastName            = big.NewInt(1 << 2)
-	updateVerificationsResponseOwnersItemFieldOwnershipPercentage = big.NewInt(1 << 3)
-	updateVerificationsResponseOwnersItemFieldRequiredDocuments   = big.NewInt(1 << 4)
-	updateVerificationsResponseOwnersItemFieldRoles               = big.NewInt(1 << 5)
-	updateVerificationsResponseOwnersItemFieldStatus              = big.NewInt(1 << 6)
+	updateVerificationsResponseOwnersItemFieldDateOfBirth         = big.NewInt(1 << 0)
+	updateVerificationsResponseOwnersItemFieldFirstName           = big.NewInt(1 << 1)
+	updateVerificationsResponseOwnersItemFieldID                  = big.NewInt(1 << 2)
+	updateVerificationsResponseOwnersItemFieldLastName            = big.NewInt(1 << 3)
+	updateVerificationsResponseOwnersItemFieldOwnershipPercentage = big.NewInt(1 << 4)
+	updateVerificationsResponseOwnersItemFieldRejectedChecks      = big.NewInt(1 << 5)
+	updateVerificationsResponseOwnersItemFieldRequiredDocuments   = big.NewInt(1 << 6)
+	updateVerificationsResponseOwnersItemFieldRoles               = big.NewInt(1 << 7)
+	updateVerificationsResponseOwnersItemFieldStatus              = big.NewInt(1 << 8)
 )
 
 // updateVerificationsResponseOwnersItemNullableFields maps the wire names of UpdateVerificationsResponseOwnersItem's nullable fields (required or optional) to their field bits.
 var updateVerificationsResponseOwnersItemNullableFields = map[string]*big.Int{
+	"date_of_birth":        updateVerificationsResponseOwnersItemFieldDateOfBirth,
 	"first_name":           updateVerificationsResponseOwnersItemFieldFirstName,
 	"last_name":            updateVerificationsResponseOwnersItemFieldLastName,
 	"ownership_percentage": updateVerificationsResponseOwnersItemFieldOwnershipPercentage,
 }
 
 type UpdateVerificationsResponseOwnersItem struct {
-	FirstName *string `json:"first_name,omitempty" url:"first_name,omitempty"`
+	// The owner's date of birth on file, formatted as `YYYY-MM-DD`.
+	DateOfBirth *string `json:"date_of_birth,omitempty" url:"date_of_birth,omitempty"`
+	FirstName   *string `json:"first_name,omitempty" url:"first_name,omitempty"`
 	// Owner ID, prefixed `own_`. Send it in Update Verification's `owners` to change or remove the owner, including one added in the hosted session.
 	ID       string  `json:"id" url:"id"`
 	LastName *string `json:"last_name,omitempty" url:"last_name,omitempty"`
 	// Share of the business the person owns, from 0 to 100.
 	OwnershipPercentage *float64 `json:"ownership_percentage,omitempty" url:"ownership_percentage,omitempty"`
+	// What the provider rejected when the owner's verification was sent back: `details` (their name, date of birth, or other details don't match their ID), `identity_document`, or `selfie`. Fix only these with Update Verification. Empty otherwise.
+	RejectedChecks []UpdateVerificationsResponseOwnersItemRejectedChecksItem `json:"rejected_checks" url:"rejected_checks"`
 	// The owner's documents and their progress. Empty for an owner added with `verification_id`.
 	RequiredDocuments []*UpdateVerificationsResponseOwnersItemRequiredDocumentsItem `json:"required_documents" url:"required_documents"`
 	// What the person is to the business.
@@ -12354,6 +12966,13 @@ type UpdateVerificationsResponseOwnersItem struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (u *UpdateVerificationsResponseOwnersItem) GetDateOfBirth() *string {
+	if u == nil {
+		return nil
+	}
+	return u.DateOfBirth
 }
 
 func (u *UpdateVerificationsResponseOwnersItem) GetFirstName() *string {
@@ -12382,6 +13001,13 @@ func (u *UpdateVerificationsResponseOwnersItem) GetOwnershipPercentage() *float6
 		return nil
 	}
 	return u.OwnershipPercentage
+}
+
+func (u *UpdateVerificationsResponseOwnersItem) GetRejectedChecks() []UpdateVerificationsResponseOwnersItemRejectedChecksItem {
+	if u == nil {
+		return nil
+	}
+	return u.RejectedChecks
 }
 
 func (u *UpdateVerificationsResponseOwnersItem) GetRequiredDocuments() []*UpdateVerificationsResponseOwnersItemRequiredDocumentsItem {
@@ -12421,6 +13047,13 @@ func (u *UpdateVerificationsResponseOwnersItem) require(field *big.Int) {
 	u.explicitFields = next
 }
 
+// SetDateOfBirth sets the DateOfBirth field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponseOwnersItem) SetDateOfBirth(dateOfBirth *string) {
+	u.DateOfBirth = dateOfBirth
+	u.require(updateVerificationsResponseOwnersItemFieldDateOfBirth)
+}
+
 // SetFirstName sets the FirstName field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateVerificationsResponseOwnersItem) SetFirstName(firstName *string) {
@@ -12447,6 +13080,13 @@ func (u *UpdateVerificationsResponseOwnersItem) SetLastName(lastName *string) {
 func (u *UpdateVerificationsResponseOwnersItem) SetOwnershipPercentage(ownershipPercentage *float64) {
 	u.OwnershipPercentage = ownershipPercentage
 	u.require(updateVerificationsResponseOwnersItemFieldOwnershipPercentage)
+}
+
+// SetRejectedChecks sets the RejectedChecks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponseOwnersItem) SetRejectedChecks(rejectedChecks []UpdateVerificationsResponseOwnersItemRejectedChecksItem) {
+	u.RejectedChecks = rejectedChecks
+	u.require(updateVerificationsResponseOwnersItemFieldRejectedChecks)
 }
 
 // SetRequiredDocuments sets the RequiredDocuments field and marks it as non-optional;
@@ -12517,6 +13157,31 @@ func (u *UpdateVerificationsResponseOwnersItem) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", u)
+}
+
+type UpdateVerificationsResponseOwnersItemRejectedChecksItem string
+
+const (
+	UpdateVerificationsResponseOwnersItemRejectedChecksItemDetails          UpdateVerificationsResponseOwnersItemRejectedChecksItem = "details"
+	UpdateVerificationsResponseOwnersItemRejectedChecksItemIdentityDocument UpdateVerificationsResponseOwnersItemRejectedChecksItem = "identity_document"
+	UpdateVerificationsResponseOwnersItemRejectedChecksItemSelfie           UpdateVerificationsResponseOwnersItemRejectedChecksItem = "selfie"
+)
+
+func NewUpdateVerificationsResponseOwnersItemRejectedChecksItemFromString(s string) (UpdateVerificationsResponseOwnersItemRejectedChecksItem, error) {
+	switch s {
+	case "details":
+		return UpdateVerificationsResponseOwnersItemRejectedChecksItemDetails, nil
+	case "identity_document":
+		return UpdateVerificationsResponseOwnersItemRejectedChecksItemIdentityDocument, nil
+	case "selfie":
+		return UpdateVerificationsResponseOwnersItemRejectedChecksItemSelfie, nil
+	}
+	var t UpdateVerificationsResponseOwnersItemRejectedChecksItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateVerificationsResponseOwnersItemRejectedChecksItem) Ptr() *UpdateVerificationsResponseOwnersItemRejectedChecksItem {
+	return &u
 }
 
 var (

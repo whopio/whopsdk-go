@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-10-15-1"
+		apiVersionDateDefault := "2026-10-27-3"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -227,12 +227,15 @@ func (c *Client) Update(
 	return response.Body, nil
 }
 
-// Returns a paginated list of delivery attempts for a webhook, ordered by most recent first. Includes the request payload, response body, response code, and timing for each attempt.
+// Returns a paginated list of delivery attempts for a webhook, ordered by most recent first. Includes the request payload, response body, response code, and timing for each attempt. Filtered queries use a bounded read budget, so a page may be partial or empty. Continue with `page_info.end_cursor` while `page_info.has_next_page` is `true`.
 //
 // Example:
 //
 //	request := &whopsdk.ListDeliveriesWebhooksRequest{
 //	    ID: "id",
+//	    ResourceID: whopsdk.String(
+//	        "pay_xxxxxxxxxxxxx",
+//	    ),
 //	}
 //	client.Webhooks.ListDeliveries(
 //	    context.TODO(),

@@ -3293,9 +3293,9 @@ var (
 	listEventsResponseDataItemRelatedFieldApp        = big.NewInt(1 << 4)
 	listEventsResponseDataItemRelatedFieldAudience   = big.NewInt(1 << 5)
 	listEventsResponseDataItemRelatedFieldPayment    = big.NewInt(1 << 6)
-	listEventsResponseDataItemRelatedFieldPlan       = big.NewInt(1 << 7)
-	listEventsResponseDataItemRelatedFieldProduct    = big.NewInt(1 << 8)
-	listEventsResponseDataItemRelatedFieldUser       = big.NewInt(1 << 9)
+	listEventsResponseDataItemRelatedFieldProduct    = big.NewInt(1 << 7)
+	listEventsResponseDataItemRelatedFieldUser       = big.NewInt(1 << 8)
+	listEventsResponseDataItemRelatedFieldVariant    = big.NewInt(1 << 9)
 )
 
 // listEventsResponseDataItemRelatedNullableFields maps the wire names of ListEventsResponseDataItemRelated's nullable fields (required or optional) to their field bits.
@@ -3307,9 +3307,9 @@ var listEventsResponseDataItemRelatedNullableFields = map[string]*big.Int{
 	"app":         listEventsResponseDataItemRelatedFieldApp,
 	"audience":    listEventsResponseDataItemRelatedFieldAudience,
 	"payment":     listEventsResponseDataItemRelatedFieldPayment,
-	"plan":        listEventsResponseDataItemRelatedFieldPlan,
 	"product":     listEventsResponseDataItemRelatedFieldProduct,
 	"user":        listEventsResponseDataItemRelatedFieldUser,
+	"variant":     listEventsResponseDataItemRelatedFieldVariant,
 }
 
 // Hydrated details for the records this event references. Only present keys resolved.
@@ -3325,9 +3325,9 @@ type ListEventsResponseDataItemRelated struct {
 	// The saved audience this event came from. Present on the identify events an audience ingest writes for each of its members.
 	Audience *ListEventsResponseDataItemRelatedAudience `json:"audience,omitempty" url:"audience,omitempty"`
 	Payment  *ListEventsResponseDataItemRelatedPayment  `json:"payment,omitempty" url:"payment,omitempty"`
-	Plan     *ListEventsResponseDataItemRelatedPlan     `json:"plan,omitempty" url:"plan,omitempty"`
 	Product  *ListEventsResponseDataItemRelatedProduct  `json:"product,omitempty" url:"product,omitempty"`
 	User     *ListEventsResponseDataItemRelatedUser     `json:"user,omitempty" url:"user,omitempty"`
+	Variant  *ListEventsResponseDataItemRelatedVariant  `json:"variant,omitempty" url:"variant,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3385,13 +3385,6 @@ func (l *ListEventsResponseDataItemRelated) GetPayment() *ListEventsResponseData
 	return l.Payment
 }
 
-func (l *ListEventsResponseDataItemRelated) GetPlan() *ListEventsResponseDataItemRelatedPlan {
-	if l == nil {
-		return nil
-	}
-	return l.Plan
-}
-
 func (l *ListEventsResponseDataItemRelated) GetProduct() *ListEventsResponseDataItemRelatedProduct {
 	if l == nil {
 		return nil
@@ -3404,6 +3397,13 @@ func (l *ListEventsResponseDataItemRelated) GetUser() *ListEventsResponseDataIte
 		return nil
 	}
 	return l.User
+}
+
+func (l *ListEventsResponseDataItemRelated) GetVariant() *ListEventsResponseDataItemRelatedVariant {
+	if l == nil {
+		return nil
+	}
+	return l.Variant
 }
 
 func (l *ListEventsResponseDataItemRelated) GetExtraProperties() map[string]interface{} {
@@ -3471,13 +3471,6 @@ func (l *ListEventsResponseDataItemRelated) SetPayment(payment *ListEventsRespon
 	l.require(listEventsResponseDataItemRelatedFieldPayment)
 }
 
-// SetPlan sets the Plan field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListEventsResponseDataItemRelated) SetPlan(plan *ListEventsResponseDataItemRelatedPlan) {
-	l.Plan = plan
-	l.require(listEventsResponseDataItemRelatedFieldPlan)
-}
-
 // SetProduct sets the Product field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListEventsResponseDataItemRelated) SetProduct(product *ListEventsResponseDataItemRelatedProduct) {
@@ -3490,6 +3483,13 @@ func (l *ListEventsResponseDataItemRelated) SetProduct(product *ListEventsRespon
 func (l *ListEventsResponseDataItemRelated) SetUser(user *ListEventsResponseDataItemRelatedUser) {
 	l.User = user
 	l.require(listEventsResponseDataItemRelatedFieldUser)
+}
+
+// SetVariant sets the Variant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEventsResponseDataItemRelated) SetVariant(variant *ListEventsResponseDataItemRelatedVariant) {
+	l.Variant = variant
+	l.require(listEventsResponseDataItemRelatedFieldVariant)
 }
 
 func (l *ListEventsResponseDataItemRelated) UnmarshalJSON(data []byte) error {
@@ -4595,188 +4595,6 @@ func (l *ListEventsResponseDataItemRelatedPayment) String() string {
 }
 
 var (
-	listEventsResponseDataItemRelatedPlanFieldBillingPeriod = big.NewInt(1 << 0)
-	listEventsResponseDataItemRelatedPlanFieldCurrency      = big.NewInt(1 << 1)
-	listEventsResponseDataItemRelatedPlanFieldID            = big.NewInt(1 << 2)
-	listEventsResponseDataItemRelatedPlanFieldInitialPrice  = big.NewInt(1 << 3)
-	listEventsResponseDataItemRelatedPlanFieldRenewalPrice  = big.NewInt(1 << 4)
-	listEventsResponseDataItemRelatedPlanFieldTitle         = big.NewInt(1 << 5)
-)
-
-// listEventsResponseDataItemRelatedPlanNullableFields maps the wire names of ListEventsResponseDataItemRelatedPlan's nullable fields (required or optional) to their field bits.
-var listEventsResponseDataItemRelatedPlanNullableFields = map[string]*big.Int{
-	"billing_period": listEventsResponseDataItemRelatedPlanFieldBillingPeriod,
-	"currency":       listEventsResponseDataItemRelatedPlanFieldCurrency,
-	"initial_price":  listEventsResponseDataItemRelatedPlanFieldInitialPrice,
-	"renewal_price":  listEventsResponseDataItemRelatedPlanFieldRenewalPrice,
-	"title":          listEventsResponseDataItemRelatedPlanFieldTitle,
-}
-
-type ListEventsResponseDataItemRelatedPlan struct {
-	BillingPeriod *int     `json:"billing_period,omitempty" url:"billing_period,omitempty"`
-	Currency      *string  `json:"currency,omitempty" url:"currency,omitempty"`
-	ID            *string  `json:"id,omitempty" url:"id,omitempty"`
-	InitialPrice  *float64 `json:"initial_price,omitempty" url:"initial_price,omitempty"`
-	RenewalPrice  *float64 `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
-	Title         *string  `json:"title,omitempty" url:"title,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (l *ListEventsResponseDataItemRelatedPlan) GetBillingPeriod() *int {
-	if l == nil {
-		return nil
-	}
-	return l.BillingPeriod
-}
-
-func (l *ListEventsResponseDataItemRelatedPlan) GetCurrency() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Currency
-}
-
-func (l *ListEventsResponseDataItemRelatedPlan) GetID() *string {
-	if l == nil {
-		return nil
-	}
-	return l.ID
-}
-
-func (l *ListEventsResponseDataItemRelatedPlan) GetInitialPrice() *float64 {
-	if l == nil {
-		return nil
-	}
-	return l.InitialPrice
-}
-
-func (l *ListEventsResponseDataItemRelatedPlan) GetRenewalPrice() *float64 {
-	if l == nil {
-		return nil
-	}
-	return l.RenewalPrice
-}
-
-func (l *ListEventsResponseDataItemRelatedPlan) GetTitle() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Title
-}
-
-func (l *ListEventsResponseDataItemRelatedPlan) GetExtraProperties() map[string]interface{} {
-	if l == nil {
-		return nil
-	}
-	return l.extraProperties
-}
-
-func (l *ListEventsResponseDataItemRelatedPlan) require(field *big.Int) {
-	next := new(big.Int)
-	if l.explicitFields != nil {
-		next.Set(l.explicitFields)
-	}
-	next.Or(next, field)
-	l.explicitFields = next
-}
-
-// SetBillingPeriod sets the BillingPeriod field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListEventsResponseDataItemRelatedPlan) SetBillingPeriod(billingPeriod *int) {
-	l.BillingPeriod = billingPeriod
-	l.require(listEventsResponseDataItemRelatedPlanFieldBillingPeriod)
-}
-
-// SetCurrency sets the Currency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListEventsResponseDataItemRelatedPlan) SetCurrency(currency *string) {
-	l.Currency = currency
-	l.require(listEventsResponseDataItemRelatedPlanFieldCurrency)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListEventsResponseDataItemRelatedPlan) SetID(id *string) {
-	l.ID = id
-	l.require(listEventsResponseDataItemRelatedPlanFieldID)
-}
-
-// SetInitialPrice sets the InitialPrice field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListEventsResponseDataItemRelatedPlan) SetInitialPrice(initialPrice *float64) {
-	l.InitialPrice = initialPrice
-	l.require(listEventsResponseDataItemRelatedPlanFieldInitialPrice)
-}
-
-// SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListEventsResponseDataItemRelatedPlan) SetRenewalPrice(renewalPrice *float64) {
-	l.RenewalPrice = renewalPrice
-	l.require(listEventsResponseDataItemRelatedPlanFieldRenewalPrice)
-}
-
-// SetTitle sets the Title field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListEventsResponseDataItemRelatedPlan) SetTitle(title *string) {
-	l.Title = title
-	l.require(listEventsResponseDataItemRelatedPlanFieldTitle)
-}
-
-func (l *ListEventsResponseDataItemRelatedPlan) UnmarshalJSON(data []byte) error {
-	type unmarshaler ListEventsResponseDataItemRelatedPlan
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*l = ListEventsResponseDataItemRelatedPlan(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *l)
-	if err != nil {
-		return err
-	}
-	l.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, listEventsResponseDataItemRelatedPlanNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		l.require(presentFields)
-	}
-	l.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (l *ListEventsResponseDataItemRelatedPlan) MarshalJSON() ([]byte, error) {
-	type embed ListEventsResponseDataItemRelatedPlan
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*l),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (l *ListEventsResponseDataItemRelatedPlan) String() string {
-	if l == nil {
-		return "<nil>"
-	}
-	if len(l.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(l); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", l)
-}
-
-var (
 	listEventsResponseDataItemRelatedProductFieldID    = big.NewInt(1 << 0)
 	listEventsResponseDataItemRelatedProductFieldRoute = big.NewInt(1 << 1)
 	listEventsResponseDataItemRelatedProductFieldTitle = big.NewInt(1 << 2)
@@ -5041,6 +4859,188 @@ func (l *ListEventsResponseDataItemRelatedUser) MarshalJSON() ([]byte, error) {
 }
 
 func (l *ListEventsResponseDataItemRelatedUser) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	listEventsResponseDataItemRelatedVariantFieldBillingPeriod = big.NewInt(1 << 0)
+	listEventsResponseDataItemRelatedVariantFieldCurrency      = big.NewInt(1 << 1)
+	listEventsResponseDataItemRelatedVariantFieldID            = big.NewInt(1 << 2)
+	listEventsResponseDataItemRelatedVariantFieldInitialPrice  = big.NewInt(1 << 3)
+	listEventsResponseDataItemRelatedVariantFieldRenewalPrice  = big.NewInt(1 << 4)
+	listEventsResponseDataItemRelatedVariantFieldTitle         = big.NewInt(1 << 5)
+)
+
+// listEventsResponseDataItemRelatedVariantNullableFields maps the wire names of ListEventsResponseDataItemRelatedVariant's nullable fields (required or optional) to their field bits.
+var listEventsResponseDataItemRelatedVariantNullableFields = map[string]*big.Int{
+	"billing_period": listEventsResponseDataItemRelatedVariantFieldBillingPeriod,
+	"currency":       listEventsResponseDataItemRelatedVariantFieldCurrency,
+	"initial_price":  listEventsResponseDataItemRelatedVariantFieldInitialPrice,
+	"renewal_price":  listEventsResponseDataItemRelatedVariantFieldRenewalPrice,
+	"title":          listEventsResponseDataItemRelatedVariantFieldTitle,
+}
+
+type ListEventsResponseDataItemRelatedVariant struct {
+	BillingPeriod *int     `json:"billing_period,omitempty" url:"billing_period,omitempty"`
+	Currency      *string  `json:"currency,omitempty" url:"currency,omitempty"`
+	ID            *string  `json:"id,omitempty" url:"id,omitempty"`
+	InitialPrice  *float64 `json:"initial_price,omitempty" url:"initial_price,omitempty"`
+	RenewalPrice  *float64 `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
+	Title         *string  `json:"title,omitempty" url:"title,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListEventsResponseDataItemRelatedVariant) GetBillingPeriod() *int {
+	if l == nil {
+		return nil
+	}
+	return l.BillingPeriod
+}
+
+func (l *ListEventsResponseDataItemRelatedVariant) GetCurrency() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Currency
+}
+
+func (l *ListEventsResponseDataItemRelatedVariant) GetID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ID
+}
+
+func (l *ListEventsResponseDataItemRelatedVariant) GetInitialPrice() *float64 {
+	if l == nil {
+		return nil
+	}
+	return l.InitialPrice
+}
+
+func (l *ListEventsResponseDataItemRelatedVariant) GetRenewalPrice() *float64 {
+	if l == nil {
+		return nil
+	}
+	return l.RenewalPrice
+}
+
+func (l *ListEventsResponseDataItemRelatedVariant) GetTitle() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Title
+}
+
+func (l *ListEventsResponseDataItemRelatedVariant) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListEventsResponseDataItemRelatedVariant) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetBillingPeriod sets the BillingPeriod field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEventsResponseDataItemRelatedVariant) SetBillingPeriod(billingPeriod *int) {
+	l.BillingPeriod = billingPeriod
+	l.require(listEventsResponseDataItemRelatedVariantFieldBillingPeriod)
+}
+
+// SetCurrency sets the Currency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEventsResponseDataItemRelatedVariant) SetCurrency(currency *string) {
+	l.Currency = currency
+	l.require(listEventsResponseDataItemRelatedVariantFieldCurrency)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEventsResponseDataItemRelatedVariant) SetID(id *string) {
+	l.ID = id
+	l.require(listEventsResponseDataItemRelatedVariantFieldID)
+}
+
+// SetInitialPrice sets the InitialPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEventsResponseDataItemRelatedVariant) SetInitialPrice(initialPrice *float64) {
+	l.InitialPrice = initialPrice
+	l.require(listEventsResponseDataItemRelatedVariantFieldInitialPrice)
+}
+
+// SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEventsResponseDataItemRelatedVariant) SetRenewalPrice(renewalPrice *float64) {
+	l.RenewalPrice = renewalPrice
+	l.require(listEventsResponseDataItemRelatedVariantFieldRenewalPrice)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEventsResponseDataItemRelatedVariant) SetTitle(title *string) {
+	l.Title = title
+	l.require(listEventsResponseDataItemRelatedVariantFieldTitle)
+}
+
+func (l *ListEventsResponseDataItemRelatedVariant) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListEventsResponseDataItemRelatedVariant
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListEventsResponseDataItemRelatedVariant(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listEventsResponseDataItemRelatedVariantNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListEventsResponseDataItemRelatedVariant) MarshalJSON() ([]byte, error) {
+	type embed ListEventsResponseDataItemRelatedVariant
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListEventsResponseDataItemRelatedVariant) String() string {
 	if l == nil {
 		return "<nil>"
 	}

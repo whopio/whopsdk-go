@@ -24,7 +24,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-10-15-1"
+		apiVersionDateDefault := "2026-10-27-3"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -52,7 +52,7 @@ func NewClient(options *core.RequestOptions) *Client {
 //	            "eur",
 //	        ),
 //	    },
-//	    PlanIDs: []*string{
+//	    VariantIDs: []*string{
 //	        whopsdk.String(
 //	            "plan_xxxxxxxxxxxxx",
 //	        ),
@@ -175,7 +175,7 @@ func (c *Client) Create(
 //	            "usd",
 //	        ),
 //	    },
-//	    PlanIDs: []*string{
+//	    VariantIDs: []*string{
 //	        whopsdk.String(
 //	            "plan_xxxxxxxxxxxxx",
 //	        ),
@@ -422,7 +422,7 @@ func (c *Client) Void(
 	return response.Body, nil
 }
 
-// Charges the saved card again, with the buyer present, for a payment their bank declined until they authenticate (such as with 3DS). Retrieve the payment afterward to get the bank's challenge from `next_action`; once the buyer completes it, they land on `return_url`, or on Whop's hosted verification page if none was given. Only the buyer can call this, with the payment's `client_secret`, an OAuth token for their own account with the `member:payment_methods:use` scope, or the token from a verified `payment` session intent. An API key gets a `403`. Has no effect on a payment that is not waiting on authentication.
+// Charges the saved card again, with the buyer present, for a payment their bank declined until they authenticate (such as with 3DS). Retrieve the payment afterward to get the bank's challenge from `next_action`; once the buyer completes it, they land on `return_url`, or on Whop's hosted verification page if none was given. Only the buyer can call this, with the payment's `client_secret` in the body, an OAuth token for their own account with the `member:payment_methods:use` scope, or the token from a verified `payment` session intent. An API key gets a `403`. Has no effect on a payment that is not waiting on authentication.
 //
 // Example:
 //
@@ -449,7 +449,7 @@ func (c *Client) Resume(
 	return response.Body, nil
 }
 
-// Changes where the buyer lands after completing an off-site step, up until they return. Accepts either a secret key or the payment's own `client_secret`, so the surface that knows the final destination can set it.
+// Changes where the buyer lands after completing an off-site step, up until they return. Accepts either a secret key or the payment's own `client_secret` in the body, so the surface that knows the final destination can set it.
 //
 // Example:
 //
@@ -477,7 +477,7 @@ func (c *Client) UpdateReturnURL(
 	return response.Body, nil
 }
 
-// Retrieves how far a payment has got and what the buyer must do next, if anything. A payment is collected in the background, so poll this rather than reading the create response. Accepts either a secret key or the payment's own `client_secret`, so the surface collecting the payment can poll it directly.
+// Retrieves how far a payment has got and what the buyer must do next, if anything. A payment is collected in the background, so poll this rather than reading the create response. Accepts either a secret key or the payment's own `client_secret` as a query parameter, so the surface collecting the payment can poll it directly.
 //
 // Example:
 //

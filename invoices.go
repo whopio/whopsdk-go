@@ -11,71 +11,262 @@ import (
 )
 
 var (
-	deleteInvoicesRequestFieldID = big.NewInt(1 << 0)
+	createInvoicesRequestFieldAccountID          = big.NewInt(1 << 0)
+	createInvoicesRequestFieldBillingAddress     = big.NewInt(1 << 1)
+	createInvoicesRequestFieldBuyerFeePercentage = big.NewInt(1 << 2)
+	createInvoicesRequestFieldCustomerName       = big.NewInt(1 << 3)
+	createInvoicesRequestFieldDueAt              = big.NewInt(1 << 4)
+	createInvoicesRequestFieldEmailAddress       = big.NewInt(1 << 5)
+	createInvoicesRequestFieldItems              = big.NewInt(1 << 6)
+	createInvoicesRequestFieldMailingAddressID   = big.NewInt(1 << 7)
+	createInvoicesRequestFieldMemberID           = big.NewInt(1 << 8)
+	createInvoicesRequestFieldMetadata           = big.NewInt(1 << 9)
+	createInvoicesRequestFieldPaymentMethodID    = big.NewInt(1 << 10)
+	createInvoicesRequestFieldRecipientEmails    = big.NewInt(1 << 11)
 )
 
-type DeleteInvoicesRequest struct {
-	// The unique identifier of the draft invoice to delete.
+type CreateInvoicesRequest struct {
+	// The issuing account.
+	AccountID string `json:"account_id" url:"-"`
+	// Create a billing address linked to this member.
+	BillingAddress *CreateInvoicesRequestBillingAddress `json:"billing_address,omitempty" url:"-"`
+	// The buyer's adjustable fee in percentage points, with at most two decimal places.
+	BuyerFeePercentage *float64 `json:"buyer_fee_percentage,omitempty" url:"-"`
+	// The contact name when creating an email-only member.
+	CustomerName *string `json:"customer_name,omitempty" url:"-"`
+	// When payment is due, as an ISO 8601 timestamp.
+	DueAt *time.Time `json:"due_at,omitempty" url:"-"`
+	// Resolve or create the member for this email, creating a Whop user when none exists. Mutually exclusive with member_id.
+	EmailAddress *string `json:"email_address,omitempty" url:"-"`
+	// The variants being invoiced, all in the same currency. Each variant may appear once; use quantity for multiple units. Product and price come from each variant; a recurring variant must belong to a product, bills its renewal price and, once the invoice is paid, renews as a subscription charged to the payment method that paid it. With several items, every item that has a product must be a regular product, and all items need compatible payment, tax, and access settings.
+	Items []*CreateInvoicesRequestItemsItem `json:"items" url:"-"`
+	// An address associated with the member. Mutually exclusive with billing_address.
+	MailingAddressID *string `json:"mailing_address_id,omitempty" url:"-"`
+	// The billed customer, a member of the account. Changing email recipients does not change this buyer.
+	MemberID *string `json:"member_id,omitempty" url:"-"`
+	// Up to 50 caller-owned string key/value pairs.
+	Metadata map[string]string `json:"metadata,omitempty" url:"-"`
+	// A saved payment method belonging to the member, prefixed `payt_`. Sending the invoice emails it now and charges this method on `due_at`, or right away when there is no `due_at` or it has passed. Issuing the invoice without sending it charges right away.
+	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
+	// Email addresses saved for invoice delivery, independent of the billed customer. Saving them sends no email. Defaults to the customer email when omitted on create. Can be updated on draft, open, or uncollectible invoices.
+	RecipientEmails []string `json:"recipient_emails,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (c *CreateInvoicesRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequest) SetAccountID(accountID string) {
+	c.AccountID = accountID
+	c.require(createInvoicesRequestFieldAccountID)
+}
+
+// SetBillingAddress sets the BillingAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequest) SetBillingAddress(billingAddress *CreateInvoicesRequestBillingAddress) {
+	c.BillingAddress = billingAddress
+	c.require(createInvoicesRequestFieldBillingAddress)
+}
+
+// SetBuyerFeePercentage sets the BuyerFeePercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequest) SetBuyerFeePercentage(buyerFeePercentage *float64) {
+	c.BuyerFeePercentage = buyerFeePercentage
+	c.require(createInvoicesRequestFieldBuyerFeePercentage)
+}
+
+// SetCustomerName sets the CustomerName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequest) SetCustomerName(customerName *string) {
+	c.CustomerName = customerName
+	c.require(createInvoicesRequestFieldCustomerName)
+}
+
+// SetDueAt sets the DueAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequest) SetDueAt(dueAt *time.Time) {
+	c.DueAt = dueAt
+	c.require(createInvoicesRequestFieldDueAt)
+}
+
+// SetEmailAddress sets the EmailAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequest) SetEmailAddress(emailAddress *string) {
+	c.EmailAddress = emailAddress
+	c.require(createInvoicesRequestFieldEmailAddress)
+}
+
+// SetItems sets the Items field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequest) SetItems(items []*CreateInvoicesRequestItemsItem) {
+	c.Items = items
+	c.require(createInvoicesRequestFieldItems)
+}
+
+// SetMailingAddressID sets the MailingAddressID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequest) SetMailingAddressID(mailingAddressID *string) {
+	c.MailingAddressID = mailingAddressID
+	c.require(createInvoicesRequestFieldMailingAddressID)
+}
+
+// SetMemberID sets the MemberID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequest) SetMemberID(memberID *string) {
+	c.MemberID = memberID
+	c.require(createInvoicesRequestFieldMemberID)
+}
+
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequest) SetMetadata(metadata map[string]string) {
+	c.Metadata = metadata
+	c.require(createInvoicesRequestFieldMetadata)
+}
+
+// SetPaymentMethodID sets the PaymentMethodID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequest) SetPaymentMethodID(paymentMethodID *string) {
+	c.PaymentMethodID = paymentMethodID
+	c.require(createInvoicesRequestFieldPaymentMethodID)
+}
+
+// SetRecipientEmails sets the RecipientEmails field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequest) SetRecipientEmails(recipientEmails []string) {
+	c.RecipientEmails = recipientEmails
+	c.require(createInvoicesRequestFieldRecipientEmails)
+}
+
+func (c *CreateInvoicesRequest) UnmarshalJSON(data []byte) error {
+	type embed CreateInvoicesRequest
+	var body = struct {
+		embed
+		DueAt *internal.DateTime `json:"due_at,omitempty"`
+	}{
+		embed: embed(*c),
+	}
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*c = CreateInvoicesRequest(body.embed)
+	c.DueAt = body.DueAt.TimePtr()
+	return nil
+}
+
+func (c *CreateInvoicesRequest) MarshalJSON() ([]byte, error) {
+	type embed CreateInvoicesRequest
+	var marshaler = struct {
+		embed
+		DueAt *internal.DateTime `json:"due_at,omitempty"`
+	}{
+		embed: embed(*c),
+		DueAt: internal.NewOptionalDateTime(c.DueAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	generatePdfInvoicesRequestFieldID = big.NewInt(1 << 0)
+)
+
+type GeneratePdfInvoicesRequest struct {
+	// The invoice's pay_ ID.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
-func (d *DeleteInvoicesRequest) require(field *big.Int) {
+func (g *GeneratePdfInvoicesRequest) require(field *big.Int) {
 	next := new(big.Int)
-	if d.explicitFields != nil {
-		next.Set(d.explicitFields)
+	if g.explicitFields != nil {
+		next.Set(g.explicitFields)
 	}
 	next.Or(next, field)
-	d.explicitFields = next
+	g.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DeleteInvoicesRequest) SetID(id string) {
-	d.ID = id
-	d.require(deleteInvoicesRequestFieldID)
+func (g *GeneratePdfInvoicesRequest) SetID(id string) {
+	g.ID = id
+	g.require(generatePdfInvoicesRequestFieldID)
 }
 
 var (
-	listInvoicesRequestFieldAfter             = big.NewInt(1 << 0)
-	listInvoicesRequestFieldBefore            = big.NewInt(1 << 1)
-	listInvoicesRequestFieldFirst             = big.NewInt(1 << 2)
-	listInvoicesRequestFieldLast              = big.NewInt(1 << 3)
-	listInvoicesRequestFieldDirection         = big.NewInt(1 << 4)
-	listInvoicesRequestFieldProductIDs        = big.NewInt(1 << 5)
-	listInvoicesRequestFieldCollectionMethods = big.NewInt(1 << 6)
-	listInvoicesRequestFieldStatuses          = big.NewInt(1 << 7)
-	listInvoicesRequestFieldOrder             = big.NewInt(1 << 8)
-	listInvoicesRequestFieldCreatedBefore     = big.NewInt(1 << 9)
-	listInvoicesRequestFieldCreatedAfter      = big.NewInt(1 << 10)
-	listInvoicesRequestFieldAccountID         = big.NewInt(1 << 11)
+	issueInvoicesRequestFieldID = big.NewInt(1 << 0)
+)
+
+type IssueInvoicesRequest struct {
+	// The invoice's pay_ ID.
+	ID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (i *IssueInvoicesRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
+	}
+	next.Or(next, field)
+	i.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IssueInvoicesRequest) SetID(id string) {
+	i.ID = id
+	i.require(issueInvoicesRequestFieldID)
+}
+
+var (
+	listInvoicesRequestFieldAccountID     = big.NewInt(1 << 0)
+	listInvoicesRequestFieldStatus        = big.NewInt(1 << 1)
+	listInvoicesRequestFieldOverdue       = big.NewInt(1 << 2)
+	listInvoicesRequestFieldMemberID      = big.NewInt(1 << 3)
+	listInvoicesRequestFieldProductID     = big.NewInt(1 << 4)
+	listInvoicesRequestFieldCreatedAfter  = big.NewInt(1 << 5)
+	listInvoicesRequestFieldCreatedBefore = big.NewInt(1 << 6)
+	listInvoicesRequestFieldOrder         = big.NewInt(1 << 7)
+	listInvoicesRequestFieldDirection     = big.NewInt(1 << 8)
+	listInvoicesRequestFieldFirst         = big.NewInt(1 << 9)
+	listInvoicesRequestFieldAfter         = big.NewInt(1 << 10)
+	listInvoicesRequestFieldLast          = big.NewInt(1 << 11)
+	listInvoicesRequestFieldBefore        = big.NewInt(1 << 12)
 )
 
 type ListInvoicesRequest struct {
-	// Returns the elements in the list that come after the specified cursor.
-	After *string `json:"-" url:"after,omitempty"`
-	// Returns the elements in the list that come before the specified cursor.
-	Before *string `json:"-" url:"before,omitempty"`
-	// Returns the first _n_ elements from the list.
+	AccountID     *string                       `json:"-" url:"account_id,omitempty"`
+	Status        *ListInvoicesRequestStatus    `json:"-" url:"status,omitempty"`
+	Overdue       *bool                         `json:"-" url:"overdue,omitempty"`
+	MemberID      *string                       `json:"-" url:"member_id,omitempty"`
+	ProductID     *string                       `json:"-" url:"product_id,omitempty"`
+	CreatedAfter  *time.Time                    `json:"-" url:"created_after,omitempty"`
+	CreatedBefore *time.Time                    `json:"-" url:"created_before,omitempty"`
+	Order         *ListInvoicesRequestOrder     `json:"-" url:"order,omitempty"`
+	Direction     *ListInvoicesRequestDirection `json:"-" url:"direction,omitempty"`
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// Returns the last _n_ elements from the list.
-	Last      *int       `json:"-" url:"last,omitempty"`
-	Direction *Direction `json:"-" url:"direction,omitempty"`
-	// Filter invoices to only those associated with these specific product identifiers.
-	ProductIDs []*string `json:"-" url:"product_ids,omitempty"`
-	// Filter invoices by their collection method.
-	CollectionMethods []*InvoiceCollectionMethods `json:"-" url:"collection_methods,omitempty"`
-	// Filter invoices by their current status.
-	Statuses []*InvoiceStatuses       `json:"-" url:"statuses,omitempty"`
-	Order    *InvoicesSortableColumns `json:"-" url:"order,omitempty"`
-	// Only return invoices created before this timestamp.
-	CreatedBefore *time.Time `json:"-" url:"created_before,omitempty"`
-	// Only return invoices created after this timestamp.
-	CreatedAfter *time.Time `json:"-" url:"created_after,omitempty"`
-	// The unique identifier of the company to list invoices for.
-	AccountID *string `json:"-" url:"account_id,omitempty"`
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+	After *string `json:"-" url:"after,omitempty"`
+	// Number of results to return from the end of the range.
+	Last *int `json:"-" url:"last,omitempty"`
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+	Before *string `json:"-" url:"before,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -90,74 +281,39 @@ func (l *ListInvoicesRequest) require(field *big.Int) {
 	l.explicitFields = next
 }
 
-// SetAfter sets the After field and marks it as non-optional;
+// SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListInvoicesRequest) SetAfter(after *string) {
-	l.After = after
-	l.require(listInvoicesRequestFieldAfter)
+func (l *ListInvoicesRequest) SetAccountID(accountID *string) {
+	l.AccountID = accountID
+	l.require(listInvoicesRequestFieldAccountID)
 }
 
-// SetBefore sets the Before field and marks it as non-optional;
+// SetStatus sets the Status field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListInvoicesRequest) SetBefore(before *string) {
-	l.Before = before
-	l.require(listInvoicesRequestFieldBefore)
+func (l *ListInvoicesRequest) SetStatus(status *ListInvoicesRequestStatus) {
+	l.Status = status
+	l.require(listInvoicesRequestFieldStatus)
 }
 
-// SetFirst sets the First field and marks it as non-optional;
+// SetOverdue sets the Overdue field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListInvoicesRequest) SetFirst(first *int) {
-	l.First = first
-	l.require(listInvoicesRequestFieldFirst)
+func (l *ListInvoicesRequest) SetOverdue(overdue *bool) {
+	l.Overdue = overdue
+	l.require(listInvoicesRequestFieldOverdue)
 }
 
-// SetLast sets the Last field and marks it as non-optional;
+// SetMemberID sets the MemberID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListInvoicesRequest) SetLast(last *int) {
-	l.Last = last
-	l.require(listInvoicesRequestFieldLast)
+func (l *ListInvoicesRequest) SetMemberID(memberID *string) {
+	l.MemberID = memberID
+	l.require(listInvoicesRequestFieldMemberID)
 }
 
-// SetDirection sets the Direction field and marks it as non-optional;
+// SetProductID sets the ProductID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListInvoicesRequest) SetDirection(direction *Direction) {
-	l.Direction = direction
-	l.require(listInvoicesRequestFieldDirection)
-}
-
-// SetProductIDs sets the ProductIDs field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListInvoicesRequest) SetProductIDs(productIDs []*string) {
-	l.ProductIDs = productIDs
-	l.require(listInvoicesRequestFieldProductIDs)
-}
-
-// SetCollectionMethods sets the CollectionMethods field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListInvoicesRequest) SetCollectionMethods(collectionMethods []*InvoiceCollectionMethods) {
-	l.CollectionMethods = collectionMethods
-	l.require(listInvoicesRequestFieldCollectionMethods)
-}
-
-// SetStatuses sets the Statuses field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListInvoicesRequest) SetStatuses(statuses []*InvoiceStatuses) {
-	l.Statuses = statuses
-	l.require(listInvoicesRequestFieldStatuses)
-}
-
-// SetOrder sets the Order field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListInvoicesRequest) SetOrder(order *InvoicesSortableColumns) {
-	l.Order = order
-	l.require(listInvoicesRequestFieldOrder)
-}
-
-// SetCreatedBefore sets the CreatedBefore field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListInvoicesRequest) SetCreatedBefore(createdBefore *time.Time) {
-	l.CreatedBefore = createdBefore
-	l.require(listInvoicesRequestFieldCreatedBefore)
+func (l *ListInvoicesRequest) SetProductID(productID *string) {
+	l.ProductID = productID
+	l.require(listInvoicesRequestFieldProductID)
 }
 
 // SetCreatedAfter sets the CreatedAfter field and marks it as non-optional;
@@ -167,39 +323,53 @@ func (l *ListInvoicesRequest) SetCreatedAfter(createdAfter *time.Time) {
 	l.require(listInvoicesRequestFieldCreatedAfter)
 }
 
-// SetAccountID sets the AccountID field and marks it as non-optional;
+// SetCreatedBefore sets the CreatedBefore field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListInvoicesRequest) SetAccountID(accountID *string) {
-	l.AccountID = accountID
-	l.require(listInvoicesRequestFieldAccountID)
+func (l *ListInvoicesRequest) SetCreatedBefore(createdBefore *time.Time) {
+	l.CreatedBefore = createdBefore
+	l.require(listInvoicesRequestFieldCreatedBefore)
 }
 
-var (
-	markPaidInvoicesRequestFieldID = big.NewInt(1 << 0)
-)
-
-type MarkPaidInvoicesRequest struct {
-	// The unique identifier of the invoice to mark as paid.
-	ID string `json:"-" url:"-"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-}
-
-func (m *MarkPaidInvoicesRequest) require(field *big.Int) {
-	next := new(big.Int)
-	if m.explicitFields != nil {
-		next.Set(m.explicitFields)
-	}
-	next.Or(next, field)
-	m.explicitFields = next
-}
-
-// SetID sets the ID field and marks it as non-optional;
+// SetOrder sets the Order field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MarkPaidInvoicesRequest) SetID(id string) {
-	m.ID = id
-	m.require(markPaidInvoicesRequestFieldID)
+func (l *ListInvoicesRequest) SetOrder(order *ListInvoicesRequestOrder) {
+	l.Order = order
+	l.require(listInvoicesRequestFieldOrder)
+}
+
+// SetDirection sets the Direction field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInvoicesRequest) SetDirection(direction *ListInvoicesRequestDirection) {
+	l.Direction = direction
+	l.require(listInvoicesRequestFieldDirection)
+}
+
+// SetFirst sets the First field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInvoicesRequest) SetFirst(first *int) {
+	l.First = first
+	l.require(listInvoicesRequestFieldFirst)
+}
+
+// SetAfter sets the After field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInvoicesRequest) SetAfter(after *string) {
+	l.After = after
+	l.require(listInvoicesRequestFieldAfter)
+}
+
+// SetLast sets the Last field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInvoicesRequest) SetLast(last *int) {
+	l.Last = last
+	l.require(listInvoicesRequestFieldLast)
+}
+
+// SetBefore sets the Before field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInvoicesRequest) SetBefore(before *string) {
+	l.Before = before
+	l.require(listInvoicesRequestFieldBefore)
 }
 
 var (
@@ -207,7 +377,7 @@ var (
 )
 
 type MarkUncollectibleInvoicesRequest struct {
-	// The unique identifier of the invoice to mark as uncollectible.
+	// The invoice's pay_ ID.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -231,39 +401,11 @@ func (m *MarkUncollectibleInvoicesRequest) SetID(id string) {
 }
 
 var (
-	resendInvoicesRequestFieldID = big.NewInt(1 << 0)
-)
-
-type ResendInvoicesRequest struct {
-	// The unique identifier of the invoice to resend.
-	ID string `json:"-" url:"-"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-}
-
-func (r *ResendInvoicesRequest) require(field *big.Int) {
-	next := new(big.Int)
-	if r.explicitFields != nil {
-		next.Set(r.explicitFields)
-	}
-	next.Or(next, field)
-	r.explicitFields = next
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ResendInvoicesRequest) SetID(id string) {
-	r.ID = id
-	r.require(resendInvoicesRequestFieldID)
-}
-
-var (
 	retrieveInvoicesRequestFieldID = big.NewInt(1 << 0)
 )
 
 type RetrieveInvoicesRequest struct {
-	// The unique identifier of the invoice, or a secure token.
+	// The invoice's pay_ ID.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -286,114 +428,156 @@ func (r *RetrieveInvoicesRequest) SetID(id string) {
 	r.require(retrieveInvoicesRequestFieldID)
 }
 
-// The type of the custom field.
-type CustomFieldTypes string
-
-const (
-	CustomFieldTypesText CustomFieldTypes = "text"
+var (
+	sendInvoicesRequestFieldID     = big.NewInt(1 << 0)
+	sendInvoicesRequestFieldSendAt = big.NewInt(1 << 1)
 )
 
-func NewCustomFieldTypesFromString(s string) (CustomFieldTypes, error) {
-	switch s {
-	case "text":
-		return CustomFieldTypesText, nil
-	}
-	var t CustomFieldTypes
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
+type SendInvoicesRequest struct {
+	// The invoice's pay_ ID.
+	ID string `json:"-" url:"-"`
+	// When to send the draft, as an ISO 8601 timestamp in the future. Omit to send now.
+	SendAt *time.Time `json:"send_at,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
 }
 
-func (c CustomFieldTypes) Ptr() *CustomFieldTypes {
-	return &c
+func (s *SendInvoicesRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
+	}
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendInvoicesRequest) SetID(id string) {
+	s.ID = id
+	s.require(sendInvoicesRequestFieldID)
+}
+
+// SetSendAt sets the SendAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendInvoicesRequest) SetSendAt(sendAt *time.Time) {
+	s.SendAt = sendAt
+	s.require(sendInvoicesRequestFieldSendAt)
+}
+
+func (s *SendInvoicesRequest) UnmarshalJSON(data []byte) error {
+	type embed SendInvoicesRequest
+	var body = struct {
+		embed
+		SendAt *internal.DateTime `json:"send_at,omitempty"`
+	}{
+		embed: embed(*s),
+	}
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*s = SendInvoicesRequest(body.embed)
+	s.SendAt = body.SendAt.TimePtr()
+	return nil
+}
+
+func (s *SendInvoicesRequest) MarshalJSON() ([]byte, error) {
+	type embed SendInvoicesRequest
+	var marshaler = struct {
+		embed
+		SendAt *internal.DateTime `json:"send_at,omitempty"`
+	}{
+		embed:  embed(*s),
+		SendAt: internal.NewOptionalDateTime(s.SendAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
 }
 
 var (
-	invoiceFieldAutomaticallyFinalizesAt    = big.NewInt(1 << 0)
-	invoiceFieldChargeBuyerFee              = big.NewInt(1 << 1)
-	invoiceFieldCollectionMethod            = big.NewInt(1 << 2)
-	invoiceFieldCompany                     = big.NewInt(1 << 3)
-	invoiceFieldCreatedAt                   = big.NewInt(1 << 4)
-	invoiceFieldCurrentPlan                 = big.NewInt(1 << 5)
-	invoiceFieldCustomerName                = big.NewInt(1 << 6)
-	invoiceFieldDueDate                     = big.NewInt(1 << 7)
-	invoiceFieldEmailAddress                = big.NewInt(1 << 8)
-	invoiceFieldFetchInvoiceToken           = big.NewInt(1 << 9)
-	invoiceFieldID                          = big.NewInt(1 << 10)
-	invoiceFieldLineItems                   = big.NewInt(1 << 11)
-	invoiceFieldMailingAddress              = big.NewInt(1 << 12)
-	invoiceFieldMember                      = big.NewInt(1 << 13)
-	invoiceFieldNumber                      = big.NewInt(1 << 14)
-	invoiceFieldPayOnlineURL                = big.NewInt(1 << 15)
-	invoiceFieldPayment                     = big.NewInt(1 << 16)
-	invoiceFieldPaymentProcessing           = big.NewInt(1 << 17)
-	invoiceFieldProduct                     = big.NewInt(1 << 18)
-	invoiceFieldStatus                      = big.NewInt(1 << 19)
-	invoiceFieldSubscriptionBillingAnchorAt = big.NewInt(1 << 20)
-	invoiceFieldUpdatedAt                   = big.NewInt(1 << 21)
-	invoiceFieldUser                        = big.NewInt(1 << 22)
+	invoiceFieldAccountID          = big.NewInt(1 << 0)
+	invoiceFieldAmountDue          = big.NewInt(1 << 1)
+	invoiceFieldBillingAddress     = big.NewInt(1 << 2)
+	invoiceFieldBuyerFeeAmount     = big.NewInt(1 << 3)
+	invoiceFieldBuyerFeePercentage = big.NewInt(1 << 4)
+	invoiceFieldCheckoutLink       = big.NewInt(1 << 5)
+	invoiceFieldCreatedAt          = big.NewInt(1 << 6)
+	invoiceFieldCustomerName       = big.NewInt(1 << 7)
+	invoiceFieldDueAt              = big.NewInt(1 << 8)
+	invoiceFieldEmailAddress       = big.NewInt(1 << 9)
+	invoiceFieldID                 = big.NewInt(1 << 10)
+	invoiceFieldInvoicePrefix      = big.NewInt(1 << 11)
+	invoiceFieldLineItems          = big.NewInt(1 << 12)
+	invoiceFieldMailingAddressID   = big.NewInt(1 << 13)
+	invoiceFieldMemberID           = big.NewInt(1 << 14)
+	invoiceFieldMetadata           = big.NewInt(1 << 15)
+	invoiceFieldNumber             = big.NewInt(1 << 16)
+	invoiceFieldObject             = big.NewInt(1 << 17)
+	invoiceFieldOverdue            = big.NewInt(1 << 18)
+	invoiceFieldPaidAt             = big.NewInt(1 << 19)
+	invoiceFieldPaymentMethodID    = big.NewInt(1 << 20)
+	invoiceFieldRecipientEmails    = big.NewInt(1 << 21)
+	invoiceFieldScheduledChargeAt  = big.NewInt(1 << 22)
+	invoiceFieldScheduledSendAt    = big.NewInt(1 << 23)
+	invoiceFieldStatus             = big.NewInt(1 << 24)
+	invoiceFieldSubtotal           = big.NewInt(1 << 25)
+	invoiceFieldTaxAmount          = big.NewInt(1 << 26)
+	invoiceFieldTotal              = big.NewInt(1 << 27)
+	invoiceFieldTotalsStatus       = big.NewInt(1 << 28)
+	invoiceFieldUpdatedAt          = big.NewInt(1 << 29)
 )
 
 // invoiceNullableFields maps the wire names of Invoice's nullable fields (required or optional) to their field bits.
 var invoiceNullableFields = map[string]*big.Int{
-	"automatically_finalizes_at":     invoiceFieldAutomaticallyFinalizesAt,
-	"customer_name":                  invoiceFieldCustomerName,
-	"due_date":                       invoiceFieldDueDate,
-	"email_address":                  invoiceFieldEmailAddress,
-	"mailing_address":                invoiceFieldMailingAddress,
-	"member":                         invoiceFieldMember,
-	"pay_online_url":                 invoiceFieldPayOnlineURL,
-	"payment":                        invoiceFieldPayment,
-	"subscription_billing_anchor_at": invoiceFieldSubscriptionBillingAnchorAt,
-	"user":                           invoiceFieldUser,
+	"billing_address":     invoiceFieldBillingAddress,
+	"checkout_link":       invoiceFieldCheckoutLink,
+	"customer_name":       invoiceFieldCustomerName,
+	"due_at":              invoiceFieldDueAt,
+	"email_address":       invoiceFieldEmailAddress,
+	"invoice_prefix":      invoiceFieldInvoicePrefix,
+	"mailing_address_id":  invoiceFieldMailingAddressID,
+	"member_id":           invoiceFieldMemberID,
+	"paid_at":             invoiceFieldPaidAt,
+	"payment_method_id":   invoiceFieldPaymentMethodID,
+	"scheduled_charge_at": invoiceFieldScheduledChargeAt,
+	"scheduled_send_at":   invoiceFieldScheduledSendAt,
+	"tax_amount":          invoiceFieldTaxAmount,
 }
 
-// An invoice represents an itemized bill sent by a company to a customer for a specific product and plan, tracking the amount owed, due date, and payment status.
 type Invoice struct {
-	// The date and time when the invoice will be automatically finalized. For charge_automatically, triggers an automatic charge. For send_invoice, sends the invoice email at the specified time.
-	AutomaticallyFinalizesAt *time.Time `json:"automatically_finalizes_at,omitempty" url:"automatically_finalizes_at,omitempty"`
-	// Whether the invoice includes a buyer processing fee on top of the plan price.
-	ChargeBuyerFee bool `json:"charge_buyer_fee" url:"charge_buyer_fee"`
-	// The method used to collect payment for this invoice, such as automatic charging or manual payment.
-	CollectionMethod InvoiceCollectionMethods `json:"collection_method" url:"collection_method"`
-	// The company that issued this invoice.
-	Company *InvoiceCompany `json:"company" url:"company"`
-	// The datetime the invoice was created.
-	CreatedAt time.Time `json:"created_at" url:"created_at"`
-	// The plan that this invoice charges for.
-	CurrentPlan *InvoiceCurrentPlan `json:"current_plan" url:"current_plan"`
-	// The full name of the customer this invoice is addressed to. Null if no name is on file.
-	CustomerName *string `json:"customer_name,omitempty" url:"customer_name,omitempty"`
-	// The deadline by which payment is expected. Null if the invoice is collected automatically.
-	DueDate *time.Time `json:"due_date,omitempty" url:"due_date,omitempty"`
-	// The email address of the customer this invoice is addressed to. Null if no email is on file.
-	EmailAddress *string `json:"email_address,omitempty" url:"email_address,omitempty"`
-	// A signed token that allows fetching invoice data publicly without authentication.
-	FetchInvoiceToken string `json:"fetch_invoice_token" url:"fetch_invoice_token"`
-	// The unique identifier for the invoice.
-	ID string `json:"id" url:"id"`
-	// Optional line items that break down the invoice total into individual charges.
-	LineItems []*InvoiceLineItemsItem `json:"line_items" url:"line_items"`
-	// The billing/mailing address associated with this invoice, if one was provided at creation time.
-	MailingAddress *InvoiceMailingAddress `json:"mailing_address,omitempty" url:"mailing_address,omitempty"`
-	// The member that the invoice was created for. Null when the invoice is addressed to an email address with no member record behind it.
-	Member *InvoiceMember `json:"member,omitempty" url:"member,omitempty"`
-	// The sequential invoice number for display purposes.
-	Number string `json:"number" url:"number"`
-	// The checkout URL where the customer can pay this invoice online, with their email address pre-filled and locked.
-	PayOnlineURL *string `json:"pay_online_url,omitempty" url:"pay_online_url,omitempty"`
-	// The payment that settled this invoice. Null while the invoice is unpaid, when the invoice was marked paid manually, and on a subscription renewal invoice, where the settling payment cannot yet be identified.
-	Payment *InvoicePayment `json:"payment,omitempty" url:"payment,omitempty"`
-	// Whether a payment on this invoice is still clearing. True while a delayed payment method such as ACH or SEPA settles, during which the invoice stays open and is not marked past due.
-	PaymentProcessing bool `json:"payment_processing" url:"payment_processing"`
-	// The product that this invoice was generated for.
-	Product *InvoiceProduct `json:"product" url:"product"`
-	// The current payment status of the invoice, such as draft, open, paid, or void.
-	Status InvoiceStatuses `json:"status" url:"status"`
-	// The date that defines when the subscription billing cycle starts. When set on a renewal plan invoice, all future billing periods anchor to this date.
-	SubscriptionBillingAnchorAt *time.Time `json:"subscription_billing_anchor_at,omitempty" url:"subscription_billing_anchor_at,omitempty"`
-	// The datetime the invoice was last updated.
-	UpdatedAt time.Time `json:"updated_at" url:"updated_at"`
-	// The user this invoice is addressed to. Null if the user account has been removed.
-	User *InvoiceUser `json:"user,omitempty" url:"user,omitempty"`
+	AccountID          string          `json:"account_id" url:"account_id"`
+	AmountDue          *Money          `json:"amount_due" url:"amount_due"`
+	BillingAddress     *PaymentAddress `json:"billing_address,omitempty" url:"billing_address,omitempty"`
+	BuyerFeeAmount     *Money          `json:"buyer_fee_amount" url:"buyer_fee_amount"`
+	BuyerFeePercentage float64         `json:"buyer_fee_percentage" url:"buyer_fee_percentage"`
+	// A signed link that opens this invoice in a checkout session so the buyer can pay it: pass it as `link` to `POST /checkout_sessions`. Present once the invoice is issued and open; null while it is a draft, once it is paid or void, and when you lack `payment:charge`.
+	CheckoutLink     *string            `json:"checkout_link,omitempty" url:"checkout_link,omitempty"`
+	CreatedAt        string             `json:"created_at" url:"created_at"`
+	CustomerName     *string            `json:"customer_name,omitempty" url:"customer_name,omitempty"`
+	DueAt            *string            `json:"due_at,omitempty" url:"due_at,omitempty"`
+	EmailAddress     *string            `json:"email_address,omitempty" url:"email_address,omitempty"`
+	ID               string             `json:"id" url:"id"`
+	InvoicePrefix    *string            `json:"invoice_prefix,omitempty" url:"invoice_prefix,omitempty"`
+	LineItems        []*InvoiceLineItem `json:"line_items" url:"line_items"`
+	MailingAddressID *string            `json:"mailing_address_id,omitempty" url:"mailing_address_id,omitempty"`
+	MemberID         *string            `json:"member_id,omitempty" url:"member_id,omitempty"`
+	Metadata         map[string]string  `json:"metadata" url:"metadata"`
+	Number           string             `json:"number" url:"number"`
+	Object           InvoiceObject      `json:"object" url:"object"`
+	Overdue          bool               `json:"overdue" url:"overdue"`
+	PaidAt           *string            `json:"paid_at,omitempty" url:"paid_at,omitempty"`
+	PaymentMethodID  *string            `json:"payment_method_id,omitempty" url:"payment_method_id,omitempty"`
+	RecipientEmails  []string           `json:"recipient_emails" url:"recipient_emails"`
+	// When the invoice's saved payment method will be charged, as an ISO 8601 timestamp. Set to `due_at` when an invoice with a `payment_method_id` is sent before it is due; `null` otherwise, once the charge starts, and once the invoice is paid, void, or uncollectible.
+	ScheduledChargeAt *string             `json:"scheduled_charge_at,omitempty" url:"scheduled_charge_at,omitempty"`
+	ScheduledSendAt   *string             `json:"scheduled_send_at,omitempty" url:"scheduled_send_at,omitempty"`
+	Status            InvoiceStatus       `json:"status" url:"status"`
+	Subtotal          *Money              `json:"subtotal" url:"subtotal"`
+	TaxAmount         *Money              `json:"tax_amount,omitempty" url:"tax_amount,omitempty"`
+	Total             *Money              `json:"total" url:"total"`
+	TotalsStatus      InvoiceTotalsStatus `json:"totals_status" url:"totals_status"`
+	UpdatedAt         string              `json:"updated_at" url:"updated_at"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -402,46 +586,53 @@ type Invoice struct {
 	rawJSON         json.RawMessage
 }
 
-func (i *Invoice) GetAutomaticallyFinalizesAt() *time.Time {
-	if i == nil {
-		return nil
-	}
-	return i.AutomaticallyFinalizesAt
-}
-
-func (i *Invoice) GetChargeBuyerFee() bool {
-	if i == nil {
-		return false
-	}
-	return i.ChargeBuyerFee
-}
-
-func (i *Invoice) GetCollectionMethod() InvoiceCollectionMethods {
+func (i *Invoice) GetAccountID() string {
 	if i == nil {
 		return ""
 	}
-	return i.CollectionMethod
+	return i.AccountID
 }
 
-func (i *Invoice) GetCompany() *InvoiceCompany {
+func (i *Invoice) GetAmountDue() *Money {
 	if i == nil {
 		return nil
 	}
-	return i.Company
+	return i.AmountDue
 }
 
-func (i *Invoice) GetCreatedAt() time.Time {
+func (i *Invoice) GetBillingAddress() *PaymentAddress {
 	if i == nil {
-		return time.Time{}
+		return nil
+	}
+	return i.BillingAddress
+}
+
+func (i *Invoice) GetBuyerFeeAmount() *Money {
+	if i == nil {
+		return nil
+	}
+	return i.BuyerFeeAmount
+}
+
+func (i *Invoice) GetBuyerFeePercentage() float64 {
+	if i == nil {
+		return 0
+	}
+	return i.BuyerFeePercentage
+}
+
+func (i *Invoice) GetCheckoutLink() *string {
+	if i == nil {
+		return nil
+	}
+	return i.CheckoutLink
+}
+
+func (i *Invoice) GetCreatedAt() string {
+	if i == nil {
+		return ""
 	}
 	return i.CreatedAt
-}
-
-func (i *Invoice) GetCurrentPlan() *InvoiceCurrentPlan {
-	if i == nil {
-		return nil
-	}
-	return i.CurrentPlan
 }
 
 func (i *Invoice) GetCustomerName() *string {
@@ -451,11 +642,11 @@ func (i *Invoice) GetCustomerName() *string {
 	return i.CustomerName
 }
 
-func (i *Invoice) GetDueDate() *time.Time {
+func (i *Invoice) GetDueAt() *string {
 	if i == nil {
 		return nil
 	}
-	return i.DueDate
+	return i.DueAt
 }
 
 func (i *Invoice) GetEmailAddress() *string {
@@ -465,13 +656,6 @@ func (i *Invoice) GetEmailAddress() *string {
 	return i.EmailAddress
 }
 
-func (i *Invoice) GetFetchInvoiceToken() string {
-	if i == nil {
-		return ""
-	}
-	return i.FetchInvoiceToken
-}
-
 func (i *Invoice) GetID() string {
 	if i == nil {
 		return ""
@@ -479,25 +663,39 @@ func (i *Invoice) GetID() string {
 	return i.ID
 }
 
-func (i *Invoice) GetLineItems() []*InvoiceLineItemsItem {
+func (i *Invoice) GetInvoicePrefix() *string {
+	if i == nil {
+		return nil
+	}
+	return i.InvoicePrefix
+}
+
+func (i *Invoice) GetLineItems() []*InvoiceLineItem {
 	if i == nil {
 		return nil
 	}
 	return i.LineItems
 }
 
-func (i *Invoice) GetMailingAddress() *InvoiceMailingAddress {
+func (i *Invoice) GetMailingAddressID() *string {
 	if i == nil {
 		return nil
 	}
-	return i.MailingAddress
+	return i.MailingAddressID
 }
 
-func (i *Invoice) GetMember() *InvoiceMember {
+func (i *Invoice) GetMemberID() *string {
 	if i == nil {
 		return nil
 	}
-	return i.Member
+	return i.MemberID
+}
+
+func (i *Invoice) GetMetadata() map[string]string {
+	if i == nil {
+		return nil
+	}
+	return i.Metadata
 }
 
 func (i *Invoice) GetNumber() string {
@@ -507,60 +705,95 @@ func (i *Invoice) GetNumber() string {
 	return i.Number
 }
 
-func (i *Invoice) GetPayOnlineURL() *string {
+func (i *Invoice) GetObject() InvoiceObject {
 	if i == nil {
-		return nil
+		return ""
 	}
-	return i.PayOnlineURL
+	return i.Object
 }
 
-func (i *Invoice) GetPayment() *InvoicePayment {
-	if i == nil {
-		return nil
-	}
-	return i.Payment
-}
-
-func (i *Invoice) GetPaymentProcessing() bool {
+func (i *Invoice) GetOverdue() bool {
 	if i == nil {
 		return false
 	}
-	return i.PaymentProcessing
+	return i.Overdue
 }
 
-func (i *Invoice) GetProduct() *InvoiceProduct {
+func (i *Invoice) GetPaidAt() *string {
 	if i == nil {
 		return nil
 	}
-	return i.Product
+	return i.PaidAt
 }
 
-func (i *Invoice) GetStatus() InvoiceStatuses {
+func (i *Invoice) GetPaymentMethodID() *string {
+	if i == nil {
+		return nil
+	}
+	return i.PaymentMethodID
+}
+
+func (i *Invoice) GetRecipientEmails() []string {
+	if i == nil {
+		return nil
+	}
+	return i.RecipientEmails
+}
+
+func (i *Invoice) GetScheduledChargeAt() *string {
+	if i == nil {
+		return nil
+	}
+	return i.ScheduledChargeAt
+}
+
+func (i *Invoice) GetScheduledSendAt() *string {
+	if i == nil {
+		return nil
+	}
+	return i.ScheduledSendAt
+}
+
+func (i *Invoice) GetStatus() InvoiceStatus {
 	if i == nil {
 		return ""
 	}
 	return i.Status
 }
 
-func (i *Invoice) GetSubscriptionBillingAnchorAt() *time.Time {
+func (i *Invoice) GetSubtotal() *Money {
 	if i == nil {
 		return nil
 	}
-	return i.SubscriptionBillingAnchorAt
+	return i.Subtotal
 }
 
-func (i *Invoice) GetUpdatedAt() time.Time {
+func (i *Invoice) GetTaxAmount() *Money {
 	if i == nil {
-		return time.Time{}
+		return nil
+	}
+	return i.TaxAmount
+}
+
+func (i *Invoice) GetTotal() *Money {
+	if i == nil {
+		return nil
+	}
+	return i.Total
+}
+
+func (i *Invoice) GetTotalsStatus() InvoiceTotalsStatus {
+	if i == nil {
+		return ""
+	}
+	return i.TotalsStatus
+}
+
+func (i *Invoice) GetUpdatedAt() string {
+	if i == nil {
+		return ""
 	}
 	return i.UpdatedAt
-}
-
-func (i *Invoice) GetUser() *InvoiceUser {
-	if i == nil {
-		return nil
-	}
-	return i.User
 }
 
 func (i *Invoice) GetExtraProperties() map[string]interface{} {
@@ -579,46 +812,53 @@ func (i *Invoice) require(field *big.Int) {
 	i.explicitFields = next
 }
 
-// SetAutomaticallyFinalizesAt sets the AutomaticallyFinalizesAt field and marks it as non-optional;
+// SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (i *Invoice) SetAutomaticallyFinalizesAt(automaticallyFinalizesAt *time.Time) {
-	i.AutomaticallyFinalizesAt = automaticallyFinalizesAt
-	i.require(invoiceFieldAutomaticallyFinalizesAt)
+func (i *Invoice) SetAccountID(accountID string) {
+	i.AccountID = accountID
+	i.require(invoiceFieldAccountID)
 }
 
-// SetChargeBuyerFee sets the ChargeBuyerFee field and marks it as non-optional;
+// SetAmountDue sets the AmountDue field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (i *Invoice) SetChargeBuyerFee(chargeBuyerFee bool) {
-	i.ChargeBuyerFee = chargeBuyerFee
-	i.require(invoiceFieldChargeBuyerFee)
+func (i *Invoice) SetAmountDue(amountDue *Money) {
+	i.AmountDue = amountDue
+	i.require(invoiceFieldAmountDue)
 }
 
-// SetCollectionMethod sets the CollectionMethod field and marks it as non-optional;
+// SetBillingAddress sets the BillingAddress field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (i *Invoice) SetCollectionMethod(collectionMethod InvoiceCollectionMethods) {
-	i.CollectionMethod = collectionMethod
-	i.require(invoiceFieldCollectionMethod)
+func (i *Invoice) SetBillingAddress(billingAddress *PaymentAddress) {
+	i.BillingAddress = billingAddress
+	i.require(invoiceFieldBillingAddress)
 }
 
-// SetCompany sets the Company field and marks it as non-optional;
+// SetBuyerFeeAmount sets the BuyerFeeAmount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (i *Invoice) SetCompany(company *InvoiceCompany) {
-	i.Company = company
-	i.require(invoiceFieldCompany)
+func (i *Invoice) SetBuyerFeeAmount(buyerFeeAmount *Money) {
+	i.BuyerFeeAmount = buyerFeeAmount
+	i.require(invoiceFieldBuyerFeeAmount)
+}
+
+// SetBuyerFeePercentage sets the BuyerFeePercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *Invoice) SetBuyerFeePercentage(buyerFeePercentage float64) {
+	i.BuyerFeePercentage = buyerFeePercentage
+	i.require(invoiceFieldBuyerFeePercentage)
+}
+
+// SetCheckoutLink sets the CheckoutLink field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *Invoice) SetCheckoutLink(checkoutLink *string) {
+	i.CheckoutLink = checkoutLink
+	i.require(invoiceFieldCheckoutLink)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (i *Invoice) SetCreatedAt(createdAt time.Time) {
+func (i *Invoice) SetCreatedAt(createdAt string) {
 	i.CreatedAt = createdAt
 	i.require(invoiceFieldCreatedAt)
-}
-
-// SetCurrentPlan sets the CurrentPlan field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *Invoice) SetCurrentPlan(currentPlan *InvoiceCurrentPlan) {
-	i.CurrentPlan = currentPlan
-	i.require(invoiceFieldCurrentPlan)
 }
 
 // SetCustomerName sets the CustomerName field and marks it as non-optional;
@@ -628,11 +868,11 @@ func (i *Invoice) SetCustomerName(customerName *string) {
 	i.require(invoiceFieldCustomerName)
 }
 
-// SetDueDate sets the DueDate field and marks it as non-optional;
+// SetDueAt sets the DueAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (i *Invoice) SetDueDate(dueDate *time.Time) {
-	i.DueDate = dueDate
-	i.require(invoiceFieldDueDate)
+func (i *Invoice) SetDueAt(dueAt *string) {
+	i.DueAt = dueAt
+	i.require(invoiceFieldDueAt)
 }
 
 // SetEmailAddress sets the EmailAddress field and marks it as non-optional;
@@ -642,13 +882,6 @@ func (i *Invoice) SetEmailAddress(emailAddress *string) {
 	i.require(invoiceFieldEmailAddress)
 }
 
-// SetFetchInvoiceToken sets the FetchInvoiceToken field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *Invoice) SetFetchInvoiceToken(fetchInvoiceToken string) {
-	i.FetchInvoiceToken = fetchInvoiceToken
-	i.require(invoiceFieldFetchInvoiceToken)
-}
-
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (i *Invoice) SetID(id string) {
@@ -656,25 +889,39 @@ func (i *Invoice) SetID(id string) {
 	i.require(invoiceFieldID)
 }
 
+// SetInvoicePrefix sets the InvoicePrefix field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *Invoice) SetInvoicePrefix(invoicePrefix *string) {
+	i.InvoicePrefix = invoicePrefix
+	i.require(invoiceFieldInvoicePrefix)
+}
+
 // SetLineItems sets the LineItems field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (i *Invoice) SetLineItems(lineItems []*InvoiceLineItemsItem) {
+func (i *Invoice) SetLineItems(lineItems []*InvoiceLineItem) {
 	i.LineItems = lineItems
 	i.require(invoiceFieldLineItems)
 }
 
-// SetMailingAddress sets the MailingAddress field and marks it as non-optional;
+// SetMailingAddressID sets the MailingAddressID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (i *Invoice) SetMailingAddress(mailingAddress *InvoiceMailingAddress) {
-	i.MailingAddress = mailingAddress
-	i.require(invoiceFieldMailingAddress)
+func (i *Invoice) SetMailingAddressID(mailingAddressID *string) {
+	i.MailingAddressID = mailingAddressID
+	i.require(invoiceFieldMailingAddressID)
 }
 
-// SetMember sets the Member field and marks it as non-optional;
+// SetMemberID sets the MemberID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (i *Invoice) SetMember(member *InvoiceMember) {
-	i.Member = member
-	i.require(invoiceFieldMember)
+func (i *Invoice) SetMemberID(memberID *string) {
+	i.MemberID = memberID
+	i.require(invoiceFieldMemberID)
+}
+
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *Invoice) SetMetadata(metadata map[string]string) {
+	i.Metadata = metadata
+	i.require(invoiceFieldMetadata)
 }
 
 // SetNumber sets the Number field and marks it as non-optional;
@@ -684,83 +931,104 @@ func (i *Invoice) SetNumber(number string) {
 	i.require(invoiceFieldNumber)
 }
 
-// SetPayOnlineURL sets the PayOnlineURL field and marks it as non-optional;
+// SetObject sets the Object field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (i *Invoice) SetPayOnlineURL(payOnlineURL *string) {
-	i.PayOnlineURL = payOnlineURL
-	i.require(invoiceFieldPayOnlineURL)
+func (i *Invoice) SetObject(object InvoiceObject) {
+	i.Object = object
+	i.require(invoiceFieldObject)
 }
 
-// SetPayment sets the Payment field and marks it as non-optional;
+// SetOverdue sets the Overdue field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (i *Invoice) SetPayment(payment *InvoicePayment) {
-	i.Payment = payment
-	i.require(invoiceFieldPayment)
+func (i *Invoice) SetOverdue(overdue bool) {
+	i.Overdue = overdue
+	i.require(invoiceFieldOverdue)
 }
 
-// SetPaymentProcessing sets the PaymentProcessing field and marks it as non-optional;
+// SetPaidAt sets the PaidAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (i *Invoice) SetPaymentProcessing(paymentProcessing bool) {
-	i.PaymentProcessing = paymentProcessing
-	i.require(invoiceFieldPaymentProcessing)
+func (i *Invoice) SetPaidAt(paidAt *string) {
+	i.PaidAt = paidAt
+	i.require(invoiceFieldPaidAt)
 }
 
-// SetProduct sets the Product field and marks it as non-optional;
+// SetPaymentMethodID sets the PaymentMethodID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (i *Invoice) SetProduct(product *InvoiceProduct) {
-	i.Product = product
-	i.require(invoiceFieldProduct)
+func (i *Invoice) SetPaymentMethodID(paymentMethodID *string) {
+	i.PaymentMethodID = paymentMethodID
+	i.require(invoiceFieldPaymentMethodID)
+}
+
+// SetRecipientEmails sets the RecipientEmails field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *Invoice) SetRecipientEmails(recipientEmails []string) {
+	i.RecipientEmails = recipientEmails
+	i.require(invoiceFieldRecipientEmails)
+}
+
+// SetScheduledChargeAt sets the ScheduledChargeAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *Invoice) SetScheduledChargeAt(scheduledChargeAt *string) {
+	i.ScheduledChargeAt = scheduledChargeAt
+	i.require(invoiceFieldScheduledChargeAt)
+}
+
+// SetScheduledSendAt sets the ScheduledSendAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *Invoice) SetScheduledSendAt(scheduledSendAt *string) {
+	i.ScheduledSendAt = scheduledSendAt
+	i.require(invoiceFieldScheduledSendAt)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (i *Invoice) SetStatus(status InvoiceStatuses) {
+func (i *Invoice) SetStatus(status InvoiceStatus) {
 	i.Status = status
 	i.require(invoiceFieldStatus)
 }
 
-// SetSubscriptionBillingAnchorAt sets the SubscriptionBillingAnchorAt field and marks it as non-optional;
+// SetSubtotal sets the Subtotal field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (i *Invoice) SetSubscriptionBillingAnchorAt(subscriptionBillingAnchorAt *time.Time) {
-	i.SubscriptionBillingAnchorAt = subscriptionBillingAnchorAt
-	i.require(invoiceFieldSubscriptionBillingAnchorAt)
+func (i *Invoice) SetSubtotal(subtotal *Money) {
+	i.Subtotal = subtotal
+	i.require(invoiceFieldSubtotal)
+}
+
+// SetTaxAmount sets the TaxAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *Invoice) SetTaxAmount(taxAmount *Money) {
+	i.TaxAmount = taxAmount
+	i.require(invoiceFieldTaxAmount)
+}
+
+// SetTotal sets the Total field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *Invoice) SetTotal(total *Money) {
+	i.Total = total
+	i.require(invoiceFieldTotal)
+}
+
+// SetTotalsStatus sets the TotalsStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *Invoice) SetTotalsStatus(totalsStatus InvoiceTotalsStatus) {
+	i.TotalsStatus = totalsStatus
+	i.require(invoiceFieldTotalsStatus)
 }
 
 // SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (i *Invoice) SetUpdatedAt(updatedAt time.Time) {
+func (i *Invoice) SetUpdatedAt(updatedAt string) {
 	i.UpdatedAt = updatedAt
 	i.require(invoiceFieldUpdatedAt)
 }
 
-// SetUser sets the User field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *Invoice) SetUser(user *InvoiceUser) {
-	i.User = user
-	i.require(invoiceFieldUser)
-}
-
 func (i *Invoice) UnmarshalJSON(data []byte) error {
-	type embed Invoice
-	var unmarshaler = struct {
-		embed
-		AutomaticallyFinalizesAt    *internal.DateTime `json:"automatically_finalizes_at,omitempty"`
-		CreatedAt                   *internal.DateTime `json:"created_at"`
-		DueDate                     *internal.DateTime `json:"due_date,omitempty"`
-		SubscriptionBillingAnchorAt *internal.DateTime `json:"subscription_billing_anchor_at,omitempty"`
-		UpdatedAt                   *internal.DateTime `json:"updated_at"`
-	}{
-		embed: embed(*i),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+	type unmarshaler Invoice
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*i = Invoice(unmarshaler.embed)
-	i.AutomaticallyFinalizesAt = unmarshaler.AutomaticallyFinalizesAt.TimePtr()
-	i.CreatedAt = unmarshaler.CreatedAt.Time()
-	i.DueDate = unmarshaler.DueDate.TimePtr()
-	i.SubscriptionBillingAnchorAt = unmarshaler.SubscriptionBillingAnchorAt.TimePtr()
-	i.UpdatedAt = unmarshaler.UpdatedAt.Time()
+	*i = Invoice(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *i)
 	if err != nil {
 		return err
@@ -781,18 +1049,8 @@ func (i *Invoice) MarshalJSON() ([]byte, error) {
 	type embed Invoice
 	var marshaler = struct {
 		embed
-		AutomaticallyFinalizesAt    *internal.DateTime `json:"automatically_finalizes_at,omitempty"`
-		CreatedAt                   *internal.DateTime `json:"created_at"`
-		DueDate                     *internal.DateTime `json:"due_date,omitempty"`
-		SubscriptionBillingAnchorAt *internal.DateTime `json:"subscription_billing_anchor_at,omitempty"`
-		UpdatedAt                   *internal.DateTime `json:"updated_at"`
 	}{
-		embed:                       embed(*i),
-		AutomaticallyFinalizesAt:    internal.NewOptionalDateTime(i.AutomaticallyFinalizesAt),
-		CreatedAt:                   internal.NewDateTime(i.CreatedAt),
-		DueDate:                     internal.NewOptionalDateTime(i.DueDate),
-		SubscriptionBillingAnchorAt: internal.NewOptionalDateTime(i.SubscriptionBillingAnchorAt),
-		UpdatedAt:                   internal.NewDateTime(i.UpdatedAt),
+		embed: embed(*i),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
 	return json.Marshal(explicitMarshaler)
@@ -813,37 +1071,277 @@ func (i *Invoice) String() string {
 	return fmt.Sprintf("%#v", i)
 }
 
-// The method of collection for an invoice.
-type InvoiceCollectionMethods string
-
-const (
-	InvoiceCollectionMethodsSendInvoice         InvoiceCollectionMethods = "send_invoice"
-	InvoiceCollectionMethodsChargeAutomatically InvoiceCollectionMethods = "charge_automatically"
+var (
+	invoiceLineItemFieldDiscountAmount = big.NewInt(1 << 0)
+	invoiceLineItemFieldID             = big.NewInt(1 << 1)
+	invoiceLineItemFieldLabel          = big.NewInt(1 << 2)
+	invoiceLineItemFieldProductID      = big.NewInt(1 << 3)
+	invoiceLineItemFieldQuantity       = big.NewInt(1 << 4)
+	invoiceLineItemFieldSubtotal       = big.NewInt(1 << 5)
+	invoiceLineItemFieldTaxAmount      = big.NewInt(1 << 6)
+	invoiceLineItemFieldUnitAmount     = big.NewInt(1 << 7)
+	invoiceLineItemFieldVariantID      = big.NewInt(1 << 8)
 )
 
-func NewInvoiceCollectionMethodsFromString(s string) (InvoiceCollectionMethods, error) {
-	switch s {
-	case "send_invoice":
-		return InvoiceCollectionMethodsSendInvoice, nil
-	case "charge_automatically":
-		return InvoiceCollectionMethodsChargeAutomatically, nil
+// invoiceLineItemNullableFields maps the wire names of InvoiceLineItem's nullable fields (required or optional) to their field bits.
+var invoiceLineItemNullableFields = map[string]*big.Int{
+	"discount_amount": invoiceLineItemFieldDiscountAmount,
+	"id":              invoiceLineItemFieldID,
+	"label":           invoiceLineItemFieldLabel,
+	"product_id":      invoiceLineItemFieldProductID,
+	"subtotal":        invoiceLineItemFieldSubtotal,
+	"tax_amount":      invoiceLineItemFieldTaxAmount,
+	"unit_amount":     invoiceLineItemFieldUnitAmount,
+	"variant_id":      invoiceLineItemFieldVariantID,
+}
+
+type InvoiceLineItem struct {
+	// The promo discount applied to this item, in the payment's `currency`. Null when no discount was recorded.
+	DiscountAmount *Money `json:"discount_amount,omitempty" url:"discount_amount,omitempty"`
+	// Line item ID, prefixed `li_`. Null when the payment predates item snapshots and the item is read from the payment's variant.
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+	// The item's name as shown at checkout — the product title, else the variant title.
+	Label *string `json:"label,omitempty" url:"label,omitempty"`
+	// The product the variant belongs to, prefixed `prod_`. Null for a variant with no product.
+	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
+	// How many units were bought.
+	Quantity float64 `json:"quantity" url:"quantity"`
+	// `unit_amount` times `quantity`, before discounts and tax, in the payment's `currency`.
+	Subtotal *Money `json:"subtotal,omitempty" url:"subtotal,omitempty"`
+	// The tax collected on this item, in the payment's `currency`. Null when no tax was recorded.
+	TaxAmount *Money `json:"tax_amount,omitempty" url:"tax_amount,omitempty"`
+	// The price of one unit before discounts, in the payment's `currency`. Null when the payment recorded no price.
+	UnitAmount *Money `json:"unit_amount,omitempty" url:"unit_amount,omitempty"`
+	// The variant bought, prefixed `plan_`. Null when the variant has since been deleted.
+	VariantID *string `json:"variant_id,omitempty" url:"variant_id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *InvoiceLineItem) GetDiscountAmount() *Money {
+	if i == nil {
+		return nil
 	}
-	var t InvoiceCollectionMethods
+	return i.DiscountAmount
+}
+
+func (i *InvoiceLineItem) GetID() *string {
+	if i == nil {
+		return nil
+	}
+	return i.ID
+}
+
+func (i *InvoiceLineItem) GetLabel() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Label
+}
+
+func (i *InvoiceLineItem) GetProductID() *string {
+	if i == nil {
+		return nil
+	}
+	return i.ProductID
+}
+
+func (i *InvoiceLineItem) GetQuantity() float64 {
+	if i == nil {
+		return 0
+	}
+	return i.Quantity
+}
+
+func (i *InvoiceLineItem) GetSubtotal() *Money {
+	if i == nil {
+		return nil
+	}
+	return i.Subtotal
+}
+
+func (i *InvoiceLineItem) GetTaxAmount() *Money {
+	if i == nil {
+		return nil
+	}
+	return i.TaxAmount
+}
+
+func (i *InvoiceLineItem) GetUnitAmount() *Money {
+	if i == nil {
+		return nil
+	}
+	return i.UnitAmount
+}
+
+func (i *InvoiceLineItem) GetVariantID() *string {
+	if i == nil {
+		return nil
+	}
+	return i.VariantID
+}
+
+func (i *InvoiceLineItem) GetExtraProperties() map[string]interface{} {
+	if i == nil {
+		return nil
+	}
+	return i.extraProperties
+}
+
+func (i *InvoiceLineItem) require(field *big.Int) {
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
+	}
+	next.Or(next, field)
+	i.explicitFields = next
+}
+
+// SetDiscountAmount sets the DiscountAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLineItem) SetDiscountAmount(discountAmount *Money) {
+	i.DiscountAmount = discountAmount
+	i.require(invoiceLineItemFieldDiscountAmount)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLineItem) SetID(id *string) {
+	i.ID = id
+	i.require(invoiceLineItemFieldID)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLineItem) SetLabel(label *string) {
+	i.Label = label
+	i.require(invoiceLineItemFieldLabel)
+}
+
+// SetProductID sets the ProductID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLineItem) SetProductID(productID *string) {
+	i.ProductID = productID
+	i.require(invoiceLineItemFieldProductID)
+}
+
+// SetQuantity sets the Quantity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLineItem) SetQuantity(quantity float64) {
+	i.Quantity = quantity
+	i.require(invoiceLineItemFieldQuantity)
+}
+
+// SetSubtotal sets the Subtotal field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLineItem) SetSubtotal(subtotal *Money) {
+	i.Subtotal = subtotal
+	i.require(invoiceLineItemFieldSubtotal)
+}
+
+// SetTaxAmount sets the TaxAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLineItem) SetTaxAmount(taxAmount *Money) {
+	i.TaxAmount = taxAmount
+	i.require(invoiceLineItemFieldTaxAmount)
+}
+
+// SetUnitAmount sets the UnitAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLineItem) SetUnitAmount(unitAmount *Money) {
+	i.UnitAmount = unitAmount
+	i.require(invoiceLineItemFieldUnitAmount)
+}
+
+// SetVariantID sets the VariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLineItem) SetVariantID(variantID *string) {
+	i.VariantID = variantID
+	i.require(invoiceLineItemFieldVariantID)
+}
+
+func (i *InvoiceLineItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler InvoiceLineItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = InvoiceLineItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, invoiceLineItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		i.require(presentFields)
+	}
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceLineItem) MarshalJSON() ([]byte, error) {
+	type embed InvoiceLineItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*i),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (i *InvoiceLineItem) String() string {
+	if i == nil {
+		return "<nil>"
+	}
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+type InvoiceObject string
+
+const (
+	InvoiceObjectInvoice InvoiceObject = "invoice"
+)
+
+func NewInvoiceObjectFromString(s string) (InvoiceObject, error) {
+	switch s {
+	case "invoice":
+		return InvoiceObjectInvoice, nil
+	}
+	var t InvoiceObject
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (i InvoiceCollectionMethods) Ptr() *InvoiceCollectionMethods {
+func (i InvoiceObject) Ptr() *InvoiceObject {
 	return &i
 }
 
 var (
-	invoiceCompanyFieldID = big.NewInt(1 << 0)
+	invoicePdfFieldExpiresAt = big.NewInt(1 << 0)
+	invoicePdfFieldURL       = big.NewInt(1 << 1)
 )
 
-// The company that issued this invoice.
-type InvoiceCompany struct {
-	// The unique identifier for the company.
-	ID string `json:"id" url:"id"`
+type InvoicePdf struct {
+	// When the link stops working, as an ISO 8601 timestamp. Generate a new PDF for a fresh link.
+	ExpiresAt string `json:"expires_at" url:"expires_at"`
+	// A short-lived link to download the invoice as a PDF. Anyone holding the link can download the file until it expires.
+	URL string `json:"url" url:"url"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -852,21 +1350,28 @@ type InvoiceCompany struct {
 	rawJSON         json.RawMessage
 }
 
-func (i *InvoiceCompany) GetID() string {
+func (i *InvoicePdf) GetExpiresAt() string {
 	if i == nil {
 		return ""
 	}
-	return i.ID
+	return i.ExpiresAt
 }
 
-func (i *InvoiceCompany) GetExtraProperties() map[string]interface{} {
+func (i *InvoicePdf) GetURL() string {
+	if i == nil {
+		return ""
+	}
+	return i.URL
+}
+
+func (i *InvoicePdf) GetExtraProperties() map[string]interface{} {
 	if i == nil {
 		return nil
 	}
 	return i.extraProperties
 }
 
-func (i *InvoiceCompany) require(field *big.Int) {
+func (i *InvoicePdf) require(field *big.Int) {
 	next := new(big.Int)
 	if i.explicitFields != nil {
 		next.Set(i.explicitFields)
@@ -875,20 +1380,27 @@ func (i *InvoiceCompany) require(field *big.Int) {
 	i.explicitFields = next
 }
 
-// SetID sets the ID field and marks it as non-optional;
+// SetExpiresAt sets the ExpiresAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceCompany) SetID(id string) {
-	i.ID = id
-	i.require(invoiceCompanyFieldID)
+func (i *InvoicePdf) SetExpiresAt(expiresAt string) {
+	i.ExpiresAt = expiresAt
+	i.require(invoicePdfFieldExpiresAt)
 }
 
-func (i *InvoiceCompany) UnmarshalJSON(data []byte) error {
-	type unmarshaler InvoiceCompany
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoicePdf) SetURL(url string) {
+	i.URL = url
+	i.require(invoicePdfFieldURL)
+}
+
+func (i *InvoicePdf) UnmarshalJSON(data []byte) error {
+	type unmarshaler InvoicePdf
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*i = InvoiceCompany(value)
+	*i = InvoicePdf(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *i)
 	if err != nil {
 		return err
@@ -898,8 +1410,8 @@ func (i *InvoiceCompany) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (i *InvoiceCompany) MarshalJSON() ([]byte, error) {
-	type embed InvoiceCompany
+func (i *InvoicePdf) MarshalJSON() ([]byte, error) {
+	type embed InvoicePdf
 	var marshaler = struct {
 		embed
 	}{
@@ -909,7 +1421,7 @@ func (i *InvoiceCompany) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (i *InvoiceCompany) String() string {
+func (i *InvoicePdf) String() string {
 	if i == nil {
 		return "<nil>"
 	}
@@ -924,28 +1436,98 @@ func (i *InvoiceCompany) String() string {
 	return fmt.Sprintf("%#v", i)
 }
 
-var (
-	invoiceCurrentPlanFieldCurrency       = big.NewInt(1 << 0)
-	invoiceCurrentPlanFieldDescription    = big.NewInt(1 << 1)
-	invoiceCurrentPlanFieldFormattedPrice = big.NewInt(1 << 2)
-	invoiceCurrentPlanFieldID             = big.NewInt(1 << 3)
+type InvoiceStatus string
+
+const (
+	InvoiceStatusDraft         InvoiceStatus = "draft"
+	InvoiceStatusOpen          InvoiceStatus = "open"
+	InvoiceStatusAuthorized    InvoiceStatus = "authorized"
+	InvoiceStatusPaid          InvoiceStatus = "paid"
+	InvoiceStatusPending       InvoiceStatus = "pending"
+	InvoiceStatusUncollectible InvoiceStatus = "uncollectible"
+	InvoiceStatusUnresolved    InvoiceStatus = "unresolved"
+	InvoiceStatusVoid          InvoiceStatus = "void"
 )
 
-// invoiceCurrentPlanNullableFields maps the wire names of InvoiceCurrentPlan's nullable fields (required or optional) to their field bits.
-var invoiceCurrentPlanNullableFields = map[string]*big.Int{
-	"description": invoiceCurrentPlanFieldDescription,
+func NewInvoiceStatusFromString(s string) (InvoiceStatus, error) {
+	switch s {
+	case "draft":
+		return InvoiceStatusDraft, nil
+	case "open":
+		return InvoiceStatusOpen, nil
+	case "authorized":
+		return InvoiceStatusAuthorized, nil
+	case "paid":
+		return InvoiceStatusPaid, nil
+	case "pending":
+		return InvoiceStatusPending, nil
+	case "uncollectible":
+		return InvoiceStatusUncollectible, nil
+	case "unresolved":
+		return InvoiceStatusUnresolved, nil
+	case "void":
+		return InvoiceStatusVoid, nil
+	}
+	var t InvoiceStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-// The plan that this invoice charges for.
-type InvoiceCurrentPlan struct {
-	// The currency used for all prices on this plan (e.g., 'usd', 'eur'). All monetary amounts on the plan are denominated in this currency.
-	Currency Currencies `json:"currency" url:"currency"`
-	// A text description of the plan visible to customers. Maximum 1000 characters. Null if no description is set.
-	Description *string `json:"description,omitempty" url:"description,omitempty"`
-	// The formatted price (including currency) for the plan.
-	FormattedPrice string `json:"formatted_price" url:"formatted_price"`
-	// The unique identifier for the plan.
-	ID string `json:"id" url:"id"`
+func (i InvoiceStatus) Ptr() *InvoiceStatus {
+	return &i
+}
+
+type InvoiceTotalsStatus string
+
+const (
+	InvoiceTotalsStatusEstimated InvoiceTotalsStatus = "estimated"
+	InvoiceTotalsStatusFinal     InvoiceTotalsStatus = "final"
+)
+
+func NewInvoiceTotalsStatusFromString(s string) (InvoiceTotalsStatus, error) {
+	switch s {
+	case "estimated":
+		return InvoiceTotalsStatusEstimated, nil
+	case "final":
+		return InvoiceTotalsStatusFinal, nil
+	}
+	var t InvoiceTotalsStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (i InvoiceTotalsStatus) Ptr() *InvoiceTotalsStatus {
+	return &i
+}
+
+var (
+	createInvoicesRequestBillingAddressFieldCity       = big.NewInt(1 << 0)
+	createInvoicesRequestBillingAddressFieldCountry    = big.NewInt(1 << 1)
+	createInvoicesRequestBillingAddressFieldLine1      = big.NewInt(1 << 2)
+	createInvoicesRequestBillingAddressFieldLine2      = big.NewInt(1 << 3)
+	createInvoicesRequestBillingAddressFieldName       = big.NewInt(1 << 4)
+	createInvoicesRequestBillingAddressFieldPhone      = big.NewInt(1 << 5)
+	createInvoicesRequestBillingAddressFieldPostalCode = big.NewInt(1 << 6)
+	createInvoicesRequestBillingAddressFieldState      = big.NewInt(1 << 7)
+)
+
+// createInvoicesRequestBillingAddressNullableFields maps the wire names of CreateInvoicesRequestBillingAddress's nullable fields (required or optional) to their field bits.
+var createInvoicesRequestBillingAddressNullableFields = map[string]*big.Int{
+	"line2": createInvoicesRequestBillingAddressFieldLine2,
+	"name":  createInvoicesRequestBillingAddressFieldName,
+	"phone": createInvoicesRequestBillingAddressFieldPhone,
+	"state": createInvoicesRequestBillingAddressFieldState,
+}
+
+// Create a billing address linked to this member.
+type CreateInvoicesRequestBillingAddress struct {
+	City string `json:"city" url:"city"`
+	// ISO 3166-1 alpha-2 country code.
+	Country    string  `json:"country" url:"country"`
+	Line1      string  `json:"line1" url:"line1"`
+	Line2      *string `json:"line2,omitempty" url:"line2,omitempty"`
+	Name       *string `json:"name,omitempty" url:"name,omitempty"`
+	Phone      *string `json:"phone,omitempty" url:"phone,omitempty"`
+	PostalCode string  `json:"postal_code" url:"postal_code"`
+	State      *string `json:"state,omitempty" url:"state,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -954,2300 +1536,300 @@ type InvoiceCurrentPlan struct {
 	rawJSON         json.RawMessage
 }
 
-func (i *InvoiceCurrentPlan) GetCurrency() Currencies {
-	if i == nil {
+func (c *CreateInvoicesRequestBillingAddress) GetCity() string {
+	if c == nil {
 		return ""
 	}
-	return i.Currency
+	return c.City
 }
 
-func (i *InvoiceCurrentPlan) GetDescription() *string {
-	if i == nil {
+func (c *CreateInvoicesRequestBillingAddress) GetCountry() string {
+	if c == nil {
+		return ""
+	}
+	return c.Country
+}
+
+func (c *CreateInvoicesRequestBillingAddress) GetLine1() string {
+	if c == nil {
+		return ""
+	}
+	return c.Line1
+}
+
+func (c *CreateInvoicesRequestBillingAddress) GetLine2() *string {
+	if c == nil {
 		return nil
 	}
-	return i.Description
+	return c.Line2
 }
 
-func (i *InvoiceCurrentPlan) GetFormattedPrice() string {
-	if i == nil {
-		return ""
-	}
-	return i.FormattedPrice
-}
-
-func (i *InvoiceCurrentPlan) GetID() string {
-	if i == nil {
-		return ""
-	}
-	return i.ID
-}
-
-func (i *InvoiceCurrentPlan) GetExtraProperties() map[string]interface{} {
-	if i == nil {
+func (c *CreateInvoicesRequestBillingAddress) GetName() *string {
+	if c == nil {
 		return nil
 	}
-	return i.extraProperties
+	return c.Name
 }
 
-func (i *InvoiceCurrentPlan) require(field *big.Int) {
+func (c *CreateInvoicesRequestBillingAddress) GetPhone() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Phone
+}
+
+func (c *CreateInvoicesRequestBillingAddress) GetPostalCode() string {
+	if c == nil {
+		return ""
+	}
+	return c.PostalCode
+}
+
+func (c *CreateInvoicesRequestBillingAddress) GetState() *string {
+	if c == nil {
+		return nil
+	}
+	return c.State
+}
+
+func (c *CreateInvoicesRequestBillingAddress) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateInvoicesRequestBillingAddress) require(field *big.Int) {
 	next := new(big.Int)
-	if i.explicitFields != nil {
-		next.Set(i.explicitFields)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
 	next.Or(next, field)
-	i.explicitFields = next
-}
-
-// SetCurrency sets the Currency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceCurrentPlan) SetCurrency(currency Currencies) {
-	i.Currency = currency
-	i.require(invoiceCurrentPlanFieldCurrency)
-}
-
-// SetDescription sets the Description field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceCurrentPlan) SetDescription(description *string) {
-	i.Description = description
-	i.require(invoiceCurrentPlanFieldDescription)
-}
-
-// SetFormattedPrice sets the FormattedPrice field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceCurrentPlan) SetFormattedPrice(formattedPrice string) {
-	i.FormattedPrice = formattedPrice
-	i.require(invoiceCurrentPlanFieldFormattedPrice)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceCurrentPlan) SetID(id string) {
-	i.ID = id
-	i.require(invoiceCurrentPlanFieldID)
-}
-
-func (i *InvoiceCurrentPlan) UnmarshalJSON(data []byte) error {
-	type unmarshaler InvoiceCurrentPlan
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*i = InvoiceCurrentPlan(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *i)
-	if err != nil {
-		return err
-	}
-	i.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, invoiceCurrentPlanNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		i.require(presentFields)
-	}
-	i.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (i *InvoiceCurrentPlan) MarshalJSON() ([]byte, error) {
-	type embed InvoiceCurrentPlan
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*i),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (i *InvoiceCurrentPlan) String() string {
-	if i == nil {
-		return "<nil>"
-	}
-	if len(i.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(i); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", i)
-}
-
-var (
-	invoiceLineItemsItemFieldLabel     = big.NewInt(1 << 0)
-	invoiceLineItemsItemFieldPosition  = big.NewInt(1 << 1)
-	invoiceLineItemsItemFieldQuantity  = big.NewInt(1 << 2)
-	invoiceLineItemsItemFieldTotal     = big.NewInt(1 << 3)
-	invoiceLineItemsItemFieldUnitPrice = big.NewInt(1 << 4)
-)
-
-// A line item on an invoice, representing a single charge with a label, quantity, and unit price.
-type InvoiceLineItemsItem struct {
-	// The label or description for this line item.
-	Label string `json:"label" url:"label"`
-	// The display order of this line item within the invoice.
-	Position int `json:"position" url:"position"`
-	// The quantity of this line item.
-	Quantity float64 `json:"quantity" url:"quantity"`
-	// The computed total for this line item (quantity * unit_price).
-	Total float64 `json:"total" url:"total"`
-	// The unit price for this line item. Negative for a credit or deduction.
-	UnitPrice float64 `json:"unit_price" url:"unit_price"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (i *InvoiceLineItemsItem) GetLabel() string {
-	if i == nil {
-		return ""
-	}
-	return i.Label
-}
-
-func (i *InvoiceLineItemsItem) GetPosition() int {
-	if i == nil {
-		return 0
-	}
-	return i.Position
-}
-
-func (i *InvoiceLineItemsItem) GetQuantity() float64 {
-	if i == nil {
-		return 0
-	}
-	return i.Quantity
-}
-
-func (i *InvoiceLineItemsItem) GetTotal() float64 {
-	if i == nil {
-		return 0
-	}
-	return i.Total
-}
-
-func (i *InvoiceLineItemsItem) GetUnitPrice() float64 {
-	if i == nil {
-		return 0
-	}
-	return i.UnitPrice
-}
-
-func (i *InvoiceLineItemsItem) GetExtraProperties() map[string]interface{} {
-	if i == nil {
-		return nil
-	}
-	return i.extraProperties
-}
-
-func (i *InvoiceLineItemsItem) require(field *big.Int) {
-	next := new(big.Int)
-	if i.explicitFields != nil {
-		next.Set(i.explicitFields)
-	}
-	next.Or(next, field)
-	i.explicitFields = next
-}
-
-// SetLabel sets the Label field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceLineItemsItem) SetLabel(label string) {
-	i.Label = label
-	i.require(invoiceLineItemsItemFieldLabel)
-}
-
-// SetPosition sets the Position field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceLineItemsItem) SetPosition(position int) {
-	i.Position = position
-	i.require(invoiceLineItemsItemFieldPosition)
-}
-
-// SetQuantity sets the Quantity field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceLineItemsItem) SetQuantity(quantity float64) {
-	i.Quantity = quantity
-	i.require(invoiceLineItemsItemFieldQuantity)
-}
-
-// SetTotal sets the Total field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceLineItemsItem) SetTotal(total float64) {
-	i.Total = total
-	i.require(invoiceLineItemsItemFieldTotal)
-}
-
-// SetUnitPrice sets the UnitPrice field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceLineItemsItem) SetUnitPrice(unitPrice float64) {
-	i.UnitPrice = unitPrice
-	i.require(invoiceLineItemsItemFieldUnitPrice)
-}
-
-func (i *InvoiceLineItemsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler InvoiceLineItemsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*i = InvoiceLineItemsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *i)
-	if err != nil {
-		return err
-	}
-	i.extraProperties = extraProperties
-	i.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (i *InvoiceLineItemsItem) MarshalJSON() ([]byte, error) {
-	type embed InvoiceLineItemsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*i),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (i *InvoiceLineItemsItem) String() string {
-	if i == nil {
-		return "<nil>"
-	}
-	if len(i.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(i); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", i)
-}
-
-var (
-	invoiceListItemFieldCreatedAt         = big.NewInt(1 << 0)
-	invoiceListItemFieldCurrentPlan       = big.NewInt(1 << 1)
-	invoiceListItemFieldDueDate           = big.NewInt(1 << 2)
-	invoiceListItemFieldEmailAddress      = big.NewInt(1 << 3)
-	invoiceListItemFieldFetchInvoiceToken = big.NewInt(1 << 4)
-	invoiceListItemFieldID                = big.NewInt(1 << 5)
-	invoiceListItemFieldLineItems         = big.NewInt(1 << 6)
-	invoiceListItemFieldNumber            = big.NewInt(1 << 7)
-	invoiceListItemFieldPaymentProcessing = big.NewInt(1 << 8)
-	invoiceListItemFieldStatus            = big.NewInt(1 << 9)
-	invoiceListItemFieldUser              = big.NewInt(1 << 10)
-)
-
-// invoiceListItemNullableFields maps the wire names of InvoiceListItem's nullable fields (required or optional) to their field bits.
-var invoiceListItemNullableFields = map[string]*big.Int{
-	"due_date":      invoiceListItemFieldDueDate,
-	"email_address": invoiceListItemFieldEmailAddress,
-	"user":          invoiceListItemFieldUser,
-}
-
-// An invoice represents an itemized bill sent by a company to a customer for a specific product and plan, tracking the amount owed, due date, and payment status.
-type InvoiceListItem struct {
-	// The datetime the invoice was created.
-	CreatedAt time.Time `json:"created_at" url:"created_at"`
-	// The plan that this invoice charges for.
-	CurrentPlan *InvoiceListItemCurrentPlan `json:"current_plan" url:"current_plan"`
-	// The deadline by which payment is expected. Null if the invoice is collected automatically.
-	DueDate *time.Time `json:"due_date,omitempty" url:"due_date,omitempty"`
-	// The email address of the customer this invoice is addressed to. Null if no email is on file.
-	EmailAddress *string `json:"email_address,omitempty" url:"email_address,omitempty"`
-	// A signed token that allows fetching invoice data publicly without authentication.
-	FetchInvoiceToken string `json:"fetch_invoice_token" url:"fetch_invoice_token"`
-	// The unique identifier for the invoice.
-	ID string `json:"id" url:"id"`
-	// Optional line items that break down the invoice total into individual charges.
-	LineItems []*InvoiceListItemLineItemsItem `json:"line_items" url:"line_items"`
-	// The sequential invoice number for display purposes.
-	Number string `json:"number" url:"number"`
-	// Whether a payment on this invoice is still clearing. True while a delayed payment method such as ACH or SEPA settles, during which the invoice stays open and is not marked past due.
-	PaymentProcessing bool `json:"payment_processing" url:"payment_processing"`
-	// The current payment status of the invoice, such as draft, open, paid, or void.
-	Status InvoiceStatuses `json:"status" url:"status"`
-	// The user this invoice is addressed to. Null if the user account has been removed.
-	User *InvoiceListItemUser `json:"user,omitempty" url:"user,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (i *InvoiceListItem) GetCreatedAt() time.Time {
-	if i == nil {
-		return time.Time{}
-	}
-	return i.CreatedAt
-}
-
-func (i *InvoiceListItem) GetCurrentPlan() *InvoiceListItemCurrentPlan {
-	if i == nil {
-		return nil
-	}
-	return i.CurrentPlan
-}
-
-func (i *InvoiceListItem) GetDueDate() *time.Time {
-	if i == nil {
-		return nil
-	}
-	return i.DueDate
-}
-
-func (i *InvoiceListItem) GetEmailAddress() *string {
-	if i == nil {
-		return nil
-	}
-	return i.EmailAddress
-}
-
-func (i *InvoiceListItem) GetFetchInvoiceToken() string {
-	if i == nil {
-		return ""
-	}
-	return i.FetchInvoiceToken
-}
-
-func (i *InvoiceListItem) GetID() string {
-	if i == nil {
-		return ""
-	}
-	return i.ID
-}
-
-func (i *InvoiceListItem) GetLineItems() []*InvoiceListItemLineItemsItem {
-	if i == nil {
-		return nil
-	}
-	return i.LineItems
-}
-
-func (i *InvoiceListItem) GetNumber() string {
-	if i == nil {
-		return ""
-	}
-	return i.Number
-}
-
-func (i *InvoiceListItem) GetPaymentProcessing() bool {
-	if i == nil {
-		return false
-	}
-	return i.PaymentProcessing
-}
-
-func (i *InvoiceListItem) GetStatus() InvoiceStatuses {
-	if i == nil {
-		return ""
-	}
-	return i.Status
-}
-
-func (i *InvoiceListItem) GetUser() *InvoiceListItemUser {
-	if i == nil {
-		return nil
-	}
-	return i.User
-}
-
-func (i *InvoiceListItem) GetExtraProperties() map[string]interface{} {
-	if i == nil {
-		return nil
-	}
-	return i.extraProperties
-}
-
-func (i *InvoiceListItem) require(field *big.Int) {
-	next := new(big.Int)
-	if i.explicitFields != nil {
-		next.Set(i.explicitFields)
-	}
-	next.Or(next, field)
-	i.explicitFields = next
-}
-
-// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceListItem) SetCreatedAt(createdAt time.Time) {
-	i.CreatedAt = createdAt
-	i.require(invoiceListItemFieldCreatedAt)
-}
-
-// SetCurrentPlan sets the CurrentPlan field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceListItem) SetCurrentPlan(currentPlan *InvoiceListItemCurrentPlan) {
-	i.CurrentPlan = currentPlan
-	i.require(invoiceListItemFieldCurrentPlan)
-}
-
-// SetDueDate sets the DueDate field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceListItem) SetDueDate(dueDate *time.Time) {
-	i.DueDate = dueDate
-	i.require(invoiceListItemFieldDueDate)
-}
-
-// SetEmailAddress sets the EmailAddress field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceListItem) SetEmailAddress(emailAddress *string) {
-	i.EmailAddress = emailAddress
-	i.require(invoiceListItemFieldEmailAddress)
-}
-
-// SetFetchInvoiceToken sets the FetchInvoiceToken field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceListItem) SetFetchInvoiceToken(fetchInvoiceToken string) {
-	i.FetchInvoiceToken = fetchInvoiceToken
-	i.require(invoiceListItemFieldFetchInvoiceToken)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceListItem) SetID(id string) {
-	i.ID = id
-	i.require(invoiceListItemFieldID)
-}
-
-// SetLineItems sets the LineItems field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceListItem) SetLineItems(lineItems []*InvoiceListItemLineItemsItem) {
-	i.LineItems = lineItems
-	i.require(invoiceListItemFieldLineItems)
-}
-
-// SetNumber sets the Number field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceListItem) SetNumber(number string) {
-	i.Number = number
-	i.require(invoiceListItemFieldNumber)
-}
-
-// SetPaymentProcessing sets the PaymentProcessing field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceListItem) SetPaymentProcessing(paymentProcessing bool) {
-	i.PaymentProcessing = paymentProcessing
-	i.require(invoiceListItemFieldPaymentProcessing)
-}
-
-// SetStatus sets the Status field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceListItem) SetStatus(status InvoiceStatuses) {
-	i.Status = status
-	i.require(invoiceListItemFieldStatus)
-}
-
-// SetUser sets the User field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceListItem) SetUser(user *InvoiceListItemUser) {
-	i.User = user
-	i.require(invoiceListItemFieldUser)
-}
-
-func (i *InvoiceListItem) UnmarshalJSON(data []byte) error {
-	type embed InvoiceListItem
-	var unmarshaler = struct {
-		embed
-		CreatedAt *internal.DateTime `json:"created_at"`
-		DueDate   *internal.DateTime `json:"due_date,omitempty"`
-	}{
-		embed: embed(*i),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*i = InvoiceListItem(unmarshaler.embed)
-	i.CreatedAt = unmarshaler.CreatedAt.Time()
-	i.DueDate = unmarshaler.DueDate.TimePtr()
-	extraProperties, err := internal.ExtractExtraProperties(data, *i)
-	if err != nil {
-		return err
-	}
-	i.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, invoiceListItemNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		i.require(presentFields)
-	}
-	i.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (i *InvoiceListItem) MarshalJSON() ([]byte, error) {
-	type embed InvoiceListItem
-	var marshaler = struct {
-		embed
-		CreatedAt *internal.DateTime `json:"created_at"`
-		DueDate   *internal.DateTime `json:"due_date,omitempty"`
-	}{
-		embed:     embed(*i),
-		CreatedAt: internal.NewDateTime(i.CreatedAt),
-		DueDate:   internal.NewOptionalDateTime(i.DueDate),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (i *InvoiceListItem) String() string {
-	if i == nil {
-		return "<nil>"
-	}
-	if len(i.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(i); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", i)
-}
-
-var (
-	invoiceListItemCurrentPlanFieldCurrency       = big.NewInt(1 << 0)
-	invoiceListItemCurrentPlanFieldFormattedPrice = big.NewInt(1 << 1)
-	invoiceListItemCurrentPlanFieldID             = big.NewInt(1 << 2)
-)
-
-// The plan that this invoice charges for.
-type InvoiceListItemCurrentPlan struct {
-	// The currency used for all prices on this plan (e.g., 'usd', 'eur'). All monetary amounts on the plan are denominated in this currency.
-	Currency Currencies `json:"currency" url:"currency"`
-	// The formatted price (including currency) for the plan.
-	FormattedPrice string `json:"formatted_price" url:"formatted_price"`
-	// The unique identifier for the plan.
-	ID string `json:"id" url:"id"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (i *InvoiceListItemCurrentPlan) GetCurrency() Currencies {
-	if i == nil {
-		return ""
-	}
-	return i.Currency
-}
-
-func (i *InvoiceListItemCurrentPlan) GetFormattedPrice() string {
-	if i == nil {
-		return ""
-	}
-	return i.FormattedPrice
-}
-
-func (i *InvoiceListItemCurrentPlan) GetID() string {
-	if i == nil {
-		return ""
-	}
-	return i.ID
-}
-
-func (i *InvoiceListItemCurrentPlan) GetExtraProperties() map[string]interface{} {
-	if i == nil {
-		return nil
-	}
-	return i.extraProperties
-}
-
-func (i *InvoiceListItemCurrentPlan) require(field *big.Int) {
-	next := new(big.Int)
-	if i.explicitFields != nil {
-		next.Set(i.explicitFields)
-	}
-	next.Or(next, field)
-	i.explicitFields = next
-}
-
-// SetCurrency sets the Currency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceListItemCurrentPlan) SetCurrency(currency Currencies) {
-	i.Currency = currency
-	i.require(invoiceListItemCurrentPlanFieldCurrency)
-}
-
-// SetFormattedPrice sets the FormattedPrice field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceListItemCurrentPlan) SetFormattedPrice(formattedPrice string) {
-	i.FormattedPrice = formattedPrice
-	i.require(invoiceListItemCurrentPlanFieldFormattedPrice)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceListItemCurrentPlan) SetID(id string) {
-	i.ID = id
-	i.require(invoiceListItemCurrentPlanFieldID)
-}
-
-func (i *InvoiceListItemCurrentPlan) UnmarshalJSON(data []byte) error {
-	type unmarshaler InvoiceListItemCurrentPlan
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*i = InvoiceListItemCurrentPlan(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *i)
-	if err != nil {
-		return err
-	}
-	i.extraProperties = extraProperties
-	i.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (i *InvoiceListItemCurrentPlan) MarshalJSON() ([]byte, error) {
-	type embed InvoiceListItemCurrentPlan
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*i),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (i *InvoiceListItemCurrentPlan) String() string {
-	if i == nil {
-		return "<nil>"
-	}
-	if len(i.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(i); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", i)
-}
-
-var (
-	invoiceListItemLineItemsItemFieldLabel     = big.NewInt(1 << 0)
-	invoiceListItemLineItemsItemFieldPosition  = big.NewInt(1 << 1)
-	invoiceListItemLineItemsItemFieldQuantity  = big.NewInt(1 << 2)
-	invoiceListItemLineItemsItemFieldTotal     = big.NewInt(1 << 3)
-	invoiceListItemLineItemsItemFieldUnitPrice = big.NewInt(1 << 4)
-)
-
-// A line item on an invoice, representing a single charge with a label, quantity, and unit price.
-type InvoiceListItemLineItemsItem struct {
-	// The label or description for this line item.
-	Label string `json:"label" url:"label"`
-	// The display order of this line item within the invoice.
-	Position int `json:"position" url:"position"`
-	// The quantity of this line item.
-	Quantity float64 `json:"quantity" url:"quantity"`
-	// The computed total for this line item (quantity * unit_price).
-	Total float64 `json:"total" url:"total"`
-	// The unit price for this line item. Negative for a credit or deduction.
-	UnitPrice float64 `json:"unit_price" url:"unit_price"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (i *InvoiceListItemLineItemsItem) GetLabel() string {
-	if i == nil {
-		return ""
-	}
-	return i.Label
-}
-
-func (i *InvoiceListItemLineItemsItem) GetPosition() int {
-	if i == nil {
-		return 0
-	}
-	return i.Position
-}
-
-func (i *InvoiceListItemLineItemsItem) GetQuantity() float64 {
-	if i == nil {
-		return 0
-	}
-	return i.Quantity
-}
-
-func (i *InvoiceListItemLineItemsItem) GetTotal() float64 {
-	if i == nil {
-		return 0
-	}
-	return i.Total
-}
-
-func (i *InvoiceListItemLineItemsItem) GetUnitPrice() float64 {
-	if i == nil {
-		return 0
-	}
-	return i.UnitPrice
-}
-
-func (i *InvoiceListItemLineItemsItem) GetExtraProperties() map[string]interface{} {
-	if i == nil {
-		return nil
-	}
-	return i.extraProperties
-}
-
-func (i *InvoiceListItemLineItemsItem) require(field *big.Int) {
-	next := new(big.Int)
-	if i.explicitFields != nil {
-		next.Set(i.explicitFields)
-	}
-	next.Or(next, field)
-	i.explicitFields = next
-}
-
-// SetLabel sets the Label field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceListItemLineItemsItem) SetLabel(label string) {
-	i.Label = label
-	i.require(invoiceListItemLineItemsItemFieldLabel)
-}
-
-// SetPosition sets the Position field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceListItemLineItemsItem) SetPosition(position int) {
-	i.Position = position
-	i.require(invoiceListItemLineItemsItemFieldPosition)
-}
-
-// SetQuantity sets the Quantity field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceListItemLineItemsItem) SetQuantity(quantity float64) {
-	i.Quantity = quantity
-	i.require(invoiceListItemLineItemsItemFieldQuantity)
-}
-
-// SetTotal sets the Total field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceListItemLineItemsItem) SetTotal(total float64) {
-	i.Total = total
-	i.require(invoiceListItemLineItemsItemFieldTotal)
-}
-
-// SetUnitPrice sets the UnitPrice field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceListItemLineItemsItem) SetUnitPrice(unitPrice float64) {
-	i.UnitPrice = unitPrice
-	i.require(invoiceListItemLineItemsItemFieldUnitPrice)
-}
-
-func (i *InvoiceListItemLineItemsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler InvoiceListItemLineItemsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*i = InvoiceListItemLineItemsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *i)
-	if err != nil {
-		return err
-	}
-	i.extraProperties = extraProperties
-	i.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (i *InvoiceListItemLineItemsItem) MarshalJSON() ([]byte, error) {
-	type embed InvoiceListItemLineItemsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*i),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (i *InvoiceListItemLineItemsItem) String() string {
-	if i == nil {
-		return "<nil>"
-	}
-	if len(i.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(i); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", i)
-}
-
-var (
-	invoiceListItemUserFieldID       = big.NewInt(1 << 0)
-	invoiceListItemUserFieldName     = big.NewInt(1 << 1)
-	invoiceListItemUserFieldUsername = big.NewInt(1 << 2)
-)
-
-// invoiceListItemUserNullableFields maps the wire names of InvoiceListItemUser's nullable fields (required or optional) to their field bits.
-var invoiceListItemUserNullableFields = map[string]*big.Int{
-	"name": invoiceListItemUserFieldName,
-}
-
-// The user this invoice is addressed to. Null if the user account has been removed.
-type InvoiceListItemUser struct {
-	// The unique identifier for the user.
-	ID string `json:"id" url:"id"`
-	// The user's display name shown on their public profile.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// The user's unique username shown on their public profile.
-	Username string `json:"username" url:"username"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (i *InvoiceListItemUser) GetID() string {
-	if i == nil {
-		return ""
-	}
-	return i.ID
-}
-
-func (i *InvoiceListItemUser) GetName() *string {
-	if i == nil {
-		return nil
-	}
-	return i.Name
-}
-
-func (i *InvoiceListItemUser) GetUsername() string {
-	if i == nil {
-		return ""
-	}
-	return i.Username
-}
-
-func (i *InvoiceListItemUser) GetExtraProperties() map[string]interface{} {
-	if i == nil {
-		return nil
-	}
-	return i.extraProperties
-}
-
-func (i *InvoiceListItemUser) require(field *big.Int) {
-	next := new(big.Int)
-	if i.explicitFields != nil {
-		next.Set(i.explicitFields)
-	}
-	next.Or(next, field)
-	i.explicitFields = next
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceListItemUser) SetID(id string) {
-	i.ID = id
-	i.require(invoiceListItemUserFieldID)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceListItemUser) SetName(name *string) {
-	i.Name = name
-	i.require(invoiceListItemUserFieldName)
-}
-
-// SetUsername sets the Username field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceListItemUser) SetUsername(username string) {
-	i.Username = username
-	i.require(invoiceListItemUserFieldUsername)
-}
-
-func (i *InvoiceListItemUser) UnmarshalJSON(data []byte) error {
-	type unmarshaler InvoiceListItemUser
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*i = InvoiceListItemUser(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *i)
-	if err != nil {
-		return err
-	}
-	i.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, invoiceListItemUserNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		i.require(presentFields)
-	}
-	i.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (i *InvoiceListItemUser) MarshalJSON() ([]byte, error) {
-	type embed InvoiceListItemUser
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*i),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (i *InvoiceListItemUser) String() string {
-	if i == nil {
-		return "<nil>"
-	}
-	if len(i.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(i); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", i)
-}
-
-var (
-	invoiceMailingAddressFieldCity       = big.NewInt(1 << 0)
-	invoiceMailingAddressFieldCountry    = big.NewInt(1 << 1)
-	invoiceMailingAddressFieldLine1      = big.NewInt(1 << 2)
-	invoiceMailingAddressFieldLine2      = big.NewInt(1 << 3)
-	invoiceMailingAddressFieldName       = big.NewInt(1 << 4)
-	invoiceMailingAddressFieldPhone      = big.NewInt(1 << 5)
-	invoiceMailingAddressFieldPostalCode = big.NewInt(1 << 6)
-	invoiceMailingAddressFieldState      = big.NewInt(1 << 7)
-)
-
-// invoiceMailingAddressNullableFields maps the wire names of InvoiceMailingAddress's nullable fields (required or optional) to their field bits.
-var invoiceMailingAddressNullableFields = map[string]*big.Int{
-	"city":        invoiceMailingAddressFieldCity,
-	"country":     invoiceMailingAddressFieldCountry,
-	"line1":       invoiceMailingAddressFieldLine1,
-	"line2":       invoiceMailingAddressFieldLine2,
-	"name":        invoiceMailingAddressFieldName,
-	"phone":       invoiceMailingAddressFieldPhone,
-	"postal_code": invoiceMailingAddressFieldPostalCode,
-	"state":       invoiceMailingAddressFieldState,
-}
-
-// The billing/mailing address associated with this invoice, if one was provided at creation time.
-type InvoiceMailingAddress struct {
-	// The city of the address.
-	City *string `json:"city,omitempty" url:"city,omitempty"`
-	// The country of the address.
-	Country *string `json:"country,omitempty" url:"country,omitempty"`
-	// The line 1 of the address.
-	Line1 *string `json:"line1,omitempty" url:"line1,omitempty"`
-	// The line 2 of the address.
-	Line2 *string `json:"line2,omitempty" url:"line2,omitempty"`
-	// The name of the customer.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// The phone number of the customer.
-	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
-	// The postal code of the address.
-	PostalCode *string `json:"postal_code,omitempty" url:"postal_code,omitempty"`
-	// The state of the address.
-	State *string `json:"state,omitempty" url:"state,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (i *InvoiceMailingAddress) GetCity() *string {
-	if i == nil {
-		return nil
-	}
-	return i.City
-}
-
-func (i *InvoiceMailingAddress) GetCountry() *string {
-	if i == nil {
-		return nil
-	}
-	return i.Country
-}
-
-func (i *InvoiceMailingAddress) GetLine1() *string {
-	if i == nil {
-		return nil
-	}
-	return i.Line1
-}
-
-func (i *InvoiceMailingAddress) GetLine2() *string {
-	if i == nil {
-		return nil
-	}
-	return i.Line2
-}
-
-func (i *InvoiceMailingAddress) GetName() *string {
-	if i == nil {
-		return nil
-	}
-	return i.Name
-}
-
-func (i *InvoiceMailingAddress) GetPhone() *string {
-	if i == nil {
-		return nil
-	}
-	return i.Phone
-}
-
-func (i *InvoiceMailingAddress) GetPostalCode() *string {
-	if i == nil {
-		return nil
-	}
-	return i.PostalCode
-}
-
-func (i *InvoiceMailingAddress) GetState() *string {
-	if i == nil {
-		return nil
-	}
-	return i.State
-}
-
-func (i *InvoiceMailingAddress) GetExtraProperties() map[string]interface{} {
-	if i == nil {
-		return nil
-	}
-	return i.extraProperties
-}
-
-func (i *InvoiceMailingAddress) require(field *big.Int) {
-	next := new(big.Int)
-	if i.explicitFields != nil {
-		next.Set(i.explicitFields)
-	}
-	next.Or(next, field)
-	i.explicitFields = next
+	c.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceMailingAddress) SetCity(city *string) {
-	i.City = city
-	i.require(invoiceMailingAddressFieldCity)
+func (c *CreateInvoicesRequestBillingAddress) SetCity(city string) {
+	c.City = city
+	c.require(createInvoicesRequestBillingAddressFieldCity)
 }
 
 // SetCountry sets the Country field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceMailingAddress) SetCountry(country *string) {
-	i.Country = country
-	i.require(invoiceMailingAddressFieldCountry)
+func (c *CreateInvoicesRequestBillingAddress) SetCountry(country string) {
+	c.Country = country
+	c.require(createInvoicesRequestBillingAddressFieldCountry)
 }
 
 // SetLine1 sets the Line1 field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceMailingAddress) SetLine1(line1 *string) {
-	i.Line1 = line1
-	i.require(invoiceMailingAddressFieldLine1)
+func (c *CreateInvoicesRequestBillingAddress) SetLine1(line1 string) {
+	c.Line1 = line1
+	c.require(createInvoicesRequestBillingAddressFieldLine1)
 }
 
 // SetLine2 sets the Line2 field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceMailingAddress) SetLine2(line2 *string) {
-	i.Line2 = line2
-	i.require(invoiceMailingAddressFieldLine2)
+func (c *CreateInvoicesRequestBillingAddress) SetLine2(line2 *string) {
+	c.Line2 = line2
+	c.require(createInvoicesRequestBillingAddressFieldLine2)
 }
 
 // SetName sets the Name field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceMailingAddress) SetName(name *string) {
-	i.Name = name
-	i.require(invoiceMailingAddressFieldName)
+func (c *CreateInvoicesRequestBillingAddress) SetName(name *string) {
+	c.Name = name
+	c.require(createInvoicesRequestBillingAddressFieldName)
 }
 
 // SetPhone sets the Phone field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceMailingAddress) SetPhone(phone *string) {
-	i.Phone = phone
-	i.require(invoiceMailingAddressFieldPhone)
+func (c *CreateInvoicesRequestBillingAddress) SetPhone(phone *string) {
+	c.Phone = phone
+	c.require(createInvoicesRequestBillingAddressFieldPhone)
 }
 
 // SetPostalCode sets the PostalCode field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceMailingAddress) SetPostalCode(postalCode *string) {
-	i.PostalCode = postalCode
-	i.require(invoiceMailingAddressFieldPostalCode)
+func (c *CreateInvoicesRequestBillingAddress) SetPostalCode(postalCode string) {
+	c.PostalCode = postalCode
+	c.require(createInvoicesRequestBillingAddressFieldPostalCode)
 }
 
 // SetState sets the State field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceMailingAddress) SetState(state *string) {
-	i.State = state
-	i.require(invoiceMailingAddressFieldState)
+func (c *CreateInvoicesRequestBillingAddress) SetState(state *string) {
+	c.State = state
+	c.require(createInvoicesRequestBillingAddressFieldState)
 }
 
-func (i *InvoiceMailingAddress) UnmarshalJSON(data []byte) error {
-	type unmarshaler InvoiceMailingAddress
+func (c *CreateInvoicesRequestBillingAddress) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateInvoicesRequestBillingAddress
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*i = InvoiceMailingAddress(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	*c = CreateInvoicesRequestBillingAddress(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
 	if err != nil {
 		return err
 	}
-	i.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, invoiceMailingAddressNullableFields)
+	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestBillingAddressNullableFields)
 	if err != nil {
 		return err
 	}
 	if presentFields != nil {
-		i.require(presentFields)
+		c.require(presentFields)
 	}
-	i.rawJSON = json.RawMessage(data)
+	c.rawJSON = json.RawMessage(data)
 	return nil
 }
 
-func (i *InvoiceMailingAddress) MarshalJSON() ([]byte, error) {
-	type embed InvoiceMailingAddress
+func (c *CreateInvoicesRequestBillingAddress) MarshalJSON() ([]byte, error) {
+	type embed CreateInvoicesRequestBillingAddress
 	var marshaler = struct {
 		embed
 	}{
-		embed: embed(*i),
+		embed: embed(*c),
 	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
 	return json.Marshal(explicitMarshaler)
 }
 
-func (i *InvoiceMailingAddress) String() string {
-	if i == nil {
+func (c *CreateInvoicesRequestBillingAddress) String() string {
+	if c == nil {
 		return "<nil>"
 	}
-	if len(i.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
 			return value
 		}
 	}
-	if value, err := internal.StringifyJSON(i); err == nil {
+	if value, err := internal.StringifyJSON(c); err == nil {
 		return value
 	}
-	return fmt.Sprintf("%#v", i)
+	return fmt.Sprintf("%#v", c)
 }
 
-var (
-	invoiceMemberFieldID = big.NewInt(1 << 0)
-)
-
-// The member that the invoice was created for. Null when the invoice is addressed to an email address with no member record behind it.
-type InvoiceMember struct {
-	// The unique identifier for the company member.
-	ID string `json:"id" url:"id"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (i *InvoiceMember) GetID() string {
-	if i == nil {
-		return ""
-	}
-	return i.ID
-}
-
-func (i *InvoiceMember) GetExtraProperties() map[string]interface{} {
-	if i == nil {
-		return nil
-	}
-	return i.extraProperties
-}
-
-func (i *InvoiceMember) require(field *big.Int) {
-	next := new(big.Int)
-	if i.explicitFields != nil {
-		next.Set(i.explicitFields)
-	}
-	next.Or(next, field)
-	i.explicitFields = next
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceMember) SetID(id string) {
-	i.ID = id
-	i.require(invoiceMemberFieldID)
-}
-
-func (i *InvoiceMember) UnmarshalJSON(data []byte) error {
-	type unmarshaler InvoiceMember
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*i = InvoiceMember(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *i)
-	if err != nil {
-		return err
-	}
-	i.extraProperties = extraProperties
-	i.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (i *InvoiceMember) MarshalJSON() ([]byte, error) {
-	type embed InvoiceMember
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*i),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (i *InvoiceMember) String() string {
-	if i == nil {
-		return "<nil>"
-	}
-	if len(i.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(i); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", i)
-}
-
-var (
-	invoicePaymentFieldID = big.NewInt(1 << 0)
-)
-
-// The payment that settled this invoice. Null while the invoice is unpaid, when the invoice was marked paid manually, and on a subscription renewal invoice, where the settling payment cannot yet be identified.
-type InvoicePayment struct {
-	// The unique identifier for the payment.
-	ID string `json:"id" url:"id"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (i *InvoicePayment) GetID() string {
-	if i == nil {
-		return ""
-	}
-	return i.ID
-}
-
-func (i *InvoicePayment) GetExtraProperties() map[string]interface{} {
-	if i == nil {
-		return nil
-	}
-	return i.extraProperties
-}
-
-func (i *InvoicePayment) require(field *big.Int) {
-	next := new(big.Int)
-	if i.explicitFields != nil {
-		next.Set(i.explicitFields)
-	}
-	next.Or(next, field)
-	i.explicitFields = next
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoicePayment) SetID(id string) {
-	i.ID = id
-	i.require(invoicePaymentFieldID)
-}
-
-func (i *InvoicePayment) UnmarshalJSON(data []byte) error {
-	type unmarshaler InvoicePayment
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*i = InvoicePayment(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *i)
-	if err != nil {
-		return err
-	}
-	i.extraProperties = extraProperties
-	i.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (i *InvoicePayment) MarshalJSON() ([]byte, error) {
-	type embed InvoicePayment
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*i),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (i *InvoicePayment) String() string {
-	if i == nil {
-		return "<nil>"
-	}
-	if len(i.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(i); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", i)
-}
-
-var (
-	invoiceProductFieldID    = big.NewInt(1 << 0)
-	invoiceProductFieldTitle = big.NewInt(1 << 1)
-)
-
-// The product that this invoice was generated for.
-type InvoiceProduct struct {
-	// The unique identifier for the product.
-	ID string `json:"id" url:"id"`
-	// The display name of the product shown to customers on the product page and in search results.
-	Title string `json:"title" url:"title"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (i *InvoiceProduct) GetID() string {
-	if i == nil {
-		return ""
-	}
-	return i.ID
-}
-
-func (i *InvoiceProduct) GetTitle() string {
-	if i == nil {
-		return ""
-	}
-	return i.Title
-}
-
-func (i *InvoiceProduct) GetExtraProperties() map[string]interface{} {
-	if i == nil {
-		return nil
-	}
-	return i.extraProperties
-}
-
-func (i *InvoiceProduct) require(field *big.Int) {
-	next := new(big.Int)
-	if i.explicitFields != nil {
-		next.Set(i.explicitFields)
-	}
-	next.Or(next, field)
-	i.explicitFields = next
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceProduct) SetID(id string) {
-	i.ID = id
-	i.require(invoiceProductFieldID)
-}
-
-// SetTitle sets the Title field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceProduct) SetTitle(title string) {
-	i.Title = title
-	i.require(invoiceProductFieldTitle)
-}
-
-func (i *InvoiceProduct) UnmarshalJSON(data []byte) error {
-	type unmarshaler InvoiceProduct
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*i = InvoiceProduct(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *i)
-	if err != nil {
-		return err
-	}
-	i.extraProperties = extraProperties
-	i.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (i *InvoiceProduct) MarshalJSON() ([]byte, error) {
-	type embed InvoiceProduct
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*i),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (i *InvoiceProduct) String() string {
-	if i == nil {
-		return "<nil>"
-	}
-	if len(i.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(i); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", i)
-}
-
-// The different statuses an invoice can be in
-type InvoiceStatuses string
-
-const (
-	InvoiceStatusesDraft         InvoiceStatuses = "draft"
-	InvoiceStatusesOpen          InvoiceStatuses = "open"
-	InvoiceStatusesPaid          InvoiceStatuses = "paid"
-	InvoiceStatusesPastDue       InvoiceStatuses = "past_due"
-	InvoiceStatusesUncollectible InvoiceStatuses = "uncollectible"
-	InvoiceStatusesVoid          InvoiceStatuses = "void"
-)
-
-func NewInvoiceStatusesFromString(s string) (InvoiceStatuses, error) {
-	switch s {
-	case "draft":
-		return InvoiceStatusesDraft, nil
-	case "open":
-		return InvoiceStatusesOpen, nil
-	case "paid":
-		return InvoiceStatusesPaid, nil
-	case "past_due":
-		return InvoiceStatusesPastDue, nil
-	case "uncollectible":
-		return InvoiceStatusesUncollectible, nil
-	case "void":
-		return InvoiceStatusesVoid, nil
-	}
-	var t InvoiceStatuses
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (i InvoiceStatuses) Ptr() *InvoiceStatuses {
-	return &i
-}
-
-var (
-	invoiceUserFieldEmail    = big.NewInt(1 << 0)
-	invoiceUserFieldID       = big.NewInt(1 << 1)
-	invoiceUserFieldName     = big.NewInt(1 << 2)
-	invoiceUserFieldUsername = big.NewInt(1 << 3)
-)
-
-// invoiceUserNullableFields maps the wire names of InvoiceUser's nullable fields (required or optional) to their field bits.
-var invoiceUserNullableFields = map[string]*big.Int{
-	"email": invoiceUserFieldEmail,
-	"name":  invoiceUserFieldName,
-}
-
-// The user this invoice is addressed to. Null if the user account has been removed.
-type InvoiceUser struct {
-	// The user's email address. Requires the member:email:read permission to access. Null if not authorized.
-	Email *string `json:"email,omitempty" url:"email,omitempty"`
-	// The unique identifier for the user.
-	ID string `json:"id" url:"id"`
-	// The user's display name shown on their public profile.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// The user's unique username shown on their public profile.
-	Username string `json:"username" url:"username"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (i *InvoiceUser) GetEmail() *string {
-	if i == nil {
-		return nil
-	}
-	return i.Email
-}
-
-func (i *InvoiceUser) GetID() string {
-	if i == nil {
-		return ""
-	}
-	return i.ID
-}
-
-func (i *InvoiceUser) GetName() *string {
-	if i == nil {
-		return nil
-	}
-	return i.Name
-}
-
-func (i *InvoiceUser) GetUsername() string {
-	if i == nil {
-		return ""
-	}
-	return i.Username
-}
-
-func (i *InvoiceUser) GetExtraProperties() map[string]interface{} {
-	if i == nil {
-		return nil
-	}
-	return i.extraProperties
-}
-
-func (i *InvoiceUser) require(field *big.Int) {
-	next := new(big.Int)
-	if i.explicitFields != nil {
-		next.Set(i.explicitFields)
-	}
-	next.Or(next, field)
-	i.explicitFields = next
-}
-
-// SetEmail sets the Email field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceUser) SetEmail(email *string) {
-	i.Email = email
-	i.require(invoiceUserFieldEmail)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceUser) SetID(id string) {
-	i.ID = id
-	i.require(invoiceUserFieldID)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceUser) SetName(name *string) {
-	i.Name = name
-	i.require(invoiceUserFieldName)
-}
-
-// SetUsername sets the Username field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InvoiceUser) SetUsername(username string) {
-	i.Username = username
-	i.require(invoiceUserFieldUsername)
-}
-
-func (i *InvoiceUser) UnmarshalJSON(data []byte) error {
-	type unmarshaler InvoiceUser
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*i = InvoiceUser(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *i)
-	if err != nil {
-		return err
-	}
-	i.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, invoiceUserNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		i.require(presentFields)
-	}
-	i.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (i *InvoiceUser) MarshalJSON() ([]byte, error) {
-	type embed InvoiceUser
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*i),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (i *InvoiceUser) String() string {
-	if i == nil {
-		return "<nil>"
-	}
-	if len(i.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(i); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", i)
-}
-
-// Which columns can be used to sort.
-type InvoicesSortableColumns string
-
-const (
-	InvoicesSortableColumnsID        InvoicesSortableColumns = "id"
-	InvoicesSortableColumnsCreatedAt InvoicesSortableColumns = "created_at"
-	InvoicesSortableColumnsDueDate   InvoicesSortableColumns = "due_date"
-)
-
-func NewInvoicesSortableColumnsFromString(s string) (InvoicesSortableColumns, error) {
-	switch s {
-	case "id":
-		return InvoicesSortableColumnsID, nil
-	case "created_at":
-		return InvoicesSortableColumnsCreatedAt, nil
-	case "due_date":
-		return InvoicesSortableColumnsDueDate, nil
-	}
-	var t InvoicesSortableColumns
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (i InvoicesSortableColumns) Ptr() *InvoicesSortableColumns {
-	return &i
-}
-
-// The type of plan that can be attached to a product
-type PlanTypes string
-
-const (
-	PlanTypesRenewal PlanTypes = "renewal"
-	PlanTypesOneTime PlanTypes = "one_time"
-)
-
-func NewPlanTypesFromString(s string) (PlanTypes, error) {
-	switch s {
-	case "renewal":
-		return PlanTypesRenewal, nil
-	case "one_time":
-		return PlanTypesOneTime, nil
-	}
-	var t PlanTypes
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PlanTypes) Ptr() *PlanTypes {
-	return &p
-}
-
-// The methods of how a plan can be released.
-type ReleaseMethod string
-
-const (
-	ReleaseMethodBuyNow   ReleaseMethod = "buy_now"
-	ReleaseMethodWaitlist ReleaseMethod = "waitlist"
-)
-
-func NewReleaseMethodFromString(s string) (ReleaseMethod, error) {
-	switch s {
-	case "buy_now":
-		return ReleaseMethodBuyNow, nil
-	case "waitlist":
-		return ReleaseMethodWaitlist, nil
-	}
-	var t ReleaseMethod
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (r ReleaseMethod) Ptr() *ReleaseMethod {
-	return &r
-}
-
-// The type of tax identifier
-type TaxIdentifierTypes string
-
-const (
-	TaxIdentifierTypesAdNrt    TaxIdentifierTypes = "ad_nrt"
-	TaxIdentifierTypesAoTin    TaxIdentifierTypes = "ao_tin"
-	TaxIdentifierTypesArCuit   TaxIdentifierTypes = "ar_cuit"
-	TaxIdentifierTypesAlTin    TaxIdentifierTypes = "al_tin"
-	TaxIdentifierTypesAmTin    TaxIdentifierTypes = "am_tin"
-	TaxIdentifierTypesAwTin    TaxIdentifierTypes = "aw_tin"
-	TaxIdentifierTypesAuAbn    TaxIdentifierTypes = "au_abn"
-	TaxIdentifierTypesAuArn    TaxIdentifierTypes = "au_arn"
-	TaxIdentifierTypesEuVat    TaxIdentifierTypes = "eu_vat"
-	TaxIdentifierTypesAzTin    TaxIdentifierTypes = "az_tin"
-	TaxIdentifierTypesBsTin    TaxIdentifierTypes = "bs_tin"
-	TaxIdentifierTypesBhVat    TaxIdentifierTypes = "bh_vat"
-	TaxIdentifierTypesBdBin    TaxIdentifierTypes = "bd_bin"
-	TaxIdentifierTypesBbTin    TaxIdentifierTypes = "bb_tin"
-	TaxIdentifierTypesByTin    TaxIdentifierTypes = "by_tin"
-	TaxIdentifierTypesBjIfu    TaxIdentifierTypes = "bj_ifu"
-	TaxIdentifierTypesBoTin    TaxIdentifierTypes = "bo_tin"
-	TaxIdentifierTypesBaTin    TaxIdentifierTypes = "ba_tin"
-	TaxIdentifierTypesBrCnpj   TaxIdentifierTypes = "br_cnpj"
-	TaxIdentifierTypesBrCpf    TaxIdentifierTypes = "br_cpf"
-	TaxIdentifierTypesBgUic    TaxIdentifierTypes = "bg_uic"
-	TaxIdentifierTypesBfIfu    TaxIdentifierTypes = "bf_ifu"
-	TaxIdentifierTypesKhTin    TaxIdentifierTypes = "kh_tin"
-	TaxIdentifierTypesCmNiu    TaxIdentifierTypes = "cm_niu"
-	TaxIdentifierTypesCaBn     TaxIdentifierTypes = "ca_bn"
-	TaxIdentifierTypesCaGstHst TaxIdentifierTypes = "ca_gst_hst"
-	TaxIdentifierTypesCaPstBc  TaxIdentifierTypes = "ca_pst_bc"
-	TaxIdentifierTypesCaPstMb  TaxIdentifierTypes = "ca_pst_mb"
-	TaxIdentifierTypesCaPstSk  TaxIdentifierTypes = "ca_pst_sk"
-	TaxIdentifierTypesCaQst    TaxIdentifierTypes = "ca_qst"
-	TaxIdentifierTypesCvNif    TaxIdentifierTypes = "cv_nif"
-	TaxIdentifierTypesClTin    TaxIdentifierTypes = "cl_tin"
-	TaxIdentifierTypesCnTin    TaxIdentifierTypes = "cn_tin"
-	TaxIdentifierTypesCoNit    TaxIdentifierTypes = "co_nit"
-	TaxIdentifierTypesCdNif    TaxIdentifierTypes = "cd_nif"
-	TaxIdentifierTypesCrTin    TaxIdentifierTypes = "cr_tin"
-	TaxIdentifierTypesHrOib    TaxIdentifierTypes = "hr_oib"
-	TaxIdentifierTypesDoRcn    TaxIdentifierTypes = "do_rcn"
-	TaxIdentifierTypesEcRuc    TaxIdentifierTypes = "ec_ruc"
-	TaxIdentifierTypesEgTin    TaxIdentifierTypes = "eg_tin"
-	TaxIdentifierTypesSvNit    TaxIdentifierTypes = "sv_nit"
-	TaxIdentifierTypesEtTin    TaxIdentifierTypes = "et_tin"
-	TaxIdentifierTypesEuOssVat TaxIdentifierTypes = "eu_oss_vat"
-	TaxIdentifierTypesGeVat    TaxIdentifierTypes = "ge_vat"
-	TaxIdentifierTypesGhTin    TaxIdentifierTypes = "gh_tin"
-	TaxIdentifierTypesDeStn    TaxIdentifierTypes = "de_stn"
-	TaxIdentifierTypesGbVat    TaxIdentifierTypes = "gb_vat"
-	TaxIdentifierTypesGnNif    TaxIdentifierTypes = "gn_nif"
-	TaxIdentifierTypesHkBr     TaxIdentifierTypes = "hk_br"
-	TaxIdentifierTypesHuTin    TaxIdentifierTypes = "hu_tin"
-	TaxIdentifierTypesIsVat    TaxIdentifierTypes = "is_vat"
-	TaxIdentifierTypesInGst    TaxIdentifierTypes = "in_gst"
-	TaxIdentifierTypesIDNpwp   TaxIdentifierTypes = "id_npwp"
-	TaxIdentifierTypesIlVat    TaxIdentifierTypes = "il_vat"
-	TaxIdentifierTypesJpCn     TaxIdentifierTypes = "jp_cn"
-	TaxIdentifierTypesJpRn     TaxIdentifierTypes = "jp_rn"
-	TaxIdentifierTypesJpTrn    TaxIdentifierTypes = "jp_trn"
-	TaxIdentifierTypesKzBin    TaxIdentifierTypes = "kz_bin"
-	TaxIdentifierTypesKePin    TaxIdentifierTypes = "ke_pin"
-	TaxIdentifierTypesKgTin    TaxIdentifierTypes = "kg_tin"
-	TaxIdentifierTypesLaTin    TaxIdentifierTypes = "la_tin"
-	TaxIdentifierTypesLiUID    TaxIdentifierTypes = "li_uid"
-	TaxIdentifierTypesLiVat    TaxIdentifierTypes = "li_vat"
-	TaxIdentifierTypesMyFrp    TaxIdentifierTypes = "my_frp"
-	TaxIdentifierTypesMyItn    TaxIdentifierTypes = "my_itn"
-	TaxIdentifierTypesMySst    TaxIdentifierTypes = "my_sst"
-	TaxIdentifierTypesMrNif    TaxIdentifierTypes = "mr_nif"
-	TaxIdentifierTypesMxRfc    TaxIdentifierTypes = "mx_rfc"
-	TaxIdentifierTypesMdVat    TaxIdentifierTypes = "md_vat"
-	TaxIdentifierTypesMePib    TaxIdentifierTypes = "me_pib"
-	TaxIdentifierTypesMaVat    TaxIdentifierTypes = "ma_vat"
-	TaxIdentifierTypesNpPan    TaxIdentifierTypes = "np_pan"
-	TaxIdentifierTypesNzGst    TaxIdentifierTypes = "nz_gst"
-	TaxIdentifierTypesNgTin    TaxIdentifierTypes = "ng_tin"
-	TaxIdentifierTypesMkVat    TaxIdentifierTypes = "mk_vat"
-	TaxIdentifierTypesNoVat    TaxIdentifierTypes = "no_vat"
-	TaxIdentifierTypesNoVoec   TaxIdentifierTypes = "no_voec"
-	TaxIdentifierTypesOmVat    TaxIdentifierTypes = "om_vat"
-	TaxIdentifierTypesPeRuc    TaxIdentifierTypes = "pe_ruc"
-	TaxIdentifierTypesPhTin    TaxIdentifierTypes = "ph_tin"
-	TaxIdentifierTypesPlNip    TaxIdentifierTypes = "pl_nip"
-	TaxIdentifierTypesRoTin    TaxIdentifierTypes = "ro_tin"
-	TaxIdentifierTypesRuInn    TaxIdentifierTypes = "ru_inn"
-	TaxIdentifierTypesRuKpp    TaxIdentifierTypes = "ru_kpp"
-	TaxIdentifierTypesSaVat    TaxIdentifierTypes = "sa_vat"
-	TaxIdentifierTypesSnNinea  TaxIdentifierTypes = "sn_ninea"
-	TaxIdentifierTypesRsPib    TaxIdentifierTypes = "rs_pib"
-	TaxIdentifierTypesSgGst    TaxIdentifierTypes = "sg_gst"
-	TaxIdentifierTypesSgUen    TaxIdentifierTypes = "sg_uen"
-	TaxIdentifierTypesSiTin    TaxIdentifierTypes = "si_tin"
-	TaxIdentifierTypesZaVat    TaxIdentifierTypes = "za_vat"
-	TaxIdentifierTypesKrBrn    TaxIdentifierTypes = "kr_brn"
-	TaxIdentifierTypesEsCif    TaxIdentifierTypes = "es_cif"
-	TaxIdentifierTypesChUID    TaxIdentifierTypes = "ch_uid"
-	TaxIdentifierTypesChVat    TaxIdentifierTypes = "ch_vat"
-	TaxIdentifierTypesTwVat    TaxIdentifierTypes = "tw_vat"
-	TaxIdentifierTypesTjTin    TaxIdentifierTypes = "tj_tin"
-	TaxIdentifierTypesTzVat    TaxIdentifierTypes = "tz_vat"
-	TaxIdentifierTypesThVat    TaxIdentifierTypes = "th_vat"
-	TaxIdentifierTypesTrTin    TaxIdentifierTypes = "tr_tin"
-	TaxIdentifierTypesUgTin    TaxIdentifierTypes = "ug_tin"
-	TaxIdentifierTypesUaVat    TaxIdentifierTypes = "ua_vat"
-	TaxIdentifierTypesAeTrn    TaxIdentifierTypes = "ae_trn"
-	TaxIdentifierTypesUsEin    TaxIdentifierTypes = "us_ein"
-	TaxIdentifierTypesUyRuc    TaxIdentifierTypes = "uy_ruc"
-	TaxIdentifierTypesUzTin    TaxIdentifierTypes = "uz_tin"
-	TaxIdentifierTypesUzVat    TaxIdentifierTypes = "uz_vat"
-	TaxIdentifierTypesVeRif    TaxIdentifierTypes = "ve_rif"
-	TaxIdentifierTypesVnTin    TaxIdentifierTypes = "vn_tin"
-	TaxIdentifierTypesZmTin    TaxIdentifierTypes = "zm_tin"
-	TaxIdentifierTypesZwTin    TaxIdentifierTypes = "zw_tin"
-	TaxIdentifierTypesSrFin    TaxIdentifierTypes = "sr_fin"
-	TaxIdentifierTypesXiVat    TaxIdentifierTypes = "xi_vat"
-)
-
-func NewTaxIdentifierTypesFromString(s string) (TaxIdentifierTypes, error) {
-	switch s {
-	case "ad_nrt":
-		return TaxIdentifierTypesAdNrt, nil
-	case "ao_tin":
-		return TaxIdentifierTypesAoTin, nil
-	case "ar_cuit":
-		return TaxIdentifierTypesArCuit, nil
-	case "al_tin":
-		return TaxIdentifierTypesAlTin, nil
-	case "am_tin":
-		return TaxIdentifierTypesAmTin, nil
-	case "aw_tin":
-		return TaxIdentifierTypesAwTin, nil
-	case "au_abn":
-		return TaxIdentifierTypesAuAbn, nil
-	case "au_arn":
-		return TaxIdentifierTypesAuArn, nil
-	case "eu_vat":
-		return TaxIdentifierTypesEuVat, nil
-	case "az_tin":
-		return TaxIdentifierTypesAzTin, nil
-	case "bs_tin":
-		return TaxIdentifierTypesBsTin, nil
-	case "bh_vat":
-		return TaxIdentifierTypesBhVat, nil
-	case "bd_bin":
-		return TaxIdentifierTypesBdBin, nil
-	case "bb_tin":
-		return TaxIdentifierTypesBbTin, nil
-	case "by_tin":
-		return TaxIdentifierTypesByTin, nil
-	case "bj_ifu":
-		return TaxIdentifierTypesBjIfu, nil
-	case "bo_tin":
-		return TaxIdentifierTypesBoTin, nil
-	case "ba_tin":
-		return TaxIdentifierTypesBaTin, nil
-	case "br_cnpj":
-		return TaxIdentifierTypesBrCnpj, nil
-	case "br_cpf":
-		return TaxIdentifierTypesBrCpf, nil
-	case "bg_uic":
-		return TaxIdentifierTypesBgUic, nil
-	case "bf_ifu":
-		return TaxIdentifierTypesBfIfu, nil
-	case "kh_tin":
-		return TaxIdentifierTypesKhTin, nil
-	case "cm_niu":
-		return TaxIdentifierTypesCmNiu, nil
-	case "ca_bn":
-		return TaxIdentifierTypesCaBn, nil
-	case "ca_gst_hst":
-		return TaxIdentifierTypesCaGstHst, nil
-	case "ca_pst_bc":
-		return TaxIdentifierTypesCaPstBc, nil
-	case "ca_pst_mb":
-		return TaxIdentifierTypesCaPstMb, nil
-	case "ca_pst_sk":
-		return TaxIdentifierTypesCaPstSk, nil
-	case "ca_qst":
-		return TaxIdentifierTypesCaQst, nil
-	case "cv_nif":
-		return TaxIdentifierTypesCvNif, nil
-	case "cl_tin":
-		return TaxIdentifierTypesClTin, nil
-	case "cn_tin":
-		return TaxIdentifierTypesCnTin, nil
-	case "co_nit":
-		return TaxIdentifierTypesCoNit, nil
-	case "cd_nif":
-		return TaxIdentifierTypesCdNif, nil
-	case "cr_tin":
-		return TaxIdentifierTypesCrTin, nil
-	case "hr_oib":
-		return TaxIdentifierTypesHrOib, nil
-	case "do_rcn":
-		return TaxIdentifierTypesDoRcn, nil
-	case "ec_ruc":
-		return TaxIdentifierTypesEcRuc, nil
-	case "eg_tin":
-		return TaxIdentifierTypesEgTin, nil
-	case "sv_nit":
-		return TaxIdentifierTypesSvNit, nil
-	case "et_tin":
-		return TaxIdentifierTypesEtTin, nil
-	case "eu_oss_vat":
-		return TaxIdentifierTypesEuOssVat, nil
-	case "ge_vat":
-		return TaxIdentifierTypesGeVat, nil
-	case "gh_tin":
-		return TaxIdentifierTypesGhTin, nil
-	case "de_stn":
-		return TaxIdentifierTypesDeStn, nil
-	case "gb_vat":
-		return TaxIdentifierTypesGbVat, nil
-	case "gn_nif":
-		return TaxIdentifierTypesGnNif, nil
-	case "hk_br":
-		return TaxIdentifierTypesHkBr, nil
-	case "hu_tin":
-		return TaxIdentifierTypesHuTin, nil
-	case "is_vat":
-		return TaxIdentifierTypesIsVat, nil
-	case "in_gst":
-		return TaxIdentifierTypesInGst, nil
-	case "id_npwp":
-		return TaxIdentifierTypesIDNpwp, nil
-	case "il_vat":
-		return TaxIdentifierTypesIlVat, nil
-	case "jp_cn":
-		return TaxIdentifierTypesJpCn, nil
-	case "jp_rn":
-		return TaxIdentifierTypesJpRn, nil
-	case "jp_trn":
-		return TaxIdentifierTypesJpTrn, nil
-	case "kz_bin":
-		return TaxIdentifierTypesKzBin, nil
-	case "ke_pin":
-		return TaxIdentifierTypesKePin, nil
-	case "kg_tin":
-		return TaxIdentifierTypesKgTin, nil
-	case "la_tin":
-		return TaxIdentifierTypesLaTin, nil
-	case "li_uid":
-		return TaxIdentifierTypesLiUID, nil
-	case "li_vat":
-		return TaxIdentifierTypesLiVat, nil
-	case "my_frp":
-		return TaxIdentifierTypesMyFrp, nil
-	case "my_itn":
-		return TaxIdentifierTypesMyItn, nil
-	case "my_sst":
-		return TaxIdentifierTypesMySst, nil
-	case "mr_nif":
-		return TaxIdentifierTypesMrNif, nil
-	case "mx_rfc":
-		return TaxIdentifierTypesMxRfc, nil
-	case "md_vat":
-		return TaxIdentifierTypesMdVat, nil
-	case "me_pib":
-		return TaxIdentifierTypesMePib, nil
-	case "ma_vat":
-		return TaxIdentifierTypesMaVat, nil
-	case "np_pan":
-		return TaxIdentifierTypesNpPan, nil
-	case "nz_gst":
-		return TaxIdentifierTypesNzGst, nil
-	case "ng_tin":
-		return TaxIdentifierTypesNgTin, nil
-	case "mk_vat":
-		return TaxIdentifierTypesMkVat, nil
-	case "no_vat":
-		return TaxIdentifierTypesNoVat, nil
-	case "no_voec":
-		return TaxIdentifierTypesNoVoec, nil
-	case "om_vat":
-		return TaxIdentifierTypesOmVat, nil
-	case "pe_ruc":
-		return TaxIdentifierTypesPeRuc, nil
-	case "ph_tin":
-		return TaxIdentifierTypesPhTin, nil
-	case "pl_nip":
-		return TaxIdentifierTypesPlNip, nil
-	case "ro_tin":
-		return TaxIdentifierTypesRoTin, nil
-	case "ru_inn":
-		return TaxIdentifierTypesRuInn, nil
-	case "ru_kpp":
-		return TaxIdentifierTypesRuKpp, nil
-	case "sa_vat":
-		return TaxIdentifierTypesSaVat, nil
-	case "sn_ninea":
-		return TaxIdentifierTypesSnNinea, nil
-	case "rs_pib":
-		return TaxIdentifierTypesRsPib, nil
-	case "sg_gst":
-		return TaxIdentifierTypesSgGst, nil
-	case "sg_uen":
-		return TaxIdentifierTypesSgUen, nil
-	case "si_tin":
-		return TaxIdentifierTypesSiTin, nil
-	case "za_vat":
-		return TaxIdentifierTypesZaVat, nil
-	case "kr_brn":
-		return TaxIdentifierTypesKrBrn, nil
-	case "es_cif":
-		return TaxIdentifierTypesEsCif, nil
-	case "ch_uid":
-		return TaxIdentifierTypesChUID, nil
-	case "ch_vat":
-		return TaxIdentifierTypesChVat, nil
-	case "tw_vat":
-		return TaxIdentifierTypesTwVat, nil
-	case "tj_tin":
-		return TaxIdentifierTypesTjTin, nil
-	case "tz_vat":
-		return TaxIdentifierTypesTzVat, nil
-	case "th_vat":
-		return TaxIdentifierTypesThVat, nil
-	case "tr_tin":
-		return TaxIdentifierTypesTrTin, nil
-	case "ug_tin":
-		return TaxIdentifierTypesUgTin, nil
-	case "ua_vat":
-		return TaxIdentifierTypesUaVat, nil
-	case "ae_trn":
-		return TaxIdentifierTypesAeTrn, nil
-	case "us_ein":
-		return TaxIdentifierTypesUsEin, nil
-	case "uy_ruc":
-		return TaxIdentifierTypesUyRuc, nil
-	case "uz_tin":
-		return TaxIdentifierTypesUzTin, nil
-	case "uz_vat":
-		return TaxIdentifierTypesUzVat, nil
-	case "ve_rif":
-		return TaxIdentifierTypesVeRif, nil
-	case "vn_tin":
-		return TaxIdentifierTypesVnTin, nil
-	case "zm_tin":
-		return TaxIdentifierTypesZmTin, nil
-	case "zw_tin":
-		return TaxIdentifierTypesZwTin, nil
-	case "sr_fin":
-		return TaxIdentifierTypesSrFin, nil
-	case "xi_vat":
-		return TaxIdentifierTypesXiVat, nil
-	}
-	var t TaxIdentifierTypes
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (t TaxIdentifierTypes) Ptr() *TaxIdentifierTypes {
-	return &t
-}
-
-// Visibility of a resource
-type Visibility string
-
-const (
-	VisibilityVisible   Visibility = "visible"
-	VisibilityHidden    Visibility = "hidden"
-	VisibilityArchived  Visibility = "archived"
-	VisibilityQuickLink Visibility = "quick_link"
-)
-
-func NewVisibilityFromString(s string) (Visibility, error) {
-	switch s {
-	case "visible":
-		return VisibilityVisible, nil
-	case "hidden":
-		return VisibilityHidden, nil
-	case "archived":
-		return VisibilityArchived, nil
-	case "quick_link":
-		return VisibilityQuickLink, nil
-	}
-	var t Visibility
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (v Visibility) Ptr() *Visibility {
-	return &v
-}
-
-// Parameters for CreateInvoice
-type CreateInvoicesRequest struct {
-	// Autogenerated input type of CreateInvoice
-	CreateInvoicesRequestProduct *CreateInvoicesRequestProduct
-	// Autogenerated input type of CreateInvoice
-	CreateInvoicesRequestProductID *CreateInvoicesRequestProductID
+type CreateInvoicesRequestItemsItem struct {
+	Unknown any
 
 	typ string
 }
 
-func (c *CreateInvoicesRequest) GetCreateInvoicesRequestProduct() *CreateInvoicesRequestProduct {
+func (c *CreateInvoicesRequestItemsItem) GetUnknown() any {
 	if c == nil {
 		return nil
 	}
-	return c.CreateInvoicesRequestProduct
+	return c.Unknown
 }
 
-func (c *CreateInvoicesRequest) GetCreateInvoicesRequestProductID() *CreateInvoicesRequestProductID {
-	if c == nil {
-		return nil
-	}
-	return c.CreateInvoicesRequestProductID
-}
-
-func (c *CreateInvoicesRequest) UnmarshalJSON(data []byte) error {
-	if internal.MatchesObjectKeys(data, []string{"account_id", "automatically_finalizes_at", "billing_address", "charge_buyer_fee", "collection_method", "customer_name", "due_date", "email_address", "line_items", "mailing_address_id", "member_id", "payment_method_id", "payment_token_id", "plan", "product", "save_as_draft", "subscription_billing_anchor_at"}, []string{"account_id", "collection_method", "plan", "product"}) {
-		valueCreateInvoicesRequestProduct := new(CreateInvoicesRequestProduct)
-		if err := json.Unmarshal(data, &valueCreateInvoicesRequestProduct); err == nil {
-			c.typ = "CreateInvoicesRequestProduct"
-			c.CreateInvoicesRequestProduct = valueCreateInvoicesRequestProduct
-			return nil
-		}
-	}
-	if internal.MatchesObjectKeys(data, []string{"account_id", "automatically_finalizes_at", "billing_address", "charge_buyer_fee", "collection_method", "customer_name", "due_date", "email_address", "line_items", "mailing_address_id", "member_id", "payment_method_id", "payment_token_id", "plan", "product_id", "save_as_draft", "subscription_billing_anchor_at"}, []string{"account_id", "collection_method", "plan", "product_id"}) {
-		valueCreateInvoicesRequestProductID := new(CreateInvoicesRequestProductID)
-		if err := json.Unmarshal(data, &valueCreateInvoicesRequestProductID); err == nil {
-			c.typ = "CreateInvoicesRequestProductID"
-			c.CreateInvoicesRequestProductID = valueCreateInvoicesRequestProductID
-			return nil
-		}
-	}
-	if internal.HasObjectKeys(data, []string{"account_id", "collection_method", "plan", "product"}) {
-		valueCreateInvoicesRequestProduct := new(CreateInvoicesRequestProduct)
-		if err := json.Unmarshal(data, &valueCreateInvoicesRequestProduct); err == nil {
-			c.typ = "CreateInvoicesRequestProduct"
-			c.CreateInvoicesRequestProduct = valueCreateInvoicesRequestProduct
-			return nil
-		}
-	}
-	if internal.HasObjectKeys(data, []string{"account_id", "collection_method", "plan", "product_id"}) {
-		valueCreateInvoicesRequestProductID := new(CreateInvoicesRequestProductID)
-		if err := json.Unmarshal(data, &valueCreateInvoicesRequestProductID); err == nil {
-			c.typ = "CreateInvoicesRequestProductID"
-			c.CreateInvoicesRequestProductID = valueCreateInvoicesRequestProductID
-			return nil
-		}
-	}
-	valueCreateInvoicesRequestProduct := new(CreateInvoicesRequestProduct)
-	if err := json.Unmarshal(data, &valueCreateInvoicesRequestProduct); err == nil {
-		c.typ = "CreateInvoicesRequestProduct"
-		c.CreateInvoicesRequestProduct = valueCreateInvoicesRequestProduct
-		return nil
-	}
-	valueCreateInvoicesRequestProductID := new(CreateInvoicesRequestProductID)
-	if err := json.Unmarshal(data, &valueCreateInvoicesRequestProductID); err == nil {
-		c.typ = "CreateInvoicesRequestProductID"
-		c.CreateInvoicesRequestProductID = valueCreateInvoicesRequestProductID
+func (c *CreateInvoicesRequestItemsItem) UnmarshalJSON(data []byte) error {
+	var valueUnknown any
+	if err := json.Unmarshal(data, &valueUnknown); err == nil {
+		c.typ = "Unknown"
+		c.Unknown = valueUnknown
 		return nil
 	}
 	return fmt.Errorf("%s cannot be deserialized as a %T", data, c)
 }
 
-func (c CreateInvoicesRequest) MarshalJSON() ([]byte, error) {
-	if c.typ == "CreateInvoicesRequestProduct" || c.CreateInvoicesRequestProduct != nil {
-		return json.Marshal(c.CreateInvoicesRequestProduct)
-	}
-	if c.typ == "CreateInvoicesRequestProductID" || c.CreateInvoicesRequestProductID != nil {
-		return json.Marshal(c.CreateInvoicesRequestProductID)
+func (c CreateInvoicesRequestItemsItem) MarshalJSON() ([]byte, error) {
+	if c.typ == "Unknown" || c.Unknown != nil {
+		return json.Marshal(c.Unknown)
 	}
 	return nil, fmt.Errorf("type %T does not include a non-empty union type", c)
 }
 
-type CreateInvoicesRequestVisitor interface {
-	VisitCreateInvoicesRequestProduct(*CreateInvoicesRequestProduct) error
-	VisitCreateInvoicesRequestProductID(*CreateInvoicesRequestProductID) error
+type CreateInvoicesRequestItemsItemVisitor interface {
+	VisitUnknown(any) error
 }
 
-func (c *CreateInvoicesRequest) Accept(visitor CreateInvoicesRequestVisitor) error {
-	if c.typ == "CreateInvoicesRequestProduct" || c.CreateInvoicesRequestProduct != nil {
-		return visitor.VisitCreateInvoicesRequestProduct(c.CreateInvoicesRequestProduct)
-	}
-	if c.typ == "CreateInvoicesRequestProductID" || c.CreateInvoicesRequestProductID != nil {
-		return visitor.VisitCreateInvoicesRequestProductID(c.CreateInvoicesRequestProductID)
+func (c *CreateInvoicesRequestItemsItem) Accept(visitor CreateInvoicesRequestItemsItemVisitor) error {
+	if c.typ == "Unknown" || c.Unknown != nil {
+		return visitor.VisitUnknown(c.Unknown)
 	}
 	return fmt.Errorf("type %T does not include a non-empty union type", c)
 }
 
 var (
-	createInvoicesRequestProductFieldAccountID                   = big.NewInt(1 << 0)
-	createInvoicesRequestProductFieldAutomaticallyFinalizesAt    = big.NewInt(1 << 1)
-	createInvoicesRequestProductFieldBillingAddress              = big.NewInt(1 << 2)
-	createInvoicesRequestProductFieldChargeBuyerFee              = big.NewInt(1 << 3)
-	createInvoicesRequestProductFieldCollectionMethod            = big.NewInt(1 << 4)
-	createInvoicesRequestProductFieldCustomerName                = big.NewInt(1 << 5)
-	createInvoicesRequestProductFieldDueDate                     = big.NewInt(1 << 6)
-	createInvoicesRequestProductFieldEmailAddress                = big.NewInt(1 << 7)
-	createInvoicesRequestProductFieldLineItems                   = big.NewInt(1 << 8)
-	createInvoicesRequestProductFieldMailingAddressID            = big.NewInt(1 << 9)
-	createInvoicesRequestProductFieldMemberID                    = big.NewInt(1 << 10)
-	createInvoicesRequestProductFieldPaymentMethodID             = big.NewInt(1 << 11)
-	createInvoicesRequestProductFieldPaymentTokenID              = big.NewInt(1 << 12)
-	createInvoicesRequestProductFieldPlan                        = big.NewInt(1 << 13)
-	createInvoicesRequestProductFieldProduct                     = big.NewInt(1 << 14)
-	createInvoicesRequestProductFieldSaveAsDraft                 = big.NewInt(1 << 15)
-	createInvoicesRequestProductFieldSubscriptionBillingAnchorAt = big.NewInt(1 << 16)
+	createInvoicesRequestItemsItemVariantFieldAllowMultipleQuantity = big.NewInt(1 << 0)
+	createInvoicesRequestItemsItemVariantFieldApplicationFeeAmount  = big.NewInt(1 << 1)
+	createInvoicesRequestItemsItemVariantFieldBillingPeriod         = big.NewInt(1 << 2)
+	createInvoicesRequestItemsItemVariantFieldBillingType           = big.NewInt(1 << 3)
+	createInvoicesRequestItemsItemVariantFieldCurrency              = big.NewInt(1 << 4)
+	createInvoicesRequestItemsItemVariantFieldDescription           = big.NewInt(1 << 5)
+	createInvoicesRequestItemsItemVariantFieldExpirationDays        = big.NewInt(1 << 6)
+	createInvoicesRequestItemsItemVariantFieldForceCreateNewPlan    = big.NewInt(1 << 7)
+	createInvoicesRequestItemsItemVariantFieldInitialPrice          = big.NewInt(1 << 8)
+	createInvoicesRequestItemsItemVariantFieldInternalNotes         = big.NewInt(1 << 9)
+	createInvoicesRequestItemsItemVariantFieldOverrideTaxType       = big.NewInt(1 << 10)
+	createInvoicesRequestItemsItemVariantFieldProduct               = big.NewInt(1 << 11)
+	createInvoicesRequestItemsItemVariantFieldProductID             = big.NewInt(1 << 12)
+	createInvoicesRequestItemsItemVariantFieldRenewalPrice          = big.NewInt(1 << 13)
+	createInvoicesRequestItemsItemVariantFieldTitle                 = big.NewInt(1 << 14)
+	createInvoicesRequestItemsItemVariantFieldTrialPeriodDays       = big.NewInt(1 << 15)
+	createInvoicesRequestItemsItemVariantFieldVisibility            = big.NewInt(1 << 16)
 )
 
-// createInvoicesRequestProductNullableFields maps the wire names of CreateInvoicesRequestProduct's nullable fields (required or optional) to their field bits.
-var createInvoicesRequestProductNullableFields = map[string]*big.Int{
-	"automatically_finalizes_at":     createInvoicesRequestProductFieldAutomaticallyFinalizesAt,
-	"billing_address":                createInvoicesRequestProductFieldBillingAddress,
-	"charge_buyer_fee":               createInvoicesRequestProductFieldChargeBuyerFee,
-	"customer_name":                  createInvoicesRequestProductFieldCustomerName,
-	"due_date":                       createInvoicesRequestProductFieldDueDate,
-	"email_address":                  createInvoicesRequestProductFieldEmailAddress,
-	"line_items":                     createInvoicesRequestProductFieldLineItems,
-	"mailing_address_id":             createInvoicesRequestProductFieldMailingAddressID,
-	"member_id":                      createInvoicesRequestProductFieldMemberID,
-	"payment_method_id":              createInvoicesRequestProductFieldPaymentMethodID,
-	"payment_token_id":               createInvoicesRequestProductFieldPaymentTokenID,
-	"save_as_draft":                  createInvoicesRequestProductFieldSaveAsDraft,
-	"subscription_billing_anchor_at": createInvoicesRequestProductFieldSubscriptionBillingAnchorAt,
+// createInvoicesRequestItemsItemVariantNullableFields maps the wire names of CreateInvoicesRequestItemsItemVariant's nullable fields (required or optional) to their field bits.
+var createInvoicesRequestItemsItemVariantNullableFields = map[string]*big.Int{
+	"allow_multiple_quantity": createInvoicesRequestItemsItemVariantFieldAllowMultipleQuantity,
+	"application_fee_amount":  createInvoicesRequestItemsItemVariantFieldApplicationFeeAmount,
+	"billing_period":          createInvoicesRequestItemsItemVariantFieldBillingPeriod,
+	"billing_type":            createInvoicesRequestItemsItemVariantFieldBillingType,
+	"description":             createInvoicesRequestItemsItemVariantFieldDescription,
+	"expiration_days":         createInvoicesRequestItemsItemVariantFieldExpirationDays,
+	"force_create_new_plan":   createInvoicesRequestItemsItemVariantFieldForceCreateNewPlan,
+	"initial_price":           createInvoicesRequestItemsItemVariantFieldInitialPrice,
+	"internal_notes":          createInvoicesRequestItemsItemVariantFieldInternalNotes,
+	"override_tax_type":       createInvoicesRequestItemsItemVariantFieldOverrideTaxType,
+	"product":                 createInvoicesRequestItemsItemVariantFieldProduct,
+	"product_id":              createInvoicesRequestItemsItemVariantFieldProductID,
+	"renewal_price":           createInvoicesRequestItemsItemVariantFieldRenewalPrice,
+	"title":                   createInvoicesRequestItemsItemVariantFieldTitle,
+	"trial_period_days":       createInvoicesRequestItemsItemVariantFieldTrialPeriodDays,
+	"visibility":              createInvoicesRequestItemsItemVariantFieldVisibility,
 }
 
-// Autogenerated input type of CreateInvoice
-type CreateInvoicesRequestProduct struct {
-	// The unique identifier of the company to create this invoice for.
-	AccountID string `json:"account_id" url:"account_id"`
-	// The date and time when the invoice will be automatically finalized. For charge_automatically, triggers an automatic charge. For send_invoice, sends the invoice email to the customer at the specified time.
-	AutomaticallyFinalizesAt *time.Time `json:"automatically_finalizes_at,omitempty" url:"automatically_finalizes_at,omitempty"`
-	// Inline billing address to create a new mailing address for this invoice. Cannot be used together with mailing_address_id.
-	BillingAddress *CreateInvoicesRequestProductBillingAddress `json:"billing_address,omitempty" url:"billing_address,omitempty"`
-	// Whether to charge the customer a buyer fee on this invoice.
-	ChargeBuyerFee *bool `json:"charge_buyer_fee,omitempty" url:"charge_buyer_fee,omitempty"`
-	// How the invoice should be collected. Use charge_automatically to charge a stored payment method, or send_invoice to email the customer.
-	CollectionMethod InvoiceCollectionMethods `json:"collection_method" url:"collection_method"`
-	// The name of the customer. Required when creating an invoice for a customer who is not yet a member of the company.
-	CustomerName *string `json:"customer_name,omitempty" url:"customer_name,omitempty"`
-	// The date by which the invoice must be paid. Required unless save_as_draft is true.
-	DueDate *time.Time `json:"due_date,omitempty" url:"due_date,omitempty"`
-	// The email address of the customer. Required when creating an invoice for a customer who is not yet a member of the company.
-	EmailAddress *string `json:"email_address,omitempty" url:"email_address,omitempty"`
-	// Optional line items that break down the invoice total. When provided, the sum of (quantity * unit_price) for all items must equal the plan price. Individual items may be negative to represent a credit, as long as the sum is not negative and clears the currency's minimum charge.
-	LineItems []*CreateInvoicesRequestProductLineItemsItem `json:"line_items,omitempty" url:"line_items,omitempty"`
-	// The unique identifier of an existing mailing address to attach to this invoice. Cannot be used together with billing_address.
-	MailingAddressID *string `json:"mailing_address_id,omitempty" url:"mailing_address_id,omitempty"`
-	// The unique identifier of an existing member to create this invoice for. If not provided, you must supply an email_address and customer_name.
-	MemberID *string `json:"member_id,omitempty" url:"member_id,omitempty"`
-	// The unique identifier of the payment method to charge. Required when collection_method is charge_automatically.
-	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"payment_method_id,omitempty"`
-	// The payment token ID to use for this invoice. If using charge_automatically, you must provide a payment_token.
-	PaymentTokenID *string `json:"payment_token_id,omitempty" url:"payment_token_id,omitempty"`
-	// The plan attributes defining the price, currency, and billing interval for this invoice.
-	Plan *CreateInvoicesRequestProductPlan `json:"plan" url:"plan"`
-	// The properties of the product to create for this invoice. Provide this to create a new product inline.
-	Product *CreateInvoicesRequestProductProduct `json:"product" url:"product"`
-	// When true, creates the invoice as a draft without sending or charging. Relaxes customer and due date requirements.
-	SaveAsDraft *bool `json:"save_as_draft,omitempty" url:"save_as_draft,omitempty"`
-	// The date that defines when the subscription billing cycle should start. When set on a renewal plan invoice, this anchors all future billing periods to this date.
-	SubscriptionBillingAnchorAt *time.Time `json:"subscription_billing_anchor_at,omitempty" url:"subscription_billing_anchor_at,omitempty"`
+// Find or create a variant inline by its attributes, using the payment API properties. Requires plan:create.
+type CreateInvoicesRequestItemsItemVariant struct {
+	// Whether more than one unit can be purchased in an order. Renewal variants cannot enable it. When `false`, checkouts, carts, and invoices reject a quantity above 1.
+	AllowMultipleQuantity *bool `json:"allow_multiple_quantity,omitempty" url:"allow_multiple_quantity,omitempty"`
+	// Application fee the platform collects per unit, in the variant currency (5.00 means $5.00 for USD). Must be positive and below the initial price for one-time variants or renewal price for recurring variants. Paid to the parent account alongside other processing fees; collection is capped to remaining proceeds. Applies to subsequent payments on recurring variants. Only valid for connected accounts with a parent account.
+	ApplicationFeeAmount *float64 `json:"application_fee_amount,omitempty" url:"application_fee_amount,omitempty"`
+	// Recurring billing interval in days.
+	BillingPeriod *int `json:"billing_period,omitempty" url:"billing_period,omitempty"`
+	// Billing model for the variant.
+	BillingType *CreateInvoicesRequestItemsItemVariantBillingType `json:"billing_type,omitempty" url:"billing_type,omitempty"`
+	// Currency code for the variant prices.
+	Currency CreateInvoicesRequestItemsItemVariantCurrency `json:"currency" url:"currency"`
+	// Variant description.
+	Description *string `json:"description,omitempty" url:"description,omitempty"`
+	// Days until access expires.
+	ExpirationDays *int `json:"expiration_days,omitempty" url:"expiration_days,omitempty"`
+	// Create a new variant instead of reusing a matching variant.
+	ForceCreateNewPlan *bool `json:"force_create_new_plan,omitempty" url:"force_create_new_plan,omitempty"`
+	// Additional amount charged on the first purchase, in the variant currency. For recurring variants without a trial, the first charge includes this amount plus renewal_price.
+	InitialPrice *float64 `json:"initial_price,omitempty" url:"initial_price,omitempty"`
+	// Internal notes for the account.
+	InternalNotes *string `json:"internal_notes,omitempty" url:"internal_notes,omitempty"`
+	// Whether the variant's price includes tax: `inclusive` (tax is included in the price), `exclusive` (tax is added on top), or `unspecified`. Omit it or pass `null` to use the account's tax setting. On an account enrolled in the Whop tax service, `inclusive` or `exclusive` replaces the account's setting and `unspecified` keeps it. Otherwise it applies only where the account is the merchant of record: `inclusive` or `exclusive` replaces the account's setting when the account collects tax, and `unspecified` means the variant collects no tax. Where Whop is the merchant of record, the account's setting applies. Variants that differ only in this value are different variants.
+	OverrideTaxType *CreateInvoicesRequestItemsItemVariantOverrideTaxType `json:"override_tax_type,omitempty" url:"override_tax_type,omitempty"`
+	// Find or create a product by external identifier. Mutually exclusive with product_id.
+	Product *CreateInvoicesRequestItemsItemVariantProduct `json:"product,omitempty" url:"product,omitempty"`
+	// Existing product ID belonging to the account, prefixed `prod_`. Mutually exclusive with `product`.
+	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
+	// Recurring price in the variant currency.
+	RenewalPrice *float64 `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
+	// Variant title.
+	Title *string `json:"title,omitempty" url:"title,omitempty"`
+	// Free trial days before renewal.
+	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
+	// Whether the variant is visible to customers.
+	Visibility *CreateInvoicesRequestItemsItemVariantVisibility `json:"visibility,omitempty" url:"visibility,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3256,795 +1838,133 @@ type CreateInvoicesRequestProduct struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreateInvoicesRequestProduct) GetAccountID() string {
+func (c *CreateInvoicesRequestItemsItemVariant) GetAllowMultipleQuantity() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.AllowMultipleQuantity
+}
+
+func (c *CreateInvoicesRequestItemsItemVariant) GetApplicationFeeAmount() *float64 {
+	if c == nil {
+		return nil
+	}
+	return c.ApplicationFeeAmount
+}
+
+func (c *CreateInvoicesRequestItemsItemVariant) GetBillingPeriod() *int {
+	if c == nil {
+		return nil
+	}
+	return c.BillingPeriod
+}
+
+func (c *CreateInvoicesRequestItemsItemVariant) GetBillingType() *CreateInvoicesRequestItemsItemVariantBillingType {
+	if c == nil {
+		return nil
+	}
+	return c.BillingType
+}
+
+func (c *CreateInvoicesRequestItemsItemVariant) GetCurrency() CreateInvoicesRequestItemsItemVariantCurrency {
 	if c == nil {
 		return ""
 	}
-	return c.AccountID
+	return c.Currency
 }
 
-func (c *CreateInvoicesRequestProduct) GetAutomaticallyFinalizesAt() *time.Time {
+func (c *CreateInvoicesRequestItemsItemVariant) GetDescription() *string {
 	if c == nil {
 		return nil
 	}
-	return c.AutomaticallyFinalizesAt
+	return c.Description
 }
 
-func (c *CreateInvoicesRequestProduct) GetBillingAddress() *CreateInvoicesRequestProductBillingAddress {
+func (c *CreateInvoicesRequestItemsItemVariant) GetExpirationDays() *int {
 	if c == nil {
 		return nil
 	}
-	return c.BillingAddress
+	return c.ExpirationDays
 }
 
-func (c *CreateInvoicesRequestProduct) GetChargeBuyerFee() *bool {
+func (c *CreateInvoicesRequestItemsItemVariant) GetForceCreateNewPlan() *bool {
 	if c == nil {
 		return nil
 	}
-	return c.ChargeBuyerFee
+	return c.ForceCreateNewPlan
 }
 
-func (c *CreateInvoicesRequestProduct) GetCollectionMethod() InvoiceCollectionMethods {
-	if c == nil {
-		return ""
-	}
-	return c.CollectionMethod
-}
-
-func (c *CreateInvoicesRequestProduct) GetCustomerName() *string {
+func (c *CreateInvoicesRequestItemsItemVariant) GetInitialPrice() *float64 {
 	if c == nil {
 		return nil
 	}
-	return c.CustomerName
+	return c.InitialPrice
 }
 
-func (c *CreateInvoicesRequestProduct) GetDueDate() *time.Time {
+func (c *CreateInvoicesRequestItemsItemVariant) GetInternalNotes() *string {
 	if c == nil {
 		return nil
 	}
-	return c.DueDate
+	return c.InternalNotes
 }
 
-func (c *CreateInvoicesRequestProduct) GetEmailAddress() *string {
+func (c *CreateInvoicesRequestItemsItemVariant) GetOverrideTaxType() *CreateInvoicesRequestItemsItemVariantOverrideTaxType {
 	if c == nil {
 		return nil
 	}
-	return c.EmailAddress
+	return c.OverrideTaxType
 }
 
-func (c *CreateInvoicesRequestProduct) GetLineItems() []*CreateInvoicesRequestProductLineItemsItem {
-	if c == nil {
-		return nil
-	}
-	return c.LineItems
-}
-
-func (c *CreateInvoicesRequestProduct) GetMailingAddressID() *string {
-	if c == nil {
-		return nil
-	}
-	return c.MailingAddressID
-}
-
-func (c *CreateInvoicesRequestProduct) GetMemberID() *string {
-	if c == nil {
-		return nil
-	}
-	return c.MemberID
-}
-
-func (c *CreateInvoicesRequestProduct) GetPaymentMethodID() *string {
-	if c == nil {
-		return nil
-	}
-	return c.PaymentMethodID
-}
-
-func (c *CreateInvoicesRequestProduct) GetPaymentTokenID() *string {
-	if c == nil {
-		return nil
-	}
-	return c.PaymentTokenID
-}
-
-func (c *CreateInvoicesRequestProduct) GetPlan() *CreateInvoicesRequestProductPlan {
-	if c == nil {
-		return nil
-	}
-	return c.Plan
-}
-
-func (c *CreateInvoicesRequestProduct) GetProduct() *CreateInvoicesRequestProductProduct {
+func (c *CreateInvoicesRequestItemsItemVariant) GetProduct() *CreateInvoicesRequestItemsItemVariantProduct {
 	if c == nil {
 		return nil
 	}
 	return c.Product
 }
 
-func (c *CreateInvoicesRequestProduct) GetSaveAsDraft() *bool {
+func (c *CreateInvoicesRequestItemsItemVariant) GetProductID() *string {
 	if c == nil {
 		return nil
-	}
-	return c.SaveAsDraft
-}
-
-func (c *CreateInvoicesRequestProduct) GetSubscriptionBillingAnchorAt() *time.Time {
-	if c == nil {
-		return nil
-	}
-	return c.SubscriptionBillingAnchorAt
-}
-
-func (c *CreateInvoicesRequestProduct) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateInvoicesRequestProduct) require(field *big.Int) {
-	next := new(big.Int)
-	if c.explicitFields != nil {
-		next.Set(c.explicitFields)
-	}
-	next.Or(next, field)
-	c.explicitFields = next
-}
-
-// SetAccountID sets the AccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProduct) SetAccountID(accountID string) {
-	c.AccountID = accountID
-	c.require(createInvoicesRequestProductFieldAccountID)
-}
-
-// SetAutomaticallyFinalizesAt sets the AutomaticallyFinalizesAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProduct) SetAutomaticallyFinalizesAt(automaticallyFinalizesAt *time.Time) {
-	c.AutomaticallyFinalizesAt = automaticallyFinalizesAt
-	c.require(createInvoicesRequestProductFieldAutomaticallyFinalizesAt)
-}
-
-// SetBillingAddress sets the BillingAddress field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProduct) SetBillingAddress(billingAddress *CreateInvoicesRequestProductBillingAddress) {
-	c.BillingAddress = billingAddress
-	c.require(createInvoicesRequestProductFieldBillingAddress)
-}
-
-// SetChargeBuyerFee sets the ChargeBuyerFee field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProduct) SetChargeBuyerFee(chargeBuyerFee *bool) {
-	c.ChargeBuyerFee = chargeBuyerFee
-	c.require(createInvoicesRequestProductFieldChargeBuyerFee)
-}
-
-// SetCollectionMethod sets the CollectionMethod field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProduct) SetCollectionMethod(collectionMethod InvoiceCollectionMethods) {
-	c.CollectionMethod = collectionMethod
-	c.require(createInvoicesRequestProductFieldCollectionMethod)
-}
-
-// SetCustomerName sets the CustomerName field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProduct) SetCustomerName(customerName *string) {
-	c.CustomerName = customerName
-	c.require(createInvoicesRequestProductFieldCustomerName)
-}
-
-// SetDueDate sets the DueDate field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProduct) SetDueDate(dueDate *time.Time) {
-	c.DueDate = dueDate
-	c.require(createInvoicesRequestProductFieldDueDate)
-}
-
-// SetEmailAddress sets the EmailAddress field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProduct) SetEmailAddress(emailAddress *string) {
-	c.EmailAddress = emailAddress
-	c.require(createInvoicesRequestProductFieldEmailAddress)
-}
-
-// SetLineItems sets the LineItems field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProduct) SetLineItems(lineItems []*CreateInvoicesRequestProductLineItemsItem) {
-	c.LineItems = lineItems
-	c.require(createInvoicesRequestProductFieldLineItems)
-}
-
-// SetMailingAddressID sets the MailingAddressID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProduct) SetMailingAddressID(mailingAddressID *string) {
-	c.MailingAddressID = mailingAddressID
-	c.require(createInvoicesRequestProductFieldMailingAddressID)
-}
-
-// SetMemberID sets the MemberID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProduct) SetMemberID(memberID *string) {
-	c.MemberID = memberID
-	c.require(createInvoicesRequestProductFieldMemberID)
-}
-
-// SetPaymentMethodID sets the PaymentMethodID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProduct) SetPaymentMethodID(paymentMethodID *string) {
-	c.PaymentMethodID = paymentMethodID
-	c.require(createInvoicesRequestProductFieldPaymentMethodID)
-}
-
-// SetPaymentTokenID sets the PaymentTokenID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProduct) SetPaymentTokenID(paymentTokenID *string) {
-	c.PaymentTokenID = paymentTokenID
-	c.require(createInvoicesRequestProductFieldPaymentTokenID)
-}
-
-// SetPlan sets the Plan field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProduct) SetPlan(plan *CreateInvoicesRequestProductPlan) {
-	c.Plan = plan
-	c.require(createInvoicesRequestProductFieldPlan)
-}
-
-// SetProduct sets the Product field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProduct) SetProduct(product *CreateInvoicesRequestProductProduct) {
-	c.Product = product
-	c.require(createInvoicesRequestProductFieldProduct)
-}
-
-// SetSaveAsDraft sets the SaveAsDraft field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProduct) SetSaveAsDraft(saveAsDraft *bool) {
-	c.SaveAsDraft = saveAsDraft
-	c.require(createInvoicesRequestProductFieldSaveAsDraft)
-}
-
-// SetSubscriptionBillingAnchorAt sets the SubscriptionBillingAnchorAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProduct) SetSubscriptionBillingAnchorAt(subscriptionBillingAnchorAt *time.Time) {
-	c.SubscriptionBillingAnchorAt = subscriptionBillingAnchorAt
-	c.require(createInvoicesRequestProductFieldSubscriptionBillingAnchorAt)
-}
-
-func (c *CreateInvoicesRequestProduct) UnmarshalJSON(data []byte) error {
-	type embed CreateInvoicesRequestProduct
-	var unmarshaler = struct {
-		embed
-		AutomaticallyFinalizesAt    *internal.DateTime `json:"automatically_finalizes_at,omitempty"`
-		DueDate                     *internal.DateTime `json:"due_date,omitempty"`
-		SubscriptionBillingAnchorAt *internal.DateTime `json:"subscription_billing_anchor_at,omitempty"`
-	}{
-		embed: embed(*c),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*c = CreateInvoicesRequestProduct(unmarshaler.embed)
-	c.AutomaticallyFinalizesAt = unmarshaler.AutomaticallyFinalizesAt.TimePtr()
-	c.DueDate = unmarshaler.DueDate.TimePtr()
-	c.SubscriptionBillingAnchorAt = unmarshaler.SubscriptionBillingAnchorAt.TimePtr()
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestProductNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		c.require(presentFields)
-	}
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateInvoicesRequestProduct) MarshalJSON() ([]byte, error) {
-	type embed CreateInvoicesRequestProduct
-	var marshaler = struct {
-		embed
-		AutomaticallyFinalizesAt    *internal.DateTime `json:"automatically_finalizes_at,omitempty"`
-		DueDate                     *internal.DateTime `json:"due_date,omitempty"`
-		SubscriptionBillingAnchorAt *internal.DateTime `json:"subscription_billing_anchor_at,omitempty"`
-	}{
-		embed:                       embed(*c),
-		AutomaticallyFinalizesAt:    internal.NewOptionalDateTime(c.AutomaticallyFinalizesAt),
-		DueDate:                     internal.NewOptionalDateTime(c.DueDate),
-		SubscriptionBillingAnchorAt: internal.NewOptionalDateTime(c.SubscriptionBillingAnchorAt),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateInvoicesRequestProduct) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-var (
-	createInvoicesRequestProductBillingAddressFieldCity       = big.NewInt(1 << 0)
-	createInvoicesRequestProductBillingAddressFieldCountry    = big.NewInt(1 << 1)
-	createInvoicesRequestProductBillingAddressFieldLine1      = big.NewInt(1 << 2)
-	createInvoicesRequestProductBillingAddressFieldLine2      = big.NewInt(1 << 3)
-	createInvoicesRequestProductBillingAddressFieldName       = big.NewInt(1 << 4)
-	createInvoicesRequestProductBillingAddressFieldPhone      = big.NewInt(1 << 5)
-	createInvoicesRequestProductBillingAddressFieldPostalCode = big.NewInt(1 << 6)
-	createInvoicesRequestProductBillingAddressFieldState      = big.NewInt(1 << 7)
-	createInvoicesRequestProductBillingAddressFieldTaxIDType  = big.NewInt(1 << 8)
-	createInvoicesRequestProductBillingAddressFieldTaxIDValue = big.NewInt(1 << 9)
-)
-
-// createInvoicesRequestProductBillingAddressNullableFields maps the wire names of CreateInvoicesRequestProductBillingAddress's nullable fields (required or optional) to their field bits.
-var createInvoicesRequestProductBillingAddressNullableFields = map[string]*big.Int{
-	"city":         createInvoicesRequestProductBillingAddressFieldCity,
-	"country":      createInvoicesRequestProductBillingAddressFieldCountry,
-	"line1":        createInvoicesRequestProductBillingAddressFieldLine1,
-	"line2":        createInvoicesRequestProductBillingAddressFieldLine2,
-	"name":         createInvoicesRequestProductBillingAddressFieldName,
-	"phone":        createInvoicesRequestProductBillingAddressFieldPhone,
-	"postal_code":  createInvoicesRequestProductBillingAddressFieldPostalCode,
-	"state":        createInvoicesRequestProductBillingAddressFieldState,
-	"tax_id_type":  createInvoicesRequestProductBillingAddressFieldTaxIDType,
-	"tax_id_value": createInvoicesRequestProductBillingAddressFieldTaxIDValue,
-}
-
-// Inline billing address to create a new mailing address for this invoice. Cannot be used together with mailing_address_id.
-type CreateInvoicesRequestProductBillingAddress struct {
-	// The city of the address.
-	City *string `json:"city,omitempty" url:"city,omitempty"`
-	// The country of the address.
-	Country *string `json:"country,omitempty" url:"country,omitempty"`
-	// The line 1 of the address.
-	Line1 *string `json:"line1,omitempty" url:"line1,omitempty"`
-	// The line 2 of the address.
-	Line2 *string `json:"line2,omitempty" url:"line2,omitempty"`
-	// The name of the customer.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// The phone number of the customer.
-	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
-	// The postal code of the address.
-	PostalCode *string `json:"postal_code,omitempty" url:"postal_code,omitempty"`
-	// The state of the address.
-	State *string `json:"state,omitempty" url:"state,omitempty"`
-	// The type of tax identifier.
-	TaxIDType *TaxIdentifierTypes `json:"tax_id_type,omitempty" url:"tax_id_type,omitempty"`
-	// The value of the tax identifier.
-	TaxIDValue *string `json:"tax_id_value,omitempty" url:"tax_id_value,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateInvoicesRequestProductBillingAddress) GetCity() *string {
-	if c == nil {
-		return nil
-	}
-	return c.City
-}
-
-func (c *CreateInvoicesRequestProductBillingAddress) GetCountry() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Country
-}
-
-func (c *CreateInvoicesRequestProductBillingAddress) GetLine1() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Line1
-}
-
-func (c *CreateInvoicesRequestProductBillingAddress) GetLine2() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Line2
-}
-
-func (c *CreateInvoicesRequestProductBillingAddress) GetName() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Name
-}
-
-func (c *CreateInvoicesRequestProductBillingAddress) GetPhone() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Phone
-}
-
-func (c *CreateInvoicesRequestProductBillingAddress) GetPostalCode() *string {
-	if c == nil {
-		return nil
-	}
-	return c.PostalCode
-}
-
-func (c *CreateInvoicesRequestProductBillingAddress) GetState() *string {
-	if c == nil {
-		return nil
-	}
-	return c.State
-}
-
-func (c *CreateInvoicesRequestProductBillingAddress) GetTaxIDType() *TaxIdentifierTypes {
-	if c == nil {
-		return nil
-	}
-	return c.TaxIDType
-}
-
-func (c *CreateInvoicesRequestProductBillingAddress) GetTaxIDValue() *string {
-	if c == nil {
-		return nil
-	}
-	return c.TaxIDValue
-}
-
-func (c *CreateInvoicesRequestProductBillingAddress) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateInvoicesRequestProductBillingAddress) require(field *big.Int) {
-	next := new(big.Int)
-	if c.explicitFields != nil {
-		next.Set(c.explicitFields)
-	}
-	next.Or(next, field)
-	c.explicitFields = next
-}
-
-// SetCity sets the City field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductBillingAddress) SetCity(city *string) {
-	c.City = city
-	c.require(createInvoicesRequestProductBillingAddressFieldCity)
-}
-
-// SetCountry sets the Country field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductBillingAddress) SetCountry(country *string) {
-	c.Country = country
-	c.require(createInvoicesRequestProductBillingAddressFieldCountry)
-}
-
-// SetLine1 sets the Line1 field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductBillingAddress) SetLine1(line1 *string) {
-	c.Line1 = line1
-	c.require(createInvoicesRequestProductBillingAddressFieldLine1)
-}
-
-// SetLine2 sets the Line2 field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductBillingAddress) SetLine2(line2 *string) {
-	c.Line2 = line2
-	c.require(createInvoicesRequestProductBillingAddressFieldLine2)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductBillingAddress) SetName(name *string) {
-	c.Name = name
-	c.require(createInvoicesRequestProductBillingAddressFieldName)
-}
-
-// SetPhone sets the Phone field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductBillingAddress) SetPhone(phone *string) {
-	c.Phone = phone
-	c.require(createInvoicesRequestProductBillingAddressFieldPhone)
-}
-
-// SetPostalCode sets the PostalCode field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductBillingAddress) SetPostalCode(postalCode *string) {
-	c.PostalCode = postalCode
-	c.require(createInvoicesRequestProductBillingAddressFieldPostalCode)
-}
-
-// SetState sets the State field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductBillingAddress) SetState(state *string) {
-	c.State = state
-	c.require(createInvoicesRequestProductBillingAddressFieldState)
-}
-
-// SetTaxIDType sets the TaxIDType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductBillingAddress) SetTaxIDType(taxIDType *TaxIdentifierTypes) {
-	c.TaxIDType = taxIDType
-	c.require(createInvoicesRequestProductBillingAddressFieldTaxIDType)
-}
-
-// SetTaxIDValue sets the TaxIDValue field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductBillingAddress) SetTaxIDValue(taxIDValue *string) {
-	c.TaxIDValue = taxIDValue
-	c.require(createInvoicesRequestProductBillingAddressFieldTaxIDValue)
-}
-
-func (c *CreateInvoicesRequestProductBillingAddress) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateInvoicesRequestProductBillingAddress
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreateInvoicesRequestProductBillingAddress(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestProductBillingAddressNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		c.require(presentFields)
-	}
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateInvoicesRequestProductBillingAddress) MarshalJSON() ([]byte, error) {
-	type embed CreateInvoicesRequestProductBillingAddress
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateInvoicesRequestProductBillingAddress) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-var (
-	createInvoicesRequestProductIDFieldAccountID                   = big.NewInt(1 << 0)
-	createInvoicesRequestProductIDFieldAutomaticallyFinalizesAt    = big.NewInt(1 << 1)
-	createInvoicesRequestProductIDFieldBillingAddress              = big.NewInt(1 << 2)
-	createInvoicesRequestProductIDFieldChargeBuyerFee              = big.NewInt(1 << 3)
-	createInvoicesRequestProductIDFieldCollectionMethod            = big.NewInt(1 << 4)
-	createInvoicesRequestProductIDFieldCustomerName                = big.NewInt(1 << 5)
-	createInvoicesRequestProductIDFieldDueDate                     = big.NewInt(1 << 6)
-	createInvoicesRequestProductIDFieldEmailAddress                = big.NewInt(1 << 7)
-	createInvoicesRequestProductIDFieldLineItems                   = big.NewInt(1 << 8)
-	createInvoicesRequestProductIDFieldMailingAddressID            = big.NewInt(1 << 9)
-	createInvoicesRequestProductIDFieldMemberID                    = big.NewInt(1 << 10)
-	createInvoicesRequestProductIDFieldPaymentMethodID             = big.NewInt(1 << 11)
-	createInvoicesRequestProductIDFieldPaymentTokenID              = big.NewInt(1 << 12)
-	createInvoicesRequestProductIDFieldPlan                        = big.NewInt(1 << 13)
-	createInvoicesRequestProductIDFieldProductID                   = big.NewInt(1 << 14)
-	createInvoicesRequestProductIDFieldSaveAsDraft                 = big.NewInt(1 << 15)
-	createInvoicesRequestProductIDFieldSubscriptionBillingAnchorAt = big.NewInt(1 << 16)
-)
-
-// createInvoicesRequestProductIDNullableFields maps the wire names of CreateInvoicesRequestProductID's nullable fields (required or optional) to their field bits.
-var createInvoicesRequestProductIDNullableFields = map[string]*big.Int{
-	"automatically_finalizes_at":     createInvoicesRequestProductIDFieldAutomaticallyFinalizesAt,
-	"billing_address":                createInvoicesRequestProductIDFieldBillingAddress,
-	"charge_buyer_fee":               createInvoicesRequestProductIDFieldChargeBuyerFee,
-	"customer_name":                  createInvoicesRequestProductIDFieldCustomerName,
-	"due_date":                       createInvoicesRequestProductIDFieldDueDate,
-	"email_address":                  createInvoicesRequestProductIDFieldEmailAddress,
-	"line_items":                     createInvoicesRequestProductIDFieldLineItems,
-	"mailing_address_id":             createInvoicesRequestProductIDFieldMailingAddressID,
-	"member_id":                      createInvoicesRequestProductIDFieldMemberID,
-	"payment_method_id":              createInvoicesRequestProductIDFieldPaymentMethodID,
-	"payment_token_id":               createInvoicesRequestProductIDFieldPaymentTokenID,
-	"save_as_draft":                  createInvoicesRequestProductIDFieldSaveAsDraft,
-	"subscription_billing_anchor_at": createInvoicesRequestProductIDFieldSubscriptionBillingAnchorAt,
-}
-
-// Autogenerated input type of CreateInvoice
-type CreateInvoicesRequestProductID struct {
-	// The unique identifier of the company to create this invoice for.
-	AccountID string `json:"account_id" url:"account_id"`
-	// The date and time when the invoice will be automatically finalized. For charge_automatically, triggers an automatic charge. For send_invoice, sends the invoice email to the customer at the specified time.
-	AutomaticallyFinalizesAt *time.Time `json:"automatically_finalizes_at,omitempty" url:"automatically_finalizes_at,omitempty"`
-	// Inline billing address to create a new mailing address for this invoice. Cannot be used together with mailing_address_id.
-	BillingAddress *CreateInvoicesRequestProductIDBillingAddress `json:"billing_address,omitempty" url:"billing_address,omitempty"`
-	// Whether to charge the customer a buyer fee on this invoice.
-	ChargeBuyerFee *bool `json:"charge_buyer_fee,omitempty" url:"charge_buyer_fee,omitempty"`
-	// How the invoice should be collected. Use charge_automatically to charge a stored payment method, or send_invoice to email the customer.
-	CollectionMethod InvoiceCollectionMethods `json:"collection_method" url:"collection_method"`
-	// The name of the customer. Required when creating an invoice for a customer who is not yet a member of the company.
-	CustomerName *string `json:"customer_name,omitempty" url:"customer_name,omitempty"`
-	// The date by which the invoice must be paid. Required unless save_as_draft is true.
-	DueDate *time.Time `json:"due_date,omitempty" url:"due_date,omitempty"`
-	// The email address of the customer. Required when creating an invoice for a customer who is not yet a member of the company.
-	EmailAddress *string `json:"email_address,omitempty" url:"email_address,omitempty"`
-	// Optional line items that break down the invoice total. When provided, the sum of (quantity * unit_price) for all items must equal the plan price. Individual items may be negative to represent a credit, as long as the sum is not negative and clears the currency's minimum charge.
-	LineItems []*CreateInvoicesRequestProductIDLineItemsItem `json:"line_items,omitempty" url:"line_items,omitempty"`
-	// The unique identifier of an existing mailing address to attach to this invoice. Cannot be used together with billing_address.
-	MailingAddressID *string `json:"mailing_address_id,omitempty" url:"mailing_address_id,omitempty"`
-	// The unique identifier of an existing member to create this invoice for. If not provided, you must supply an email_address and customer_name.
-	MemberID *string `json:"member_id,omitempty" url:"member_id,omitempty"`
-	// The unique identifier of the payment method to charge. Required when collection_method is charge_automatically.
-	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"payment_method_id,omitempty"`
-	// The payment token ID to use for this invoice. If using charge_automatically, you must provide a payment_token.
-	PaymentTokenID *string `json:"payment_token_id,omitempty" url:"payment_token_id,omitempty"`
-	// The plan attributes defining the price, currency, and billing interval for this invoice.
-	Plan *CreateInvoicesRequestProductIDPlan `json:"plan" url:"plan"`
-	// The unique identifier of an existing product to create this invoice for.
-	ProductID string `json:"product_id" url:"product_id"`
-	// When true, creates the invoice as a draft without sending or charging. Relaxes customer and due date requirements.
-	SaveAsDraft *bool `json:"save_as_draft,omitempty" url:"save_as_draft,omitempty"`
-	// The date that defines when the subscription billing cycle should start. When set on a renewal plan invoice, this anchors all future billing periods to this date.
-	SubscriptionBillingAnchorAt *time.Time `json:"subscription_billing_anchor_at,omitempty" url:"subscription_billing_anchor_at,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateInvoicesRequestProductID) GetAccountID() string {
-	if c == nil {
-		return ""
-	}
-	return c.AccountID
-}
-
-func (c *CreateInvoicesRequestProductID) GetAutomaticallyFinalizesAt() *time.Time {
-	if c == nil {
-		return nil
-	}
-	return c.AutomaticallyFinalizesAt
-}
-
-func (c *CreateInvoicesRequestProductID) GetBillingAddress() *CreateInvoicesRequestProductIDBillingAddress {
-	if c == nil {
-		return nil
-	}
-	return c.BillingAddress
-}
-
-func (c *CreateInvoicesRequestProductID) GetChargeBuyerFee() *bool {
-	if c == nil {
-		return nil
-	}
-	return c.ChargeBuyerFee
-}
-
-func (c *CreateInvoicesRequestProductID) GetCollectionMethod() InvoiceCollectionMethods {
-	if c == nil {
-		return ""
-	}
-	return c.CollectionMethod
-}
-
-func (c *CreateInvoicesRequestProductID) GetCustomerName() *string {
-	if c == nil {
-		return nil
-	}
-	return c.CustomerName
-}
-
-func (c *CreateInvoicesRequestProductID) GetDueDate() *time.Time {
-	if c == nil {
-		return nil
-	}
-	return c.DueDate
-}
-
-func (c *CreateInvoicesRequestProductID) GetEmailAddress() *string {
-	if c == nil {
-		return nil
-	}
-	return c.EmailAddress
-}
-
-func (c *CreateInvoicesRequestProductID) GetLineItems() []*CreateInvoicesRequestProductIDLineItemsItem {
-	if c == nil {
-		return nil
-	}
-	return c.LineItems
-}
-
-func (c *CreateInvoicesRequestProductID) GetMailingAddressID() *string {
-	if c == nil {
-		return nil
-	}
-	return c.MailingAddressID
-}
-
-func (c *CreateInvoicesRequestProductID) GetMemberID() *string {
-	if c == nil {
-		return nil
-	}
-	return c.MemberID
-}
-
-func (c *CreateInvoicesRequestProductID) GetPaymentMethodID() *string {
-	if c == nil {
-		return nil
-	}
-	return c.PaymentMethodID
-}
-
-func (c *CreateInvoicesRequestProductID) GetPaymentTokenID() *string {
-	if c == nil {
-		return nil
-	}
-	return c.PaymentTokenID
-}
-
-func (c *CreateInvoicesRequestProductID) GetPlan() *CreateInvoicesRequestProductIDPlan {
-	if c == nil {
-		return nil
-	}
-	return c.Plan
-}
-
-func (c *CreateInvoicesRequestProductID) GetProductID() string {
-	if c == nil {
-		return ""
 	}
 	return c.ProductID
 }
 
-func (c *CreateInvoicesRequestProductID) GetSaveAsDraft() *bool {
+func (c *CreateInvoicesRequestItemsItemVariant) GetRenewalPrice() *float64 {
 	if c == nil {
 		return nil
 	}
-	return c.SaveAsDraft
+	return c.RenewalPrice
 }
 
-func (c *CreateInvoicesRequestProductID) GetSubscriptionBillingAnchorAt() *time.Time {
+func (c *CreateInvoicesRequestItemsItemVariant) GetTitle() *string {
 	if c == nil {
 		return nil
 	}
-	return c.SubscriptionBillingAnchorAt
+	return c.Title
 }
 
-func (c *CreateInvoicesRequestProductID) GetExtraProperties() map[string]interface{} {
+func (c *CreateInvoicesRequestItemsItemVariant) GetTrialPeriodDays() *int {
+	if c == nil {
+		return nil
+	}
+	return c.TrialPeriodDays
+}
+
+func (c *CreateInvoicesRequestItemsItemVariant) GetVisibility() *CreateInvoicesRequestItemsItemVariantVisibility {
+	if c == nil {
+		return nil
+	}
+	return c.Visibility
+}
+
+func (c *CreateInvoicesRequestItemsItemVariant) GetExtraProperties() map[string]interface{} {
 	if c == nil {
 		return nil
 	}
 	return c.extraProperties
 }
 
-func (c *CreateInvoicesRequestProductID) require(field *big.Int) {
+func (c *CreateInvoicesRequestItemsItemVariant) require(field *big.Int) {
 	next := new(big.Int)
 	if c.explicitFields != nil {
 		next.Set(c.explicitFields)
@@ -4053,938 +1973,138 @@ func (c *CreateInvoicesRequestProductID) require(field *big.Int) {
 	c.explicitFields = next
 }
 
-// SetAccountID sets the AccountID field and marks it as non-optional;
+// SetAllowMultipleQuantity sets the AllowMultipleQuantity field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductID) SetAccountID(accountID string) {
-	c.AccountID = accountID
-	c.require(createInvoicesRequestProductIDFieldAccountID)
+func (c *CreateInvoicesRequestItemsItemVariant) SetAllowMultipleQuantity(allowMultipleQuantity *bool) {
+	c.AllowMultipleQuantity = allowMultipleQuantity
+	c.require(createInvoicesRequestItemsItemVariantFieldAllowMultipleQuantity)
 }
 
-// SetAutomaticallyFinalizesAt sets the AutomaticallyFinalizesAt field and marks it as non-optional;
+// SetApplicationFeeAmount sets the ApplicationFeeAmount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductID) SetAutomaticallyFinalizesAt(automaticallyFinalizesAt *time.Time) {
-	c.AutomaticallyFinalizesAt = automaticallyFinalizesAt
-	c.require(createInvoicesRequestProductIDFieldAutomaticallyFinalizesAt)
+func (c *CreateInvoicesRequestItemsItemVariant) SetApplicationFeeAmount(applicationFeeAmount *float64) {
+	c.ApplicationFeeAmount = applicationFeeAmount
+	c.require(createInvoicesRequestItemsItemVariantFieldApplicationFeeAmount)
 }
 
-// SetBillingAddress sets the BillingAddress field and marks it as non-optional;
+// SetBillingPeriod sets the BillingPeriod field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductID) SetBillingAddress(billingAddress *CreateInvoicesRequestProductIDBillingAddress) {
-	c.BillingAddress = billingAddress
-	c.require(createInvoicesRequestProductIDFieldBillingAddress)
+func (c *CreateInvoicesRequestItemsItemVariant) SetBillingPeriod(billingPeriod *int) {
+	c.BillingPeriod = billingPeriod
+	c.require(createInvoicesRequestItemsItemVariantFieldBillingPeriod)
 }
 
-// SetChargeBuyerFee sets the ChargeBuyerFee field and marks it as non-optional;
+// SetBillingType sets the BillingType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductID) SetChargeBuyerFee(chargeBuyerFee *bool) {
-	c.ChargeBuyerFee = chargeBuyerFee
-	c.require(createInvoicesRequestProductIDFieldChargeBuyerFee)
+func (c *CreateInvoicesRequestItemsItemVariant) SetBillingType(billingType *CreateInvoicesRequestItemsItemVariantBillingType) {
+	c.BillingType = billingType
+	c.require(createInvoicesRequestItemsItemVariantFieldBillingType)
 }
 
-// SetCollectionMethod sets the CollectionMethod field and marks it as non-optional;
+// SetCurrency sets the Currency field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductID) SetCollectionMethod(collectionMethod InvoiceCollectionMethods) {
-	c.CollectionMethod = collectionMethod
-	c.require(createInvoicesRequestProductIDFieldCollectionMethod)
+func (c *CreateInvoicesRequestItemsItemVariant) SetCurrency(currency CreateInvoicesRequestItemsItemVariantCurrency) {
+	c.Currency = currency
+	c.require(createInvoicesRequestItemsItemVariantFieldCurrency)
 }
 
-// SetCustomerName sets the CustomerName field and marks it as non-optional;
+// SetDescription sets the Description field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductID) SetCustomerName(customerName *string) {
-	c.CustomerName = customerName
-	c.require(createInvoicesRequestProductIDFieldCustomerName)
+func (c *CreateInvoicesRequestItemsItemVariant) SetDescription(description *string) {
+	c.Description = description
+	c.require(createInvoicesRequestItemsItemVariantFieldDescription)
 }
 
-// SetDueDate sets the DueDate field and marks it as non-optional;
+// SetExpirationDays sets the ExpirationDays field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductID) SetDueDate(dueDate *time.Time) {
-	c.DueDate = dueDate
-	c.require(createInvoicesRequestProductIDFieldDueDate)
+func (c *CreateInvoicesRequestItemsItemVariant) SetExpirationDays(expirationDays *int) {
+	c.ExpirationDays = expirationDays
+	c.require(createInvoicesRequestItemsItemVariantFieldExpirationDays)
 }
 
-// SetEmailAddress sets the EmailAddress field and marks it as non-optional;
+// SetForceCreateNewPlan sets the ForceCreateNewPlan field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductID) SetEmailAddress(emailAddress *string) {
-	c.EmailAddress = emailAddress
-	c.require(createInvoicesRequestProductIDFieldEmailAddress)
+func (c *CreateInvoicesRequestItemsItemVariant) SetForceCreateNewPlan(forceCreateNewPlan *bool) {
+	c.ForceCreateNewPlan = forceCreateNewPlan
+	c.require(createInvoicesRequestItemsItemVariantFieldForceCreateNewPlan)
 }
 
-// SetLineItems sets the LineItems field and marks it as non-optional;
+// SetInitialPrice sets the InitialPrice field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductID) SetLineItems(lineItems []*CreateInvoicesRequestProductIDLineItemsItem) {
-	c.LineItems = lineItems
-	c.require(createInvoicesRequestProductIDFieldLineItems)
+func (c *CreateInvoicesRequestItemsItemVariant) SetInitialPrice(initialPrice *float64) {
+	c.InitialPrice = initialPrice
+	c.require(createInvoicesRequestItemsItemVariantFieldInitialPrice)
 }
 
-// SetMailingAddressID sets the MailingAddressID field and marks it as non-optional;
+// SetInternalNotes sets the InternalNotes field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductID) SetMailingAddressID(mailingAddressID *string) {
-	c.MailingAddressID = mailingAddressID
-	c.require(createInvoicesRequestProductIDFieldMailingAddressID)
+func (c *CreateInvoicesRequestItemsItemVariant) SetInternalNotes(internalNotes *string) {
+	c.InternalNotes = internalNotes
+	c.require(createInvoicesRequestItemsItemVariantFieldInternalNotes)
 }
 
-// SetMemberID sets the MemberID field and marks it as non-optional;
+// SetOverrideTaxType sets the OverrideTaxType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductID) SetMemberID(memberID *string) {
-	c.MemberID = memberID
-	c.require(createInvoicesRequestProductIDFieldMemberID)
+func (c *CreateInvoicesRequestItemsItemVariant) SetOverrideTaxType(overrideTaxType *CreateInvoicesRequestItemsItemVariantOverrideTaxType) {
+	c.OverrideTaxType = overrideTaxType
+	c.require(createInvoicesRequestItemsItemVariantFieldOverrideTaxType)
 }
 
-// SetPaymentMethodID sets the PaymentMethodID field and marks it as non-optional;
+// SetProduct sets the Product field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductID) SetPaymentMethodID(paymentMethodID *string) {
-	c.PaymentMethodID = paymentMethodID
-	c.require(createInvoicesRequestProductIDFieldPaymentMethodID)
-}
-
-// SetPaymentTokenID sets the PaymentTokenID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductID) SetPaymentTokenID(paymentTokenID *string) {
-	c.PaymentTokenID = paymentTokenID
-	c.require(createInvoicesRequestProductIDFieldPaymentTokenID)
-}
-
-// SetPlan sets the Plan field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductID) SetPlan(plan *CreateInvoicesRequestProductIDPlan) {
-	c.Plan = plan
-	c.require(createInvoicesRequestProductIDFieldPlan)
+func (c *CreateInvoicesRequestItemsItemVariant) SetProduct(product *CreateInvoicesRequestItemsItemVariantProduct) {
+	c.Product = product
+	c.require(createInvoicesRequestItemsItemVariantFieldProduct)
 }
 
 // SetProductID sets the ProductID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductID) SetProductID(productID string) {
+func (c *CreateInvoicesRequestItemsItemVariant) SetProductID(productID *string) {
 	c.ProductID = productID
-	c.require(createInvoicesRequestProductIDFieldProductID)
-}
-
-// SetSaveAsDraft sets the SaveAsDraft field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductID) SetSaveAsDraft(saveAsDraft *bool) {
-	c.SaveAsDraft = saveAsDraft
-	c.require(createInvoicesRequestProductIDFieldSaveAsDraft)
-}
-
-// SetSubscriptionBillingAnchorAt sets the SubscriptionBillingAnchorAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductID) SetSubscriptionBillingAnchorAt(subscriptionBillingAnchorAt *time.Time) {
-	c.SubscriptionBillingAnchorAt = subscriptionBillingAnchorAt
-	c.require(createInvoicesRequestProductIDFieldSubscriptionBillingAnchorAt)
-}
-
-func (c *CreateInvoicesRequestProductID) UnmarshalJSON(data []byte) error {
-	type embed CreateInvoicesRequestProductID
-	var unmarshaler = struct {
-		embed
-		AutomaticallyFinalizesAt    *internal.DateTime `json:"automatically_finalizes_at,omitempty"`
-		DueDate                     *internal.DateTime `json:"due_date,omitempty"`
-		SubscriptionBillingAnchorAt *internal.DateTime `json:"subscription_billing_anchor_at,omitempty"`
-	}{
-		embed: embed(*c),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*c = CreateInvoicesRequestProductID(unmarshaler.embed)
-	c.AutomaticallyFinalizesAt = unmarshaler.AutomaticallyFinalizesAt.TimePtr()
-	c.DueDate = unmarshaler.DueDate.TimePtr()
-	c.SubscriptionBillingAnchorAt = unmarshaler.SubscriptionBillingAnchorAt.TimePtr()
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestProductIDNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		c.require(presentFields)
-	}
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateInvoicesRequestProductID) MarshalJSON() ([]byte, error) {
-	type embed CreateInvoicesRequestProductID
-	var marshaler = struct {
-		embed
-		AutomaticallyFinalizesAt    *internal.DateTime `json:"automatically_finalizes_at,omitempty"`
-		DueDate                     *internal.DateTime `json:"due_date,omitempty"`
-		SubscriptionBillingAnchorAt *internal.DateTime `json:"subscription_billing_anchor_at,omitempty"`
-	}{
-		embed:                       embed(*c),
-		AutomaticallyFinalizesAt:    internal.NewOptionalDateTime(c.AutomaticallyFinalizesAt),
-		DueDate:                     internal.NewOptionalDateTime(c.DueDate),
-		SubscriptionBillingAnchorAt: internal.NewOptionalDateTime(c.SubscriptionBillingAnchorAt),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateInvoicesRequestProductID) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-var (
-	createInvoicesRequestProductIDBillingAddressFieldCity       = big.NewInt(1 << 0)
-	createInvoicesRequestProductIDBillingAddressFieldCountry    = big.NewInt(1 << 1)
-	createInvoicesRequestProductIDBillingAddressFieldLine1      = big.NewInt(1 << 2)
-	createInvoicesRequestProductIDBillingAddressFieldLine2      = big.NewInt(1 << 3)
-	createInvoicesRequestProductIDBillingAddressFieldName       = big.NewInt(1 << 4)
-	createInvoicesRequestProductIDBillingAddressFieldPhone      = big.NewInt(1 << 5)
-	createInvoicesRequestProductIDBillingAddressFieldPostalCode = big.NewInt(1 << 6)
-	createInvoicesRequestProductIDBillingAddressFieldState      = big.NewInt(1 << 7)
-	createInvoicesRequestProductIDBillingAddressFieldTaxIDType  = big.NewInt(1 << 8)
-	createInvoicesRequestProductIDBillingAddressFieldTaxIDValue = big.NewInt(1 << 9)
-)
-
-// createInvoicesRequestProductIDBillingAddressNullableFields maps the wire names of CreateInvoicesRequestProductIDBillingAddress's nullable fields (required or optional) to their field bits.
-var createInvoicesRequestProductIDBillingAddressNullableFields = map[string]*big.Int{
-	"city":         createInvoicesRequestProductIDBillingAddressFieldCity,
-	"country":      createInvoicesRequestProductIDBillingAddressFieldCountry,
-	"line1":        createInvoicesRequestProductIDBillingAddressFieldLine1,
-	"line2":        createInvoicesRequestProductIDBillingAddressFieldLine2,
-	"name":         createInvoicesRequestProductIDBillingAddressFieldName,
-	"phone":        createInvoicesRequestProductIDBillingAddressFieldPhone,
-	"postal_code":  createInvoicesRequestProductIDBillingAddressFieldPostalCode,
-	"state":        createInvoicesRequestProductIDBillingAddressFieldState,
-	"tax_id_type":  createInvoicesRequestProductIDBillingAddressFieldTaxIDType,
-	"tax_id_value": createInvoicesRequestProductIDBillingAddressFieldTaxIDValue,
-}
-
-// Inline billing address to create a new mailing address for this invoice. Cannot be used together with mailing_address_id.
-type CreateInvoicesRequestProductIDBillingAddress struct {
-	// The city of the address.
-	City *string `json:"city,omitempty" url:"city,omitempty"`
-	// The country of the address.
-	Country *string `json:"country,omitempty" url:"country,omitempty"`
-	// The line 1 of the address.
-	Line1 *string `json:"line1,omitempty" url:"line1,omitempty"`
-	// The line 2 of the address.
-	Line2 *string `json:"line2,omitempty" url:"line2,omitempty"`
-	// The name of the customer.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// The phone number of the customer.
-	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
-	// The postal code of the address.
-	PostalCode *string `json:"postal_code,omitempty" url:"postal_code,omitempty"`
-	// The state of the address.
-	State *string `json:"state,omitempty" url:"state,omitempty"`
-	// The type of tax identifier.
-	TaxIDType *TaxIdentifierTypes `json:"tax_id_type,omitempty" url:"tax_id_type,omitempty"`
-	// The value of the tax identifier.
-	TaxIDValue *string `json:"tax_id_value,omitempty" url:"tax_id_value,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateInvoicesRequestProductIDBillingAddress) GetCity() *string {
-	if c == nil {
-		return nil
-	}
-	return c.City
-}
-
-func (c *CreateInvoicesRequestProductIDBillingAddress) GetCountry() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Country
-}
-
-func (c *CreateInvoicesRequestProductIDBillingAddress) GetLine1() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Line1
-}
-
-func (c *CreateInvoicesRequestProductIDBillingAddress) GetLine2() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Line2
-}
-
-func (c *CreateInvoicesRequestProductIDBillingAddress) GetName() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Name
-}
-
-func (c *CreateInvoicesRequestProductIDBillingAddress) GetPhone() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Phone
-}
-
-func (c *CreateInvoicesRequestProductIDBillingAddress) GetPostalCode() *string {
-	if c == nil {
-		return nil
-	}
-	return c.PostalCode
-}
-
-func (c *CreateInvoicesRequestProductIDBillingAddress) GetState() *string {
-	if c == nil {
-		return nil
-	}
-	return c.State
-}
-
-func (c *CreateInvoicesRequestProductIDBillingAddress) GetTaxIDType() *TaxIdentifierTypes {
-	if c == nil {
-		return nil
-	}
-	return c.TaxIDType
-}
-
-func (c *CreateInvoicesRequestProductIDBillingAddress) GetTaxIDValue() *string {
-	if c == nil {
-		return nil
-	}
-	return c.TaxIDValue
-}
-
-func (c *CreateInvoicesRequestProductIDBillingAddress) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateInvoicesRequestProductIDBillingAddress) require(field *big.Int) {
-	next := new(big.Int)
-	if c.explicitFields != nil {
-		next.Set(c.explicitFields)
-	}
-	next.Or(next, field)
-	c.explicitFields = next
-}
-
-// SetCity sets the City field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDBillingAddress) SetCity(city *string) {
-	c.City = city
-	c.require(createInvoicesRequestProductIDBillingAddressFieldCity)
-}
-
-// SetCountry sets the Country field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDBillingAddress) SetCountry(country *string) {
-	c.Country = country
-	c.require(createInvoicesRequestProductIDBillingAddressFieldCountry)
-}
-
-// SetLine1 sets the Line1 field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDBillingAddress) SetLine1(line1 *string) {
-	c.Line1 = line1
-	c.require(createInvoicesRequestProductIDBillingAddressFieldLine1)
-}
-
-// SetLine2 sets the Line2 field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDBillingAddress) SetLine2(line2 *string) {
-	c.Line2 = line2
-	c.require(createInvoicesRequestProductIDBillingAddressFieldLine2)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDBillingAddress) SetName(name *string) {
-	c.Name = name
-	c.require(createInvoicesRequestProductIDBillingAddressFieldName)
-}
-
-// SetPhone sets the Phone field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDBillingAddress) SetPhone(phone *string) {
-	c.Phone = phone
-	c.require(createInvoicesRequestProductIDBillingAddressFieldPhone)
-}
-
-// SetPostalCode sets the PostalCode field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDBillingAddress) SetPostalCode(postalCode *string) {
-	c.PostalCode = postalCode
-	c.require(createInvoicesRequestProductIDBillingAddressFieldPostalCode)
-}
-
-// SetState sets the State field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDBillingAddress) SetState(state *string) {
-	c.State = state
-	c.require(createInvoicesRequestProductIDBillingAddressFieldState)
-}
-
-// SetTaxIDType sets the TaxIDType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDBillingAddress) SetTaxIDType(taxIDType *TaxIdentifierTypes) {
-	c.TaxIDType = taxIDType
-	c.require(createInvoicesRequestProductIDBillingAddressFieldTaxIDType)
-}
-
-// SetTaxIDValue sets the TaxIDValue field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDBillingAddress) SetTaxIDValue(taxIDValue *string) {
-	c.TaxIDValue = taxIDValue
-	c.require(createInvoicesRequestProductIDBillingAddressFieldTaxIDValue)
-}
-
-func (c *CreateInvoicesRequestProductIDBillingAddress) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateInvoicesRequestProductIDBillingAddress
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreateInvoicesRequestProductIDBillingAddress(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestProductIDBillingAddressNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		c.require(presentFields)
-	}
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateInvoicesRequestProductIDBillingAddress) MarshalJSON() ([]byte, error) {
-	type embed CreateInvoicesRequestProductIDBillingAddress
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateInvoicesRequestProductIDBillingAddress) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-var (
-	createInvoicesRequestProductIDLineItemsItemFieldLabel     = big.NewInt(1 << 0)
-	createInvoicesRequestProductIDLineItemsItemFieldQuantity  = big.NewInt(1 << 1)
-	createInvoicesRequestProductIDLineItemsItemFieldUnitPrice = big.NewInt(1 << 2)
-)
-
-// createInvoicesRequestProductIDLineItemsItemNullableFields maps the wire names of CreateInvoicesRequestProductIDLineItemsItem's nullable fields (required or optional) to their field bits.
-var createInvoicesRequestProductIDLineItemsItemNullableFields = map[string]*big.Int{
-	"quantity": createInvoicesRequestProductIDLineItemsItemFieldQuantity,
-}
-
-// A single line item to include on the invoice, with a label, quantity, and unit price.
-type CreateInvoicesRequestProductIDLineItemsItem struct {
-	// The label or description for this line item.
-	Label string `json:"label" url:"label"`
-	// The quantity of this line item. Defaults to 1.
-	Quantity *float64 `json:"quantity,omitempty" url:"quantity,omitempty"`
-	// The unit price for this line item. Provided as a number in the specified currency. Eg: 10.43 for $10.43. Negative values represent a credit or deduction, as long as the line items still total a chargeable amount.
-	UnitPrice float64 `json:"unit_price" url:"unit_price"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateInvoicesRequestProductIDLineItemsItem) GetLabel() string {
-	if c == nil {
-		return ""
-	}
-	return c.Label
-}
-
-func (c *CreateInvoicesRequestProductIDLineItemsItem) GetQuantity() *float64 {
-	if c == nil {
-		return nil
-	}
-	return c.Quantity
-}
-
-func (c *CreateInvoicesRequestProductIDLineItemsItem) GetUnitPrice() float64 {
-	if c == nil {
-		return 0
-	}
-	return c.UnitPrice
-}
-
-func (c *CreateInvoicesRequestProductIDLineItemsItem) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateInvoicesRequestProductIDLineItemsItem) require(field *big.Int) {
-	next := new(big.Int)
-	if c.explicitFields != nil {
-		next.Set(c.explicitFields)
-	}
-	next.Or(next, field)
-	c.explicitFields = next
-}
-
-// SetLabel sets the Label field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDLineItemsItem) SetLabel(label string) {
-	c.Label = label
-	c.require(createInvoicesRequestProductIDLineItemsItemFieldLabel)
-}
-
-// SetQuantity sets the Quantity field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDLineItemsItem) SetQuantity(quantity *float64) {
-	c.Quantity = quantity
-	c.require(createInvoicesRequestProductIDLineItemsItemFieldQuantity)
-}
-
-// SetUnitPrice sets the UnitPrice field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDLineItemsItem) SetUnitPrice(unitPrice float64) {
-	c.UnitPrice = unitPrice
-	c.require(createInvoicesRequestProductIDLineItemsItemFieldUnitPrice)
-}
-
-func (c *CreateInvoicesRequestProductIDLineItemsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateInvoicesRequestProductIDLineItemsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreateInvoicesRequestProductIDLineItemsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestProductIDLineItemsItemNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		c.require(presentFields)
-	}
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateInvoicesRequestProductIDLineItemsItem) MarshalJSON() ([]byte, error) {
-	type embed CreateInvoicesRequestProductIDLineItemsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateInvoicesRequestProductIDLineItemsItem) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-var (
-	createInvoicesRequestProductIDPlanFieldAdaptivePricingEnabled      = big.NewInt(1 << 0)
-	createInvoicesRequestProductIDPlanFieldBillingPeriod               = big.NewInt(1 << 1)
-	createInvoicesRequestProductIDPlanFieldCurrency                    = big.NewInt(1 << 2)
-	createInvoicesRequestProductIDPlanFieldCustomFields                = big.NewInt(1 << 3)
-	createInvoicesRequestProductIDPlanFieldDescription                 = big.NewInt(1 << 4)
-	createInvoicesRequestProductIDPlanFieldExpirationDays              = big.NewInt(1 << 5)
-	createInvoicesRequestProductIDPlanFieldInitialPrice                = big.NewInt(1 << 6)
-	createInvoicesRequestProductIDPlanFieldInternalNotes               = big.NewInt(1 << 7)
-	createInvoicesRequestProductIDPlanFieldLegacyPaymentMethodControls = big.NewInt(1 << 8)
-	createInvoicesRequestProductIDPlanFieldPaymentMethodConfiguration  = big.NewInt(1 << 9)
-	createInvoicesRequestProductIDPlanFieldPlanType                    = big.NewInt(1 << 10)
-	createInvoicesRequestProductIDPlanFieldReleaseMethod               = big.NewInt(1 << 11)
-	createInvoicesRequestProductIDPlanFieldRenewalPrice                = big.NewInt(1 << 12)
-	createInvoicesRequestProductIDPlanFieldStock                       = big.NewInt(1 << 13)
-	createInvoicesRequestProductIDPlanFieldTrialPeriodDays             = big.NewInt(1 << 14)
-	createInvoicesRequestProductIDPlanFieldUnlimitedStock              = big.NewInt(1 << 15)
-	createInvoicesRequestProductIDPlanFieldVisibility                  = big.NewInt(1 << 16)
-)
-
-// createInvoicesRequestProductIDPlanNullableFields maps the wire names of CreateInvoicesRequestProductIDPlan's nullable fields (required or optional) to their field bits.
-var createInvoicesRequestProductIDPlanNullableFields = map[string]*big.Int{
-	"adaptive_pricing_enabled":       createInvoicesRequestProductIDPlanFieldAdaptivePricingEnabled,
-	"billing_period":                 createInvoicesRequestProductIDPlanFieldBillingPeriod,
-	"currency":                       createInvoicesRequestProductIDPlanFieldCurrency,
-	"custom_fields":                  createInvoicesRequestProductIDPlanFieldCustomFields,
-	"description":                    createInvoicesRequestProductIDPlanFieldDescription,
-	"expiration_days":                createInvoicesRequestProductIDPlanFieldExpirationDays,
-	"initial_price":                  createInvoicesRequestProductIDPlanFieldInitialPrice,
-	"internal_notes":                 createInvoicesRequestProductIDPlanFieldInternalNotes,
-	"legacy_payment_method_controls": createInvoicesRequestProductIDPlanFieldLegacyPaymentMethodControls,
-	"payment_method_configuration":   createInvoicesRequestProductIDPlanFieldPaymentMethodConfiguration,
-	"plan_type":                      createInvoicesRequestProductIDPlanFieldPlanType,
-	"release_method":                 createInvoicesRequestProductIDPlanFieldReleaseMethod,
-	"renewal_price":                  createInvoicesRequestProductIDPlanFieldRenewalPrice,
-	"stock":                          createInvoicesRequestProductIDPlanFieldStock,
-	"trial_period_days":              createInvoicesRequestProductIDPlanFieldTrialPeriodDays,
-	"unlimited_stock":                createInvoicesRequestProductIDPlanFieldUnlimitedStock,
-	"visibility":                     createInvoicesRequestProductIDPlanFieldVisibility,
-}
-
-// The plan attributes defining the price, currency, and billing interval for this invoice.
-type CreateInvoicesRequestProductIDPlan struct {
-	// Whether this plan accepts local currency payments via adaptive pricing.
-	AdaptivePricingEnabled *bool `json:"adaptive_pricing_enabled,omitempty" url:"adaptive_pricing_enabled,omitempty"`
-	// The interval in days at which the plan charges (renewal plans).
-	BillingPeriod *int `json:"billing_period,omitempty" url:"billing_period,omitempty"`
-	// The three-letter ISO currency code for the plan's pricing. Defaults to USD.
-	Currency *Currencies `json:"currency,omitempty" url:"currency,omitempty"`
-	// An array of custom field objects.
-	CustomFields []*CreateInvoicesRequestProductIDPlanCustomFieldsItem `json:"custom_fields,omitempty" url:"custom_fields,omitempty"`
-	// The description of the plan.
-	Description *string `json:"description,omitempty" url:"description,omitempty"`
-	// The number of days until the membership expires and revokes access (expiration plans). For example, 365 for a one-year access period.
-	ExpirationDays *int `json:"expiration_days,omitempty" url:"expiration_days,omitempty"`
-	// An additional amount charged upon first purchase. Use only if a one time payment OR you want to charge an additional amount on top of the renewal price. Provided as a number in the specified currency. Eg: 10.43 for $10.43
-	InitialPrice *float64 `json:"initial_price,omitempty" url:"initial_price,omitempty"`
-	// A personal description or notes section for the business.
-	InternalNotes *string `json:"internal_notes,omitempty" url:"internal_notes,omitempty"`
-	// Whether this plan uses legacy payment method controls
-	LegacyPaymentMethodControls *bool `json:"legacy_payment_method_controls,omitempty" url:"legacy_payment_method_controls,omitempty"`
-	// The explicit payment method configuration for the plan. If not provided, the platform or company's defaults will apply.
-	PaymentMethodConfiguration *CreateInvoicesRequestProductIDPlanPaymentMethodConfiguration `json:"payment_method_configuration,omitempty" url:"payment_method_configuration,omitempty"`
-	// Indicates if the plan is a one time payment or recurring.
-	PlanType *PlanTypes `json:"plan_type,omitempty" url:"plan_type,omitempty"`
-	// This is the release method the business uses to sell this plan.
-	ReleaseMethod *ReleaseMethod `json:"release_method,omitempty" url:"release_method,omitempty"`
-	// The amount the customer is charged every billing period. Use only if a recurring payment. Provided as a number in the specified currency. Eg: 10.43 for $10.43
-	RenewalPrice *float64 `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
-	// The number of units available for purchase.
-	Stock *int `json:"stock,omitempty" url:"stock,omitempty"`
-	// The number of free trial days added before a renewal plan.
-	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
-	// When true, the plan has unlimited stock (stock field is ignored). When false, purchases are limited by the stock field.
-	UnlimitedStock *bool `json:"unlimited_stock,omitempty" url:"unlimited_stock,omitempty"`
-	// Shows or hides the plan from public/business view.
-	Visibility *Visibility `json:"visibility,omitempty" url:"visibility,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateInvoicesRequestProductIDPlan) GetAdaptivePricingEnabled() *bool {
-	if c == nil {
-		return nil
-	}
-	return c.AdaptivePricingEnabled
-}
-
-func (c *CreateInvoicesRequestProductIDPlan) GetBillingPeriod() *int {
-	if c == nil {
-		return nil
-	}
-	return c.BillingPeriod
-}
-
-func (c *CreateInvoicesRequestProductIDPlan) GetCurrency() *Currencies {
-	if c == nil {
-		return nil
-	}
-	return c.Currency
-}
-
-func (c *CreateInvoicesRequestProductIDPlan) GetCustomFields() []*CreateInvoicesRequestProductIDPlanCustomFieldsItem {
-	if c == nil {
-		return nil
-	}
-	return c.CustomFields
-}
-
-func (c *CreateInvoicesRequestProductIDPlan) GetDescription() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Description
-}
-
-func (c *CreateInvoicesRequestProductIDPlan) GetExpirationDays() *int {
-	if c == nil {
-		return nil
-	}
-	return c.ExpirationDays
-}
-
-func (c *CreateInvoicesRequestProductIDPlan) GetInitialPrice() *float64 {
-	if c == nil {
-		return nil
-	}
-	return c.InitialPrice
-}
-
-func (c *CreateInvoicesRequestProductIDPlan) GetInternalNotes() *string {
-	if c == nil {
-		return nil
-	}
-	return c.InternalNotes
-}
-
-func (c *CreateInvoicesRequestProductIDPlan) GetLegacyPaymentMethodControls() *bool {
-	if c == nil {
-		return nil
-	}
-	return c.LegacyPaymentMethodControls
-}
-
-func (c *CreateInvoicesRequestProductIDPlan) GetPaymentMethodConfiguration() *CreateInvoicesRequestProductIDPlanPaymentMethodConfiguration {
-	if c == nil {
-		return nil
-	}
-	return c.PaymentMethodConfiguration
-}
-
-func (c *CreateInvoicesRequestProductIDPlan) GetPlanType() *PlanTypes {
-	if c == nil {
-		return nil
-	}
-	return c.PlanType
-}
-
-func (c *CreateInvoicesRequestProductIDPlan) GetReleaseMethod() *ReleaseMethod {
-	if c == nil {
-		return nil
-	}
-	return c.ReleaseMethod
-}
-
-func (c *CreateInvoicesRequestProductIDPlan) GetRenewalPrice() *float64 {
-	if c == nil {
-		return nil
-	}
-	return c.RenewalPrice
-}
-
-func (c *CreateInvoicesRequestProductIDPlan) GetStock() *int {
-	if c == nil {
-		return nil
-	}
-	return c.Stock
-}
-
-func (c *CreateInvoicesRequestProductIDPlan) GetTrialPeriodDays() *int {
-	if c == nil {
-		return nil
-	}
-	return c.TrialPeriodDays
-}
-
-func (c *CreateInvoicesRequestProductIDPlan) GetUnlimitedStock() *bool {
-	if c == nil {
-		return nil
-	}
-	return c.UnlimitedStock
-}
-
-func (c *CreateInvoicesRequestProductIDPlan) GetVisibility() *Visibility {
-	if c == nil {
-		return nil
-	}
-	return c.Visibility
-}
-
-func (c *CreateInvoicesRequestProductIDPlan) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateInvoicesRequestProductIDPlan) require(field *big.Int) {
-	next := new(big.Int)
-	if c.explicitFields != nil {
-		next.Set(c.explicitFields)
-	}
-	next.Or(next, field)
-	c.explicitFields = next
-}
-
-// SetAdaptivePricingEnabled sets the AdaptivePricingEnabled field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDPlan) SetAdaptivePricingEnabled(adaptivePricingEnabled *bool) {
-	c.AdaptivePricingEnabled = adaptivePricingEnabled
-	c.require(createInvoicesRequestProductIDPlanFieldAdaptivePricingEnabled)
-}
-
-// SetBillingPeriod sets the BillingPeriod field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDPlan) SetBillingPeriod(billingPeriod *int) {
-	c.BillingPeriod = billingPeriod
-	c.require(createInvoicesRequestProductIDPlanFieldBillingPeriod)
-}
-
-// SetCurrency sets the Currency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDPlan) SetCurrency(currency *Currencies) {
-	c.Currency = currency
-	c.require(createInvoicesRequestProductIDPlanFieldCurrency)
-}
-
-// SetCustomFields sets the CustomFields field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDPlan) SetCustomFields(customFields []*CreateInvoicesRequestProductIDPlanCustomFieldsItem) {
-	c.CustomFields = customFields
-	c.require(createInvoicesRequestProductIDPlanFieldCustomFields)
-}
-
-// SetDescription sets the Description field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDPlan) SetDescription(description *string) {
-	c.Description = description
-	c.require(createInvoicesRequestProductIDPlanFieldDescription)
-}
-
-// SetExpirationDays sets the ExpirationDays field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDPlan) SetExpirationDays(expirationDays *int) {
-	c.ExpirationDays = expirationDays
-	c.require(createInvoicesRequestProductIDPlanFieldExpirationDays)
-}
-
-// SetInitialPrice sets the InitialPrice field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDPlan) SetInitialPrice(initialPrice *float64) {
-	c.InitialPrice = initialPrice
-	c.require(createInvoicesRequestProductIDPlanFieldInitialPrice)
-}
-
-// SetInternalNotes sets the InternalNotes field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDPlan) SetInternalNotes(internalNotes *string) {
-	c.InternalNotes = internalNotes
-	c.require(createInvoicesRequestProductIDPlanFieldInternalNotes)
-}
-
-// SetLegacyPaymentMethodControls sets the LegacyPaymentMethodControls field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDPlan) SetLegacyPaymentMethodControls(legacyPaymentMethodControls *bool) {
-	c.LegacyPaymentMethodControls = legacyPaymentMethodControls
-	c.require(createInvoicesRequestProductIDPlanFieldLegacyPaymentMethodControls)
-}
-
-// SetPaymentMethodConfiguration sets the PaymentMethodConfiguration field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDPlan) SetPaymentMethodConfiguration(paymentMethodConfiguration *CreateInvoicesRequestProductIDPlanPaymentMethodConfiguration) {
-	c.PaymentMethodConfiguration = paymentMethodConfiguration
-	c.require(createInvoicesRequestProductIDPlanFieldPaymentMethodConfiguration)
-}
-
-// SetPlanType sets the PlanType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDPlan) SetPlanType(planType *PlanTypes) {
-	c.PlanType = planType
-	c.require(createInvoicesRequestProductIDPlanFieldPlanType)
-}
-
-// SetReleaseMethod sets the ReleaseMethod field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDPlan) SetReleaseMethod(releaseMethod *ReleaseMethod) {
-	c.ReleaseMethod = releaseMethod
-	c.require(createInvoicesRequestProductIDPlanFieldReleaseMethod)
+	c.require(createInvoicesRequestItemsItemVariantFieldProductID)
 }
 
 // SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDPlan) SetRenewalPrice(renewalPrice *float64) {
+func (c *CreateInvoicesRequestItemsItemVariant) SetRenewalPrice(renewalPrice *float64) {
 	c.RenewalPrice = renewalPrice
-	c.require(createInvoicesRequestProductIDPlanFieldRenewalPrice)
+	c.require(createInvoicesRequestItemsItemVariantFieldRenewalPrice)
 }
 
-// SetStock sets the Stock field and marks it as non-optional;
+// SetTitle sets the Title field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDPlan) SetStock(stock *int) {
-	c.Stock = stock
-	c.require(createInvoicesRequestProductIDPlanFieldStock)
+func (c *CreateInvoicesRequestItemsItemVariant) SetTitle(title *string) {
+	c.Title = title
+	c.require(createInvoicesRequestItemsItemVariantFieldTitle)
 }
 
 // SetTrialPeriodDays sets the TrialPeriodDays field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDPlan) SetTrialPeriodDays(trialPeriodDays *int) {
+func (c *CreateInvoicesRequestItemsItemVariant) SetTrialPeriodDays(trialPeriodDays *int) {
 	c.TrialPeriodDays = trialPeriodDays
-	c.require(createInvoicesRequestProductIDPlanFieldTrialPeriodDays)
-}
-
-// SetUnlimitedStock sets the UnlimitedStock field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDPlan) SetUnlimitedStock(unlimitedStock *bool) {
-	c.UnlimitedStock = unlimitedStock
-	c.require(createInvoicesRequestProductIDPlanFieldUnlimitedStock)
+	c.require(createInvoicesRequestItemsItemVariantFieldTrialPeriodDays)
 }
 
 // SetVisibility sets the Visibility field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDPlan) SetVisibility(visibility *Visibility) {
+func (c *CreateInvoicesRequestItemsItemVariant) SetVisibility(visibility *CreateInvoicesRequestItemsItemVariantVisibility) {
 	c.Visibility = visibility
-	c.require(createInvoicesRequestProductIDPlanFieldVisibility)
+	c.require(createInvoicesRequestItemsItemVariantFieldVisibility)
 }
 
-func (c *CreateInvoicesRequestProductIDPlan) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateInvoicesRequestProductIDPlan
+func (c *CreateInvoicesRequestItemsItemVariant) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateInvoicesRequestItemsItemVariant
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*c = CreateInvoicesRequestProductIDPlan(value)
+	*c = CreateInvoicesRequestItemsItemVariant(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *c)
 	if err != nil {
 		return err
 	}
 	c.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestProductIDPlanNullableFields)
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestItemsItemVariantNullableFields)
 	if err != nil {
 		return err
 	}
@@ -4995,8 +2115,8 @@ func (c *CreateInvoicesRequestProductIDPlan) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (c *CreateInvoicesRequestProductIDPlan) MarshalJSON() ([]byte, error) {
-	type embed CreateInvoicesRequestProductIDPlan
+func (c *CreateInvoicesRequestItemsItemVariant) MarshalJSON() ([]byte, error) {
+	type embed CreateInvoicesRequestItemsItemVariant
 	var marshaler = struct {
 		embed
 	}{
@@ -5006,7 +2126,7 @@ func (c *CreateInvoicesRequestProductIDPlan) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (c *CreateInvoicesRequestProductIDPlan) String() string {
+func (c *CreateInvoicesRequestItemsItemVariant) String() string {
 	if c == nil {
 		return "<nil>"
 	}
@@ -5021,1186 +2141,396 @@ func (c *CreateInvoicesRequestProductIDPlan) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-var (
-	createInvoicesRequestProductIDPlanCustomFieldsItemFieldFieldType   = big.NewInt(1 << 0)
-	createInvoicesRequestProductIDPlanCustomFieldsItemFieldID          = big.NewInt(1 << 1)
-	createInvoicesRequestProductIDPlanCustomFieldsItemFieldName        = big.NewInt(1 << 2)
-	createInvoicesRequestProductIDPlanCustomFieldsItemFieldOrder       = big.NewInt(1 << 3)
-	createInvoicesRequestProductIDPlanCustomFieldsItemFieldPlaceholder = big.NewInt(1 << 4)
-	createInvoicesRequestProductIDPlanCustomFieldsItemFieldRequired    = big.NewInt(1 << 5)
+// Billing model for the variant.
+type CreateInvoicesRequestItemsItemVariantBillingType string
+
+const (
+	CreateInvoicesRequestItemsItemVariantBillingTypeRenewal CreateInvoicesRequestItemsItemVariantBillingType = "renewal"
+	CreateInvoicesRequestItemsItemVariantBillingTypeOneTime CreateInvoicesRequestItemsItemVariantBillingType = "one_time"
 )
 
-// createInvoicesRequestProductIDPlanCustomFieldsItemNullableFields maps the wire names of CreateInvoicesRequestProductIDPlanCustomFieldsItem's nullable fields (required or optional) to their field bits.
-var createInvoicesRequestProductIDPlanCustomFieldsItemNullableFields = map[string]*big.Int{
-	"id":          createInvoicesRequestProductIDPlanCustomFieldsItemFieldID,
-	"order":       createInvoicesRequestProductIDPlanCustomFieldsItemFieldOrder,
-	"placeholder": createInvoicesRequestProductIDPlanCustomFieldsItemFieldPlaceholder,
-	"required":    createInvoicesRequestProductIDPlanCustomFieldsItemFieldRequired,
-}
-
-type CreateInvoicesRequestProductIDPlanCustomFieldsItem struct {
-	// The type of the custom field.
-	FieldType CustomFieldTypes `json:"field_type" url:"field_type"`
-	// The ID of the custom field (if being updated)
-	ID *string `json:"id,omitempty" url:"id,omitempty"`
-	// The name of the custom field.
-	Name string `json:"name" url:"name"`
-	// The order of the field.
-	Order *int `json:"order,omitempty" url:"order,omitempty"`
-	// The placeholder value of the field.
-	Placeholder *string `json:"placeholder,omitempty" url:"placeholder,omitempty"`
-	// Whether or not the field is required.
-	Required *bool `json:"required,omitempty" url:"required,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateInvoicesRequestProductIDPlanCustomFieldsItem) GetFieldType() CustomFieldTypes {
-	if c == nil {
-		return ""
+func NewCreateInvoicesRequestItemsItemVariantBillingTypeFromString(s string) (CreateInvoicesRequestItemsItemVariantBillingType, error) {
+	switch s {
+	case "renewal":
+		return CreateInvoicesRequestItemsItemVariantBillingTypeRenewal, nil
+	case "one_time":
+		return CreateInvoicesRequestItemsItemVariantBillingTypeOneTime, nil
 	}
-	return c.FieldType
+	var t CreateInvoicesRequestItemsItemVariantBillingType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (c *CreateInvoicesRequestProductIDPlanCustomFieldsItem) GetID() *string {
-	if c == nil {
-		return nil
-	}
-	return c.ID
+func (c CreateInvoicesRequestItemsItemVariantBillingType) Ptr() *CreateInvoicesRequestItemsItemVariantBillingType {
+	return &c
 }
 
-func (c *CreateInvoicesRequestProductIDPlanCustomFieldsItem) GetName() string {
-	if c == nil {
-		return ""
-	}
-	return c.Name
-}
+// Currency code for the variant prices.
+type CreateInvoicesRequestItemsItemVariantCurrency string
 
-func (c *CreateInvoicesRequestProductIDPlanCustomFieldsItem) GetOrder() *int {
-	if c == nil {
-		return nil
-	}
-	return c.Order
-}
-
-func (c *CreateInvoicesRequestProductIDPlanCustomFieldsItem) GetPlaceholder() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Placeholder
-}
-
-func (c *CreateInvoicesRequestProductIDPlanCustomFieldsItem) GetRequired() *bool {
-	if c == nil {
-		return nil
-	}
-	return c.Required
-}
-
-func (c *CreateInvoicesRequestProductIDPlanCustomFieldsItem) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateInvoicesRequestProductIDPlanCustomFieldsItem) require(field *big.Int) {
-	next := new(big.Int)
-	if c.explicitFields != nil {
-		next.Set(c.explicitFields)
-	}
-	next.Or(next, field)
-	c.explicitFields = next
-}
-
-// SetFieldType sets the FieldType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDPlanCustomFieldsItem) SetFieldType(fieldType CustomFieldTypes) {
-	c.FieldType = fieldType
-	c.require(createInvoicesRequestProductIDPlanCustomFieldsItemFieldFieldType)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDPlanCustomFieldsItem) SetID(id *string) {
-	c.ID = id
-	c.require(createInvoicesRequestProductIDPlanCustomFieldsItemFieldID)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDPlanCustomFieldsItem) SetName(name string) {
-	c.Name = name
-	c.require(createInvoicesRequestProductIDPlanCustomFieldsItemFieldName)
-}
-
-// SetOrder sets the Order field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDPlanCustomFieldsItem) SetOrder(order *int) {
-	c.Order = order
-	c.require(createInvoicesRequestProductIDPlanCustomFieldsItemFieldOrder)
-}
-
-// SetPlaceholder sets the Placeholder field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDPlanCustomFieldsItem) SetPlaceholder(placeholder *string) {
-	c.Placeholder = placeholder
-	c.require(createInvoicesRequestProductIDPlanCustomFieldsItemFieldPlaceholder)
-}
-
-// SetRequired sets the Required field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDPlanCustomFieldsItem) SetRequired(required *bool) {
-	c.Required = required
-	c.require(createInvoicesRequestProductIDPlanCustomFieldsItemFieldRequired)
-}
-
-func (c *CreateInvoicesRequestProductIDPlanCustomFieldsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateInvoicesRequestProductIDPlanCustomFieldsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreateInvoicesRequestProductIDPlanCustomFieldsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestProductIDPlanCustomFieldsItemNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		c.require(presentFields)
-	}
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateInvoicesRequestProductIDPlanCustomFieldsItem) MarshalJSON() ([]byte, error) {
-	type embed CreateInvoicesRequestProductIDPlanCustomFieldsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateInvoicesRequestProductIDPlanCustomFieldsItem) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-var (
-	createInvoicesRequestProductIDPlanPaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
-	createInvoicesRequestProductIDPlanPaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
-	createInvoicesRequestProductIDPlanPaymentMethodConfigurationFieldIncludePlatformDefaults = big.NewInt(1 << 2)
+const (
+	CreateInvoicesRequestItemsItemVariantCurrencyUsd     CreateInvoicesRequestItemsItemVariantCurrency = "usd"
+	CreateInvoicesRequestItemsItemVariantCurrencySgd     CreateInvoicesRequestItemsItemVariantCurrency = "sgd"
+	CreateInvoicesRequestItemsItemVariantCurrencyInr     CreateInvoicesRequestItemsItemVariantCurrency = "inr"
+	CreateInvoicesRequestItemsItemVariantCurrencyAud     CreateInvoicesRequestItemsItemVariantCurrency = "aud"
+	CreateInvoicesRequestItemsItemVariantCurrencyBrl     CreateInvoicesRequestItemsItemVariantCurrency = "brl"
+	CreateInvoicesRequestItemsItemVariantCurrencyCad     CreateInvoicesRequestItemsItemVariantCurrency = "cad"
+	CreateInvoicesRequestItemsItemVariantCurrencyDkk     CreateInvoicesRequestItemsItemVariantCurrency = "dkk"
+	CreateInvoicesRequestItemsItemVariantCurrencyEur     CreateInvoicesRequestItemsItemVariantCurrency = "eur"
+	CreateInvoicesRequestItemsItemVariantCurrencyNok     CreateInvoicesRequestItemsItemVariantCurrency = "nok"
+	CreateInvoicesRequestItemsItemVariantCurrencyGbp     CreateInvoicesRequestItemsItemVariantCurrency = "gbp"
+	CreateInvoicesRequestItemsItemVariantCurrencySek     CreateInvoicesRequestItemsItemVariantCurrency = "sek"
+	CreateInvoicesRequestItemsItemVariantCurrencyChf     CreateInvoicesRequestItemsItemVariantCurrency = "chf"
+	CreateInvoicesRequestItemsItemVariantCurrencyHkd     CreateInvoicesRequestItemsItemVariantCurrency = "hkd"
+	CreateInvoicesRequestItemsItemVariantCurrencyHuf     CreateInvoicesRequestItemsItemVariantCurrency = "huf"
+	CreateInvoicesRequestItemsItemVariantCurrencyJpy     CreateInvoicesRequestItemsItemVariantCurrency = "jpy"
+	CreateInvoicesRequestItemsItemVariantCurrencyMxn     CreateInvoicesRequestItemsItemVariantCurrency = "mxn"
+	CreateInvoicesRequestItemsItemVariantCurrencyMyr     CreateInvoicesRequestItemsItemVariantCurrency = "myr"
+	CreateInvoicesRequestItemsItemVariantCurrencyPln     CreateInvoicesRequestItemsItemVariantCurrency = "pln"
+	CreateInvoicesRequestItemsItemVariantCurrencyCzk     CreateInvoicesRequestItemsItemVariantCurrency = "czk"
+	CreateInvoicesRequestItemsItemVariantCurrencyNzd     CreateInvoicesRequestItemsItemVariantCurrency = "nzd"
+	CreateInvoicesRequestItemsItemVariantCurrencyAed     CreateInvoicesRequestItemsItemVariantCurrency = "aed"
+	CreateInvoicesRequestItemsItemVariantCurrencyEth     CreateInvoicesRequestItemsItemVariantCurrency = "eth"
+	CreateInvoicesRequestItemsItemVariantCurrencyApe     CreateInvoicesRequestItemsItemVariantCurrency = "ape"
+	CreateInvoicesRequestItemsItemVariantCurrencyCop     CreateInvoicesRequestItemsItemVariantCurrency = "cop"
+	CreateInvoicesRequestItemsItemVariantCurrencyRon     CreateInvoicesRequestItemsItemVariantCurrency = "ron"
+	CreateInvoicesRequestItemsItemVariantCurrencyThb     CreateInvoicesRequestItemsItemVariantCurrency = "thb"
+	CreateInvoicesRequestItemsItemVariantCurrencyBgn     CreateInvoicesRequestItemsItemVariantCurrency = "bgn"
+	CreateInvoicesRequestItemsItemVariantCurrencyIdr     CreateInvoicesRequestItemsItemVariantCurrency = "idr"
+	CreateInvoicesRequestItemsItemVariantCurrencyDop     CreateInvoicesRequestItemsItemVariantCurrency = "dop"
+	CreateInvoicesRequestItemsItemVariantCurrencyPhp     CreateInvoicesRequestItemsItemVariantCurrency = "php"
+	CreateInvoicesRequestItemsItemVariantCurrencyTry     CreateInvoicesRequestItemsItemVariantCurrency = "try"
+	CreateInvoicesRequestItemsItemVariantCurrencyKrw     CreateInvoicesRequestItemsItemVariantCurrency = "krw"
+	CreateInvoicesRequestItemsItemVariantCurrencyTwd     CreateInvoicesRequestItemsItemVariantCurrency = "twd"
+	CreateInvoicesRequestItemsItemVariantCurrencyVnd     CreateInvoicesRequestItemsItemVariantCurrency = "vnd"
+	CreateInvoicesRequestItemsItemVariantCurrencyPkr     CreateInvoicesRequestItemsItemVariantCurrency = "pkr"
+	CreateInvoicesRequestItemsItemVariantCurrencyClp     CreateInvoicesRequestItemsItemVariantCurrency = "clp"
+	CreateInvoicesRequestItemsItemVariantCurrencyUyu     CreateInvoicesRequestItemsItemVariantCurrency = "uyu"
+	CreateInvoicesRequestItemsItemVariantCurrencyArs     CreateInvoicesRequestItemsItemVariantCurrency = "ars"
+	CreateInvoicesRequestItemsItemVariantCurrencyZar     CreateInvoicesRequestItemsItemVariantCurrency = "zar"
+	CreateInvoicesRequestItemsItemVariantCurrencyDzd     CreateInvoicesRequestItemsItemVariantCurrency = "dzd"
+	CreateInvoicesRequestItemsItemVariantCurrencyTnd     CreateInvoicesRequestItemsItemVariantCurrency = "tnd"
+	CreateInvoicesRequestItemsItemVariantCurrencyMad     CreateInvoicesRequestItemsItemVariantCurrency = "mad"
+	CreateInvoicesRequestItemsItemVariantCurrencyKes     CreateInvoicesRequestItemsItemVariantCurrency = "kes"
+	CreateInvoicesRequestItemsItemVariantCurrencyKwd     CreateInvoicesRequestItemsItemVariantCurrency = "kwd"
+	CreateInvoicesRequestItemsItemVariantCurrencyJod     CreateInvoicesRequestItemsItemVariantCurrency = "jod"
+	CreateInvoicesRequestItemsItemVariantCurrencyAll     CreateInvoicesRequestItemsItemVariantCurrency = "all"
+	CreateInvoicesRequestItemsItemVariantCurrencyXcd     CreateInvoicesRequestItemsItemVariantCurrency = "xcd"
+	CreateInvoicesRequestItemsItemVariantCurrencyAmd     CreateInvoicesRequestItemsItemVariantCurrency = "amd"
+	CreateInvoicesRequestItemsItemVariantCurrencyBsd     CreateInvoicesRequestItemsItemVariantCurrency = "bsd"
+	CreateInvoicesRequestItemsItemVariantCurrencyBhd     CreateInvoicesRequestItemsItemVariantCurrency = "bhd"
+	CreateInvoicesRequestItemsItemVariantCurrencyBob     CreateInvoicesRequestItemsItemVariantCurrency = "bob"
+	CreateInvoicesRequestItemsItemVariantCurrencyBam     CreateInvoicesRequestItemsItemVariantCurrency = "bam"
+	CreateInvoicesRequestItemsItemVariantCurrencyKhr     CreateInvoicesRequestItemsItemVariantCurrency = "khr"
+	CreateInvoicesRequestItemsItemVariantCurrencyCrc     CreateInvoicesRequestItemsItemVariantCurrency = "crc"
+	CreateInvoicesRequestItemsItemVariantCurrencyXof     CreateInvoicesRequestItemsItemVariantCurrency = "xof"
+	CreateInvoicesRequestItemsItemVariantCurrencyEgp     CreateInvoicesRequestItemsItemVariantCurrency = "egp"
+	CreateInvoicesRequestItemsItemVariantCurrencyEtb     CreateInvoicesRequestItemsItemVariantCurrency = "etb"
+	CreateInvoicesRequestItemsItemVariantCurrencyGmd     CreateInvoicesRequestItemsItemVariantCurrency = "gmd"
+	CreateInvoicesRequestItemsItemVariantCurrencyGhs     CreateInvoicesRequestItemsItemVariantCurrency = "ghs"
+	CreateInvoicesRequestItemsItemVariantCurrencyGtq     CreateInvoicesRequestItemsItemVariantCurrency = "gtq"
+	CreateInvoicesRequestItemsItemVariantCurrencyGyd     CreateInvoicesRequestItemsItemVariantCurrency = "gyd"
+	CreateInvoicesRequestItemsItemVariantCurrencyIls     CreateInvoicesRequestItemsItemVariantCurrency = "ils"
+	CreateInvoicesRequestItemsItemVariantCurrencyJmd     CreateInvoicesRequestItemsItemVariantCurrency = "jmd"
+	CreateInvoicesRequestItemsItemVariantCurrencyMop     CreateInvoicesRequestItemsItemVariantCurrency = "mop"
+	CreateInvoicesRequestItemsItemVariantCurrencyMga     CreateInvoicesRequestItemsItemVariantCurrency = "mga"
+	CreateInvoicesRequestItemsItemVariantCurrencyMur     CreateInvoicesRequestItemsItemVariantCurrency = "mur"
+	CreateInvoicesRequestItemsItemVariantCurrencyMdl     CreateInvoicesRequestItemsItemVariantCurrency = "mdl"
+	CreateInvoicesRequestItemsItemVariantCurrencyMnt     CreateInvoicesRequestItemsItemVariantCurrency = "mnt"
+	CreateInvoicesRequestItemsItemVariantCurrencyNad     CreateInvoicesRequestItemsItemVariantCurrency = "nad"
+	CreateInvoicesRequestItemsItemVariantCurrencyNgn     CreateInvoicesRequestItemsItemVariantCurrency = "ngn"
+	CreateInvoicesRequestItemsItemVariantCurrencyMkd     CreateInvoicesRequestItemsItemVariantCurrency = "mkd"
+	CreateInvoicesRequestItemsItemVariantCurrencyOmr     CreateInvoicesRequestItemsItemVariantCurrency = "omr"
+	CreateInvoicesRequestItemsItemVariantCurrencyPyg     CreateInvoicesRequestItemsItemVariantCurrency = "pyg"
+	CreateInvoicesRequestItemsItemVariantCurrencyPen     CreateInvoicesRequestItemsItemVariantCurrency = "pen"
+	CreateInvoicesRequestItemsItemVariantCurrencyQar     CreateInvoicesRequestItemsItemVariantCurrency = "qar"
+	CreateInvoicesRequestItemsItemVariantCurrencyRwf     CreateInvoicesRequestItemsItemVariantCurrency = "rwf"
+	CreateInvoicesRequestItemsItemVariantCurrencySar     CreateInvoicesRequestItemsItemVariantCurrency = "sar"
+	CreateInvoicesRequestItemsItemVariantCurrencyRsd     CreateInvoicesRequestItemsItemVariantCurrency = "rsd"
+	CreateInvoicesRequestItemsItemVariantCurrencyLkr     CreateInvoicesRequestItemsItemVariantCurrency = "lkr"
+	CreateInvoicesRequestItemsItemVariantCurrencyTzs     CreateInvoicesRequestItemsItemVariantCurrency = "tzs"
+	CreateInvoicesRequestItemsItemVariantCurrencyTtd     CreateInvoicesRequestItemsItemVariantCurrency = "ttd"
+	CreateInvoicesRequestItemsItemVariantCurrencyUzs     CreateInvoicesRequestItemsItemVariantCurrency = "uzs"
+	CreateInvoicesRequestItemsItemVariantCurrencyRub     CreateInvoicesRequestItemsItemVariantCurrency = "rub"
+	CreateInvoicesRequestItemsItemVariantCurrencyBtc     CreateInvoicesRequestItemsItemVariantCurrency = "btc"
+	CreateInvoicesRequestItemsItemVariantCurrencyCny     CreateInvoicesRequestItemsItemVariantCurrency = "cny"
+	CreateInvoicesRequestItemsItemVariantCurrencyUsdt    CreateInvoicesRequestItemsItemVariantCurrency = "usdt"
+	CreateInvoicesRequestItemsItemVariantCurrencyKzt     CreateInvoicesRequestItemsItemVariantCurrency = "kzt"
+	CreateInvoicesRequestItemsItemVariantCurrencyAwg     CreateInvoicesRequestItemsItemVariantCurrency = "awg"
+	CreateInvoicesRequestItemsItemVariantCurrencyWhopUsd CreateInvoicesRequestItemsItemVariantCurrency = "whop_usd"
+	CreateInvoicesRequestItemsItemVariantCurrencyXau     CreateInvoicesRequestItemsItemVariantCurrency = "xau"
 )
 
-// createInvoicesRequestProductIDPlanPaymentMethodConfigurationNullableFields maps the wire names of CreateInvoicesRequestProductIDPlanPaymentMethodConfiguration's nullable fields (required or optional) to their field bits.
-var createInvoicesRequestProductIDPlanPaymentMethodConfigurationNullableFields = map[string]*big.Int{
-	"include_platform_defaults": createInvoicesRequestProductIDPlanPaymentMethodConfigurationFieldIncludePlatformDefaults,
+func NewCreateInvoicesRequestItemsItemVariantCurrencyFromString(s string) (CreateInvoicesRequestItemsItemVariantCurrency, error) {
+	switch s {
+	case "usd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyUsd, nil
+	case "sgd":
+		return CreateInvoicesRequestItemsItemVariantCurrencySgd, nil
+	case "inr":
+		return CreateInvoicesRequestItemsItemVariantCurrencyInr, nil
+	case "aud":
+		return CreateInvoicesRequestItemsItemVariantCurrencyAud, nil
+	case "brl":
+		return CreateInvoicesRequestItemsItemVariantCurrencyBrl, nil
+	case "cad":
+		return CreateInvoicesRequestItemsItemVariantCurrencyCad, nil
+	case "dkk":
+		return CreateInvoicesRequestItemsItemVariantCurrencyDkk, nil
+	case "eur":
+		return CreateInvoicesRequestItemsItemVariantCurrencyEur, nil
+	case "nok":
+		return CreateInvoicesRequestItemsItemVariantCurrencyNok, nil
+	case "gbp":
+		return CreateInvoicesRequestItemsItemVariantCurrencyGbp, nil
+	case "sek":
+		return CreateInvoicesRequestItemsItemVariantCurrencySek, nil
+	case "chf":
+		return CreateInvoicesRequestItemsItemVariantCurrencyChf, nil
+	case "hkd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyHkd, nil
+	case "huf":
+		return CreateInvoicesRequestItemsItemVariantCurrencyHuf, nil
+	case "jpy":
+		return CreateInvoicesRequestItemsItemVariantCurrencyJpy, nil
+	case "mxn":
+		return CreateInvoicesRequestItemsItemVariantCurrencyMxn, nil
+	case "myr":
+		return CreateInvoicesRequestItemsItemVariantCurrencyMyr, nil
+	case "pln":
+		return CreateInvoicesRequestItemsItemVariantCurrencyPln, nil
+	case "czk":
+		return CreateInvoicesRequestItemsItemVariantCurrencyCzk, nil
+	case "nzd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyNzd, nil
+	case "aed":
+		return CreateInvoicesRequestItemsItemVariantCurrencyAed, nil
+	case "eth":
+		return CreateInvoicesRequestItemsItemVariantCurrencyEth, nil
+	case "ape":
+		return CreateInvoicesRequestItemsItemVariantCurrencyApe, nil
+	case "cop":
+		return CreateInvoicesRequestItemsItemVariantCurrencyCop, nil
+	case "ron":
+		return CreateInvoicesRequestItemsItemVariantCurrencyRon, nil
+	case "thb":
+		return CreateInvoicesRequestItemsItemVariantCurrencyThb, nil
+	case "bgn":
+		return CreateInvoicesRequestItemsItemVariantCurrencyBgn, nil
+	case "idr":
+		return CreateInvoicesRequestItemsItemVariantCurrencyIdr, nil
+	case "dop":
+		return CreateInvoicesRequestItemsItemVariantCurrencyDop, nil
+	case "php":
+		return CreateInvoicesRequestItemsItemVariantCurrencyPhp, nil
+	case "try":
+		return CreateInvoicesRequestItemsItemVariantCurrencyTry, nil
+	case "krw":
+		return CreateInvoicesRequestItemsItemVariantCurrencyKrw, nil
+	case "twd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyTwd, nil
+	case "vnd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyVnd, nil
+	case "pkr":
+		return CreateInvoicesRequestItemsItemVariantCurrencyPkr, nil
+	case "clp":
+		return CreateInvoicesRequestItemsItemVariantCurrencyClp, nil
+	case "uyu":
+		return CreateInvoicesRequestItemsItemVariantCurrencyUyu, nil
+	case "ars":
+		return CreateInvoicesRequestItemsItemVariantCurrencyArs, nil
+	case "zar":
+		return CreateInvoicesRequestItemsItemVariantCurrencyZar, nil
+	case "dzd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyDzd, nil
+	case "tnd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyTnd, nil
+	case "mad":
+		return CreateInvoicesRequestItemsItemVariantCurrencyMad, nil
+	case "kes":
+		return CreateInvoicesRequestItemsItemVariantCurrencyKes, nil
+	case "kwd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyKwd, nil
+	case "jod":
+		return CreateInvoicesRequestItemsItemVariantCurrencyJod, nil
+	case "all":
+		return CreateInvoicesRequestItemsItemVariantCurrencyAll, nil
+	case "xcd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyXcd, nil
+	case "amd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyAmd, nil
+	case "bsd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyBsd, nil
+	case "bhd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyBhd, nil
+	case "bob":
+		return CreateInvoicesRequestItemsItemVariantCurrencyBob, nil
+	case "bam":
+		return CreateInvoicesRequestItemsItemVariantCurrencyBam, nil
+	case "khr":
+		return CreateInvoicesRequestItemsItemVariantCurrencyKhr, nil
+	case "crc":
+		return CreateInvoicesRequestItemsItemVariantCurrencyCrc, nil
+	case "xof":
+		return CreateInvoicesRequestItemsItemVariantCurrencyXof, nil
+	case "egp":
+		return CreateInvoicesRequestItemsItemVariantCurrencyEgp, nil
+	case "etb":
+		return CreateInvoicesRequestItemsItemVariantCurrencyEtb, nil
+	case "gmd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyGmd, nil
+	case "ghs":
+		return CreateInvoicesRequestItemsItemVariantCurrencyGhs, nil
+	case "gtq":
+		return CreateInvoicesRequestItemsItemVariantCurrencyGtq, nil
+	case "gyd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyGyd, nil
+	case "ils":
+		return CreateInvoicesRequestItemsItemVariantCurrencyIls, nil
+	case "jmd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyJmd, nil
+	case "mop":
+		return CreateInvoicesRequestItemsItemVariantCurrencyMop, nil
+	case "mga":
+		return CreateInvoicesRequestItemsItemVariantCurrencyMga, nil
+	case "mur":
+		return CreateInvoicesRequestItemsItemVariantCurrencyMur, nil
+	case "mdl":
+		return CreateInvoicesRequestItemsItemVariantCurrencyMdl, nil
+	case "mnt":
+		return CreateInvoicesRequestItemsItemVariantCurrencyMnt, nil
+	case "nad":
+		return CreateInvoicesRequestItemsItemVariantCurrencyNad, nil
+	case "ngn":
+		return CreateInvoicesRequestItemsItemVariantCurrencyNgn, nil
+	case "mkd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyMkd, nil
+	case "omr":
+		return CreateInvoicesRequestItemsItemVariantCurrencyOmr, nil
+	case "pyg":
+		return CreateInvoicesRequestItemsItemVariantCurrencyPyg, nil
+	case "pen":
+		return CreateInvoicesRequestItemsItemVariantCurrencyPen, nil
+	case "qar":
+		return CreateInvoicesRequestItemsItemVariantCurrencyQar, nil
+	case "rwf":
+		return CreateInvoicesRequestItemsItemVariantCurrencyRwf, nil
+	case "sar":
+		return CreateInvoicesRequestItemsItemVariantCurrencySar, nil
+	case "rsd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyRsd, nil
+	case "lkr":
+		return CreateInvoicesRequestItemsItemVariantCurrencyLkr, nil
+	case "tzs":
+		return CreateInvoicesRequestItemsItemVariantCurrencyTzs, nil
+	case "ttd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyTtd, nil
+	case "uzs":
+		return CreateInvoicesRequestItemsItemVariantCurrencyUzs, nil
+	case "rub":
+		return CreateInvoicesRequestItemsItemVariantCurrencyRub, nil
+	case "btc":
+		return CreateInvoicesRequestItemsItemVariantCurrencyBtc, nil
+	case "cny":
+		return CreateInvoicesRequestItemsItemVariantCurrencyCny, nil
+	case "usdt":
+		return CreateInvoicesRequestItemsItemVariantCurrencyUsdt, nil
+	case "kzt":
+		return CreateInvoicesRequestItemsItemVariantCurrencyKzt, nil
+	case "awg":
+		return CreateInvoicesRequestItemsItemVariantCurrencyAwg, nil
+	case "whop_usd":
+		return CreateInvoicesRequestItemsItemVariantCurrencyWhopUsd, nil
+	case "xau":
+		return CreateInvoicesRequestItemsItemVariantCurrencyXau, nil
+	}
+	var t CreateInvoicesRequestItemsItemVariantCurrency
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-// The explicit payment method configuration for the plan. If not provided, the platform or company's defaults will apply.
-type CreateInvoicesRequestProductIDPlanPaymentMethodConfiguration struct {
-	// An array of payment method identifiers that are explicitly disabled. Only applies if the include_platform_defaults is true.
-	Disabled []PaymentMethodTypes `json:"disabled" url:"disabled"`
-	// An array of payment method identifiers that are explicitly enabled. This means these payment methods will be shown on checkout. Example use case is to only enable a specific payment method like cashapp, or extending the platform defaults with additional methods.
-	Enabled []PaymentMethodTypes `json:"enabled" url:"enabled"`
-	// Whether Whop's platform default payment method enablement settings are included in this configuration. The full list of default payment methods can be found in the documentation at docs.whop.com/payments.
-	IncludePlatformDefaults *bool `json:"include_platform_defaults,omitempty" url:"include_platform_defaults,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
+func (c CreateInvoicesRequestItemsItemVariantCurrency) Ptr() *CreateInvoicesRequestItemsItemVariantCurrency {
+	return &c
 }
 
-func (c *CreateInvoicesRequestProductIDPlanPaymentMethodConfiguration) GetDisabled() []PaymentMethodTypes {
-	if c == nil {
-		return nil
-	}
-	return c.Disabled
-}
+// Whether the variant's price includes tax: `inclusive` (tax is included in the price), `exclusive` (tax is added on top), or `unspecified`. Omit it or pass `null` to use the account's tax setting. On an account enrolled in the Whop tax service, `inclusive` or `exclusive` replaces the account's setting and `unspecified` keeps it. Otherwise it applies only where the account is the merchant of record: `inclusive` or `exclusive` replaces the account's setting when the account collects tax, and `unspecified` means the variant collects no tax. Where Whop is the merchant of record, the account's setting applies. Variants that differ only in this value are different variants.
+type CreateInvoicesRequestItemsItemVariantOverrideTaxType string
 
-func (c *CreateInvoicesRequestProductIDPlanPaymentMethodConfiguration) GetEnabled() []PaymentMethodTypes {
-	if c == nil {
-		return nil
-	}
-	return c.Enabled
-}
-
-func (c *CreateInvoicesRequestProductIDPlanPaymentMethodConfiguration) GetIncludePlatformDefaults() *bool {
-	if c == nil {
-		return nil
-	}
-	return c.IncludePlatformDefaults
-}
-
-func (c *CreateInvoicesRequestProductIDPlanPaymentMethodConfiguration) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateInvoicesRequestProductIDPlanPaymentMethodConfiguration) require(field *big.Int) {
-	next := new(big.Int)
-	if c.explicitFields != nil {
-		next.Set(c.explicitFields)
-	}
-	next.Or(next, field)
-	c.explicitFields = next
-}
-
-// SetDisabled sets the Disabled field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDPlanPaymentMethodConfiguration) SetDisabled(disabled []PaymentMethodTypes) {
-	c.Disabled = disabled
-	c.require(createInvoicesRequestProductIDPlanPaymentMethodConfigurationFieldDisabled)
-}
-
-// SetEnabled sets the Enabled field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDPlanPaymentMethodConfiguration) SetEnabled(enabled []PaymentMethodTypes) {
-	c.Enabled = enabled
-	c.require(createInvoicesRequestProductIDPlanPaymentMethodConfigurationFieldEnabled)
-}
-
-// SetIncludePlatformDefaults sets the IncludePlatformDefaults field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductIDPlanPaymentMethodConfiguration) SetIncludePlatformDefaults(includePlatformDefaults *bool) {
-	c.IncludePlatformDefaults = includePlatformDefaults
-	c.require(createInvoicesRequestProductIDPlanPaymentMethodConfigurationFieldIncludePlatformDefaults)
-}
-
-func (c *CreateInvoicesRequestProductIDPlanPaymentMethodConfiguration) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateInvoicesRequestProductIDPlanPaymentMethodConfiguration
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreateInvoicesRequestProductIDPlanPaymentMethodConfiguration(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestProductIDPlanPaymentMethodConfigurationNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		c.require(presentFields)
-	}
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateInvoicesRequestProductIDPlanPaymentMethodConfiguration) MarshalJSON() ([]byte, error) {
-	type embed CreateInvoicesRequestProductIDPlanPaymentMethodConfiguration
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateInvoicesRequestProductIDPlanPaymentMethodConfiguration) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-var (
-	createInvoicesRequestProductLineItemsItemFieldLabel     = big.NewInt(1 << 0)
-	createInvoicesRequestProductLineItemsItemFieldQuantity  = big.NewInt(1 << 1)
-	createInvoicesRequestProductLineItemsItemFieldUnitPrice = big.NewInt(1 << 2)
+const (
+	CreateInvoicesRequestItemsItemVariantOverrideTaxTypeExclusive   CreateInvoicesRequestItemsItemVariantOverrideTaxType = "exclusive"
+	CreateInvoicesRequestItemsItemVariantOverrideTaxTypeInclusive   CreateInvoicesRequestItemsItemVariantOverrideTaxType = "inclusive"
+	CreateInvoicesRequestItemsItemVariantOverrideTaxTypeUnspecified CreateInvoicesRequestItemsItemVariantOverrideTaxType = "unspecified"
 )
 
-// createInvoicesRequestProductLineItemsItemNullableFields maps the wire names of CreateInvoicesRequestProductLineItemsItem's nullable fields (required or optional) to their field bits.
-var createInvoicesRequestProductLineItemsItemNullableFields = map[string]*big.Int{
-	"quantity": createInvoicesRequestProductLineItemsItemFieldQuantity,
+func NewCreateInvoicesRequestItemsItemVariantOverrideTaxTypeFromString(s string) (CreateInvoicesRequestItemsItemVariantOverrideTaxType, error) {
+	switch s {
+	case "exclusive":
+		return CreateInvoicesRequestItemsItemVariantOverrideTaxTypeExclusive, nil
+	case "inclusive":
+		return CreateInvoicesRequestItemsItemVariantOverrideTaxTypeInclusive, nil
+	case "unspecified":
+		return CreateInvoicesRequestItemsItemVariantOverrideTaxTypeUnspecified, nil
+	}
+	var t CreateInvoicesRequestItemsItemVariantOverrideTaxType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-// A single line item to include on the invoice, with a label, quantity, and unit price.
-type CreateInvoicesRequestProductLineItemsItem struct {
-	// The label or description for this line item.
-	Label string `json:"label" url:"label"`
-	// The quantity of this line item. Defaults to 1.
-	Quantity *float64 `json:"quantity,omitempty" url:"quantity,omitempty"`
-	// The unit price for this line item. Provided as a number in the specified currency. Eg: 10.43 for $10.43. Negative values represent a credit or deduction, as long as the line items still total a chargeable amount.
-	UnitPrice float64 `json:"unit_price" url:"unit_price"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateInvoicesRequestProductLineItemsItem) GetLabel() string {
-	if c == nil {
-		return ""
-	}
-	return c.Label
-}
-
-func (c *CreateInvoicesRequestProductLineItemsItem) GetQuantity() *float64 {
-	if c == nil {
-		return nil
-	}
-	return c.Quantity
-}
-
-func (c *CreateInvoicesRequestProductLineItemsItem) GetUnitPrice() float64 {
-	if c == nil {
-		return 0
-	}
-	return c.UnitPrice
-}
-
-func (c *CreateInvoicesRequestProductLineItemsItem) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateInvoicesRequestProductLineItemsItem) require(field *big.Int) {
-	next := new(big.Int)
-	if c.explicitFields != nil {
-		next.Set(c.explicitFields)
-	}
-	next.Or(next, field)
-	c.explicitFields = next
-}
-
-// SetLabel sets the Label field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductLineItemsItem) SetLabel(label string) {
-	c.Label = label
-	c.require(createInvoicesRequestProductLineItemsItemFieldLabel)
-}
-
-// SetQuantity sets the Quantity field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductLineItemsItem) SetQuantity(quantity *float64) {
-	c.Quantity = quantity
-	c.require(createInvoicesRequestProductLineItemsItemFieldQuantity)
-}
-
-// SetUnitPrice sets the UnitPrice field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductLineItemsItem) SetUnitPrice(unitPrice float64) {
-	c.UnitPrice = unitPrice
-	c.require(createInvoicesRequestProductLineItemsItemFieldUnitPrice)
-}
-
-func (c *CreateInvoicesRequestProductLineItemsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateInvoicesRequestProductLineItemsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreateInvoicesRequestProductLineItemsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestProductLineItemsItemNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		c.require(presentFields)
-	}
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateInvoicesRequestProductLineItemsItem) MarshalJSON() ([]byte, error) {
-	type embed CreateInvoicesRequestProductLineItemsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateInvoicesRequestProductLineItemsItem) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
+func (c CreateInvoicesRequestItemsItemVariantOverrideTaxType) Ptr() *CreateInvoicesRequestItemsItemVariantOverrideTaxType {
+	return &c
 }
 
 var (
-	createInvoicesRequestProductPlanFieldAdaptivePricingEnabled      = big.NewInt(1 << 0)
-	createInvoicesRequestProductPlanFieldBillingPeriod               = big.NewInt(1 << 1)
-	createInvoicesRequestProductPlanFieldCurrency                    = big.NewInt(1 << 2)
-	createInvoicesRequestProductPlanFieldCustomFields                = big.NewInt(1 << 3)
-	createInvoicesRequestProductPlanFieldDescription                 = big.NewInt(1 << 4)
-	createInvoicesRequestProductPlanFieldExpirationDays              = big.NewInt(1 << 5)
-	createInvoicesRequestProductPlanFieldInitialPrice                = big.NewInt(1 << 6)
-	createInvoicesRequestProductPlanFieldInternalNotes               = big.NewInt(1 << 7)
-	createInvoicesRequestProductPlanFieldLegacyPaymentMethodControls = big.NewInt(1 << 8)
-	createInvoicesRequestProductPlanFieldPaymentMethodConfiguration  = big.NewInt(1 << 9)
-	createInvoicesRequestProductPlanFieldPlanType                    = big.NewInt(1 << 10)
-	createInvoicesRequestProductPlanFieldReleaseMethod               = big.NewInt(1 << 11)
-	createInvoicesRequestProductPlanFieldRenewalPrice                = big.NewInt(1 << 12)
-	createInvoicesRequestProductPlanFieldStock                       = big.NewInt(1 << 13)
-	createInvoicesRequestProductPlanFieldTrialPeriodDays             = big.NewInt(1 << 14)
-	createInvoicesRequestProductPlanFieldUnlimitedStock              = big.NewInt(1 << 15)
-	createInvoicesRequestProductPlanFieldVisibility                  = big.NewInt(1 << 16)
+	createInvoicesRequestItemsItemVariantProductFieldCollectShippingAddress    = big.NewInt(1 << 0)
+	createInvoicesRequestItemsItemVariantProductFieldCustomStatementDescriptor = big.NewInt(1 << 1)
+	createInvoicesRequestItemsItemVariantProductFieldDescription               = big.NewInt(1 << 2)
+	createInvoicesRequestItemsItemVariantProductFieldExternalIdentifier        = big.NewInt(1 << 3)
+	createInvoicesRequestItemsItemVariantProductFieldGlobalAffiliatePercentage = big.NewInt(1 << 4)
+	createInvoicesRequestItemsItemVariantProductFieldGlobalAffiliateStatus     = big.NewInt(1 << 5)
+	createInvoicesRequestItemsItemVariantProductFieldHeadline                  = big.NewInt(1 << 6)
+	createInvoicesRequestItemsItemVariantProductFieldProductTaxCodeID          = big.NewInt(1 << 7)
+	createInvoicesRequestItemsItemVariantProductFieldRedirectPurchaseURL       = big.NewInt(1 << 8)
+	createInvoicesRequestItemsItemVariantProductFieldRoute                     = big.NewInt(1 << 9)
+	createInvoicesRequestItemsItemVariantProductFieldTitle                     = big.NewInt(1 << 10)
+	createInvoicesRequestItemsItemVariantProductFieldVisibility                = big.NewInt(1 << 11)
 )
 
-// createInvoicesRequestProductPlanNullableFields maps the wire names of CreateInvoicesRequestProductPlan's nullable fields (required or optional) to their field bits.
-var createInvoicesRequestProductPlanNullableFields = map[string]*big.Int{
-	"adaptive_pricing_enabled":       createInvoicesRequestProductPlanFieldAdaptivePricingEnabled,
-	"billing_period":                 createInvoicesRequestProductPlanFieldBillingPeriod,
-	"currency":                       createInvoicesRequestProductPlanFieldCurrency,
-	"custom_fields":                  createInvoicesRequestProductPlanFieldCustomFields,
-	"description":                    createInvoicesRequestProductPlanFieldDescription,
-	"expiration_days":                createInvoicesRequestProductPlanFieldExpirationDays,
-	"initial_price":                  createInvoicesRequestProductPlanFieldInitialPrice,
-	"internal_notes":                 createInvoicesRequestProductPlanFieldInternalNotes,
-	"legacy_payment_method_controls": createInvoicesRequestProductPlanFieldLegacyPaymentMethodControls,
-	"payment_method_configuration":   createInvoicesRequestProductPlanFieldPaymentMethodConfiguration,
-	"plan_type":                      createInvoicesRequestProductPlanFieldPlanType,
-	"release_method":                 createInvoicesRequestProductPlanFieldReleaseMethod,
-	"renewal_price":                  createInvoicesRequestProductPlanFieldRenewalPrice,
-	"stock":                          createInvoicesRequestProductPlanFieldStock,
-	"trial_period_days":              createInvoicesRequestProductPlanFieldTrialPeriodDays,
-	"unlimited_stock":                createInvoicesRequestProductPlanFieldUnlimitedStock,
-	"visibility":                     createInvoicesRequestProductPlanFieldVisibility,
+// createInvoicesRequestItemsItemVariantProductNullableFields maps the wire names of CreateInvoicesRequestItemsItemVariantProduct's nullable fields (required or optional) to their field bits.
+var createInvoicesRequestItemsItemVariantProductNullableFields = map[string]*big.Int{
+	"collect_shipping_address":    createInvoicesRequestItemsItemVariantProductFieldCollectShippingAddress,
+	"custom_statement_descriptor": createInvoicesRequestItemsItemVariantProductFieldCustomStatementDescriptor,
+	"description":                 createInvoicesRequestItemsItemVariantProductFieldDescription,
+	"global_affiliate_percentage": createInvoicesRequestItemsItemVariantProductFieldGlobalAffiliatePercentage,
+	"global_affiliate_status":     createInvoicesRequestItemsItemVariantProductFieldGlobalAffiliateStatus,
+	"headline":                    createInvoicesRequestItemsItemVariantProductFieldHeadline,
+	"product_tax_code_id":         createInvoicesRequestItemsItemVariantProductFieldProductTaxCodeID,
+	"redirect_purchase_url":       createInvoicesRequestItemsItemVariantProductFieldRedirectPurchaseURL,
+	"route":                       createInvoicesRequestItemsItemVariantProductFieldRoute,
 }
 
-// The plan attributes defining the price, currency, and billing interval for this invoice.
-type CreateInvoicesRequestProductPlan struct {
-	// Whether this plan accepts local currency payments via adaptive pricing.
-	AdaptivePricingEnabled *bool `json:"adaptive_pricing_enabled,omitempty" url:"adaptive_pricing_enabled,omitempty"`
-	// The interval in days at which the plan charges (renewal plans).
-	BillingPeriod *int `json:"billing_period,omitempty" url:"billing_period,omitempty"`
-	// The three-letter ISO currency code for the plan's pricing. Defaults to USD.
-	Currency *Currencies `json:"currency,omitempty" url:"currency,omitempty"`
-	// An array of custom field objects.
-	CustomFields []*CreateInvoicesRequestProductPlanCustomFieldsItem `json:"custom_fields,omitempty" url:"custom_fields,omitempty"`
-	// The description of the plan.
+// Find or create a product by external identifier. Mutually exclusive with product_id.
+type CreateInvoicesRequestItemsItemVariantProduct struct {
+	// Whether to collect a shipping address at checkout.
+	CollectShippingAddress *bool `json:"collect_shipping_address,omitempty" url:"collect_shipping_address,omitempty"`
+	// Custom card statement descriptor for the product, starting with WHOP*.
+	CustomStatementDescriptor *string `json:"custom_statement_descriptor,omitempty" url:"custom_statement_descriptor,omitempty"`
+	// Product description.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
-	// The number of days until the membership expires and revokes access (expiration plans). For example, 365 for a one-year access period.
-	ExpirationDays *int `json:"expiration_days,omitempty" url:"expiration_days,omitempty"`
-	// An additional amount charged upon first purchase. Use only if a one time payment OR you want to charge an additional amount on top of the renewal price. Provided as a number in the specified currency. Eg: 10.43 for $10.43
-	InitialPrice *float64 `json:"initial_price,omitempty" url:"initial_price,omitempty"`
-	// A personal description or notes section for the business.
-	InternalNotes *string `json:"internal_notes,omitempty" url:"internal_notes,omitempty"`
-	// Whether this plan uses legacy payment method controls
-	LegacyPaymentMethodControls *bool `json:"legacy_payment_method_controls,omitempty" url:"legacy_payment_method_controls,omitempty"`
-	// The explicit payment method configuration for the plan. If not provided, the platform or company's defaults will apply.
-	PaymentMethodConfiguration *CreateInvoicesRequestProductPlanPaymentMethodConfiguration `json:"payment_method_configuration,omitempty" url:"payment_method_configuration,omitempty"`
-	// Indicates if the plan is a one time payment or recurring.
-	PlanType *PlanTypes `json:"plan_type,omitempty" url:"plan_type,omitempty"`
-	// This is the release method the business uses to sell this plan.
-	ReleaseMethod *ReleaseMethod `json:"release_method,omitempty" url:"release_method,omitempty"`
-	// The amount the customer is charged every billing period. Use only if a recurring payment. Provided as a number in the specified currency. Eg: 10.43 for $10.43
-	RenewalPrice *float64 `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
-	// The number of units available for purchase.
-	Stock *int `json:"stock,omitempty" url:"stock,omitempty"`
-	// The number of free trial days added before a renewal plan.
-	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
-	// When true, the plan has unlimited stock (stock field is ignored). When false, purchases are limited by the stock field.
-	UnlimitedStock *bool `json:"unlimited_stock,omitempty" url:"unlimited_stock,omitempty"`
-	// Shows or hides the plan from public/business view.
-	Visibility *Visibility `json:"visibility,omitempty" url:"visibility,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateInvoicesRequestProductPlan) GetAdaptivePricingEnabled() *bool {
-	if c == nil {
-		return nil
-	}
-	return c.AdaptivePricingEnabled
-}
-
-func (c *CreateInvoicesRequestProductPlan) GetBillingPeriod() *int {
-	if c == nil {
-		return nil
-	}
-	return c.BillingPeriod
-}
-
-func (c *CreateInvoicesRequestProductPlan) GetCurrency() *Currencies {
-	if c == nil {
-		return nil
-	}
-	return c.Currency
-}
-
-func (c *CreateInvoicesRequestProductPlan) GetCustomFields() []*CreateInvoicesRequestProductPlanCustomFieldsItem {
-	if c == nil {
-		return nil
-	}
-	return c.CustomFields
-}
-
-func (c *CreateInvoicesRequestProductPlan) GetDescription() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Description
-}
-
-func (c *CreateInvoicesRequestProductPlan) GetExpirationDays() *int {
-	if c == nil {
-		return nil
-	}
-	return c.ExpirationDays
-}
-
-func (c *CreateInvoicesRequestProductPlan) GetInitialPrice() *float64 {
-	if c == nil {
-		return nil
-	}
-	return c.InitialPrice
-}
-
-func (c *CreateInvoicesRequestProductPlan) GetInternalNotes() *string {
-	if c == nil {
-		return nil
-	}
-	return c.InternalNotes
-}
-
-func (c *CreateInvoicesRequestProductPlan) GetLegacyPaymentMethodControls() *bool {
-	if c == nil {
-		return nil
-	}
-	return c.LegacyPaymentMethodControls
-}
-
-func (c *CreateInvoicesRequestProductPlan) GetPaymentMethodConfiguration() *CreateInvoicesRequestProductPlanPaymentMethodConfiguration {
-	if c == nil {
-		return nil
-	}
-	return c.PaymentMethodConfiguration
-}
-
-func (c *CreateInvoicesRequestProductPlan) GetPlanType() *PlanTypes {
-	if c == nil {
-		return nil
-	}
-	return c.PlanType
-}
-
-func (c *CreateInvoicesRequestProductPlan) GetReleaseMethod() *ReleaseMethod {
-	if c == nil {
-		return nil
-	}
-	return c.ReleaseMethod
-}
-
-func (c *CreateInvoicesRequestProductPlan) GetRenewalPrice() *float64 {
-	if c == nil {
-		return nil
-	}
-	return c.RenewalPrice
-}
-
-func (c *CreateInvoicesRequestProductPlan) GetStock() *int {
-	if c == nil {
-		return nil
-	}
-	return c.Stock
-}
-
-func (c *CreateInvoicesRequestProductPlan) GetTrialPeriodDays() *int {
-	if c == nil {
-		return nil
-	}
-	return c.TrialPeriodDays
-}
-
-func (c *CreateInvoicesRequestProductPlan) GetUnlimitedStock() *bool {
-	if c == nil {
-		return nil
-	}
-	return c.UnlimitedStock
-}
-
-func (c *CreateInvoicesRequestProductPlan) GetVisibility() *Visibility {
-	if c == nil {
-		return nil
-	}
-	return c.Visibility
-}
-
-func (c *CreateInvoicesRequestProductPlan) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateInvoicesRequestProductPlan) require(field *big.Int) {
-	next := new(big.Int)
-	if c.explicitFields != nil {
-		next.Set(c.explicitFields)
-	}
-	next.Or(next, field)
-	c.explicitFields = next
-}
-
-// SetAdaptivePricingEnabled sets the AdaptivePricingEnabled field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductPlan) SetAdaptivePricingEnabled(adaptivePricingEnabled *bool) {
-	c.AdaptivePricingEnabled = adaptivePricingEnabled
-	c.require(createInvoicesRequestProductPlanFieldAdaptivePricingEnabled)
-}
-
-// SetBillingPeriod sets the BillingPeriod field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductPlan) SetBillingPeriod(billingPeriod *int) {
-	c.BillingPeriod = billingPeriod
-	c.require(createInvoicesRequestProductPlanFieldBillingPeriod)
-}
-
-// SetCurrency sets the Currency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductPlan) SetCurrency(currency *Currencies) {
-	c.Currency = currency
-	c.require(createInvoicesRequestProductPlanFieldCurrency)
-}
-
-// SetCustomFields sets the CustomFields field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductPlan) SetCustomFields(customFields []*CreateInvoicesRequestProductPlanCustomFieldsItem) {
-	c.CustomFields = customFields
-	c.require(createInvoicesRequestProductPlanFieldCustomFields)
-}
-
-// SetDescription sets the Description field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductPlan) SetDescription(description *string) {
-	c.Description = description
-	c.require(createInvoicesRequestProductPlanFieldDescription)
-}
-
-// SetExpirationDays sets the ExpirationDays field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductPlan) SetExpirationDays(expirationDays *int) {
-	c.ExpirationDays = expirationDays
-	c.require(createInvoicesRequestProductPlanFieldExpirationDays)
-}
-
-// SetInitialPrice sets the InitialPrice field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductPlan) SetInitialPrice(initialPrice *float64) {
-	c.InitialPrice = initialPrice
-	c.require(createInvoicesRequestProductPlanFieldInitialPrice)
-}
-
-// SetInternalNotes sets the InternalNotes field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductPlan) SetInternalNotes(internalNotes *string) {
-	c.InternalNotes = internalNotes
-	c.require(createInvoicesRequestProductPlanFieldInternalNotes)
-}
-
-// SetLegacyPaymentMethodControls sets the LegacyPaymentMethodControls field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductPlan) SetLegacyPaymentMethodControls(legacyPaymentMethodControls *bool) {
-	c.LegacyPaymentMethodControls = legacyPaymentMethodControls
-	c.require(createInvoicesRequestProductPlanFieldLegacyPaymentMethodControls)
-}
-
-// SetPaymentMethodConfiguration sets the PaymentMethodConfiguration field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductPlan) SetPaymentMethodConfiguration(paymentMethodConfiguration *CreateInvoicesRequestProductPlanPaymentMethodConfiguration) {
-	c.PaymentMethodConfiguration = paymentMethodConfiguration
-	c.require(createInvoicesRequestProductPlanFieldPaymentMethodConfiguration)
-}
-
-// SetPlanType sets the PlanType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductPlan) SetPlanType(planType *PlanTypes) {
-	c.PlanType = planType
-	c.require(createInvoicesRequestProductPlanFieldPlanType)
-}
-
-// SetReleaseMethod sets the ReleaseMethod field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductPlan) SetReleaseMethod(releaseMethod *ReleaseMethod) {
-	c.ReleaseMethod = releaseMethod
-	c.require(createInvoicesRequestProductPlanFieldReleaseMethod)
-}
-
-// SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductPlan) SetRenewalPrice(renewalPrice *float64) {
-	c.RenewalPrice = renewalPrice
-	c.require(createInvoicesRequestProductPlanFieldRenewalPrice)
-}
-
-// SetStock sets the Stock field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductPlan) SetStock(stock *int) {
-	c.Stock = stock
-	c.require(createInvoicesRequestProductPlanFieldStock)
-}
-
-// SetTrialPeriodDays sets the TrialPeriodDays field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductPlan) SetTrialPeriodDays(trialPeriodDays *int) {
-	c.TrialPeriodDays = trialPeriodDays
-	c.require(createInvoicesRequestProductPlanFieldTrialPeriodDays)
-}
-
-// SetUnlimitedStock sets the UnlimitedStock field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductPlan) SetUnlimitedStock(unlimitedStock *bool) {
-	c.UnlimitedStock = unlimitedStock
-	c.require(createInvoicesRequestProductPlanFieldUnlimitedStock)
-}
-
-// SetVisibility sets the Visibility field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductPlan) SetVisibility(visibility *Visibility) {
-	c.Visibility = visibility
-	c.require(createInvoicesRequestProductPlanFieldVisibility)
-}
-
-func (c *CreateInvoicesRequestProductPlan) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateInvoicesRequestProductPlan
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreateInvoicesRequestProductPlan(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestProductPlanNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		c.require(presentFields)
-	}
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateInvoicesRequestProductPlan) MarshalJSON() ([]byte, error) {
-	type embed CreateInvoicesRequestProductPlan
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateInvoicesRequestProductPlan) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-var (
-	createInvoicesRequestProductPlanCustomFieldsItemFieldFieldType   = big.NewInt(1 << 0)
-	createInvoicesRequestProductPlanCustomFieldsItemFieldID          = big.NewInt(1 << 1)
-	createInvoicesRequestProductPlanCustomFieldsItemFieldName        = big.NewInt(1 << 2)
-	createInvoicesRequestProductPlanCustomFieldsItemFieldOrder       = big.NewInt(1 << 3)
-	createInvoicesRequestProductPlanCustomFieldsItemFieldPlaceholder = big.NewInt(1 << 4)
-	createInvoicesRequestProductPlanCustomFieldsItemFieldRequired    = big.NewInt(1 << 5)
-)
-
-// createInvoicesRequestProductPlanCustomFieldsItemNullableFields maps the wire names of CreateInvoicesRequestProductPlanCustomFieldsItem's nullable fields (required or optional) to their field bits.
-var createInvoicesRequestProductPlanCustomFieldsItemNullableFields = map[string]*big.Int{
-	"id":          createInvoicesRequestProductPlanCustomFieldsItemFieldID,
-	"order":       createInvoicesRequestProductPlanCustomFieldsItemFieldOrder,
-	"placeholder": createInvoicesRequestProductPlanCustomFieldsItemFieldPlaceholder,
-	"required":    createInvoicesRequestProductPlanCustomFieldsItemFieldRequired,
-}
-
-type CreateInvoicesRequestProductPlanCustomFieldsItem struct {
-	// The type of the custom field.
-	FieldType CustomFieldTypes `json:"field_type" url:"field_type"`
-	// The ID of the custom field (if being updated)
-	ID *string `json:"id,omitempty" url:"id,omitempty"`
-	// The name of the custom field.
-	Name string `json:"name" url:"name"`
-	// The order of the field.
-	Order *int `json:"order,omitempty" url:"order,omitempty"`
-	// The placeholder value of the field.
-	Placeholder *string `json:"placeholder,omitempty" url:"placeholder,omitempty"`
-	// Whether or not the field is required.
-	Required *bool `json:"required,omitempty" url:"required,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateInvoicesRequestProductPlanCustomFieldsItem) GetFieldType() CustomFieldTypes {
-	if c == nil {
-		return ""
-	}
-	return c.FieldType
-}
-
-func (c *CreateInvoicesRequestProductPlanCustomFieldsItem) GetID() *string {
-	if c == nil {
-		return nil
-	}
-	return c.ID
-}
-
-func (c *CreateInvoicesRequestProductPlanCustomFieldsItem) GetName() string {
-	if c == nil {
-		return ""
-	}
-	return c.Name
-}
-
-func (c *CreateInvoicesRequestProductPlanCustomFieldsItem) GetOrder() *int {
-	if c == nil {
-		return nil
-	}
-	return c.Order
-}
-
-func (c *CreateInvoicesRequestProductPlanCustomFieldsItem) GetPlaceholder() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Placeholder
-}
-
-func (c *CreateInvoicesRequestProductPlanCustomFieldsItem) GetRequired() *bool {
-	if c == nil {
-		return nil
-	}
-	return c.Required
-}
-
-func (c *CreateInvoicesRequestProductPlanCustomFieldsItem) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateInvoicesRequestProductPlanCustomFieldsItem) require(field *big.Int) {
-	next := new(big.Int)
-	if c.explicitFields != nil {
-		next.Set(c.explicitFields)
-	}
-	next.Or(next, field)
-	c.explicitFields = next
-}
-
-// SetFieldType sets the FieldType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductPlanCustomFieldsItem) SetFieldType(fieldType CustomFieldTypes) {
-	c.FieldType = fieldType
-	c.require(createInvoicesRequestProductPlanCustomFieldsItemFieldFieldType)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductPlanCustomFieldsItem) SetID(id *string) {
-	c.ID = id
-	c.require(createInvoicesRequestProductPlanCustomFieldsItemFieldID)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductPlanCustomFieldsItem) SetName(name string) {
-	c.Name = name
-	c.require(createInvoicesRequestProductPlanCustomFieldsItemFieldName)
-}
-
-// SetOrder sets the Order field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductPlanCustomFieldsItem) SetOrder(order *int) {
-	c.Order = order
-	c.require(createInvoicesRequestProductPlanCustomFieldsItemFieldOrder)
-}
-
-// SetPlaceholder sets the Placeholder field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductPlanCustomFieldsItem) SetPlaceholder(placeholder *string) {
-	c.Placeholder = placeholder
-	c.require(createInvoicesRequestProductPlanCustomFieldsItemFieldPlaceholder)
-}
-
-// SetRequired sets the Required field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductPlanCustomFieldsItem) SetRequired(required *bool) {
-	c.Required = required
-	c.require(createInvoicesRequestProductPlanCustomFieldsItemFieldRequired)
-}
-
-func (c *CreateInvoicesRequestProductPlanCustomFieldsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateInvoicesRequestProductPlanCustomFieldsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreateInvoicesRequestProductPlanCustomFieldsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestProductPlanCustomFieldsItemNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		c.require(presentFields)
-	}
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateInvoicesRequestProductPlanCustomFieldsItem) MarshalJSON() ([]byte, error) {
-	type embed CreateInvoicesRequestProductPlanCustomFieldsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateInvoicesRequestProductPlanCustomFieldsItem) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-var (
-	createInvoicesRequestProductPlanPaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
-	createInvoicesRequestProductPlanPaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
-	createInvoicesRequestProductPlanPaymentMethodConfigurationFieldIncludePlatformDefaults = big.NewInt(1 << 2)
-)
-
-// createInvoicesRequestProductPlanPaymentMethodConfigurationNullableFields maps the wire names of CreateInvoicesRequestProductPlanPaymentMethodConfiguration's nullable fields (required or optional) to their field bits.
-var createInvoicesRequestProductPlanPaymentMethodConfigurationNullableFields = map[string]*big.Int{
-	"include_platform_defaults": createInvoicesRequestProductPlanPaymentMethodConfigurationFieldIncludePlatformDefaults,
-}
-
-// The explicit payment method configuration for the plan. If not provided, the platform or company's defaults will apply.
-type CreateInvoicesRequestProductPlanPaymentMethodConfiguration struct {
-	// An array of payment method identifiers that are explicitly disabled. Only applies if the include_platform_defaults is true.
-	Disabled []PaymentMethodTypes `json:"disabled" url:"disabled"`
-	// An array of payment method identifiers that are explicitly enabled. This means these payment methods will be shown on checkout. Example use case is to only enable a specific payment method like cashapp, or extending the platform defaults with additional methods.
-	Enabled []PaymentMethodTypes `json:"enabled" url:"enabled"`
-	// Whether Whop's platform default payment method enablement settings are included in this configuration. The full list of default payment methods can be found in the documentation at docs.whop.com/payments.
-	IncludePlatformDefaults *bool `json:"include_platform_defaults,omitempty" url:"include_platform_defaults,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateInvoicesRequestProductPlanPaymentMethodConfiguration) GetDisabled() []PaymentMethodTypes {
-	if c == nil {
-		return nil
-	}
-	return c.Disabled
-}
-
-func (c *CreateInvoicesRequestProductPlanPaymentMethodConfiguration) GetEnabled() []PaymentMethodTypes {
-	if c == nil {
-		return nil
-	}
-	return c.Enabled
-}
-
-func (c *CreateInvoicesRequestProductPlanPaymentMethodConfiguration) GetIncludePlatformDefaults() *bool {
-	if c == nil {
-		return nil
-	}
-	return c.IncludePlatformDefaults
-}
-
-func (c *CreateInvoicesRequestProductPlanPaymentMethodConfiguration) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateInvoicesRequestProductPlanPaymentMethodConfiguration) require(field *big.Int) {
-	next := new(big.Int)
-	if c.explicitFields != nil {
-		next.Set(c.explicitFields)
-	}
-	next.Or(next, field)
-	c.explicitFields = next
-}
-
-// SetDisabled sets the Disabled field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductPlanPaymentMethodConfiguration) SetDisabled(disabled []PaymentMethodTypes) {
-	c.Disabled = disabled
-	c.require(createInvoicesRequestProductPlanPaymentMethodConfigurationFieldDisabled)
-}
-
-// SetEnabled sets the Enabled field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductPlanPaymentMethodConfiguration) SetEnabled(enabled []PaymentMethodTypes) {
-	c.Enabled = enabled
-	c.require(createInvoicesRequestProductPlanPaymentMethodConfigurationFieldEnabled)
-}
-
-// SetIncludePlatformDefaults sets the IncludePlatformDefaults field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductPlanPaymentMethodConfiguration) SetIncludePlatformDefaults(includePlatformDefaults *bool) {
-	c.IncludePlatformDefaults = includePlatformDefaults
-	c.require(createInvoicesRequestProductPlanPaymentMethodConfigurationFieldIncludePlatformDefaults)
-}
-
-func (c *CreateInvoicesRequestProductPlanPaymentMethodConfiguration) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateInvoicesRequestProductPlanPaymentMethodConfiguration
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreateInvoicesRequestProductPlanPaymentMethodConfiguration(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestProductPlanPaymentMethodConfigurationNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		c.require(presentFields)
-	}
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateInvoicesRequestProductPlanPaymentMethodConfiguration) MarshalJSON() ([]byte, error) {
-	type embed CreateInvoicesRequestProductPlanPaymentMethodConfiguration
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateInvoicesRequestProductPlanPaymentMethodConfiguration) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-var (
-	createInvoicesRequestProductProductFieldProductTaxCodeID = big.NewInt(1 << 0)
-	createInvoicesRequestProductProductFieldTitle            = big.NewInt(1 << 1)
-)
-
-// createInvoicesRequestProductProductNullableFields maps the wire names of CreateInvoicesRequestProductProduct's nullable fields (required or optional) to their field bits.
-var createInvoicesRequestProductProductNullableFields = map[string]*big.Int{
-	"product_tax_code_id": createInvoicesRequestProductProductFieldProductTaxCodeID,
-}
-
-// The properties of the product to create for this invoice. Provide this to create a new product inline.
-type CreateInvoicesRequestProductProduct struct {
-	// The ID of the product tax code to apply to this product.
+	// Your unique identifier for the product.
+	ExternalIdentifier string `json:"external_identifier" url:"external_identifier"`
+	// Percentage of revenue paid to global affiliates.
+	GlobalAffiliatePercentage *float64 `json:"global_affiliate_percentage,omitempty" url:"global_affiliate_percentage,omitempty"`
+	// Global affiliate program status.
+	GlobalAffiliateStatus *CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus `json:"global_affiliate_status,omitempty" url:"global_affiliate_status,omitempty"`
+	// Product headline.
+	Headline *string `json:"headline,omitempty" url:"headline,omitempty"`
+	// Product tax code identifier.
 	ProductTaxCodeID *string `json:"product_tax_code_id,omitempty" url:"product_tax_code_id,omitempty"`
-	// The title of the product.
+	// Where to redirect the buyer after purchase.
+	RedirectPurchaseURL *string `json:"redirect_purchase_url,omitempty" url:"redirect_purchase_url,omitempty"`
+	// Product route.
+	Route *string `json:"route,omitempty" url:"route,omitempty"`
+	// Product title.
 	Title string `json:"title" url:"title"`
+	// Product visibility. Defaults to hidden.
+	Visibility *CreateInvoicesRequestItemsItemVariantProductVisibility `json:"visibility,omitempty" url:"visibility,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -6209,28 +2539,98 @@ type CreateInvoicesRequestProductProduct struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreateInvoicesRequestProductProduct) GetProductTaxCodeID() *string {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) GetCollectShippingAddress() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.CollectShippingAddress
+}
+
+func (c *CreateInvoicesRequestItemsItemVariantProduct) GetCustomStatementDescriptor() *string {
+	if c == nil {
+		return nil
+	}
+	return c.CustomStatementDescriptor
+}
+
+func (c *CreateInvoicesRequestItemsItemVariantProduct) GetDescription() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Description
+}
+
+func (c *CreateInvoicesRequestItemsItemVariantProduct) GetExternalIdentifier() string {
+	if c == nil {
+		return ""
+	}
+	return c.ExternalIdentifier
+}
+
+func (c *CreateInvoicesRequestItemsItemVariantProduct) GetGlobalAffiliatePercentage() *float64 {
+	if c == nil {
+		return nil
+	}
+	return c.GlobalAffiliatePercentage
+}
+
+func (c *CreateInvoicesRequestItemsItemVariantProduct) GetGlobalAffiliateStatus() *CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus {
+	if c == nil {
+		return nil
+	}
+	return c.GlobalAffiliateStatus
+}
+
+func (c *CreateInvoicesRequestItemsItemVariantProduct) GetHeadline() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Headline
+}
+
+func (c *CreateInvoicesRequestItemsItemVariantProduct) GetProductTaxCodeID() *string {
 	if c == nil {
 		return nil
 	}
 	return c.ProductTaxCodeID
 }
 
-func (c *CreateInvoicesRequestProductProduct) GetTitle() string {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) GetRedirectPurchaseURL() *string {
+	if c == nil {
+		return nil
+	}
+	return c.RedirectPurchaseURL
+}
+
+func (c *CreateInvoicesRequestItemsItemVariantProduct) GetRoute() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Route
+}
+
+func (c *CreateInvoicesRequestItemsItemVariantProduct) GetTitle() string {
 	if c == nil {
 		return ""
 	}
 	return c.Title
 }
 
-func (c *CreateInvoicesRequestProductProduct) GetExtraProperties() map[string]interface{} {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) GetVisibility() *CreateInvoicesRequestItemsItemVariantProductVisibility {
+	if c == nil {
+		return nil
+	}
+	return c.Visibility
+}
+
+func (c *CreateInvoicesRequestItemsItemVariantProduct) GetExtraProperties() map[string]interface{} {
 	if c == nil {
 		return nil
 	}
 	return c.extraProperties
 }
 
-func (c *CreateInvoicesRequestProductProduct) require(field *big.Int) {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) require(field *big.Int) {
 	next := new(big.Int)
 	if c.explicitFields != nil {
 		next.Set(c.explicitFields)
@@ -6239,33 +2639,103 @@ func (c *CreateInvoicesRequestProductProduct) require(field *big.Int) {
 	c.explicitFields = next
 }
 
+// SetCollectShippingAddress sets the CollectShippingAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequestItemsItemVariantProduct) SetCollectShippingAddress(collectShippingAddress *bool) {
+	c.CollectShippingAddress = collectShippingAddress
+	c.require(createInvoicesRequestItemsItemVariantProductFieldCollectShippingAddress)
+}
+
+// SetCustomStatementDescriptor sets the CustomStatementDescriptor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequestItemsItemVariantProduct) SetCustomStatementDescriptor(customStatementDescriptor *string) {
+	c.CustomStatementDescriptor = customStatementDescriptor
+	c.require(createInvoicesRequestItemsItemVariantProductFieldCustomStatementDescriptor)
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequestItemsItemVariantProduct) SetDescription(description *string) {
+	c.Description = description
+	c.require(createInvoicesRequestItemsItemVariantProductFieldDescription)
+}
+
+// SetExternalIdentifier sets the ExternalIdentifier field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequestItemsItemVariantProduct) SetExternalIdentifier(externalIdentifier string) {
+	c.ExternalIdentifier = externalIdentifier
+	c.require(createInvoicesRequestItemsItemVariantProductFieldExternalIdentifier)
+}
+
+// SetGlobalAffiliatePercentage sets the GlobalAffiliatePercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequestItemsItemVariantProduct) SetGlobalAffiliatePercentage(globalAffiliatePercentage *float64) {
+	c.GlobalAffiliatePercentage = globalAffiliatePercentage
+	c.require(createInvoicesRequestItemsItemVariantProductFieldGlobalAffiliatePercentage)
+}
+
+// SetGlobalAffiliateStatus sets the GlobalAffiliateStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequestItemsItemVariantProduct) SetGlobalAffiliateStatus(globalAffiliateStatus *CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus) {
+	c.GlobalAffiliateStatus = globalAffiliateStatus
+	c.require(createInvoicesRequestItemsItemVariantProductFieldGlobalAffiliateStatus)
+}
+
+// SetHeadline sets the Headline field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequestItemsItemVariantProduct) SetHeadline(headline *string) {
+	c.Headline = headline
+	c.require(createInvoicesRequestItemsItemVariantProductFieldHeadline)
+}
+
 // SetProductTaxCodeID sets the ProductTaxCodeID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductProduct) SetProductTaxCodeID(productTaxCodeID *string) {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) SetProductTaxCodeID(productTaxCodeID *string) {
 	c.ProductTaxCodeID = productTaxCodeID
-	c.require(createInvoicesRequestProductProductFieldProductTaxCodeID)
+	c.require(createInvoicesRequestItemsItemVariantProductFieldProductTaxCodeID)
+}
+
+// SetRedirectPurchaseURL sets the RedirectPurchaseURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequestItemsItemVariantProduct) SetRedirectPurchaseURL(redirectPurchaseURL *string) {
+	c.RedirectPurchaseURL = redirectPurchaseURL
+	c.require(createInvoicesRequestItemsItemVariantProductFieldRedirectPurchaseURL)
+}
+
+// SetRoute sets the Route field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequestItemsItemVariantProduct) SetRoute(route *string) {
+	c.Route = route
+	c.require(createInvoicesRequestItemsItemVariantProductFieldRoute)
 }
 
 // SetTitle sets the Title field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateInvoicesRequestProductProduct) SetTitle(title string) {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) SetTitle(title string) {
 	c.Title = title
-	c.require(createInvoicesRequestProductProductFieldTitle)
+	c.require(createInvoicesRequestItemsItemVariantProductFieldTitle)
 }
 
-func (c *CreateInvoicesRequestProductProduct) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateInvoicesRequestProductProduct
+// SetVisibility sets the Visibility field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequestItemsItemVariantProduct) SetVisibility(visibility *CreateInvoicesRequestItemsItemVariantProductVisibility) {
+	c.Visibility = visibility
+	c.require(createInvoicesRequestItemsItemVariantProductFieldVisibility)
+}
+
+func (c *CreateInvoicesRequestItemsItemVariantProduct) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateInvoicesRequestItemsItemVariantProduct
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*c = CreateInvoicesRequestProductProduct(value)
+	*c = CreateInvoicesRequestItemsItemVariantProduct(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *c)
 	if err != nil {
 		return err
 	}
 	c.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestProductProductNullableFields)
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestItemsItemVariantProductNullableFields)
 	if err != nil {
 		return err
 	}
@@ -6276,8 +2746,8 @@ func (c *CreateInvoicesRequestProductProduct) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (c *CreateInvoicesRequestProductProduct) MarshalJSON() ([]byte, error) {
-	type embed CreateInvoicesRequestProductProduct
+func (c *CreateInvoicesRequestItemsItemVariantProduct) MarshalJSON() ([]byte, error) {
+	type embed CreateInvoicesRequestItemsItemVariantProduct
 	var marshaler = struct {
 		embed
 	}{
@@ -6287,7 +2757,7 @@ func (c *CreateInvoicesRequestProductProduct) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (c *CreateInvoicesRequestProductProduct) String() string {
+func (c *CreateInvoicesRequestItemsItemVariantProduct) String() string {
 	if c == nil {
 		return "<nil>"
 	}
@@ -6300,6 +2770,171 @@ func (c *CreateInvoicesRequestProductProduct) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", c)
+}
+
+// Global affiliate program status.
+type CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus string
+
+const (
+	CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatusEnabled  CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus = "enabled"
+	CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatusDisabled CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus = "disabled"
+)
+
+func NewCreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatusFromString(s string) (CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus, error) {
+	switch s {
+	case "enabled":
+		return CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatusEnabled, nil
+	case "disabled":
+		return CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatusDisabled, nil
+	}
+	var t CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus) Ptr() *CreateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus {
+	return &c
+}
+
+// Product visibility. Defaults to hidden.
+type CreateInvoicesRequestItemsItemVariantProductVisibility string
+
+const (
+	CreateInvoicesRequestItemsItemVariantProductVisibilityVisible   CreateInvoicesRequestItemsItemVariantProductVisibility = "visible"
+	CreateInvoicesRequestItemsItemVariantProductVisibilityHidden    CreateInvoicesRequestItemsItemVariantProductVisibility = "hidden"
+	CreateInvoicesRequestItemsItemVariantProductVisibilityArchived  CreateInvoicesRequestItemsItemVariantProductVisibility = "archived"
+	CreateInvoicesRequestItemsItemVariantProductVisibilityQuickLink CreateInvoicesRequestItemsItemVariantProductVisibility = "quick_link"
+)
+
+func NewCreateInvoicesRequestItemsItemVariantProductVisibilityFromString(s string) (CreateInvoicesRequestItemsItemVariantProductVisibility, error) {
+	switch s {
+	case "visible":
+		return CreateInvoicesRequestItemsItemVariantProductVisibilityVisible, nil
+	case "hidden":
+		return CreateInvoicesRequestItemsItemVariantProductVisibilityHidden, nil
+	case "archived":
+		return CreateInvoicesRequestItemsItemVariantProductVisibilityArchived, nil
+	case "quick_link":
+		return CreateInvoicesRequestItemsItemVariantProductVisibilityQuickLink, nil
+	}
+	var t CreateInvoicesRequestItemsItemVariantProductVisibility
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateInvoicesRequestItemsItemVariantProductVisibility) Ptr() *CreateInvoicesRequestItemsItemVariantProductVisibility {
+	return &c
+}
+
+// Whether the variant is visible to customers.
+type CreateInvoicesRequestItemsItemVariantVisibility string
+
+const (
+	CreateInvoicesRequestItemsItemVariantVisibilityVisible   CreateInvoicesRequestItemsItemVariantVisibility = "visible"
+	CreateInvoicesRequestItemsItemVariantVisibilityHidden    CreateInvoicesRequestItemsItemVariantVisibility = "hidden"
+	CreateInvoicesRequestItemsItemVariantVisibilityArchived  CreateInvoicesRequestItemsItemVariantVisibility = "archived"
+	CreateInvoicesRequestItemsItemVariantVisibilityQuickLink CreateInvoicesRequestItemsItemVariantVisibility = "quick_link"
+)
+
+func NewCreateInvoicesRequestItemsItemVariantVisibilityFromString(s string) (CreateInvoicesRequestItemsItemVariantVisibility, error) {
+	switch s {
+	case "visible":
+		return CreateInvoicesRequestItemsItemVariantVisibilityVisible, nil
+	case "hidden":
+		return CreateInvoicesRequestItemsItemVariantVisibilityHidden, nil
+	case "archived":
+		return CreateInvoicesRequestItemsItemVariantVisibilityArchived, nil
+	case "quick_link":
+		return CreateInvoicesRequestItemsItemVariantVisibilityQuickLink, nil
+	}
+	var t CreateInvoicesRequestItemsItemVariantVisibility
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateInvoicesRequestItemsItemVariantVisibility) Ptr() *CreateInvoicesRequestItemsItemVariantVisibility {
+	return &c
+}
+
+type ListInvoicesRequestDirection string
+
+const (
+	ListInvoicesRequestDirectionAsc  ListInvoicesRequestDirection = "asc"
+	ListInvoicesRequestDirectionDesc ListInvoicesRequestDirection = "desc"
+)
+
+func NewListInvoicesRequestDirectionFromString(s string) (ListInvoicesRequestDirection, error) {
+	switch s {
+	case "asc":
+		return ListInvoicesRequestDirectionAsc, nil
+	case "desc":
+		return ListInvoicesRequestDirectionDesc, nil
+	}
+	var t ListInvoicesRequestDirection
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListInvoicesRequestDirection) Ptr() *ListInvoicesRequestDirection {
+	return &l
+}
+
+type ListInvoicesRequestOrder string
+
+const (
+	ListInvoicesRequestOrderCreatedAt ListInvoicesRequestOrder = "created_at"
+	ListInvoicesRequestOrderDueAt     ListInvoicesRequestOrder = "due_at"
+)
+
+func NewListInvoicesRequestOrderFromString(s string) (ListInvoicesRequestOrder, error) {
+	switch s {
+	case "created_at":
+		return ListInvoicesRequestOrderCreatedAt, nil
+	case "due_at":
+		return ListInvoicesRequestOrderDueAt, nil
+	}
+	var t ListInvoicesRequestOrder
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListInvoicesRequestOrder) Ptr() *ListInvoicesRequestOrder {
+	return &l
+}
+
+type ListInvoicesRequestStatus string
+
+const (
+	ListInvoicesRequestStatusDraft         ListInvoicesRequestStatus = "draft"
+	ListInvoicesRequestStatusOpen          ListInvoicesRequestStatus = "open"
+	ListInvoicesRequestStatusAuthorized    ListInvoicesRequestStatus = "authorized"
+	ListInvoicesRequestStatusPaid          ListInvoicesRequestStatus = "paid"
+	ListInvoicesRequestStatusPending       ListInvoicesRequestStatus = "pending"
+	ListInvoicesRequestStatusUncollectible ListInvoicesRequestStatus = "uncollectible"
+	ListInvoicesRequestStatusUnresolved    ListInvoicesRequestStatus = "unresolved"
+	ListInvoicesRequestStatusVoid          ListInvoicesRequestStatus = "void"
+)
+
+func NewListInvoicesRequestStatusFromString(s string) (ListInvoicesRequestStatus, error) {
+	switch s {
+	case "draft":
+		return ListInvoicesRequestStatusDraft, nil
+	case "open":
+		return ListInvoicesRequestStatusOpen, nil
+	case "authorized":
+		return ListInvoicesRequestStatusAuthorized, nil
+	case "paid":
+		return ListInvoicesRequestStatusPaid, nil
+	case "pending":
+		return ListInvoicesRequestStatusPending, nil
+	case "uncollectible":
+		return ListInvoicesRequestStatusUncollectible, nil
+	case "unresolved":
+		return ListInvoicesRequestStatusUnresolved, nil
+	case "void":
+		return ListInvoicesRequestStatusVoid, nil
+	}
+	var t ListInvoicesRequestStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListInvoicesRequestStatus) Ptr() *ListInvoicesRequestStatus {
+	return &l
 }
 
 var (
@@ -6307,12 +2942,9 @@ var (
 	listInvoicesResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
-// The connection type for PublicInvoice.
 type ListInvoicesResponse struct {
-	// A list of nodes.
-	Data []*InvoiceListItem `json:"data" url:"data"`
-	// Information to aid in pagination.
-	PageInfo *PageInfo `json:"page_info" url:"page_info"`
+	Data     []*Invoice                    `json:"data" url:"data"`
+	PageInfo *ListInvoicesResponsePageInfo `json:"page_info" url:"page_info"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -6321,14 +2953,14 @@ type ListInvoicesResponse struct {
 	rawJSON         json.RawMessage
 }
 
-func (l *ListInvoicesResponse) GetData() []*InvoiceListItem {
+func (l *ListInvoicesResponse) GetData() []*Invoice {
 	if l == nil {
 		return nil
 	}
 	return l.Data
 }
 
-func (l *ListInvoicesResponse) GetPageInfo() *PageInfo {
+func (l *ListInvoicesResponse) GetPageInfo() *ListInvoicesResponsePageInfo {
 	if l == nil {
 		return nil
 	}
@@ -6353,14 +2985,14 @@ func (l *ListInvoicesResponse) require(field *big.Int) {
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListInvoicesResponse) SetData(data []*InvoiceListItem) {
+func (l *ListInvoicesResponse) SetData(data []*Invoice) {
 	l.Data = data
 	l.require(listInvoicesResponseFieldData)
 }
 
 // SetPageInfo sets the PageInfo field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListInvoicesResponse) SetPageInfo(pageInfo *PageInfo) {
+func (l *ListInvoicesResponse) SetPageInfo(pageInfo *ListInvoicesResponsePageInfo) {
 	l.PageInfo = pageInfo
 	l.require(listInvoicesResponseFieldPageInfo)
 }
@@ -6408,6 +3040,153 @@ func (l *ListInvoicesResponse) String() string {
 }
 
 var (
+	listInvoicesResponsePageInfoFieldEndCursor       = big.NewInt(1 << 0)
+	listInvoicesResponsePageInfoFieldHasNextPage     = big.NewInt(1 << 1)
+	listInvoicesResponsePageInfoFieldHasPreviousPage = big.NewInt(1 << 2)
+	listInvoicesResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
+)
+
+// listInvoicesResponsePageInfoNullableFields maps the wire names of ListInvoicesResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listInvoicesResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listInvoicesResponsePageInfoFieldEndCursor,
+	"start_cursor": listInvoicesResponsePageInfoFieldStartCursor,
+}
+
+type ListInvoicesResponsePageInfo struct {
+	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
+	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
+	HasPreviousPage bool    `json:"has_previous_page" url:"has_previous_page"`
+	StartCursor     *string `json:"start_cursor,omitempty" url:"start_cursor,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListInvoicesResponsePageInfo) GetEndCursor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.EndCursor
+}
+
+func (l *ListInvoicesResponsePageInfo) GetHasNextPage() bool {
+	if l == nil {
+		return false
+	}
+	return l.HasNextPage
+}
+
+func (l *ListInvoicesResponsePageInfo) GetHasPreviousPage() bool {
+	if l == nil {
+		return false
+	}
+	return l.HasPreviousPage
+}
+
+func (l *ListInvoicesResponsePageInfo) GetStartCursor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.StartCursor
+}
+
+func (l *ListInvoicesResponsePageInfo) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListInvoicesResponsePageInfo) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetEndCursor sets the EndCursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInvoicesResponsePageInfo) SetEndCursor(endCursor *string) {
+	l.EndCursor = endCursor
+	l.require(listInvoicesResponsePageInfoFieldEndCursor)
+}
+
+// SetHasNextPage sets the HasNextPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInvoicesResponsePageInfo) SetHasNextPage(hasNextPage bool) {
+	l.HasNextPage = hasNextPage
+	l.require(listInvoicesResponsePageInfoFieldHasNextPage)
+}
+
+// SetHasPreviousPage sets the HasPreviousPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInvoicesResponsePageInfo) SetHasPreviousPage(hasPreviousPage bool) {
+	l.HasPreviousPage = hasPreviousPage
+	l.require(listInvoicesResponsePageInfoFieldHasPreviousPage)
+}
+
+// SetStartCursor sets the StartCursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInvoicesResponsePageInfo) SetStartCursor(startCursor *string) {
+	l.StartCursor = startCursor
+	l.require(listInvoicesResponsePageInfoFieldStartCursor)
+}
+
+func (l *ListInvoicesResponsePageInfo) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListInvoicesResponsePageInfo
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListInvoicesResponsePageInfo(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listInvoicesResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListInvoicesResponsePageInfo) MarshalJSON() ([]byte, error) {
+	type embed ListInvoicesResponsePageInfo
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListInvoicesResponsePageInfo) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
 	postInvoiceCreatedPayloadFieldAccountID          = big.NewInt(1 << 0)
 	postInvoiceCreatedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
 	postInvoiceCreatedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
@@ -6430,8 +3209,8 @@ type PostInvoiceCreatedPayload struct {
 	// The API version for this webhook
 	APIVersion PostInvoiceCreatedPayloadAPIVersion `json:"api_version" url:"api_version"`
 	// The dated API version (Api-Version-Date) the payload is serialized to
-	APIVersionDate *string  `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
-	Data           *Invoice `json:"data" url:"data"`
+	APIVersionDate *string        `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *InvoiceLegacy `json:"data" url:"data"`
 	// A unique ID for every single webhook request
 	ID string `json:"id" url:"id"`
 	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
@@ -6469,7 +3248,7 @@ func (p *PostInvoiceCreatedPayload) GetAPIVersionDate() *string {
 	return p.APIVersionDate
 }
 
-func (p *PostInvoiceCreatedPayload) GetData() *Invoice {
+func (p *PostInvoiceCreatedPayload) GetData() *InvoiceLegacy {
 	if p == nil {
 		return nil
 	}
@@ -6543,7 +3322,7 @@ func (p *PostInvoiceCreatedPayload) SetAPIVersionDate(apiVersionDate *string) {
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostInvoiceCreatedPayload) SetData(data *Invoice) {
+func (p *PostInvoiceCreatedPayload) SetData(data *InvoiceLegacy) {
 	p.Data = data
 	p.require(postInvoiceCreatedPayloadFieldData)
 }
@@ -6696,8 +3475,8 @@ type PostInvoiceMarkedUncollectiblePayload struct {
 	// The API version for this webhook
 	APIVersion PostInvoiceMarkedUncollectiblePayloadAPIVersion `json:"api_version" url:"api_version"`
 	// The dated API version (Api-Version-Date) the payload is serialized to
-	APIVersionDate *string  `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
-	Data           *Invoice `json:"data" url:"data"`
+	APIVersionDate *string        `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *InvoiceLegacy `json:"data" url:"data"`
 	// A unique ID for every single webhook request
 	ID string `json:"id" url:"id"`
 	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
@@ -6735,7 +3514,7 @@ func (p *PostInvoiceMarkedUncollectiblePayload) GetAPIVersionDate() *string {
 	return p.APIVersionDate
 }
 
-func (p *PostInvoiceMarkedUncollectiblePayload) GetData() *Invoice {
+func (p *PostInvoiceMarkedUncollectiblePayload) GetData() *InvoiceLegacy {
 	if p == nil {
 		return nil
 	}
@@ -6809,7 +3588,7 @@ func (p *PostInvoiceMarkedUncollectiblePayload) SetAPIVersionDate(apiVersionDate
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostInvoiceMarkedUncollectiblePayload) SetData(data *Invoice) {
+func (p *PostInvoiceMarkedUncollectiblePayload) SetData(data *InvoiceLegacy) {
 	p.Data = data
 	p.require(postInvoiceMarkedUncollectiblePayloadFieldData)
 }
@@ -6962,8 +3741,8 @@ type PostInvoicePaidPayload struct {
 	// The API version for this webhook
 	APIVersion PostInvoicePaidPayloadAPIVersion `json:"api_version" url:"api_version"`
 	// The dated API version (Api-Version-Date) the payload is serialized to
-	APIVersionDate *string  `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
-	Data           *Invoice `json:"data" url:"data"`
+	APIVersionDate *string        `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *InvoiceLegacy `json:"data" url:"data"`
 	// A unique ID for every single webhook request
 	ID string `json:"id" url:"id"`
 	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
@@ -7001,7 +3780,7 @@ func (p *PostInvoicePaidPayload) GetAPIVersionDate() *string {
 	return p.APIVersionDate
 }
 
-func (p *PostInvoicePaidPayload) GetData() *Invoice {
+func (p *PostInvoicePaidPayload) GetData() *InvoiceLegacy {
 	if p == nil {
 		return nil
 	}
@@ -7075,7 +3854,7 @@ func (p *PostInvoicePaidPayload) SetAPIVersionDate(apiVersionDate *string) {
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostInvoicePaidPayload) SetData(data *Invoice) {
+func (p *PostInvoicePaidPayload) SetData(data *InvoiceLegacy) {
 	p.Data = data
 	p.require(postInvoicePaidPayloadFieldData)
 }
@@ -7228,8 +4007,8 @@ type PostInvoicePastDuePayload struct {
 	// The API version for this webhook
 	APIVersion PostInvoicePastDuePayloadAPIVersion `json:"api_version" url:"api_version"`
 	// The dated API version (Api-Version-Date) the payload is serialized to
-	APIVersionDate *string  `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
-	Data           *Invoice `json:"data" url:"data"`
+	APIVersionDate *string        `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *InvoiceLegacy `json:"data" url:"data"`
 	// A unique ID for every single webhook request
 	ID string `json:"id" url:"id"`
 	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
@@ -7267,7 +4046,7 @@ func (p *PostInvoicePastDuePayload) GetAPIVersionDate() *string {
 	return p.APIVersionDate
 }
 
-func (p *PostInvoicePastDuePayload) GetData() *Invoice {
+func (p *PostInvoicePastDuePayload) GetData() *InvoiceLegacy {
 	if p == nil {
 		return nil
 	}
@@ -7341,7 +4120,7 @@ func (p *PostInvoicePastDuePayload) SetAPIVersionDate(apiVersionDate *string) {
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostInvoicePastDuePayload) SetData(data *Invoice) {
+func (p *PostInvoicePastDuePayload) SetData(data *InvoiceLegacy) {
 	p.Data = data
 	p.require(postInvoicePastDuePayloadFieldData)
 }
@@ -7494,8 +4273,8 @@ type PostInvoiceVoidedPayload struct {
 	// The API version for this webhook
 	APIVersion PostInvoiceVoidedPayloadAPIVersion `json:"api_version" url:"api_version"`
 	// The dated API version (Api-Version-Date) the payload is serialized to
-	APIVersionDate *string  `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
-	Data           *Invoice `json:"data" url:"data"`
+	APIVersionDate *string        `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *InvoiceLegacy `json:"data" url:"data"`
 	// A unique ID for every single webhook request
 	ID string `json:"id" url:"id"`
 	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
@@ -7533,7 +4312,7 @@ func (p *PostInvoiceVoidedPayload) GetAPIVersionDate() *string {
 	return p.APIVersionDate
 }
 
-func (p *PostInvoiceVoidedPayload) GetData() *Invoice {
+func (p *PostInvoiceVoidedPayload) GetData() *InvoiceLegacy {
 	if p == nil {
 		return nil
 	}
@@ -7607,7 +4386,7 @@ func (p *PostInvoiceVoidedPayload) SetAPIVersionDate(apiVersionDate *string) {
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostInvoiceVoidedPayload) SetData(data *Invoice) {
+func (p *PostInvoiceVoidedPayload) SetData(data *InvoiceLegacy) {
 	p.Data = data
 	p.require(postInvoiceVoidedPayloadFieldData)
 }
@@ -7746,46 +4525,27 @@ var (
 	updateInvoicesRequestBillingAddressFieldPhone      = big.NewInt(1 << 5)
 	updateInvoicesRequestBillingAddressFieldPostalCode = big.NewInt(1 << 6)
 	updateInvoicesRequestBillingAddressFieldState      = big.NewInt(1 << 7)
-	updateInvoicesRequestBillingAddressFieldTaxIDType  = big.NewInt(1 << 8)
-	updateInvoicesRequestBillingAddressFieldTaxIDValue = big.NewInt(1 << 9)
 )
 
 // updateInvoicesRequestBillingAddressNullableFields maps the wire names of UpdateInvoicesRequestBillingAddress's nullable fields (required or optional) to their field bits.
 var updateInvoicesRequestBillingAddressNullableFields = map[string]*big.Int{
-	"city":         updateInvoicesRequestBillingAddressFieldCity,
-	"country":      updateInvoicesRequestBillingAddressFieldCountry,
-	"line1":        updateInvoicesRequestBillingAddressFieldLine1,
-	"line2":        updateInvoicesRequestBillingAddressFieldLine2,
-	"name":         updateInvoicesRequestBillingAddressFieldName,
-	"phone":        updateInvoicesRequestBillingAddressFieldPhone,
-	"postal_code":  updateInvoicesRequestBillingAddressFieldPostalCode,
-	"state":        updateInvoicesRequestBillingAddressFieldState,
-	"tax_id_type":  updateInvoicesRequestBillingAddressFieldTaxIDType,
-	"tax_id_value": updateInvoicesRequestBillingAddressFieldTaxIDValue,
+	"line2": updateInvoicesRequestBillingAddressFieldLine2,
+	"name":  updateInvoicesRequestBillingAddressFieldName,
+	"phone": updateInvoicesRequestBillingAddressFieldPhone,
+	"state": updateInvoicesRequestBillingAddressFieldState,
 }
 
-// Inline billing address to create or update a mailing address for this invoice.
+// Create a billing address linked to this member.
 type UpdateInvoicesRequestBillingAddress struct {
-	// The city of the address.
-	City *string `json:"city,omitempty" url:"city,omitempty"`
-	// The country of the address.
-	Country *string `json:"country,omitempty" url:"country,omitempty"`
-	// The line 1 of the address.
-	Line1 *string `json:"line1,omitempty" url:"line1,omitempty"`
-	// The line 2 of the address.
-	Line2 *string `json:"line2,omitempty" url:"line2,omitempty"`
-	// The name of the customer.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// The phone number of the customer.
-	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
-	// The postal code of the address.
-	PostalCode *string `json:"postal_code,omitempty" url:"postal_code,omitempty"`
-	// The state of the address.
-	State *string `json:"state,omitempty" url:"state,omitempty"`
-	// The type of tax identifier.
-	TaxIDType *TaxIdentifierTypes `json:"tax_id_type,omitempty" url:"tax_id_type,omitempty"`
-	// The value of the tax identifier.
-	TaxIDValue *string `json:"tax_id_value,omitempty" url:"tax_id_value,omitempty"`
+	City string `json:"city" url:"city"`
+	// ISO 3166-1 alpha-2 country code.
+	Country    string  `json:"country" url:"country"`
+	Line1      string  `json:"line1" url:"line1"`
+	Line2      *string `json:"line2,omitempty" url:"line2,omitempty"`
+	Name       *string `json:"name,omitempty" url:"name,omitempty"`
+	Phone      *string `json:"phone,omitempty" url:"phone,omitempty"`
+	PostalCode string  `json:"postal_code" url:"postal_code"`
+	State      *string `json:"state,omitempty" url:"state,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -7794,23 +4554,23 @@ type UpdateInvoicesRequestBillingAddress struct {
 	rawJSON         json.RawMessage
 }
 
-func (u *UpdateInvoicesRequestBillingAddress) GetCity() *string {
+func (u *UpdateInvoicesRequestBillingAddress) GetCity() string {
 	if u == nil {
-		return nil
+		return ""
 	}
 	return u.City
 }
 
-func (u *UpdateInvoicesRequestBillingAddress) GetCountry() *string {
+func (u *UpdateInvoicesRequestBillingAddress) GetCountry() string {
 	if u == nil {
-		return nil
+		return ""
 	}
 	return u.Country
 }
 
-func (u *UpdateInvoicesRequestBillingAddress) GetLine1() *string {
+func (u *UpdateInvoicesRequestBillingAddress) GetLine1() string {
 	if u == nil {
-		return nil
+		return ""
 	}
 	return u.Line1
 }
@@ -7836,9 +4596,9 @@ func (u *UpdateInvoicesRequestBillingAddress) GetPhone() *string {
 	return u.Phone
 }
 
-func (u *UpdateInvoicesRequestBillingAddress) GetPostalCode() *string {
+func (u *UpdateInvoicesRequestBillingAddress) GetPostalCode() string {
 	if u == nil {
-		return nil
+		return ""
 	}
 	return u.PostalCode
 }
@@ -7848,20 +4608,6 @@ func (u *UpdateInvoicesRequestBillingAddress) GetState() *string {
 		return nil
 	}
 	return u.State
-}
-
-func (u *UpdateInvoicesRequestBillingAddress) GetTaxIDType() *TaxIdentifierTypes {
-	if u == nil {
-		return nil
-	}
-	return u.TaxIDType
-}
-
-func (u *UpdateInvoicesRequestBillingAddress) GetTaxIDValue() *string {
-	if u == nil {
-		return nil
-	}
-	return u.TaxIDValue
 }
 
 func (u *UpdateInvoicesRequestBillingAddress) GetExtraProperties() map[string]interface{} {
@@ -7882,21 +4628,21 @@ func (u *UpdateInvoicesRequestBillingAddress) require(field *big.Int) {
 
 // SetCity sets the City field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestBillingAddress) SetCity(city *string) {
+func (u *UpdateInvoicesRequestBillingAddress) SetCity(city string) {
 	u.City = city
 	u.require(updateInvoicesRequestBillingAddressFieldCity)
 }
 
 // SetCountry sets the Country field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestBillingAddress) SetCountry(country *string) {
+func (u *UpdateInvoicesRequestBillingAddress) SetCountry(country string) {
 	u.Country = country
 	u.require(updateInvoicesRequestBillingAddressFieldCountry)
 }
 
 // SetLine1 sets the Line1 field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestBillingAddress) SetLine1(line1 *string) {
+func (u *UpdateInvoicesRequestBillingAddress) SetLine1(line1 string) {
 	u.Line1 = line1
 	u.require(updateInvoicesRequestBillingAddressFieldLine1)
 }
@@ -7924,7 +4670,7 @@ func (u *UpdateInvoicesRequestBillingAddress) SetPhone(phone *string) {
 
 // SetPostalCode sets the PostalCode field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestBillingAddress) SetPostalCode(postalCode *string) {
+func (u *UpdateInvoicesRequestBillingAddress) SetPostalCode(postalCode string) {
 	u.PostalCode = postalCode
 	u.require(updateInvoicesRequestBillingAddressFieldPostalCode)
 }
@@ -7934,20 +4680,6 @@ func (u *UpdateInvoicesRequestBillingAddress) SetPostalCode(postalCode *string) 
 func (u *UpdateInvoicesRequestBillingAddress) SetState(state *string) {
 	u.State = state
 	u.require(updateInvoicesRequestBillingAddressFieldState)
-}
-
-// SetTaxIDType sets the TaxIDType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestBillingAddress) SetTaxIDType(taxIDType *TaxIdentifierTypes) {
-	u.TaxIDType = taxIDType
-	u.require(updateInvoicesRequestBillingAddressFieldTaxIDType)
-}
-
-// SetTaxIDValue sets the TaxIDValue field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestBillingAddress) SetTaxIDValue(taxIDValue *string) {
-	u.TaxIDValue = taxIDValue
-	u.require(updateInvoicesRequestBillingAddressFieldTaxIDValue)
 }
 
 func (u *UpdateInvoicesRequestBillingAddress) UnmarshalJSON(data []byte) error {
@@ -7999,217 +4731,123 @@ func (u *UpdateInvoicesRequestBillingAddress) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-var (
-	updateInvoicesRequestLineItemsItemFieldLabel     = big.NewInt(1 << 0)
-	updateInvoicesRequestLineItemsItemFieldQuantity  = big.NewInt(1 << 1)
-	updateInvoicesRequestLineItemsItemFieldUnitPrice = big.NewInt(1 << 2)
-)
+type UpdateInvoicesRequestItemsItem struct {
+	Unknown any
 
-// updateInvoicesRequestLineItemsItemNullableFields maps the wire names of UpdateInvoicesRequestLineItemsItem's nullable fields (required or optional) to their field bits.
-var updateInvoicesRequestLineItemsItemNullableFields = map[string]*big.Int{
-	"quantity": updateInvoicesRequestLineItemsItemFieldQuantity,
+	typ string
 }
 
-// A single line item to include on the invoice, with a label, quantity, and unit price.
-type UpdateInvoicesRequestLineItemsItem struct {
-	// The label or description for this line item.
-	Label string `json:"label" url:"label"`
-	// The quantity of this line item. Defaults to 1.
-	Quantity *float64 `json:"quantity,omitempty" url:"quantity,omitempty"`
-	// The unit price for this line item. Provided as a number in the specified currency. Eg: 10.43 for $10.43. Negative values represent a credit or deduction, as long as the line items still total a chargeable amount.
-	UnitPrice float64 `json:"unit_price" url:"unit_price"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (u *UpdateInvoicesRequestLineItemsItem) GetLabel() string {
-	if u == nil {
-		return ""
-	}
-	return u.Label
-}
-
-func (u *UpdateInvoicesRequestLineItemsItem) GetQuantity() *float64 {
+func (u *UpdateInvoicesRequestItemsItem) GetUnknown() any {
 	if u == nil {
 		return nil
 	}
-	return u.Quantity
+	return u.Unknown
 }
 
-func (u *UpdateInvoicesRequestLineItemsItem) GetUnitPrice() float64 {
-	if u == nil {
-		return 0
-	}
-	return u.UnitPrice
-}
-
-func (u *UpdateInvoicesRequestLineItemsItem) GetExtraProperties() map[string]interface{} {
-	if u == nil {
+func (u *UpdateInvoicesRequestItemsItem) UnmarshalJSON(data []byte) error {
+	var valueUnknown any
+	if err := json.Unmarshal(data, &valueUnknown); err == nil {
+		u.typ = "Unknown"
+		u.Unknown = valueUnknown
 		return nil
 	}
-	return u.extraProperties
+	return fmt.Errorf("%s cannot be deserialized as a %T", data, u)
 }
 
-func (u *UpdateInvoicesRequestLineItemsItem) require(field *big.Int) {
-	next := new(big.Int)
-	if u.explicitFields != nil {
-		next.Set(u.explicitFields)
+func (u UpdateInvoicesRequestItemsItem) MarshalJSON() ([]byte, error) {
+	if u.typ == "Unknown" || u.Unknown != nil {
+		return json.Marshal(u.Unknown)
 	}
-	next.Or(next, field)
-	u.explicitFields = next
+	return nil, fmt.Errorf("type %T does not include a non-empty union type", u)
 }
 
-// SetLabel sets the Label field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestLineItemsItem) SetLabel(label string) {
-	u.Label = label
-	u.require(updateInvoicesRequestLineItemsItemFieldLabel)
+type UpdateInvoicesRequestItemsItemVisitor interface {
+	VisitUnknown(any) error
 }
 
-// SetQuantity sets the Quantity field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestLineItemsItem) SetQuantity(quantity *float64) {
-	u.Quantity = quantity
-	u.require(updateInvoicesRequestLineItemsItemFieldQuantity)
-}
-
-// SetUnitPrice sets the UnitPrice field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestLineItemsItem) SetUnitPrice(unitPrice float64) {
-	u.UnitPrice = unitPrice
-	u.require(updateInvoicesRequestLineItemsItemFieldUnitPrice)
-}
-
-func (u *UpdateInvoicesRequestLineItemsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateInvoicesRequestLineItemsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
+func (u *UpdateInvoicesRequestItemsItem) Accept(visitor UpdateInvoicesRequestItemsItemVisitor) error {
+	if u.typ == "Unknown" || u.Unknown != nil {
+		return visitor.VisitUnknown(u.Unknown)
 	}
-	*u = UpdateInvoicesRequestLineItemsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *u)
-	if err != nil {
-		return err
-	}
-	u.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateInvoicesRequestLineItemsItemNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		u.require(presentFields)
-	}
-	u.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (u *UpdateInvoicesRequestLineItemsItem) MarshalJSON() ([]byte, error) {
-	type embed UpdateInvoicesRequestLineItemsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*u),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (u *UpdateInvoicesRequestLineItemsItem) String() string {
-	if u == nil {
-		return "<nil>"
-	}
-	if len(u.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(u); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", u)
+	return fmt.Errorf("type %T does not include a non-empty union type", u)
 }
 
 var (
-	updateInvoicesRequestPlanFieldAdaptivePricingEnabled      = big.NewInt(1 << 0)
-	updateInvoicesRequestPlanFieldBillingPeriod               = big.NewInt(1 << 1)
-	updateInvoicesRequestPlanFieldCurrency                    = big.NewInt(1 << 2)
-	updateInvoicesRequestPlanFieldCustomFields                = big.NewInt(1 << 3)
-	updateInvoicesRequestPlanFieldDescription                 = big.NewInt(1 << 4)
-	updateInvoicesRequestPlanFieldExpirationDays              = big.NewInt(1 << 5)
-	updateInvoicesRequestPlanFieldInitialPrice                = big.NewInt(1 << 6)
-	updateInvoicesRequestPlanFieldInternalNotes               = big.NewInt(1 << 7)
-	updateInvoicesRequestPlanFieldLegacyPaymentMethodControls = big.NewInt(1 << 8)
-	updateInvoicesRequestPlanFieldPaymentMethodConfiguration  = big.NewInt(1 << 9)
-	updateInvoicesRequestPlanFieldPlanType                    = big.NewInt(1 << 10)
-	updateInvoicesRequestPlanFieldReleaseMethod               = big.NewInt(1 << 11)
-	updateInvoicesRequestPlanFieldRenewalPrice                = big.NewInt(1 << 12)
-	updateInvoicesRequestPlanFieldStock                       = big.NewInt(1 << 13)
-	updateInvoicesRequestPlanFieldTrialPeriodDays             = big.NewInt(1 << 14)
-	updateInvoicesRequestPlanFieldUnlimitedStock              = big.NewInt(1 << 15)
-	updateInvoicesRequestPlanFieldVisibility                  = big.NewInt(1 << 16)
+	updateInvoicesRequestItemsItemVariantFieldAllowMultipleQuantity = big.NewInt(1 << 0)
+	updateInvoicesRequestItemsItemVariantFieldApplicationFeeAmount  = big.NewInt(1 << 1)
+	updateInvoicesRequestItemsItemVariantFieldBillingPeriod         = big.NewInt(1 << 2)
+	updateInvoicesRequestItemsItemVariantFieldBillingType           = big.NewInt(1 << 3)
+	updateInvoicesRequestItemsItemVariantFieldCurrency              = big.NewInt(1 << 4)
+	updateInvoicesRequestItemsItemVariantFieldDescription           = big.NewInt(1 << 5)
+	updateInvoicesRequestItemsItemVariantFieldExpirationDays        = big.NewInt(1 << 6)
+	updateInvoicesRequestItemsItemVariantFieldForceCreateNewPlan    = big.NewInt(1 << 7)
+	updateInvoicesRequestItemsItemVariantFieldInitialPrice          = big.NewInt(1 << 8)
+	updateInvoicesRequestItemsItemVariantFieldInternalNotes         = big.NewInt(1 << 9)
+	updateInvoicesRequestItemsItemVariantFieldOverrideTaxType       = big.NewInt(1 << 10)
+	updateInvoicesRequestItemsItemVariantFieldProduct               = big.NewInt(1 << 11)
+	updateInvoicesRequestItemsItemVariantFieldProductID             = big.NewInt(1 << 12)
+	updateInvoicesRequestItemsItemVariantFieldRenewalPrice          = big.NewInt(1 << 13)
+	updateInvoicesRequestItemsItemVariantFieldTitle                 = big.NewInt(1 << 14)
+	updateInvoicesRequestItemsItemVariantFieldTrialPeriodDays       = big.NewInt(1 << 15)
+	updateInvoicesRequestItemsItemVariantFieldVisibility            = big.NewInt(1 << 16)
 )
 
-// updateInvoicesRequestPlanNullableFields maps the wire names of UpdateInvoicesRequestPlan's nullable fields (required or optional) to their field bits.
-var updateInvoicesRequestPlanNullableFields = map[string]*big.Int{
-	"adaptive_pricing_enabled":       updateInvoicesRequestPlanFieldAdaptivePricingEnabled,
-	"billing_period":                 updateInvoicesRequestPlanFieldBillingPeriod,
-	"currency":                       updateInvoicesRequestPlanFieldCurrency,
-	"custom_fields":                  updateInvoicesRequestPlanFieldCustomFields,
-	"description":                    updateInvoicesRequestPlanFieldDescription,
-	"expiration_days":                updateInvoicesRequestPlanFieldExpirationDays,
-	"initial_price":                  updateInvoicesRequestPlanFieldInitialPrice,
-	"internal_notes":                 updateInvoicesRequestPlanFieldInternalNotes,
-	"legacy_payment_method_controls": updateInvoicesRequestPlanFieldLegacyPaymentMethodControls,
-	"payment_method_configuration":   updateInvoicesRequestPlanFieldPaymentMethodConfiguration,
-	"plan_type":                      updateInvoicesRequestPlanFieldPlanType,
-	"release_method":                 updateInvoicesRequestPlanFieldReleaseMethod,
-	"renewal_price":                  updateInvoicesRequestPlanFieldRenewalPrice,
-	"stock":                          updateInvoicesRequestPlanFieldStock,
-	"trial_period_days":              updateInvoicesRequestPlanFieldTrialPeriodDays,
-	"unlimited_stock":                updateInvoicesRequestPlanFieldUnlimitedStock,
-	"visibility":                     updateInvoicesRequestPlanFieldVisibility,
+// updateInvoicesRequestItemsItemVariantNullableFields maps the wire names of UpdateInvoicesRequestItemsItemVariant's nullable fields (required or optional) to their field bits.
+var updateInvoicesRequestItemsItemVariantNullableFields = map[string]*big.Int{
+	"allow_multiple_quantity": updateInvoicesRequestItemsItemVariantFieldAllowMultipleQuantity,
+	"application_fee_amount":  updateInvoicesRequestItemsItemVariantFieldApplicationFeeAmount,
+	"billing_period":          updateInvoicesRequestItemsItemVariantFieldBillingPeriod,
+	"billing_type":            updateInvoicesRequestItemsItemVariantFieldBillingType,
+	"description":             updateInvoicesRequestItemsItemVariantFieldDescription,
+	"expiration_days":         updateInvoicesRequestItemsItemVariantFieldExpirationDays,
+	"force_create_new_plan":   updateInvoicesRequestItemsItemVariantFieldForceCreateNewPlan,
+	"initial_price":           updateInvoicesRequestItemsItemVariantFieldInitialPrice,
+	"internal_notes":          updateInvoicesRequestItemsItemVariantFieldInternalNotes,
+	"override_tax_type":       updateInvoicesRequestItemsItemVariantFieldOverrideTaxType,
+	"product":                 updateInvoicesRequestItemsItemVariantFieldProduct,
+	"product_id":              updateInvoicesRequestItemsItemVariantFieldProductID,
+	"renewal_price":           updateInvoicesRequestItemsItemVariantFieldRenewalPrice,
+	"title":                   updateInvoicesRequestItemsItemVariantFieldTitle,
+	"trial_period_days":       updateInvoicesRequestItemsItemVariantFieldTrialPeriodDays,
+	"visibility":              updateInvoicesRequestItemsItemVariantFieldVisibility,
 }
 
-// Updated plan attributes.
-type UpdateInvoicesRequestPlan struct {
-	// Whether this plan accepts local currency payments via adaptive pricing.
-	AdaptivePricingEnabled *bool `json:"adaptive_pricing_enabled,omitempty" url:"adaptive_pricing_enabled,omitempty"`
-	// The interval in days at which the plan charges (renewal plans).
+// Find or create a variant inline by its attributes, using the payment API properties. Requires plan:create.
+type UpdateInvoicesRequestItemsItemVariant struct {
+	// Whether more than one unit can be purchased in an order. Renewal variants cannot enable it. When `false`, checkouts, carts, and invoices reject a quantity above 1.
+	AllowMultipleQuantity *bool `json:"allow_multiple_quantity,omitempty" url:"allow_multiple_quantity,omitempty"`
+	// Application fee the platform collects per unit, in the variant currency (5.00 means $5.00 for USD). Must be positive and below the initial price for one-time variants or renewal price for recurring variants. Paid to the parent account alongside other processing fees; collection is capped to remaining proceeds. Applies to subsequent payments on recurring variants. Only valid for connected accounts with a parent account.
+	ApplicationFeeAmount *float64 `json:"application_fee_amount,omitempty" url:"application_fee_amount,omitempty"`
+	// Recurring billing interval in days.
 	BillingPeriod *int `json:"billing_period,omitempty" url:"billing_period,omitempty"`
-	// The three-letter ISO currency code for the plan's pricing. Defaults to USD.
-	Currency *Currencies `json:"currency,omitempty" url:"currency,omitempty"`
-	// An array of custom field objects.
-	CustomFields []*UpdateInvoicesRequestPlanCustomFieldsItem `json:"custom_fields,omitempty" url:"custom_fields,omitempty"`
-	// The description of the plan.
+	// Billing model for the variant.
+	BillingType *UpdateInvoicesRequestItemsItemVariantBillingType `json:"billing_type,omitempty" url:"billing_type,omitempty"`
+	// Currency code for the variant prices.
+	Currency UpdateInvoicesRequestItemsItemVariantCurrency `json:"currency" url:"currency"`
+	// Variant description.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
-	// The number of days until the membership expires and revokes access (expiration plans). For example, 365 for a one-year access period.
+	// Days until access expires.
 	ExpirationDays *int `json:"expiration_days,omitempty" url:"expiration_days,omitempty"`
-	// An additional amount charged upon first purchase. Use only if a one time payment OR you want to charge an additional amount on top of the renewal price. Provided as a number in the specified currency. Eg: 10.43 for $10.43
+	// Create a new variant instead of reusing a matching variant.
+	ForceCreateNewPlan *bool `json:"force_create_new_plan,omitempty" url:"force_create_new_plan,omitempty"`
+	// Additional amount charged on the first purchase, in the variant currency. For recurring variants without a trial, the first charge includes this amount plus renewal_price.
 	InitialPrice *float64 `json:"initial_price,omitempty" url:"initial_price,omitempty"`
-	// A personal description or notes section for the business.
+	// Internal notes for the account.
 	InternalNotes *string `json:"internal_notes,omitempty" url:"internal_notes,omitempty"`
-	// Whether this plan uses legacy payment method controls
-	LegacyPaymentMethodControls *bool `json:"legacy_payment_method_controls,omitempty" url:"legacy_payment_method_controls,omitempty"`
-	// The explicit payment method configuration for the plan. If not provided, the platform or company's defaults will apply.
-	PaymentMethodConfiguration *UpdateInvoicesRequestPlanPaymentMethodConfiguration `json:"payment_method_configuration,omitempty" url:"payment_method_configuration,omitempty"`
-	// Indicates if the plan is a one time payment or recurring.
-	PlanType *PlanTypes `json:"plan_type,omitempty" url:"plan_type,omitempty"`
-	// This is the release method the business uses to sell this plan.
-	ReleaseMethod *ReleaseMethod `json:"release_method,omitempty" url:"release_method,omitempty"`
-	// The amount the customer is charged every billing period. Use only if a recurring payment. Provided as a number in the specified currency. Eg: 10.43 for $10.43
+	// Whether the variant's price includes tax: `inclusive` (tax is included in the price), `exclusive` (tax is added on top), or `unspecified`. Omit it or pass `null` to use the account's tax setting. On an account enrolled in the Whop tax service, `inclusive` or `exclusive` replaces the account's setting and `unspecified` keeps it. Otherwise it applies only where the account is the merchant of record: `inclusive` or `exclusive` replaces the account's setting when the account collects tax, and `unspecified` means the variant collects no tax. Where Whop is the merchant of record, the account's setting applies. Variants that differ only in this value are different variants.
+	OverrideTaxType *UpdateInvoicesRequestItemsItemVariantOverrideTaxType `json:"override_tax_type,omitempty" url:"override_tax_type,omitempty"`
+	// Find or create a product by external identifier. Mutually exclusive with product_id.
+	Product *UpdateInvoicesRequestItemsItemVariantProduct `json:"product,omitempty" url:"product,omitempty"`
+	// Existing product ID belonging to the account, prefixed `prod_`. Mutually exclusive with `product`.
+	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
+	// Recurring price in the variant currency.
 	RenewalPrice *float64 `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
-	// The number of units available for purchase.
-	Stock *int `json:"stock,omitempty" url:"stock,omitempty"`
-	// The number of free trial days added before a renewal plan.
+	// Variant title.
+	Title *string `json:"title,omitempty" url:"title,omitempty"`
+	// Free trial days before renewal.
 	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
-	// When true, the plan has unlimited stock (stock field is ignored). When false, purchases are limited by the stock field.
-	UnlimitedStock *bool `json:"unlimited_stock,omitempty" url:"unlimited_stock,omitempty"`
-	// Shows or hides the plan from public/business view.
-	Visibility *Visibility `json:"visibility,omitempty" url:"visibility,omitempty"`
+	// Whether the variant is visible to customers.
+	Visibility *UpdateInvoicesRequestItemsItemVariantVisibility `json:"visibility,omitempty" url:"visibility,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -8218,133 +4856,133 @@ type UpdateInvoicesRequestPlan struct {
 	rawJSON         json.RawMessage
 }
 
-func (u *UpdateInvoicesRequestPlan) GetAdaptivePricingEnabled() *bool {
+func (u *UpdateInvoicesRequestItemsItemVariant) GetAllowMultipleQuantity() *bool {
 	if u == nil {
 		return nil
 	}
-	return u.AdaptivePricingEnabled
+	return u.AllowMultipleQuantity
 }
 
-func (u *UpdateInvoicesRequestPlan) GetBillingPeriod() *int {
+func (u *UpdateInvoicesRequestItemsItemVariant) GetApplicationFeeAmount() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.ApplicationFeeAmount
+}
+
+func (u *UpdateInvoicesRequestItemsItemVariant) GetBillingPeriod() *int {
 	if u == nil {
 		return nil
 	}
 	return u.BillingPeriod
 }
 
-func (u *UpdateInvoicesRequestPlan) GetCurrency() *Currencies {
+func (u *UpdateInvoicesRequestItemsItemVariant) GetBillingType() *UpdateInvoicesRequestItemsItemVariantBillingType {
 	if u == nil {
 		return nil
+	}
+	return u.BillingType
+}
+
+func (u *UpdateInvoicesRequestItemsItemVariant) GetCurrency() UpdateInvoicesRequestItemsItemVariantCurrency {
+	if u == nil {
+		return ""
 	}
 	return u.Currency
 }
 
-func (u *UpdateInvoicesRequestPlan) GetCustomFields() []*UpdateInvoicesRequestPlanCustomFieldsItem {
-	if u == nil {
-		return nil
-	}
-	return u.CustomFields
-}
-
-func (u *UpdateInvoicesRequestPlan) GetDescription() *string {
+func (u *UpdateInvoicesRequestItemsItemVariant) GetDescription() *string {
 	if u == nil {
 		return nil
 	}
 	return u.Description
 }
 
-func (u *UpdateInvoicesRequestPlan) GetExpirationDays() *int {
+func (u *UpdateInvoicesRequestItemsItemVariant) GetExpirationDays() *int {
 	if u == nil {
 		return nil
 	}
 	return u.ExpirationDays
 }
 
-func (u *UpdateInvoicesRequestPlan) GetInitialPrice() *float64 {
+func (u *UpdateInvoicesRequestItemsItemVariant) GetForceCreateNewPlan() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.ForceCreateNewPlan
+}
+
+func (u *UpdateInvoicesRequestItemsItemVariant) GetInitialPrice() *float64 {
 	if u == nil {
 		return nil
 	}
 	return u.InitialPrice
 }
 
-func (u *UpdateInvoicesRequestPlan) GetInternalNotes() *string {
+func (u *UpdateInvoicesRequestItemsItemVariant) GetInternalNotes() *string {
 	if u == nil {
 		return nil
 	}
 	return u.InternalNotes
 }
 
-func (u *UpdateInvoicesRequestPlan) GetLegacyPaymentMethodControls() *bool {
+func (u *UpdateInvoicesRequestItemsItemVariant) GetOverrideTaxType() *UpdateInvoicesRequestItemsItemVariantOverrideTaxType {
 	if u == nil {
 		return nil
 	}
-	return u.LegacyPaymentMethodControls
+	return u.OverrideTaxType
 }
 
-func (u *UpdateInvoicesRequestPlan) GetPaymentMethodConfiguration() *UpdateInvoicesRequestPlanPaymentMethodConfiguration {
+func (u *UpdateInvoicesRequestItemsItemVariant) GetProduct() *UpdateInvoicesRequestItemsItemVariantProduct {
 	if u == nil {
 		return nil
 	}
-	return u.PaymentMethodConfiguration
+	return u.Product
 }
 
-func (u *UpdateInvoicesRequestPlan) GetPlanType() *PlanTypes {
+func (u *UpdateInvoicesRequestItemsItemVariant) GetProductID() *string {
 	if u == nil {
 		return nil
 	}
-	return u.PlanType
+	return u.ProductID
 }
 
-func (u *UpdateInvoicesRequestPlan) GetReleaseMethod() *ReleaseMethod {
-	if u == nil {
-		return nil
-	}
-	return u.ReleaseMethod
-}
-
-func (u *UpdateInvoicesRequestPlan) GetRenewalPrice() *float64 {
+func (u *UpdateInvoicesRequestItemsItemVariant) GetRenewalPrice() *float64 {
 	if u == nil {
 		return nil
 	}
 	return u.RenewalPrice
 }
 
-func (u *UpdateInvoicesRequestPlan) GetStock() *int {
+func (u *UpdateInvoicesRequestItemsItemVariant) GetTitle() *string {
 	if u == nil {
 		return nil
 	}
-	return u.Stock
+	return u.Title
 }
 
-func (u *UpdateInvoicesRequestPlan) GetTrialPeriodDays() *int {
+func (u *UpdateInvoicesRequestItemsItemVariant) GetTrialPeriodDays() *int {
 	if u == nil {
 		return nil
 	}
 	return u.TrialPeriodDays
 }
 
-func (u *UpdateInvoicesRequestPlan) GetUnlimitedStock() *bool {
-	if u == nil {
-		return nil
-	}
-	return u.UnlimitedStock
-}
-
-func (u *UpdateInvoicesRequestPlan) GetVisibility() *Visibility {
+func (u *UpdateInvoicesRequestItemsItemVariant) GetVisibility() *UpdateInvoicesRequestItemsItemVariantVisibility {
 	if u == nil {
 		return nil
 	}
 	return u.Visibility
 }
 
-func (u *UpdateInvoicesRequestPlan) GetExtraProperties() map[string]interface{} {
+func (u *UpdateInvoicesRequestItemsItemVariant) GetExtraProperties() map[string]interface{} {
 	if u == nil {
 		return nil
 	}
 	return u.extraProperties
 }
 
-func (u *UpdateInvoicesRequestPlan) require(field *big.Int) {
+func (u *UpdateInvoicesRequestItemsItemVariant) require(field *big.Int) {
 	next := new(big.Int)
 	if u.explicitFields != nil {
 		next.Set(u.explicitFields)
@@ -8353,138 +4991,138 @@ func (u *UpdateInvoicesRequestPlan) require(field *big.Int) {
 	u.explicitFields = next
 }
 
-// SetAdaptivePricingEnabled sets the AdaptivePricingEnabled field and marks it as non-optional;
+// SetAllowMultipleQuantity sets the AllowMultipleQuantity field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestPlan) SetAdaptivePricingEnabled(adaptivePricingEnabled *bool) {
-	u.AdaptivePricingEnabled = adaptivePricingEnabled
-	u.require(updateInvoicesRequestPlanFieldAdaptivePricingEnabled)
+func (u *UpdateInvoicesRequestItemsItemVariant) SetAllowMultipleQuantity(allowMultipleQuantity *bool) {
+	u.AllowMultipleQuantity = allowMultipleQuantity
+	u.require(updateInvoicesRequestItemsItemVariantFieldAllowMultipleQuantity)
+}
+
+// SetApplicationFeeAmount sets the ApplicationFeeAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInvoicesRequestItemsItemVariant) SetApplicationFeeAmount(applicationFeeAmount *float64) {
+	u.ApplicationFeeAmount = applicationFeeAmount
+	u.require(updateInvoicesRequestItemsItemVariantFieldApplicationFeeAmount)
 }
 
 // SetBillingPeriod sets the BillingPeriod field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestPlan) SetBillingPeriod(billingPeriod *int) {
+func (u *UpdateInvoicesRequestItemsItemVariant) SetBillingPeriod(billingPeriod *int) {
 	u.BillingPeriod = billingPeriod
-	u.require(updateInvoicesRequestPlanFieldBillingPeriod)
+	u.require(updateInvoicesRequestItemsItemVariantFieldBillingPeriod)
+}
+
+// SetBillingType sets the BillingType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInvoicesRequestItemsItemVariant) SetBillingType(billingType *UpdateInvoicesRequestItemsItemVariantBillingType) {
+	u.BillingType = billingType
+	u.require(updateInvoicesRequestItemsItemVariantFieldBillingType)
 }
 
 // SetCurrency sets the Currency field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestPlan) SetCurrency(currency *Currencies) {
+func (u *UpdateInvoicesRequestItemsItemVariant) SetCurrency(currency UpdateInvoicesRequestItemsItemVariantCurrency) {
 	u.Currency = currency
-	u.require(updateInvoicesRequestPlanFieldCurrency)
-}
-
-// SetCustomFields sets the CustomFields field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestPlan) SetCustomFields(customFields []*UpdateInvoicesRequestPlanCustomFieldsItem) {
-	u.CustomFields = customFields
-	u.require(updateInvoicesRequestPlanFieldCustomFields)
+	u.require(updateInvoicesRequestItemsItemVariantFieldCurrency)
 }
 
 // SetDescription sets the Description field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestPlan) SetDescription(description *string) {
+func (u *UpdateInvoicesRequestItemsItemVariant) SetDescription(description *string) {
 	u.Description = description
-	u.require(updateInvoicesRequestPlanFieldDescription)
+	u.require(updateInvoicesRequestItemsItemVariantFieldDescription)
 }
 
 // SetExpirationDays sets the ExpirationDays field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestPlan) SetExpirationDays(expirationDays *int) {
+func (u *UpdateInvoicesRequestItemsItemVariant) SetExpirationDays(expirationDays *int) {
 	u.ExpirationDays = expirationDays
-	u.require(updateInvoicesRequestPlanFieldExpirationDays)
+	u.require(updateInvoicesRequestItemsItemVariantFieldExpirationDays)
+}
+
+// SetForceCreateNewPlan sets the ForceCreateNewPlan field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInvoicesRequestItemsItemVariant) SetForceCreateNewPlan(forceCreateNewPlan *bool) {
+	u.ForceCreateNewPlan = forceCreateNewPlan
+	u.require(updateInvoicesRequestItemsItemVariantFieldForceCreateNewPlan)
 }
 
 // SetInitialPrice sets the InitialPrice field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestPlan) SetInitialPrice(initialPrice *float64) {
+func (u *UpdateInvoicesRequestItemsItemVariant) SetInitialPrice(initialPrice *float64) {
 	u.InitialPrice = initialPrice
-	u.require(updateInvoicesRequestPlanFieldInitialPrice)
+	u.require(updateInvoicesRequestItemsItemVariantFieldInitialPrice)
 }
 
 // SetInternalNotes sets the InternalNotes field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestPlan) SetInternalNotes(internalNotes *string) {
+func (u *UpdateInvoicesRequestItemsItemVariant) SetInternalNotes(internalNotes *string) {
 	u.InternalNotes = internalNotes
-	u.require(updateInvoicesRequestPlanFieldInternalNotes)
+	u.require(updateInvoicesRequestItemsItemVariantFieldInternalNotes)
 }
 
-// SetLegacyPaymentMethodControls sets the LegacyPaymentMethodControls field and marks it as non-optional;
+// SetOverrideTaxType sets the OverrideTaxType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestPlan) SetLegacyPaymentMethodControls(legacyPaymentMethodControls *bool) {
-	u.LegacyPaymentMethodControls = legacyPaymentMethodControls
-	u.require(updateInvoicesRequestPlanFieldLegacyPaymentMethodControls)
+func (u *UpdateInvoicesRequestItemsItemVariant) SetOverrideTaxType(overrideTaxType *UpdateInvoicesRequestItemsItemVariantOverrideTaxType) {
+	u.OverrideTaxType = overrideTaxType
+	u.require(updateInvoicesRequestItemsItemVariantFieldOverrideTaxType)
 }
 
-// SetPaymentMethodConfiguration sets the PaymentMethodConfiguration field and marks it as non-optional;
+// SetProduct sets the Product field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestPlan) SetPaymentMethodConfiguration(paymentMethodConfiguration *UpdateInvoicesRequestPlanPaymentMethodConfiguration) {
-	u.PaymentMethodConfiguration = paymentMethodConfiguration
-	u.require(updateInvoicesRequestPlanFieldPaymentMethodConfiguration)
+func (u *UpdateInvoicesRequestItemsItemVariant) SetProduct(product *UpdateInvoicesRequestItemsItemVariantProduct) {
+	u.Product = product
+	u.require(updateInvoicesRequestItemsItemVariantFieldProduct)
 }
 
-// SetPlanType sets the PlanType field and marks it as non-optional;
+// SetProductID sets the ProductID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestPlan) SetPlanType(planType *PlanTypes) {
-	u.PlanType = planType
-	u.require(updateInvoicesRequestPlanFieldPlanType)
-}
-
-// SetReleaseMethod sets the ReleaseMethod field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestPlan) SetReleaseMethod(releaseMethod *ReleaseMethod) {
-	u.ReleaseMethod = releaseMethod
-	u.require(updateInvoicesRequestPlanFieldReleaseMethod)
+func (u *UpdateInvoicesRequestItemsItemVariant) SetProductID(productID *string) {
+	u.ProductID = productID
+	u.require(updateInvoicesRequestItemsItemVariantFieldProductID)
 }
 
 // SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestPlan) SetRenewalPrice(renewalPrice *float64) {
+func (u *UpdateInvoicesRequestItemsItemVariant) SetRenewalPrice(renewalPrice *float64) {
 	u.RenewalPrice = renewalPrice
-	u.require(updateInvoicesRequestPlanFieldRenewalPrice)
+	u.require(updateInvoicesRequestItemsItemVariantFieldRenewalPrice)
 }
 
-// SetStock sets the Stock field and marks it as non-optional;
+// SetTitle sets the Title field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestPlan) SetStock(stock *int) {
-	u.Stock = stock
-	u.require(updateInvoicesRequestPlanFieldStock)
+func (u *UpdateInvoicesRequestItemsItemVariant) SetTitle(title *string) {
+	u.Title = title
+	u.require(updateInvoicesRequestItemsItemVariantFieldTitle)
 }
 
 // SetTrialPeriodDays sets the TrialPeriodDays field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestPlan) SetTrialPeriodDays(trialPeriodDays *int) {
+func (u *UpdateInvoicesRequestItemsItemVariant) SetTrialPeriodDays(trialPeriodDays *int) {
 	u.TrialPeriodDays = trialPeriodDays
-	u.require(updateInvoicesRequestPlanFieldTrialPeriodDays)
-}
-
-// SetUnlimitedStock sets the UnlimitedStock field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestPlan) SetUnlimitedStock(unlimitedStock *bool) {
-	u.UnlimitedStock = unlimitedStock
-	u.require(updateInvoicesRequestPlanFieldUnlimitedStock)
+	u.require(updateInvoicesRequestItemsItemVariantFieldTrialPeriodDays)
 }
 
 // SetVisibility sets the Visibility field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestPlan) SetVisibility(visibility *Visibility) {
+func (u *UpdateInvoicesRequestItemsItemVariant) SetVisibility(visibility *UpdateInvoicesRequestItemsItemVariantVisibility) {
 	u.Visibility = visibility
-	u.require(updateInvoicesRequestPlanFieldVisibility)
+	u.require(updateInvoicesRequestItemsItemVariantFieldVisibility)
 }
 
-func (u *UpdateInvoicesRequestPlan) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateInvoicesRequestPlan
+func (u *UpdateInvoicesRequestItemsItemVariant) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateInvoicesRequestItemsItemVariant
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*u = UpdateInvoicesRequestPlan(value)
+	*u = UpdateInvoicesRequestItemsItemVariant(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *u)
 	if err != nil {
 		return err
 	}
 	u.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateInvoicesRequestPlanNullableFields)
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateInvoicesRequestItemsItemVariantNullableFields)
 	if err != nil {
 		return err
 	}
@@ -8495,8 +5133,8 @@ func (u *UpdateInvoicesRequestPlan) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (u *UpdateInvoicesRequestPlan) MarshalJSON() ([]byte, error) {
-	type embed UpdateInvoicesRequestPlan
+func (u *UpdateInvoicesRequestItemsItemVariant) MarshalJSON() ([]byte, error) {
+	type embed UpdateInvoicesRequestItemsItemVariant
 	var marshaler = struct {
 		embed
 	}{
@@ -8506,7 +5144,7 @@ func (u *UpdateInvoicesRequestPlan) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (u *UpdateInvoicesRequestPlan) String() string {
+func (u *UpdateInvoicesRequestItemsItemVariant) String() string {
 	if u == nil {
 		return "<nil>"
 	}
@@ -8521,36 +5159,396 @@ func (u *UpdateInvoicesRequestPlan) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-var (
-	updateInvoicesRequestPlanCustomFieldsItemFieldFieldType   = big.NewInt(1 << 0)
-	updateInvoicesRequestPlanCustomFieldsItemFieldID          = big.NewInt(1 << 1)
-	updateInvoicesRequestPlanCustomFieldsItemFieldName        = big.NewInt(1 << 2)
-	updateInvoicesRequestPlanCustomFieldsItemFieldOrder       = big.NewInt(1 << 3)
-	updateInvoicesRequestPlanCustomFieldsItemFieldPlaceholder = big.NewInt(1 << 4)
-	updateInvoicesRequestPlanCustomFieldsItemFieldRequired    = big.NewInt(1 << 5)
+// Billing model for the variant.
+type UpdateInvoicesRequestItemsItemVariantBillingType string
+
+const (
+	UpdateInvoicesRequestItemsItemVariantBillingTypeRenewal UpdateInvoicesRequestItemsItemVariantBillingType = "renewal"
+	UpdateInvoicesRequestItemsItemVariantBillingTypeOneTime UpdateInvoicesRequestItemsItemVariantBillingType = "one_time"
 )
 
-// updateInvoicesRequestPlanCustomFieldsItemNullableFields maps the wire names of UpdateInvoicesRequestPlanCustomFieldsItem's nullable fields (required or optional) to their field bits.
-var updateInvoicesRequestPlanCustomFieldsItemNullableFields = map[string]*big.Int{
-	"id":          updateInvoicesRequestPlanCustomFieldsItemFieldID,
-	"order":       updateInvoicesRequestPlanCustomFieldsItemFieldOrder,
-	"placeholder": updateInvoicesRequestPlanCustomFieldsItemFieldPlaceholder,
-	"required":    updateInvoicesRequestPlanCustomFieldsItemFieldRequired,
+func NewUpdateInvoicesRequestItemsItemVariantBillingTypeFromString(s string) (UpdateInvoicesRequestItemsItemVariantBillingType, error) {
+	switch s {
+	case "renewal":
+		return UpdateInvoicesRequestItemsItemVariantBillingTypeRenewal, nil
+	case "one_time":
+		return UpdateInvoicesRequestItemsItemVariantBillingTypeOneTime, nil
+	}
+	var t UpdateInvoicesRequestItemsItemVariantBillingType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-type UpdateInvoicesRequestPlanCustomFieldsItem struct {
-	// The type of the custom field.
-	FieldType CustomFieldTypes `json:"field_type" url:"field_type"`
-	// The ID of the custom field (if being updated)
-	ID *string `json:"id,omitempty" url:"id,omitempty"`
-	// The name of the custom field.
-	Name string `json:"name" url:"name"`
-	// The order of the field.
-	Order *int `json:"order,omitempty" url:"order,omitempty"`
-	// The placeholder value of the field.
-	Placeholder *string `json:"placeholder,omitempty" url:"placeholder,omitempty"`
-	// Whether or not the field is required.
-	Required *bool `json:"required,omitempty" url:"required,omitempty"`
+func (u UpdateInvoicesRequestItemsItemVariantBillingType) Ptr() *UpdateInvoicesRequestItemsItemVariantBillingType {
+	return &u
+}
+
+// Currency code for the variant prices.
+type UpdateInvoicesRequestItemsItemVariantCurrency string
+
+const (
+	UpdateInvoicesRequestItemsItemVariantCurrencyUsd     UpdateInvoicesRequestItemsItemVariantCurrency = "usd"
+	UpdateInvoicesRequestItemsItemVariantCurrencySgd     UpdateInvoicesRequestItemsItemVariantCurrency = "sgd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyInr     UpdateInvoicesRequestItemsItemVariantCurrency = "inr"
+	UpdateInvoicesRequestItemsItemVariantCurrencyAud     UpdateInvoicesRequestItemsItemVariantCurrency = "aud"
+	UpdateInvoicesRequestItemsItemVariantCurrencyBrl     UpdateInvoicesRequestItemsItemVariantCurrency = "brl"
+	UpdateInvoicesRequestItemsItemVariantCurrencyCad     UpdateInvoicesRequestItemsItemVariantCurrency = "cad"
+	UpdateInvoicesRequestItemsItemVariantCurrencyDkk     UpdateInvoicesRequestItemsItemVariantCurrency = "dkk"
+	UpdateInvoicesRequestItemsItemVariantCurrencyEur     UpdateInvoicesRequestItemsItemVariantCurrency = "eur"
+	UpdateInvoicesRequestItemsItemVariantCurrencyNok     UpdateInvoicesRequestItemsItemVariantCurrency = "nok"
+	UpdateInvoicesRequestItemsItemVariantCurrencyGbp     UpdateInvoicesRequestItemsItemVariantCurrency = "gbp"
+	UpdateInvoicesRequestItemsItemVariantCurrencySek     UpdateInvoicesRequestItemsItemVariantCurrency = "sek"
+	UpdateInvoicesRequestItemsItemVariantCurrencyChf     UpdateInvoicesRequestItemsItemVariantCurrency = "chf"
+	UpdateInvoicesRequestItemsItemVariantCurrencyHkd     UpdateInvoicesRequestItemsItemVariantCurrency = "hkd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyHuf     UpdateInvoicesRequestItemsItemVariantCurrency = "huf"
+	UpdateInvoicesRequestItemsItemVariantCurrencyJpy     UpdateInvoicesRequestItemsItemVariantCurrency = "jpy"
+	UpdateInvoicesRequestItemsItemVariantCurrencyMxn     UpdateInvoicesRequestItemsItemVariantCurrency = "mxn"
+	UpdateInvoicesRequestItemsItemVariantCurrencyMyr     UpdateInvoicesRequestItemsItemVariantCurrency = "myr"
+	UpdateInvoicesRequestItemsItemVariantCurrencyPln     UpdateInvoicesRequestItemsItemVariantCurrency = "pln"
+	UpdateInvoicesRequestItemsItemVariantCurrencyCzk     UpdateInvoicesRequestItemsItemVariantCurrency = "czk"
+	UpdateInvoicesRequestItemsItemVariantCurrencyNzd     UpdateInvoicesRequestItemsItemVariantCurrency = "nzd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyAed     UpdateInvoicesRequestItemsItemVariantCurrency = "aed"
+	UpdateInvoicesRequestItemsItemVariantCurrencyEth     UpdateInvoicesRequestItemsItemVariantCurrency = "eth"
+	UpdateInvoicesRequestItemsItemVariantCurrencyApe     UpdateInvoicesRequestItemsItemVariantCurrency = "ape"
+	UpdateInvoicesRequestItemsItemVariantCurrencyCop     UpdateInvoicesRequestItemsItemVariantCurrency = "cop"
+	UpdateInvoicesRequestItemsItemVariantCurrencyRon     UpdateInvoicesRequestItemsItemVariantCurrency = "ron"
+	UpdateInvoicesRequestItemsItemVariantCurrencyThb     UpdateInvoicesRequestItemsItemVariantCurrency = "thb"
+	UpdateInvoicesRequestItemsItemVariantCurrencyBgn     UpdateInvoicesRequestItemsItemVariantCurrency = "bgn"
+	UpdateInvoicesRequestItemsItemVariantCurrencyIdr     UpdateInvoicesRequestItemsItemVariantCurrency = "idr"
+	UpdateInvoicesRequestItemsItemVariantCurrencyDop     UpdateInvoicesRequestItemsItemVariantCurrency = "dop"
+	UpdateInvoicesRequestItemsItemVariantCurrencyPhp     UpdateInvoicesRequestItemsItemVariantCurrency = "php"
+	UpdateInvoicesRequestItemsItemVariantCurrencyTry     UpdateInvoicesRequestItemsItemVariantCurrency = "try"
+	UpdateInvoicesRequestItemsItemVariantCurrencyKrw     UpdateInvoicesRequestItemsItemVariantCurrency = "krw"
+	UpdateInvoicesRequestItemsItemVariantCurrencyTwd     UpdateInvoicesRequestItemsItemVariantCurrency = "twd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyVnd     UpdateInvoicesRequestItemsItemVariantCurrency = "vnd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyPkr     UpdateInvoicesRequestItemsItemVariantCurrency = "pkr"
+	UpdateInvoicesRequestItemsItemVariantCurrencyClp     UpdateInvoicesRequestItemsItemVariantCurrency = "clp"
+	UpdateInvoicesRequestItemsItemVariantCurrencyUyu     UpdateInvoicesRequestItemsItemVariantCurrency = "uyu"
+	UpdateInvoicesRequestItemsItemVariantCurrencyArs     UpdateInvoicesRequestItemsItemVariantCurrency = "ars"
+	UpdateInvoicesRequestItemsItemVariantCurrencyZar     UpdateInvoicesRequestItemsItemVariantCurrency = "zar"
+	UpdateInvoicesRequestItemsItemVariantCurrencyDzd     UpdateInvoicesRequestItemsItemVariantCurrency = "dzd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyTnd     UpdateInvoicesRequestItemsItemVariantCurrency = "tnd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyMad     UpdateInvoicesRequestItemsItemVariantCurrency = "mad"
+	UpdateInvoicesRequestItemsItemVariantCurrencyKes     UpdateInvoicesRequestItemsItemVariantCurrency = "kes"
+	UpdateInvoicesRequestItemsItemVariantCurrencyKwd     UpdateInvoicesRequestItemsItemVariantCurrency = "kwd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyJod     UpdateInvoicesRequestItemsItemVariantCurrency = "jod"
+	UpdateInvoicesRequestItemsItemVariantCurrencyAll     UpdateInvoicesRequestItemsItemVariantCurrency = "all"
+	UpdateInvoicesRequestItemsItemVariantCurrencyXcd     UpdateInvoicesRequestItemsItemVariantCurrency = "xcd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyAmd     UpdateInvoicesRequestItemsItemVariantCurrency = "amd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyBsd     UpdateInvoicesRequestItemsItemVariantCurrency = "bsd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyBhd     UpdateInvoicesRequestItemsItemVariantCurrency = "bhd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyBob     UpdateInvoicesRequestItemsItemVariantCurrency = "bob"
+	UpdateInvoicesRequestItemsItemVariantCurrencyBam     UpdateInvoicesRequestItemsItemVariantCurrency = "bam"
+	UpdateInvoicesRequestItemsItemVariantCurrencyKhr     UpdateInvoicesRequestItemsItemVariantCurrency = "khr"
+	UpdateInvoicesRequestItemsItemVariantCurrencyCrc     UpdateInvoicesRequestItemsItemVariantCurrency = "crc"
+	UpdateInvoicesRequestItemsItemVariantCurrencyXof     UpdateInvoicesRequestItemsItemVariantCurrency = "xof"
+	UpdateInvoicesRequestItemsItemVariantCurrencyEgp     UpdateInvoicesRequestItemsItemVariantCurrency = "egp"
+	UpdateInvoicesRequestItemsItemVariantCurrencyEtb     UpdateInvoicesRequestItemsItemVariantCurrency = "etb"
+	UpdateInvoicesRequestItemsItemVariantCurrencyGmd     UpdateInvoicesRequestItemsItemVariantCurrency = "gmd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyGhs     UpdateInvoicesRequestItemsItemVariantCurrency = "ghs"
+	UpdateInvoicesRequestItemsItemVariantCurrencyGtq     UpdateInvoicesRequestItemsItemVariantCurrency = "gtq"
+	UpdateInvoicesRequestItemsItemVariantCurrencyGyd     UpdateInvoicesRequestItemsItemVariantCurrency = "gyd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyIls     UpdateInvoicesRequestItemsItemVariantCurrency = "ils"
+	UpdateInvoicesRequestItemsItemVariantCurrencyJmd     UpdateInvoicesRequestItemsItemVariantCurrency = "jmd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyMop     UpdateInvoicesRequestItemsItemVariantCurrency = "mop"
+	UpdateInvoicesRequestItemsItemVariantCurrencyMga     UpdateInvoicesRequestItemsItemVariantCurrency = "mga"
+	UpdateInvoicesRequestItemsItemVariantCurrencyMur     UpdateInvoicesRequestItemsItemVariantCurrency = "mur"
+	UpdateInvoicesRequestItemsItemVariantCurrencyMdl     UpdateInvoicesRequestItemsItemVariantCurrency = "mdl"
+	UpdateInvoicesRequestItemsItemVariantCurrencyMnt     UpdateInvoicesRequestItemsItemVariantCurrency = "mnt"
+	UpdateInvoicesRequestItemsItemVariantCurrencyNad     UpdateInvoicesRequestItemsItemVariantCurrency = "nad"
+	UpdateInvoicesRequestItemsItemVariantCurrencyNgn     UpdateInvoicesRequestItemsItemVariantCurrency = "ngn"
+	UpdateInvoicesRequestItemsItemVariantCurrencyMkd     UpdateInvoicesRequestItemsItemVariantCurrency = "mkd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyOmr     UpdateInvoicesRequestItemsItemVariantCurrency = "omr"
+	UpdateInvoicesRequestItemsItemVariantCurrencyPyg     UpdateInvoicesRequestItemsItemVariantCurrency = "pyg"
+	UpdateInvoicesRequestItemsItemVariantCurrencyPen     UpdateInvoicesRequestItemsItemVariantCurrency = "pen"
+	UpdateInvoicesRequestItemsItemVariantCurrencyQar     UpdateInvoicesRequestItemsItemVariantCurrency = "qar"
+	UpdateInvoicesRequestItemsItemVariantCurrencyRwf     UpdateInvoicesRequestItemsItemVariantCurrency = "rwf"
+	UpdateInvoicesRequestItemsItemVariantCurrencySar     UpdateInvoicesRequestItemsItemVariantCurrency = "sar"
+	UpdateInvoicesRequestItemsItemVariantCurrencyRsd     UpdateInvoicesRequestItemsItemVariantCurrency = "rsd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyLkr     UpdateInvoicesRequestItemsItemVariantCurrency = "lkr"
+	UpdateInvoicesRequestItemsItemVariantCurrencyTzs     UpdateInvoicesRequestItemsItemVariantCurrency = "tzs"
+	UpdateInvoicesRequestItemsItemVariantCurrencyTtd     UpdateInvoicesRequestItemsItemVariantCurrency = "ttd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyUzs     UpdateInvoicesRequestItemsItemVariantCurrency = "uzs"
+	UpdateInvoicesRequestItemsItemVariantCurrencyRub     UpdateInvoicesRequestItemsItemVariantCurrency = "rub"
+	UpdateInvoicesRequestItemsItemVariantCurrencyBtc     UpdateInvoicesRequestItemsItemVariantCurrency = "btc"
+	UpdateInvoicesRequestItemsItemVariantCurrencyCny     UpdateInvoicesRequestItemsItemVariantCurrency = "cny"
+	UpdateInvoicesRequestItemsItemVariantCurrencyUsdt    UpdateInvoicesRequestItemsItemVariantCurrency = "usdt"
+	UpdateInvoicesRequestItemsItemVariantCurrencyKzt     UpdateInvoicesRequestItemsItemVariantCurrency = "kzt"
+	UpdateInvoicesRequestItemsItemVariantCurrencyAwg     UpdateInvoicesRequestItemsItemVariantCurrency = "awg"
+	UpdateInvoicesRequestItemsItemVariantCurrencyWhopUsd UpdateInvoicesRequestItemsItemVariantCurrency = "whop_usd"
+	UpdateInvoicesRequestItemsItemVariantCurrencyXau     UpdateInvoicesRequestItemsItemVariantCurrency = "xau"
+)
+
+func NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString(s string) (UpdateInvoicesRequestItemsItemVariantCurrency, error) {
+	switch s {
+	case "usd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyUsd, nil
+	case "sgd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencySgd, nil
+	case "inr":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyInr, nil
+	case "aud":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyAud, nil
+	case "brl":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyBrl, nil
+	case "cad":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyCad, nil
+	case "dkk":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyDkk, nil
+	case "eur":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyEur, nil
+	case "nok":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyNok, nil
+	case "gbp":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyGbp, nil
+	case "sek":
+		return UpdateInvoicesRequestItemsItemVariantCurrencySek, nil
+	case "chf":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyChf, nil
+	case "hkd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyHkd, nil
+	case "huf":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyHuf, nil
+	case "jpy":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyJpy, nil
+	case "mxn":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyMxn, nil
+	case "myr":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyMyr, nil
+	case "pln":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyPln, nil
+	case "czk":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyCzk, nil
+	case "nzd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyNzd, nil
+	case "aed":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyAed, nil
+	case "eth":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyEth, nil
+	case "ape":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyApe, nil
+	case "cop":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyCop, nil
+	case "ron":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyRon, nil
+	case "thb":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyThb, nil
+	case "bgn":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyBgn, nil
+	case "idr":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyIdr, nil
+	case "dop":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyDop, nil
+	case "php":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyPhp, nil
+	case "try":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyTry, nil
+	case "krw":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyKrw, nil
+	case "twd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyTwd, nil
+	case "vnd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyVnd, nil
+	case "pkr":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyPkr, nil
+	case "clp":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyClp, nil
+	case "uyu":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyUyu, nil
+	case "ars":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyArs, nil
+	case "zar":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyZar, nil
+	case "dzd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyDzd, nil
+	case "tnd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyTnd, nil
+	case "mad":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyMad, nil
+	case "kes":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyKes, nil
+	case "kwd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyKwd, nil
+	case "jod":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyJod, nil
+	case "all":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyAll, nil
+	case "xcd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyXcd, nil
+	case "amd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyAmd, nil
+	case "bsd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyBsd, nil
+	case "bhd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyBhd, nil
+	case "bob":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyBob, nil
+	case "bam":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyBam, nil
+	case "khr":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyKhr, nil
+	case "crc":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyCrc, nil
+	case "xof":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyXof, nil
+	case "egp":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyEgp, nil
+	case "etb":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyEtb, nil
+	case "gmd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyGmd, nil
+	case "ghs":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyGhs, nil
+	case "gtq":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyGtq, nil
+	case "gyd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyGyd, nil
+	case "ils":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyIls, nil
+	case "jmd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyJmd, nil
+	case "mop":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyMop, nil
+	case "mga":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyMga, nil
+	case "mur":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyMur, nil
+	case "mdl":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyMdl, nil
+	case "mnt":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyMnt, nil
+	case "nad":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyNad, nil
+	case "ngn":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyNgn, nil
+	case "mkd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyMkd, nil
+	case "omr":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyOmr, nil
+	case "pyg":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyPyg, nil
+	case "pen":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyPen, nil
+	case "qar":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyQar, nil
+	case "rwf":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyRwf, nil
+	case "sar":
+		return UpdateInvoicesRequestItemsItemVariantCurrencySar, nil
+	case "rsd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyRsd, nil
+	case "lkr":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyLkr, nil
+	case "tzs":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyTzs, nil
+	case "ttd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyTtd, nil
+	case "uzs":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyUzs, nil
+	case "rub":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyRub, nil
+	case "btc":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyBtc, nil
+	case "cny":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyCny, nil
+	case "usdt":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyUsdt, nil
+	case "kzt":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyKzt, nil
+	case "awg":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyAwg, nil
+	case "whop_usd":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyWhopUsd, nil
+	case "xau":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyXau, nil
+	}
+	var t UpdateInvoicesRequestItemsItemVariantCurrency
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateInvoicesRequestItemsItemVariantCurrency) Ptr() *UpdateInvoicesRequestItemsItemVariantCurrency {
+	return &u
+}
+
+// Whether the variant's price includes tax: `inclusive` (tax is included in the price), `exclusive` (tax is added on top), or `unspecified`. Omit it or pass `null` to use the account's tax setting. On an account enrolled in the Whop tax service, `inclusive` or `exclusive` replaces the account's setting and `unspecified` keeps it. Otherwise it applies only where the account is the merchant of record: `inclusive` or `exclusive` replaces the account's setting when the account collects tax, and `unspecified` means the variant collects no tax. Where Whop is the merchant of record, the account's setting applies. Variants that differ only in this value are different variants.
+type UpdateInvoicesRequestItemsItemVariantOverrideTaxType string
+
+const (
+	UpdateInvoicesRequestItemsItemVariantOverrideTaxTypeExclusive   UpdateInvoicesRequestItemsItemVariantOverrideTaxType = "exclusive"
+	UpdateInvoicesRequestItemsItemVariantOverrideTaxTypeInclusive   UpdateInvoicesRequestItemsItemVariantOverrideTaxType = "inclusive"
+	UpdateInvoicesRequestItemsItemVariantOverrideTaxTypeUnspecified UpdateInvoicesRequestItemsItemVariantOverrideTaxType = "unspecified"
+)
+
+func NewUpdateInvoicesRequestItemsItemVariantOverrideTaxTypeFromString(s string) (UpdateInvoicesRequestItemsItemVariantOverrideTaxType, error) {
+	switch s {
+	case "exclusive":
+		return UpdateInvoicesRequestItemsItemVariantOverrideTaxTypeExclusive, nil
+	case "inclusive":
+		return UpdateInvoicesRequestItemsItemVariantOverrideTaxTypeInclusive, nil
+	case "unspecified":
+		return UpdateInvoicesRequestItemsItemVariantOverrideTaxTypeUnspecified, nil
+	}
+	var t UpdateInvoicesRequestItemsItemVariantOverrideTaxType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateInvoicesRequestItemsItemVariantOverrideTaxType) Ptr() *UpdateInvoicesRequestItemsItemVariantOverrideTaxType {
+	return &u
+}
+
+var (
+	updateInvoicesRequestItemsItemVariantProductFieldCollectShippingAddress    = big.NewInt(1 << 0)
+	updateInvoicesRequestItemsItemVariantProductFieldCustomStatementDescriptor = big.NewInt(1 << 1)
+	updateInvoicesRequestItemsItemVariantProductFieldDescription               = big.NewInt(1 << 2)
+	updateInvoicesRequestItemsItemVariantProductFieldExternalIdentifier        = big.NewInt(1 << 3)
+	updateInvoicesRequestItemsItemVariantProductFieldGlobalAffiliatePercentage = big.NewInt(1 << 4)
+	updateInvoicesRequestItemsItemVariantProductFieldGlobalAffiliateStatus     = big.NewInt(1 << 5)
+	updateInvoicesRequestItemsItemVariantProductFieldHeadline                  = big.NewInt(1 << 6)
+	updateInvoicesRequestItemsItemVariantProductFieldProductTaxCodeID          = big.NewInt(1 << 7)
+	updateInvoicesRequestItemsItemVariantProductFieldRedirectPurchaseURL       = big.NewInt(1 << 8)
+	updateInvoicesRequestItemsItemVariantProductFieldRoute                     = big.NewInt(1 << 9)
+	updateInvoicesRequestItemsItemVariantProductFieldTitle                     = big.NewInt(1 << 10)
+	updateInvoicesRequestItemsItemVariantProductFieldVisibility                = big.NewInt(1 << 11)
+)
+
+// updateInvoicesRequestItemsItemVariantProductNullableFields maps the wire names of UpdateInvoicesRequestItemsItemVariantProduct's nullable fields (required or optional) to their field bits.
+var updateInvoicesRequestItemsItemVariantProductNullableFields = map[string]*big.Int{
+	"collect_shipping_address":    updateInvoicesRequestItemsItemVariantProductFieldCollectShippingAddress,
+	"custom_statement_descriptor": updateInvoicesRequestItemsItemVariantProductFieldCustomStatementDescriptor,
+	"description":                 updateInvoicesRequestItemsItemVariantProductFieldDescription,
+	"global_affiliate_percentage": updateInvoicesRequestItemsItemVariantProductFieldGlobalAffiliatePercentage,
+	"global_affiliate_status":     updateInvoicesRequestItemsItemVariantProductFieldGlobalAffiliateStatus,
+	"headline":                    updateInvoicesRequestItemsItemVariantProductFieldHeadline,
+	"product_tax_code_id":         updateInvoicesRequestItemsItemVariantProductFieldProductTaxCodeID,
+	"redirect_purchase_url":       updateInvoicesRequestItemsItemVariantProductFieldRedirectPurchaseURL,
+	"route":                       updateInvoicesRequestItemsItemVariantProductFieldRoute,
+}
+
+// Find or create a product by external identifier. Mutually exclusive with product_id.
+type UpdateInvoicesRequestItemsItemVariantProduct struct {
+	// Whether to collect a shipping address at checkout.
+	CollectShippingAddress *bool `json:"collect_shipping_address,omitempty" url:"collect_shipping_address,omitempty"`
+	// Custom card statement descriptor for the product, starting with WHOP*.
+	CustomStatementDescriptor *string `json:"custom_statement_descriptor,omitempty" url:"custom_statement_descriptor,omitempty"`
+	// Product description.
+	Description *string `json:"description,omitempty" url:"description,omitempty"`
+	// Your unique identifier for the product.
+	ExternalIdentifier string `json:"external_identifier" url:"external_identifier"`
+	// Percentage of revenue paid to global affiliates.
+	GlobalAffiliatePercentage *float64 `json:"global_affiliate_percentage,omitempty" url:"global_affiliate_percentage,omitempty"`
+	// Global affiliate program status.
+	GlobalAffiliateStatus *UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus `json:"global_affiliate_status,omitempty" url:"global_affiliate_status,omitempty"`
+	// Product headline.
+	Headline *string `json:"headline,omitempty" url:"headline,omitempty"`
+	// Product tax code identifier.
+	ProductTaxCodeID *string `json:"product_tax_code_id,omitempty" url:"product_tax_code_id,omitempty"`
+	// Where to redirect the buyer after purchase.
+	RedirectPurchaseURL *string `json:"redirect_purchase_url,omitempty" url:"redirect_purchase_url,omitempty"`
+	// Product route.
+	Route *string `json:"route,omitempty" url:"route,omitempty"`
+	// Product title.
+	Title string `json:"title" url:"title"`
+	// Product visibility. Defaults to hidden.
+	Visibility *UpdateInvoicesRequestItemsItemVariantProductVisibility `json:"visibility,omitempty" url:"visibility,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -8559,56 +5557,98 @@ type UpdateInvoicesRequestPlanCustomFieldsItem struct {
 	rawJSON         json.RawMessage
 }
 
-func (u *UpdateInvoicesRequestPlanCustomFieldsItem) GetFieldType() CustomFieldTypes {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) GetCollectShippingAddress() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.CollectShippingAddress
+}
+
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) GetCustomStatementDescriptor() *string {
+	if u == nil {
+		return nil
+	}
+	return u.CustomStatementDescriptor
+}
+
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) GetDescription() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Description
+}
+
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) GetExternalIdentifier() string {
 	if u == nil {
 		return ""
 	}
-	return u.FieldType
+	return u.ExternalIdentifier
 }
 
-func (u *UpdateInvoicesRequestPlanCustomFieldsItem) GetID() *string {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) GetGlobalAffiliatePercentage() *float64 {
 	if u == nil {
 		return nil
 	}
-	return u.ID
+	return u.GlobalAffiliatePercentage
 }
 
-func (u *UpdateInvoicesRequestPlanCustomFieldsItem) GetName() string {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) GetGlobalAffiliateStatus() *UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus {
+	if u == nil {
+		return nil
+	}
+	return u.GlobalAffiliateStatus
+}
+
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) GetHeadline() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Headline
+}
+
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) GetProductTaxCodeID() *string {
+	if u == nil {
+		return nil
+	}
+	return u.ProductTaxCodeID
+}
+
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) GetRedirectPurchaseURL() *string {
+	if u == nil {
+		return nil
+	}
+	return u.RedirectPurchaseURL
+}
+
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) GetRoute() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Route
+}
+
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) GetTitle() string {
 	if u == nil {
 		return ""
 	}
-	return u.Name
+	return u.Title
 }
 
-func (u *UpdateInvoicesRequestPlanCustomFieldsItem) GetOrder() *int {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) GetVisibility() *UpdateInvoicesRequestItemsItemVariantProductVisibility {
 	if u == nil {
 		return nil
 	}
-	return u.Order
+	return u.Visibility
 }
 
-func (u *UpdateInvoicesRequestPlanCustomFieldsItem) GetPlaceholder() *string {
-	if u == nil {
-		return nil
-	}
-	return u.Placeholder
-}
-
-func (u *UpdateInvoicesRequestPlanCustomFieldsItem) GetRequired() *bool {
-	if u == nil {
-		return nil
-	}
-	return u.Required
-}
-
-func (u *UpdateInvoicesRequestPlanCustomFieldsItem) GetExtraProperties() map[string]interface{} {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) GetExtraProperties() map[string]interface{} {
 	if u == nil {
 		return nil
 	}
 	return u.extraProperties
 }
 
-func (u *UpdateInvoicesRequestPlanCustomFieldsItem) require(field *big.Int) {
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) require(field *big.Int) {
 	next := new(big.Int)
 	if u.explicitFields != nil {
 		next.Set(u.explicitFields)
@@ -8617,280 +5657,282 @@ func (u *UpdateInvoicesRequestPlanCustomFieldsItem) require(field *big.Int) {
 	u.explicitFields = next
 }
 
-// SetFieldType sets the FieldType field and marks it as non-optional;
+// SetCollectShippingAddress sets the CollectShippingAddress field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestPlanCustomFieldsItem) SetFieldType(fieldType CustomFieldTypes) {
-	u.FieldType = fieldType
-	u.require(updateInvoicesRequestPlanCustomFieldsItemFieldFieldType)
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) SetCollectShippingAddress(collectShippingAddress *bool) {
+	u.CollectShippingAddress = collectShippingAddress
+	u.require(updateInvoicesRequestItemsItemVariantProductFieldCollectShippingAddress)
+}
+
+// SetCustomStatementDescriptor sets the CustomStatementDescriptor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) SetCustomStatementDescriptor(customStatementDescriptor *string) {
+	u.CustomStatementDescriptor = customStatementDescriptor
+	u.require(updateInvoicesRequestItemsItemVariantProductFieldCustomStatementDescriptor)
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) SetDescription(description *string) {
+	u.Description = description
+	u.require(updateInvoicesRequestItemsItemVariantProductFieldDescription)
+}
+
+// SetExternalIdentifier sets the ExternalIdentifier field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) SetExternalIdentifier(externalIdentifier string) {
+	u.ExternalIdentifier = externalIdentifier
+	u.require(updateInvoicesRequestItemsItemVariantProductFieldExternalIdentifier)
+}
+
+// SetGlobalAffiliatePercentage sets the GlobalAffiliatePercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) SetGlobalAffiliatePercentage(globalAffiliatePercentage *float64) {
+	u.GlobalAffiliatePercentage = globalAffiliatePercentage
+	u.require(updateInvoicesRequestItemsItemVariantProductFieldGlobalAffiliatePercentage)
+}
+
+// SetGlobalAffiliateStatus sets the GlobalAffiliateStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) SetGlobalAffiliateStatus(globalAffiliateStatus *UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus) {
+	u.GlobalAffiliateStatus = globalAffiliateStatus
+	u.require(updateInvoicesRequestItemsItemVariantProductFieldGlobalAffiliateStatus)
+}
+
+// SetHeadline sets the Headline field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) SetHeadline(headline *string) {
+	u.Headline = headline
+	u.require(updateInvoicesRequestItemsItemVariantProductFieldHeadline)
+}
+
+// SetProductTaxCodeID sets the ProductTaxCodeID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) SetProductTaxCodeID(productTaxCodeID *string) {
+	u.ProductTaxCodeID = productTaxCodeID
+	u.require(updateInvoicesRequestItemsItemVariantProductFieldProductTaxCodeID)
+}
+
+// SetRedirectPurchaseURL sets the RedirectPurchaseURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) SetRedirectPurchaseURL(redirectPurchaseURL *string) {
+	u.RedirectPurchaseURL = redirectPurchaseURL
+	u.require(updateInvoicesRequestItemsItemVariantProductFieldRedirectPurchaseURL)
+}
+
+// SetRoute sets the Route field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) SetRoute(route *string) {
+	u.Route = route
+	u.require(updateInvoicesRequestItemsItemVariantProductFieldRoute)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) SetTitle(title string) {
+	u.Title = title
+	u.require(updateInvoicesRequestItemsItemVariantProductFieldTitle)
+}
+
+// SetVisibility sets the Visibility field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) SetVisibility(visibility *UpdateInvoicesRequestItemsItemVariantProductVisibility) {
+	u.Visibility = visibility
+	u.require(updateInvoicesRequestItemsItemVariantProductFieldVisibility)
+}
+
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateInvoicesRequestItemsItemVariantProduct
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateInvoicesRequestItemsItemVariantProduct(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateInvoicesRequestItemsItemVariantProductNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) MarshalJSON() ([]byte, error) {
+	type embed UpdateInvoicesRequestItemsItemVariantProduct
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateInvoicesRequestItemsItemVariantProduct) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// Global affiliate program status.
+type UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus string
+
+const (
+	UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatusEnabled  UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus = "enabled"
+	UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatusDisabled UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus = "disabled"
+)
+
+func NewUpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatusFromString(s string) (UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus, error) {
+	switch s {
+	case "enabled":
+		return UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatusEnabled, nil
+	case "disabled":
+		return UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatusDisabled, nil
+	}
+	var t UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus) Ptr() *UpdateInvoicesRequestItemsItemVariantProductGlobalAffiliateStatus {
+	return &u
+}
+
+// Product visibility. Defaults to hidden.
+type UpdateInvoicesRequestItemsItemVariantProductVisibility string
+
+const (
+	UpdateInvoicesRequestItemsItemVariantProductVisibilityVisible   UpdateInvoicesRequestItemsItemVariantProductVisibility = "visible"
+	UpdateInvoicesRequestItemsItemVariantProductVisibilityHidden    UpdateInvoicesRequestItemsItemVariantProductVisibility = "hidden"
+	UpdateInvoicesRequestItemsItemVariantProductVisibilityArchived  UpdateInvoicesRequestItemsItemVariantProductVisibility = "archived"
+	UpdateInvoicesRequestItemsItemVariantProductVisibilityQuickLink UpdateInvoicesRequestItemsItemVariantProductVisibility = "quick_link"
+)
+
+func NewUpdateInvoicesRequestItemsItemVariantProductVisibilityFromString(s string) (UpdateInvoicesRequestItemsItemVariantProductVisibility, error) {
+	switch s {
+	case "visible":
+		return UpdateInvoicesRequestItemsItemVariantProductVisibilityVisible, nil
+	case "hidden":
+		return UpdateInvoicesRequestItemsItemVariantProductVisibilityHidden, nil
+	case "archived":
+		return UpdateInvoicesRequestItemsItemVariantProductVisibilityArchived, nil
+	case "quick_link":
+		return UpdateInvoicesRequestItemsItemVariantProductVisibilityQuickLink, nil
+	}
+	var t UpdateInvoicesRequestItemsItemVariantProductVisibility
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateInvoicesRequestItemsItemVariantProductVisibility) Ptr() *UpdateInvoicesRequestItemsItemVariantProductVisibility {
+	return &u
+}
+
+// Whether the variant is visible to customers.
+type UpdateInvoicesRequestItemsItemVariantVisibility string
+
+const (
+	UpdateInvoicesRequestItemsItemVariantVisibilityVisible   UpdateInvoicesRequestItemsItemVariantVisibility = "visible"
+	UpdateInvoicesRequestItemsItemVariantVisibilityHidden    UpdateInvoicesRequestItemsItemVariantVisibility = "hidden"
+	UpdateInvoicesRequestItemsItemVariantVisibilityArchived  UpdateInvoicesRequestItemsItemVariantVisibility = "archived"
+	UpdateInvoicesRequestItemsItemVariantVisibilityQuickLink UpdateInvoicesRequestItemsItemVariantVisibility = "quick_link"
+)
+
+func NewUpdateInvoicesRequestItemsItemVariantVisibilityFromString(s string) (UpdateInvoicesRequestItemsItemVariantVisibility, error) {
+	switch s {
+	case "visible":
+		return UpdateInvoicesRequestItemsItemVariantVisibilityVisible, nil
+	case "hidden":
+		return UpdateInvoicesRequestItemsItemVariantVisibilityHidden, nil
+	case "archived":
+		return UpdateInvoicesRequestItemsItemVariantVisibilityArchived, nil
+	case "quick_link":
+		return UpdateInvoicesRequestItemsItemVariantVisibilityQuickLink, nil
+	}
+	var t UpdateInvoicesRequestItemsItemVariantVisibility
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateInvoicesRequestItemsItemVariantVisibility) Ptr() *UpdateInvoicesRequestItemsItemVariantVisibility {
+	return &u
+}
+
+var (
+	unscheduleInvoicesRequestFieldID = big.NewInt(1 << 0)
+)
+
+type UnscheduleInvoicesRequest struct {
+	// The invoice's pay_ ID.
+	ID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (u *UnscheduleInvoicesRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestPlanCustomFieldsItem) SetID(id *string) {
+func (u *UnscheduleInvoicesRequest) SetID(id string) {
 	u.ID = id
-	u.require(updateInvoicesRequestPlanCustomFieldsItemFieldID)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestPlanCustomFieldsItem) SetName(name string) {
-	u.Name = name
-	u.require(updateInvoicesRequestPlanCustomFieldsItemFieldName)
-}
-
-// SetOrder sets the Order field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestPlanCustomFieldsItem) SetOrder(order *int) {
-	u.Order = order
-	u.require(updateInvoicesRequestPlanCustomFieldsItemFieldOrder)
-}
-
-// SetPlaceholder sets the Placeholder field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestPlanCustomFieldsItem) SetPlaceholder(placeholder *string) {
-	u.Placeholder = placeholder
-	u.require(updateInvoicesRequestPlanCustomFieldsItemFieldPlaceholder)
-}
-
-// SetRequired sets the Required field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestPlanCustomFieldsItem) SetRequired(required *bool) {
-	u.Required = required
-	u.require(updateInvoicesRequestPlanCustomFieldsItemFieldRequired)
-}
-
-func (u *UpdateInvoicesRequestPlanCustomFieldsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateInvoicesRequestPlanCustomFieldsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*u = UpdateInvoicesRequestPlanCustomFieldsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *u)
-	if err != nil {
-		return err
-	}
-	u.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateInvoicesRequestPlanCustomFieldsItemNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		u.require(presentFields)
-	}
-	u.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (u *UpdateInvoicesRequestPlanCustomFieldsItem) MarshalJSON() ([]byte, error) {
-	type embed UpdateInvoicesRequestPlanCustomFieldsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*u),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (u *UpdateInvoicesRequestPlanCustomFieldsItem) String() string {
-	if u == nil {
-		return "<nil>"
-	}
-	if len(u.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(u); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", u)
+	u.require(unscheduleInvoicesRequestFieldID)
 }
 
 var (
-	updateInvoicesRequestPlanPaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
-	updateInvoicesRequestPlanPaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
-	updateInvoicesRequestPlanPaymentMethodConfigurationFieldIncludePlatformDefaults = big.NewInt(1 << 2)
-)
-
-// updateInvoicesRequestPlanPaymentMethodConfigurationNullableFields maps the wire names of UpdateInvoicesRequestPlanPaymentMethodConfiguration's nullable fields (required or optional) to their field bits.
-var updateInvoicesRequestPlanPaymentMethodConfigurationNullableFields = map[string]*big.Int{
-	"include_platform_defaults": updateInvoicesRequestPlanPaymentMethodConfigurationFieldIncludePlatformDefaults,
-}
-
-// The explicit payment method configuration for the plan. If not provided, the platform or company's defaults will apply.
-type UpdateInvoicesRequestPlanPaymentMethodConfiguration struct {
-	// An array of payment method identifiers that are explicitly disabled. Only applies if the include_platform_defaults is true.
-	Disabled []PaymentMethodTypes `json:"disabled" url:"disabled"`
-	// An array of payment method identifiers that are explicitly enabled. This means these payment methods will be shown on checkout. Example use case is to only enable a specific payment method like cashapp, or extending the platform defaults with additional methods.
-	Enabled []PaymentMethodTypes `json:"enabled" url:"enabled"`
-	// Whether Whop's platform default payment method enablement settings are included in this configuration. The full list of default payment methods can be found in the documentation at docs.whop.com/payments.
-	IncludePlatformDefaults *bool `json:"include_platform_defaults,omitempty" url:"include_platform_defaults,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (u *UpdateInvoicesRequestPlanPaymentMethodConfiguration) GetDisabled() []PaymentMethodTypes {
-	if u == nil {
-		return nil
-	}
-	return u.Disabled
-}
-
-func (u *UpdateInvoicesRequestPlanPaymentMethodConfiguration) GetEnabled() []PaymentMethodTypes {
-	if u == nil {
-		return nil
-	}
-	return u.Enabled
-}
-
-func (u *UpdateInvoicesRequestPlanPaymentMethodConfiguration) GetIncludePlatformDefaults() *bool {
-	if u == nil {
-		return nil
-	}
-	return u.IncludePlatformDefaults
-}
-
-func (u *UpdateInvoicesRequestPlanPaymentMethodConfiguration) GetExtraProperties() map[string]interface{} {
-	if u == nil {
-		return nil
-	}
-	return u.extraProperties
-}
-
-func (u *UpdateInvoicesRequestPlanPaymentMethodConfiguration) require(field *big.Int) {
-	next := new(big.Int)
-	if u.explicitFields != nil {
-		next.Set(u.explicitFields)
-	}
-	next.Or(next, field)
-	u.explicitFields = next
-}
-
-// SetDisabled sets the Disabled field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestPlanPaymentMethodConfiguration) SetDisabled(disabled []PaymentMethodTypes) {
-	u.Disabled = disabled
-	u.require(updateInvoicesRequestPlanPaymentMethodConfigurationFieldDisabled)
-}
-
-// SetEnabled sets the Enabled field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestPlanPaymentMethodConfiguration) SetEnabled(enabled []PaymentMethodTypes) {
-	u.Enabled = enabled
-	u.require(updateInvoicesRequestPlanPaymentMethodConfigurationFieldEnabled)
-}
-
-// SetIncludePlatformDefaults sets the IncludePlatformDefaults field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequestPlanPaymentMethodConfiguration) SetIncludePlatformDefaults(includePlatformDefaults *bool) {
-	u.IncludePlatformDefaults = includePlatformDefaults
-	u.require(updateInvoicesRequestPlanPaymentMethodConfigurationFieldIncludePlatformDefaults)
-}
-
-func (u *UpdateInvoicesRequestPlanPaymentMethodConfiguration) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateInvoicesRequestPlanPaymentMethodConfiguration
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*u = UpdateInvoicesRequestPlanPaymentMethodConfiguration(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *u)
-	if err != nil {
-		return err
-	}
-	u.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateInvoicesRequestPlanPaymentMethodConfigurationNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		u.require(presentFields)
-	}
-	u.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (u *UpdateInvoicesRequestPlanPaymentMethodConfiguration) MarshalJSON() ([]byte, error) {
-	type embed UpdateInvoicesRequestPlanPaymentMethodConfiguration
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*u),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (u *UpdateInvoicesRequestPlanPaymentMethodConfiguration) String() string {
-	if u == nil {
-		return "<nil>"
-	}
-	if len(u.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(u); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", u)
-}
-
-var (
-	updateInvoicesRequestFieldID                          = big.NewInt(1 << 0)
-	updateInvoicesRequestFieldAutomaticallyFinalizesAt    = big.NewInt(1 << 1)
-	updateInvoicesRequestFieldBillingAddress              = big.NewInt(1 << 2)
-	updateInvoicesRequestFieldChargeBuyerFee              = big.NewInt(1 << 3)
-	updateInvoicesRequestFieldCollectionMethod            = big.NewInt(1 << 4)
-	updateInvoicesRequestFieldCustomerName                = big.NewInt(1 << 5)
-	updateInvoicesRequestFieldDueDate                     = big.NewInt(1 << 6)
-	updateInvoicesRequestFieldEmailAddress                = big.NewInt(1 << 7)
-	updateInvoicesRequestFieldLineItems                   = big.NewInt(1 << 8)
-	updateInvoicesRequestFieldMailingAddressID            = big.NewInt(1 << 9)
-	updateInvoicesRequestFieldMemberID                    = big.NewInt(1 << 10)
-	updateInvoicesRequestFieldPaymentMethodID             = big.NewInt(1 << 11)
-	updateInvoicesRequestFieldPlan                        = big.NewInt(1 << 12)
-	updateInvoicesRequestFieldProductID                   = big.NewInt(1 << 13)
-	updateInvoicesRequestFieldSubscriptionBillingAnchorAt = big.NewInt(1 << 14)
+	updateInvoicesRequestFieldID                 = big.NewInt(1 << 0)
+	updateInvoicesRequestFieldBillingAddress     = big.NewInt(1 << 1)
+	updateInvoicesRequestFieldBuyerFeePercentage = big.NewInt(1 << 2)
+	updateInvoicesRequestFieldDueAt              = big.NewInt(1 << 3)
+	updateInvoicesRequestFieldItems              = big.NewInt(1 << 4)
+	updateInvoicesRequestFieldMailingAddressID   = big.NewInt(1 << 5)
+	updateInvoicesRequestFieldMemberID           = big.NewInt(1 << 6)
+	updateInvoicesRequestFieldMetadata           = big.NewInt(1 << 7)
+	updateInvoicesRequestFieldPaymentMethodID    = big.NewInt(1 << 8)
+	updateInvoicesRequestFieldRecipientEmails    = big.NewInt(1 << 9)
 )
 
 type UpdateInvoicesRequest struct {
-	// The unique identifier of the invoice to update.
+	// The invoice's pay_ ID.
 	ID string `json:"-" url:"-"`
-	// The date and time when the invoice will be automatically finalized. For charge_automatically, triggers an automatic charge. For send_invoice, sends the invoice email at the specified time.
-	AutomaticallyFinalizesAt *time.Time `json:"automatically_finalizes_at,omitempty" url:"-"`
-	// Inline billing address to create or update a mailing address for this invoice.
+	// Create a billing address linked to this member.
 	BillingAddress *UpdateInvoicesRequestBillingAddress `json:"billing_address,omitempty" url:"-"`
-	// Whether to charge the customer a buyer fee on this invoice.
-	ChargeBuyerFee *bool `json:"charge_buyer_fee,omitempty" url:"-"`
-	// How the invoice should be collected.
-	CollectionMethod *InvoiceCollectionMethods `json:"collection_method,omitempty" url:"-"`
-	// The name of the customer.
-	CustomerName *string `json:"customer_name,omitempty" url:"-"`
-	// The date by which the invoice must be paid.
-	DueDate *time.Time `json:"due_date,omitempty" url:"-"`
-	// The email address of the customer.
-	EmailAddress *string `json:"email_address,omitempty" url:"-"`
-	// Line items that break down the invoice total. When provided, the sum of (quantity * unit_price) for all items must equal the plan price. Individual items may be negative to represent a credit, as long as the sum is not negative and clears the currency's minimum charge. Pass an empty list to remove the breakdown.
-	LineItems []*UpdateInvoicesRequestLineItemsItem `json:"line_items,omitempty" url:"-"`
-	// The unique identifier of an existing mailing address to attach.
+	// The buyer's adjustable fee in percentage points, with at most two decimal places.
+	BuyerFeePercentage *float64 `json:"buyer_fee_percentage,omitempty" url:"-"`
+	// When payment is due, as an ISO 8601 timestamp.
+	DueAt *time.Time `json:"due_at,omitempty" url:"-"`
+	// The variants being invoiced, all in the same currency. Each variant may appear once; use quantity for multiple units. Product and price come from each variant; a recurring variant must belong to a product, bills its renewal price and, once the invoice is paid, renews as a subscription charged to the payment method that paid it. With several items, every item that has a product must be a regular product, and all items need compatible payment, tax, and access settings.
+	Items []*UpdateInvoicesRequestItemsItem `json:"items,omitempty" url:"-"`
+	// An address associated with the member. Mutually exclusive with billing_address.
 	MailingAddressID *string `json:"mailing_address_id,omitempty" url:"-"`
-	// The unique identifier of a member to assign as the customer.
+	// The billed customer, a member of the account. Changing email recipients does not change this buyer.
 	MemberID *string `json:"member_id,omitempty" url:"-"`
-	// The unique identifier of the payment method to charge.
+	// Up to 50 caller-owned string key/value pairs.
+	Metadata map[string]string `json:"metadata,omitempty" url:"-"`
+	// A saved payment method belonging to the member, prefixed `payt_`. Sending the invoice emails it now and charges this method on `due_at`, or right away when there is no `due_at` or it has passed. Issuing the invoice without sending it charges right away.
 	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
-	// Updated plan attributes.
-	Plan *UpdateInvoicesRequestPlan `json:"plan,omitempty" url:"-"`
-	// The unique identifier of an existing product to attach to this invoice. Only allowed while the invoice is still a draft.
-	ProductID *string `json:"product_id,omitempty" url:"-"`
-	// The date that defines when the subscription billing cycle should start.
-	SubscriptionBillingAnchorAt *time.Time `json:"subscription_billing_anchor_at,omitempty" url:"-"`
+	// Email addresses saved for invoice delivery, independent of the billed customer. Saving them sends no email. Defaults to the customer email when omitted on create. Can be updated on draft, open, or uncollectible invoices.
+	RecipientEmails []string `json:"recipient_emails,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -8912,13 +5954,6 @@ func (u *UpdateInvoicesRequest) SetID(id string) {
 	u.require(updateInvoicesRequestFieldID)
 }
 
-// SetAutomaticallyFinalizesAt sets the AutomaticallyFinalizesAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequest) SetAutomaticallyFinalizesAt(automaticallyFinalizesAt *time.Time) {
-	u.AutomaticallyFinalizesAt = automaticallyFinalizesAt
-	u.require(updateInvoicesRequestFieldAutomaticallyFinalizesAt)
-}
-
 // SetBillingAddress sets the BillingAddress field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateInvoicesRequest) SetBillingAddress(billingAddress *UpdateInvoicesRequestBillingAddress) {
@@ -8926,46 +5961,25 @@ func (u *UpdateInvoicesRequest) SetBillingAddress(billingAddress *UpdateInvoices
 	u.require(updateInvoicesRequestFieldBillingAddress)
 }
 
-// SetChargeBuyerFee sets the ChargeBuyerFee field and marks it as non-optional;
+// SetBuyerFeePercentage sets the BuyerFeePercentage field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequest) SetChargeBuyerFee(chargeBuyerFee *bool) {
-	u.ChargeBuyerFee = chargeBuyerFee
-	u.require(updateInvoicesRequestFieldChargeBuyerFee)
+func (u *UpdateInvoicesRequest) SetBuyerFeePercentage(buyerFeePercentage *float64) {
+	u.BuyerFeePercentage = buyerFeePercentage
+	u.require(updateInvoicesRequestFieldBuyerFeePercentage)
 }
 
-// SetCollectionMethod sets the CollectionMethod field and marks it as non-optional;
+// SetDueAt sets the DueAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequest) SetCollectionMethod(collectionMethod *InvoiceCollectionMethods) {
-	u.CollectionMethod = collectionMethod
-	u.require(updateInvoicesRequestFieldCollectionMethod)
+func (u *UpdateInvoicesRequest) SetDueAt(dueAt *time.Time) {
+	u.DueAt = dueAt
+	u.require(updateInvoicesRequestFieldDueAt)
 }
 
-// SetCustomerName sets the CustomerName field and marks it as non-optional;
+// SetItems sets the Items field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequest) SetCustomerName(customerName *string) {
-	u.CustomerName = customerName
-	u.require(updateInvoicesRequestFieldCustomerName)
-}
-
-// SetDueDate sets the DueDate field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequest) SetDueDate(dueDate *time.Time) {
-	u.DueDate = dueDate
-	u.require(updateInvoicesRequestFieldDueDate)
-}
-
-// SetEmailAddress sets the EmailAddress field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequest) SetEmailAddress(emailAddress *string) {
-	u.EmailAddress = emailAddress
-	u.require(updateInvoicesRequestFieldEmailAddress)
-}
-
-// SetLineItems sets the LineItems field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequest) SetLineItems(lineItems []*UpdateInvoicesRequestLineItemsItem) {
-	u.LineItems = lineItems
-	u.require(updateInvoicesRequestFieldLineItems)
+func (u *UpdateInvoicesRequest) SetItems(items []*UpdateInvoicesRequestItemsItem) {
+	u.Items = items
+	u.require(updateInvoicesRequestFieldItems)
 }
 
 // SetMailingAddressID sets the MailingAddressID field and marks it as non-optional;
@@ -8982,6 +5996,13 @@ func (u *UpdateInvoicesRequest) SetMemberID(memberID *string) {
 	u.require(updateInvoicesRequestFieldMemberID)
 }
 
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInvoicesRequest) SetMetadata(metadata map[string]string) {
+	u.Metadata = metadata
+	u.require(updateInvoicesRequestFieldMetadata)
+}
+
 // SetPaymentMethodID sets the PaymentMethodID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateInvoicesRequest) SetPaymentMethodID(paymentMethodID *string) {
@@ -8989,34 +6010,18 @@ func (u *UpdateInvoicesRequest) SetPaymentMethodID(paymentMethodID *string) {
 	u.require(updateInvoicesRequestFieldPaymentMethodID)
 }
 
-// SetPlan sets the Plan field and marks it as non-optional;
+// SetRecipientEmails sets the RecipientEmails field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequest) SetPlan(plan *UpdateInvoicesRequestPlan) {
-	u.Plan = plan
-	u.require(updateInvoicesRequestFieldPlan)
-}
-
-// SetProductID sets the ProductID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequest) SetProductID(productID *string) {
-	u.ProductID = productID
-	u.require(updateInvoicesRequestFieldProductID)
-}
-
-// SetSubscriptionBillingAnchorAt sets the SubscriptionBillingAnchorAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateInvoicesRequest) SetSubscriptionBillingAnchorAt(subscriptionBillingAnchorAt *time.Time) {
-	u.SubscriptionBillingAnchorAt = subscriptionBillingAnchorAt
-	u.require(updateInvoicesRequestFieldSubscriptionBillingAnchorAt)
+func (u *UpdateInvoicesRequest) SetRecipientEmails(recipientEmails []string) {
+	u.RecipientEmails = recipientEmails
+	u.require(updateInvoicesRequestFieldRecipientEmails)
 }
 
 func (u *UpdateInvoicesRequest) UnmarshalJSON(data []byte) error {
 	type embed UpdateInvoicesRequest
 	var body = struct {
 		embed
-		AutomaticallyFinalizesAt    *internal.DateTime `json:"automatically_finalizes_at,omitempty"`
-		DueDate                     *internal.DateTime `json:"due_date,omitempty"`
-		SubscriptionBillingAnchorAt *internal.DateTime `json:"subscription_billing_anchor_at,omitempty"`
+		DueAt *internal.DateTime `json:"due_at,omitempty"`
 	}{
 		embed: embed(*u),
 	}
@@ -9024,9 +6029,7 @@ func (u *UpdateInvoicesRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*u = UpdateInvoicesRequest(body.embed)
-	u.AutomaticallyFinalizesAt = body.AutomaticallyFinalizesAt.TimePtr()
-	u.DueDate = body.DueDate.TimePtr()
-	u.SubscriptionBillingAnchorAt = body.SubscriptionBillingAnchorAt.TimePtr()
+	u.DueAt = body.DueAt.TimePtr()
 	return nil
 }
 
@@ -9034,14 +6037,10 @@ func (u *UpdateInvoicesRequest) MarshalJSON() ([]byte, error) {
 	type embed UpdateInvoicesRequest
 	var marshaler = struct {
 		embed
-		AutomaticallyFinalizesAt    *internal.DateTime `json:"automatically_finalizes_at,omitempty"`
-		DueDate                     *internal.DateTime `json:"due_date,omitempty"`
-		SubscriptionBillingAnchorAt *internal.DateTime `json:"subscription_billing_anchor_at,omitempty"`
+		DueAt *internal.DateTime `json:"due_at,omitempty"`
 	}{
-		embed:                       embed(*u),
-		AutomaticallyFinalizesAt:    internal.NewOptionalDateTime(u.AutomaticallyFinalizesAt),
-		DueDate:                     internal.NewOptionalDateTime(u.DueDate),
-		SubscriptionBillingAnchorAt: internal.NewOptionalDateTime(u.SubscriptionBillingAnchorAt),
+		embed: embed(*u),
+		DueAt: internal.NewOptionalDateTime(u.DueAt),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
 	return json.Marshal(explicitMarshaler)
@@ -9052,7 +6051,7 @@ var (
 )
 
 type VoidInvoicesRequest struct {
-	// The unique identifier of the invoice to void.
+	// The invoice's pay_ ID.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

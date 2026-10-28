@@ -118,7 +118,7 @@ func TestCheckoutConfigurationsCreateWithWireMock(
 		AccountID: whopsdk.String(
 			"biz_xxxxxxxxxxxxxx",
 		),
-		PlanID: whopsdk.String(
+		VariantID: whopsdk.String(
 			"plan_xxxxxxxxxxxxx",
 		),
 	}

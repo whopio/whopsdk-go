@@ -539,19 +539,21 @@ var (
 	appFieldOauthClientType                = big.NewInt(1 << 25)
 	appFieldOpenapiPath                    = big.NewInt(1 << 26)
 	appFieldOrigin                         = big.NewInt(1 << 27)
-	appFieldPreviewToken                   = big.NewInt(1 << 28)
-	appFieldProductID                      = big.NewInt(1 << 29)
-	appFieldProductionAndroidBuild         = big.NewInt(1 << 30)
-	appFieldProductionIosBuild             = big.NewInt(1 << 31)
-	appFieldProductionWebBuild             = big.NewInt(1 << 32)
-	appFieldRedirectURIs                   = big.NewInt(1 << 33)
-	appFieldRequestedPermissions           = big.NewInt(1 << 34)
-	appFieldRequiredScopes                 = big.NewInt(1 << 35)
-	appFieldRoute                          = big.NewInt(1 << 36)
-	appFieldSecrets                        = big.NewInt(1 << 37)
-	appFieldSkillsPath                     = big.NewInt(1 << 38)
-	appFieldStatus                         = big.NewInt(1 << 39)
-	appFieldVerified                       = big.NewInt(1 << 40)
+	appFieldPerInstallSchedule             = big.NewInt(1 << 28)
+	appFieldPreviewToken                   = big.NewInt(1 << 29)
+	appFieldProductID                      = big.NewInt(1 << 30)
+	appFieldProductionAndroidBuild         = big.NewInt(1 << 31)
+	appFieldProductionIosBuild             = big.NewInt(1 << 32)
+	appFieldProductionWebBuild             = big.NewInt(1 << 33)
+	appFieldRedirectURIs                   = big.NewInt(1 << 34)
+	appFieldRequestedPermissions           = big.NewInt(1 << 35)
+	appFieldRequiredScopes                 = big.NewInt(1 << 36)
+	appFieldRoute                          = big.NewInt(1 << 37)
+	appFieldSchedule                       = big.NewInt(1 << 38)
+	appFieldSecrets                        = big.NewInt(1 << 39)
+	appFieldSkillsPath                     = big.NewInt(1 << 40)
+	appFieldStatus                         = big.NewInt(1 << 41)
+	appFieldVerified                       = big.NewInt(1 << 42)
 )
 
 // appNullableFields maps the wire names of App's nullable fields (required or optional) to their field bits.
@@ -571,12 +573,14 @@ var appNullableFields = map[string]*big.Int{
 	"marketplace_status":       appFieldMarketplaceStatus,
 	"openapi_path":             appFieldOpenapiPath,
 	"origin":                   appFieldOrigin,
+	"per_install_schedule":     appFieldPerInstallSchedule,
 	"preview_token":            appFieldPreviewToken,
 	"product_id":               appFieldProductID,
 	"production_android_build": appFieldProductionAndroidBuild,
 	"production_ios_build":     appFieldProductionIosBuild,
 	"production_web_build":     appFieldProductionWebBuild,
 	"route":                    appFieldRoute,
+	"schedule":                 appFieldSchedule,
 	"secrets":                  appFieldSecrets,
 	"skills_path":              appFieldSkillsPath,
 }
@@ -636,6 +640,8 @@ type App struct {
 	OpenapiPath *string `json:"openapi_path,omitempty" url:"openapi_path,omitempty"`
 	// Full origin URL of the app's proxied domain, for example https://ab1c2d3e4f.apps.whop.com.
 	Origin *string `json:"origin,omitempty" url:"origin,omitempty"`
+	// Five-field cron expression, read in UTC, on which Whop runs the production web build's `scheduled()` export once for every installation, with the installation in `ctx.props.app_installation`, no more often than every 15 minutes. Slots are skipped while the app has no production web build with a server entry. `null` when the app has no per-install schedule, or if the caller lacks the `developer:basic:read` permission on the app's account.
+	PerInstallSchedule *string `json:"per_install_schedule,omitempty" url:"per_install_schedule,omitempty"`
 	// A short-lived signed pass scoping the caller to this app's gated preview hosts — every build preview and the live dev-server sandbox. Add it to a preview host as the `__whop_preview` query param (or `x-whop-preview-token` header). `null` unless the caller is a team member who can read the app's developer settings.
 	PreviewToken *string `json:"preview_token,omitempty" url:"preview_token,omitempty"`
 	// ID of the app's product listing on the Whop app store, or `null` when the app has no associated product.
@@ -652,6 +658,8 @@ type App struct {
 	// Claimed subdomain route where hosted web builds are served (`myapp` for myapp.whop.site), or `null` if no route is claimed.
 	// DEPRECATED: Read `domains` instead.
 	Route *string `json:"route,omitempty" url:"route,omitempty"`
+	// Five-field cron expression, read in UTC, on which Whop runs the production web build's `scheduled()` export once per slot. Slots are skipped while the app has no production web build with a server entry. `null` when the app has no global schedule, or if the caller lacks the `developer:basic:read` permission on the app's account.
+	Schedule *string `json:"schedule,omitempty" url:"schedule,omitempty"`
 	// The app's production secrets as an object of string values, injected into the hosted server runtime. `null` when the caller lacks the `developer:update_app` permission.
 	Secrets map[string]any `json:"secrets,omitempty" url:"secrets,omitempty"`
 	// URL path to the app's skills directory, or `null` when not configured.
@@ -864,6 +872,13 @@ func (a *App) GetOrigin() *string {
 	return a.Origin
 }
 
+func (a *App) GetPerInstallSchedule() *string {
+	if a == nil {
+		return nil
+	}
+	return a.PerInstallSchedule
+}
+
 func (a *App) GetPreviewToken() *string {
 	if a == nil {
 		return nil
@@ -925,6 +940,13 @@ func (a *App) GetRoute() *string {
 		return nil
 	}
 	return a.Route
+}
+
+func (a *App) GetSchedule() *string {
+	if a == nil {
+		return nil
+	}
+	return a.Schedule
 }
 
 func (a *App) GetSecrets() map[string]any {
@@ -1167,6 +1189,13 @@ func (a *App) SetOrigin(origin *string) {
 	a.require(appFieldOrigin)
 }
 
+// SetPerInstallSchedule sets the PerInstallSchedule field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *App) SetPerInstallSchedule(perInstallSchedule *string) {
+	a.PerInstallSchedule = perInstallSchedule
+	a.require(appFieldPerInstallSchedule)
+}
+
 // SetPreviewToken sets the PreviewToken field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *App) SetPreviewToken(previewToken *string) {
@@ -1228,6 +1257,13 @@ func (a *App) SetRequiredScopes(requiredScopes []AppRequiredScopesItem) {
 func (a *App) SetRoute(route *string) {
 	a.Route = route
 	a.require(appFieldRoute)
+}
+
+// SetSchedule sets the Schedule field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *App) SetSchedule(schedule *string) {
+	a.Schedule = schedule
+	a.require(appFieldSchedule)
 }
 
 // SetSecrets sets the Secrets field and marks it as non-optional;
@@ -5166,15 +5202,17 @@ var (
 	updateAppsRequestFieldName                     = big.NewInt(1 << 10)
 	updateAppsRequestFieldOauthClientType          = big.NewInt(1 << 11)
 	updateAppsRequestFieldOpenapiPath              = big.NewInt(1 << 12)
-	updateAppsRequestFieldProductionAndroidBuildID = big.NewInt(1 << 13)
-	updateAppsRequestFieldProductionIosBuildID     = big.NewInt(1 << 14)
-	updateAppsRequestFieldProductionWebBuildID     = big.NewInt(1 << 15)
-	updateAppsRequestFieldRedirectURIs             = big.NewInt(1 << 16)
-	updateAppsRequestFieldRequiredScopes           = big.NewInt(1 << 17)
-	updateAppsRequestFieldRoute                    = big.NewInt(1 << 18)
-	updateAppsRequestFieldSecrets                  = big.NewInt(1 << 19)
-	updateAppsRequestFieldSkillsPath               = big.NewInt(1 << 20)
-	updateAppsRequestFieldStatus                   = big.NewInt(1 << 21)
+	updateAppsRequestFieldPerInstallSchedule       = big.NewInt(1 << 13)
+	updateAppsRequestFieldProductionAndroidBuildID = big.NewInt(1 << 14)
+	updateAppsRequestFieldProductionIosBuildID     = big.NewInt(1 << 15)
+	updateAppsRequestFieldProductionWebBuildID     = big.NewInt(1 << 16)
+	updateAppsRequestFieldRedirectURIs             = big.NewInt(1 << 17)
+	updateAppsRequestFieldRequiredScopes           = big.NewInt(1 << 18)
+	updateAppsRequestFieldRoute                    = big.NewInt(1 << 19)
+	updateAppsRequestFieldSchedule                 = big.NewInt(1 << 20)
+	updateAppsRequestFieldSecrets                  = big.NewInt(1 << 21)
+	updateAppsRequestFieldSkillsPath               = big.NewInt(1 << 22)
+	updateAppsRequestFieldStatus                   = big.NewInt(1 << 23)
 )
 
 type UpdateAppsRequest struct {
@@ -5204,6 +5242,8 @@ type UpdateAppsRequest struct {
 	OauthClientType *UpdateAppsRequestOauthClientType `json:"oauth_client_type,omitempty" url:"-"`
 	// The URL path to the app's OpenAPI spec file (requires the ai_chat capability).
 	OpenapiPath *string `json:"openapi_path,omitempty" url:"-"`
+	// Five-field cron expression, read in UTC, on which Whop runs the production web build's `scheduled()` export once for every installation, with the installation in `ctx.props.app_installation`. It must fire at least once and no more often than every 15 minutes. Slots are skipped while the app has no production web build with a server entry. Set to `null` or an empty string to stop the per-install schedule.
+	PerInstallSchedule *string `json:"per_install_schedule,omitempty" url:"-"`
 	// The app build (`abld_` tag) to serve as the Android production build, or `null` to unassign it. Same rules as `production_web_build_id`.
 	ProductionAndroidBuildID *string `json:"production_android_build_id,omitempty" url:"-"`
 	// The app build (`abld_` tag) to serve as the iOS production build, or `null` to unassign it. Same rules as `production_web_build_id`.
@@ -5216,6 +5256,8 @@ type UpdateAppsRequest struct {
 	RequiredScopes []string `json:"required_scopes,omitempty" url:"-"`
 	// The subdomain route where the app's hosted web builds are served.
 	Route *string `json:"route,omitempty" url:"-"`
+	// Five-field cron expression, read in UTC, on which Whop runs the production web build's `scheduled()` export once per slot, such as `* /15 * * * *`. It must fire at least once. Slots are skipped while the app has no production web build with a server entry. Set to `null` or an empty string to stop the global schedule.
+	Schedule *string `json:"schedule,omitempty" url:"-"`
 	// Secrets to add or overwrite on the app, as an object of string values. Keys not included are left untouched; pass null or an empty string as the value to delete a secret. Encrypted at rest and injected into the app's hosted server runtime.
 	Secrets map[string]any `json:"secrets,omitempty" url:"-"`
 	// The URL path to the app's skills directory (requires the ai_chat capability).
@@ -5327,6 +5369,13 @@ func (u *UpdateAppsRequest) SetOpenapiPath(openapiPath *string) {
 	u.require(updateAppsRequestFieldOpenapiPath)
 }
 
+// SetPerInstallSchedule sets the PerInstallSchedule field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAppsRequest) SetPerInstallSchedule(perInstallSchedule *string) {
+	u.PerInstallSchedule = perInstallSchedule
+	u.require(updateAppsRequestFieldPerInstallSchedule)
+}
+
 // SetProductionAndroidBuildID sets the ProductionAndroidBuildID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateAppsRequest) SetProductionAndroidBuildID(productionAndroidBuildID *string) {
@@ -5367,6 +5416,13 @@ func (u *UpdateAppsRequest) SetRequiredScopes(requiredScopes []string) {
 func (u *UpdateAppsRequest) SetRoute(route *string) {
 	u.Route = route
 	u.require(updateAppsRequestFieldRoute)
+}
+
+// SetSchedule sets the Schedule field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAppsRequest) SetSchedule(schedule *string) {
+	u.Schedule = schedule
+	u.require(updateAppsRequestFieldSchedule)
 }
 
 // SetSecrets sets the Secrets field and marks it as non-optional;

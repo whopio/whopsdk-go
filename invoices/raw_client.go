@@ -56,6 +56,7 @@ func (r *RawClient) Create(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
+	headers.Add("Content-Type", "application/json")
 	var response *whopsdk.Invoice
 	raw, err := r.caller.Call(
 		ctx,
@@ -136,59 +137,6 @@ func (r *RawClient) Retrieve(
 	}, nil
 }
 
-func (r *RawClient) Delete(
-	ctx context.Context,
-	request *whopsdk.DeleteInvoicesRequest,
-	opts ...option.RequestOption,
-) (*core.Response[bool], error) {
-	options := core.NewRequestOptions(opts...)
-	baseURL := internal.ResolveBaseURL(
-		options.BaseURL,
-		internal.ResolveEnvironmentBaseURL(
-			options.Environment,
-			"API",
-		),
-		r.baseURL,
-		internal.ResolveEnvironmentBaseURL(
-			r.options.Environment,
-			"API",
-		),
-		"https://api.whop.com/api/v1",
-	)
-	endpointURL := internal.EncodeURL(
-		baseURL+"/invoices/%v",
-		request.ID,
-	)
-	headers := internal.MergeHeaders(
-		r.options.ToHeader(),
-		options.ToHeader(),
-	)
-	var response bool
-	raw, err := r.caller.Call(
-		ctx,
-		&internal.CallParams{
-			URL:             endpointURL,
-			Method:          http.MethodDelete,
-			Headers:         headers,
-			MaxAttempts:     options.MaxAttempts,
-			DisableRetries:  options.DisableRetries,
-			BodyProperties:  options.BodyProperties,
-			QueryParameters: options.QueryParameters,
-			Client:          options.HTTPClient,
-			Response:        &response,
-			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
-		},
-	)
-	if err != nil {
-		return nil, err
-	}
-	return &core.Response[bool]{
-		StatusCode: raw.StatusCode,
-		Header:     raw.Header,
-		Body:       response,
-	}, nil
-}
-
 func (r *RawClient) Update(
 	ctx context.Context,
 	request *whopsdk.UpdateInvoicesRequest,
@@ -244,11 +192,11 @@ func (r *RawClient) Update(
 	}, nil
 }
 
-func (r *RawClient) MarkPaid(
+func (r *RawClient) GeneratePdf(
 	ctx context.Context,
-	request *whopsdk.MarkPaidInvoicesRequest,
+	request *whopsdk.GeneratePdfInvoicesRequest,
 	opts ...option.RequestOption,
-) (*core.Response[bool], error) {
+) (*core.Response[*whopsdk.InvoicePdf], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -264,14 +212,14 @@ func (r *RawClient) MarkPaid(
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := internal.EncodeURL(
-		baseURL+"/invoices/%v/mark_paid",
+		baseURL+"/invoices/%v/generate_pdf",
 		request.ID,
 	)
 	headers := internal.MergeHeaders(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
-	var response bool
+	var response *whopsdk.InvoicePdf
 	raw, err := r.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -290,7 +238,60 @@ func (r *RawClient) MarkPaid(
 	if err != nil {
 		return nil, err
 	}
-	return &core.Response[bool]{
+	return &core.Response[*whopsdk.InvoicePdf]{
+		StatusCode: raw.StatusCode,
+		Header:     raw.Header,
+		Body:       response,
+	}, nil
+}
+
+func (r *RawClient) Issue(
+	ctx context.Context,
+	request *whopsdk.IssueInvoicesRequest,
+	opts ...option.RequestOption,
+) (*core.Response[*whopsdk.Invoice], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
+		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
+		"https://api.whop.com/api/v1",
+	)
+	endpointURL := internal.EncodeURL(
+		baseURL+"/invoices/%v/issue",
+		request.ID,
+	)
+	headers := internal.MergeHeaders(
+		r.options.ToHeader(),
+		options.ToHeader(),
+	)
+	var response *whopsdk.Invoice
+	raw, err := r.caller.Call(
+		ctx,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodPost,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Response:        &response,
+			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &core.Response[*whopsdk.Invoice]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,
@@ -301,7 +302,7 @@ func (r *RawClient) MarkUncollectible(
 	ctx context.Context,
 	request *whopsdk.MarkUncollectibleInvoicesRequest,
 	opts ...option.RequestOption,
-) (*core.Response[bool], error) {
+) (*core.Response[*whopsdk.Invoice], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -324,7 +325,7 @@ func (r *RawClient) MarkUncollectible(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
-	var response bool
+	var response *whopsdk.Invoice
 	raw, err := r.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -343,18 +344,18 @@ func (r *RawClient) MarkUncollectible(
 	if err != nil {
 		return nil, err
 	}
-	return &core.Response[bool]{
+	return &core.Response[*whopsdk.Invoice]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,
 	}, nil
 }
 
-func (r *RawClient) Resend(
+func (r *RawClient) Send(
 	ctx context.Context,
-	request *whopsdk.ResendInvoicesRequest,
+	request *whopsdk.SendInvoicesRequest,
 	opts ...option.RequestOption,
-) (*core.Response[bool], error) {
+) (*core.Response[*whopsdk.Invoice], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -370,14 +371,69 @@ func (r *RawClient) Resend(
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := internal.EncodeURL(
-		baseURL+"/invoices/%v/resend",
+		baseURL+"/invoices/%v/send",
 		request.ID,
 	)
 	headers := internal.MergeHeaders(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
-	var response bool
+	headers.Add("Content-Type", "application/json")
+	var response *whopsdk.Invoice
+	raw, err := r.caller.Call(
+		ctx,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodPost,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Request:         request,
+			Response:        &response,
+			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &core.Response[*whopsdk.Invoice]{
+		StatusCode: raw.StatusCode,
+		Header:     raw.Header,
+		Body:       response,
+	}, nil
+}
+
+func (r *RawClient) Unschedule(
+	ctx context.Context,
+	request *whopsdk.UnscheduleInvoicesRequest,
+	opts ...option.RequestOption,
+) (*core.Response[*whopsdk.Invoice], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
+		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
+		"https://api.whop.com/api/v1",
+	)
+	endpointURL := internal.EncodeURL(
+		baseURL+"/invoices/%v/unschedule",
+		request.ID,
+	)
+	headers := internal.MergeHeaders(
+		r.options.ToHeader(),
+		options.ToHeader(),
+	)
+	var response *whopsdk.Invoice
 	raw, err := r.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -396,7 +452,7 @@ func (r *RawClient) Resend(
 	if err != nil {
 		return nil, err
 	}
-	return &core.Response[bool]{
+	return &core.Response[*whopsdk.Invoice]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,
@@ -407,7 +463,7 @@ func (r *RawClient) Void(
 	ctx context.Context,
 	request *whopsdk.VoidInvoicesRequest,
 	opts ...option.RequestOption,
-) (*core.Response[bool], error) {
+) (*core.Response[*whopsdk.Invoice], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -430,7 +486,7 @@ func (r *RawClient) Void(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
-	var response bool
+	var response *whopsdk.Invoice
 	raw, err := r.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -449,7 +505,7 @@ func (r *RawClient) Void(
 	if err != nil {
 		return nil, err
 	}
-	return &core.Response[bool]{
+	return &core.Response[*whopsdk.Invoice]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,

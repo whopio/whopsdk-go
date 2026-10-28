@@ -7,6 +7,7 @@ import (
 	fmt "fmt"
 	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
+	time "time"
 )
 
 var (
@@ -15,7 +16,8 @@ var (
 	createWebhooksRequestFieldEnabled             = big.NewInt(1 << 2)
 	createWebhooksRequestFieldEvents              = big.NewInt(1 << 3)
 	createWebhooksRequestFieldResourceID          = big.NewInt(1 << 4)
-	createWebhooksRequestFieldURL                 = big.NewInt(1 << 5)
+	createWebhooksRequestFieldTitle               = big.NewInt(1 << 5)
+	createWebhooksRequestFieldURL                 = big.NewInt(1 << 6)
 )
 
 type CreateWebhooksRequest struct {
@@ -29,6 +31,8 @@ type CreateWebhooksRequest struct {
 	Events []CreateWebhooksRequestEventsItem `json:"events,omitempty" url:"-"`
 	// The account or app to create the webhook for. Defaults to the current account.
 	ResourceID *string `json:"resource_id,omitempty" url:"-"`
+	// A label for the webhook, shown in the dashboard. Up to 255 characters.
+	Title *string `json:"title,omitempty" url:"-"`
 	// The URL to send the webhook to.
 	URL string `json:"url" url:"-"`
 
@@ -78,6 +82,13 @@ func (c *CreateWebhooksRequest) SetEvents(events []CreateWebhooksRequestEventsIt
 func (c *CreateWebhooksRequest) SetResourceID(resourceID *string) {
 	c.ResourceID = resourceID
 	c.require(createWebhooksRequestFieldResourceID)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateWebhooksRequest) SetTitle(title *string) {
+	c.Title = title
+	c.require(createWebhooksRequestFieldTitle)
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -235,9 +246,14 @@ func (l *ListWebhooksRequest) SetBefore(before *string) {
 }
 
 var (
-	listDeliveriesWebhooksRequestFieldID    = big.NewInt(1 << 0)
-	listDeliveriesWebhooksRequestFieldFirst = big.NewInt(1 << 1)
-	listDeliveriesWebhooksRequestFieldAfter = big.NewInt(1 << 2)
+	listDeliveriesWebhooksRequestFieldID         = big.NewInt(1 << 0)
+	listDeliveriesWebhooksRequestFieldFirst      = big.NewInt(1 << 1)
+	listDeliveriesWebhooksRequestFieldAfter      = big.NewInt(1 << 2)
+	listDeliveriesWebhooksRequestFieldSentAfter  = big.NewInt(1 << 3)
+	listDeliveriesWebhooksRequestFieldSentBefore = big.NewInt(1 << 4)
+	listDeliveriesWebhooksRequestFieldEvents     = big.NewInt(1 << 5)
+	listDeliveriesWebhooksRequestFieldStatus     = big.NewInt(1 << 6)
+	listDeliveriesWebhooksRequestFieldResourceID = big.NewInt(1 << 7)
 )
 
 type ListDeliveriesWebhooksRequest struct {
@@ -247,6 +263,16 @@ type ListDeliveriesWebhooksRequest struct {
 	First *int `json:"-" url:"first,omitempty"`
 	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
+	// Only deliveries sent at or after this ISO 8601 timestamp. Deliveries are retained for 30 days.
+	SentAfter *time.Time `json:"-" url:"sent_after,omitempty"`
+	// Only deliveries sent at or before this ISO 8601 timestamp.
+	SentBefore *time.Time `json:"-" url:"sent_before,omitempty"`
+	// Only deliveries of these event types. Repeat the parameter to pass several.
+	Events []*ListDeliveriesWebhooksRequestEventsItem `json:"-" url:"events,omitempty"`
+	// Only deliveries with this outcome: `success` for a 2xx response, `error` otherwise.
+	Status *ListDeliveriesWebhooksRequestStatus `json:"-" url:"status,omitempty"`
+	// Only deliveries triggered by this resource.
+	ResourceID *string `json:"-" url:"resource_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -280,6 +306,41 @@ func (l *ListDeliveriesWebhooksRequest) SetFirst(first *int) {
 func (l *ListDeliveriesWebhooksRequest) SetAfter(after *string) {
 	l.After = after
 	l.require(listDeliveriesWebhooksRequestFieldAfter)
+}
+
+// SetSentAfter sets the SentAfter field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListDeliveriesWebhooksRequest) SetSentAfter(sentAfter *time.Time) {
+	l.SentAfter = sentAfter
+	l.require(listDeliveriesWebhooksRequestFieldSentAfter)
+}
+
+// SetSentBefore sets the SentBefore field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListDeliveriesWebhooksRequest) SetSentBefore(sentBefore *time.Time) {
+	l.SentBefore = sentBefore
+	l.require(listDeliveriesWebhooksRequestFieldSentBefore)
+}
+
+// SetEvents sets the Events field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListDeliveriesWebhooksRequest) SetEvents(events []*ListDeliveriesWebhooksRequestEventsItem) {
+	l.Events = events
+	l.require(listDeliveriesWebhooksRequestFieldEvents)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListDeliveriesWebhooksRequest) SetStatus(status *ListDeliveriesWebhooksRequestStatus) {
+	l.Status = status
+	l.require(listDeliveriesWebhooksRequestFieldStatus)
+}
+
+// SetResourceID sets the ResourceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListDeliveriesWebhooksRequest) SetResourceID(resourceID *string) {
+	l.ResourceID = resourceID
+	l.require(listDeliveriesWebhooksRequestFieldResourceID)
 }
 
 var (
@@ -552,8 +613,9 @@ var (
 	webhookFieldLastFailureAt       = big.NewInt(1 << 11)
 	webhookFieldResourceID          = big.NewInt(1 << 12)
 	webhookFieldTestableEvents      = big.NewInt(1 << 13)
-	webhookFieldURL                 = big.NewInt(1 << 14)
-	webhookFieldWebhookSecret       = big.NewInt(1 << 15)
+	webhookFieldTitle               = big.NewInt(1 << 14)
+	webhookFieldURL                 = big.NewInt(1 << 15)
+	webhookFieldWebhookSecret       = big.NewInt(1 << 16)
 )
 
 // webhookNullableFields maps the wire names of Webhook's nullable fields (required or optional) to their field bits.
@@ -563,6 +625,7 @@ var webhookNullableFields = map[string]*big.Int{
 	"disabled_reason":  webhookFieldDisabledReason,
 	"failing_since":    webhookFieldFailingSince,
 	"last_failure_at":  webhookFieldLastFailureAt,
+	"title":            webhookFieldTitle,
 	"webhook_secret":   webhookFieldWebhookSecret,
 }
 
@@ -593,6 +656,8 @@ type Webhook struct {
 	// ID of the resource (account or app) this webhook is attached to.
 	ResourceID     string                      `json:"resource_id" url:"resource_id"`
 	TestableEvents []WebhookTestableEventsItem `json:"testable_events" url:"testable_events"`
+	// A label for this webhook endpoint, such as `Production`, shown in the dashboard. `null` if no title was set.
+	Title *string `json:"title,omitempty" url:"title,omitempty"`
 	// Destination URL where webhook payloads are delivered via HTTP POST.
 	URL string `json:"url" url:"url"`
 	// Secret key used to sign webhook payloads for verification. Include this in your HMAC validation logic. Returned on the create response and to interactive dashboard sessions; `null` for API-key and OAuth callers on later reads.
@@ -701,6 +766,13 @@ func (w *Webhook) GetTestableEvents() []WebhookTestableEventsItem {
 		return nil
 	}
 	return w.TestableEvents
+}
+
+func (w *Webhook) GetTitle() *string {
+	if w == nil {
+		return nil
+	}
+	return w.Title
 }
 
 func (w *Webhook) GetURL() string {
@@ -831,6 +903,13 @@ func (w *Webhook) SetTestableEvents(testableEvents []WebhookTestableEventsItem) 
 	w.require(webhookFieldTestableEvents)
 }
 
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *Webhook) SetTitle(title *string) {
+	w.Title = title
+	w.require(webhookFieldTitle)
+}
+
 // SetURL sets the URL field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (w *Webhook) SetURL(url string) {
@@ -929,8 +1008,9 @@ var (
 	webhookDeliveryFieldResponseBody = big.NewInt(1 << 5)
 	webhookDeliveryFieldResponseCode = big.NewInt(1 << 6)
 	webhookDeliveryFieldSentAt       = big.NewInt(1 << 7)
-	webhookDeliveryFieldSuccess      = big.NewInt(1 << 8)
-	webhookDeliveryFieldTotalTime    = big.NewInt(1 << 9)
+	webhookDeliveryFieldStatus       = big.NewInt(1 << 8)
+	webhookDeliveryFieldSuccess      = big.NewInt(1 << 9)
+	webhookDeliveryFieldTotalTime    = big.NewInt(1 << 10)
 )
 
 // webhookDeliveryNullableFields maps the wire names of WebhookDelivery's nullable fields (required or optional) to their field bits.
@@ -957,6 +1037,8 @@ type WebhookDelivery struct {
 	ResponseCode float64 `json:"response_code" url:"response_code"`
 	// When the webhook was sent, as an ISO 8601 timestamp.
 	SentAt string `json:"sent_at" url:"sent_at"`
+	// Outcome of this delivery attempt: `success` when the endpoint returned a 2xx response, `error` otherwise.
+	Status WebhookDeliveryStatus `json:"status" url:"status"`
 	// Whether the endpoint acknowledged this attempt with a 2xx response.
 	Success bool `json:"success" url:"success"`
 	// Total time taken to send the webhook request, in seconds.
@@ -1023,6 +1105,13 @@ func (w *WebhookDelivery) GetSentAt() string {
 		return ""
 	}
 	return w.SentAt
+}
+
+func (w *WebhookDelivery) GetStatus() WebhookDeliveryStatus {
+	if w == nil {
+		return ""
+	}
+	return w.Status
 }
 
 func (w *WebhookDelivery) GetSuccess() bool {
@@ -1111,6 +1200,13 @@ func (w *WebhookDelivery) SetSentAt(sentAt string) {
 	w.require(webhookDeliveryFieldSentAt)
 }
 
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebhookDelivery) SetStatus(status WebhookDeliveryStatus) {
+	w.Status = status
+	w.require(webhookDeliveryFieldStatus)
+}
+
 // SetSuccess sets the Success field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (w *WebhookDelivery) SetSuccess(success bool) {
@@ -1172,6 +1268,29 @@ func (w *WebhookDelivery) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", w)
+}
+
+// Outcome of this delivery attempt: `success` when the endpoint returned a 2xx response, `error` otherwise.
+type WebhookDeliveryStatus string
+
+const (
+	WebhookDeliveryStatusSuccess WebhookDeliveryStatus = "success"
+	WebhookDeliveryStatusError   WebhookDeliveryStatus = "error"
+)
+
+func NewWebhookDeliveryStatusFromString(s string) (WebhookDeliveryStatus, error) {
+	switch s {
+	case "success":
+		return WebhookDeliveryStatusSuccess, nil
+	case "error":
+		return WebhookDeliveryStatusError, nil
+	}
+	var t WebhookDeliveryStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (w WebhookDeliveryStatus) Ptr() *WebhookDeliveryStatus {
+	return &w
 }
 
 // Why Whop disabled this webhook. `delivery_failures` means every delivery failed for 3 days straight. `null` when `disabled_at` is `null`.
@@ -1247,6 +1366,9 @@ const (
 	WebhookEventsItemCardApplicationApproved               WebhookEventsItem = "card_application.approved"
 	WebhookEventsItemCardApplicationDenied                 WebhookEventsItem = "card_application.denied"
 	WebhookEventsItemCourseLessonInteractionCompleted      WebhookEventsItem = "course_lesson_interaction.completed"
+	WebhookEventsItemDomainCreated                         WebhookEventsItem = "domain.created"
+	WebhookEventsItemDomainUpdated                         WebhookEventsItem = "domain.updated"
+	WebhookEventsItemDomainDeleted                         WebhookEventsItem = "domain.deleted"
 	WebhookEventsItemPayoutMethodCreated                   WebhookEventsItem = "payout_method.created"
 	WebhookEventsItemVerificationSucceeded                 WebhookEventsItem = "verification.succeeded"
 	WebhookEventsItemIdentityProfileApproved               WebhookEventsItem = "identity_profile.approved"
@@ -1279,6 +1401,8 @@ const (
 	WebhookEventsItemAdGroupUpdated                        WebhookEventsItem = "ad_group.updated"
 	WebhookEventsItemAdCreated                             WebhookEventsItem = "ad.created"
 	WebhookEventsItemAdUpdated                             WebhookEventsItem = "ad.updated"
+	WebhookEventsItemAppInstallationCreated                WebhookEventsItem = "app_installation.created"
+	WebhookEventsItemAppInstallationDeleted                WebhookEventsItem = "app_installation.deleted"
 	WebhookEventsItemChatMessageCreated                    WebhookEventsItem = "chat.message.created"
 	WebhookEventsItemChatReactionCreated                   WebhookEventsItem = "chat.reaction.created"
 	WebhookEventsItemPaymentCreated                        WebhookEventsItem = "payment.created"
@@ -1410,6 +1534,12 @@ func NewWebhookEventsItemFromString(s string) (WebhookEventsItem, error) {
 		return WebhookEventsItemCardApplicationDenied, nil
 	case "course_lesson_interaction.completed":
 		return WebhookEventsItemCourseLessonInteractionCompleted, nil
+	case "domain.created":
+		return WebhookEventsItemDomainCreated, nil
+	case "domain.updated":
+		return WebhookEventsItemDomainUpdated, nil
+	case "domain.deleted":
+		return WebhookEventsItemDomainDeleted, nil
 	case "payout_method.created":
 		return WebhookEventsItemPayoutMethodCreated, nil
 	case "verification.succeeded":
@@ -1474,6 +1604,10 @@ func NewWebhookEventsItemFromString(s string) (WebhookEventsItem, error) {
 		return WebhookEventsItemAdCreated, nil
 	case "ad.updated":
 		return WebhookEventsItemAdUpdated, nil
+	case "app_installation.created":
+		return WebhookEventsItemAppInstallationCreated, nil
+	case "app_installation.deleted":
+		return WebhookEventsItemAppInstallationDeleted, nil
 	case "chat.message.created":
 		return WebhookEventsItemChatMessageCreated, nil
 	case "chat.reaction.created":
@@ -1555,8 +1689,9 @@ var (
 	webhookListItemFieldID                  = big.NewInt(1 << 10)
 	webhookListItemFieldLastFailureAt       = big.NewInt(1 << 11)
 	webhookListItemFieldResourceID          = big.NewInt(1 << 12)
-	webhookListItemFieldURL                 = big.NewInt(1 << 13)
-	webhookListItemFieldWebhookSecret       = big.NewInt(1 << 14)
+	webhookListItemFieldTitle               = big.NewInt(1 << 13)
+	webhookListItemFieldURL                 = big.NewInt(1 << 14)
+	webhookListItemFieldWebhookSecret       = big.NewInt(1 << 15)
 )
 
 // webhookListItemNullableFields maps the wire names of WebhookListItem's nullable fields (required or optional) to their field bits.
@@ -1566,6 +1701,7 @@ var webhookListItemNullableFields = map[string]*big.Int{
 	"disabled_reason":  webhookListItemFieldDisabledReason,
 	"failing_since":    webhookListItemFieldFailingSince,
 	"last_failure_at":  webhookListItemFieldLastFailureAt,
+	"title":            webhookListItemFieldTitle,
 	"webhook_secret":   webhookListItemFieldWebhookSecret,
 }
 
@@ -1595,6 +1731,8 @@ type WebhookListItem struct {
 	LastFailureAt *string `json:"last_failure_at,omitempty" url:"last_failure_at,omitempty"`
 	// ID of the resource (account or app) this webhook is attached to.
 	ResourceID string `json:"resource_id" url:"resource_id"`
+	// A label for this webhook endpoint, such as `Production`, shown in the dashboard. `null` if no title was set.
+	Title *string `json:"title,omitempty" url:"title,omitempty"`
 	// Destination URL where webhook payloads are delivered via HTTP POST.
 	URL string `json:"url" url:"url"`
 	// Secret key used to sign webhook payloads for verification. Include this in your HMAC validation logic. Returned on the create response and to interactive dashboard sessions; `null` for API-key and OAuth callers on later reads.
@@ -1696,6 +1834,13 @@ func (w *WebhookListItem) GetResourceID() string {
 		return ""
 	}
 	return w.ResourceID
+}
+
+func (w *WebhookListItem) GetTitle() *string {
+	if w == nil {
+		return nil
+	}
+	return w.Title
 }
 
 func (w *WebhookListItem) GetURL() string {
@@ -1817,6 +1962,13 @@ func (w *WebhookListItem) SetLastFailureAt(lastFailureAt *string) {
 func (w *WebhookListItem) SetResourceID(resourceID string) {
 	w.ResourceID = resourceID
 	w.require(webhookListItemFieldResourceID)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebhookListItem) SetTitle(title *string) {
+	w.Title = title
+	w.require(webhookListItemFieldTitle)
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -1981,6 +2133,9 @@ const (
 	WebhookListItemEventsItemCardApplicationApproved               WebhookListItemEventsItem = "card_application.approved"
 	WebhookListItemEventsItemCardApplicationDenied                 WebhookListItemEventsItem = "card_application.denied"
 	WebhookListItemEventsItemCourseLessonInteractionCompleted      WebhookListItemEventsItem = "course_lesson_interaction.completed"
+	WebhookListItemEventsItemDomainCreated                         WebhookListItemEventsItem = "domain.created"
+	WebhookListItemEventsItemDomainUpdated                         WebhookListItemEventsItem = "domain.updated"
+	WebhookListItemEventsItemDomainDeleted                         WebhookListItemEventsItem = "domain.deleted"
 	WebhookListItemEventsItemPayoutMethodCreated                   WebhookListItemEventsItem = "payout_method.created"
 	WebhookListItemEventsItemVerificationSucceeded                 WebhookListItemEventsItem = "verification.succeeded"
 	WebhookListItemEventsItemIdentityProfileApproved               WebhookListItemEventsItem = "identity_profile.approved"
@@ -2013,6 +2168,8 @@ const (
 	WebhookListItemEventsItemAdGroupUpdated                        WebhookListItemEventsItem = "ad_group.updated"
 	WebhookListItemEventsItemAdCreated                             WebhookListItemEventsItem = "ad.created"
 	WebhookListItemEventsItemAdUpdated                             WebhookListItemEventsItem = "ad.updated"
+	WebhookListItemEventsItemAppInstallationCreated                WebhookListItemEventsItem = "app_installation.created"
+	WebhookListItemEventsItemAppInstallationDeleted                WebhookListItemEventsItem = "app_installation.deleted"
 	WebhookListItemEventsItemChatMessageCreated                    WebhookListItemEventsItem = "chat.message.created"
 	WebhookListItemEventsItemChatReactionCreated                   WebhookListItemEventsItem = "chat.reaction.created"
 	WebhookListItemEventsItemPaymentCreated                        WebhookListItemEventsItem = "payment.created"
@@ -2144,6 +2301,12 @@ func NewWebhookListItemEventsItemFromString(s string) (WebhookListItemEventsItem
 		return WebhookListItemEventsItemCardApplicationDenied, nil
 	case "course_lesson_interaction.completed":
 		return WebhookListItemEventsItemCourseLessonInteractionCompleted, nil
+	case "domain.created":
+		return WebhookListItemEventsItemDomainCreated, nil
+	case "domain.updated":
+		return WebhookListItemEventsItemDomainUpdated, nil
+	case "domain.deleted":
+		return WebhookListItemEventsItemDomainDeleted, nil
 	case "payout_method.created":
 		return WebhookListItemEventsItemPayoutMethodCreated, nil
 	case "verification.succeeded":
@@ -2208,6 +2371,10 @@ func NewWebhookListItemEventsItemFromString(s string) (WebhookListItemEventsItem
 		return WebhookListItemEventsItemAdCreated, nil
 	case "ad.updated":
 		return WebhookListItemEventsItemAdUpdated, nil
+	case "app_installation.created":
+		return WebhookListItemEventsItemAppInstallationCreated, nil
+	case "app_installation.deleted":
+		return WebhookListItemEventsItemAppInstallationDeleted, nil
 	case "chat.message.created":
 		return WebhookListItemEventsItemChatMessageCreated, nil
 	case "chat.reaction.created":
@@ -2328,6 +2495,9 @@ const (
 	WebhookTestableEventsItemCardApplicationApproved               WebhookTestableEventsItem = "card_application.approved"
 	WebhookTestableEventsItemCardApplicationDenied                 WebhookTestableEventsItem = "card_application.denied"
 	WebhookTestableEventsItemCourseLessonInteractionCompleted      WebhookTestableEventsItem = "course_lesson_interaction.completed"
+	WebhookTestableEventsItemDomainCreated                         WebhookTestableEventsItem = "domain.created"
+	WebhookTestableEventsItemDomainUpdated                         WebhookTestableEventsItem = "domain.updated"
+	WebhookTestableEventsItemDomainDeleted                         WebhookTestableEventsItem = "domain.deleted"
 	WebhookTestableEventsItemPayoutMethodCreated                   WebhookTestableEventsItem = "payout_method.created"
 	WebhookTestableEventsItemVerificationSucceeded                 WebhookTestableEventsItem = "verification.succeeded"
 	WebhookTestableEventsItemIdentityProfileApproved               WebhookTestableEventsItem = "identity_profile.approved"
@@ -2360,6 +2530,8 @@ const (
 	WebhookTestableEventsItemAdGroupUpdated                        WebhookTestableEventsItem = "ad_group.updated"
 	WebhookTestableEventsItemAdCreated                             WebhookTestableEventsItem = "ad.created"
 	WebhookTestableEventsItemAdUpdated                             WebhookTestableEventsItem = "ad.updated"
+	WebhookTestableEventsItemAppInstallationCreated                WebhookTestableEventsItem = "app_installation.created"
+	WebhookTestableEventsItemAppInstallationDeleted                WebhookTestableEventsItem = "app_installation.deleted"
 	WebhookTestableEventsItemChatMessageCreated                    WebhookTestableEventsItem = "chat.message.created"
 	WebhookTestableEventsItemChatReactionCreated                   WebhookTestableEventsItem = "chat.reaction.created"
 	WebhookTestableEventsItemPaymentCreated                        WebhookTestableEventsItem = "payment.created"
@@ -2491,6 +2663,12 @@ func NewWebhookTestableEventsItemFromString(s string) (WebhookTestableEventsItem
 		return WebhookTestableEventsItemCardApplicationDenied, nil
 	case "course_lesson_interaction.completed":
 		return WebhookTestableEventsItemCourseLessonInteractionCompleted, nil
+	case "domain.created":
+		return WebhookTestableEventsItemDomainCreated, nil
+	case "domain.updated":
+		return WebhookTestableEventsItemDomainUpdated, nil
+	case "domain.deleted":
+		return WebhookTestableEventsItemDomainDeleted, nil
 	case "payout_method.created":
 		return WebhookTestableEventsItemPayoutMethodCreated, nil
 	case "verification.succeeded":
@@ -2555,6 +2733,10 @@ func NewWebhookTestableEventsItemFromString(s string) (WebhookTestableEventsItem
 		return WebhookTestableEventsItemAdCreated, nil
 	case "ad.updated":
 		return WebhookTestableEventsItemAdUpdated, nil
+	case "app_installation.created":
+		return WebhookTestableEventsItemAppInstallationCreated, nil
+	case "app_installation.deleted":
+		return WebhookTestableEventsItemAppInstallationDeleted, nil
 	case "chat.message.created":
 		return WebhookTestableEventsItemChatMessageCreated, nil
 	case "chat.reaction.created":
@@ -2671,6 +2853,9 @@ const (
 	CreateWebhooksRequestEventsItemCardApplicationApproved            CreateWebhooksRequestEventsItem = "card_application.approved"
 	CreateWebhooksRequestEventsItemCardApplicationDenied              CreateWebhooksRequestEventsItem = "card_application.denied"
 	CreateWebhooksRequestEventsItemCourseLessonInteractionCompleted   CreateWebhooksRequestEventsItem = "course_lesson_interaction.completed"
+	CreateWebhooksRequestEventsItemDomainCreated                      CreateWebhooksRequestEventsItem = "domain.created"
+	CreateWebhooksRequestEventsItemDomainUpdated                      CreateWebhooksRequestEventsItem = "domain.updated"
+	CreateWebhooksRequestEventsItemDomainDeleted                      CreateWebhooksRequestEventsItem = "domain.deleted"
 	CreateWebhooksRequestEventsItemPayoutMethodCreated                CreateWebhooksRequestEventsItem = "payout_method.created"
 	CreateWebhooksRequestEventsItemVerificationSucceeded              CreateWebhooksRequestEventsItem = "verification.succeeded"
 	CreateWebhooksRequestEventsItemIdentityProfileApproved            CreateWebhooksRequestEventsItem = "identity_profile.approved"
@@ -2703,6 +2888,8 @@ const (
 	CreateWebhooksRequestEventsItemAdGroupUpdated                     CreateWebhooksRequestEventsItem = "ad_group.updated"
 	CreateWebhooksRequestEventsItemAdCreated                          CreateWebhooksRequestEventsItem = "ad.created"
 	CreateWebhooksRequestEventsItemAdUpdated                          CreateWebhooksRequestEventsItem = "ad.updated"
+	CreateWebhooksRequestEventsItemAppInstallationCreated             CreateWebhooksRequestEventsItem = "app_installation.created"
+	CreateWebhooksRequestEventsItemAppInstallationDeleted             CreateWebhooksRequestEventsItem = "app_installation.deleted"
 	CreateWebhooksRequestEventsItemChatMessageCreated                 CreateWebhooksRequestEventsItem = "chat.message.created"
 	CreateWebhooksRequestEventsItemChatReactionCreated                CreateWebhooksRequestEventsItem = "chat.reaction.created"
 	CreateWebhooksRequestEventsItemPaymentCreated                     CreateWebhooksRequestEventsItem = "payment.created"
@@ -2812,6 +2999,12 @@ func NewCreateWebhooksRequestEventsItemFromString(s string) (CreateWebhooksReque
 		return CreateWebhooksRequestEventsItemCardApplicationDenied, nil
 	case "course_lesson_interaction.completed":
 		return CreateWebhooksRequestEventsItemCourseLessonInteractionCompleted, nil
+	case "domain.created":
+		return CreateWebhooksRequestEventsItemDomainCreated, nil
+	case "domain.updated":
+		return CreateWebhooksRequestEventsItemDomainUpdated, nil
+	case "domain.deleted":
+		return CreateWebhooksRequestEventsItemDomainDeleted, nil
 	case "payout_method.created":
 		return CreateWebhooksRequestEventsItemPayoutMethodCreated, nil
 	case "verification.succeeded":
@@ -2876,6 +3069,10 @@ func NewCreateWebhooksRequestEventsItemFromString(s string) (CreateWebhooksReque
 		return CreateWebhooksRequestEventsItemAdCreated, nil
 	case "ad.updated":
 		return CreateWebhooksRequestEventsItemAdUpdated, nil
+	case "app_installation.created":
+		return CreateWebhooksRequestEventsItemAppInstallationCreated, nil
+	case "app_installation.deleted":
+		return CreateWebhooksRequestEventsItemAppInstallationDeleted, nil
 	case "chat.message.created":
 		return CreateWebhooksRequestEventsItemChatMessageCreated, nil
 	case "chat.reaction.created":
@@ -3013,6 +3210,389 @@ func (d *DeleteWebhooksResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", d)
+}
+
+type ListDeliveriesWebhooksRequestEventsItem string
+
+const (
+	ListDeliveriesWebhooksRequestEventsItemAccountUpdated                        ListDeliveriesWebhooksRequestEventsItem = "account.updated"
+	ListDeliveriesWebhooksRequestEventsItemAccountFinancingApproved              ListDeliveriesWebhooksRequestEventsItem = "account.financing_approved"
+	ListDeliveriesWebhooksRequestEventsItemAccountFinancingDenied                ListDeliveriesWebhooksRequestEventsItem = "account.financing_denied"
+	ListDeliveriesWebhooksRequestEventsItemAccountFinancingDisabled              ListDeliveriesWebhooksRequestEventsItem = "account.financing_disabled"
+	ListDeliveriesWebhooksRequestEventsItemInvoiceCreated                        ListDeliveriesWebhooksRequestEventsItem = "invoice.created"
+	ListDeliveriesWebhooksRequestEventsItemInvoiceMarkedUncollectible            ListDeliveriesWebhooksRequestEventsItem = "invoice.marked_uncollectible"
+	ListDeliveriesWebhooksRequestEventsItemInvoicePaid                           ListDeliveriesWebhooksRequestEventsItem = "invoice.paid"
+	ListDeliveriesWebhooksRequestEventsItemInvoicePastDue                        ListDeliveriesWebhooksRequestEventsItem = "invoice.past_due"
+	ListDeliveriesWebhooksRequestEventsItemInvoiceVoided                         ListDeliveriesWebhooksRequestEventsItem = "invoice.voided"
+	ListDeliveriesWebhooksRequestEventsItemMembershipActivated                   ListDeliveriesWebhooksRequestEventsItem = "membership.activated"
+	ListDeliveriesWebhooksRequestEventsItemMembershipDeactivated                 ListDeliveriesWebhooksRequestEventsItem = "membership.deactivated"
+	ListDeliveriesWebhooksRequestEventsItemMembershipTrialEndingSoon             ListDeliveriesWebhooksRequestEventsItem = "membership.trial_ending_soon"
+	ListDeliveriesWebhooksRequestEventsItemMembershipUpdated                     ListDeliveriesWebhooksRequestEventsItem = "membership.updated"
+	ListDeliveriesWebhooksRequestEventsItemEntryCreated                          ListDeliveriesWebhooksRequestEventsItem = "entry.created"
+	ListDeliveriesWebhooksRequestEventsItemEntryApproved                         ListDeliveriesWebhooksRequestEventsItem = "entry.approved"
+	ListDeliveriesWebhooksRequestEventsItemEntryDenied                           ListDeliveriesWebhooksRequestEventsItem = "entry.denied"
+	ListDeliveriesWebhooksRequestEventsItemEntryDeleted                          ListDeliveriesWebhooksRequestEventsItem = "entry.deleted"
+	ListDeliveriesWebhooksRequestEventsItemExportCompleted                       ListDeliveriesWebhooksRequestEventsItem = "export.completed"
+	ListDeliveriesWebhooksRequestEventsItemExportFailed                          ListDeliveriesWebhooksRequestEventsItem = "export.failed"
+	ListDeliveriesWebhooksRequestEventsItemSetupIntentRequiresAction             ListDeliveriesWebhooksRequestEventsItem = "setup_intent.requires_action"
+	ListDeliveriesWebhooksRequestEventsItemSetupIntentSucceeded                  ListDeliveriesWebhooksRequestEventsItem = "setup_intent.succeeded"
+	ListDeliveriesWebhooksRequestEventsItemSetupIntentCanceled                   ListDeliveriesWebhooksRequestEventsItem = "setup_intent.canceled"
+	ListDeliveriesWebhooksRequestEventsItemLedgerAccountFundsAvailable           ListDeliveriesWebhooksRequestEventsItem = "ledger_account.funds_available"
+	ListDeliveriesWebhooksRequestEventsItemSwapCompleted                         ListDeliveriesWebhooksRequestEventsItem = "swap.completed"
+	ListDeliveriesWebhooksRequestEventsItemDepositSucceeded                      ListDeliveriesWebhooksRequestEventsItem = "deposit.succeeded"
+	ListDeliveriesWebhooksRequestEventsItemFinancialActivityFundsAvailable       ListDeliveriesWebhooksRequestEventsItem = "financial_activity.funds_available"
+	ListDeliveriesWebhooksRequestEventsItemTransferCreated                       ListDeliveriesWebhooksRequestEventsItem = "transfer.created"
+	ListDeliveriesWebhooksRequestEventsItemTransferCompleted                     ListDeliveriesWebhooksRequestEventsItem = "transfer.completed"
+	ListDeliveriesWebhooksRequestEventsItemTransferFailed                        ListDeliveriesWebhooksRequestEventsItem = "transfer.failed"
+	ListDeliveriesWebhooksRequestEventsItemWithdrawalCreated                     ListDeliveriesWebhooksRequestEventsItem = "withdrawal.created"
+	ListDeliveriesWebhooksRequestEventsItemWithdrawalUpdated                     ListDeliveriesWebhooksRequestEventsItem = "withdrawal.updated"
+	ListDeliveriesWebhooksRequestEventsItemWithdrawalReversed                    ListDeliveriesWebhooksRequestEventsItem = "withdrawal.reversed"
+	ListDeliveriesWebhooksRequestEventsItemPayoutCreated                         ListDeliveriesWebhooksRequestEventsItem = "payout.created"
+	ListDeliveriesWebhooksRequestEventsItemPayoutUpdated                         ListDeliveriesWebhooksRequestEventsItem = "payout.updated"
+	ListDeliveriesWebhooksRequestEventsItemPayoutReversed                        ListDeliveriesWebhooksRequestEventsItem = "payout.reversed"
+	ListDeliveriesWebhooksRequestEventsItemCardTransactionCreated                ListDeliveriesWebhooksRequestEventsItem = "card_transaction.created"
+	ListDeliveriesWebhooksRequestEventsItemCardTransactionUpdated                ListDeliveriesWebhooksRequestEventsItem = "card_transaction.updated"
+	ListDeliveriesWebhooksRequestEventsItemCardTransactionCompleted              ListDeliveriesWebhooksRequestEventsItem = "card_transaction.completed"
+	ListDeliveriesWebhooksRequestEventsItemCardTransactionDeclined               ListDeliveriesWebhooksRequestEventsItem = "card_transaction.declined"
+	ListDeliveriesWebhooksRequestEventsItemCardTransactionReversed               ListDeliveriesWebhooksRequestEventsItem = "card_transaction.reversed"
+	ListDeliveriesWebhooksRequestEventsItemCardCreated                           ListDeliveriesWebhooksRequestEventsItem = "card.created"
+	ListDeliveriesWebhooksRequestEventsItemCardUpdated                           ListDeliveriesWebhooksRequestEventsItem = "card.updated"
+	ListDeliveriesWebhooksRequestEventsItemCardFrozen                            ListDeliveriesWebhooksRequestEventsItem = "card.frozen"
+	ListDeliveriesWebhooksRequestEventsItemCardCanceled                          ListDeliveriesWebhooksRequestEventsItem = "card.canceled"
+	ListDeliveriesWebhooksRequestEventsItemCardApplicationCreated                ListDeliveriesWebhooksRequestEventsItem = "card_application.created"
+	ListDeliveriesWebhooksRequestEventsItemCardApplicationUpdated                ListDeliveriesWebhooksRequestEventsItem = "card_application.updated"
+	ListDeliveriesWebhooksRequestEventsItemCardApplicationApproved               ListDeliveriesWebhooksRequestEventsItem = "card_application.approved"
+	ListDeliveriesWebhooksRequestEventsItemCardApplicationDenied                 ListDeliveriesWebhooksRequestEventsItem = "card_application.denied"
+	ListDeliveriesWebhooksRequestEventsItemCourseLessonInteractionCompleted      ListDeliveriesWebhooksRequestEventsItem = "course_lesson_interaction.completed"
+	ListDeliveriesWebhooksRequestEventsItemDomainCreated                         ListDeliveriesWebhooksRequestEventsItem = "domain.created"
+	ListDeliveriesWebhooksRequestEventsItemDomainUpdated                         ListDeliveriesWebhooksRequestEventsItem = "domain.updated"
+	ListDeliveriesWebhooksRequestEventsItemDomainDeleted                         ListDeliveriesWebhooksRequestEventsItem = "domain.deleted"
+	ListDeliveriesWebhooksRequestEventsItemPayoutMethodCreated                   ListDeliveriesWebhooksRequestEventsItem = "payout_method.created"
+	ListDeliveriesWebhooksRequestEventsItemVerificationSucceeded                 ListDeliveriesWebhooksRequestEventsItem = "verification.succeeded"
+	ListDeliveriesWebhooksRequestEventsItemIdentityProfileApproved               ListDeliveriesWebhooksRequestEventsItem = "identity_profile.approved"
+	ListDeliveriesWebhooksRequestEventsItemIdentityProfileRejected               ListDeliveriesWebhooksRequestEventsItem = "identity_profile.rejected"
+	ListDeliveriesWebhooksRequestEventsItemIdentityProfileNeedsAction            ListDeliveriesWebhooksRequestEventsItem = "identity_profile.needs_action"
+	ListDeliveriesWebhooksRequestEventsItemIdentityProfileUpdated                ListDeliveriesWebhooksRequestEventsItem = "identity_profile.updated"
+	ListDeliveriesWebhooksRequestEventsItemPayoutAccountStatusUpdated            ListDeliveriesWebhooksRequestEventsItem = "payout_account.status_updated"
+	ListDeliveriesWebhooksRequestEventsItemPaymentAuthorized                     ListDeliveriesWebhooksRequestEventsItem = "payment.authorized"
+	ListDeliveriesWebhooksRequestEventsItemPaymentCanceled                       ListDeliveriesWebhooksRequestEventsItem = "payment.canceled"
+	ListDeliveriesWebhooksRequestEventsItemResolutionCenterCaseCreated           ListDeliveriesWebhooksRequestEventsItem = "resolution_center_case.created"
+	ListDeliveriesWebhooksRequestEventsItemResolutionCenterCaseUpdated           ListDeliveriesWebhooksRequestEventsItem = "resolution_center_case.updated"
+	ListDeliveriesWebhooksRequestEventsItemResolutionCenterCaseDecided           ListDeliveriesWebhooksRequestEventsItem = "resolution_center_case.decided"
+	ListDeliveriesWebhooksRequestEventsItemProductCreated                        ListDeliveriesWebhooksRequestEventsItem = "product.created"
+	ListDeliveriesWebhooksRequestEventsItemProductUpdated                        ListDeliveriesWebhooksRequestEventsItem = "product.updated"
+	ListDeliveriesWebhooksRequestEventsItemProductDeleted                        ListDeliveriesWebhooksRequestEventsItem = "product.deleted"
+	ListDeliveriesWebhooksRequestEventsItemProductPublished                      ListDeliveriesWebhooksRequestEventsItem = "product.published"
+	ListDeliveriesWebhooksRequestEventsItemProductUnpublished                    ListDeliveriesWebhooksRequestEventsItem = "product.unpublished"
+	ListDeliveriesWebhooksRequestEventsItemPlanCreated                           ListDeliveriesWebhooksRequestEventsItem = "plan.created"
+	ListDeliveriesWebhooksRequestEventsItemPlanUpdated                           ListDeliveriesWebhooksRequestEventsItem = "plan.updated"
+	ListDeliveriesWebhooksRequestEventsItemPlanDeleted                           ListDeliveriesWebhooksRequestEventsItem = "plan.deleted"
+	ListDeliveriesWebhooksRequestEventsItemShipmentCreated                       ListDeliveriesWebhooksRequestEventsItem = "shipment.created"
+	ListDeliveriesWebhooksRequestEventsItemShipmentUpdated                       ListDeliveriesWebhooksRequestEventsItem = "shipment.updated"
+	ListDeliveriesWebhooksRequestEventsItemMemberCreated                         ListDeliveriesWebhooksRequestEventsItem = "member.created"
+	ListDeliveriesWebhooksRequestEventsItemMemberUpdated                         ListDeliveriesWebhooksRequestEventsItem = "member.updated"
+	ListDeliveriesWebhooksRequestEventsItemAdCampaignCreated                     ListDeliveriesWebhooksRequestEventsItem = "ad_campaign.created"
+	ListDeliveriesWebhooksRequestEventsItemAdCampaignPaymentFailed               ListDeliveriesWebhooksRequestEventsItem = "ad_campaign.payment_failed"
+	ListDeliveriesWebhooksRequestEventsItemAdCampaignUpdated                     ListDeliveriesWebhooksRequestEventsItem = "ad_campaign.updated"
+	ListDeliveriesWebhooksRequestEventsItemAdCampaignEvents                      ListDeliveriesWebhooksRequestEventsItem = "ad_campaign.events"
+	ListDeliveriesWebhooksRequestEventsItemAdGroupCreated                        ListDeliveriesWebhooksRequestEventsItem = "ad_group.created"
+	ListDeliveriesWebhooksRequestEventsItemAdGroupUpdated                        ListDeliveriesWebhooksRequestEventsItem = "ad_group.updated"
+	ListDeliveriesWebhooksRequestEventsItemAdCreated                             ListDeliveriesWebhooksRequestEventsItem = "ad.created"
+	ListDeliveriesWebhooksRequestEventsItemAdUpdated                             ListDeliveriesWebhooksRequestEventsItem = "ad.updated"
+	ListDeliveriesWebhooksRequestEventsItemAppInstallationCreated                ListDeliveriesWebhooksRequestEventsItem = "app_installation.created"
+	ListDeliveriesWebhooksRequestEventsItemAppInstallationDeleted                ListDeliveriesWebhooksRequestEventsItem = "app_installation.deleted"
+	ListDeliveriesWebhooksRequestEventsItemChatMessageCreated                    ListDeliveriesWebhooksRequestEventsItem = "chat.message.created"
+	ListDeliveriesWebhooksRequestEventsItemChatReactionCreated                   ListDeliveriesWebhooksRequestEventsItem = "chat.reaction.created"
+	ListDeliveriesWebhooksRequestEventsItemPaymentCreated                        ListDeliveriesWebhooksRequestEventsItem = "payment.created"
+	ListDeliveriesWebhooksRequestEventsItemPaymentSucceeded                      ListDeliveriesWebhooksRequestEventsItem = "payment.succeeded"
+	ListDeliveriesWebhooksRequestEventsItemPaymentFailed                         ListDeliveriesWebhooksRequestEventsItem = "payment.failed"
+	ListDeliveriesWebhooksRequestEventsItemPaymentPending                        ListDeliveriesWebhooksRequestEventsItem = "payment.pending"
+	ListDeliveriesWebhooksRequestEventsItemPaymentRequiresAction                 ListDeliveriesWebhooksRequestEventsItem = "payment.requires_action"
+	ListDeliveriesWebhooksRequestEventsItemDisputeCreated                        ListDeliveriesWebhooksRequestEventsItem = "dispute.created"
+	ListDeliveriesWebhooksRequestEventsItemDisputeUpdated                        ListDeliveriesWebhooksRequestEventsItem = "dispute.updated"
+	ListDeliveriesWebhooksRequestEventsItemRefundCreated                         ListDeliveriesWebhooksRequestEventsItem = "refund.created"
+	ListDeliveriesWebhooksRequestEventsItemRefundUpdated                         ListDeliveriesWebhooksRequestEventsItem = "refund.updated"
+	ListDeliveriesWebhooksRequestEventsItemDisputeAlertCreated                   ListDeliveriesWebhooksRequestEventsItem = "dispute_alert.created"
+	ListDeliveriesWebhooksRequestEventsItemMembershipCancelAtPeriodEndChanged    ListDeliveriesWebhooksRequestEventsItem = "membership.cancel_at_period_end_changed"
+	ListDeliveriesWebhooksRequestEventsItemMembershipWentValid                   ListDeliveriesWebhooksRequestEventsItem = "membership.went_valid"
+	ListDeliveriesWebhooksRequestEventsItemMembershipWentInvalid                 ListDeliveriesWebhooksRequestEventsItem = "membership.went_invalid"
+	ListDeliveriesWebhooksRequestEventsItemMembershipMetadataUpdated             ListDeliveriesWebhooksRequestEventsItem = "membership.metadata_updated"
+	ListDeliveriesWebhooksRequestEventsItemResolutionCreated                     ListDeliveriesWebhooksRequestEventsItem = "resolution.created"
+	ListDeliveriesWebhooksRequestEventsItemResolutionUpdated                     ListDeliveriesWebhooksRequestEventsItem = "resolution.updated"
+	ListDeliveriesWebhooksRequestEventsItemResolutionDecided                     ListDeliveriesWebhooksRequestEventsItem = "resolution.decided"
+	ListDeliveriesWebhooksRequestEventsItemPaymentAffiliateRewardCreated         ListDeliveriesWebhooksRequestEventsItem = "payment.affiliate_reward_created"
+	ListDeliveriesWebhooksRequestEventsItemMembershipExperienceClaimed           ListDeliveriesWebhooksRequestEventsItem = "membership.experience_claimed"
+	ListDeliveriesWebhooksRequestEventsItemAppMembershipWentValid                ListDeliveriesWebhooksRequestEventsItem = "app_membership.went_valid"
+	ListDeliveriesWebhooksRequestEventsItemAppMembershipWentInvalid              ListDeliveriesWebhooksRequestEventsItem = "app_membership.went_invalid"
+	ListDeliveriesWebhooksRequestEventsItemAppPaymentCreated                     ListDeliveriesWebhooksRequestEventsItem = "app_payment.created"
+	ListDeliveriesWebhooksRequestEventsItemAppPaymentSucceeded                   ListDeliveriesWebhooksRequestEventsItem = "app_payment.succeeded"
+	ListDeliveriesWebhooksRequestEventsItemAppPaymentFailed                      ListDeliveriesWebhooksRequestEventsItem = "app_payment.failed"
+	ListDeliveriesWebhooksRequestEventsItemAppPaymentPending                     ListDeliveriesWebhooksRequestEventsItem = "app_payment.pending"
+	ListDeliveriesWebhooksRequestEventsItemAppPaymentRequiresAction              ListDeliveriesWebhooksRequestEventsItem = "app_payment.requires_action"
+	ListDeliveriesWebhooksRequestEventsItemAppMembershipCancelAtPeriodEndChanged ListDeliveriesWebhooksRequestEventsItem = "app_membership.cancel_at_period_end_changed"
+)
+
+func NewListDeliveriesWebhooksRequestEventsItemFromString(s string) (ListDeliveriesWebhooksRequestEventsItem, error) {
+	switch s {
+	case "account.updated":
+		return ListDeliveriesWebhooksRequestEventsItemAccountUpdated, nil
+	case "account.financing_approved":
+		return ListDeliveriesWebhooksRequestEventsItemAccountFinancingApproved, nil
+	case "account.financing_denied":
+		return ListDeliveriesWebhooksRequestEventsItemAccountFinancingDenied, nil
+	case "account.financing_disabled":
+		return ListDeliveriesWebhooksRequestEventsItemAccountFinancingDisabled, nil
+	case "invoice.created":
+		return ListDeliveriesWebhooksRequestEventsItemInvoiceCreated, nil
+	case "invoice.marked_uncollectible":
+		return ListDeliveriesWebhooksRequestEventsItemInvoiceMarkedUncollectible, nil
+	case "invoice.paid":
+		return ListDeliveriesWebhooksRequestEventsItemInvoicePaid, nil
+	case "invoice.past_due":
+		return ListDeliveriesWebhooksRequestEventsItemInvoicePastDue, nil
+	case "invoice.voided":
+		return ListDeliveriesWebhooksRequestEventsItemInvoiceVoided, nil
+	case "membership.activated":
+		return ListDeliveriesWebhooksRequestEventsItemMembershipActivated, nil
+	case "membership.deactivated":
+		return ListDeliveriesWebhooksRequestEventsItemMembershipDeactivated, nil
+	case "membership.trial_ending_soon":
+		return ListDeliveriesWebhooksRequestEventsItemMembershipTrialEndingSoon, nil
+	case "membership.updated":
+		return ListDeliveriesWebhooksRequestEventsItemMembershipUpdated, nil
+	case "entry.created":
+		return ListDeliveriesWebhooksRequestEventsItemEntryCreated, nil
+	case "entry.approved":
+		return ListDeliveriesWebhooksRequestEventsItemEntryApproved, nil
+	case "entry.denied":
+		return ListDeliveriesWebhooksRequestEventsItemEntryDenied, nil
+	case "entry.deleted":
+		return ListDeliveriesWebhooksRequestEventsItemEntryDeleted, nil
+	case "export.completed":
+		return ListDeliveriesWebhooksRequestEventsItemExportCompleted, nil
+	case "export.failed":
+		return ListDeliveriesWebhooksRequestEventsItemExportFailed, nil
+	case "setup_intent.requires_action":
+		return ListDeliveriesWebhooksRequestEventsItemSetupIntentRequiresAction, nil
+	case "setup_intent.succeeded":
+		return ListDeliveriesWebhooksRequestEventsItemSetupIntentSucceeded, nil
+	case "setup_intent.canceled":
+		return ListDeliveriesWebhooksRequestEventsItemSetupIntentCanceled, nil
+	case "ledger_account.funds_available":
+		return ListDeliveriesWebhooksRequestEventsItemLedgerAccountFundsAvailable, nil
+	case "swap.completed":
+		return ListDeliveriesWebhooksRequestEventsItemSwapCompleted, nil
+	case "deposit.succeeded":
+		return ListDeliveriesWebhooksRequestEventsItemDepositSucceeded, nil
+	case "financial_activity.funds_available":
+		return ListDeliveriesWebhooksRequestEventsItemFinancialActivityFundsAvailable, nil
+	case "transfer.created":
+		return ListDeliveriesWebhooksRequestEventsItemTransferCreated, nil
+	case "transfer.completed":
+		return ListDeliveriesWebhooksRequestEventsItemTransferCompleted, nil
+	case "transfer.failed":
+		return ListDeliveriesWebhooksRequestEventsItemTransferFailed, nil
+	case "withdrawal.created":
+		return ListDeliveriesWebhooksRequestEventsItemWithdrawalCreated, nil
+	case "withdrawal.updated":
+		return ListDeliveriesWebhooksRequestEventsItemWithdrawalUpdated, nil
+	case "withdrawal.reversed":
+		return ListDeliveriesWebhooksRequestEventsItemWithdrawalReversed, nil
+	case "payout.created":
+		return ListDeliveriesWebhooksRequestEventsItemPayoutCreated, nil
+	case "payout.updated":
+		return ListDeliveriesWebhooksRequestEventsItemPayoutUpdated, nil
+	case "payout.reversed":
+		return ListDeliveriesWebhooksRequestEventsItemPayoutReversed, nil
+	case "card_transaction.created":
+		return ListDeliveriesWebhooksRequestEventsItemCardTransactionCreated, nil
+	case "card_transaction.updated":
+		return ListDeliveriesWebhooksRequestEventsItemCardTransactionUpdated, nil
+	case "card_transaction.completed":
+		return ListDeliveriesWebhooksRequestEventsItemCardTransactionCompleted, nil
+	case "card_transaction.declined":
+		return ListDeliveriesWebhooksRequestEventsItemCardTransactionDeclined, nil
+	case "card_transaction.reversed":
+		return ListDeliveriesWebhooksRequestEventsItemCardTransactionReversed, nil
+	case "card.created":
+		return ListDeliveriesWebhooksRequestEventsItemCardCreated, nil
+	case "card.updated":
+		return ListDeliveriesWebhooksRequestEventsItemCardUpdated, nil
+	case "card.frozen":
+		return ListDeliveriesWebhooksRequestEventsItemCardFrozen, nil
+	case "card.canceled":
+		return ListDeliveriesWebhooksRequestEventsItemCardCanceled, nil
+	case "card_application.created":
+		return ListDeliveriesWebhooksRequestEventsItemCardApplicationCreated, nil
+	case "card_application.updated":
+		return ListDeliveriesWebhooksRequestEventsItemCardApplicationUpdated, nil
+	case "card_application.approved":
+		return ListDeliveriesWebhooksRequestEventsItemCardApplicationApproved, nil
+	case "card_application.denied":
+		return ListDeliveriesWebhooksRequestEventsItemCardApplicationDenied, nil
+	case "course_lesson_interaction.completed":
+		return ListDeliveriesWebhooksRequestEventsItemCourseLessonInteractionCompleted, nil
+	case "domain.created":
+		return ListDeliveriesWebhooksRequestEventsItemDomainCreated, nil
+	case "domain.updated":
+		return ListDeliveriesWebhooksRequestEventsItemDomainUpdated, nil
+	case "domain.deleted":
+		return ListDeliveriesWebhooksRequestEventsItemDomainDeleted, nil
+	case "payout_method.created":
+		return ListDeliveriesWebhooksRequestEventsItemPayoutMethodCreated, nil
+	case "verification.succeeded":
+		return ListDeliveriesWebhooksRequestEventsItemVerificationSucceeded, nil
+	case "identity_profile.approved":
+		return ListDeliveriesWebhooksRequestEventsItemIdentityProfileApproved, nil
+	case "identity_profile.rejected":
+		return ListDeliveriesWebhooksRequestEventsItemIdentityProfileRejected, nil
+	case "identity_profile.needs_action":
+		return ListDeliveriesWebhooksRequestEventsItemIdentityProfileNeedsAction, nil
+	case "identity_profile.updated":
+		return ListDeliveriesWebhooksRequestEventsItemIdentityProfileUpdated, nil
+	case "payout_account.status_updated":
+		return ListDeliveriesWebhooksRequestEventsItemPayoutAccountStatusUpdated, nil
+	case "payment.authorized":
+		return ListDeliveriesWebhooksRequestEventsItemPaymentAuthorized, nil
+	case "payment.canceled":
+		return ListDeliveriesWebhooksRequestEventsItemPaymentCanceled, nil
+	case "resolution_center_case.created":
+		return ListDeliveriesWebhooksRequestEventsItemResolutionCenterCaseCreated, nil
+	case "resolution_center_case.updated":
+		return ListDeliveriesWebhooksRequestEventsItemResolutionCenterCaseUpdated, nil
+	case "resolution_center_case.decided":
+		return ListDeliveriesWebhooksRequestEventsItemResolutionCenterCaseDecided, nil
+	case "product.created":
+		return ListDeliveriesWebhooksRequestEventsItemProductCreated, nil
+	case "product.updated":
+		return ListDeliveriesWebhooksRequestEventsItemProductUpdated, nil
+	case "product.deleted":
+		return ListDeliveriesWebhooksRequestEventsItemProductDeleted, nil
+	case "product.published":
+		return ListDeliveriesWebhooksRequestEventsItemProductPublished, nil
+	case "product.unpublished":
+		return ListDeliveriesWebhooksRequestEventsItemProductUnpublished, nil
+	case "plan.created":
+		return ListDeliveriesWebhooksRequestEventsItemPlanCreated, nil
+	case "plan.updated":
+		return ListDeliveriesWebhooksRequestEventsItemPlanUpdated, nil
+	case "plan.deleted":
+		return ListDeliveriesWebhooksRequestEventsItemPlanDeleted, nil
+	case "shipment.created":
+		return ListDeliveriesWebhooksRequestEventsItemShipmentCreated, nil
+	case "shipment.updated":
+		return ListDeliveriesWebhooksRequestEventsItemShipmentUpdated, nil
+	case "member.created":
+		return ListDeliveriesWebhooksRequestEventsItemMemberCreated, nil
+	case "member.updated":
+		return ListDeliveriesWebhooksRequestEventsItemMemberUpdated, nil
+	case "ad_campaign.created":
+		return ListDeliveriesWebhooksRequestEventsItemAdCampaignCreated, nil
+	case "ad_campaign.payment_failed":
+		return ListDeliveriesWebhooksRequestEventsItemAdCampaignPaymentFailed, nil
+	case "ad_campaign.updated":
+		return ListDeliveriesWebhooksRequestEventsItemAdCampaignUpdated, nil
+	case "ad_campaign.events":
+		return ListDeliveriesWebhooksRequestEventsItemAdCampaignEvents, nil
+	case "ad_group.created":
+		return ListDeliveriesWebhooksRequestEventsItemAdGroupCreated, nil
+	case "ad_group.updated":
+		return ListDeliveriesWebhooksRequestEventsItemAdGroupUpdated, nil
+	case "ad.created":
+		return ListDeliveriesWebhooksRequestEventsItemAdCreated, nil
+	case "ad.updated":
+		return ListDeliveriesWebhooksRequestEventsItemAdUpdated, nil
+	case "app_installation.created":
+		return ListDeliveriesWebhooksRequestEventsItemAppInstallationCreated, nil
+	case "app_installation.deleted":
+		return ListDeliveriesWebhooksRequestEventsItemAppInstallationDeleted, nil
+	case "chat.message.created":
+		return ListDeliveriesWebhooksRequestEventsItemChatMessageCreated, nil
+	case "chat.reaction.created":
+		return ListDeliveriesWebhooksRequestEventsItemChatReactionCreated, nil
+	case "payment.created":
+		return ListDeliveriesWebhooksRequestEventsItemPaymentCreated, nil
+	case "payment.succeeded":
+		return ListDeliveriesWebhooksRequestEventsItemPaymentSucceeded, nil
+	case "payment.failed":
+		return ListDeliveriesWebhooksRequestEventsItemPaymentFailed, nil
+	case "payment.pending":
+		return ListDeliveriesWebhooksRequestEventsItemPaymentPending, nil
+	case "payment.requires_action":
+		return ListDeliveriesWebhooksRequestEventsItemPaymentRequiresAction, nil
+	case "dispute.created":
+		return ListDeliveriesWebhooksRequestEventsItemDisputeCreated, nil
+	case "dispute.updated":
+		return ListDeliveriesWebhooksRequestEventsItemDisputeUpdated, nil
+	case "refund.created":
+		return ListDeliveriesWebhooksRequestEventsItemRefundCreated, nil
+	case "refund.updated":
+		return ListDeliveriesWebhooksRequestEventsItemRefundUpdated, nil
+	case "dispute_alert.created":
+		return ListDeliveriesWebhooksRequestEventsItemDisputeAlertCreated, nil
+	case "membership.cancel_at_period_end_changed":
+		return ListDeliveriesWebhooksRequestEventsItemMembershipCancelAtPeriodEndChanged, nil
+	case "membership.went_valid":
+		return ListDeliveriesWebhooksRequestEventsItemMembershipWentValid, nil
+	case "membership.went_invalid":
+		return ListDeliveriesWebhooksRequestEventsItemMembershipWentInvalid, nil
+	case "membership.metadata_updated":
+		return ListDeliveriesWebhooksRequestEventsItemMembershipMetadataUpdated, nil
+	case "resolution.created":
+		return ListDeliveriesWebhooksRequestEventsItemResolutionCreated, nil
+	case "resolution.updated":
+		return ListDeliveriesWebhooksRequestEventsItemResolutionUpdated, nil
+	case "resolution.decided":
+		return ListDeliveriesWebhooksRequestEventsItemResolutionDecided, nil
+	case "payment.affiliate_reward_created":
+		return ListDeliveriesWebhooksRequestEventsItemPaymentAffiliateRewardCreated, nil
+	case "membership.experience_claimed":
+		return ListDeliveriesWebhooksRequestEventsItemMembershipExperienceClaimed, nil
+	case "app_membership.went_valid":
+		return ListDeliveriesWebhooksRequestEventsItemAppMembershipWentValid, nil
+	case "app_membership.went_invalid":
+		return ListDeliveriesWebhooksRequestEventsItemAppMembershipWentInvalid, nil
+	case "app_payment.created":
+		return ListDeliveriesWebhooksRequestEventsItemAppPaymentCreated, nil
+	case "app_payment.succeeded":
+		return ListDeliveriesWebhooksRequestEventsItemAppPaymentSucceeded, nil
+	case "app_payment.failed":
+		return ListDeliveriesWebhooksRequestEventsItemAppPaymentFailed, nil
+	case "app_payment.pending":
+		return ListDeliveriesWebhooksRequestEventsItemAppPaymentPending, nil
+	case "app_payment.requires_action":
+		return ListDeliveriesWebhooksRequestEventsItemAppPaymentRequiresAction, nil
+	case "app_membership.cancel_at_period_end_changed":
+		return ListDeliveriesWebhooksRequestEventsItemAppMembershipCancelAtPeriodEndChanged, nil
+	}
+	var t ListDeliveriesWebhooksRequestEventsItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListDeliveriesWebhooksRequestEventsItem) Ptr() *ListDeliveriesWebhooksRequestEventsItem {
+	return &l
+}
+
+type ListDeliveriesWebhooksRequestStatus string
+
+const (
+	ListDeliveriesWebhooksRequestStatusSuccess ListDeliveriesWebhooksRequestStatus = "success"
+	ListDeliveriesWebhooksRequestStatusError   ListDeliveriesWebhooksRequestStatus = "error"
+)
+
+func NewListDeliveriesWebhooksRequestStatusFromString(s string) (ListDeliveriesWebhooksRequestStatus, error) {
+	switch s {
+	case "success":
+		return ListDeliveriesWebhooksRequestStatusSuccess, nil
+	case "error":
+		return ListDeliveriesWebhooksRequestStatusError, nil
+	}
+	var t ListDeliveriesWebhooksRequestStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListDeliveriesWebhooksRequestStatus) Ptr() *ListDeliveriesWebhooksRequestStatus {
+	return &l
 }
 
 var (
@@ -3890,6 +4470,9 @@ const (
 	UpdateWebhooksRequestEventsItemCardApplicationApproved            UpdateWebhooksRequestEventsItem = "card_application.approved"
 	UpdateWebhooksRequestEventsItemCardApplicationDenied              UpdateWebhooksRequestEventsItem = "card_application.denied"
 	UpdateWebhooksRequestEventsItemCourseLessonInteractionCompleted   UpdateWebhooksRequestEventsItem = "course_lesson_interaction.completed"
+	UpdateWebhooksRequestEventsItemDomainCreated                      UpdateWebhooksRequestEventsItem = "domain.created"
+	UpdateWebhooksRequestEventsItemDomainUpdated                      UpdateWebhooksRequestEventsItem = "domain.updated"
+	UpdateWebhooksRequestEventsItemDomainDeleted                      UpdateWebhooksRequestEventsItem = "domain.deleted"
 	UpdateWebhooksRequestEventsItemPayoutMethodCreated                UpdateWebhooksRequestEventsItem = "payout_method.created"
 	UpdateWebhooksRequestEventsItemVerificationSucceeded              UpdateWebhooksRequestEventsItem = "verification.succeeded"
 	UpdateWebhooksRequestEventsItemIdentityProfileApproved            UpdateWebhooksRequestEventsItem = "identity_profile.approved"
@@ -3922,6 +4505,8 @@ const (
 	UpdateWebhooksRequestEventsItemAdGroupUpdated                     UpdateWebhooksRequestEventsItem = "ad_group.updated"
 	UpdateWebhooksRequestEventsItemAdCreated                          UpdateWebhooksRequestEventsItem = "ad.created"
 	UpdateWebhooksRequestEventsItemAdUpdated                          UpdateWebhooksRequestEventsItem = "ad.updated"
+	UpdateWebhooksRequestEventsItemAppInstallationCreated             UpdateWebhooksRequestEventsItem = "app_installation.created"
+	UpdateWebhooksRequestEventsItemAppInstallationDeleted             UpdateWebhooksRequestEventsItem = "app_installation.deleted"
 	UpdateWebhooksRequestEventsItemChatMessageCreated                 UpdateWebhooksRequestEventsItem = "chat.message.created"
 	UpdateWebhooksRequestEventsItemChatReactionCreated                UpdateWebhooksRequestEventsItem = "chat.reaction.created"
 	UpdateWebhooksRequestEventsItemPaymentCreated                     UpdateWebhooksRequestEventsItem = "payment.created"
@@ -4031,6 +4616,12 @@ func NewUpdateWebhooksRequestEventsItemFromString(s string) (UpdateWebhooksReque
 		return UpdateWebhooksRequestEventsItemCardApplicationDenied, nil
 	case "course_lesson_interaction.completed":
 		return UpdateWebhooksRequestEventsItemCourseLessonInteractionCompleted, nil
+	case "domain.created":
+		return UpdateWebhooksRequestEventsItemDomainCreated, nil
+	case "domain.updated":
+		return UpdateWebhooksRequestEventsItemDomainUpdated, nil
+	case "domain.deleted":
+		return UpdateWebhooksRequestEventsItemDomainDeleted, nil
 	case "payout_method.created":
 		return UpdateWebhooksRequestEventsItemPayoutMethodCreated, nil
 	case "verification.succeeded":
@@ -4095,6 +4686,10 @@ func NewUpdateWebhooksRequestEventsItemFromString(s string) (UpdateWebhooksReque
 		return UpdateWebhooksRequestEventsItemAdCreated, nil
 	case "ad.updated":
 		return UpdateWebhooksRequestEventsItemAdUpdated, nil
+	case "app_installation.created":
+		return UpdateWebhooksRequestEventsItemAppInstallationCreated, nil
+	case "app_installation.deleted":
+		return UpdateWebhooksRequestEventsItemAppInstallationDeleted, nil
 	case "chat.message.created":
 		return UpdateWebhooksRequestEventsItemChatMessageCreated, nil
 	case "chat.reaction.created":
@@ -4136,7 +4731,8 @@ var (
 	updateWebhooksRequestFieldChildResourceEvents = big.NewInt(1 << 2)
 	updateWebhooksRequestFieldEnabled             = big.NewInt(1 << 3)
 	updateWebhooksRequestFieldEvents              = big.NewInt(1 << 4)
-	updateWebhooksRequestFieldURL                 = big.NewInt(1 << 5)
+	updateWebhooksRequestFieldTitle               = big.NewInt(1 << 5)
+	updateWebhooksRequestFieldURL                 = big.NewInt(1 << 6)
 )
 
 type UpdateWebhooksRequest struct {
@@ -4150,6 +4746,8 @@ type UpdateWebhooksRequest struct {
 	Enabled *bool `json:"enabled,omitempty" url:"-"`
 	// The events to send the webhook for, in dot form (for example `payment.succeeded`).
 	Events []UpdateWebhooksRequestEventsItem `json:"events,omitempty" url:"-"`
+	// A label for the webhook, shown in the dashboard. Up to 255 characters. Pass `null` or an empty string to remove it.
+	Title *string `json:"title,omitempty" url:"-"`
 	// The URL to send the webhook to.
 	URL *string `json:"url,omitempty" url:"-"`
 
@@ -4199,6 +4797,13 @@ func (u *UpdateWebhooksRequest) SetEnabled(enabled *bool) {
 func (u *UpdateWebhooksRequest) SetEvents(events []UpdateWebhooksRequestEventsItem) {
 	u.Events = events
 	u.require(updateWebhooksRequestFieldEvents)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateWebhooksRequest) SetTitle(title *string) {
+	u.Title = title
+	u.require(updateWebhooksRequestFieldTitle)
 }
 
 // SetURL sets the URL field and marks it as non-optional;

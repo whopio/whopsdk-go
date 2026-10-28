@@ -866,11 +866,11 @@ func TestSettersListProductsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetPlanTypes", func(t *testing.T) {
+	t.Run("SetBillingTypes", func(t *testing.T) {
 		obj := &ListProductsRequest{}
-		var fernTestValuePlanTypes []*ListProductsRequestPlanTypesItem
-		obj.SetPlanTypes(fernTestValuePlanTypes)
-		assert.Equal(t, fernTestValuePlanTypes, obj.PlanTypes)
+		var fernTestValueBillingTypes []*ListProductsRequestBillingTypesItem
+		obj.SetBillingTypes(fernTestValueBillingTypes)
+		assert.Equal(t, fernTestValueBillingTypes, obj.BillingTypes)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -1074,14 +1074,14 @@ func TestSettersMarkExplicitListProductsRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetPlanTypes_MarksExplicit", func(t *testing.T) {
+	t.Run("SetBillingTypes_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListProductsRequest{}
-		var fernTestValuePlanTypes []*ListProductsRequestPlanTypesItem
+		var fernTestValueBillingTypes []*ListProductsRequestBillingTypesItem
 
 		// Act
-		obj.SetPlanTypes(fernTestValuePlanTypes)
+		obj.SetBillingTypes(fernTestValueBillingTypes)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1649,11 +1649,11 @@ func TestSettersProduct(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetDefaultPlan", func(t *testing.T) {
+	t.Run("SetDefaultVariant", func(t *testing.T) {
 		obj := &Product{}
-		var fernTestValueDefaultPlan *ProductPublicPlan
-		obj.SetDefaultPlan(fernTestValueDefaultPlan)
-		assert.Equal(t, fernTestValueDefaultPlan, obj.DefaultPlan)
+		var fernTestValueDefaultVariant *ProductPublicVariant
+		obj.SetDefaultVariant(fernTestValueDefaultVariant)
+		assert.Equal(t, fernTestValueDefaultVariant, obj.DefaultVariant)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -2022,28 +2022,28 @@ func TestGettersProduct(t *testing.T) {
 		_ = obj.GetCustomStatementDescriptor() // Should return zero value
 	})
 
-	t.Run("GetDefaultPlan", func(t *testing.T) {
+	t.Run("GetDefaultVariant", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &Product{}
-		var expected *ProductPublicPlan
-		obj.DefaultPlan = expected
+		var expected *ProductPublicVariant
+		obj.DefaultVariant = expected
 
 		// Act & Assert
-		assert.Equal(t, expected, obj.GetDefaultPlan(), "getter should return the property value")
+		assert.Equal(t, expected, obj.GetDefaultVariant(), "getter should return the property value")
 	})
 
-	t.Run("GetDefaultPlan_NilValue", func(t *testing.T) {
+	t.Run("GetDefaultVariant_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &Product{}
-		obj.DefaultPlan = nil
+		obj.DefaultVariant = nil
 
 		// Act & Assert
-		assert.Nil(t, obj.GetDefaultPlan(), "getter should return nil when property is nil")
+		assert.Nil(t, obj.GetDefaultVariant(), "getter should return nil when property is nil")
 	})
 
-	t.Run("GetDefaultPlan_NilReceiver", func(t *testing.T) {
+	t.Run("GetDefaultVariant_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *Product
 		// Should not panic - getters should handle nil receiver gracefully
@@ -2052,7 +2052,7 @@ func TestGettersProduct(t *testing.T) {
 				t.Errorf("Getter panicked on nil receiver: %v", r)
 			}
 		}()
-		_ = obj.GetDefaultPlan() // Should return zero value
+		_ = obj.GetDefaultVariant() // Should return zero value
 	})
 
 	t.Run("GetDescription", func(t *testing.T) {
@@ -2923,14 +2923,14 @@ func TestSettersMarkExplicitProduct(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetDefaultPlan_MarksExplicit", func(t *testing.T) {
+	t.Run("SetDefaultVariant_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &Product{}
-		var fernTestValueDefaultPlan *ProductPublicPlan
+		var fernTestValueDefaultVariant *ProductPublicVariant
 
 		// Act
-		obj.SetDefaultPlan(fernTestValueDefaultPlan)
+		obj.SetDefaultVariant(fernTestValueDefaultVariant)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3909,11 +3909,11 @@ func TestSettersProductListItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetDefaultPlan", func(t *testing.T) {
+	t.Run("SetDefaultVariant", func(t *testing.T) {
 		obj := &ProductListItem{}
-		var fernTestValueDefaultPlan *ProductPublicPlan
-		obj.SetDefaultPlan(fernTestValueDefaultPlan)
-		assert.Equal(t, fernTestValueDefaultPlan, obj.DefaultPlan)
+		var fernTestValueDefaultVariant *ProductPublicVariant
+		obj.SetDefaultVariant(fernTestValueDefaultVariant)
+		assert.Equal(t, fernTestValueDefaultVariant, obj.DefaultVariant)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -4119,28 +4119,28 @@ func TestGettersProductListItem(t *testing.T) {
 		_ = obj.GetCreatedAt() // Should return zero value
 	})
 
-	t.Run("GetDefaultPlan", func(t *testing.T) {
+	t.Run("GetDefaultVariant", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ProductListItem{}
-		var expected *ProductPublicPlan
-		obj.DefaultPlan = expected
+		var expected *ProductPublicVariant
+		obj.DefaultVariant = expected
 
 		// Act & Assert
-		assert.Equal(t, expected, obj.GetDefaultPlan(), "getter should return the property value")
+		assert.Equal(t, expected, obj.GetDefaultVariant(), "getter should return the property value")
 	})
 
-	t.Run("GetDefaultPlan_NilValue", func(t *testing.T) {
+	t.Run("GetDefaultVariant_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ProductListItem{}
-		obj.DefaultPlan = nil
+		obj.DefaultVariant = nil
 
 		// Act & Assert
-		assert.Nil(t, obj.GetDefaultPlan(), "getter should return nil when property is nil")
+		assert.Nil(t, obj.GetDefaultVariant(), "getter should return nil when property is nil")
 	})
 
-	t.Run("GetDefaultPlan_NilReceiver", func(t *testing.T) {
+	t.Run("GetDefaultVariant_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *ProductListItem
 		// Should not panic - getters should handle nil receiver gracefully
@@ -4149,7 +4149,7 @@ func TestGettersProductListItem(t *testing.T) {
 				t.Errorf("Getter panicked on nil receiver: %v", r)
 			}
 		}()
-		_ = obj.GetDefaultPlan() // Should return zero value
+		_ = obj.GetDefaultVariant() // Should return zero value
 	})
 
 	t.Run("GetDescription", func(t *testing.T) {
@@ -4673,14 +4673,14 @@ func TestSettersMarkExplicitProductListItem(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetDefaultPlan_MarksExplicit", func(t *testing.T) {
+	t.Run("SetDefaultVariant_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ProductListItem{}
-		var fernTestValueDefaultPlan *ProductPublicPlan
+		var fernTestValueDefaultVariant *ProductPublicVariant
 
 		// Act
-		obj.SetDefaultPlan(fernTestValueDefaultPlan)
+		obj.SetDefaultVariant(fernTestValueDefaultVariant)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -5171,17 +5171,25 @@ func TestSettersMarkExplicitProductListItem(t *testing.T) {
 
 }
 
-func TestSettersProductPublicPlan(t *testing.T) {
+func TestSettersProductPublicVariant(t *testing.T) {
 	t.Run("SetBillingPeriod", func(t *testing.T) {
-		obj := &ProductPublicPlan{}
+		obj := &ProductPublicVariant{}
 		var fernTestValueBillingPeriod *float64
 		obj.SetBillingPeriod(fernTestValueBillingPeriod)
 		assert.Equal(t, fernTestValueBillingPeriod, obj.BillingPeriod)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetBillingType", func(t *testing.T) {
+		obj := &ProductPublicVariant{}
+		var fernTestValueBillingType ProductPublicVariantBillingType
+		obj.SetBillingType(fernTestValueBillingType)
+		assert.Equal(t, fernTestValueBillingType, obj.BillingType)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetExpirationDays", func(t *testing.T) {
-		obj := &ProductPublicPlan{}
+		obj := &ProductPublicVariant{}
 		var fernTestValueExpirationDays *float64
 		obj.SetExpirationDays(fernTestValueExpirationDays)
 		assert.Equal(t, fernTestValueExpirationDays, obj.ExpirationDays)
@@ -5189,7 +5197,7 @@ func TestSettersProductPublicPlan(t *testing.T) {
 	})
 
 	t.Run("SetID", func(t *testing.T) {
-		obj := &ProductPublicPlan{}
+		obj := &ProductPublicVariant{}
 		var fernTestValueID string
 		obj.SetID(fernTestValueID)
 		assert.Equal(t, fernTestValueID, obj.ID)
@@ -5197,23 +5205,15 @@ func TestSettersProductPublicPlan(t *testing.T) {
 	})
 
 	t.Run("SetInitialPrice", func(t *testing.T) {
-		obj := &ProductPublicPlan{}
+		obj := &ProductPublicVariant{}
 		var fernTestValueInitialPrice *Money
 		obj.SetInitialPrice(fernTestValueInitialPrice)
 		assert.Equal(t, fernTestValueInitialPrice, obj.InitialPrice)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetPlanType", func(t *testing.T) {
-		obj := &ProductPublicPlan{}
-		var fernTestValuePlanType ProductPublicPlanPlanType
-		obj.SetPlanType(fernTestValuePlanType)
-		assert.Equal(t, fernTestValuePlanType, obj.PlanType)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetRenewalPrice", func(t *testing.T) {
-		obj := &ProductPublicPlan{}
+		obj := &ProductPublicVariant{}
 		var fernTestValueRenewalPrice *Money
 		obj.SetRenewalPrice(fernTestValueRenewalPrice)
 		assert.Equal(t, fernTestValueRenewalPrice, obj.RenewalPrice)
@@ -5221,7 +5221,7 @@ func TestSettersProductPublicPlan(t *testing.T) {
 	})
 
 	t.Run("SetTitle", func(t *testing.T) {
-		obj := &ProductPublicPlan{}
+		obj := &ProductPublicVariant{}
 		var fernTestValueTitle *string
 		obj.SetTitle(fernTestValueTitle)
 		assert.Equal(t, fernTestValueTitle, obj.Title)
@@ -5229,7 +5229,7 @@ func TestSettersProductPublicPlan(t *testing.T) {
 	})
 
 	t.Run("SetUnlimitedStock", func(t *testing.T) {
-		obj := &ProductPublicPlan{}
+		obj := &ProductPublicVariant{}
 		var fernTestValueUnlimitedStock bool
 		obj.SetUnlimitedStock(fernTestValueUnlimitedStock)
 		assert.Equal(t, fernTestValueUnlimitedStock, obj.UnlimitedStock)
@@ -5237,8 +5237,8 @@ func TestSettersProductPublicPlan(t *testing.T) {
 	})
 
 	t.Run("SetVisibility", func(t *testing.T) {
-		obj := &ProductPublicPlan{}
-		var fernTestValueVisibility ProductPublicPlanVisibility
+		obj := &ProductPublicVariant{}
+		var fernTestValueVisibility ProductPublicVariantVisibility
 		obj.SetVisibility(fernTestValueVisibility)
 		assert.Equal(t, fernTestValueVisibility, obj.Visibility)
 		assert.NotNil(t, obj.explicitFields)
@@ -5246,11 +5246,11 @@ func TestSettersProductPublicPlan(t *testing.T) {
 
 }
 
-func TestGettersProductPublicPlan(t *testing.T) {
+func TestGettersProductPublicVariant(t *testing.T) {
 	t.Run("GetBillingPeriod", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ProductPublicPlan{}
+		obj := &ProductPublicVariant{}
 		var expected *float64
 		obj.BillingPeriod = expected
 
@@ -5261,7 +5261,7 @@ func TestGettersProductPublicPlan(t *testing.T) {
 	t.Run("GetBillingPeriod_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ProductPublicPlan{}
+		obj := &ProductPublicVariant{}
 		obj.BillingPeriod = nil
 
 		// Act & Assert
@@ -5270,7 +5270,7 @@ func TestGettersProductPublicPlan(t *testing.T) {
 
 	t.Run("GetBillingPeriod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *ProductPublicPlan
+		var obj *ProductPublicVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -5280,10 +5280,33 @@ func TestGettersProductPublicPlan(t *testing.T) {
 		_ = obj.GetBillingPeriod() // Should return zero value
 	})
 
+	t.Run("GetBillingType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ProductPublicVariant{}
+		var expected ProductPublicVariantBillingType
+		obj.BillingType = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetBillingType(), "getter should return the property value")
+	})
+
+	t.Run("GetBillingType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ProductPublicVariant
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetBillingType() // Should return zero value
+	})
+
 	t.Run("GetExpirationDays", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ProductPublicPlan{}
+		obj := &ProductPublicVariant{}
 		var expected *float64
 		obj.ExpirationDays = expected
 
@@ -5294,7 +5317,7 @@ func TestGettersProductPublicPlan(t *testing.T) {
 	t.Run("GetExpirationDays_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ProductPublicPlan{}
+		obj := &ProductPublicVariant{}
 		obj.ExpirationDays = nil
 
 		// Act & Assert
@@ -5303,7 +5326,7 @@ func TestGettersProductPublicPlan(t *testing.T) {
 
 	t.Run("GetExpirationDays_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *ProductPublicPlan
+		var obj *ProductPublicVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -5316,7 +5339,7 @@ func TestGettersProductPublicPlan(t *testing.T) {
 	t.Run("GetID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ProductPublicPlan{}
+		obj := &ProductPublicVariant{}
 		var expected string
 		obj.ID = expected
 
@@ -5326,7 +5349,7 @@ func TestGettersProductPublicPlan(t *testing.T) {
 
 	t.Run("GetID_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *ProductPublicPlan
+		var obj *ProductPublicVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -5339,7 +5362,7 @@ func TestGettersProductPublicPlan(t *testing.T) {
 	t.Run("GetInitialPrice", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ProductPublicPlan{}
+		obj := &ProductPublicVariant{}
 		var expected *Money
 		obj.InitialPrice = expected
 
@@ -5350,7 +5373,7 @@ func TestGettersProductPublicPlan(t *testing.T) {
 	t.Run("GetInitialPrice_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ProductPublicPlan{}
+		obj := &ProductPublicVariant{}
 		obj.InitialPrice = nil
 
 		// Act & Assert
@@ -5359,7 +5382,7 @@ func TestGettersProductPublicPlan(t *testing.T) {
 
 	t.Run("GetInitialPrice_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *ProductPublicPlan
+		var obj *ProductPublicVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -5369,33 +5392,10 @@ func TestGettersProductPublicPlan(t *testing.T) {
 		_ = obj.GetInitialPrice() // Should return zero value
 	})
 
-	t.Run("GetPlanType", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &ProductPublicPlan{}
-		var expected ProductPublicPlanPlanType
-		obj.PlanType = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetPlanType(), "getter should return the property value")
-	})
-
-	t.Run("GetPlanType_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *ProductPublicPlan
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetPlanType() // Should return zero value
-	})
-
 	t.Run("GetRenewalPrice", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ProductPublicPlan{}
+		obj := &ProductPublicVariant{}
 		var expected *Money
 		obj.RenewalPrice = expected
 
@@ -5406,7 +5406,7 @@ func TestGettersProductPublicPlan(t *testing.T) {
 	t.Run("GetRenewalPrice_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ProductPublicPlan{}
+		obj := &ProductPublicVariant{}
 		obj.RenewalPrice = nil
 
 		// Act & Assert
@@ -5415,7 +5415,7 @@ func TestGettersProductPublicPlan(t *testing.T) {
 
 	t.Run("GetRenewalPrice_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *ProductPublicPlan
+		var obj *ProductPublicVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -5428,7 +5428,7 @@ func TestGettersProductPublicPlan(t *testing.T) {
 	t.Run("GetTitle", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ProductPublicPlan{}
+		obj := &ProductPublicVariant{}
 		var expected *string
 		obj.Title = expected
 
@@ -5439,7 +5439,7 @@ func TestGettersProductPublicPlan(t *testing.T) {
 	t.Run("GetTitle_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ProductPublicPlan{}
+		obj := &ProductPublicVariant{}
 		obj.Title = nil
 
 		// Act & Assert
@@ -5448,7 +5448,7 @@ func TestGettersProductPublicPlan(t *testing.T) {
 
 	t.Run("GetTitle_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *ProductPublicPlan
+		var obj *ProductPublicVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -5461,7 +5461,7 @@ func TestGettersProductPublicPlan(t *testing.T) {
 	t.Run("GetUnlimitedStock", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ProductPublicPlan{}
+		obj := &ProductPublicVariant{}
 		var expected bool
 		obj.UnlimitedStock = expected
 
@@ -5471,7 +5471,7 @@ func TestGettersProductPublicPlan(t *testing.T) {
 
 	t.Run("GetUnlimitedStock_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *ProductPublicPlan
+		var obj *ProductPublicVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -5484,8 +5484,8 @@ func TestGettersProductPublicPlan(t *testing.T) {
 	t.Run("GetVisibility", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ProductPublicPlan{}
-		var expected ProductPublicPlanVisibility
+		obj := &ProductPublicVariant{}
+		var expected ProductPublicVariantVisibility
 		obj.Visibility = expected
 
 		// Act & Assert
@@ -5494,7 +5494,7 @@ func TestGettersProductPublicPlan(t *testing.T) {
 
 	t.Run("GetVisibility_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *ProductPublicPlan
+		var obj *ProductPublicVariant
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -5506,11 +5506,11 @@ func TestGettersProductPublicPlan(t *testing.T) {
 
 }
 
-func TestSettersMarkExplicitProductPublicPlan(t *testing.T) {
+func TestSettersMarkExplicitProductPublicVariant(t *testing.T) {
 	t.Run("SetBillingPeriod_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ProductPublicPlan{}
+		obj := &ProductPublicVariant{}
 		var fernTestValueBillingPeriod *float64
 
 		// Act
@@ -5538,10 +5538,41 @@ func TestSettersMarkExplicitProductPublicPlan(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetBillingType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ProductPublicVariant{}
+		var fernTestValueBillingType ProductPublicVariantBillingType
+
+		// Act
+		obj.SetBillingType(fernTestValueBillingType)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetExpirationDays_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ProductPublicPlan{}
+		obj := &ProductPublicVariant{}
 		var fernTestValueExpirationDays *float64
 
 		// Act
@@ -5572,7 +5603,7 @@ func TestSettersMarkExplicitProductPublicPlan(t *testing.T) {
 	t.Run("SetID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ProductPublicPlan{}
+		obj := &ProductPublicVariant{}
 		var fernTestValueID string
 
 		// Act
@@ -5603,7 +5634,7 @@ func TestSettersMarkExplicitProductPublicPlan(t *testing.T) {
 	t.Run("SetInitialPrice_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ProductPublicPlan{}
+		obj := &ProductPublicVariant{}
 		var fernTestValueInitialPrice *Money
 
 		// Act
@@ -5631,41 +5662,10 @@ func TestSettersMarkExplicitProductPublicPlan(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetPlanType_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &ProductPublicPlan{}
-		var fernTestValuePlanType ProductPublicPlanPlanType
-
-		// Act
-		obj.SetPlanType(fernTestValuePlanType)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
 	t.Run("SetRenewalPrice_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ProductPublicPlan{}
+		obj := &ProductPublicVariant{}
 		var fernTestValueRenewalPrice *Money
 
 		// Act
@@ -5696,7 +5696,7 @@ func TestSettersMarkExplicitProductPublicPlan(t *testing.T) {
 	t.Run("SetTitle_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ProductPublicPlan{}
+		obj := &ProductPublicVariant{}
 		var fernTestValueTitle *string
 
 		// Act
@@ -5727,7 +5727,7 @@ func TestSettersMarkExplicitProductPublicPlan(t *testing.T) {
 	t.Run("SetUnlimitedStock_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ProductPublicPlan{}
+		obj := &ProductPublicVariant{}
 		var fernTestValueUnlimitedStock bool
 
 		// Act
@@ -5758,8 +5758,8 @@ func TestSettersMarkExplicitProductPublicPlan(t *testing.T) {
 	t.Run("SetVisibility_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ProductPublicPlan{}
-		var fernTestValueVisibility ProductPublicPlanVisibility
+		obj := &ProductPublicVariant{}
+		var fernTestValueVisibility ProductPublicVariantVisibility
 
 		// Act
 		obj.SetVisibility(fernTestValueVisibility)
@@ -10411,11 +10411,11 @@ func TestJSONMarshalingProductListItem(t *testing.T) {
 	})
 }
 
-func TestJSONMarshalingProductPublicPlan(t *testing.T) {
+func TestJSONMarshalingProductPublicVariant(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ProductPublicPlan{}
+		obj := &ProductPublicVariant{}
 
 		// Act - Marshal to JSON
 		data, err := json.Marshal(obj)
@@ -10424,21 +10424,21 @@ func TestJSONMarshalingProductPublicPlan(t *testing.T) {
 		assert.NotEmpty(t, data, "marshaled data should not be empty")
 
 		// Unmarshal back and verify round-trip
-		var unmarshaled ProductPublicPlan
+		var unmarshaled ProductPublicVariant
 		err = json.Unmarshal(data, &unmarshaled)
 		assert.NoError(t, err, "round-trip unmarshal should succeed")
 	})
 
 	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
 		t.Parallel()
-		var obj ProductPublicPlan
+		var obj ProductPublicVariant
 		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
 		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
 	})
 
 	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
 		t.Parallel()
-		var obj ProductPublicPlan
+		var obj ProductPublicVariant
 		err := json.Unmarshal([]byte(`{}`), &obj)
 		assert.NoError(t, err, "unmarshaling empty object should succeed")
 	})
@@ -10775,7 +10775,7 @@ func TestRequiredNullableRoundTripProduct(t *testing.T) {
 		"custom_cta",
 		"custom_cta_url",
 		"custom_statement_descriptor",
-		"default_plan",
+		"default_variant",
 		"description",
 		"external_identifier",
 		"global_affiliate_percentage",
@@ -10801,7 +10801,7 @@ func TestRequiredNullableRoundTripProduct(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Product
-		require.NoError(t, json.Unmarshal([]byte(`{"account":null,"custom_cta":null,"custom_cta_url":null,"custom_statement_descriptor":null,"default_plan":null,"description":null,"external_identifier":null,"global_affiliate_percentage":null,"global_affiliate_status":null,"headline":null,"member_affiliate_percentage":null,"member_affiliate_status":null,"metadata":null,"owner_user":null,"product_tax_code":null,"variant_attributes":null,"variants":null,"visibility":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account":null,"custom_cta":null,"custom_cta_url":null,"custom_statement_descriptor":null,"default_variant":null,"description":null,"external_identifier":null,"global_affiliate_percentage":null,"global_affiliate_status":null,"headline":null,"member_affiliate_percentage":null,"member_affiliate_status":null,"metadata":null,"owner_user":null,"product_tax_code":null,"variant_attributes":null,"variants":null,"visibility":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -10876,7 +10876,7 @@ func TestRequiredNullableRoundTripProductGalleryImage(t *testing.T) {
 func TestRequiredNullableRoundTripProductListItem(t *testing.T) {
 	requiredNullableKeys := []string{
 		"account",
-		"default_plan",
+		"default_variant",
 		"description",
 		"external_identifier",
 		"headline",
@@ -10895,7 +10895,7 @@ func TestRequiredNullableRoundTripProductListItem(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj ProductListItem
-		require.NoError(t, json.Unmarshal([]byte(`{"account":null,"default_plan":null,"description":null,"external_identifier":null,"headline":null,"metadata":null,"variant_attributes":null,"visibility":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account":null,"default_variant":null,"description":null,"external_identifier":null,"headline":null,"metadata":null,"variant_attributes":null,"visibility":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -10923,13 +10923,13 @@ func TestRequiredNullableRoundTripProductListItem(t *testing.T) {
 	})
 }
 
-func TestRequiredNullableRoundTripProductPublicPlan(t *testing.T) {
+func TestRequiredNullableRoundTripProductPublicVariant(t *testing.T) {
 	requiredNullableKeys := []string{
 		"billing_period",
 		"expiration_days",
 		"title",
 	}
-	marshalToMap := func(t *testing.T, obj *ProductPublicPlan) map[string]json.RawMessage {
+	marshalToMap := func(t *testing.T, obj *ProductPublicVariant) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
 		require.NoError(t, err, "marshaling should succeed")
 		var result map[string]json.RawMessage
@@ -10939,7 +10939,7 @@ func TestRequiredNullableRoundTripProductPublicPlan(t *testing.T) {
 
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
-		var obj ProductPublicPlan
+		var obj ProductPublicVariant
 		require.NoError(t, json.Unmarshal([]byte(`{"billing_period":null,"expiration_days":null,"title":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
@@ -10951,7 +10951,7 @@ func TestRequiredNullableRoundTripProductPublicPlan(t *testing.T) {
 
 	t.Run("AbsentStaysAbsent", func(t *testing.T) {
 		t.Parallel()
-		var obj ProductPublicPlan
+		var obj ProductPublicVariant
 		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
@@ -10961,7 +10961,7 @@ func TestRequiredNullableRoundTripProductPublicPlan(t *testing.T) {
 
 	t.Run("FreshValueOmits", func(t *testing.T) {
 		t.Parallel()
-		result := marshalToMap(t, &ProductPublicPlan{})
+		result := marshalToMap(t, &ProductPublicVariant{})
 		for _, key := range requiredNullableKeys {
 			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
 		}
@@ -11375,17 +11375,17 @@ func TestStringProductListItem(t *testing.T) {
 	})
 }
 
-func TestStringProductPublicPlan(t *testing.T) {
+func TestStringProductPublicVariant(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
-		obj := &ProductPublicPlan{}
+		obj := &ProductPublicVariant{}
 		result := obj.String()
 		assert.NotEmpty(t, result, "String() should return a non-empty representation")
 	})
 
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *ProductPublicPlan
+		var obj *ProductPublicVariant
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -11587,6 +11587,35 @@ func TestEnumCreateProductsRequestMemberAffiliateStatus(t *testing.T) {
 	})
 }
 
+func TestEnumListProductsRequestBillingTypesItem(t *testing.T) {
+	t.Run("NewFromString_renewal", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListProductsRequestBillingTypesItemFromString("renewal")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListProductsRequestBillingTypesItem("renewal"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_one_time", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListProductsRequestBillingTypesItemFromString("one_time")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListProductsRequestBillingTypesItem("one_time"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewListProductsRequestBillingTypesItemFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewListProductsRequestBillingTypesItemFromString("renewal")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumListProductsRequestDirection(t *testing.T) {
 	t.Run("NewFromString_asc", func(t *testing.T) {
 		t.Parallel()
@@ -11609,35 +11638,6 @@ func TestEnumListProductsRequestDirection(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewListProductsRequestDirectionFromString("asc")
-		assert.NoError(t, err)
-		ptr := val.Ptr()
-		assert.NotNil(t, ptr)
-		assert.Equal(t, val, *ptr)
-	})
-}
-
-func TestEnumListProductsRequestPlanTypesItem(t *testing.T) {
-	t.Run("NewFromString_renewal", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewListProductsRequestPlanTypesItemFromString("renewal")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListProductsRequestPlanTypesItem("renewal"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_one_time", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewListProductsRequestPlanTypesItemFromString("one_time")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListProductsRequestPlanTypesItem("one_time"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewListProductsRequestPlanTypesItemFromString("invalid_value_that_does_not_exist")
-		assert.Error(t, err)
-	})
-
-	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewListProductsRequestPlanTypesItemFromString("renewal")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -12065,28 +12065,28 @@ func TestEnumProductMemberAffiliateStatus(t *testing.T) {
 	})
 }
 
-func TestEnumProductPublicPlanPlanType(t *testing.T) {
+func TestEnumProductPublicVariantBillingType(t *testing.T) {
 	t.Run("NewFromString_renewal", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewProductPublicPlanPlanTypeFromString("renewal")
+		val, err := NewProductPublicVariantBillingTypeFromString("renewal")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ProductPublicPlanPlanType("renewal"), val, "enum value should match expected wire value")
+		assert.Equal(t, ProductPublicVariantBillingType("renewal"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_one_time", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewProductPublicPlanPlanTypeFromString("one_time")
+		val, err := NewProductPublicVariantBillingTypeFromString("one_time")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ProductPublicPlanPlanType("one_time"), val, "enum value should match expected wire value")
+		assert.Equal(t, ProductPublicVariantBillingType("one_time"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewProductPublicPlanPlanTypeFromString("invalid_value_that_does_not_exist")
+		_, err := NewProductPublicVariantBillingTypeFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewProductPublicPlanPlanTypeFromString("renewal")
+		val, err := NewProductPublicVariantBillingTypeFromString("renewal")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -12094,42 +12094,42 @@ func TestEnumProductPublicPlanPlanType(t *testing.T) {
 	})
 }
 
-func TestEnumProductPublicPlanVisibility(t *testing.T) {
+func TestEnumProductPublicVariantVisibility(t *testing.T) {
 	t.Run("NewFromString_visible", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewProductPublicPlanVisibilityFromString("visible")
+		val, err := NewProductPublicVariantVisibilityFromString("visible")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ProductPublicPlanVisibility("visible"), val, "enum value should match expected wire value")
+		assert.Equal(t, ProductPublicVariantVisibility("visible"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_hidden", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewProductPublicPlanVisibilityFromString("hidden")
+		val, err := NewProductPublicVariantVisibilityFromString("hidden")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ProductPublicPlanVisibility("hidden"), val, "enum value should match expected wire value")
+		assert.Equal(t, ProductPublicVariantVisibility("hidden"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_archived", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewProductPublicPlanVisibilityFromString("archived")
+		val, err := NewProductPublicVariantVisibilityFromString("archived")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ProductPublicPlanVisibility("archived"), val, "enum value should match expected wire value")
+		assert.Equal(t, ProductPublicVariantVisibility("archived"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_quick_link", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewProductPublicPlanVisibilityFromString("quick_link")
+		val, err := NewProductPublicVariantVisibilityFromString("quick_link")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ProductPublicPlanVisibility("quick_link"), val, "enum value should match expected wire value")
+		assert.Equal(t, ProductPublicVariantVisibility("quick_link"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewProductPublicPlanVisibilityFromString("invalid_value_that_does_not_exist")
+		_, err := NewProductPublicVariantVisibilityFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewProductPublicPlanVisibilityFromString("visible")
+		val, err := NewProductPublicVariantVisibilityFromString("visible")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -12413,10 +12413,10 @@ func TestExtraPropertiesProductListItem(t *testing.T) {
 	})
 }
 
-func TestExtraPropertiesProductPublicPlan(t *testing.T) {
+func TestExtraPropertiesProductPublicVariant(t *testing.T) {
 	t.Run("GetExtraProperties", func(t *testing.T) {
 		t.Parallel()
-		obj := &ProductPublicPlan{}
+		obj := &ProductPublicVariant{}
 		// Should not panic when calling GetExtraProperties()
 		defer func() {
 			if r := recover(); r != nil {
@@ -12430,7 +12430,7 @@ func TestExtraPropertiesProductPublicPlan(t *testing.T) {
 
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *ProductPublicPlan
+		var obj *ProductPublicVariant
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

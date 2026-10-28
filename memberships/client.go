@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-10-15-1"
+		apiVersionDateDefault := "2026-10-27-3"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -44,12 +44,15 @@ func NewClient(options *core.RequestOptions) *Client {
 // Example:
 //
 //	request := &whopsdk.ListMembershipsRequest{
+//	    ExternalAccount: whopsdk.String(
+//	        "discord_123456789012345678",
+//	    ),
 //	    ProductIDs: []*string{
 //	        whopsdk.String(
 //	            "prod_xxxxxxxxxxxxx",
 //	        ),
 //	    },
-//	    PlanIDs: []*string{
+//	    VariantIDs: []*string{
 //	        whopsdk.String(
 //	            "plan_xxxxxxxxxxxxx",
 //	        ),
@@ -141,8 +144,8 @@ func (c *Client) List(
 //
 //	request := &whopsdk.InviteMembershipsRequestBody{
 //	    InviteMembershipsRequestBodyUserID: &whopsdk.InviteMembershipsRequestBodyUserID{
-//	        PlanID: "plan_xxxxxxxxxxxxxx",
 //	        UserID: "user_xxxxxxxxxxxxxx",
+//	        VariantID: "plan_xxxxxxxxxxxxxx",
 //	    },
 //	}
 //	client.Memberships.Invite(

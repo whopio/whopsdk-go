@@ -23,7 +23,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-10-15-1"
+		apiVersionDateDefault := "2026-10-27-3"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -120,7 +120,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Registers a passkey for the authenticated user from the attestation a browser produced for a `registration` challenge. Mint that challenge first with `POST /users/me/passkeys/challenge`; it is single-use and expires 5 minutes after it is issued. Requires a user session.
+// Registers a passkey for the authenticated user from the attestation a browser produced for a `registration` challenge. Mint that challenge first with `POST /users/me/passkeys/challenge` and run the ceremony with its `creation_options`; it is single-use and expires 5 minutes after it is issued. Send back the `user_handle` the options carried: registering with it replaces the account's passkeys made before Whop issued options, which can only be deleted. Requires a user session that has completed step-up verification.
 //
 // Example:
 //
@@ -150,7 +150,7 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Mints the challenge a browser needs to run a WebAuthn ceremony against the authenticated user's own passkeys. A `registration` challenge enrolls a new passkey; a `deletion` challenge is bound to the one passkey named by `passkey_id` and proves the user still holds it. Challenges are single-use and expire 5 minutes after they are issued, so send a fresh `Idempotency-Key` per ceremony — a replayed key returns the original challenge, which may already have expired. Requires a user session.
+// Mints the challenge and WebAuthn options a browser needs to run a ceremony against the authenticated user's own passkeys. A `registration` challenge enrolls a new passkey; a `deletion` challenge is bound to the one passkey named by `passkey_id` and proves the user still holds it. The options are in wire snake_case: convert the keys to camelCase before passing them to the browser. Challenges are single-use and expire 5 minutes after they are issued, so send a fresh `Idempotency-Key` per ceremony — a replayed key returns the original challenge, which may already have expired. Requires a user session. A `registration` challenge also requires step-up verification, so the user completes it before the browser ceremony.
 //
 // Example:
 //
@@ -165,7 +165,7 @@ func (c *Client) Challenge(
 	ctx context.Context,
 	request *users.ChallengePasskeysRequest,
 	opts ...option.RequestOption,
-) (*users.ChallengePasskeysResponse, error) {
+) (*whopsdk.PasskeyChallenge, error) {
 	response, err := c.WithRawResponse.Challenge(
 		ctx,
 		request,

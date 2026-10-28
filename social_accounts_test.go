@@ -303,6 +303,14 @@ func TestSettersCreateSocialAccountsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetAPIKey", func(t *testing.T) {
+		obj := &CreateSocialAccountsRequest{}
+		var fernTestValueAPIKey *string
+		obj.SetAPIKey(fernTestValueAPIKey)
+		assert.Equal(t, fernTestValueAPIKey, obj.APIKey)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetPlatform", func(t *testing.T) {
 		obj := &CreateSocialAccountsRequest{}
 		var fernTestValuePlatform CreateSocialAccountsRequestPlatform
@@ -322,6 +330,37 @@ func TestSettersMarkExplicitCreateSocialAccountsRequest(t *testing.T) {
 
 		// Act
 		obj.SetAccountID(fernTestValueAccountID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetAPIKey_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateSocialAccountsRequest{}
+		var fernTestValueAPIKey *string
+
+		// Act
+		obj.SetAPIKey(fernTestValueAPIKey)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -7135,6 +7174,13 @@ func TestEnumCreateSocialAccountsRequestPlatform(t *testing.T) {
 		assert.Equal(t, CreateSocialAccountsRequestPlatform("tiktok"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_klaviyo", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateSocialAccountsRequestPlatformFromString("klaviyo")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateSocialAccountsRequestPlatform("klaviyo"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewCreateSocialAccountsRequestPlatformFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -7271,6 +7317,13 @@ func TestEnumListSocialAccountsRequestPlatform(t *testing.T) {
 		assert.Equal(t, ListSocialAccountsRequestPlatform("snapchat"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_klaviyo", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListSocialAccountsRequestPlatformFromString("klaviyo")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListSocialAccountsRequestPlatform("klaviyo"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewListSocialAccountsRequestPlatformFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -7313,6 +7366,13 @@ func TestEnumListSocialAccountsRequestTrustLevel(t *testing.T) {
 		val, err := NewListSocialAccountsRequestTrustLevelFromString("oauth")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListSocialAccountsRequestTrustLevel("oauth"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_api_key", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListSocialAccountsRequestTrustLevelFromString("api_key")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListSocialAccountsRequestTrustLevel("api_key"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_verified", func(t *testing.T) {
@@ -7450,6 +7510,13 @@ func TestEnumSocialAccountParentPlatform(t *testing.T) {
 		assert.Equal(t, SocialAccountParentPlatform("snapchat"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_klaviyo", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSocialAccountParentPlatformFromString("klaviyo")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SocialAccountParentPlatform("klaviyo"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewSocialAccountParentPlatformFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -7562,6 +7629,13 @@ func TestEnumSocialAccountPlatform(t *testing.T) {
 		val, err := NewSocialAccountPlatformFromString("snapchat")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, SocialAccountPlatform("snapchat"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_klaviyo", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSocialAccountPlatformFromString("klaviyo")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SocialAccountPlatform("klaviyo"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {

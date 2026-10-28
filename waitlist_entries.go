@@ -39,14 +39,14 @@ func (a *ApproveWaitlistEntriesRequest) SetID(id string) {
 
 var (
 	approveAllWaitlistEntriesRequestFieldAccountID = big.NewInt(1 << 0)
-	approveAllWaitlistEntriesRequestFieldPlanID    = big.NewInt(1 << 1)
+	approveAllWaitlistEntriesRequestFieldVariantID = big.NewInt(1 << 1)
 )
 
 type ApproveAllWaitlistEntriesRequest struct {
 	// The seller account whose pending signups to approve, prefixed `biz_`.
 	AccountID string `json:"account_id" url:"-"`
 	// Only approve signups for this variant, prefixed `plan_`. Omit to include every waitlist variant on the account.
-	PlanID *string `json:"plan_id,omitempty" url:"-"`
+	VariantID *string `json:"variant_id,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -68,11 +68,11 @@ func (a *ApproveAllWaitlistEntriesRequest) SetAccountID(accountID string) {
 	a.require(approveAllWaitlistEntriesRequestFieldAccountID)
 }
 
-// SetPlanID sets the PlanID field and marks it as non-optional;
+// SetVariantID sets the VariantID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (a *ApproveAllWaitlistEntriesRequest) SetPlanID(planID *string) {
-	a.PlanID = planID
-	a.require(approveAllWaitlistEntriesRequestFieldPlanID)
+func (a *ApproveAllWaitlistEntriesRequest) SetVariantID(variantID *string) {
+	a.VariantID = variantID
+	a.require(approveAllWaitlistEntriesRequestFieldVariantID)
 }
 
 func (a *ApproveAllWaitlistEntriesRequest) UnmarshalJSON(data []byte) error {
@@ -128,7 +128,7 @@ var (
 	createWaitlistEntriesRequestFieldBuyerAccountID       = big.NewInt(1 << 0)
 	createWaitlistEntriesRequestFieldCustomFieldResponses = big.NewInt(1 << 1)
 	createWaitlistEntriesRequestFieldMetadata             = big.NewInt(1 << 2)
-	createWaitlistEntriesRequestFieldPlanID               = big.NewInt(1 << 3)
+	createWaitlistEntriesRequestFieldVariantID            = big.NewInt(1 << 3)
 )
 
 type CreateWaitlistEntriesRequest struct {
@@ -139,7 +139,7 @@ type CreateWaitlistEntriesRequest struct {
 	// Custom key-value pairs to store on the signup. Max 50 keys, 100 chars per key, 500 chars per string value. Ignored when the request returns an existing signup.
 	Metadata map[string]any `json:"metadata,omitempty" url:"-"`
 	// The free waitlist variant to join, prefixed `plan_`.
-	PlanID string `json:"plan_id" url:"-"`
+	VariantID string `json:"variant_id" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -175,11 +175,11 @@ func (c *CreateWaitlistEntriesRequest) SetMetadata(metadata map[string]any) {
 	c.require(createWaitlistEntriesRequestFieldMetadata)
 }
 
-// SetPlanID sets the PlanID field and marks it as non-optional;
+// SetVariantID sets the VariantID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateWaitlistEntriesRequest) SetPlanID(planID string) {
-	c.PlanID = planID
-	c.require(createWaitlistEntriesRequestFieldPlanID)
+func (c *CreateWaitlistEntriesRequest) SetVariantID(variantID string) {
+	c.VariantID = variantID
+	c.require(createWaitlistEntriesRequestFieldVariantID)
 }
 
 func (c *CreateWaitlistEntriesRequest) UnmarshalJSON(data []byte) error {
@@ -236,15 +236,16 @@ var (
 	listWaitlistEntriesRequestFieldAfter          = big.NewInt(1 << 1)
 	listWaitlistEntriesRequestFieldLast           = big.NewInt(1 << 2)
 	listWaitlistEntriesRequestFieldBefore         = big.NewInt(1 << 3)
-	listWaitlistEntriesRequestFieldPlanID         = big.NewInt(1 << 4)
+	listWaitlistEntriesRequestFieldVariantID      = big.NewInt(1 << 4)
 	listWaitlistEntriesRequestFieldAccountID      = big.NewInt(1 << 5)
 	listWaitlistEntriesRequestFieldProductID      = big.NewInt(1 << 6)
 	listWaitlistEntriesRequestFieldBuyerAccountID = big.NewInt(1 << 7)
 	listWaitlistEntriesRequestFieldStatus         = big.NewInt(1 << 8)
-	listWaitlistEntriesRequestFieldCreatedBefore  = big.NewInt(1 << 9)
-	listWaitlistEntriesRequestFieldCreatedAfter   = big.NewInt(1 << 10)
-	listWaitlistEntriesRequestFieldOrder          = big.NewInt(1 << 11)
-	listWaitlistEntriesRequestFieldDirection      = big.NewInt(1 << 12)
+	listWaitlistEntriesRequestFieldQuery          = big.NewInt(1 << 9)
+	listWaitlistEntriesRequestFieldCreatedBefore  = big.NewInt(1 << 10)
+	listWaitlistEntriesRequestFieldCreatedAfter   = big.NewInt(1 << 11)
+	listWaitlistEntriesRequestFieldOrder          = big.NewInt(1 << 12)
+	listWaitlistEntriesRequestFieldDirection      = big.NewInt(1 << 13)
 )
 
 type ListWaitlistEntriesRequest struct {
@@ -257,7 +258,7 @@ type ListWaitlistEntriesRequest struct {
 	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
 	// Only return signups for this variant, prefixed `plan_`.
-	PlanID *string `json:"-" url:"plan_id,omitempty"`
+	VariantID *string `json:"-" url:"variant_id,omitempty"`
 	// Only return signups submitted to this seller account, prefixed `biz_`.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// Only return signups for variants on this product, prefixed `prod_`.
@@ -266,6 +267,8 @@ type ListWaitlistEntriesRequest struct {
 	BuyerAccountID *string `json:"-" url:"buyer_account_id,omitempty"`
 	// Only return signups in this state. Canceled signups are returned only when `status` is `canceled`.
 	Status *ListWaitlistEntriesRequestStatus `json:"-" url:"status,omitempty"`
+	// Search signups by the user's name or username, or the name of the account they were submitted on behalf of. An account ID, prefixed `biz_`, matches signups submitted on behalf of that account, and an exact email address matches that user's signups.
+	Query *string `json:"-" url:"query,omitempty"`
 	// Only return signups submitted at or before this ISO 8601 timestamp.
 	CreatedBefore *string `json:"-" url:"created_before,omitempty"`
 	// Only return signups submitted at or after this ISO 8601 timestamp.
@@ -316,11 +319,11 @@ func (l *ListWaitlistEntriesRequest) SetBefore(before *string) {
 	l.require(listWaitlistEntriesRequestFieldBefore)
 }
 
-// SetPlanID sets the PlanID field and marks it as non-optional;
+// SetVariantID sets the VariantID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListWaitlistEntriesRequest) SetPlanID(planID *string) {
-	l.PlanID = planID
-	l.require(listWaitlistEntriesRequestFieldPlanID)
+func (l *ListWaitlistEntriesRequest) SetVariantID(variantID *string) {
+	l.VariantID = variantID
+	l.require(listWaitlistEntriesRequestFieldVariantID)
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -349,6 +352,13 @@ func (l *ListWaitlistEntriesRequest) SetBuyerAccountID(buyerAccountID *string) {
 func (l *ListWaitlistEntriesRequest) SetStatus(status *ListWaitlistEntriesRequestStatus) {
 	l.Status = status
 	l.require(listWaitlistEntriesRequestFieldStatus)
+}
+
+// SetQuery sets the Query field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListWaitlistEntriesRequest) SetQuery(query *string) {
+	l.Query = query
+	l.require(listWaitlistEntriesRequestFieldQuery)
 }
 
 // SetCreatedBefore sets the CreatedBefore field and marks it as non-optional;
@@ -417,14 +427,14 @@ var (
 	waitlistEntryFieldID                    = big.NewInt(1 << 6)
 	waitlistEntryFieldMembershipID          = big.NewInt(1 << 7)
 	waitlistEntryFieldMetadata              = big.NewInt(1 << 8)
-	waitlistEntryFieldPlanID                = big.NewInt(1 << 9)
-	waitlistEntryFieldProduct               = big.NewInt(1 << 10)
-	waitlistEntryFieldProductID             = big.NewInt(1 << 11)
-	waitlistEntryFieldStatus                = big.NewInt(1 << 12)
-	waitlistEntryFieldUpdatedAt             = big.NewInt(1 << 13)
-	waitlistEntryFieldUser                  = big.NewInt(1 << 14)
-	waitlistEntryFieldUserID                = big.NewInt(1 << 15)
-	waitlistEntryFieldVariant               = big.NewInt(1 << 16)
+	waitlistEntryFieldProduct               = big.NewInt(1 << 9)
+	waitlistEntryFieldProductID             = big.NewInt(1 << 10)
+	waitlistEntryFieldStatus                = big.NewInt(1 << 11)
+	waitlistEntryFieldUpdatedAt             = big.NewInt(1 << 12)
+	waitlistEntryFieldUser                  = big.NewInt(1 << 13)
+	waitlistEntryFieldUserID                = big.NewInt(1 << 14)
+	waitlistEntryFieldVariant               = big.NewInt(1 << 15)
+	waitlistEntryFieldVariantID             = big.NewInt(1 << 16)
 )
 
 // waitlistEntryNullableFields maps the wire names of WaitlistEntry's nullable fields (required or optional) to their field bits.
@@ -455,8 +465,6 @@ type WaitlistEntry struct {
 	MembershipID *string `json:"membership_id,omitempty" url:"membership_id,omitempty"`
 	// Custom key-value metadata associated with this signup.
 	Metadata map[string]any `json:"metadata" url:"metadata"`
-	// The variant this signup belongs to, prefixed `plan_`.
-	PlanID string `json:"plan_id" url:"plan_id"`
 	// The product this signup belongs to, or `null` when the variant has no product.
 	Product *WaitlistEntryProduct `json:"product,omitempty" url:"product,omitempty"`
 	// The product this signup belongs to, prefixed `prod_`, or `null` when the variant has no product.
@@ -471,6 +479,8 @@ type WaitlistEntry struct {
 	UserID string `json:"user_id" url:"user_id"`
 	// The variant this signup belongs to.
 	Variant *WaitlistEntryVariant `json:"variant" url:"variant"`
+	// The variant this signup belongs to, prefixed `plan_`.
+	VariantID string `json:"variant_id" url:"variant_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -542,13 +552,6 @@ func (w *WaitlistEntry) GetMetadata() map[string]any {
 	return w.Metadata
 }
 
-func (w *WaitlistEntry) GetPlanID() string {
-	if w == nil {
-		return ""
-	}
-	return w.PlanID
-}
-
 func (w *WaitlistEntry) GetProduct() *WaitlistEntryProduct {
 	if w == nil {
 		return nil
@@ -596,6 +599,13 @@ func (w *WaitlistEntry) GetVariant() *WaitlistEntryVariant {
 		return nil
 	}
 	return w.Variant
+}
+
+func (w *WaitlistEntry) GetVariantID() string {
+	if w == nil {
+		return ""
+	}
+	return w.VariantID
 }
 
 func (w *WaitlistEntry) GetExtraProperties() map[string]interface{} {
@@ -677,13 +687,6 @@ func (w *WaitlistEntry) SetMetadata(metadata map[string]any) {
 	w.require(waitlistEntryFieldMetadata)
 }
 
-// SetPlanID sets the PlanID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (w *WaitlistEntry) SetPlanID(planID string) {
-	w.PlanID = planID
-	w.require(waitlistEntryFieldPlanID)
-}
-
 // SetProduct sets the Product field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (w *WaitlistEntry) SetProduct(product *WaitlistEntryProduct) {
@@ -731,6 +734,13 @@ func (w *WaitlistEntry) SetUserID(userID string) {
 func (w *WaitlistEntry) SetVariant(variant *WaitlistEntryVariant) {
 	w.Variant = variant
 	w.require(waitlistEntryFieldVariant)
+}
+
+// SetVariantID sets the VariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WaitlistEntry) SetVariantID(variantID string) {
+	w.VariantID = variantID
+	w.require(waitlistEntryFieldVariantID)
 }
 
 func (w *WaitlistEntry) UnmarshalJSON(data []byte) error {
@@ -1067,10 +1077,10 @@ func (w WaitlistEntryStatus) Ptr() *WaitlistEntryStatus {
 
 var (
 	waitlistEntryVariantFieldBillingPeriod   = big.NewInt(1 << 0)
-	waitlistEntryVariantFieldDescription     = big.NewInt(1 << 1)
-	waitlistEntryVariantFieldID              = big.NewInt(1 << 2)
-	waitlistEntryVariantFieldInitialPrice    = big.NewInt(1 << 3)
-	waitlistEntryVariantFieldPlanType        = big.NewInt(1 << 4)
+	waitlistEntryVariantFieldBillingType     = big.NewInt(1 << 1)
+	waitlistEntryVariantFieldDescription     = big.NewInt(1 << 2)
+	waitlistEntryVariantFieldID              = big.NewInt(1 << 3)
+	waitlistEntryVariantFieldInitialPrice    = big.NewInt(1 << 4)
 	waitlistEntryVariantFieldRenewalPrice    = big.NewInt(1 << 5)
 	waitlistEntryVariantFieldTitle           = big.NewInt(1 << 6)
 	waitlistEntryVariantFieldTrialPeriodDays = big.NewInt(1 << 7)
@@ -1087,14 +1097,14 @@ var waitlistEntryVariantNullableFields = map[string]*big.Int{
 type WaitlistEntryVariant struct {
 	// Number of days between recurring charges, such as 30 for monthly or 365 for annual. `null` for one-time variants.
 	BillingPeriod *float64 `json:"billing_period,omitempty" url:"billing_period,omitempty"`
+	// Billing model for this variant: `one_time` or `renewal`.
+	BillingType WaitlistEntryVariantBillingType `json:"billing_type" url:"billing_type"`
 	// Customer-visible variant description. Maximum 1000 characters. `null` if no description is set.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
 	// Variant ID, prefixed `plan_`.
 	ID string `json:"id" url:"id"`
 	// What checkout charges up front. `amount` is `"0.00"` when the first charge is free, such as a trial.
 	InitialPrice *Money `json:"initial_price" url:"initial_price"`
-	// Billing model for this variant: `one_time` or `renewal`.
-	PlanType WaitlistEntryVariantPlanType `json:"plan_type" url:"plan_type"`
 	// The recurring charge every `billing_period` days. `amount` is `"0.00"` for one-time variants.
 	RenewalPrice *Money `json:"renewal_price" url:"renewal_price"`
 	// Variant display name shown to customers. `null` if no title has been set.
@@ -1116,6 +1126,13 @@ func (w *WaitlistEntryVariant) GetBillingPeriod() *float64 {
 	return w.BillingPeriod
 }
 
+func (w *WaitlistEntryVariant) GetBillingType() WaitlistEntryVariantBillingType {
+	if w == nil {
+		return ""
+	}
+	return w.BillingType
+}
+
 func (w *WaitlistEntryVariant) GetDescription() *string {
 	if w == nil {
 		return nil
@@ -1135,13 +1152,6 @@ func (w *WaitlistEntryVariant) GetInitialPrice() *Money {
 		return nil
 	}
 	return w.InitialPrice
-}
-
-func (w *WaitlistEntryVariant) GetPlanType() WaitlistEntryVariantPlanType {
-	if w == nil {
-		return ""
-	}
-	return w.PlanType
 }
 
 func (w *WaitlistEntryVariant) GetRenewalPrice() *Money {
@@ -1188,6 +1198,13 @@ func (w *WaitlistEntryVariant) SetBillingPeriod(billingPeriod *float64) {
 	w.require(waitlistEntryVariantFieldBillingPeriod)
 }
 
+// SetBillingType sets the BillingType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WaitlistEntryVariant) SetBillingType(billingType WaitlistEntryVariantBillingType) {
+	w.BillingType = billingType
+	w.require(waitlistEntryVariantFieldBillingType)
+}
+
 // SetDescription sets the Description field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (w *WaitlistEntryVariant) SetDescription(description *string) {
@@ -1207,13 +1224,6 @@ func (w *WaitlistEntryVariant) SetID(id string) {
 func (w *WaitlistEntryVariant) SetInitialPrice(initialPrice *Money) {
 	w.InitialPrice = initialPrice
 	w.require(waitlistEntryVariantFieldInitialPrice)
-}
-
-// SetPlanType sets the PlanType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (w *WaitlistEntryVariant) SetPlanType(planType WaitlistEntryVariantPlanType) {
-	w.PlanType = planType
-	w.require(waitlistEntryVariantFieldPlanType)
 }
 
 // SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;
@@ -1287,46 +1297,46 @@ func (w *WaitlistEntryVariant) String() string {
 }
 
 // Billing model for this variant: `one_time` or `renewal`.
-type WaitlistEntryVariantPlanType string
+type WaitlistEntryVariantBillingType string
 
 const (
-	WaitlistEntryVariantPlanTypeRenewal WaitlistEntryVariantPlanType = "renewal"
-	WaitlistEntryVariantPlanTypeOneTime WaitlistEntryVariantPlanType = "one_time"
+	WaitlistEntryVariantBillingTypeRenewal WaitlistEntryVariantBillingType = "renewal"
+	WaitlistEntryVariantBillingTypeOneTime WaitlistEntryVariantBillingType = "one_time"
 )
 
-func NewWaitlistEntryVariantPlanTypeFromString(s string) (WaitlistEntryVariantPlanType, error) {
+func NewWaitlistEntryVariantBillingTypeFromString(s string) (WaitlistEntryVariantBillingType, error) {
 	switch s {
 	case "renewal":
-		return WaitlistEntryVariantPlanTypeRenewal, nil
+		return WaitlistEntryVariantBillingTypeRenewal, nil
 	case "one_time":
-		return WaitlistEntryVariantPlanTypeOneTime, nil
+		return WaitlistEntryVariantBillingTypeOneTime, nil
 	}
-	var t WaitlistEntryVariantPlanType
+	var t WaitlistEntryVariantBillingType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (w WaitlistEntryVariantPlanType) Ptr() *WaitlistEntryVariantPlanType {
+func (w WaitlistEntryVariantBillingType) Ptr() *WaitlistEntryVariantBillingType {
 	return &w
 }
 
 var (
 	approveAllWaitlistEntriesResponseFieldAccountID = big.NewInt(1 << 0)
-	approveAllWaitlistEntriesResponseFieldPlanID    = big.NewInt(1 << 1)
-	approveAllWaitlistEntriesResponseFieldQueued    = big.NewInt(1 << 2)
+	approveAllWaitlistEntriesResponseFieldQueued    = big.NewInt(1 << 1)
+	approveAllWaitlistEntriesResponseFieldVariantID = big.NewInt(1 << 2)
 )
 
 // approveAllWaitlistEntriesResponseNullableFields maps the wire names of ApproveAllWaitlistEntriesResponse's nullable fields (required or optional) to their field bits.
 var approveAllWaitlistEntriesResponseNullableFields = map[string]*big.Int{
-	"plan_id": approveAllWaitlistEntriesResponseFieldPlanID,
+	"variant_id": approveAllWaitlistEntriesResponseFieldVariantID,
 }
 
 type ApproveAllWaitlistEntriesResponse struct {
 	// The seller account whose signups were queued, prefixed `biz_`.
 	AccountID string `json:"account_id" url:"account_id"`
-	// The variant the request was narrowed to, prefixed `plan_`, or `null` when every waitlist variant on the account was included.
-	PlanID *string `json:"plan_id,omitempty" url:"plan_id,omitempty"`
 	// Whether any pending signups were queued for approval. `false` when there were none.
 	Queued bool `json:"queued" url:"queued"`
+	// The variant the request was narrowed to, prefixed `plan_`, or `null` when every waitlist variant on the account was included.
+	VariantID *string `json:"variant_id,omitempty" url:"variant_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1342,18 +1352,18 @@ func (a *ApproveAllWaitlistEntriesResponse) GetAccountID() string {
 	return a.AccountID
 }
 
-func (a *ApproveAllWaitlistEntriesResponse) GetPlanID() *string {
-	if a == nil {
-		return nil
-	}
-	return a.PlanID
-}
-
 func (a *ApproveAllWaitlistEntriesResponse) GetQueued() bool {
 	if a == nil {
 		return false
 	}
 	return a.Queued
+}
+
+func (a *ApproveAllWaitlistEntriesResponse) GetVariantID() *string {
+	if a == nil {
+		return nil
+	}
+	return a.VariantID
 }
 
 func (a *ApproveAllWaitlistEntriesResponse) GetExtraProperties() map[string]interface{} {
@@ -1379,18 +1389,18 @@ func (a *ApproveAllWaitlistEntriesResponse) SetAccountID(accountID string) {
 	a.require(approveAllWaitlistEntriesResponseFieldAccountID)
 }
 
-// SetPlanID sets the PlanID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *ApproveAllWaitlistEntriesResponse) SetPlanID(planID *string) {
-	a.PlanID = planID
-	a.require(approveAllWaitlistEntriesResponseFieldPlanID)
-}
-
 // SetQueued sets the Queued field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *ApproveAllWaitlistEntriesResponse) SetQueued(queued bool) {
 	a.Queued = queued
 	a.require(approveAllWaitlistEntriesResponseFieldQueued)
+}
+
+// SetVariantID sets the VariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *ApproveAllWaitlistEntriesResponse) SetVariantID(variantID *string) {
+	a.VariantID = variantID
+	a.require(approveAllWaitlistEntriesResponseFieldVariantID)
 }
 
 func (a *ApproveAllWaitlistEntriesResponse) UnmarshalJSON(data []byte) error {

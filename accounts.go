@@ -4064,6 +4064,7 @@ const (
 	AccountPaymentControlsRestrictedPaymentMethodsItemVenmo                     AccountPaymentControlsRestrictedPaymentMethodsItem = "venmo"
 	AccountPaymentControlsRestrictedPaymentMethodsItemAmazonPay                 AccountPaymentControlsRestrictedPaymentMethodsItem = "amazon_pay"
 	AccountPaymentControlsRestrictedPaymentMethodsItemLink                      AccountPaymentControlsRestrictedPaymentMethodsItem = "link"
+	AccountPaymentControlsRestrictedPaymentMethodsItemWechatPay                 AccountPaymentControlsRestrictedPaymentMethodsItem = "wechat_pay"
 )
 
 func NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString(s string) (AccountPaymentControlsRestrictedPaymentMethodsItem, error) {
@@ -4154,6 +4155,8 @@ func NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString(s string) (
 		return AccountPaymentControlsRestrictedPaymentMethodsItemAmazonPay, nil
 	case "link":
 		return AccountPaymentControlsRestrictedPaymentMethodsItemLink, nil
+	case "wechat_pay":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemWechatPay, nil
 	}
 	var t AccountPaymentControlsRestrictedPaymentMethodsItem
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

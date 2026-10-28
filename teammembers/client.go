@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-10-15-1"
+		apiVersionDateDefault := "2026-10-27-3"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -121,13 +121,16 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Adds a member to an account's team with a system role. Identify them by exactly one of `user_id` or `email`. If the person has not yet accepted — or the email does not belong to a Whop account yet — an invitation is sent instead and the response is `202` with an `object` of `team_member_invite`. If they already have a pending invite, the request fails with a `400`. Granting the `workforce` role is also allowed with the `bounty:create` scope.
+// Adds a member to an account's team with a system role. Identify them by exactly one of `user_id` or `email`. If the person has not yet accepted, or the email does not belong to a Whop account yet, an invitation is sent instead and the response is `202` with the pending team member, whose `status` is `pending` and whose id is prefixed `ausri_`. If they already have a pending invite, the request fails with a `400`. Granting the `workforce` role is also allowed with the `bounty:create` scope.
 //
 // Example:
 //
 //	request := &whopsdk.CreateTeamMembersRequest{
 //	    AccountID: "biz_xxxxxxxxxxxxxx",
-//	    Role: whopsdk.CreateTeamMembersRequestRoleOwner,
+//	    Role: whopsdk.CreateTeamMembersRequestRoleSalesManager,
+//	    UserID: whopsdk.String(
+//	        "user_xxxxxxxxxxxxxx",
+//	    ),
 //	}
 //	client.TeamMembers.Create(
 //	    context.TODO(),

@@ -25,7 +25,7 @@ var (
 type CreateSwapsRequest struct {
 	// Business account that makes the swap, prefixed `biz_`. Provide this or `user_id`.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
-	// Source token amount. Required for crypto swaps. For fiat pairs: the amount of from_token to convert at the mid-market rate; omit (along with to_amount) to repay the full negative to_token balance instead.
+	// Source token amount. Required for a crypto pair: a decimal amount, or `all` to swap the whole from_token balance in the account's wallet, read from the chain when the swap is created (any token but USDT). An amount above that balance is rejected when the balance can be read. For fiat pairs: the amount of from_token to convert at the mid-market rate; omit (along with to_amount) to repay the full negative to_token balance instead.
 	Amount *string `json:"amount,omitempty" url:"-"`
 	// Source chain name or chain ID. Defaults to the source token's chain when omitted.
 	FromChain *CreateSwapsRequestFromChain `json:"from_chain,omitempty" url:"-"`
@@ -930,22 +930,24 @@ func (c *CreateSwapsRequestToChain) Accept(visitor CreateSwapsRequestToChainVisi
 
 var (
 	createSwapsResponseFieldAccountID         = big.NewInt(1 << 0)
-	createSwapsResponseFieldAmountIn          = big.NewInt(1 << 1)
-	createSwapsResponseFieldAmountOut         = big.NewInt(1 << 2)
-	createSwapsResponseFieldAmountOutExpected = big.NewInt(1 << 3)
-	createSwapsResponseFieldAmountOutMin      = big.NewInt(1 << 4)
-	createSwapsResponseFieldFromToken         = big.NewInt(1 << 5)
-	createSwapsResponseFieldID                = big.NewInt(1 << 6)
-	createSwapsResponseFieldObject            = big.NewInt(1 << 7)
-	createSwapsResponseFieldRate              = big.NewInt(1 << 8)
-	createSwapsResponseFieldStatus            = big.NewInt(1 << 9)
-	createSwapsResponseFieldToChain           = big.NewInt(1 << 10)
-	createSwapsResponseFieldToToken           = big.NewInt(1 << 11)
-	createSwapsResponseFieldUserID            = big.NewInt(1 << 12)
+	createSwapsResponseFieldAmount            = big.NewInt(1 << 1)
+	createSwapsResponseFieldAmountIn          = big.NewInt(1 << 2)
+	createSwapsResponseFieldAmountOut         = big.NewInt(1 << 3)
+	createSwapsResponseFieldAmountOutExpected = big.NewInt(1 << 4)
+	createSwapsResponseFieldAmountOutMin      = big.NewInt(1 << 5)
+	createSwapsResponseFieldFromToken         = big.NewInt(1 << 6)
+	createSwapsResponseFieldID                = big.NewInt(1 << 7)
+	createSwapsResponseFieldObject            = big.NewInt(1 << 8)
+	createSwapsResponseFieldRate              = big.NewInt(1 << 9)
+	createSwapsResponseFieldStatus            = big.NewInt(1 << 10)
+	createSwapsResponseFieldToChain           = big.NewInt(1 << 11)
+	createSwapsResponseFieldToToken           = big.NewInt(1 << 12)
+	createSwapsResponseFieldUserID            = big.NewInt(1 << 13)
 )
 
 // createSwapsResponseNullableFields maps the wire names of CreateSwapsResponse's nullable fields (required or optional) to their field bits.
 var createSwapsResponseNullableFields = map[string]*big.Int{
+	"amount":     createSwapsResponseFieldAmount,
 	"amount_in":  createSwapsResponseFieldAmountIn,
 	"amount_out": createSwapsResponseFieldAmountOut,
 	"from_token": createSwapsResponseFieldFromToken,
@@ -956,6 +958,8 @@ var createSwapsResponseNullableFields = map[string]*big.Int{
 type CreateSwapsResponse struct {
 	// Account that owns the swap: a business ID prefixed `biz_`, or the user ID for a personal account.
 	AccountID string `json:"account_id" url:"account_id"`
+	// Crypto pairs only: the from_token amount the swap spends, as a decimal string. A request for `all` returns the wallet balance it read.
+	Amount *string `json:"amount,omitempty" url:"amount,omitempty"`
 	// Fiat pairs only: amount of the source currency converted. Null while a stablecoin repayment is processing.
 	AmountIn *float64 `json:"amount_in,omitempty" url:"amount_in,omitempty"`
 	// Fiat pairs only: amount credited in the destination currency. Null while a stablecoin repayment is processing.
@@ -992,6 +996,13 @@ func (c *CreateSwapsResponse) GetAccountID() string {
 		return ""
 	}
 	return c.AccountID
+}
+
+func (c *CreateSwapsResponse) GetAmount() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Amount
 }
 
 func (c *CreateSwapsResponse) GetAmountIn() *float64 {
@@ -1099,6 +1110,13 @@ func (c *CreateSwapsResponse) require(field *big.Int) {
 func (c *CreateSwapsResponse) SetAccountID(accountID string) {
 	c.AccountID = accountID
 	c.require(createSwapsResponseFieldAccountID)
+}
+
+// SetAmount sets the Amount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateSwapsResponse) SetAmount(amount *string) {
+	c.Amount = amount
+	c.require(createSwapsResponseFieldAmount)
 }
 
 // SetAmountIn sets the AmountIn field and marks it as non-optional;
@@ -1545,16 +1563,18 @@ func (l *ListSwapsResponse) String() string {
 
 var (
 	listSwapsResponseDataItemFieldAccountID = big.NewInt(1 << 0)
-	listSwapsResponseDataItemFieldError     = big.NewInt(1 << 1)
-	listSwapsResponseDataItemFieldID        = big.NewInt(1 << 2)
-	listSwapsResponseDataItemFieldObject    = big.NewInt(1 << 3)
-	listSwapsResponseDataItemFieldStatus    = big.NewInt(1 << 4)
-	listSwapsResponseDataItemFieldTxHashes  = big.NewInt(1 << 5)
-	listSwapsResponseDataItemFieldUserID    = big.NewInt(1 << 6)
+	listSwapsResponseDataItemFieldAmount    = big.NewInt(1 << 1)
+	listSwapsResponseDataItemFieldError     = big.NewInt(1 << 2)
+	listSwapsResponseDataItemFieldID        = big.NewInt(1 << 3)
+	listSwapsResponseDataItemFieldObject    = big.NewInt(1 << 4)
+	listSwapsResponseDataItemFieldStatus    = big.NewInt(1 << 5)
+	listSwapsResponseDataItemFieldTxHashes  = big.NewInt(1 << 6)
+	listSwapsResponseDataItemFieldUserID    = big.NewInt(1 << 7)
 )
 
 // listSwapsResponseDataItemNullableFields maps the wire names of ListSwapsResponseDataItem's nullable fields (required or optional) to their field bits.
 var listSwapsResponseDataItemNullableFields = map[string]*big.Int{
+	"amount":  listSwapsResponseDataItemFieldAmount,
 	"error":   listSwapsResponseDataItemFieldError,
 	"user_id": listSwapsResponseDataItemFieldUserID,
 }
@@ -1562,6 +1582,8 @@ var listSwapsResponseDataItemNullableFields = map[string]*big.Int{
 type ListSwapsResponseDataItem struct {
 	// Account that owns the swap: a business ID prefixed `biz_`, or the user ID for a personal account.
 	AccountID string `json:"account_id" url:"account_id"`
+	// The from_token amount the swap was created to spend, as a decimal string. A swap created with `all` reports the wallet balance it read. Null for a fiat pair.
+	Amount *string `json:"amount,omitempty" url:"amount,omitempty"`
 	// Latest error returned for a failed swap.
 	Error *string `json:"error,omitempty" url:"error,omitempty"`
 	// Swap ID.
@@ -1586,6 +1608,13 @@ func (l *ListSwapsResponseDataItem) GetAccountID() string {
 		return ""
 	}
 	return l.AccountID
+}
+
+func (l *ListSwapsResponseDataItem) GetAmount() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Amount
 }
 
 func (l *ListSwapsResponseDataItem) GetError() *string {
@@ -1651,6 +1680,13 @@ func (l *ListSwapsResponseDataItem) require(field *big.Int) {
 func (l *ListSwapsResponseDataItem) SetAccountID(accountID string) {
 	l.AccountID = accountID
 	l.require(listSwapsResponseDataItemFieldAccountID)
+}
+
+// SetAmount sets the Amount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSwapsResponseDataItem) SetAmount(amount *string) {
+	l.Amount = amount
+	l.require(listSwapsResponseDataItemFieldAmount)
 }
 
 // SetError sets the Error field and marks it as non-optional;
@@ -2060,16 +2096,18 @@ func (p PostSwapCompletedPayloadType) Ptr() *PostSwapCompletedPayloadType {
 
 var (
 	retrieveSwapsResponseFieldAccountID = big.NewInt(1 << 0)
-	retrieveSwapsResponseFieldError     = big.NewInt(1 << 1)
-	retrieveSwapsResponseFieldID        = big.NewInt(1 << 2)
-	retrieveSwapsResponseFieldObject    = big.NewInt(1 << 3)
-	retrieveSwapsResponseFieldStatus    = big.NewInt(1 << 4)
-	retrieveSwapsResponseFieldTxHashes  = big.NewInt(1 << 5)
-	retrieveSwapsResponseFieldUserID    = big.NewInt(1 << 6)
+	retrieveSwapsResponseFieldAmount    = big.NewInt(1 << 1)
+	retrieveSwapsResponseFieldError     = big.NewInt(1 << 2)
+	retrieveSwapsResponseFieldID        = big.NewInt(1 << 3)
+	retrieveSwapsResponseFieldObject    = big.NewInt(1 << 4)
+	retrieveSwapsResponseFieldStatus    = big.NewInt(1 << 5)
+	retrieveSwapsResponseFieldTxHashes  = big.NewInt(1 << 6)
+	retrieveSwapsResponseFieldUserID    = big.NewInt(1 << 7)
 )
 
 // retrieveSwapsResponseNullableFields maps the wire names of RetrieveSwapsResponse's nullable fields (required or optional) to their field bits.
 var retrieveSwapsResponseNullableFields = map[string]*big.Int{
+	"amount":  retrieveSwapsResponseFieldAmount,
 	"error":   retrieveSwapsResponseFieldError,
 	"user_id": retrieveSwapsResponseFieldUserID,
 }
@@ -2077,6 +2115,8 @@ var retrieveSwapsResponseNullableFields = map[string]*big.Int{
 type RetrieveSwapsResponse struct {
 	// Account that owns the swap: a business ID prefixed `biz_`, or the user ID for a personal account.
 	AccountID string `json:"account_id" url:"account_id"`
+	// The from_token amount the swap was created to spend, as a decimal string. A swap created with `all` reports the wallet balance it read. Null for a fiat pair.
+	Amount *string `json:"amount,omitempty" url:"amount,omitempty"`
 	// Latest error returned for a failed swap.
 	Error *string `json:"error,omitempty" url:"error,omitempty"`
 	// Swap ID.
@@ -2101,6 +2141,13 @@ func (r *RetrieveSwapsResponse) GetAccountID() string {
 		return ""
 	}
 	return r.AccountID
+}
+
+func (r *RetrieveSwapsResponse) GetAmount() *string {
+	if r == nil {
+		return nil
+	}
+	return r.Amount
 }
 
 func (r *RetrieveSwapsResponse) GetError() *string {
@@ -2166,6 +2213,13 @@ func (r *RetrieveSwapsResponse) require(field *big.Int) {
 func (r *RetrieveSwapsResponse) SetAccountID(accountID string) {
 	r.AccountID = accountID
 	r.require(retrieveSwapsResponseFieldAccountID)
+}
+
+// SetAmount sets the Amount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveSwapsResponse) SetAmount(amount *string) {
+	r.Amount = amount
+	r.require(retrieveSwapsResponseFieldAmount)
 }
 
 // SetError sets the Error field and marks it as non-optional;

@@ -48,12 +48,12 @@ var (
 	createPromoCodesRequestFieldExpiresAt               = big.NewInt(1 << 6)
 	createPromoCodesRequestFieldNewUsersOnly            = big.NewInt(1 << 7)
 	createPromoCodesRequestFieldOnePerCustomer          = big.NewInt(1 << 8)
-	createPromoCodesRequestFieldPlanIDs                 = big.NewInt(1 << 9)
-	createPromoCodesRequestFieldProductID               = big.NewInt(1 << 10)
-	createPromoCodesRequestFieldPromoDurationMonths     = big.NewInt(1 << 11)
-	createPromoCodesRequestFieldPromoType               = big.NewInt(1 << 12)
-	createPromoCodesRequestFieldStock                   = big.NewInt(1 << 13)
-	createPromoCodesRequestFieldUnlimitedStock          = big.NewInt(1 << 14)
+	createPromoCodesRequestFieldProductID               = big.NewInt(1 << 9)
+	createPromoCodesRequestFieldPromoDurationMonths     = big.NewInt(1 << 10)
+	createPromoCodesRequestFieldPromoType               = big.NewInt(1 << 11)
+	createPromoCodesRequestFieldStock                   = big.NewInt(1 << 12)
+	createPromoCodesRequestFieldUnlimitedStock          = big.NewInt(1 << 13)
+	createPromoCodesRequestFieldVariantIDs              = big.NewInt(1 << 14)
 )
 
 type CreatePromoCodesRequest struct {
@@ -66,12 +66,12 @@ type CreatePromoCodesRequest struct {
 	ExpiresAt               *string                             `json:"expires_at,omitempty" url:"-"`
 	NewUsersOnly            bool                                `json:"new_users_only" url:"-"`
 	OnePerCustomer          *bool                               `json:"one_per_customer,omitempty" url:"-"`
-	PlanIDs                 []string                            `json:"plan_ids,omitempty" url:"-"`
 	ProductID               *string                             `json:"product_id,omitempty" url:"-"`
 	PromoDurationMonths     int                                 `json:"promo_duration_months" url:"-"`
 	PromoType               CreatePromoCodesRequestPromoType    `json:"promo_type" url:"-"`
 	Stock                   *int                                `json:"stock,omitempty" url:"-"`
 	UnlimitedStock          *bool                               `json:"unlimited_stock,omitempty" url:"-"`
+	VariantIDs              []string                            `json:"variant_ids,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -149,13 +149,6 @@ func (c *CreatePromoCodesRequest) SetOnePerCustomer(onePerCustomer *bool) {
 	c.require(createPromoCodesRequestFieldOnePerCustomer)
 }
 
-// SetPlanIDs sets the PlanIDs field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePromoCodesRequest) SetPlanIDs(planIDs []string) {
-	c.PlanIDs = planIDs
-	c.require(createPromoCodesRequestFieldPlanIDs)
-}
-
 // SetProductID sets the ProductID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreatePromoCodesRequest) SetProductID(productID *string) {
@@ -189,6 +182,13 @@ func (c *CreatePromoCodesRequest) SetStock(stock *int) {
 func (c *CreatePromoCodesRequest) SetUnlimitedStock(unlimitedStock *bool) {
 	c.UnlimitedStock = unlimitedStock
 	c.require(createPromoCodesRequestFieldUnlimitedStock)
+}
+
+// SetVariantIDs sets the VariantIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePromoCodesRequest) SetVariantIDs(variantIDs []string) {
+	c.VariantIDs = variantIDs
+	c.require(createPromoCodesRequestFieldVariantIDs)
 }
 
 func (c *CreatePromoCodesRequest) UnmarshalJSON(data []byte) error {
@@ -272,7 +272,7 @@ var (
 	listPromoCodesRequestFieldAccountID     = big.NewInt(1 << 0)
 	listPromoCodesRequestFieldStatus        = big.NewInt(1 << 1)
 	listPromoCodesRequestFieldProductIDs    = big.NewInt(1 << 2)
-	listPromoCodesRequestFieldPlanIDs       = big.NewInt(1 << 3)
+	listPromoCodesRequestFieldVariantIDs    = big.NewInt(1 << 3)
 	listPromoCodesRequestFieldCreatedBefore = big.NewInt(1 << 4)
 	listPromoCodesRequestFieldCreatedAfter  = big.NewInt(1 << 5)
 	listPromoCodesRequestFieldOrder         = big.NewInt(1 << 6)
@@ -291,7 +291,7 @@ type ListPromoCodesRequest struct {
 	// Only promo codes scoped to these product IDs.
 	ProductIDs []*string `json:"-" url:"product_ids,omitempty"`
 	// Only promo codes scoped to these variant IDs.
-	PlanIDs []*string `json:"-" url:"plan_ids,omitempty"`
+	VariantIDs []*string `json:"-" url:"variant_ids,omitempty"`
 	// Only promo codes created before this ISO 8601 timestamp.
 	CreatedBefore *time.Time `json:"-" url:"created_before,omitempty"`
 	// Only promo codes created after this ISO 8601 timestamp.
@@ -343,11 +343,11 @@ func (l *ListPromoCodesRequest) SetProductIDs(productIDs []*string) {
 	l.require(listPromoCodesRequestFieldProductIDs)
 }
 
-// SetPlanIDs sets the PlanIDs field and marks it as non-optional;
+// SetVariantIDs sets the VariantIDs field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPromoCodesRequest) SetPlanIDs(planIDs []*string) {
-	l.PlanIDs = planIDs
-	l.require(listPromoCodesRequestFieldPlanIDs)
+func (l *ListPromoCodesRequest) SetVariantIDs(variantIDs []*string) {
+	l.VariantIDs = variantIDs
+	l.require(listPromoCodesRequestFieldVariantIDs)
 }
 
 // SetCreatedBefore sets the CreatedBefore field and marks it as non-optional;
@@ -436,30 +436,32 @@ func (r *RetrievePromoCodesRequest) SetID(id string) {
 
 var (
 	promoCodeFieldAccount                 = big.NewInt(1 << 0)
-	promoCodeFieldAmountOff               = big.NewInt(1 << 1)
-	promoCodeFieldChurnedUsersOnly        = big.NewInt(1 << 2)
-	promoCodeFieldCode                    = big.NewInt(1 << 3)
-	promoCodeFieldCreatedAt               = big.NewInt(1 << 4)
-	promoCodeFieldCurrency                = big.NewInt(1 << 5)
-	promoCodeFieldDuration                = big.NewInt(1 << 6)
-	promoCodeFieldExistingMembershipsOnly = big.NewInt(1 << 7)
-	promoCodeFieldExpiresAt               = big.NewInt(1 << 8)
-	promoCodeFieldID                      = big.NewInt(1 << 9)
-	promoCodeFieldMetadata                = big.NewInt(1 << 10)
-	promoCodeFieldNewUsersOnly            = big.NewInt(1 << 11)
-	promoCodeFieldOnePerCustomer          = big.NewInt(1 << 12)
-	promoCodeFieldProduct                 = big.NewInt(1 << 13)
-	promoCodeFieldPromoDurationMonths     = big.NewInt(1 << 14)
-	promoCodeFieldPromoType               = big.NewInt(1 << 15)
-	promoCodeFieldStatus                  = big.NewInt(1 << 16)
-	promoCodeFieldStock                   = big.NewInt(1 << 17)
-	promoCodeFieldUnlimitedStock          = big.NewInt(1 << 18)
-	promoCodeFieldUpdatedAt               = big.NewInt(1 << 19)
-	promoCodeFieldUses                    = big.NewInt(1 << 20)
+	promoCodeFieldAffiliate               = big.NewInt(1 << 1)
+	promoCodeFieldAmountOff               = big.NewInt(1 << 2)
+	promoCodeFieldChurnedUsersOnly        = big.NewInt(1 << 3)
+	promoCodeFieldCode                    = big.NewInt(1 << 4)
+	promoCodeFieldCreatedAt               = big.NewInt(1 << 5)
+	promoCodeFieldCurrency                = big.NewInt(1 << 6)
+	promoCodeFieldDuration                = big.NewInt(1 << 7)
+	promoCodeFieldExistingMembershipsOnly = big.NewInt(1 << 8)
+	promoCodeFieldExpiresAt               = big.NewInt(1 << 9)
+	promoCodeFieldID                      = big.NewInt(1 << 10)
+	promoCodeFieldMetadata                = big.NewInt(1 << 11)
+	promoCodeFieldNewUsersOnly            = big.NewInt(1 << 12)
+	promoCodeFieldOnePerCustomer          = big.NewInt(1 << 13)
+	promoCodeFieldProduct                 = big.NewInt(1 << 14)
+	promoCodeFieldPromoDurationMonths     = big.NewInt(1 << 15)
+	promoCodeFieldPromoType               = big.NewInt(1 << 16)
+	promoCodeFieldStatus                  = big.NewInt(1 << 17)
+	promoCodeFieldStock                   = big.NewInt(1 << 18)
+	promoCodeFieldUnlimitedStock          = big.NewInt(1 << 19)
+	promoCodeFieldUpdatedAt               = big.NewInt(1 << 20)
+	promoCodeFieldUses                    = big.NewInt(1 << 21)
 )
 
 // promoCodeNullableFields maps the wire names of PromoCode's nullable fields (required or optional) to their field bits.
 var promoCodeNullableFields = map[string]*big.Int{
+	"affiliate":             promoCodeFieldAffiliate,
 	"code":                  promoCodeFieldCode,
 	"expires_at":            promoCodeFieldExpiresAt,
 	"product":               promoCodeFieldProduct,
@@ -469,6 +471,8 @@ var promoCodeNullableFields = map[string]*big.Int{
 type PromoCode struct {
 	// Account that owns the promo code.
 	Account *AccountSummary `json:"account" url:"account"`
+	// Affiliate credited with referrals that use the promo code, or `null` when no affiliate is attached.
+	Affiliate *PromoCodeAffiliate `json:"affiliate,omitempty" url:"affiliate,omitempty"`
 	// Discount amount. Percentage discounts are represented as a decimal fraction.
 	AmountOff float64 `json:"amount_off" url:"amount_off"`
 	// Whether the promo code is restricted to churned customers.
@@ -522,6 +526,13 @@ func (p *PromoCode) GetAccount() *AccountSummary {
 		return nil
 	}
 	return p.Account
+}
+
+func (p *PromoCode) GetAffiliate() *PromoCodeAffiliate {
+	if p == nil {
+		return nil
+	}
+	return p.Affiliate
 }
 
 func (p *PromoCode) GetAmountOff() float64 {
@@ -685,6 +696,13 @@ func (p *PromoCode) require(field *big.Int) {
 func (p *PromoCode) SetAccount(account *AccountSummary) {
 	p.Account = account
 	p.require(promoCodeFieldAccount)
+}
+
+// SetAffiliate sets the Affiliate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PromoCode) SetAffiliate(affiliate *PromoCodeAffiliate) {
+	p.Affiliate = affiliate
+	p.require(promoCodeFieldAffiliate)
 }
 
 // SetAmountOff sets the AmountOff field and marks it as non-optional;
@@ -862,6 +880,261 @@ func (p *PromoCode) MarshalJSON() ([]byte, error) {
 }
 
 func (p *PromoCode) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	promoCodeAffiliateFieldID   = big.NewInt(1 << 0)
+	promoCodeAffiliateFieldUser = big.NewInt(1 << 1)
+)
+
+type PromoCodeAffiliate struct {
+	// Affiliate ID, prefixed `aff_`.
+	ID string `json:"id" url:"id"`
+	// User who is the affiliate.
+	User *PromoCodeAffiliateUser `json:"user" url:"user"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PromoCodeAffiliate) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PromoCodeAffiliate) GetUser() *PromoCodeAffiliateUser {
+	if p == nil {
+		return nil
+	}
+	return p.User
+}
+
+func (p *PromoCodeAffiliate) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PromoCodeAffiliate) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PromoCodeAffiliate) SetID(id string) {
+	p.ID = id
+	p.require(promoCodeAffiliateFieldID)
+}
+
+// SetUser sets the User field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PromoCodeAffiliate) SetUser(user *PromoCodeAffiliateUser) {
+	p.User = user
+	p.require(promoCodeAffiliateFieldUser)
+}
+
+func (p *PromoCodeAffiliate) UnmarshalJSON(data []byte) error {
+	type unmarshaler PromoCodeAffiliate
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PromoCodeAffiliate(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PromoCodeAffiliate) MarshalJSON() ([]byte, error) {
+	type embed PromoCodeAffiliate
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PromoCodeAffiliate) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	promoCodeAffiliateUserFieldID         = big.NewInt(1 << 0)
+	promoCodeAffiliateUserFieldName       = big.NewInt(1 << 1)
+	promoCodeAffiliateUserFieldProfilePic = big.NewInt(1 << 2)
+	promoCodeAffiliateUserFieldUsername   = big.NewInt(1 << 3)
+)
+
+// promoCodeAffiliateUserNullableFields maps the wire names of PromoCodeAffiliateUser's nullable fields (required or optional) to their field bits.
+var promoCodeAffiliateUserNullableFields = map[string]*big.Int{
+	"name":     promoCodeAffiliateUserFieldName,
+	"username": promoCodeAffiliateUserFieldUsername,
+}
+
+type PromoCodeAffiliateUser struct {
+	// Affiliate user ID, prefixed `user_`.
+	ID string `json:"id" url:"id"`
+	// Display name of the affiliate.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// Affiliate avatar URL, including the generated fallback when no avatar is set.
+	ProfilePic string `json:"profile_pic" url:"profile_pic"`
+	// Public username of the affiliate.
+	Username *string `json:"username,omitempty" url:"username,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PromoCodeAffiliateUser) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PromoCodeAffiliateUser) GetName() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Name
+}
+
+func (p *PromoCodeAffiliateUser) GetProfilePic() string {
+	if p == nil {
+		return ""
+	}
+	return p.ProfilePic
+}
+
+func (p *PromoCodeAffiliateUser) GetUsername() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Username
+}
+
+func (p *PromoCodeAffiliateUser) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PromoCodeAffiliateUser) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PromoCodeAffiliateUser) SetID(id string) {
+	p.ID = id
+	p.require(promoCodeAffiliateUserFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PromoCodeAffiliateUser) SetName(name *string) {
+	p.Name = name
+	p.require(promoCodeAffiliateUserFieldName)
+}
+
+// SetProfilePic sets the ProfilePic field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PromoCodeAffiliateUser) SetProfilePic(profilePic string) {
+	p.ProfilePic = profilePic
+	p.require(promoCodeAffiliateUserFieldProfilePic)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PromoCodeAffiliateUser) SetUsername(username *string) {
+	p.Username = username
+	p.require(promoCodeAffiliateUserFieldUsername)
+}
+
+func (p *PromoCodeAffiliateUser) UnmarshalJSON(data []byte) error {
+	type unmarshaler PromoCodeAffiliateUser
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PromoCodeAffiliateUser(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, promoCodeAffiliateUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PromoCodeAffiliateUser) MarshalJSON() ([]byte, error) {
+	type embed PromoCodeAffiliateUser
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PromoCodeAffiliateUser) String() string {
 	if p == nil {
 		return "<nil>"
 	}
@@ -1190,30 +1463,32 @@ func (p PromoCodeDuration) Ptr() *PromoCodeDuration {
 }
 
 var (
-	promoCodeListItemFieldAmountOff               = big.NewInt(1 << 0)
-	promoCodeListItemFieldChurnedUsersOnly        = big.NewInt(1 << 1)
-	promoCodeListItemFieldCode                    = big.NewInt(1 << 2)
-	promoCodeListItemFieldCreatedAt               = big.NewInt(1 << 3)
-	promoCodeListItemFieldCurrency                = big.NewInt(1 << 4)
-	promoCodeListItemFieldDuration                = big.NewInt(1 << 5)
-	promoCodeListItemFieldExistingMembershipsOnly = big.NewInt(1 << 6)
-	promoCodeListItemFieldExpiresAt               = big.NewInt(1 << 7)
-	promoCodeListItemFieldID                      = big.NewInt(1 << 8)
-	promoCodeListItemFieldMetadata                = big.NewInt(1 << 9)
-	promoCodeListItemFieldNewUsersOnly            = big.NewInt(1 << 10)
-	promoCodeListItemFieldOnePerCustomer          = big.NewInt(1 << 11)
-	promoCodeListItemFieldProduct                 = big.NewInt(1 << 12)
-	promoCodeListItemFieldPromoDurationMonths     = big.NewInt(1 << 13)
-	promoCodeListItemFieldPromoType               = big.NewInt(1 << 14)
-	promoCodeListItemFieldStatus                  = big.NewInt(1 << 15)
-	promoCodeListItemFieldStock                   = big.NewInt(1 << 16)
-	promoCodeListItemFieldUnlimitedStock          = big.NewInt(1 << 17)
-	promoCodeListItemFieldUpdatedAt               = big.NewInt(1 << 18)
-	promoCodeListItemFieldUses                    = big.NewInt(1 << 19)
+	promoCodeListItemFieldAffiliate               = big.NewInt(1 << 0)
+	promoCodeListItemFieldAmountOff               = big.NewInt(1 << 1)
+	promoCodeListItemFieldChurnedUsersOnly        = big.NewInt(1 << 2)
+	promoCodeListItemFieldCode                    = big.NewInt(1 << 3)
+	promoCodeListItemFieldCreatedAt               = big.NewInt(1 << 4)
+	promoCodeListItemFieldCurrency                = big.NewInt(1 << 5)
+	promoCodeListItemFieldDuration                = big.NewInt(1 << 6)
+	promoCodeListItemFieldExistingMembershipsOnly = big.NewInt(1 << 7)
+	promoCodeListItemFieldExpiresAt               = big.NewInt(1 << 8)
+	promoCodeListItemFieldID                      = big.NewInt(1 << 9)
+	promoCodeListItemFieldMetadata                = big.NewInt(1 << 10)
+	promoCodeListItemFieldNewUsersOnly            = big.NewInt(1 << 11)
+	promoCodeListItemFieldOnePerCustomer          = big.NewInt(1 << 12)
+	promoCodeListItemFieldProduct                 = big.NewInt(1 << 13)
+	promoCodeListItemFieldPromoDurationMonths     = big.NewInt(1 << 14)
+	promoCodeListItemFieldPromoType               = big.NewInt(1 << 15)
+	promoCodeListItemFieldStatus                  = big.NewInt(1 << 16)
+	promoCodeListItemFieldStock                   = big.NewInt(1 << 17)
+	promoCodeListItemFieldUnlimitedStock          = big.NewInt(1 << 18)
+	promoCodeListItemFieldUpdatedAt               = big.NewInt(1 << 19)
+	promoCodeListItemFieldUses                    = big.NewInt(1 << 20)
 )
 
 // promoCodeListItemNullableFields maps the wire names of PromoCodeListItem's nullable fields (required or optional) to their field bits.
 var promoCodeListItemNullableFields = map[string]*big.Int{
+	"affiliate":             promoCodeListItemFieldAffiliate,
 	"code":                  promoCodeListItemFieldCode,
 	"expires_at":            promoCodeListItemFieldExpiresAt,
 	"product":               promoCodeListItemFieldProduct,
@@ -1221,6 +1496,8 @@ var promoCodeListItemNullableFields = map[string]*big.Int{
 }
 
 type PromoCodeListItem struct {
+	// Affiliate credited with referrals that use the promo code, or `null` when no affiliate is attached.
+	Affiliate *PromoCodeAffiliate `json:"affiliate,omitempty" url:"affiliate,omitempty"`
 	// Discount amount. Percentage discounts are represented as a decimal fraction.
 	AmountOff float64 `json:"amount_off" url:"amount_off"`
 	// Whether the promo code is restricted to churned customers.
@@ -1267,6 +1544,13 @@ type PromoCodeListItem struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (p *PromoCodeListItem) GetAffiliate() *PromoCodeAffiliate {
+	if p == nil {
+		return nil
+	}
+	return p.Affiliate
 }
 
 func (p *PromoCodeListItem) GetAmountOff() float64 {
@@ -1423,6 +1707,13 @@ func (p *PromoCodeListItem) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	p.explicitFields = next
+}
+
+// SetAffiliate sets the Affiliate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PromoCodeListItem) SetAffiliate(affiliate *PromoCodeAffiliate) {
+	p.Affiliate = affiliate
+	p.require(promoCodeListItemFieldAffiliate)
 }
 
 // SetAmountOff sets the AmountOff field and marks it as non-optional;

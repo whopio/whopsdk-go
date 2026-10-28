@@ -180,9 +180,10 @@ var (
 	disputeAlertFieldPaymentID     = big.NewInt(1 << 10)
 	disputeAlertFieldProductID     = big.NewInt(1 << 11)
 	disputeAlertFieldReportedAt    = big.NewInt(1 << 12)
-	disputeAlertFieldTransactionAt = big.NewInt(1 << 13)
-	disputeAlertFieldType          = big.NewInt(1 << 14)
-	disputeAlertFieldUpdatedAt     = big.NewInt(1 << 15)
+	disputeAlertFieldSource        = big.NewInt(1 << 13)
+	disputeAlertFieldTransactionAt = big.NewInt(1 << 14)
+	disputeAlertFieldType          = big.NewInt(1 << 15)
+	disputeAlertFieldUpdatedAt     = big.NewInt(1 << 16)
 )
 
 // disputeAlertNullableFields maps the wire names of DisputeAlert's nullable fields (required or optional) to their field bits.
@@ -193,6 +194,7 @@ var disputeAlertNullableFields = map[string]*big.Int{
 	"issuer":         disputeAlertFieldIssuer,
 	"payment_id":     disputeAlertFieldPaymentID,
 	"product_id":     disputeAlertFieldProductID,
+	"source":         disputeAlertFieldSource,
 	"transaction_at": disputeAlertFieldTransactionAt,
 }
 
@@ -224,6 +226,8 @@ type DisputeAlert struct {
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// When the issuer filed the report, as an ISO 8601 timestamp. Earlier than `created_at`, which is when Whop received it.
 	ReportedAt string `json:"reported_at" url:"reported_at"`
+	// The network program that sent the alert, which `type` alone doesn't tell apart. `ethoca` for Mastercard Ethoca, `cdrn` for Visa Verifi CDRN, `rdr` for Visa RDR, `tc40` / `safe` for a Visa / Mastercard fraud report, `paypal` for a PayPal alert. `null` when the network didn't say.
+	Source *DisputeAlertSource `json:"source,omitempty" url:"source,omitempty"`
 	// When the reported transaction was made, as an ISO 8601 timestamp — falls back to when the matched payment was made if the issuer's own report didn't carry one. Should not be `null` in practice; treat one as a data issue rather than expected behavior.
 	TransactionAt *string `json:"transaction_at,omitempty" url:"transaction_at,omitempty"`
 	// What the issuer sent. `early_fraud_warning` is a fraud report on a settled payment (Visa TC40 / Mastercard SAFE) — refunding still avoids the chargeback, and Whop never charges a fee for one. `dispute_alert` is a pre-dispute notice from the issuer's alert network, which Whop pays for and passes on as a fee. `rapid_dispute_resolution` is a Visa RDR case the network already closed by refunding the payment — nothing is left to act on.
@@ -327,6 +331,13 @@ func (d *DisputeAlert) GetReportedAt() string {
 		return ""
 	}
 	return d.ReportedAt
+}
+
+func (d *DisputeAlert) GetSource() *DisputeAlertSource {
+	if d == nil {
+		return nil
+	}
+	return d.Source
 }
 
 func (d *DisputeAlert) GetTransactionAt() *string {
@@ -457,6 +468,13 @@ func (d *DisputeAlert) SetReportedAt(reportedAt string) {
 	d.require(disputeAlertFieldReportedAt)
 }
 
+// SetSource sets the Source field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeAlert) SetSource(source *DisputeAlertSource) {
+	d.Source = source
+	d.require(disputeAlertFieldSource)
+}
+
 // SetTransactionAt sets the TransactionAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (d *DisputeAlert) SetTransactionAt(transactionAt *string) {
@@ -525,6 +543,41 @@ func (d *DisputeAlert) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", d)
+}
+
+// The network program that sent the alert, which `type` alone doesn't tell apart. `ethoca` for Mastercard Ethoca, `cdrn` for Visa Verifi CDRN, `rdr` for Visa RDR, `tc40` / `safe` for a Visa / Mastercard fraud report, `paypal` for a PayPal alert. `null` when the network didn't say.
+type DisputeAlertSource string
+
+const (
+	DisputeAlertSourceEthoca DisputeAlertSource = "ethoca"
+	DisputeAlertSourceCdrn   DisputeAlertSource = "cdrn"
+	DisputeAlertSourceRdr    DisputeAlertSource = "rdr"
+	DisputeAlertSourceTc40   DisputeAlertSource = "tc40"
+	DisputeAlertSourceSafe   DisputeAlertSource = "safe"
+	DisputeAlertSourcePaypal DisputeAlertSource = "paypal"
+)
+
+func NewDisputeAlertSourceFromString(s string) (DisputeAlertSource, error) {
+	switch s {
+	case "ethoca":
+		return DisputeAlertSourceEthoca, nil
+	case "cdrn":
+		return DisputeAlertSourceCdrn, nil
+	case "rdr":
+		return DisputeAlertSourceRdr, nil
+	case "tc40":
+		return DisputeAlertSourceTc40, nil
+	case "safe":
+		return DisputeAlertSourceSafe, nil
+	case "paypal":
+		return DisputeAlertSourcePaypal, nil
+	}
+	var t DisputeAlertSource
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (d DisputeAlertSource) Ptr() *DisputeAlertSource {
+	return &d
 }
 
 // What the issuer sent. `early_fraud_warning` is a fraud report on a settled payment (Visa TC40 / Mastercard SAFE) — refunding still avoids the chargeback, and Whop never charges a fee for one. `dispute_alert` is a pre-dispute notice from the issuer's alert network, which Whop pays for and passes on as a fee. `rapid_dispute_resolution` is a Visa RDR case the network already closed by refunding the payment — nothing is left to act on.

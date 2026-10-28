@@ -7,6 +7,7 @@ import (
 	fmt "fmt"
 	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
+	time "time"
 )
 
 var (
@@ -5396,6 +5397,804 @@ func (l *ListDomainsResponsePageInfo) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	postDomainCreatedPayloadFieldAccountID          = big.NewInt(1 << 0)
+	postDomainCreatedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
+	postDomainCreatedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
+	postDomainCreatedPayloadFieldData               = big.NewInt(1 << 3)
+	postDomainCreatedPayloadFieldID                 = big.NewInt(1 << 4)
+	postDomainCreatedPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
+	postDomainCreatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
+	postDomainCreatedPayloadFieldType               = big.NewInt(1 << 7)
+)
+
+// postDomainCreatedPayloadNullableFields maps the wire names of PostDomainCreatedPayload's nullable fields (required or optional) to their field bits.
+var postDomainCreatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postDomainCreatedPayloadFieldAccountID,
+	"api_version_date": postDomainCreatedPayloadFieldAPIVersionDate,
+}
+
+type PostDomainCreatedPayload struct {
+	// The account ID that this webhook event is associated with
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// The API version for this webhook
+	APIVersion PostDomainCreatedPayloadAPIVersion `json:"api_version" url:"api_version"`
+	// The dated API version (Api-Version-Date) the payload is serialized to
+	APIVersionDate *string `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *Domain `json:"data" url:"data"`
+	// A unique ID for every single webhook request
+	ID string `json:"id" url:"id"`
+	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
+	PreviousAttributes map[string]any `json:"previous_attributes,omitempty" url:"previous_attributes,omitempty"`
+	// The timestamp in ISO 8601 format that the webhook was sent at on the server
+	Timestamp time.Time `json:"timestamp" url:"timestamp"`
+	// The webhook event type
+	Type PostDomainCreatedPayloadType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostDomainCreatedPayload) GetAccountID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AccountID
+}
+
+func (p *PostDomainCreatedPayload) GetAPIVersion() PostDomainCreatedPayloadAPIVersion {
+	if p == nil {
+		return ""
+	}
+	return p.APIVersion
+}
+
+func (p *PostDomainCreatedPayload) GetAPIVersionDate() *string {
+	if p == nil {
+		return nil
+	}
+	return p.APIVersionDate
+}
+
+func (p *PostDomainCreatedPayload) GetData() *Domain {
+	if p == nil {
+		return nil
+	}
+	return p.Data
+}
+
+func (p *PostDomainCreatedPayload) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostDomainCreatedPayload) GetPreviousAttributes() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.PreviousAttributes
+}
+
+func (p *PostDomainCreatedPayload) GetTimestamp() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.Timestamp
+}
+
+func (p *PostDomainCreatedPayload) GetType() PostDomainCreatedPayloadType {
+	if p == nil {
+		return ""
+	}
+	return p.Type
+}
+
+func (p *PostDomainCreatedPayload) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostDomainCreatedPayload) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostDomainCreatedPayload) SetAccountID(accountID *string) {
+	p.AccountID = accountID
+	p.require(postDomainCreatedPayloadFieldAccountID)
+}
+
+// SetAPIVersion sets the APIVersion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostDomainCreatedPayload) SetAPIVersion(apiVersion PostDomainCreatedPayloadAPIVersion) {
+	p.APIVersion = apiVersion
+	p.require(postDomainCreatedPayloadFieldAPIVersion)
+}
+
+// SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostDomainCreatedPayload) SetAPIVersionDate(apiVersionDate *string) {
+	p.APIVersionDate = apiVersionDate
+	p.require(postDomainCreatedPayloadFieldAPIVersionDate)
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostDomainCreatedPayload) SetData(data *Domain) {
+	p.Data = data
+	p.require(postDomainCreatedPayloadFieldData)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostDomainCreatedPayload) SetID(id string) {
+	p.ID = id
+	p.require(postDomainCreatedPayloadFieldID)
+}
+
+// SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostDomainCreatedPayload) SetPreviousAttributes(previousAttributes map[string]any) {
+	p.PreviousAttributes = previousAttributes
+	p.require(postDomainCreatedPayloadFieldPreviousAttributes)
+}
+
+// SetTimestamp sets the Timestamp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostDomainCreatedPayload) SetTimestamp(timestamp time.Time) {
+	p.Timestamp = timestamp
+	p.require(postDomainCreatedPayloadFieldTimestamp)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostDomainCreatedPayload) SetType(type_ PostDomainCreatedPayloadType) {
+	p.Type = type_
+	p.require(postDomainCreatedPayloadFieldType)
+}
+
+func (p *PostDomainCreatedPayload) UnmarshalJSON(data []byte) error {
+	type embed PostDomainCreatedPayload
+	var unmarshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*p = PostDomainCreatedPayload(unmarshaler.embed)
+	p.Timestamp = unmarshaler.Timestamp.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postDomainCreatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostDomainCreatedPayload) MarshalJSON() ([]byte, error) {
+	type embed PostDomainCreatedPayload
+	var marshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed:     embed(*p),
+		Timestamp: internal.NewDateTime(p.Timestamp),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostDomainCreatedPayload) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The API version for this webhook
+type PostDomainCreatedPayloadAPIVersion string
+
+const (
+	PostDomainCreatedPayloadAPIVersionV1 PostDomainCreatedPayloadAPIVersion = "v1"
+)
+
+func NewPostDomainCreatedPayloadAPIVersionFromString(s string) (PostDomainCreatedPayloadAPIVersion, error) {
+	switch s {
+	case "v1":
+		return PostDomainCreatedPayloadAPIVersionV1, nil
+	}
+	var t PostDomainCreatedPayloadAPIVersion
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostDomainCreatedPayloadAPIVersion) Ptr() *PostDomainCreatedPayloadAPIVersion {
+	return &p
+}
+
+// The webhook event type
+type PostDomainCreatedPayloadType string
+
+const (
+	PostDomainCreatedPayloadTypeDomainCreated PostDomainCreatedPayloadType = "domain.created"
+)
+
+func NewPostDomainCreatedPayloadTypeFromString(s string) (PostDomainCreatedPayloadType, error) {
+	switch s {
+	case "domain.created":
+		return PostDomainCreatedPayloadTypeDomainCreated, nil
+	}
+	var t PostDomainCreatedPayloadType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostDomainCreatedPayloadType) Ptr() *PostDomainCreatedPayloadType {
+	return &p
+}
+
+var (
+	postDomainDeletedPayloadFieldAccountID          = big.NewInt(1 << 0)
+	postDomainDeletedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
+	postDomainDeletedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
+	postDomainDeletedPayloadFieldData               = big.NewInt(1 << 3)
+	postDomainDeletedPayloadFieldID                 = big.NewInt(1 << 4)
+	postDomainDeletedPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
+	postDomainDeletedPayloadFieldTimestamp          = big.NewInt(1 << 6)
+	postDomainDeletedPayloadFieldType               = big.NewInt(1 << 7)
+)
+
+// postDomainDeletedPayloadNullableFields maps the wire names of PostDomainDeletedPayload's nullable fields (required or optional) to their field bits.
+var postDomainDeletedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postDomainDeletedPayloadFieldAccountID,
+	"api_version_date": postDomainDeletedPayloadFieldAPIVersionDate,
+}
+
+type PostDomainDeletedPayload struct {
+	// The account ID that this webhook event is associated with
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// The API version for this webhook
+	APIVersion PostDomainDeletedPayloadAPIVersion `json:"api_version" url:"api_version"`
+	// The dated API version (Api-Version-Date) the payload is serialized to
+	APIVersionDate *string `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *Domain `json:"data" url:"data"`
+	// A unique ID for every single webhook request
+	ID string `json:"id" url:"id"`
+	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
+	PreviousAttributes map[string]any `json:"previous_attributes,omitempty" url:"previous_attributes,omitempty"`
+	// The timestamp in ISO 8601 format that the webhook was sent at on the server
+	Timestamp time.Time `json:"timestamp" url:"timestamp"`
+	// The webhook event type
+	Type PostDomainDeletedPayloadType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostDomainDeletedPayload) GetAccountID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AccountID
+}
+
+func (p *PostDomainDeletedPayload) GetAPIVersion() PostDomainDeletedPayloadAPIVersion {
+	if p == nil {
+		return ""
+	}
+	return p.APIVersion
+}
+
+func (p *PostDomainDeletedPayload) GetAPIVersionDate() *string {
+	if p == nil {
+		return nil
+	}
+	return p.APIVersionDate
+}
+
+func (p *PostDomainDeletedPayload) GetData() *Domain {
+	if p == nil {
+		return nil
+	}
+	return p.Data
+}
+
+func (p *PostDomainDeletedPayload) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostDomainDeletedPayload) GetPreviousAttributes() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.PreviousAttributes
+}
+
+func (p *PostDomainDeletedPayload) GetTimestamp() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.Timestamp
+}
+
+func (p *PostDomainDeletedPayload) GetType() PostDomainDeletedPayloadType {
+	if p == nil {
+		return ""
+	}
+	return p.Type
+}
+
+func (p *PostDomainDeletedPayload) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostDomainDeletedPayload) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostDomainDeletedPayload) SetAccountID(accountID *string) {
+	p.AccountID = accountID
+	p.require(postDomainDeletedPayloadFieldAccountID)
+}
+
+// SetAPIVersion sets the APIVersion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostDomainDeletedPayload) SetAPIVersion(apiVersion PostDomainDeletedPayloadAPIVersion) {
+	p.APIVersion = apiVersion
+	p.require(postDomainDeletedPayloadFieldAPIVersion)
+}
+
+// SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostDomainDeletedPayload) SetAPIVersionDate(apiVersionDate *string) {
+	p.APIVersionDate = apiVersionDate
+	p.require(postDomainDeletedPayloadFieldAPIVersionDate)
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostDomainDeletedPayload) SetData(data *Domain) {
+	p.Data = data
+	p.require(postDomainDeletedPayloadFieldData)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostDomainDeletedPayload) SetID(id string) {
+	p.ID = id
+	p.require(postDomainDeletedPayloadFieldID)
+}
+
+// SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostDomainDeletedPayload) SetPreviousAttributes(previousAttributes map[string]any) {
+	p.PreviousAttributes = previousAttributes
+	p.require(postDomainDeletedPayloadFieldPreviousAttributes)
+}
+
+// SetTimestamp sets the Timestamp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostDomainDeletedPayload) SetTimestamp(timestamp time.Time) {
+	p.Timestamp = timestamp
+	p.require(postDomainDeletedPayloadFieldTimestamp)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostDomainDeletedPayload) SetType(type_ PostDomainDeletedPayloadType) {
+	p.Type = type_
+	p.require(postDomainDeletedPayloadFieldType)
+}
+
+func (p *PostDomainDeletedPayload) UnmarshalJSON(data []byte) error {
+	type embed PostDomainDeletedPayload
+	var unmarshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*p = PostDomainDeletedPayload(unmarshaler.embed)
+	p.Timestamp = unmarshaler.Timestamp.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postDomainDeletedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostDomainDeletedPayload) MarshalJSON() ([]byte, error) {
+	type embed PostDomainDeletedPayload
+	var marshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed:     embed(*p),
+		Timestamp: internal.NewDateTime(p.Timestamp),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostDomainDeletedPayload) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The API version for this webhook
+type PostDomainDeletedPayloadAPIVersion string
+
+const (
+	PostDomainDeletedPayloadAPIVersionV1 PostDomainDeletedPayloadAPIVersion = "v1"
+)
+
+func NewPostDomainDeletedPayloadAPIVersionFromString(s string) (PostDomainDeletedPayloadAPIVersion, error) {
+	switch s {
+	case "v1":
+		return PostDomainDeletedPayloadAPIVersionV1, nil
+	}
+	var t PostDomainDeletedPayloadAPIVersion
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostDomainDeletedPayloadAPIVersion) Ptr() *PostDomainDeletedPayloadAPIVersion {
+	return &p
+}
+
+// The webhook event type
+type PostDomainDeletedPayloadType string
+
+const (
+	PostDomainDeletedPayloadTypeDomainDeleted PostDomainDeletedPayloadType = "domain.deleted"
+)
+
+func NewPostDomainDeletedPayloadTypeFromString(s string) (PostDomainDeletedPayloadType, error) {
+	switch s {
+	case "domain.deleted":
+		return PostDomainDeletedPayloadTypeDomainDeleted, nil
+	}
+	var t PostDomainDeletedPayloadType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostDomainDeletedPayloadType) Ptr() *PostDomainDeletedPayloadType {
+	return &p
+}
+
+var (
+	postDomainUpdatedPayloadFieldAccountID          = big.NewInt(1 << 0)
+	postDomainUpdatedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
+	postDomainUpdatedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
+	postDomainUpdatedPayloadFieldData               = big.NewInt(1 << 3)
+	postDomainUpdatedPayloadFieldID                 = big.NewInt(1 << 4)
+	postDomainUpdatedPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
+	postDomainUpdatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
+	postDomainUpdatedPayloadFieldType               = big.NewInt(1 << 7)
+)
+
+// postDomainUpdatedPayloadNullableFields maps the wire names of PostDomainUpdatedPayload's nullable fields (required or optional) to their field bits.
+var postDomainUpdatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postDomainUpdatedPayloadFieldAccountID,
+	"api_version_date": postDomainUpdatedPayloadFieldAPIVersionDate,
+}
+
+type PostDomainUpdatedPayload struct {
+	// The account ID that this webhook event is associated with
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// The API version for this webhook
+	APIVersion PostDomainUpdatedPayloadAPIVersion `json:"api_version" url:"api_version"`
+	// The dated API version (Api-Version-Date) the payload is serialized to
+	APIVersionDate *string `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *Domain `json:"data" url:"data"`
+	// A unique ID for every single webhook request
+	ID string `json:"id" url:"id"`
+	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
+	PreviousAttributes map[string]any `json:"previous_attributes,omitempty" url:"previous_attributes,omitempty"`
+	// The timestamp in ISO 8601 format that the webhook was sent at on the server
+	Timestamp time.Time `json:"timestamp" url:"timestamp"`
+	// The webhook event type
+	Type PostDomainUpdatedPayloadType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostDomainUpdatedPayload) GetAccountID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AccountID
+}
+
+func (p *PostDomainUpdatedPayload) GetAPIVersion() PostDomainUpdatedPayloadAPIVersion {
+	if p == nil {
+		return ""
+	}
+	return p.APIVersion
+}
+
+func (p *PostDomainUpdatedPayload) GetAPIVersionDate() *string {
+	if p == nil {
+		return nil
+	}
+	return p.APIVersionDate
+}
+
+func (p *PostDomainUpdatedPayload) GetData() *Domain {
+	if p == nil {
+		return nil
+	}
+	return p.Data
+}
+
+func (p *PostDomainUpdatedPayload) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostDomainUpdatedPayload) GetPreviousAttributes() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.PreviousAttributes
+}
+
+func (p *PostDomainUpdatedPayload) GetTimestamp() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.Timestamp
+}
+
+func (p *PostDomainUpdatedPayload) GetType() PostDomainUpdatedPayloadType {
+	if p == nil {
+		return ""
+	}
+	return p.Type
+}
+
+func (p *PostDomainUpdatedPayload) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostDomainUpdatedPayload) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostDomainUpdatedPayload) SetAccountID(accountID *string) {
+	p.AccountID = accountID
+	p.require(postDomainUpdatedPayloadFieldAccountID)
+}
+
+// SetAPIVersion sets the APIVersion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostDomainUpdatedPayload) SetAPIVersion(apiVersion PostDomainUpdatedPayloadAPIVersion) {
+	p.APIVersion = apiVersion
+	p.require(postDomainUpdatedPayloadFieldAPIVersion)
+}
+
+// SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostDomainUpdatedPayload) SetAPIVersionDate(apiVersionDate *string) {
+	p.APIVersionDate = apiVersionDate
+	p.require(postDomainUpdatedPayloadFieldAPIVersionDate)
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostDomainUpdatedPayload) SetData(data *Domain) {
+	p.Data = data
+	p.require(postDomainUpdatedPayloadFieldData)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostDomainUpdatedPayload) SetID(id string) {
+	p.ID = id
+	p.require(postDomainUpdatedPayloadFieldID)
+}
+
+// SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostDomainUpdatedPayload) SetPreviousAttributes(previousAttributes map[string]any) {
+	p.PreviousAttributes = previousAttributes
+	p.require(postDomainUpdatedPayloadFieldPreviousAttributes)
+}
+
+// SetTimestamp sets the Timestamp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostDomainUpdatedPayload) SetTimestamp(timestamp time.Time) {
+	p.Timestamp = timestamp
+	p.require(postDomainUpdatedPayloadFieldTimestamp)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostDomainUpdatedPayload) SetType(type_ PostDomainUpdatedPayloadType) {
+	p.Type = type_
+	p.require(postDomainUpdatedPayloadFieldType)
+}
+
+func (p *PostDomainUpdatedPayload) UnmarshalJSON(data []byte) error {
+	type embed PostDomainUpdatedPayload
+	var unmarshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*p = PostDomainUpdatedPayload(unmarshaler.embed)
+	p.Timestamp = unmarshaler.Timestamp.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postDomainUpdatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostDomainUpdatedPayload) MarshalJSON() ([]byte, error) {
+	type embed PostDomainUpdatedPayload
+	var marshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed:     embed(*p),
+		Timestamp: internal.NewDateTime(p.Timestamp),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostDomainUpdatedPayload) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The API version for this webhook
+type PostDomainUpdatedPayloadAPIVersion string
+
+const (
+	PostDomainUpdatedPayloadAPIVersionV1 PostDomainUpdatedPayloadAPIVersion = "v1"
+)
+
+func NewPostDomainUpdatedPayloadAPIVersionFromString(s string) (PostDomainUpdatedPayloadAPIVersion, error) {
+	switch s {
+	case "v1":
+		return PostDomainUpdatedPayloadAPIVersionV1, nil
+	}
+	var t PostDomainUpdatedPayloadAPIVersion
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostDomainUpdatedPayloadAPIVersion) Ptr() *PostDomainUpdatedPayloadAPIVersion {
+	return &p
+}
+
+// The webhook event type
+type PostDomainUpdatedPayloadType string
+
+const (
+	PostDomainUpdatedPayloadTypeDomainUpdated PostDomainUpdatedPayloadType = "domain.updated"
+)
+
+func NewPostDomainUpdatedPayloadTypeFromString(s string) (PostDomainUpdatedPayloadType, error) {
+	switch s {
+	case "domain.updated":
+		return PostDomainUpdatedPayloadTypeDomainUpdated, nil
+	}
+	var t PostDomainUpdatedPayloadType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostDomainUpdatedPayloadType) Ptr() *PostDomainUpdatedPayloadType {
+	return &p
 }
 
 // Accept Apple Pay at checkout on the domain. It needs no other capability. Whop registers the domain with Apple: it stays `pending` until Apple answers, then turns `ready`, or `action_required` when Apple couldn't fetch the domain association file. Serve the file, then check the domain to register it again. Pass `null` to turn Apple Pay off: Whop removes the domain from Apple, and the domain stays, like releasing any other capability.

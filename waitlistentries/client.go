@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-10-15-1"
+		apiVersionDateDefault := "2026-10-27-3"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -124,7 +124,7 @@ func (c *Client) List(
 // Example:
 //
 //	request := &whopsdk.CreateWaitlistEntriesRequest{
-//	    PlanID: "plan_xxxxxxxxxxxxxx",
+//	    VariantID: "plan_xxxxxxxxxxxxxx",
 //	}
 //	client.WaitlistEntries.Create(
 //	    context.TODO(),

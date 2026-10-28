@@ -20,23 +20,25 @@ var (
 	createDirectRequestFieldMetadata                = big.NewInt(1 << 6)
 	createDirectRequestFieldOffSession              = big.NewInt(1 << 7)
 	createDirectRequestFieldPaymentMethod           = big.NewInt(1 << 8)
-	createDirectRequestFieldQuoteID                 = big.NewInt(1 << 9)
-	createDirectRequestFieldReturnURL               = big.NewInt(1 << 10)
-	createDirectRequestFieldSetupFutureUsage        = big.NewInt(1 << 11)
-	createDirectRequestFieldStatementDescriptor     = big.NewInt(1 << 12)
+	createDirectRequestFieldPlan                    = big.NewInt(1 << 9)
+	createDirectRequestFieldPlanID                  = big.NewInt(1 << 10)
+	createDirectRequestFieldQuoteID                 = big.NewInt(1 << 11)
+	createDirectRequestFieldReturnURL               = big.NewInt(1 << 12)
+	createDirectRequestFieldSetupFutureUsage        = big.NewInt(1 << 13)
+	createDirectRequestFieldStatementDescriptor     = big.NewInt(1 << 14)
 )
 
 type CreateDirectRequest struct {
 	// The account the purchase belongs to, prefixed `biz_`.
 	AccountID string `json:"account_id" url:"-"`
-	// The variant purchased, described by its attributes instead of an id: the variant with exactly these attributes is used, and one is created when none exists. Mutually exclusive with `plan_id` and `line_items`. Creating a variant requires `plan:create`; creating or updating a product requires the corresponding product permission.
-	Plan *v2.PaymentInputPlan `json:"plan,omitempty" url:"-"`
-	// The variant purchased, prefixed `plan_`. It must belong to the account. Mutually exclusive with `plan` and `line_items`.
-	PlanID *string `json:"plan_id,omitempty" url:"-"`
 	// The promo code as the buyer typed it, matched within the account regardless of case and surrounding spaces, as checkout matches it. It must be valid for the variant. Send it or `promo_code_id`, not both; an empty or whitespace-only string counts as not sent. A code the account does not have, or one that is no longer active, is refused before anything is written, with the error code `promo_invalid`. A code this purchase cannot use, such as one with no uses left or one restricted to other variants, products or buyers, is refused with `promo_invalid` too, and the error's message says why.
 	PromoCode *string `json:"promo_code,omitempty" url:"-"`
 	// An active promo code to apply, prefixed `promo_`. It must belong to the account and be valid for the variant. Send it or `promo_code`, not both. A code this purchase cannot use is refused with the error code `promo_invalid`, and the error's message says why.
 	PromoCodeID *string `json:"promo_code_id,omitempty" url:"-"`
+	// The variant purchased, described by its attributes instead of an id: the variant with exactly these attributes is used, and one is created when none exists. Mutually exclusive with `variant_id` and `line_items`. Creating a variant requires `plan:create`; creating or updating a product requires the corresponding product permission.
+	Variant *v2.PaymentInputVariant `json:"variant,omitempty" url:"-"`
+	// The variant purchased, prefixed `plan_`. It must belong to the account. Mutually exclusive with `variant` and `line_items`.
+	VariantID *string `json:"variant_id,omitempty" url:"-"`
 	// The code an affiliate link carries, which is the affiliate's username. The affiliate is credited for this payment as on a checkout session. A code naming no one eligible to earn on the product is ignored, and the payment goes ahead. A promo code with its own affiliate takes precedence. No affiliate is credited on a variant without a product or on a purchase of several variants. At most 255 characters.
 	AffiliateCode *string `json:"affiliate_code,omitempty" url:"-"`
 	// Minutes after authorization at which Whop captures the hold automatically unless it has been voided. Requires `capture: false`. Between 5 and 5760 (4 days).
@@ -45,7 +47,7 @@ type CreateDirectRequest struct {
 	BillingDetails *CreateDirectRequestBillingDetails `json:"billing_details" url:"-"`
 	// Whether to capture the payment immediately. Defaults to true. Pass false to place an authorization hold that must be captured in full within five days via the capture endpoint, or automatically after `auto_capture_after_minutes`.
 	Capture *bool `json:"capture,omitempty" url:"-"`
-	// What the buyer is purchasing. Each entry names an existing variant by plan_id. Several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency.
+	// What the buyer is purchasing. Each entry names an existing variant by `variant_id`. Several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency.
 	LineItems []*CreateDirectRequestLineItemsItem `json:"line_items,omitempty" url:"-"`
 	// The member to charge, prefixed `mber_`. When omitted the buyer is resolved from `billing_details.email`.
 	MemberID *string `json:"member_id,omitempty" url:"-"`
@@ -55,7 +57,11 @@ type CreateDirectRequest struct {
 	OffSession *bool `json:"off_session,omitempty" url:"-"`
 	// The payment method to charge, as the raw details the caller holds. Raw details are accepted only on the vault host, where Whop's vault tokenizes them in transit; the official SDKs route this operation there. Whop's own clients, which tokenize with the Basis Theory SDK, send the resulting token intent id to the regular host.
 	PaymentMethod *CreateDirectRequestPaymentMethod `json:"payment_method" url:"-"`
-	// A payment quote from `POST /payment_quotes`, prefixed `pq_`. The payment charges exactly the quote: its purchase (its variants and quantities, or the `plan` it priced), which this body may then omit, its promo code, and its tax, the quote's `tax_amount` rather than a figure calculated now. Omit it, or send null, to have tax calculated when the payment is charged. The quote must belong to `account_id`. A purchase field you omit or send as null takes the quote's value; the buyer's email, the addresses and the payment method are this request's own, never the quote's. Whatever you do send must describe the quoted purchase: the same variants, quantities and promo code. A quote that priced `plan` takes only the same `plan` you sent to `POST /payment_quotes` (or omit the purchase to take the quoted one), never `plan_id` or `line_items`, and a quote that priced variants by id never takes `plan`. Unless the quote located no buyer (`located_by` is null), the address the payment carries (its shipping address, else its billing address) must put the buyer where the quote priced tax, by country, state and postal code; otherwise the payment is refused with 400 before the payment method is used. A quote located by IP address or by the country the buyer chose (`located_by` is `ip_address` or `presentment_country`) is a preview and cannot be paid. A quote is consumed by one payment: a declined payment keeps it and can be retried; a new payment needs a new quote. A quote cannot be charged by a processor that doesn't take quotes, such as a seller's own connected PayPal account; such a payment is refused before the payment method is used. A quote priced in a `presentment_currency` is charged in that currency at the quote's `exchange_rate`. A payment refused over its quote carries an error `code`. `quote_expired`: the quote has expired; quote again. `quote_tax_unavailable`: the quote could not price tax; quote again, or omit `quote_id`. `quote_preview_only`: the quote was located by IP address or by the country the buyer chose; quote again with the buyer's address. `quote_in_use` (409): another payment holds the quote. `quote_mismatch`: the purchase or the buyer's address is not the one quoted. `quote_rate_expired`: the exchange rate the quote was priced at has moved too far to charge; quote again. `payment_method_currency_unsupported`: the payment method cannot pay in the quote's currency; use another method, or quote again in another currency. `quote_processor_unsupported`: the payment would be processed by a processor that doesn't take quotes, such as a seller's own connected PayPal account; use another method, or omit `quote_id` to have tax calculated when the payment is charged.
+	// Deprecated: send `variant`, which takes `billing_type` in place of `plan_type`. Accepted only from callers pinned to an API version before 2026-10-27-2.
+	Plan *CreateDirectRequestPlan `json:"plan,omitempty" url:"-"`
+	// Deprecated: send `variant_id`. Accepted only from callers pinned to an API version before 2026-10-27-2.
+	PlanID *string `json:"plan_id,omitempty" url:"-"`
+	// A payment quote from `POST /payment_quotes`, prefixed `pq_`. The payment charges exactly the quote: its purchase (its variants and quantities, or the `variant` it priced), which this body may then omit, its promo code, and its tax, the quote's `tax_amount` rather than a figure calculated now. Omit it, or send null, to have tax calculated when the payment is charged. The quote must belong to `account_id`. A purchase field you omit or send as null takes the quote's value; the buyer's email, the addresses and the payment method are this request's own, never the quote's. Whatever you do send must describe the quoted purchase: the same variants, quantities and promo code. A quote that priced `variant` takes only the same `variant` you sent to `POST /payment_quotes` (or omit the purchase to take the quoted one), never `variant_id` or `line_items`, and a quote that priced variants by id never takes `variant`. Unless the quote located no buyer (`located_by` is null), the address the payment carries (its shipping address, else its billing address) must put the buyer where the quote priced tax, by country, state and postal code; otherwise the payment is refused with 400 before the payment method is used. A quote located by IP address or by the country the buyer chose (`located_by` is `ip_address` or `presentment_country`) is a preview and cannot be paid. A quote is consumed by one payment: a declined payment keeps it and can be retried; a new payment needs a new quote. A quote cannot be charged by a processor that doesn't take quotes, such as a seller's own connected PayPal account; such a payment is refused before the payment method is used. A quote priced in a `presentment_currency` is charged in that currency at the quote's `exchange_rate`. A payment refused over its quote carries an error `code`. `quote_expired`: the quote has expired; quote again. `quote_tax_unavailable`: the quote could not price tax; quote again, or omit `quote_id`. `quote_preview_only`: the quote was located by IP address or by the country the buyer chose; quote again with the buyer's address. `quote_in_use` (409): another payment holds the quote. `quote_mismatch`: the purchase or the buyer's address is not the one quoted. `quote_rate_expired`: the exchange rate the quote was priced at has moved too far to charge; quote again. `payment_method_currency_unsupported`: the payment method cannot pay in the quote's currency; use another method, or quote again in another currency. `quote_processor_unsupported`: the payment would be processed by a processor that doesn't take quotes, such as a seller's own connected PayPal account; use another method, or omit `quote_id` to have tax calculated when the payment is charged.
 	QuoteID *string `json:"quote_id,omitempty" url:"-"`
 	// Where the buyer continues after completing an off-site step such as 3D Secure. An absolute https URL without credentials, at most 2,048 characters.
 	ReturnURL *string `json:"return_url,omitempty" url:"-"`
@@ -138,6 +144,20 @@ func (c *CreateDirectRequest) SetOffSession(offSession *bool) {
 func (c *CreateDirectRequest) SetPaymentMethod(paymentMethod *CreateDirectRequestPaymentMethod) {
 	c.PaymentMethod = paymentMethod
 	c.require(createDirectRequestFieldPaymentMethod)
+}
+
+// SetPlan sets the Plan field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequest) SetPlan(plan *CreateDirectRequestPlan) {
+	c.Plan = plan
+	c.require(createDirectRequestFieldPlan)
+}
+
+// SetPlanID sets the PlanID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequest) SetPlanID(planID *string) {
+	c.PlanID = planID
+	c.require(createDirectRequestFieldPlanID)
 }
 
 // SetQuoteID sets the QuoteID field and marks it as non-optional;
@@ -527,8 +547,8 @@ func (c *CreateDirectRequestBillingDetailsAddress) String() string {
 }
 
 var (
-	createDirectRequestLineItemsItemFieldPlanID   = big.NewInt(1 << 0)
-	createDirectRequestLineItemsItemFieldQuantity = big.NewInt(1 << 1)
+	createDirectRequestLineItemsItemFieldQuantity  = big.NewInt(1 << 0)
+	createDirectRequestLineItemsItemFieldVariantID = big.NewInt(1 << 1)
 )
 
 // createDirectRequestLineItemsItemNullableFields maps the wire names of CreateDirectRequestLineItemsItem's nullable fields (required or optional) to their field bits.
@@ -537,10 +557,10 @@ var createDirectRequestLineItemsItemNullableFields = map[string]*big.Int{
 }
 
 type CreateDirectRequestLineItemsItem struct {
-	// An existing variant to charge for, prefixed `plan_`. Each variant may appear once — use `quantity` for multiple units.
-	PlanID string `json:"plan_id" url:"plan_id"`
 	// How many units of the variant to purchase. Defaults to 1; more than 1 requires the variant to allow multiple quantities.
 	Quantity *int `json:"quantity,omitempty" url:"quantity,omitempty"`
+	// An existing variant to charge for, prefixed `plan_`. Each variant may appear once — use `quantity` for multiple units.
+	VariantID string `json:"variant_id" url:"variant_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -549,18 +569,18 @@ type CreateDirectRequestLineItemsItem struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreateDirectRequestLineItemsItem) GetPlanID() string {
-	if c == nil {
-		return ""
-	}
-	return c.PlanID
-}
-
 func (c *CreateDirectRequestLineItemsItem) GetQuantity() *int {
 	if c == nil {
 		return nil
 	}
 	return c.Quantity
+}
+
+func (c *CreateDirectRequestLineItemsItem) GetVariantID() string {
+	if c == nil {
+		return ""
+	}
+	return c.VariantID
 }
 
 func (c *CreateDirectRequestLineItemsItem) GetExtraProperties() map[string]interface{} {
@@ -579,18 +599,18 @@ func (c *CreateDirectRequestLineItemsItem) require(field *big.Int) {
 	c.explicitFields = next
 }
 
-// SetPlanID sets the PlanID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateDirectRequestLineItemsItem) SetPlanID(planID string) {
-	c.PlanID = planID
-	c.require(createDirectRequestLineItemsItemFieldPlanID)
-}
-
 // SetQuantity sets the Quantity field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateDirectRequestLineItemsItem) SetQuantity(quantity *int) {
 	c.Quantity = quantity
 	c.require(createDirectRequestLineItemsItemFieldQuantity)
+}
+
+// SetVariantID sets the VariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestLineItemsItem) SetVariantID(variantID string) {
+	c.VariantID = variantID
+	c.require(createDirectRequestLineItemsItemFieldVariantID)
 }
 
 func (c *CreateDirectRequestLineItemsItem) UnmarshalJSON(data []byte) error {
@@ -1020,6 +1040,1105 @@ func NewCreateDirectRequestPaymentMethodTypeFromString(s string) (CreateDirectRe
 }
 
 func (c CreateDirectRequestPaymentMethodType) Ptr() *CreateDirectRequestPaymentMethodType {
+	return &c
+}
+
+var (
+	createDirectRequestPlanFieldAllowMultipleQuantity = big.NewInt(1 << 0)
+	createDirectRequestPlanFieldApplicationFeeAmount  = big.NewInt(1 << 1)
+	createDirectRequestPlanFieldBillingPeriod         = big.NewInt(1 << 2)
+	createDirectRequestPlanFieldCurrency              = big.NewInt(1 << 3)
+	createDirectRequestPlanFieldDescription           = big.NewInt(1 << 4)
+	createDirectRequestPlanFieldExpirationDays        = big.NewInt(1 << 5)
+	createDirectRequestPlanFieldForceCreateNewPlan    = big.NewInt(1 << 6)
+	createDirectRequestPlanFieldInitialPrice          = big.NewInt(1 << 7)
+	createDirectRequestPlanFieldInternalNotes         = big.NewInt(1 << 8)
+	createDirectRequestPlanFieldOverrideTaxType       = big.NewInt(1 << 9)
+	createDirectRequestPlanFieldPlanType              = big.NewInt(1 << 10)
+	createDirectRequestPlanFieldProduct               = big.NewInt(1 << 11)
+	createDirectRequestPlanFieldProductID             = big.NewInt(1 << 12)
+	createDirectRequestPlanFieldRenewalPrice          = big.NewInt(1 << 13)
+	createDirectRequestPlanFieldTitle                 = big.NewInt(1 << 14)
+	createDirectRequestPlanFieldTrialPeriodDays       = big.NewInt(1 << 15)
+	createDirectRequestPlanFieldVisibility            = big.NewInt(1 << 16)
+)
+
+// createDirectRequestPlanNullableFields maps the wire names of CreateDirectRequestPlan's nullable fields (required or optional) to their field bits.
+var createDirectRequestPlanNullableFields = map[string]*big.Int{
+	"allow_multiple_quantity": createDirectRequestPlanFieldAllowMultipleQuantity,
+	"application_fee_amount":  createDirectRequestPlanFieldApplicationFeeAmount,
+	"billing_period":          createDirectRequestPlanFieldBillingPeriod,
+	"description":             createDirectRequestPlanFieldDescription,
+	"expiration_days":         createDirectRequestPlanFieldExpirationDays,
+	"force_create_new_plan":   createDirectRequestPlanFieldForceCreateNewPlan,
+	"initial_price":           createDirectRequestPlanFieldInitialPrice,
+	"internal_notes":          createDirectRequestPlanFieldInternalNotes,
+	"override_tax_type":       createDirectRequestPlanFieldOverrideTaxType,
+	"plan_type":               createDirectRequestPlanFieldPlanType,
+	"product":                 createDirectRequestPlanFieldProduct,
+	"product_id":              createDirectRequestPlanFieldProductID,
+	"renewal_price":           createDirectRequestPlanFieldRenewalPrice,
+	"title":                   createDirectRequestPlanFieldTitle,
+	"trial_period_days":       createDirectRequestPlanFieldTrialPeriodDays,
+	"visibility":              createDirectRequestPlanFieldVisibility,
+}
+
+// Deprecated: send `variant`, which takes `billing_type` in place of `plan_type`. Accepted only from callers pinned to an API version before 2026-10-27-2.
+type CreateDirectRequestPlan struct {
+	// Whether more than one unit can be purchased in an order. Renewal variants cannot enable it. When `false`, checkouts, carts, and invoices reject a quantity above 1.
+	AllowMultipleQuantity *bool `json:"allow_multiple_quantity,omitempty" url:"allow_multiple_quantity,omitempty"`
+	// Application fee the platform collects per unit, in the variant currency (5.00 means $5.00 for USD). Must be positive and below the initial price for one-time variants or renewal price for recurring variants. Paid to the parent account alongside other processing fees; collection is capped to remaining proceeds. Applies to subsequent payments on recurring variants. Only valid for connected accounts with a parent account.
+	ApplicationFeeAmount *float64 `json:"application_fee_amount,omitempty" url:"application_fee_amount,omitempty"`
+	// Recurring billing interval in days.
+	BillingPeriod *int `json:"billing_period,omitempty" url:"billing_period,omitempty"`
+	// Currency code for the variant prices.
+	Currency CreateDirectRequestPlanCurrency `json:"currency" url:"currency"`
+	// Variant description.
+	Description *string `json:"description,omitempty" url:"description,omitempty"`
+	// Days until access expires.
+	ExpirationDays *int `json:"expiration_days,omitempty" url:"expiration_days,omitempty"`
+	// Create a new variant instead of reusing a matching variant.
+	ForceCreateNewPlan *bool `json:"force_create_new_plan,omitempty" url:"force_create_new_plan,omitempty"`
+	// Additional amount charged on the first purchase, in the variant currency. For recurring variants without a trial, the first charge includes this amount plus renewal_price.
+	InitialPrice *float64 `json:"initial_price,omitempty" url:"initial_price,omitempty"`
+	// Internal notes for the account.
+	InternalNotes *string `json:"internal_notes,omitempty" url:"internal_notes,omitempty"`
+	// Whether the variant's price includes tax: `inclusive` (tax is included in the price), `exclusive` (tax is added on top), or `unspecified`. Omit it or pass `null` to use the account's tax setting. On an account enrolled in the Whop tax service, `inclusive` or `exclusive` replaces the account's setting and `unspecified` keeps it. Otherwise it applies only where the account is the merchant of record: `inclusive` or `exclusive` replaces the account's setting when the account collects tax, and `unspecified` means the variant collects no tax. Where Whop is the merchant of record, the account's setting applies. Variants that differ only in this value are different variants.
+	OverrideTaxType *CreateDirectRequestPlanOverrideTaxType `json:"override_tax_type,omitempty" url:"override_tax_type,omitempty"`
+	// Billing model for the variant.
+	PlanType *CreateDirectRequestPlanPlanType `json:"plan_type,omitempty" url:"plan_type,omitempty"`
+	// Find or create a product by external identifier. Mutually exclusive with product_id.
+	Product *CreateDirectRequestPlanProduct `json:"product,omitempty" url:"product,omitempty"`
+	// Existing product ID belonging to the account, prefixed `prod_`. Mutually exclusive with `product`.
+	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
+	// Recurring price in the variant currency.
+	RenewalPrice *float64 `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
+	// Variant title.
+	Title *string `json:"title,omitempty" url:"title,omitempty"`
+	// Free trial days before renewal.
+	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
+	// Whether the variant is visible to customers.
+	Visibility *CreateDirectRequestPlanVisibility `json:"visibility,omitempty" url:"visibility,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateDirectRequestPlan) GetAllowMultipleQuantity() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.AllowMultipleQuantity
+}
+
+func (c *CreateDirectRequestPlan) GetApplicationFeeAmount() *float64 {
+	if c == nil {
+		return nil
+	}
+	return c.ApplicationFeeAmount
+}
+
+func (c *CreateDirectRequestPlan) GetBillingPeriod() *int {
+	if c == nil {
+		return nil
+	}
+	return c.BillingPeriod
+}
+
+func (c *CreateDirectRequestPlan) GetCurrency() CreateDirectRequestPlanCurrency {
+	if c == nil {
+		return ""
+	}
+	return c.Currency
+}
+
+func (c *CreateDirectRequestPlan) GetDescription() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Description
+}
+
+func (c *CreateDirectRequestPlan) GetExpirationDays() *int {
+	if c == nil {
+		return nil
+	}
+	return c.ExpirationDays
+}
+
+func (c *CreateDirectRequestPlan) GetForceCreateNewPlan() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.ForceCreateNewPlan
+}
+
+func (c *CreateDirectRequestPlan) GetInitialPrice() *float64 {
+	if c == nil {
+		return nil
+	}
+	return c.InitialPrice
+}
+
+func (c *CreateDirectRequestPlan) GetInternalNotes() *string {
+	if c == nil {
+		return nil
+	}
+	return c.InternalNotes
+}
+
+func (c *CreateDirectRequestPlan) GetOverrideTaxType() *CreateDirectRequestPlanOverrideTaxType {
+	if c == nil {
+		return nil
+	}
+	return c.OverrideTaxType
+}
+
+func (c *CreateDirectRequestPlan) GetPlanType() *CreateDirectRequestPlanPlanType {
+	if c == nil {
+		return nil
+	}
+	return c.PlanType
+}
+
+func (c *CreateDirectRequestPlan) GetProduct() *CreateDirectRequestPlanProduct {
+	if c == nil {
+		return nil
+	}
+	return c.Product
+}
+
+func (c *CreateDirectRequestPlan) GetProductID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.ProductID
+}
+
+func (c *CreateDirectRequestPlan) GetRenewalPrice() *float64 {
+	if c == nil {
+		return nil
+	}
+	return c.RenewalPrice
+}
+
+func (c *CreateDirectRequestPlan) GetTitle() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Title
+}
+
+func (c *CreateDirectRequestPlan) GetTrialPeriodDays() *int {
+	if c == nil {
+		return nil
+	}
+	return c.TrialPeriodDays
+}
+
+func (c *CreateDirectRequestPlan) GetVisibility() *CreateDirectRequestPlanVisibility {
+	if c == nil {
+		return nil
+	}
+	return c.Visibility
+}
+
+func (c *CreateDirectRequestPlan) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateDirectRequestPlan) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetAllowMultipleQuantity sets the AllowMultipleQuantity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestPlan) SetAllowMultipleQuantity(allowMultipleQuantity *bool) {
+	c.AllowMultipleQuantity = allowMultipleQuantity
+	c.require(createDirectRequestPlanFieldAllowMultipleQuantity)
+}
+
+// SetApplicationFeeAmount sets the ApplicationFeeAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestPlan) SetApplicationFeeAmount(applicationFeeAmount *float64) {
+	c.ApplicationFeeAmount = applicationFeeAmount
+	c.require(createDirectRequestPlanFieldApplicationFeeAmount)
+}
+
+// SetBillingPeriod sets the BillingPeriod field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestPlan) SetBillingPeriod(billingPeriod *int) {
+	c.BillingPeriod = billingPeriod
+	c.require(createDirectRequestPlanFieldBillingPeriod)
+}
+
+// SetCurrency sets the Currency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestPlan) SetCurrency(currency CreateDirectRequestPlanCurrency) {
+	c.Currency = currency
+	c.require(createDirectRequestPlanFieldCurrency)
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestPlan) SetDescription(description *string) {
+	c.Description = description
+	c.require(createDirectRequestPlanFieldDescription)
+}
+
+// SetExpirationDays sets the ExpirationDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestPlan) SetExpirationDays(expirationDays *int) {
+	c.ExpirationDays = expirationDays
+	c.require(createDirectRequestPlanFieldExpirationDays)
+}
+
+// SetForceCreateNewPlan sets the ForceCreateNewPlan field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestPlan) SetForceCreateNewPlan(forceCreateNewPlan *bool) {
+	c.ForceCreateNewPlan = forceCreateNewPlan
+	c.require(createDirectRequestPlanFieldForceCreateNewPlan)
+}
+
+// SetInitialPrice sets the InitialPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestPlan) SetInitialPrice(initialPrice *float64) {
+	c.InitialPrice = initialPrice
+	c.require(createDirectRequestPlanFieldInitialPrice)
+}
+
+// SetInternalNotes sets the InternalNotes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestPlan) SetInternalNotes(internalNotes *string) {
+	c.InternalNotes = internalNotes
+	c.require(createDirectRequestPlanFieldInternalNotes)
+}
+
+// SetOverrideTaxType sets the OverrideTaxType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestPlan) SetOverrideTaxType(overrideTaxType *CreateDirectRequestPlanOverrideTaxType) {
+	c.OverrideTaxType = overrideTaxType
+	c.require(createDirectRequestPlanFieldOverrideTaxType)
+}
+
+// SetPlanType sets the PlanType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestPlan) SetPlanType(planType *CreateDirectRequestPlanPlanType) {
+	c.PlanType = planType
+	c.require(createDirectRequestPlanFieldPlanType)
+}
+
+// SetProduct sets the Product field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestPlan) SetProduct(product *CreateDirectRequestPlanProduct) {
+	c.Product = product
+	c.require(createDirectRequestPlanFieldProduct)
+}
+
+// SetProductID sets the ProductID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestPlan) SetProductID(productID *string) {
+	c.ProductID = productID
+	c.require(createDirectRequestPlanFieldProductID)
+}
+
+// SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestPlan) SetRenewalPrice(renewalPrice *float64) {
+	c.RenewalPrice = renewalPrice
+	c.require(createDirectRequestPlanFieldRenewalPrice)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestPlan) SetTitle(title *string) {
+	c.Title = title
+	c.require(createDirectRequestPlanFieldTitle)
+}
+
+// SetTrialPeriodDays sets the TrialPeriodDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestPlan) SetTrialPeriodDays(trialPeriodDays *int) {
+	c.TrialPeriodDays = trialPeriodDays
+	c.require(createDirectRequestPlanFieldTrialPeriodDays)
+}
+
+// SetVisibility sets the Visibility field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestPlan) SetVisibility(visibility *CreateDirectRequestPlanVisibility) {
+	c.Visibility = visibility
+	c.require(createDirectRequestPlanFieldVisibility)
+}
+
+func (c *CreateDirectRequestPlan) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateDirectRequestPlan
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateDirectRequestPlan(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createDirectRequestPlanNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateDirectRequestPlan) MarshalJSON() ([]byte, error) {
+	type embed CreateDirectRequestPlan
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateDirectRequestPlan) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// Currency code for the variant prices.
+type CreateDirectRequestPlanCurrency string
+
+const (
+	CreateDirectRequestPlanCurrencyUsd     CreateDirectRequestPlanCurrency = "usd"
+	CreateDirectRequestPlanCurrencySgd     CreateDirectRequestPlanCurrency = "sgd"
+	CreateDirectRequestPlanCurrencyInr     CreateDirectRequestPlanCurrency = "inr"
+	CreateDirectRequestPlanCurrencyAud     CreateDirectRequestPlanCurrency = "aud"
+	CreateDirectRequestPlanCurrencyBrl     CreateDirectRequestPlanCurrency = "brl"
+	CreateDirectRequestPlanCurrencyCad     CreateDirectRequestPlanCurrency = "cad"
+	CreateDirectRequestPlanCurrencyDkk     CreateDirectRequestPlanCurrency = "dkk"
+	CreateDirectRequestPlanCurrencyEur     CreateDirectRequestPlanCurrency = "eur"
+	CreateDirectRequestPlanCurrencyNok     CreateDirectRequestPlanCurrency = "nok"
+	CreateDirectRequestPlanCurrencyGbp     CreateDirectRequestPlanCurrency = "gbp"
+	CreateDirectRequestPlanCurrencySek     CreateDirectRequestPlanCurrency = "sek"
+	CreateDirectRequestPlanCurrencyChf     CreateDirectRequestPlanCurrency = "chf"
+	CreateDirectRequestPlanCurrencyHkd     CreateDirectRequestPlanCurrency = "hkd"
+	CreateDirectRequestPlanCurrencyHuf     CreateDirectRequestPlanCurrency = "huf"
+	CreateDirectRequestPlanCurrencyJpy     CreateDirectRequestPlanCurrency = "jpy"
+	CreateDirectRequestPlanCurrencyMxn     CreateDirectRequestPlanCurrency = "mxn"
+	CreateDirectRequestPlanCurrencyMyr     CreateDirectRequestPlanCurrency = "myr"
+	CreateDirectRequestPlanCurrencyPln     CreateDirectRequestPlanCurrency = "pln"
+	CreateDirectRequestPlanCurrencyCzk     CreateDirectRequestPlanCurrency = "czk"
+	CreateDirectRequestPlanCurrencyNzd     CreateDirectRequestPlanCurrency = "nzd"
+	CreateDirectRequestPlanCurrencyAed     CreateDirectRequestPlanCurrency = "aed"
+	CreateDirectRequestPlanCurrencyEth     CreateDirectRequestPlanCurrency = "eth"
+	CreateDirectRequestPlanCurrencyApe     CreateDirectRequestPlanCurrency = "ape"
+	CreateDirectRequestPlanCurrencyCop     CreateDirectRequestPlanCurrency = "cop"
+	CreateDirectRequestPlanCurrencyRon     CreateDirectRequestPlanCurrency = "ron"
+	CreateDirectRequestPlanCurrencyThb     CreateDirectRequestPlanCurrency = "thb"
+	CreateDirectRequestPlanCurrencyBgn     CreateDirectRequestPlanCurrency = "bgn"
+	CreateDirectRequestPlanCurrencyIdr     CreateDirectRequestPlanCurrency = "idr"
+	CreateDirectRequestPlanCurrencyDop     CreateDirectRequestPlanCurrency = "dop"
+	CreateDirectRequestPlanCurrencyPhp     CreateDirectRequestPlanCurrency = "php"
+	CreateDirectRequestPlanCurrencyTry     CreateDirectRequestPlanCurrency = "try"
+	CreateDirectRequestPlanCurrencyKrw     CreateDirectRequestPlanCurrency = "krw"
+	CreateDirectRequestPlanCurrencyTwd     CreateDirectRequestPlanCurrency = "twd"
+	CreateDirectRequestPlanCurrencyVnd     CreateDirectRequestPlanCurrency = "vnd"
+	CreateDirectRequestPlanCurrencyPkr     CreateDirectRequestPlanCurrency = "pkr"
+	CreateDirectRequestPlanCurrencyClp     CreateDirectRequestPlanCurrency = "clp"
+	CreateDirectRequestPlanCurrencyUyu     CreateDirectRequestPlanCurrency = "uyu"
+	CreateDirectRequestPlanCurrencyArs     CreateDirectRequestPlanCurrency = "ars"
+	CreateDirectRequestPlanCurrencyZar     CreateDirectRequestPlanCurrency = "zar"
+	CreateDirectRequestPlanCurrencyDzd     CreateDirectRequestPlanCurrency = "dzd"
+	CreateDirectRequestPlanCurrencyTnd     CreateDirectRequestPlanCurrency = "tnd"
+	CreateDirectRequestPlanCurrencyMad     CreateDirectRequestPlanCurrency = "mad"
+	CreateDirectRequestPlanCurrencyKes     CreateDirectRequestPlanCurrency = "kes"
+	CreateDirectRequestPlanCurrencyKwd     CreateDirectRequestPlanCurrency = "kwd"
+	CreateDirectRequestPlanCurrencyJod     CreateDirectRequestPlanCurrency = "jod"
+	CreateDirectRequestPlanCurrencyAll     CreateDirectRequestPlanCurrency = "all"
+	CreateDirectRequestPlanCurrencyXcd     CreateDirectRequestPlanCurrency = "xcd"
+	CreateDirectRequestPlanCurrencyAmd     CreateDirectRequestPlanCurrency = "amd"
+	CreateDirectRequestPlanCurrencyBsd     CreateDirectRequestPlanCurrency = "bsd"
+	CreateDirectRequestPlanCurrencyBhd     CreateDirectRequestPlanCurrency = "bhd"
+	CreateDirectRequestPlanCurrencyBob     CreateDirectRequestPlanCurrency = "bob"
+	CreateDirectRequestPlanCurrencyBam     CreateDirectRequestPlanCurrency = "bam"
+	CreateDirectRequestPlanCurrencyKhr     CreateDirectRequestPlanCurrency = "khr"
+	CreateDirectRequestPlanCurrencyCrc     CreateDirectRequestPlanCurrency = "crc"
+	CreateDirectRequestPlanCurrencyXof     CreateDirectRequestPlanCurrency = "xof"
+	CreateDirectRequestPlanCurrencyEgp     CreateDirectRequestPlanCurrency = "egp"
+	CreateDirectRequestPlanCurrencyEtb     CreateDirectRequestPlanCurrency = "etb"
+	CreateDirectRequestPlanCurrencyGmd     CreateDirectRequestPlanCurrency = "gmd"
+	CreateDirectRequestPlanCurrencyGhs     CreateDirectRequestPlanCurrency = "ghs"
+	CreateDirectRequestPlanCurrencyGtq     CreateDirectRequestPlanCurrency = "gtq"
+	CreateDirectRequestPlanCurrencyGyd     CreateDirectRequestPlanCurrency = "gyd"
+	CreateDirectRequestPlanCurrencyIls     CreateDirectRequestPlanCurrency = "ils"
+	CreateDirectRequestPlanCurrencyJmd     CreateDirectRequestPlanCurrency = "jmd"
+	CreateDirectRequestPlanCurrencyMop     CreateDirectRequestPlanCurrency = "mop"
+	CreateDirectRequestPlanCurrencyMga     CreateDirectRequestPlanCurrency = "mga"
+	CreateDirectRequestPlanCurrencyMur     CreateDirectRequestPlanCurrency = "mur"
+	CreateDirectRequestPlanCurrencyMdl     CreateDirectRequestPlanCurrency = "mdl"
+	CreateDirectRequestPlanCurrencyMnt     CreateDirectRequestPlanCurrency = "mnt"
+	CreateDirectRequestPlanCurrencyNad     CreateDirectRequestPlanCurrency = "nad"
+	CreateDirectRequestPlanCurrencyNgn     CreateDirectRequestPlanCurrency = "ngn"
+	CreateDirectRequestPlanCurrencyMkd     CreateDirectRequestPlanCurrency = "mkd"
+	CreateDirectRequestPlanCurrencyOmr     CreateDirectRequestPlanCurrency = "omr"
+	CreateDirectRequestPlanCurrencyPyg     CreateDirectRequestPlanCurrency = "pyg"
+	CreateDirectRequestPlanCurrencyPen     CreateDirectRequestPlanCurrency = "pen"
+	CreateDirectRequestPlanCurrencyQar     CreateDirectRequestPlanCurrency = "qar"
+	CreateDirectRequestPlanCurrencyRwf     CreateDirectRequestPlanCurrency = "rwf"
+	CreateDirectRequestPlanCurrencySar     CreateDirectRequestPlanCurrency = "sar"
+	CreateDirectRequestPlanCurrencyRsd     CreateDirectRequestPlanCurrency = "rsd"
+	CreateDirectRequestPlanCurrencyLkr     CreateDirectRequestPlanCurrency = "lkr"
+	CreateDirectRequestPlanCurrencyTzs     CreateDirectRequestPlanCurrency = "tzs"
+	CreateDirectRequestPlanCurrencyTtd     CreateDirectRequestPlanCurrency = "ttd"
+	CreateDirectRequestPlanCurrencyUzs     CreateDirectRequestPlanCurrency = "uzs"
+	CreateDirectRequestPlanCurrencyRub     CreateDirectRequestPlanCurrency = "rub"
+	CreateDirectRequestPlanCurrencyBtc     CreateDirectRequestPlanCurrency = "btc"
+	CreateDirectRequestPlanCurrencyCny     CreateDirectRequestPlanCurrency = "cny"
+	CreateDirectRequestPlanCurrencyUsdt    CreateDirectRequestPlanCurrency = "usdt"
+	CreateDirectRequestPlanCurrencyKzt     CreateDirectRequestPlanCurrency = "kzt"
+	CreateDirectRequestPlanCurrencyAwg     CreateDirectRequestPlanCurrency = "awg"
+	CreateDirectRequestPlanCurrencyWhopUsd CreateDirectRequestPlanCurrency = "whop_usd"
+	CreateDirectRequestPlanCurrencyXau     CreateDirectRequestPlanCurrency = "xau"
+)
+
+func NewCreateDirectRequestPlanCurrencyFromString(s string) (CreateDirectRequestPlanCurrency, error) {
+	switch s {
+	case "usd":
+		return CreateDirectRequestPlanCurrencyUsd, nil
+	case "sgd":
+		return CreateDirectRequestPlanCurrencySgd, nil
+	case "inr":
+		return CreateDirectRequestPlanCurrencyInr, nil
+	case "aud":
+		return CreateDirectRequestPlanCurrencyAud, nil
+	case "brl":
+		return CreateDirectRequestPlanCurrencyBrl, nil
+	case "cad":
+		return CreateDirectRequestPlanCurrencyCad, nil
+	case "dkk":
+		return CreateDirectRequestPlanCurrencyDkk, nil
+	case "eur":
+		return CreateDirectRequestPlanCurrencyEur, nil
+	case "nok":
+		return CreateDirectRequestPlanCurrencyNok, nil
+	case "gbp":
+		return CreateDirectRequestPlanCurrencyGbp, nil
+	case "sek":
+		return CreateDirectRequestPlanCurrencySek, nil
+	case "chf":
+		return CreateDirectRequestPlanCurrencyChf, nil
+	case "hkd":
+		return CreateDirectRequestPlanCurrencyHkd, nil
+	case "huf":
+		return CreateDirectRequestPlanCurrencyHuf, nil
+	case "jpy":
+		return CreateDirectRequestPlanCurrencyJpy, nil
+	case "mxn":
+		return CreateDirectRequestPlanCurrencyMxn, nil
+	case "myr":
+		return CreateDirectRequestPlanCurrencyMyr, nil
+	case "pln":
+		return CreateDirectRequestPlanCurrencyPln, nil
+	case "czk":
+		return CreateDirectRequestPlanCurrencyCzk, nil
+	case "nzd":
+		return CreateDirectRequestPlanCurrencyNzd, nil
+	case "aed":
+		return CreateDirectRequestPlanCurrencyAed, nil
+	case "eth":
+		return CreateDirectRequestPlanCurrencyEth, nil
+	case "ape":
+		return CreateDirectRequestPlanCurrencyApe, nil
+	case "cop":
+		return CreateDirectRequestPlanCurrencyCop, nil
+	case "ron":
+		return CreateDirectRequestPlanCurrencyRon, nil
+	case "thb":
+		return CreateDirectRequestPlanCurrencyThb, nil
+	case "bgn":
+		return CreateDirectRequestPlanCurrencyBgn, nil
+	case "idr":
+		return CreateDirectRequestPlanCurrencyIdr, nil
+	case "dop":
+		return CreateDirectRequestPlanCurrencyDop, nil
+	case "php":
+		return CreateDirectRequestPlanCurrencyPhp, nil
+	case "try":
+		return CreateDirectRequestPlanCurrencyTry, nil
+	case "krw":
+		return CreateDirectRequestPlanCurrencyKrw, nil
+	case "twd":
+		return CreateDirectRequestPlanCurrencyTwd, nil
+	case "vnd":
+		return CreateDirectRequestPlanCurrencyVnd, nil
+	case "pkr":
+		return CreateDirectRequestPlanCurrencyPkr, nil
+	case "clp":
+		return CreateDirectRequestPlanCurrencyClp, nil
+	case "uyu":
+		return CreateDirectRequestPlanCurrencyUyu, nil
+	case "ars":
+		return CreateDirectRequestPlanCurrencyArs, nil
+	case "zar":
+		return CreateDirectRequestPlanCurrencyZar, nil
+	case "dzd":
+		return CreateDirectRequestPlanCurrencyDzd, nil
+	case "tnd":
+		return CreateDirectRequestPlanCurrencyTnd, nil
+	case "mad":
+		return CreateDirectRequestPlanCurrencyMad, nil
+	case "kes":
+		return CreateDirectRequestPlanCurrencyKes, nil
+	case "kwd":
+		return CreateDirectRequestPlanCurrencyKwd, nil
+	case "jod":
+		return CreateDirectRequestPlanCurrencyJod, nil
+	case "all":
+		return CreateDirectRequestPlanCurrencyAll, nil
+	case "xcd":
+		return CreateDirectRequestPlanCurrencyXcd, nil
+	case "amd":
+		return CreateDirectRequestPlanCurrencyAmd, nil
+	case "bsd":
+		return CreateDirectRequestPlanCurrencyBsd, nil
+	case "bhd":
+		return CreateDirectRequestPlanCurrencyBhd, nil
+	case "bob":
+		return CreateDirectRequestPlanCurrencyBob, nil
+	case "bam":
+		return CreateDirectRequestPlanCurrencyBam, nil
+	case "khr":
+		return CreateDirectRequestPlanCurrencyKhr, nil
+	case "crc":
+		return CreateDirectRequestPlanCurrencyCrc, nil
+	case "xof":
+		return CreateDirectRequestPlanCurrencyXof, nil
+	case "egp":
+		return CreateDirectRequestPlanCurrencyEgp, nil
+	case "etb":
+		return CreateDirectRequestPlanCurrencyEtb, nil
+	case "gmd":
+		return CreateDirectRequestPlanCurrencyGmd, nil
+	case "ghs":
+		return CreateDirectRequestPlanCurrencyGhs, nil
+	case "gtq":
+		return CreateDirectRequestPlanCurrencyGtq, nil
+	case "gyd":
+		return CreateDirectRequestPlanCurrencyGyd, nil
+	case "ils":
+		return CreateDirectRequestPlanCurrencyIls, nil
+	case "jmd":
+		return CreateDirectRequestPlanCurrencyJmd, nil
+	case "mop":
+		return CreateDirectRequestPlanCurrencyMop, nil
+	case "mga":
+		return CreateDirectRequestPlanCurrencyMga, nil
+	case "mur":
+		return CreateDirectRequestPlanCurrencyMur, nil
+	case "mdl":
+		return CreateDirectRequestPlanCurrencyMdl, nil
+	case "mnt":
+		return CreateDirectRequestPlanCurrencyMnt, nil
+	case "nad":
+		return CreateDirectRequestPlanCurrencyNad, nil
+	case "ngn":
+		return CreateDirectRequestPlanCurrencyNgn, nil
+	case "mkd":
+		return CreateDirectRequestPlanCurrencyMkd, nil
+	case "omr":
+		return CreateDirectRequestPlanCurrencyOmr, nil
+	case "pyg":
+		return CreateDirectRequestPlanCurrencyPyg, nil
+	case "pen":
+		return CreateDirectRequestPlanCurrencyPen, nil
+	case "qar":
+		return CreateDirectRequestPlanCurrencyQar, nil
+	case "rwf":
+		return CreateDirectRequestPlanCurrencyRwf, nil
+	case "sar":
+		return CreateDirectRequestPlanCurrencySar, nil
+	case "rsd":
+		return CreateDirectRequestPlanCurrencyRsd, nil
+	case "lkr":
+		return CreateDirectRequestPlanCurrencyLkr, nil
+	case "tzs":
+		return CreateDirectRequestPlanCurrencyTzs, nil
+	case "ttd":
+		return CreateDirectRequestPlanCurrencyTtd, nil
+	case "uzs":
+		return CreateDirectRequestPlanCurrencyUzs, nil
+	case "rub":
+		return CreateDirectRequestPlanCurrencyRub, nil
+	case "btc":
+		return CreateDirectRequestPlanCurrencyBtc, nil
+	case "cny":
+		return CreateDirectRequestPlanCurrencyCny, nil
+	case "usdt":
+		return CreateDirectRequestPlanCurrencyUsdt, nil
+	case "kzt":
+		return CreateDirectRequestPlanCurrencyKzt, nil
+	case "awg":
+		return CreateDirectRequestPlanCurrencyAwg, nil
+	case "whop_usd":
+		return CreateDirectRequestPlanCurrencyWhopUsd, nil
+	case "xau":
+		return CreateDirectRequestPlanCurrencyXau, nil
+	}
+	var t CreateDirectRequestPlanCurrency
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateDirectRequestPlanCurrency) Ptr() *CreateDirectRequestPlanCurrency {
+	return &c
+}
+
+// Whether the variant's price includes tax: `inclusive` (tax is included in the price), `exclusive` (tax is added on top), or `unspecified`. Omit it or pass `null` to use the account's tax setting. On an account enrolled in the Whop tax service, `inclusive` or `exclusive` replaces the account's setting and `unspecified` keeps it. Otherwise it applies only where the account is the merchant of record: `inclusive` or `exclusive` replaces the account's setting when the account collects tax, and `unspecified` means the variant collects no tax. Where Whop is the merchant of record, the account's setting applies. Variants that differ only in this value are different variants.
+type CreateDirectRequestPlanOverrideTaxType string
+
+const (
+	CreateDirectRequestPlanOverrideTaxTypeExclusive   CreateDirectRequestPlanOverrideTaxType = "exclusive"
+	CreateDirectRequestPlanOverrideTaxTypeInclusive   CreateDirectRequestPlanOverrideTaxType = "inclusive"
+	CreateDirectRequestPlanOverrideTaxTypeUnspecified CreateDirectRequestPlanOverrideTaxType = "unspecified"
+)
+
+func NewCreateDirectRequestPlanOverrideTaxTypeFromString(s string) (CreateDirectRequestPlanOverrideTaxType, error) {
+	switch s {
+	case "exclusive":
+		return CreateDirectRequestPlanOverrideTaxTypeExclusive, nil
+	case "inclusive":
+		return CreateDirectRequestPlanOverrideTaxTypeInclusive, nil
+	case "unspecified":
+		return CreateDirectRequestPlanOverrideTaxTypeUnspecified, nil
+	}
+	var t CreateDirectRequestPlanOverrideTaxType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateDirectRequestPlanOverrideTaxType) Ptr() *CreateDirectRequestPlanOverrideTaxType {
+	return &c
+}
+
+// Billing model for the variant.
+type CreateDirectRequestPlanPlanType string
+
+const (
+	CreateDirectRequestPlanPlanTypeRenewal CreateDirectRequestPlanPlanType = "renewal"
+	CreateDirectRequestPlanPlanTypeOneTime CreateDirectRequestPlanPlanType = "one_time"
+)
+
+func NewCreateDirectRequestPlanPlanTypeFromString(s string) (CreateDirectRequestPlanPlanType, error) {
+	switch s {
+	case "renewal":
+		return CreateDirectRequestPlanPlanTypeRenewal, nil
+	case "one_time":
+		return CreateDirectRequestPlanPlanTypeOneTime, nil
+	}
+	var t CreateDirectRequestPlanPlanType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateDirectRequestPlanPlanType) Ptr() *CreateDirectRequestPlanPlanType {
+	return &c
+}
+
+var (
+	createDirectRequestPlanProductFieldCollectShippingAddress    = big.NewInt(1 << 0)
+	createDirectRequestPlanProductFieldCustomStatementDescriptor = big.NewInt(1 << 1)
+	createDirectRequestPlanProductFieldDescription               = big.NewInt(1 << 2)
+	createDirectRequestPlanProductFieldExternalIdentifier        = big.NewInt(1 << 3)
+	createDirectRequestPlanProductFieldGlobalAffiliatePercentage = big.NewInt(1 << 4)
+	createDirectRequestPlanProductFieldGlobalAffiliateStatus     = big.NewInt(1 << 5)
+	createDirectRequestPlanProductFieldHeadline                  = big.NewInt(1 << 6)
+	createDirectRequestPlanProductFieldProductTaxCodeID          = big.NewInt(1 << 7)
+	createDirectRequestPlanProductFieldRedirectPurchaseURL       = big.NewInt(1 << 8)
+	createDirectRequestPlanProductFieldRoute                     = big.NewInt(1 << 9)
+	createDirectRequestPlanProductFieldTitle                     = big.NewInt(1 << 10)
+	createDirectRequestPlanProductFieldVisibility                = big.NewInt(1 << 11)
+)
+
+// createDirectRequestPlanProductNullableFields maps the wire names of CreateDirectRequestPlanProduct's nullable fields (required or optional) to their field bits.
+var createDirectRequestPlanProductNullableFields = map[string]*big.Int{
+	"collect_shipping_address":    createDirectRequestPlanProductFieldCollectShippingAddress,
+	"custom_statement_descriptor": createDirectRequestPlanProductFieldCustomStatementDescriptor,
+	"description":                 createDirectRequestPlanProductFieldDescription,
+	"global_affiliate_percentage": createDirectRequestPlanProductFieldGlobalAffiliatePercentage,
+	"global_affiliate_status":     createDirectRequestPlanProductFieldGlobalAffiliateStatus,
+	"headline":                    createDirectRequestPlanProductFieldHeadline,
+	"product_tax_code_id":         createDirectRequestPlanProductFieldProductTaxCodeID,
+	"redirect_purchase_url":       createDirectRequestPlanProductFieldRedirectPurchaseURL,
+	"route":                       createDirectRequestPlanProductFieldRoute,
+}
+
+// Find or create a product by external identifier. Mutually exclusive with product_id.
+type CreateDirectRequestPlanProduct struct {
+	// Whether to collect a shipping address at checkout.
+	CollectShippingAddress *bool `json:"collect_shipping_address,omitempty" url:"collect_shipping_address,omitempty"`
+	// Custom card statement descriptor for the product, starting with WHOP*.
+	CustomStatementDescriptor *string `json:"custom_statement_descriptor,omitempty" url:"custom_statement_descriptor,omitempty"`
+	// Product description.
+	Description *string `json:"description,omitempty" url:"description,omitempty"`
+	// Your unique identifier for the product.
+	ExternalIdentifier string `json:"external_identifier" url:"external_identifier"`
+	// Percentage of revenue paid to global affiliates.
+	GlobalAffiliatePercentage *float64 `json:"global_affiliate_percentage,omitempty" url:"global_affiliate_percentage,omitempty"`
+	// Global affiliate program status.
+	GlobalAffiliateStatus *CreateDirectRequestPlanProductGlobalAffiliateStatus `json:"global_affiliate_status,omitempty" url:"global_affiliate_status,omitempty"`
+	// Product headline.
+	Headline *string `json:"headline,omitempty" url:"headline,omitempty"`
+	// Product tax code identifier.
+	ProductTaxCodeID *string `json:"product_tax_code_id,omitempty" url:"product_tax_code_id,omitempty"`
+	// Where to redirect the buyer after purchase.
+	RedirectPurchaseURL *string `json:"redirect_purchase_url,omitempty" url:"redirect_purchase_url,omitempty"`
+	// Product route.
+	Route *string `json:"route,omitempty" url:"route,omitempty"`
+	// Product title.
+	Title string `json:"title" url:"title"`
+	// Product visibility. Defaults to hidden.
+	Visibility *CreateDirectRequestPlanProductVisibility `json:"visibility,omitempty" url:"visibility,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateDirectRequestPlanProduct) GetCollectShippingAddress() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.CollectShippingAddress
+}
+
+func (c *CreateDirectRequestPlanProduct) GetCustomStatementDescriptor() *string {
+	if c == nil {
+		return nil
+	}
+	return c.CustomStatementDescriptor
+}
+
+func (c *CreateDirectRequestPlanProduct) GetDescription() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Description
+}
+
+func (c *CreateDirectRequestPlanProduct) GetExternalIdentifier() string {
+	if c == nil {
+		return ""
+	}
+	return c.ExternalIdentifier
+}
+
+func (c *CreateDirectRequestPlanProduct) GetGlobalAffiliatePercentage() *float64 {
+	if c == nil {
+		return nil
+	}
+	return c.GlobalAffiliatePercentage
+}
+
+func (c *CreateDirectRequestPlanProduct) GetGlobalAffiliateStatus() *CreateDirectRequestPlanProductGlobalAffiliateStatus {
+	if c == nil {
+		return nil
+	}
+	return c.GlobalAffiliateStatus
+}
+
+func (c *CreateDirectRequestPlanProduct) GetHeadline() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Headline
+}
+
+func (c *CreateDirectRequestPlanProduct) GetProductTaxCodeID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.ProductTaxCodeID
+}
+
+func (c *CreateDirectRequestPlanProduct) GetRedirectPurchaseURL() *string {
+	if c == nil {
+		return nil
+	}
+	return c.RedirectPurchaseURL
+}
+
+func (c *CreateDirectRequestPlanProduct) GetRoute() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Route
+}
+
+func (c *CreateDirectRequestPlanProduct) GetTitle() string {
+	if c == nil {
+		return ""
+	}
+	return c.Title
+}
+
+func (c *CreateDirectRequestPlanProduct) GetVisibility() *CreateDirectRequestPlanProductVisibility {
+	if c == nil {
+		return nil
+	}
+	return c.Visibility
+}
+
+func (c *CreateDirectRequestPlanProduct) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateDirectRequestPlanProduct) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetCollectShippingAddress sets the CollectShippingAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestPlanProduct) SetCollectShippingAddress(collectShippingAddress *bool) {
+	c.CollectShippingAddress = collectShippingAddress
+	c.require(createDirectRequestPlanProductFieldCollectShippingAddress)
+}
+
+// SetCustomStatementDescriptor sets the CustomStatementDescriptor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestPlanProduct) SetCustomStatementDescriptor(customStatementDescriptor *string) {
+	c.CustomStatementDescriptor = customStatementDescriptor
+	c.require(createDirectRequestPlanProductFieldCustomStatementDescriptor)
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestPlanProduct) SetDescription(description *string) {
+	c.Description = description
+	c.require(createDirectRequestPlanProductFieldDescription)
+}
+
+// SetExternalIdentifier sets the ExternalIdentifier field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestPlanProduct) SetExternalIdentifier(externalIdentifier string) {
+	c.ExternalIdentifier = externalIdentifier
+	c.require(createDirectRequestPlanProductFieldExternalIdentifier)
+}
+
+// SetGlobalAffiliatePercentage sets the GlobalAffiliatePercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestPlanProduct) SetGlobalAffiliatePercentage(globalAffiliatePercentage *float64) {
+	c.GlobalAffiliatePercentage = globalAffiliatePercentage
+	c.require(createDirectRequestPlanProductFieldGlobalAffiliatePercentage)
+}
+
+// SetGlobalAffiliateStatus sets the GlobalAffiliateStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestPlanProduct) SetGlobalAffiliateStatus(globalAffiliateStatus *CreateDirectRequestPlanProductGlobalAffiliateStatus) {
+	c.GlobalAffiliateStatus = globalAffiliateStatus
+	c.require(createDirectRequestPlanProductFieldGlobalAffiliateStatus)
+}
+
+// SetHeadline sets the Headline field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestPlanProduct) SetHeadline(headline *string) {
+	c.Headline = headline
+	c.require(createDirectRequestPlanProductFieldHeadline)
+}
+
+// SetProductTaxCodeID sets the ProductTaxCodeID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestPlanProduct) SetProductTaxCodeID(productTaxCodeID *string) {
+	c.ProductTaxCodeID = productTaxCodeID
+	c.require(createDirectRequestPlanProductFieldProductTaxCodeID)
+}
+
+// SetRedirectPurchaseURL sets the RedirectPurchaseURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestPlanProduct) SetRedirectPurchaseURL(redirectPurchaseURL *string) {
+	c.RedirectPurchaseURL = redirectPurchaseURL
+	c.require(createDirectRequestPlanProductFieldRedirectPurchaseURL)
+}
+
+// SetRoute sets the Route field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestPlanProduct) SetRoute(route *string) {
+	c.Route = route
+	c.require(createDirectRequestPlanProductFieldRoute)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestPlanProduct) SetTitle(title string) {
+	c.Title = title
+	c.require(createDirectRequestPlanProductFieldTitle)
+}
+
+// SetVisibility sets the Visibility field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestPlanProduct) SetVisibility(visibility *CreateDirectRequestPlanProductVisibility) {
+	c.Visibility = visibility
+	c.require(createDirectRequestPlanProductFieldVisibility)
+}
+
+func (c *CreateDirectRequestPlanProduct) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateDirectRequestPlanProduct
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateDirectRequestPlanProduct(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createDirectRequestPlanProductNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateDirectRequestPlanProduct) MarshalJSON() ([]byte, error) {
+	type embed CreateDirectRequestPlanProduct
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateDirectRequestPlanProduct) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// Global affiliate program status.
+type CreateDirectRequestPlanProductGlobalAffiliateStatus string
+
+const (
+	CreateDirectRequestPlanProductGlobalAffiliateStatusEnabled  CreateDirectRequestPlanProductGlobalAffiliateStatus = "enabled"
+	CreateDirectRequestPlanProductGlobalAffiliateStatusDisabled CreateDirectRequestPlanProductGlobalAffiliateStatus = "disabled"
+)
+
+func NewCreateDirectRequestPlanProductGlobalAffiliateStatusFromString(s string) (CreateDirectRequestPlanProductGlobalAffiliateStatus, error) {
+	switch s {
+	case "enabled":
+		return CreateDirectRequestPlanProductGlobalAffiliateStatusEnabled, nil
+	case "disabled":
+		return CreateDirectRequestPlanProductGlobalAffiliateStatusDisabled, nil
+	}
+	var t CreateDirectRequestPlanProductGlobalAffiliateStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateDirectRequestPlanProductGlobalAffiliateStatus) Ptr() *CreateDirectRequestPlanProductGlobalAffiliateStatus {
+	return &c
+}
+
+// Product visibility. Defaults to hidden.
+type CreateDirectRequestPlanProductVisibility string
+
+const (
+	CreateDirectRequestPlanProductVisibilityVisible   CreateDirectRequestPlanProductVisibility = "visible"
+	CreateDirectRequestPlanProductVisibilityHidden    CreateDirectRequestPlanProductVisibility = "hidden"
+	CreateDirectRequestPlanProductVisibilityArchived  CreateDirectRequestPlanProductVisibility = "archived"
+	CreateDirectRequestPlanProductVisibilityQuickLink CreateDirectRequestPlanProductVisibility = "quick_link"
+)
+
+func NewCreateDirectRequestPlanProductVisibilityFromString(s string) (CreateDirectRequestPlanProductVisibility, error) {
+	switch s {
+	case "visible":
+		return CreateDirectRequestPlanProductVisibilityVisible, nil
+	case "hidden":
+		return CreateDirectRequestPlanProductVisibilityHidden, nil
+	case "archived":
+		return CreateDirectRequestPlanProductVisibilityArchived, nil
+	case "quick_link":
+		return CreateDirectRequestPlanProductVisibilityQuickLink, nil
+	}
+	var t CreateDirectRequestPlanProductVisibility
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateDirectRequestPlanProductVisibility) Ptr() *CreateDirectRequestPlanProductVisibility {
+	return &c
+}
+
+// Whether the variant is visible to customers.
+type CreateDirectRequestPlanVisibility string
+
+const (
+	CreateDirectRequestPlanVisibilityVisible   CreateDirectRequestPlanVisibility = "visible"
+	CreateDirectRequestPlanVisibilityHidden    CreateDirectRequestPlanVisibility = "hidden"
+	CreateDirectRequestPlanVisibilityArchived  CreateDirectRequestPlanVisibility = "archived"
+	CreateDirectRequestPlanVisibilityQuickLink CreateDirectRequestPlanVisibility = "quick_link"
+)
+
+func NewCreateDirectRequestPlanVisibilityFromString(s string) (CreateDirectRequestPlanVisibility, error) {
+	switch s {
+	case "visible":
+		return CreateDirectRequestPlanVisibilityVisible, nil
+	case "hidden":
+		return CreateDirectRequestPlanVisibilityHidden, nil
+	case "archived":
+		return CreateDirectRequestPlanVisibilityArchived, nil
+	case "quick_link":
+		return CreateDirectRequestPlanVisibilityQuickLink, nil
+	}
+	var t CreateDirectRequestPlanVisibility
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateDirectRequestPlanVisibility) Ptr() *CreateDirectRequestPlanVisibility {
 	return &c
 }
 

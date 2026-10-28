@@ -79,7 +79,7 @@ type ListDisputesRequest struct {
 	CreatedAfter *string `json:"-" url:"created_after,omitempty"`
 	// Search disputes by dispute ID, payment ID, user ID, membership ID, user email, name, or username. Email filtering requires the member:email:read permission.
 	Query *string `json:"-" url:"query,omitempty"`
-	// Only for searches: with `query`, also search the account's connected accounts. Requires `account_id` and `query`, and is a 400 without either; it never lists connected accounts' disputes on its own. Matches on dispute, payment, user or membership ID, buyer email, or a card's first 6 or 8 digits and last 4 separated by a space or dash (`424242 4242`). Free-text queries such as a name search only the named account. Connected accounts' disputes are returned only for connected accounts you can read disputes on.
+	// Also cover the account's connected accounts. Requires `account_id`, and is a 400 without it. Without `query`, covers the disputes of the account and every connected account, in any order. The listing is cut off after 10 seconds; add a `query` to narrow it. With `query`, matches on dispute, payment, user or membership ID, buyer email, or a card's first 6 or 8 digits and last 4 separated by a space or dash (`424242 4242`); free-text queries such as a name search only the named account. Connected accounts' disputes are returned only for connected accounts you can read disputes on.
 	IncludeConnectedAccounts *bool `json:"-" url:"include_connected_accounts,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -268,7 +268,7 @@ type SummaryDisputesRequest struct {
 	CreatedAfter *string `json:"-" url:"created_after,omitempty"`
 	// Search disputes by dispute ID, payment ID, user ID, membership ID, user email, name, or username. Email filtering requires the member:email:read permission.
 	Query *string `json:"-" url:"query,omitempty"`
-	// Only for searches: with `query`, also search the account's connected accounts. Requires `account_id` and `query`, and is a 400 without either; it never lists connected accounts' disputes on its own. Matches on dispute, payment, user or membership ID, buyer email, or a card's first 6 or 8 digits and last 4 separated by a space or dash (`424242 4242`). Free-text queries such as a name search only the named account. Connected accounts' disputes are returned only for connected accounts you can read disputes on.
+	// Also cover the account's connected accounts. Requires `account_id`, and is a 400 without it. Without `query`, covers the disputes of the account and every connected account, in any order. The listing is cut off after 10 seconds; add a `query` to narrow it. With `query`, matches on dispute, payment, user or membership ID, buyer email, or a card's first 6 or 8 digits and last 4 separated by a space or dash (`424242 4242`); free-text queries such as a name search only the named account. Connected accounts' disputes are returned only for connected accounts you can read disputes on.
 	IncludeConnectedAccounts *bool `json:"-" url:"include_connected_accounts,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -358,12 +358,12 @@ var (
 	disputeFieldIssuerComments       = big.NewInt(1 << 14)
 	disputeFieldLineItems            = big.NewInt(1 << 15)
 	disputeFieldPayment              = big.NewInt(1 << 16)
-	disputeFieldPlanID               = big.NewInt(1 << 17)
-	disputeFieldProductID            = big.NewInt(1 << 18)
-	disputeFieldReason               = big.NewInt(1 << 19)
-	disputeFieldReasonCode           = big.NewInt(1 << 20)
-	disputeFieldStatus               = big.NewInt(1 << 21)
-	disputeFieldUpdatedAt            = big.NewInt(1 << 22)
+	disputeFieldProductID            = big.NewInt(1 << 17)
+	disputeFieldReason               = big.NewInt(1 << 18)
+	disputeFieldReasonCode           = big.NewInt(1 << 19)
+	disputeFieldStatus               = big.NewInt(1 << 20)
+	disputeFieldUpdatedAt            = big.NewInt(1 << 21)
+	disputeFieldVariantID            = big.NewInt(1 << 22)
 )
 
 // disputeNullableFields maps the wire names of Dispute's nullable fields (required or optional) to their field bits.
@@ -373,9 +373,9 @@ var disputeNullableFields = map[string]*big.Int{
 	"evidence_locked_reason": disputeFieldEvidenceLockedReason,
 	"evidence_submitted_at":  disputeFieldEvidenceSubmittedAt,
 	"fee":                    disputeFieldFee,
-	"plan_id":                disputeFieldPlanID,
 	"product_id":             disputeFieldProductID,
 	"reason_code":            disputeFieldReasonCode,
+	"variant_id":             disputeFieldVariantID,
 }
 
 type Dispute struct {
@@ -411,8 +411,6 @@ type Dispute struct {
 	LineItems      []*ReceiptLineItem      `json:"line_items" url:"line_items"`
 	// The payment being disputed.
 	Payment *DisputePayment `json:"payment" url:"payment"`
-	// The variant the disputed payment was made on, prefixed `plan_`.
-	PlanID *string `json:"plan_id,omitempty" url:"plan_id,omitempty"`
 	// The product the disputed payment was for, prefixed `prod_`.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// Why the customer says they are disputing, normalized across processors and card networks. `other` covers a processor reason Whop has not categorized yet.
@@ -423,6 +421,8 @@ type Dispute struct {
 	Status DisputeStatus `json:"status" url:"status"`
 	// When the dispute was last changed, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
+	// The variant the disputed payment was made on, prefixed `plan_`.
+	VariantID *string `json:"variant_id,omitempty" url:"variant_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -550,13 +550,6 @@ func (d *Dispute) GetPayment() *DisputePayment {
 	return d.Payment
 }
 
-func (d *Dispute) GetPlanID() *string {
-	if d == nil {
-		return nil
-	}
-	return d.PlanID
-}
-
 func (d *Dispute) GetProductID() *string {
 	if d == nil {
 		return nil
@@ -590,6 +583,13 @@ func (d *Dispute) GetUpdatedAt() string {
 		return ""
 	}
 	return d.UpdatedAt
+}
+
+func (d *Dispute) GetVariantID() *string {
+	if d == nil {
+		return nil
+	}
+	return d.VariantID
 }
 
 func (d *Dispute) GetExtraProperties() map[string]interface{} {
@@ -727,13 +727,6 @@ func (d *Dispute) SetPayment(payment *DisputePayment) {
 	d.require(disputeFieldPayment)
 }
 
-// SetPlanID sets the PlanID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *Dispute) SetPlanID(planID *string) {
-	d.PlanID = planID
-	d.require(disputeFieldPlanID)
-}
-
 // SetProductID sets the ProductID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (d *Dispute) SetProductID(productID *string) {
@@ -767,6 +760,13 @@ func (d *Dispute) SetStatus(status DisputeStatus) {
 func (d *Dispute) SetUpdatedAt(updatedAt string) {
 	d.UpdatedAt = updatedAt
 	d.require(disputeFieldUpdatedAt)
+}
+
+// SetVariantID sets the VariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *Dispute) SetVariantID(variantID *string) {
+	d.VariantID = variantID
+	d.require(disputeFieldVariantID)
 }
 
 func (d *Dispute) UnmarshalJSON(data []byte) error {

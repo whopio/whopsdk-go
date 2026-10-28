@@ -1900,7 +1900,7 @@ client.AdCampaigns.Create(
 <dl>
 <dd>
 
-**desiredCostPerResult:** `*float64` — Cost per result to aim for (`average_target`) or never exceed (`maximum_target`). Only for campaigns that own the budget.
+**desiredCostPerResult:** `*float64` — The cost per result, in USD, you want this campaign to achieve. A target only: it is not a bid, cost cap, or bid cap, and doesn't change how the campaign's ads bid. Ad groups set cost and bid caps with their own `desired_cost_per_result`. Omit or send `null` for no target.
     
 </dd>
 </dl>
@@ -2124,7 +2124,7 @@ client.AdCampaigns.Delete(
 <dl>
 <dd>
 
-Updates an ad campaign's settings, or launches a draft campaign by setting `status` to `active`. The objective and desired cost per result are fixed at creation and cannot be changed.
+Updates an ad campaign's settings, or launches a draft campaign by setting `status` to `active`. The objective is fixed at creation and cannot be changed.
 </dd>
 </dl>
 </dd>
@@ -2217,6 +2217,14 @@ client.AdCampaigns.Update(
 <dd>
 
 **campaignType:** `*whopsdk.UpdateAdCampaignsRequestCampaignType` — Accepted only when it matches the campaign's current type, so a read can be sent back unchanged. The type is fixed at creation.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**desiredCostPerResult:** `*float64` — The cost per result, in USD, you want this campaign to achieve. A target only: it is not a bid, cost cap, or bid cap, and doesn't change how the campaign's ads bid. Ad groups set cost and bid caps with their own `desired_cost_per_result`. `null` clears it.
     
 </dd>
 </dl>
@@ -4788,6 +4796,104 @@ client.AdPixels.Update(
 </details>
 
 ## Ads
+<details><summary><code>client.Ads.ReportStats(request) -> *whopsdk.AdStat</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Records a runner's stats for one of their ads in one hour, and pays them for the spend. Send the ad's totals so far for an hour that started in the last 24 hours; they replace what the ad held for that hour, and its ad group's and campaign's hours are rebuilt from their ads. The spend can go up but never down. Reporting on a campaign starts with the hour of its first recorded report; earlier hours are refused. Spend over what is left of a budget (the runner's share of the day, the campaign's daily budget or the ad group's budget) is refused with the most the ad can record. Takes the runner's Whop session or a user OAuth token with `ad_campaign:update`. A token without that scope gets a 403, and anyone not holding the ad's campaign gets a 404.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.ReportStatsAdsRequest{
+    AdID: "ad_xxxxxxxxxxxxxx",
+    HourStartedAt: whopsdk.MustParseDateTime(
+        "2026-01-01T12:00:00Z",
+    ),
+    Spend: &whopsdk.ReportStatsAdsRequestSpend{
+        Double: 1.1,
+    },
+}
+client.Ads.ReportStats(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**adID:** `string` — The ad's ID, prefixed `ad_`: the campaign's ad or the runner's copy of it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**clicks:** `*whopsdk.ReportStatsAdsRequestClicks` — The ad's clicks in the hour so far, at most `impressions`. Zero when left out.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**hourStartedAt:** `time.Time` — Start of the hour, on the hour, within the last 24 hours.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**impressions:** `*whopsdk.ReportStatsAdsRequestImpressions` — The ad's impressions in the hour so far. Zero when left out.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**spend:** `*whopsdk.ReportStatsAdsRequestSpend` — USD spent on the ad in the hour so far, to the cent.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Ads.List() -> *whopsdk.ListAdsResponse</code></summary>
 <dl>
 <dd>
@@ -8479,6 +8585,14 @@ client.Apps.Update(
 <dl>
 <dd>
 
+**perInstallSchedule:** `*string` — Five-field cron expression, read in UTC, on which Whop runs the production web build's `scheduled()` export once for every installation, with the installation in `ctx.props.app_installation`. It must fire at least once and no more often than every 15 minutes. Slots are skipped while the app has no production web build with a server entry. Set to `null` or an empty string to stop the per-install schedule.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **productionAndroidBuildID:** `*string` — The app build (`abld_` tag) to serve as the Android production build, or `null` to unassign it. Same rules as `production_web_build_id`.
     
 </dd>
@@ -8520,6 +8634,14 @@ client.Apps.Update(
 <dd>
 
 **route:** `*string` — The subdomain route where the app's hosted web builds are served.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**schedule:** `*string` — Five-field cron expression, read in UTC, on which Whop runs the production web build's `scheduled()` export once per slot, such as `* /15 * * * *`. It must fire at least once. Slots are skipped while the app has no production web build with a server entry. Set to `null` or an empty string to stop the global schedule.
     
 </dd>
 </dl>
@@ -12090,7 +12212,7 @@ client.CheckoutConfigurations.List(
 <dl>
 <dd>
 
-**planID:** `*string` — Only return checkout configurations for this variant ID, prefixed `plan_`.
+**variantID:** `*string` — Only return checkout configurations for this variant ID, prefixed `plan_`.
     
 </dd>
 </dl>
@@ -12181,7 +12303,7 @@ request := &whopsdk.CreateCheckoutConfigurationsRequest{
     AccountID: whopsdk.String(
         "biz_xxxxxxxxxxxxxx",
     ),
-    PlanID: whopsdk.String(
+    VariantID: whopsdk.String(
         "plan_xxxxxxxxxxxxx",
     ),
 }
@@ -12251,22 +12373,6 @@ client.CheckoutConfigurations.Create(
 <dl>
 <dd>
 
-**plan:** `*whopsdk.CreateCheckoutConfigurationsRequestPlan` — Variant attributes used to create or find a variant for this checkout configuration. Mutually exclusive with `plan_id`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**planID:** `*string` — Existing variant ID, prefixed `plan_`. Mutually exclusive with `plan`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **redirectURL:** `*string` — URL customers are sent to after checkout.
     
 </dd>
@@ -12276,6 +12382,22 @@ client.CheckoutConfigurations.Create(
 <dd>
 
 **threeDsLevel:** `*whopsdk.CreateCheckoutConfigurationsRequestThreeDsLevel` — 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the variant policy.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**variant:** `*whopsdk.CreateCheckoutConfigurationsRequestVariant` — Variant attributes used to create or find a variant for this checkout configuration. Mutually exclusive with `variant_id`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**variantID:** `*string` — Existing variant ID, prefixed `plan_`. Mutually exclusive with `variant`.
     
 </dd>
 </dl>
@@ -14907,7 +15029,99 @@ client.Deposits.Create(
 <dl>
 <dd>
 
+**originBic:** `*string` — SWIFT/BIC of the bank the funds are sent from, 8 or 11 characters. Fills each bank currency's `swift_bic` with the intermediary bank to route the wire through.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **paymentMethodID:** `*string` — A saved payment method of the business to charge for `amount`, prefixed `payt_`. Save one with Create setup intent and `owner_id` set to the account. Only for a `biz_` destination, and requires authentication with the `payment:charge` scope. A declined charge fails the request with 400.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Deposits.Reverse(ID, request) -> *whopsdk.LedgerActivity</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Sends a bank deposit back to the bank account that wired it and takes it back out of the balance. Identify the deposit by its `vbt_` ID, the `source.id` of its row in the account's financial activity. The available balance has to cover the deposit minus the deposit fee, which is refunded. Returns the reversal's own row in the financial activity: a `topup_reversal` debit for the full deposit amount, whose `source` is the bank deposit. The source's `status` is `reversal_in_progress` until the money is back with the sender, then `reversed`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.ReverseDepositsRequest{
+    ID: "vbt_xxxxxxxxxxxxxx",
+}
+client.Deposits.Reverse(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The ID of the bank deposit to reverse, prefixed `vbt_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — The business that received the deposit, prefixed `biz_`. Pass this or `user_id`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `map[string]*whopsdk.ReverseDepositsRequestMetadataValue` — Custom metadata to store with the reversal.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**userID:** `*string` — The user that received the deposit, prefixed `user_`. Pass this or `account_id`.
     
 </dd>
 </dl>
@@ -15261,7 +15475,7 @@ client.Disputes.List(
 <dl>
 <dd>
 
-**includeConnectedAccounts:** `*bool` — Only for searches: with `query`, also search the account's connected accounts. Requires `account_id` and `query`, and is a 400 without either; it never lists connected accounts' disputes on its own. Matches on dispute, payment, user or membership ID, buyer email, or a card's first 6 or 8 digits and last 4 separated by a space or dash (`424242 4242`). Free-text queries such as a name search only the named account. Connected accounts' disputes are returned only for connected accounts you can read disputes on.
+**includeConnectedAccounts:** `*bool` — Also cover the account's connected accounts. Requires `account_id`, and is a 400 without it. Without `query`, covers the disputes of the account and every connected account, in any order. The listing is cut off after 10 seconds; add a `query` to narrow it. With `query`, matches on dispute, payment, user or membership ID, buyer email, or a card's first 6 or 8 digits and last 4 separated by a space or dash (`424242 4242`); free-text queries such as a name search only the named account. Connected accounts' disputes are returned only for connected accounts you can read disputes on.
     
 </dd>
 </dl>
@@ -15375,7 +15589,7 @@ client.Disputes.Summary(
 <dl>
 <dd>
 
-**includeConnectedAccounts:** `*bool` — Only for searches: with `query`, also search the account's connected accounts. Requires `account_id` and `query`, and is a 400 without either; it never lists connected accounts' disputes on its own. Matches on dispute, payment, user or membership ID, buyer email, or a card's first 6 or 8 digits and last 4 separated by a space or dash (`424242 4242`). Free-text queries such as a name search only the named account. Connected accounts' disputes are returned only for connected accounts you can read disputes on.
+**includeConnectedAccounts:** `*bool` — Also cover the account's connected accounts. Requires `account_id`, and is a 400 without it. Without `query`, covers the disputes of the account and every connected account, in any order. The listing is cut off after 10 seconds; add a `query` to narrow it. With `query`, matches on dispute, payment, user or membership ID, buyer email, or a card's first 6 or 8 digits and last 4 separated by a space or dash (`424242 4242`); free-text queries such as a name search only the named account. Connected accounts' disputes are returned only for connected accounts you can read disputes on.
     
 </dd>
 </dl>
@@ -20357,7 +20571,7 @@ client.ExternalAccounts.List(
 <dl>
 <dd>
 
-Creates or returns a Whop-managed Facebook page or TikTok account for an account.
+Creates or returns a Whop-managed Facebook page or TikTok account for an account, or connects the account's existing Klaviyo account with a private API key.
 </dd>
 </dl>
 </dd>
@@ -20401,7 +20615,15 @@ client.ExternalAccounts.Create(
 <dl>
 <dd>
 
-**platform:** `whopsdk.CreateExternalAccountsRequestPlatform` — The platform to create the external account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes.
+**apiKey:** `*string` — A private API key for the account on the platform. Required for `klaviyo`, which needs read access to Accounts; not accepted for other platforms. Whop checks the key with the platform before connecting and never returns it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**platform:** `whopsdk.CreateExternalAccountsRequestPlatform` — The platform to create the external account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes. `klaviyo` connects the account's existing Klaviyo account with the `api_key` you pass.
     
 </dd>
 </dl>
@@ -23188,10 +23410,7 @@ client.IdentityProfiles.ListVerificationsIdentityProfile(
 <dl>
 <dd>
 
-Returns a paginated list of invoices for an account, with optional filtering by product, status, collection method, and creation date.
-
-Required permissions:
- - `invoice:basic:read`
+Lists receipt-backed invoices for accounts the caller can read. Legacy invoices are excluded.
 </dd>
 </dl>
 </dd>
@@ -23206,27 +23425,7 @@ Required permissions:
 <dd>
 
 ```go
-request := &whopsdk.ListInvoicesRequest{
-    First: whopsdk.Int(
-        42,
-    ),
-    Last: whopsdk.Int(
-        42,
-    ),
-    CreatedBefore: whopsdk.Time(
-        whopsdk.MustParseDateTime(
-            "2023-12-01T05:00:00Z",
-        ),
-    ),
-    CreatedAfter: whopsdk.Time(
-        whopsdk.MustParseDateTime(
-            "2023-12-01T05:00:00Z",
-        ),
-    ),
-    AccountID: whopsdk.String(
-        "biz_xxxxxxxxxxxxxx",
-    ),
-}
+request := &whopsdk.ListInvoicesRequest{}
 client.Invoices.List(
     context.TODO(),
     request,
@@ -23245,7 +23444,7 @@ client.Invoices.List(
 <dl>
 <dd>
 
-**after:** `*string` — Returns the elements in the list that come after the specified cursor.
+**accountID:** `*string` 
     
 </dd>
 </dl>
@@ -23253,7 +23452,7 @@ client.Invoices.List(
 <dl>
 <dd>
 
-**before:** `*string` — Returns the elements in the list that come before the specified cursor.
+**status:** `*whopsdk.ListInvoicesRequestStatus` 
     
 </dd>
 </dl>
@@ -23261,7 +23460,7 @@ client.Invoices.List(
 <dl>
 <dd>
 
-**first:** `*int` — Returns the first _n_ elements from the list.
+**overdue:** `*bool` 
     
 </dd>
 </dl>
@@ -23269,7 +23468,7 @@ client.Invoices.List(
 <dl>
 <dd>
 
-**last:** `*int` — Returns the last _n_ elements from the list.
+**memberID:** `*string` 
     
 </dd>
 </dl>
@@ -23277,7 +23476,7 @@ client.Invoices.List(
 <dl>
 <dd>
 
-**direction:** `*whopsdk.Direction` 
+**productID:** `*string` 
     
 </dd>
 </dl>
@@ -23285,7 +23484,7 @@ client.Invoices.List(
 <dl>
 <dd>
 
-**productIDs:** `*string` — Filter invoices to only those associated with these specific product identifiers.
+**createdAfter:** `*time.Time` 
     
 </dd>
 </dl>
@@ -23293,7 +23492,7 @@ client.Invoices.List(
 <dl>
 <dd>
 
-**collectionMethods:** `*whopsdk.InvoiceCollectionMethods` — Filter invoices by their collection method.
+**createdBefore:** `*time.Time` 
     
 </dd>
 </dl>
@@ -23301,7 +23500,7 @@ client.Invoices.List(
 <dl>
 <dd>
 
-**statuses:** `*whopsdk.InvoiceStatuses` — Filter invoices by their current status.
+**order:** `*whopsdk.ListInvoicesRequestOrder` 
     
 </dd>
 </dl>
@@ -23309,7 +23508,7 @@ client.Invoices.List(
 <dl>
 <dd>
 
-**order:** `*whopsdk.InvoicesSortableColumns` 
+**direction:** `*whopsdk.ListInvoicesRequestDirection` 
     
 </dd>
 </dl>
@@ -23317,7 +23516,7 @@ client.Invoices.List(
 <dl>
 <dd>
 
-**createdBefore:** `*time.Time` — Only return invoices created before this timestamp.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -23325,7 +23524,7 @@ client.Invoices.List(
 <dl>
 <dd>
 
-**createdAfter:** `*time.Time` — Only return invoices created after this timestamp.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -23333,7 +23532,15 @@ client.Invoices.List(
 <dl>
 <dd>
 
-**accountID:** `*string` — The unique identifier of the company to list invoices for.
+**last:** `*int` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -23357,13 +23564,7 @@ client.Invoices.List(
 <dl>
 <dd>
 
-Create an invoice for a customer. The invoice can be charged automatically using a stored payment method, or sent to the customer for manual payment.
-
-Required permissions:
- - `invoice:create`
- - `member:email:read`
- - `member:basic:read`
- - `payment:basic:read`
+Creates a draft invoice backed by a receipt, with saved items, quantities, prices, and recipients. Issue the draft to resolve final tax and open the invoice. The pay_ ID stays the same when paid.
 </dd>
 </dl>
 </dd>
@@ -23379,14 +23580,8 @@ Required permissions:
 
 ```go
 request := &whopsdk.CreateInvoicesRequest{
-    CreateInvoicesRequestProduct: &whopsdk.CreateInvoicesRequestProduct{
-        AccountID: "biz_xxxxxxxxxxxxxx",
-        CollectionMethod: whopsdk.InvoiceCollectionMethodsSendInvoice,
-        Plan: &whopsdk.CreateInvoicesRequestProductPlan{},
-        Product: &whopsdk.CreateInvoicesRequestProductProduct{
-            Title: "title",
-        },
-    },
+    AccountID: "biz_xxxxxxxxxxxxxx",
+    Items: []*whopsdk.CreateInvoicesRequestItemsItem{},
 }
 client.Invoices.Create(
     context.TODO(),
@@ -23406,7 +23601,95 @@ client.Invoices.Create(
 <dl>
 <dd>
 
-**request:** `*whopsdk.CreateInvoicesRequest` — Parameters for CreateInvoice
+**accountID:** `string` — The issuing account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**billingAddress:** `*whopsdk.CreateInvoicesRequestBillingAddress` — Create a billing address linked to this member.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**buyerFeePercentage:** `*float64` — The buyer's adjustable fee in percentage points, with at most two decimal places.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**customerName:** `*string` — The contact name when creating an email-only member.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**dueAt:** `*time.Time` — When payment is due, as an ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**emailAddress:** `*string` — Resolve or create the member for this email, creating a Whop user when none exists. Mutually exclusive with member_id.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**items:** `[]*whopsdk.CreateInvoicesRequestItemsItem` — The variants being invoiced, all in the same currency. Each variant may appear once; use quantity for multiple units. Product and price come from each variant; a recurring variant must belong to a product, bills its renewal price and, once the invoice is paid, renews as a subscription charged to the payment method that paid it. With several items, every item that has a product must be a regular product, and all items need compatible payment, tax, and access settings.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**mailingAddressID:** `*string` — An address associated with the member. Mutually exclusive with billing_address.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**memberID:** `*string` — The billed customer, a member of the account. Changing email recipients does not change this buyer.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `map[string]string` — Up to 50 caller-owned string key/value pairs.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**paymentMethodID:** `*string` — A saved payment method belonging to the member, prefixed `payt_`. Sending the invoice emails it now and charges this method on `due_at`, or right away when there is no `due_at` or it has passed. Issuing the invoice without sending it charges right away.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**recipientEmails:** `[]string` — Email addresses saved for invoice delivery, independent of the billed customer. Saving them sends no email. Defaults to the customer email when omitted on create. Can be updated on draft, open, or uncollectible invoices.
     
 </dd>
 </dl>
@@ -23430,13 +23713,7 @@ client.Invoices.Create(
 <dl>
 <dd>
 
-Retrieves the details of an existing invoice.
-
-Required permissions:
- - `invoice:basic:read`
- - `member:email:read`
- - `member:basic:read`
- - `payment:basic:read`
+Retrieves a receipt-backed invoice by its pay_ ID.
 </dd>
 </dl>
 </dd>
@@ -23452,7 +23729,7 @@ Required permissions:
 
 ```go
 request := &whopsdk.RetrieveInvoicesRequest{
-    ID: "inv_xxxxxxxxxxxxxx",
+    ID: "id",
 }
 client.Invoices.Retrieve(
     context.TODO(),
@@ -23472,70 +23749,7 @@ client.Invoices.Retrieve(
 <dl>
 <dd>
 
-**id:** `string` — The unique identifier of the invoice, or a secure token.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.Invoices.Delete(ID) -> bool</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Delete a draft invoice.
-
-Required permissions:
- - `invoice:update`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.DeleteInvoicesRequest{
-    ID: "inv_xxxxxxxxxxxxxx",
-}
-client.Invoices.Delete(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `string` — The unique identifier of the draft invoice to delete.
+**id:** `string` — The invoice's pay_ ID.
     
 </dd>
 </dl>
@@ -23559,13 +23773,7 @@ client.Invoices.Delete(
 <dl>
 <dd>
 
-Update a draft invoice's details.
-
-Required permissions:
- - `invoice:update`
- - `member:email:read`
- - `member:basic:read`
- - `payment:basic:read`
+Updates draft invoice items and billing fields. Recipient-only updates are also allowed on unpaid invoices. Edit customer contact details through the member API.
 </dd>
 </dl>
 </dd>
@@ -23581,7 +23789,7 @@ Required permissions:
 
 ```go
 request := &whopsdk.UpdateInvoicesRequest{
-    ID: "inv_xxxxxxxxxxxxxx",
+    ID: "id",
 }
 client.Invoices.Update(
     context.TODO(),
@@ -23601,7 +23809,7 @@ client.Invoices.Update(
 <dl>
 <dd>
 
-**id:** `string` — The unique identifier of the invoice to update.
+**id:** `string` — The invoice's pay_ ID.
     
 </dd>
 </dl>
@@ -23609,7 +23817,7 @@ client.Invoices.Update(
 <dl>
 <dd>
 
-**automaticallyFinalizesAt:** `*time.Time` — The date and time when the invoice will be automatically finalized. For charge_automatically, triggers an automatic charge. For send_invoice, sends the invoice email at the specified time.
+**billingAddress:** `*whopsdk.UpdateInvoicesRequestBillingAddress` — Create a billing address linked to this member.
     
 </dd>
 </dl>
@@ -23617,7 +23825,7 @@ client.Invoices.Update(
 <dl>
 <dd>
 
-**billingAddress:** `*whopsdk.UpdateInvoicesRequestBillingAddress` — Inline billing address to create or update a mailing address for this invoice.
+**buyerFeePercentage:** `*float64` — The buyer's adjustable fee in percentage points, with at most two decimal places.
     
 </dd>
 </dl>
@@ -23625,7 +23833,7 @@ client.Invoices.Update(
 <dl>
 <dd>
 
-**chargeBuyerFee:** `*bool` — Whether to charge the customer a buyer fee on this invoice.
+**dueAt:** `*time.Time` — When payment is due, as an ISO 8601 timestamp.
     
 </dd>
 </dl>
@@ -23633,7 +23841,7 @@ client.Invoices.Update(
 <dl>
 <dd>
 
-**collectionMethod:** `*whopsdk.InvoiceCollectionMethods` — How the invoice should be collected.
+**items:** `[]*whopsdk.UpdateInvoicesRequestItemsItem` — The variants being invoiced, all in the same currency. Each variant may appear once; use quantity for multiple units. Product and price come from each variant; a recurring variant must belong to a product, bills its renewal price and, once the invoice is paid, renews as a subscription charged to the payment method that paid it. With several items, every item that has a product must be a regular product, and all items need compatible payment, tax, and access settings.
     
 </dd>
 </dl>
@@ -23641,7 +23849,7 @@ client.Invoices.Update(
 <dl>
 <dd>
 
-**customerName:** `*string` — The name of the customer.
+**mailingAddressID:** `*string` — An address associated with the member. Mutually exclusive with billing_address.
     
 </dd>
 </dl>
@@ -23649,7 +23857,7 @@ client.Invoices.Update(
 <dl>
 <dd>
 
-**dueDate:** `*time.Time` — The date by which the invoice must be paid.
+**memberID:** `*string` — The billed customer, a member of the account. Changing email recipients does not change this buyer.
     
 </dd>
 </dl>
@@ -23657,7 +23865,7 @@ client.Invoices.Update(
 <dl>
 <dd>
 
-**emailAddress:** `*string` — The email address of the customer.
+**metadata:** `map[string]string` — Up to 50 caller-owned string key/value pairs.
     
 </dd>
 </dl>
@@ -23665,7 +23873,7 @@ client.Invoices.Update(
 <dl>
 <dd>
 
-**lineItems:** `[]*whopsdk.UpdateInvoicesRequestLineItemsItem` — Line items that break down the invoice total. When provided, the sum of (quantity * unit_price) for all items must equal the plan price. Individual items may be negative to represent a credit, as long as the sum is not negative and clears the currency's minimum charge. Pass an empty list to remove the breakdown.
+**paymentMethodID:** `*string` — A saved payment method belonging to the member, prefixed `payt_`. Sending the invoice emails it now and charges this method on `due_at`, or right away when there is no `due_at` or it has passed. Issuing the invoice without sending it charges right away.
     
 </dd>
 </dl>
@@ -23673,47 +23881,7 @@ client.Invoices.Update(
 <dl>
 <dd>
 
-**mailingAddressID:** `*string` — The unique identifier of an existing mailing address to attach.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**memberID:** `*string` — The unique identifier of a member to assign as the customer.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**paymentMethodID:** `*string` — The unique identifier of the payment method to charge.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**plan:** `*whopsdk.UpdateInvoicesRequestPlan` — Updated plan attributes.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**productID:** `*string` — The unique identifier of an existing product to attach to this invoice. Only allowed while the invoice is still a draft.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**subscriptionBillingAnchorAt:** `*time.Time` — The date that defines when the subscription billing cycle should start.
+**recipientEmails:** `[]string` — Email addresses saved for invoice delivery, independent of the billed customer. Saving them sends no email. Defaults to the customer email when omitted on create. Can be updated on draft, open, or uncollectible invoices.
     
 </dd>
 </dl>
@@ -23725,7 +23893,7 @@ client.Invoices.Update(
 </dl>
 </details>
 
-<details><summary><code>client.Invoices.MarkPaid(ID) -> bool</code></summary>
+<details><summary><code>client.Invoices.GeneratePdf(ID) -> *whopsdk.InvoicePdf</code></summary>
 <dl>
 <dd>
 
@@ -23737,10 +23905,7 @@ client.Invoices.Update(
 <dl>
 <dd>
 
-Mark an open invoice as paid when payment was collected outside of Whop.
-
-Required permissions:
- - `invoice:update`
+Generates the invoice as a PDF and returns a short-lived link to download it. A draft shows its estimated totals. The buyer's name and email need `member:basic:read` and `member:email:read`, and the Pay now link on an open invoice needs `payment:charge`. Each call generates a new file and link, so this endpoint does not replay `Idempotency-Key` responses.
 </dd>
 </dl>
 </dd>
@@ -23755,10 +23920,10 @@ Required permissions:
 <dd>
 
 ```go
-request := &whopsdk.MarkPaidInvoicesRequest{
-    ID: "inv_xxxxxxxxxxxxxx",
+request := &whopsdk.GeneratePdfInvoicesRequest{
+    ID: "id",
 }
-client.Invoices.MarkPaid(
+client.Invoices.GeneratePdf(
     context.TODO(),
     request,
 )
@@ -23776,7 +23941,7 @@ client.Invoices.MarkPaid(
 <dl>
 <dd>
 
-**id:** `string` — The unique identifier of the invoice to mark as paid.
+**id:** `string` — The invoice's pay_ ID.
     
 </dd>
 </dl>
@@ -23788,7 +23953,7 @@ client.Invoices.MarkPaid(
 </dl>
 </details>
 
-<details><summary><code>client.Invoices.MarkUncollectible(ID) -> bool</code></summary>
+<details><summary><code>client.Invoices.Issue(ID) -> *whopsdk.Invoice</code></summary>
 <dl>
 <dd>
 
@@ -23800,10 +23965,67 @@ client.Invoices.MarkPaid(
 <dl>
 <dd>
 
-Mark an open invoice as uncollectible when payment is not expected.
+Resolves final tax and opens a draft invoice. An invoice with a `payment_method_id` is then charged to it off-session, as `POST /payments` charges a saved payment method. Issuing an open invoice again retains its totals and charges nothing.
+</dd>
+</dl>
+</dd>
+</dl>
 
-Required permissions:
- - `invoice:update`
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.IssueInvoicesRequest{
+    ID: "id",
+}
+client.Invoices.Issue(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The invoice's pay_ ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Invoices.MarkUncollectible(ID) -> *whopsdk.Invoice</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Marks an open invoice as uncollectible. Reminders stop, but the customer can still pay it.
 </dd>
 </dl>
 </dd>
@@ -23819,7 +24041,7 @@ Required permissions:
 
 ```go
 request := &whopsdk.MarkUncollectibleInvoicesRequest{
-    ID: "inv_xxxxxxxxxxxxxx",
+    ID: "id",
 }
 client.Invoices.MarkUncollectible(
     context.TODO(),
@@ -23839,7 +24061,7 @@ client.Invoices.MarkUncollectible(
 <dl>
 <dd>
 
-**id:** `string` — The unique identifier of the invoice to mark as uncollectible.
+**id:** `string` — The invoice's pay_ ID.
     
 </dd>
 </dl>
@@ -23851,7 +24073,7 @@ client.Invoices.MarkUncollectible(
 </dl>
 </details>
 
-<details><summary><code>client.Invoices.Resend(ID) -> bool</code></summary>
+<details><summary><code>client.Invoices.Send(ID, request) -> *whopsdk.Invoice</code></summary>
 <dl>
 <dd>
 
@@ -23863,10 +24085,7 @@ client.Invoices.MarkUncollectible(
 <dl>
 <dd>
 
-Resend the notification email for an existing invoice to the customer.
-
-Required permissions:
- - `invoice:update`
+Issues a draft and emails it to its recipients, with reminders after the due date. A draft with a `payment_method_id` needs `payment:charge`: when its `due_at` is still ahead, it is emailed now and charged to that method on `due_at` (see `scheduled_charge_at`); otherwise it is charged right away instead of emailed. Voiding the invoice, marking it uncollectible, or paying it first cancels the scheduled charge, and its recipients get the payment link if a charge fails. Sending an open invoice emails it again, up to three emails a day including the first send. With `send_at`, the draft is sent at that time instead, and cannot be edited, except its recipients, until it is sent or unscheduled. Each email, reminders included, is sent separately to the customer email shown on the invoice and to each address in `recipient_emails`, so recipients never see each other's addresses.
 </dd>
 </dl>
 </dd>
@@ -23881,10 +24100,10 @@ Required permissions:
 <dd>
 
 ```go
-request := &whopsdk.ResendInvoicesRequest{
-    ID: "inv_xxxxxxxxxxxxxx",
+request := &whopsdk.SendInvoicesRequest{
+    ID: "id",
 }
-client.Invoices.Resend(
+client.Invoices.Send(
     context.TODO(),
     request,
 )
@@ -23902,7 +24121,15 @@ client.Invoices.Resend(
 <dl>
 <dd>
 
-**id:** `string` — The unique identifier of the invoice to resend.
+**id:** `string` — The invoice's pay_ ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sendAt:** `*time.Time` — When to send the draft, as an ISO 8601 timestamp in the future. Omit to send now.
     
 </dd>
 </dl>
@@ -23914,7 +24141,7 @@ client.Invoices.Resend(
 </dl>
 </details>
 
-<details><summary><code>client.Invoices.Void(ID) -> bool</code></summary>
+<details><summary><code>client.Invoices.Unschedule(ID) -> *whopsdk.Invoice</code></summary>
 <dl>
 <dd>
 
@@ -23926,10 +24153,67 @@ client.Invoices.Resend(
 <dl>
 <dd>
 
-Void an open invoice so it can no longer be paid. Voiding is permanent and cannot be undone.
+Cancels a draft's scheduled send, so it can be edited again. An invoice with no scheduled send is returned unchanged.
+</dd>
+</dl>
+</dd>
+</dl>
 
-Required permissions:
- - `invoice:update`
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.UnscheduleInvoicesRequest{
+    ID: "id",
+}
+client.Invoices.Unschedule(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The invoice's pay_ ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Invoices.Void(ID) -> *whopsdk.Invoice</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Voids a draft or unpaid invoice.
 </dd>
 </dl>
 </dd>
@@ -23945,7 +24229,7 @@ Required permissions:
 
 ```go
 request := &whopsdk.VoidInvoicesRequest{
-    ID: "inv_xxxxxxxxxxxxxx",
+    ID: "id",
 }
 client.Invoices.Void(
     context.TODO(),
@@ -23965,7 +24249,7 @@ client.Invoices.Void(
 <dl>
 <dd>
 
-**id:** `string` — The unique identifier of the invoice to void.
+**id:** `string` — The invoice's pay_ ID.
     
 </dd>
 </dl>
@@ -24917,7 +25201,7 @@ request := &whopsdk.ListMembersRequest{
             "prod_xxxxxxxxxxxxx",
         ),
     },
-    PlanIDs: []*string{
+    VariantIDs: []*string{
         whopsdk.String(
             "plan_xxxxxxxxxxxxx",
         ),
@@ -24986,7 +25270,7 @@ client.Members.List(
 <dl>
 <dd>
 
-**membershipStatus:** `*whopsdk.ListMembersRequestMembershipStatus` — `active` returns members holding at least one membership that currently grants access; `inactive` returns members holding at least one membership that does not. Combined with `product_ids`, `plan_ids`, or `promo_code_ids`, one membership must match all of them.
+**membershipStatus:** `*whopsdk.ListMembersRequestMembershipStatus` — `active` returns members holding at least one membership that currently grants access; `inactive` returns members holding at least one membership that does not. Combined with `product_ids`, `variant_ids`, or `promo_code_ids`, one membership must match all of them.
     
 </dd>
 </dl>
@@ -25002,7 +25286,7 @@ client.Members.List(
 <dl>
 <dd>
 
-**planIDs:** `*string` — Only return members holding a membership on one of these plans, prefixed `plan_`. Unknown IDs match nothing.
+**variantIDs:** `*string` — Only return members holding a membership on one of these variants, prefixed `plan_`. Unknown IDs match nothing.
     
 </dd>
 </dl>
@@ -25183,12 +25467,15 @@ Lists every membership the caller can read: an account API key its account's; a 
 
 ```go
 request := &whopsdk.ListMembershipsRequest{
+    ExternalAccount: whopsdk.String(
+        "discord_123456789012345678",
+    ),
     ProductIDs: []*string{
         whopsdk.String(
             "prod_xxxxxxxxxxxxx",
         ),
     },
-    PlanIDs: []*string{
+    VariantIDs: []*string{
         whopsdk.String(
             "plan_xxxxxxxxxxxxx",
         ),
@@ -25241,6 +25528,14 @@ client.Memberships.List(
 <dl>
 <dd>
 
+**externalAccount:** `*string` — Narrow to memberships linked to one Discord or Telegram account, given as the platform's user ID prefixed with `discord_` or `telegram_`. Discord matches include memberships imported with that Discord ID. Any other format is a 400.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **status:** `*whopsdk.ListMembershipsRequestStatus` — Filter by billing state. `trialing`, `active`, `past_due`, `completed`, `canceled`, and `expired` match the membership's `status`; `active`, `trialing`, and `past_due` exclude memberships set to cancel at period end. The other values are derived buckets that never appear as a `status`: `canceling` matches memberships set to cancel at period end; `paused` matches memberships with payment collection paused; `expiring` matches one-time purchases that have not yet expired; `one_time` matches one-time purchases that never expire; `unclaimed` matches memberships with no buyer user, including memberships bought by another business; `banned` matches memberships whose buyer is banned from the account.
     
 </dd>
@@ -25273,7 +25568,7 @@ client.Memberships.List(
 <dl>
 <dd>
 
-**planID:** `*string` — Filter to memberships of this variant (`plan_` tag).
+**variantID:** `*string` — Filter to memberships of this variant (`plan_` tag).
     
 </dd>
 </dl>
@@ -25281,7 +25576,7 @@ client.Memberships.List(
 <dl>
 <dd>
 
-**planIDs:** `*string` — Filter to memberships of any of these variants, each prefixed `plan_`. Repeat the parameter to pass several.
+**variantIDs:** `*string` — Filter to memberships of any of these variants, each prefixed `plan_`. Repeat the parameter to pass several.
     
 </dd>
 </dl>
@@ -25394,8 +25689,8 @@ Emails one recipient an invitation to a free variant's membership. The invitatio
 ```go
 request := &whopsdk.InviteMembershipsRequestBody{
     InviteMembershipsRequestBodyUserID: &whopsdk.InviteMembershipsRequestBodyUserID{
-        PlanID: "plan_xxxxxxxxxxxxxx",
         UserID: "user_xxxxxxxxxxxxxx",
+        VariantID: "plan_xxxxxxxxxxxxxx",
     },
 }
 client.Memberships.Invite(
@@ -28652,7 +28947,7 @@ client.PaymentMethods.DeletePaymentMethod(
 <dl>
 <dd>
 
-Prices a purchase the way a payment for it will be charged. The body is the `PaymentInput` a payment takes plus where the buyer is, which a seller that collects no tax on the purchase can leave out. The purchase is priced from exactly what you send: no buyer is looked up, so no stored registration or purchase history applies. Pass the quote's `id` as `quote_id` when you create the payment to charge exactly the purchase, promo code, and tax shown here. A quote is priced once and may be consumed by one payment before `expires_at`. Cart entries must name existing variants with `plan_id`.
+Prices a purchase the way a payment for it will be charged. The body is the `PaymentInput` a payment takes plus where the buyer is, which a seller that collects no tax on the purchase can leave out. The purchase is priced from exactly what you send: no buyer is looked up, so no stored registration or purchase history applies. Pass the quote's `id` as `quote_id` when you create the payment to charge exactly the purchase, promo code, and tax shown here. A quote is priced once and may be consumed by one payment before `expires_at`. Cart entries must name existing variants with `variant_id`.
 </dd>
 </dl>
 </dd>
@@ -28704,7 +28999,7 @@ client.PaymentQuotes.Create(
 <dl>
 <dd>
 
-**lineItems:** `[]*whopsdk.CreatePaymentQuotesRequestLineItemsItem` — What the buyer is purchasing. Each entry names an existing variant by plan_id. Several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency.
+**lineItems:** `[]*whopsdk.CreatePaymentQuotesRequestLineItemsItem` — What the buyer is purchasing. Each entry names an existing variant by `variant_id`. Several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency.
     
 </dd>
 </dl>
@@ -29514,7 +29809,7 @@ request := &whopsdk.ListPaymentsRequest{
             "eur",
         ),
     },
-    PlanIDs: []*string{
+    VariantIDs: []*string{
         whopsdk.String(
             "plan_xxxxxxxxxxxxx",
         ),
@@ -29607,7 +29902,7 @@ client.Payments.List(
 <dl>
 <dd>
 
-**includeConnectedAccounts:** `*bool` — Only for searches: with `query`, also search the account's connected accounts. Requires `account_id` and `query`, and is a 400 without either; it never lists connected accounts' payments on its own. Matches on payment, dispute, user or membership ID, buyer email, or a card's first 6 or 8 digits and last 4 separated by a space or dash (`424242 4242`). Free-text queries such as a name search only the named account. Connected accounts' payments are returned only for connected accounts you can read payments on.
+**includeConnectedAccounts:** `*bool` — Also cover the account's connected accounts. Requires `account_id`, and is a 400 without it. Without `query`, lists the payments of the account and every connected account, newest first by `created_at` only; another `order` is a 400. The listing is cut off after 10 seconds, which a rare filter on an account with little recent activity can reach; add a `query` to narrow it. With `query`, matches on payment, dispute, user or membership ID, buyer email, or a card's first 6 or 8 digits and last 4 separated by a space or dash (`424242 4242`); free-text queries such as a name search only the named account. Connected accounts' payments are returned only for connected accounts you can read payments on.
     
 </dd>
 </dl>
@@ -29639,7 +29934,7 @@ client.Payments.List(
 <dl>
 <dd>
 
-**planID:** `*string` — Only payments priced by this variant, prefixed `plan_`.
+**variantID:** `*string` — Only payments priced by this variant, prefixed `plan_`.
     
 </dd>
 </dl>
@@ -29695,7 +29990,7 @@ client.Payments.List(
 <dl>
 <dd>
 
-**planIDs:** `*string` — Only payments priced by any of these variants, each prefixed `plan_`. Repeat the parameter to pass several. Combined with `plan_id` when both are sent.
+**variantIDs:** `*string` — Only payments priced by any of these variants, each prefixed `plan_`. Repeat the parameter to pass several. Combined with `variant_id` when both are sent.
     
 </dd>
 </dl>
@@ -29875,7 +30170,7 @@ client.Payments.Create(
 <dl>
 <dd>
 
-**affiliateCode:** `*string` — The code an affiliate link carries, which is the affiliate's username. The affiliate is credited for this payment as on a checkout session. A code naming no one eligible to earn on the product is ignored, and the payment goes ahead. A promo code with its own affiliate takes precedence. No affiliate is credited on a variant without a product or on a purchase of several variants. At most 255 characters. Not supported with `payment_method`.
+**affiliateCode:** `*string` — The code an affiliate link carries, which is the affiliate's username. The affiliate is credited for this payment as on a checkout session. A code naming no one eligible to earn on the product is ignored, and the payment goes ahead. A promo code with its own affiliate takes precedence. No affiliate is credited on a variant without a product or on a purchase of several variants. At most 255 characters. Not supported with a `card_present` `payment_method`.
     
 </dd>
 </dl>
@@ -29884,6 +30179,14 @@ client.Payments.Create(
 <dd>
 
 **autoCaptureAfterMinutes:** `*int` — Minutes after authorization at which Whop captures the hold automatically unless it has been voided. Requires `capture: false`. Between 5 and 5760 (4 days).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**billingAddress:** `*whopsdk.CreatePaymentsRequestBillingAddress` — The buyer's billing address, returned on the payment as `billing_address` and used to calculate tax when Whop calculates it for the account. Only with a `paypal` `payment_method`. Only the keys you supply are kept.
     
 </dd>
 </dl>
@@ -29907,7 +30210,7 @@ client.Payments.Create(
 <dl>
 <dd>
 
-**email:** `*string` — The buyer's email, resolving or creating the user the payment belongs to. With `confirmation_token` it overrides the email the token carries, and is ignored when the token was created by a signed-in buyer; with `payment_method` it names a buyer the point of sale already knows, otherwise the sale belongs to a guest until a buyer is attached. Ignored with `member_id`.
+**email:** `*string` — The buyer's email, resolving or creating the user the payment belongs to. With `confirmation_token` it overrides the email the token carries, and is ignored when the token was created by a signed-in buyer; with a `card_present` `payment_method` it names a buyer the point of sale already knows, otherwise the sale belongs to a guest until a buyer is attached; with a `paypal` `payment_method` it names the buyer and is required unless `member_id` is provided. Ignored with `member_id`.
     
 </dd>
 </dl>
@@ -29923,7 +30226,7 @@ client.Payments.Create(
 <dl>
 <dd>
 
-**lineItems:** `[]*whopsdk.CreatePaymentsRequestLineItemsItem` — What the buyer is purchasing. Each entry takes exactly one of `plan_id` or an inline `plan`. One entry charges that variant; several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency. Mutually exclusive with `plan_id` and `plan`.
+**lineItems:** `[]*whopsdk.CreatePaymentsRequestLineItemsItem` — What the buyer is purchasing. Each entry takes exactly one of `variant_id` or an inline `variant`. One entry charges that variant; several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency. Mutually exclusive with `variant_id` and `variant`.
     
 </dd>
 </dl>
@@ -29931,7 +30234,7 @@ client.Payments.Create(
 <dl>
 <dd>
 
-**memberID:** `*string` — The member to charge, prefixed `mber_`. Required with `payment_method_id` unless `confirmation_token` is provided.
+**memberID:** `*string` — The member to charge, prefixed `mber_`. Required with `payment_method_id` unless `confirmation_token` is provided. With a `paypal` `payment_method` it names the buyer instead of `email`, and must belong to a user.
     
 </dd>
 </dl>
@@ -29955,7 +30258,7 @@ client.Payments.Create(
 <dl>
 <dd>
 
-**paymentMethod:** `*whopsdk.CreatePaymentsRequestPaymentMethod` — A payment method collected on the seller's device rather than described by a confirmation token. `type` names it and the member named after it carries what the device needs. Today only `card_present` (Tap to Pay): nothing is collected on this call, the payment is created first and the reader then collects against it with the client secret the status endpoint serves in `next_action`. Mutually exclusive with `confirmation_token`, `member_id` and `payment_method_id`.
+**paymentMethod:** `*whopsdk.CreatePaymentsRequestPaymentMethod` — A payment method named on this call rather than described by a confirmation token. `type` names it and the member named after it carries its details. Nothing is collected on this call: the payment is created first and the buyer or device then acts on the `next_action` the status endpoint serves. `card_present` (Tap to Pay): the reader collects against the payment with the client secret in `next_action`. `paypal`: the buyer approves on PayPal's page, reached through a `redirect` `next_action`, then returns to `return_url`; `member_id` or `email` names the buyer. Mutually exclusive with `confirmation_token` and `payment_method_id`, and with `member_id` except for `paypal`.
     
 </dd>
 </dl>
@@ -29971,7 +30274,7 @@ client.Payments.Create(
 <dl>
 <dd>
 
-**quoteID:** `*string` — A payment quote from `POST /payment_quotes`, prefixed `pq_`. The payment charges exactly the quote: its purchase (its variants and quantities, or the `plan` it priced), which this body may then omit, its promo code, and its tax, the quote's `tax_amount` rather than a figure calculated now. Omit it, or send null, to have tax calculated when the payment is charged. The quote must belong to `account_id`. A purchase field you omit or send as null takes the quote's value; the buyer's email, the addresses and the payment method are this request's own, never the quote's. Whatever you do send must describe the quoted purchase: the same variants, quantities and promo code. A quote that priced `plan` takes only the same `plan` you sent to `POST /payment_quotes` (or omit the purchase to take the quoted one), never `plan_id` or `line_items`, and a quote that priced variants by id never takes `plan`. Unless the quote located no buyer (`located_by` is null), the address the payment carries (its shipping address, else its billing address) must put the buyer where the quote priced tax, by country, state and postal code; otherwise the payment is refused with 400 before the payment method is used. A quote located by IP address or by the country the buyer chose (`located_by` is `ip_address` or `presentment_country`) is a preview and cannot be paid. A quote is consumed by one payment: a declined payment keeps it and can be retried; a new payment needs a new quote. A quote cannot be charged by a processor that doesn't take quotes, such as a seller's own connected PayPal account; such a payment is refused before the payment method is used. A quote priced in a `presentment_currency` is charged in that currency at the quote's `exchange_rate`. A payment refused over its quote carries an error `code`. `quote_expired`: the quote has expired; quote again. `quote_tax_unavailable`: the quote could not price tax; quote again, or omit `quote_id`. `quote_preview_only`: the quote was located by IP address or by the country the buyer chose; quote again with the buyer's address. `quote_in_use` (409): another payment holds the quote. `quote_mismatch`: the purchase or the buyer's address is not the one quoted. `quote_rate_expired`: the exchange rate the quote was priced at has moved too far to charge; quote again. `payment_method_currency_unsupported`: the payment method cannot pay in the quote's currency; use another method, or quote again in another currency. `quote_processor_unsupported`: the payment would be processed by a processor that doesn't take quotes, such as a seller's own connected PayPal account; use another method, or omit `quote_id` to have tax calculated when the payment is charged.
+**quoteID:** `*string` — A payment quote from `POST /payment_quotes`, prefixed `pq_`. The payment charges exactly the quote: its purchase (its variants and quantities, or the `variant` it priced), which this body may then omit, its promo code, and its tax, the quote's `tax_amount` rather than a figure calculated now. Omit it, or send null, to have tax calculated when the payment is charged. The quote must belong to `account_id`. A purchase field you omit or send as null takes the quote's value; the buyer's email, the addresses and the payment method are this request's own, never the quote's. Whatever you do send must describe the quoted purchase: the same variants, quantities and promo code. A quote that priced `variant` takes only the same `variant` you sent to `POST /payment_quotes` (or omit the purchase to take the quoted one), never `variant_id` or `line_items`, and a quote that priced variants by id never takes `variant`. Unless the quote located no buyer (`located_by` is null), the address the payment carries (its shipping address, else its billing address) must put the buyer where the quote priced tax, by country, state and postal code; otherwise the payment is refused with 400 before the payment method is used. A quote located by IP address or by the country the buyer chose (`located_by` is `ip_address` or `presentment_country`) is a preview and cannot be paid. A quote is consumed by one payment: a declined payment keeps it and can be retried; a new payment needs a new quote. A quote cannot be charged by a processor that doesn't take quotes, such as a seller's own connected PayPal account; such a payment is refused before the payment method is used. A quote priced in a `presentment_currency` is charged in that currency at the quote's `exchange_rate`. A payment refused over its quote carries an error `code`. `quote_expired`: the quote has expired; quote again. `quote_tax_unavailable`: the quote could not price tax; quote again, or omit `quote_id`. `quote_preview_only`: the quote was located by IP address or by the country the buyer chose; quote again with the buyer's address. `quote_in_use` (409): another payment holds the quote. `quote_mismatch`: the purchase or the buyer's address is not the one quoted. `quote_rate_expired`: the exchange rate the quote was priced at has moved too far to charge; quote again. `payment_method_currency_unsupported`: the payment method cannot pay in the quote's currency; use another method, or quote again in another currency. `quote_processor_unsupported`: the payment would be processed by a processor that doesn't take quotes, such as a seller's own connected PayPal account; use another method, or omit `quote_id` to have tax calculated when the payment is charged.
     
 </dd>
 </dl>
@@ -29979,7 +30282,15 @@ client.Payments.Create(
 <dl>
 <dd>
 
-**returnURL:** `*string` — Where the buyer continues after completing an off-site step such as 3D Secure. An absolute https URL without credentials, at most 2,048 characters. Required when a saved payment method is charged with `off_session` false; otherwise ignored unless `confirmation_token` is provided.
+**returnURL:** `*string` — Where the buyer continues after completing an off-site step such as 3D Secure. An absolute https URL without credentials, at most 2,048 characters. Required when a saved payment method is charged with `off_session` false; otherwise ignored unless `confirmation_token` or a `paypal` `payment_method` is provided.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**setupFutureUsage:** `*whopsdk.CreatePaymentsRequestSetupFutureUsage` — Attests that the buyer was told the payment method will be saved for later charges, and saves it once they approve, so it can be charged with `member_id` and `payment_method_id`. PayPal shows the buyer the agreement to future charges on its approval page. Omit it for a one-time payment that saves nothing. Ignored unless a `paypal` `payment_method` is provided.
     
 </dd>
 </dl>
@@ -30040,7 +30351,7 @@ request := &whopsdk.SummaryPaymentsRequest{
             "usd",
         ),
     },
-    PlanIDs: []*string{
+    VariantIDs: []*string{
         whopsdk.String(
             "plan_xxxxxxxxxxxxx",
         ),
@@ -30117,7 +30428,7 @@ client.Payments.Summary(
 <dl>
 <dd>
 
-**planIDs:** `*string` — Only payments priced by any of these variants, each prefixed `plan_`. Repeat the parameter to pass several.
+**variantIDs:** `*string` — Only payments priced by any of these variants, each prefixed `plan_`. Repeat the parameter to pass several.
     
 </dd>
 </dl>
@@ -30757,7 +31068,7 @@ client.Payments.Void(
 <dl>
 <dd>
 
-Charges the saved card again, with the buyer present, for a payment their bank declined until they authenticate (such as with 3DS). Retrieve the payment afterward to get the bank's challenge from `next_action`; once the buyer completes it, they land on `return_url`, or on Whop's hosted verification page if none was given. Only the buyer can call this, with the payment's `client_secret`, an OAuth token for their own account with the `member:payment_methods:use` scope, or the token from a verified `payment` session intent. An API key gets a `403`. Has no effect on a payment that is not waiting on authentication.
+Charges the saved card again, with the buyer present, for a payment their bank declined until they authenticate (such as with 3DS). Retrieve the payment afterward to get the bank's challenge from `next_action`; once the buyer completes it, they land on `return_url`, or on Whop's hosted verification page if none was given. Only the buyer can call this, with the payment's `client_secret` in the body, an OAuth token for their own account with the `member:payment_methods:use` scope, or the token from a verified `payment` session intent. An API key gets a `403`. Has no effect on a payment that is not waiting on authentication.
 </dd>
 </dl>
 </dd>
@@ -30801,6 +31112,14 @@ client.Payments.Resume(
 <dl>
 <dd>
 
+**clientSecret:** `*string` — The payment's own `client_secret`, for a buyer without a token.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **returnURL:** `*string` — Where the buyer continues after completing an off-site step. Must be an absolute https URL without credentials (http is allowed for localhost), at most 2,048 characters. Defaults to Whop's hosted verification page. Ignored when the payment is not waiting on authentication.
     
 </dd>
@@ -30825,7 +31144,7 @@ client.Payments.Resume(
 <dl>
 <dd>
 
-Changes where the buyer lands after completing an off-site step, up until they return. Accepts either a secret key or the payment's own `client_secret`, so the surface that knows the final destination can set it.
+Changes where the buyer lands after completing an off-site step, up until they return. Accepts either a secret key or the payment's own `client_secret` in the body, so the surface that knows the final destination can set it.
 </dd>
 </dl>
 </dd>
@@ -30870,6 +31189,14 @@ client.Payments.UpdateReturnURL(
 <dl>
 <dd>
 
+**clientSecret:** `*string` — The payment's own `client_secret`, for a caller without a secret key.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **returnURL:** `string` — Where the buyer continues after completing an off-site step. Must be an absolute https URL without credentials (http is allowed for localhost), at most 2,048 characters.
     
 </dd>
@@ -30894,7 +31221,7 @@ client.Payments.UpdateReturnURL(
 <dl>
 <dd>
 
-Retrieves how far a payment has got and what the buyer must do next, if anything. A payment is collected in the background, so poll this rather than reading the create response. Accepts either a secret key or the payment's own `client_secret`, so the surface collecting the payment can poll it directly.
+Retrieves how far a payment has got and what the buyer must do next, if anything. A payment is collected in the background, so poll this rather than reading the create response. Accepts either a secret key or the payment's own `client_secret` as a query parameter, so the surface collecting the payment can poll it directly.
 </dd>
 </dl>
 </dd>
@@ -30931,6 +31258,14 @@ client.Payments.RetrieveStatus(
 <dd>
 
 **paymentID:** `string` — The unique identifier of the payment.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**clientSecret:** `*string` — The payment's own `client_secret`, for a caller without a secret key.
     
 </dd>
 </dl>
@@ -31455,7 +31790,7 @@ client.Payouts.Create(
 <dl>
 <dd>
 
-**statementDescriptor:** `*string` — Text that appears on the recipient's bank statement. Must be 5-22 alphanumeric characters (A-Z, a-z, 0-9). Without a `quote_token`, omit or pass `null` to use the default descriptor. With a `quote_token`, set this value when creating the quote; the payout request may omit it but cannot add or change it.
+**statementDescriptor:** `*string` — Payment description sent with the payout, such as an invoice number or what it pays for. Must be 5-80 printable ASCII characters (letters, digits, spaces and punctuation); Whop sends it in upper case. Not all countries and banks show it on the recipient's statement, and it is not the sender name. Without a `quote_token`, omit or pass `null` to use the default descriptor. With a `quote_token`, set this value when creating the quote; the payout request may omit it but cannot add or change it.
     
 </dd>
 </dl>
@@ -31587,7 +31922,7 @@ client.Payouts.CreateQuote(
 <dl>
 <dd>
 
-**statementDescriptor:** `*string` — Text that appears on the recipient's bank statement. Must be 5-22 alphanumeric characters (A-Z, a-z, 0-9). Omit or pass `null` to use the default descriptor.
+**statementDescriptor:** `*string` — Payment description sent with the payout, such as an invoice number or what it pays for. Must be 5-80 printable ASCII characters (letters, digits, spaces and punctuation); Whop sends it in upper case. Not all countries and banks show it on the recipient's statement, and it is not the sender name. Omit or pass `null` to use the default descriptor.
     
 </dd>
 </dl>
@@ -32405,7 +32740,7 @@ client.Plans.List(
 <dl>
 <dd>
 
-**planTypes:** `*string` 
+**billingTypes:** `*string` 
     
 </dd>
 </dl>
@@ -32535,6 +32870,14 @@ client.Plans.Create(
 <dl>
 <dd>
 
+**allowMultipleQuantity:** `*bool` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **attributes:** `map[string]any` 
     
 </dd>
@@ -32544,6 +32887,30 @@ client.Plans.Create(
 <dd>
 
 **billingPeriod:** `*int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**billingType:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cancelDiscountIntervals:** `*int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cancelDiscountPercentage:** `*int` 
     
 </dd>
 </dl>
@@ -32623,6 +32990,14 @@ client.Plans.Create(
 <dl>
 <dd>
 
+**offerCancelDiscount:** `*bool` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **overrideTaxType:** `*string` 
     
 </dd>
@@ -32632,14 +33007,6 @@ client.Plans.Create(
 <dd>
 
 **paymentMethodConfiguration:** `*whopsdk.CreatePlansRequestPaymentMethodConfiguration` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**planType:** `*string` 
     
 </dd>
 </dl>
@@ -32923,6 +33290,14 @@ client.Plans.Update(
 <dl>
 <dd>
 
+**allowMultipleQuantity:** `*bool` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **attributes:** `map[string]any` 
     
 </dd>
@@ -33068,6 +33443,14 @@ client.Plans.Update(
 <dd>
 
 **sku:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**splitPayRequiredPayments:** `*int` 
     
 </dd>
 </dl>
@@ -33447,7 +33830,7 @@ client.Products.List(
 <dl>
 <dd>
 
-**planTypes:** `*whopsdk.ListProductsRequestPlanTypesItem` — Filter to products with a buyable variant of these billing models, such as `one_time` or `renewal`.
+**billingTypes:** `*whopsdk.ListProductsRequestBillingTypesItem` — Filter to products with a buyable variant of these billing models, such as `one_time` or `renewal`.
     
 </dd>
 </dl>
@@ -34190,7 +34573,7 @@ request := &whopsdk.ListPromoCodesRequest{
             "prod_xxxxxxxxxxxxxx",
         ),
     },
-    PlanIDs: []*string{
+    VariantIDs: []*string{
         whopsdk.String(
             "plan_xxxxxxxxxxxxxx",
         ),
@@ -34238,7 +34621,7 @@ client.PromoCodes.List(
 <dl>
 <dd>
 
-**planIDs:** `*string` — Only promo codes scoped to these variant IDs.
+**variantIDs:** `*string` — Only promo codes scoped to these variant IDs.
     
 </dd>
 </dl>
@@ -34440,14 +34823,6 @@ client.PromoCodes.Create(
 <dl>
 <dd>
 
-**planIDs:** `[]string` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **productID:** `*string` 
     
 </dd>
@@ -34481,6 +34856,14 @@ client.PromoCodes.Create(
 <dd>
 
 **unlimitedStock:** `*bool` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**variantIDs:** `[]string` 
     
 </dd>
 </dl>
@@ -36829,7 +37212,7 @@ client.SetupIntents.Retrieve(
 <dl>
 <dd>
 
-Changes where the buyer lands after completing an off-site step, up until they return. Accepts either a secret key or the setup's own `client_secret`, so the surface that knows the final destination can set it.
+Changes where the buyer lands after completing an off-site step, up until they return. Accepts either a secret key or the setup's own `client_secret` in the body, so the surface that knows the final destination can set it.
 </dd>
 </dl>
 </dd>
@@ -36874,6 +37257,14 @@ client.SetupIntents.UpdateReturnURL(
 <dl>
 <dd>
 
+**clientSecret:** `*string` — The setup's own `client_secret`, for a caller without a secret key.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **returnURL:** `string` — Where the buyer continues after completing an off-site step. Must be an absolute https URL without credentials (http is allowed for localhost), at most 2,048 characters.
     
 </dd>
@@ -36898,7 +37289,7 @@ client.SetupIntents.UpdateReturnURL(
 <dl>
 <dd>
 
-Retrieves how far a setup has got and what the buyer must do next, if anything. Collection runs in the background, so poll this rather than reading the create response. Accepts either a secret key or the setup's own `client_secret`, so the surface collecting the payment method can poll it directly.
+Retrieves how far a setup has got and what the buyer must do next, if anything. Collection runs in the background, so poll this rather than reading the create response. Accepts either a secret key or the setup's own `client_secret` as a query parameter, so the surface collecting the payment method can poll it directly.
 </dd>
 </dl>
 </dd>
@@ -36935,6 +37326,14 @@ client.SetupIntents.RetrieveStatus(
 <dd>
 
 **setupIntentID:** `string` — The unique identifier of the setup intent.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**clientSecret:** `*string` — The setup's own `client_secret`, for a caller without a secret key.
     
 </dd>
 </dl>
@@ -37585,7 +37984,15 @@ client.SocialAccounts.Create(
 <dl>
 <dd>
 
-**platform:** `whopsdk.CreateSocialAccountsRequestPlatform` — The platform to create the external account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes.
+**apiKey:** `*string` — A private API key for the account on the platform. Required for `klaviyo`, which needs read access to Accounts; not accepted for other platforms. Whop checks the key with the platform before connecting and never returns it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**platform:** `whopsdk.CreateSocialAccountsRequestPlatform` — The platform to create the external account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes. `klaviyo` connects the account's existing Klaviyo account with the `api_key` you pass.
     
 </dd>
 </dl>
@@ -39372,7 +39779,7 @@ client.Swaps.Create(
 <dl>
 <dd>
 
-**amount:** `*string` — Source token amount. Required for crypto swaps. For fiat pairs: the amount of from_token to convert at the mid-market rate; omit (along with to_amount) to repay the full negative to_token balance instead.
+**amount:** `*string` — Source token amount. Required for a crypto pair: a decimal amount, or `all` to swap the whole from_token balance in the account's wallet, read from the chain when the swap is created (any token but USDT). An amount above that balance is rejected when the balance can be read. For fiat pairs: the amount of from_token to convert at the mid-market rate; omit (along with to_amount) to repay the full negative to_token balance instead.
     
 </dd>
 </dl>
@@ -39819,7 +40226,7 @@ client.TeamMembers.List(
 <dl>
 <dd>
 
-Adds a member to an account's team with a system role. Identify them by exactly one of `user_id` or `email`. If the person has not yet accepted — or the email does not belong to a Whop account yet — an invitation is sent instead and the response is `202` with an `object` of `team_member_invite`. If they already have a pending invite, the request fails with a `400`. Granting the `workforce` role is also allowed with the `bounty:create` scope.
+Adds a member to an account's team with a system role. Identify them by exactly one of `user_id` or `email`. If the person has not yet accepted, or the email does not belong to a Whop account yet, an invitation is sent instead and the response is `202` with the pending team member, whose `status` is `pending` and whose id is prefixed `ausri_`. If they already have a pending invite, the request fails with a `400`. Granting the `workforce` role is also allowed with the `bounty:create` scope.
 </dd>
 </dl>
 </dd>
@@ -39836,7 +40243,10 @@ Adds a member to an account's team with a system role. Identify them by exactly 
 ```go
 request := &whopsdk.CreateTeamMembersRequest{
     AccountID: "biz_xxxxxxxxxxxxxx",
-    Role: whopsdk.CreateTeamMembersRequestRoleOwner,
+    Role: whopsdk.CreateTeamMembersRequestRoleSalesManager,
+    UserID: whopsdk.String(
+        "user_xxxxxxxxxxxxxx",
+    ),
 }
 client.TeamMembers.Create(
     context.TODO(),
@@ -41479,7 +41889,7 @@ request := &whopsdk.ListVariantsRequest{
             "visible",
         ),
     },
-    PlanTypes: []*string{
+    BillingTypes: []*string{
         whopsdk.String(
             "renewal",
         ),
@@ -41557,7 +41967,7 @@ client.Variants.List(
 <dl>
 <dd>
 
-**planTypes:** `*string` — Filter to only variants matching these billing types.
+**billingTypes:** `*string` — Filter to only variants matching these billing types.
     
 </dd>
 </dl>
@@ -41711,6 +42121,14 @@ client.Variants.Create(
 <dl>
 <dd>
 
+**allowMultipleQuantity:** `*bool` — Whether more than one unit can be purchased in an order. Renewal variants cannot enable it. When `false`, checkouts, carts, and invoices reject a quantity above 1.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **attributes:** `map[string]any` — Attribute values that make this variant one variant of its product, as a map of attribute name to value, e.g. `{"size": "Large", "color": "Blue"}`. Names are normalized to snake_case identifiers (`Ring Size` becomes `ring_size`) and come back in alphabetical order. Every variant on a product must carry the same attribute names and a distinct set of values. Send `null` to make the variant an ordinary pricing option again.
     
 </dd>
@@ -41720,6 +42138,30 @@ client.Variants.Create(
 <dd>
 
 **billingPeriod:** `*int` — Recurring billing interval in days, such as 30 for monthly or 365 for annual.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**billingType:** `*string` — Variant billing type, such as `one_time` or `renewal`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cancelDiscountIntervals:** `*int` — How long the retention discount lasts: `0` forever, `1` the next payment only, or a number of calendar months from when the customer accepts it. Required when `offer_cancel_discount` is true.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cancelDiscountPercentage:** `*int` — Percentage taken off each discounted renewal, as a whole number from 1 to 100. Required when `offer_cancel_discount` is true.
     
 </dd>
 </dl>
@@ -41799,6 +42241,14 @@ client.Variants.Create(
 <dl>
 <dd>
 
+**offerCancelDiscount:** `*bool` — Whether to offer a retention discount when a customer attempts to cancel.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **overrideTaxType:** `*string` — Override the default tax classification for this specific variant.
     
 </dd>
@@ -41808,14 +42258,6 @@ client.Variants.Create(
 <dd>
 
 **paymentMethodConfiguration:** `*whopsdk.CreateVariantsRequestPaymentMethodConfiguration` — Explicit payment method configuration for the variant. When not provided, the account's defaults apply. Send at least one of `enabled` or `disabled`; an omitted one is empty.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**planType:** `*string` — Variant billing type, such as `one_time` or `renewal`.
     
 </dd>
 </dl>
@@ -41855,7 +42297,7 @@ client.Variants.Create(
 <dl>
 <dd>
 
-**splitPayRequiredPayments:** `*int` — Installment payments required before the subscription pauses.
+**splitPayRequiredPayments:** `*int` — Installment payments required before the subscription pauses, from 2 to 115. Only valid on `renewal` variants.
     
 </dd>
 </dl>
@@ -42132,6 +42574,14 @@ client.Variants.Update(
 <dl>
 <dd>
 
+**allowMultipleQuantity:** `*bool` — Whether more than one unit can be purchased in an order. Renewal variants cannot enable it. When `false`, checkouts, carts, and invoices reject a quantity above 1.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **attributes:** `map[string]any` — Attribute values that make this variant one variant of its product, as a map of attribute name to value, e.g. `{"size": "Large", "color": "Blue"}`. Names are normalized to snake_case identifiers (`Ring Size` becomes `ring_size`) and come back in alphabetical order. Every variant on a product must carry the same attribute names and a distinct set of values. Send `null` to make the variant an ordinary pricing option again.
     
 </dd>
@@ -42148,7 +42598,7 @@ client.Variants.Update(
 <dl>
 <dd>
 
-**cancelDiscountIntervals:** `*int` — How many renewals the retention discount applies to. Required when `offer_cancel_discount` is true.
+**cancelDiscountIntervals:** `*int` — How long the retention discount lasts: `0` forever, `1` the next payment only, or a number of calendar months from when the customer accepts it. Required when `offer_cancel_discount` is true.
     
 </dd>
 </dl>
@@ -42156,7 +42606,7 @@ client.Variants.Update(
 <dl>
 <dd>
 
-**cancelDiscountPercentage:** `*int` — Percentage taken off each discounted renewal. Required when `offer_cancel_discount` is true.
+**cancelDiscountPercentage:** `*int` — Percentage taken off each discounted renewal, as a whole number from 1 to 100. Required when `offer_cancel_discount` is true.
     
 </dd>
 </dl>
@@ -42277,6 +42727,14 @@ client.Variants.Update(
 <dd>
 
 **sku:** `*string` — Stock keeping unit for this variant. Maximum 100 characters. Free text, not enforced unique.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**splitPayRequiredPayments:** `*int` — Installment payments required before the subscription pauses, from 2 to 115. Only valid on `renewal` variants.
     
 </dd>
 </dl>
@@ -42455,7 +42913,7 @@ client.Variants.CalculateTax(
 <dl>
 <dd>
 
-Lists the verifications for an account or user, including their status and any required actions.
+Lists the verifications for an account or user, including their status and any required actions. Platforms list their own and every subaccount's verifications at once with `include_subaccounts`; each one's `account_ids` names its account, and a verification shared by several accounts appears once for each.
 </dd>
 </dl>
 </dd>
@@ -42498,6 +42956,46 @@ client.Verifications.List(
 <dd>
 
 **userID:** `*string` — The caller's own user ID, prefixed `user_`, to list personal verifications. Provide this or `account_id`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeSubaccounts:** `*bool` — Also cover the account's subaccounts. Requires `account_id`, and is a 400 without it. Lists the verifications of the account and every subaccount in account order, oldest account first, paging forward; `status`, `order`, `direction`, `last` and `before` are a 400. Leaves out removed subaccounts and ones you can't read verifications on. A page can hold fewer than `first` verifications while `has_next_page` is `true`; keep following `end_cursor`. On a subaccount, lists only that account's verifications.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `*int` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `*int` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -42813,7 +43311,7 @@ client.WaitlistEntries.List(
 <dl>
 <dd>
 
-**planID:** `*string` — Only return signups for this variant, prefixed `plan_`.
+**variantID:** `*string` — Only return signups for this variant, prefixed `plan_`.
     
 </dd>
 </dl>
@@ -42846,6 +43344,14 @@ client.WaitlistEntries.List(
 <dd>
 
 **status:** `*whopsdk.ListWaitlistEntriesRequestStatus` — Only return signups in this state. Canceled signups are returned only when `status` is `canceled`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**query:** `*string` — Search signups by the user's name or username, or the name of the account they were submitted on behalf of. An account ID, prefixed `biz_`, matches signups submitted on behalf of that account, and an exact email address matches that user's signups.
     
 </dd>
 </dl>
@@ -42917,7 +43423,7 @@ Joins a free waitlist variant as the authenticated user, or on behalf of an acco
 
 ```go
 request := &whopsdk.CreateWaitlistEntriesRequest{
-    PlanID: "plan_xxxxxxxxxxxxxx",
+    VariantID: "plan_xxxxxxxxxxxxxx",
 }
 client.WaitlistEntries.Create(
     context.TODO(),
@@ -42961,7 +43467,7 @@ client.WaitlistEntries.Create(
 <dl>
 <dd>
 
-**planID:** `string` — The free waitlist variant to join, prefixed `plan_`.
+**variantID:** `string` — The free waitlist variant to join, prefixed `plan_`.
     
 </dd>
 </dl>
@@ -43029,7 +43535,7 @@ client.WaitlistEntries.ApproveAll(
 <dl>
 <dd>
 
-**planID:** `*string` — Only approve signups for this variant, prefixed `plan_`. Omit to include every waitlist variant on the account.
+**variantID:** `*string` — Only approve signups for this variant, prefixed `plan_`. Omit to include every waitlist variant on the account.
     
 </dd>
 </dl>
@@ -43484,6 +43990,14 @@ client.Webhooks.Create(
 <dl>
 <dd>
 
+**title:** `*string` — A label for the webhook, shown in the dashboard. Up to 255 characters.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **url:** `string` — The URL to send the webhook to.
     
 </dd>
@@ -43704,6 +44218,14 @@ client.Webhooks.Update(
 <dl>
 <dd>
 
+**title:** `*string` — A label for the webhook, shown in the dashboard. Up to 255 characters. Pass `null` or an empty string to remove it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **url:** `*string` — The URL to send the webhook to.
     
 </dd>
@@ -43728,7 +44250,7 @@ client.Webhooks.Update(
 <dl>
 <dd>
 
-Returns a paginated list of delivery attempts for a webhook, ordered by most recent first. Includes the request payload, response body, response code, and timing for each attempt.
+Returns a paginated list of delivery attempts for a webhook, ordered by most recent first. Includes the request payload, response body, response code, and timing for each attempt. Filtered queries use a bounded read budget, so a page may be partial or empty. Continue with `page_info.end_cursor` while `page_info.has_next_page` is `true`.
 </dd>
 </dl>
 </dd>
@@ -43745,6 +44267,9 @@ Returns a paginated list of delivery attempts for a webhook, ordered by most rec
 ```go
 request := &whopsdk.ListDeliveriesWebhooksRequest{
     ID: "id",
+    ResourceID: whopsdk.String(
+        "pay_xxxxxxxxxxxxx",
+    ),
 }
 client.Webhooks.ListDeliveries(
     context.TODO(),
@@ -43781,6 +44306,46 @@ client.Webhooks.ListDeliveries(
 <dd>
 
 **after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sentAfter:** `*time.Time` — Only deliveries sent at or after this ISO 8601 timestamp. Deliveries are retained for 30 days.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sentBefore:** `*time.Time` — Only deliveries sent at or before this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**events:** `*whopsdk.ListDeliveriesWebhooksRequestEventsItem` — Only deliveries of these event types. Repeat the parameter to pass several.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `*whopsdk.ListDeliveriesWebhooksRequestStatus` — Only deliveries with this outcome: `success` for a 2xx response, `error` otherwise.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**resourceID:** `*string` — Only deliveries triggered by this resource.
     
 </dd>
 </dl>
@@ -44217,6 +44782,22 @@ client.Accounts.Fees.Update(
 <dl>
 <dd>
 
+**achDispute:** `*accounts.UpdateFeesRequestAchDispute` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**achReturn:** `*accounts.UpdateFeesRequestAchReturn` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **bankDeposit:** `*accounts.UpdateFeesRequestBankDeposit` — The fields of a fee the caller may change. Only the keys sent are replaced.
     
 </dd>
@@ -44418,6 +44999,22 @@ client.Accounts.Fees.Update(
 <dd>
 
 **revshare:** `*accounts.UpdateFeesRequestRevshare` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sepaDispute:** `*accounts.UpdateFeesRequestSepaDispute` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sepaReturn:** `*accounts.UpdateFeesRequestSepaReturn` — The fields of a fee the caller may change. Only the keys sent are replaced.
     
 </dd>
 </dl>
@@ -46516,6 +47113,22 @@ client.Partners.Businesses.List(
 <dl>
 <dd>
 
+**firstSaleBefore:** `*string` — Only return partner businesses whose first paid sale above zero happened before this timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**firstSaleAfter:** `*string` — Only return partner businesses whose first paid sale above zero happened after this timestamp. Combined with first_sale_before, this is the net new set: businesses that processed their first $1 inside the window.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **referredUserID:** `*string` — Filter to referrals attributed to this user. For first-tier referrals, this is the referred account owner; for second-tier referrals, this is the partner you recruited.
     
 </dd>
@@ -47098,7 +47711,7 @@ client.Payments.Direct.Create(
 <dl>
 <dd>
 
-**lineItems:** `[]*payments.CreateDirectRequestLineItemsItem` — What the buyer is purchasing. Each entry names an existing variant by plan_id. Several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency.
+**lineItems:** `[]*payments.CreateDirectRequestLineItemsItem` — What the buyer is purchasing. Each entry names an existing variant by `variant_id`. Several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency.
     
 </dd>
 </dl>
@@ -47138,7 +47751,23 @@ client.Payments.Direct.Create(
 <dl>
 <dd>
 
-**quoteID:** `*string` — A payment quote from `POST /payment_quotes`, prefixed `pq_`. The payment charges exactly the quote: its purchase (its variants and quantities, or the `plan` it priced), which this body may then omit, its promo code, and its tax, the quote's `tax_amount` rather than a figure calculated now. Omit it, or send null, to have tax calculated when the payment is charged. The quote must belong to `account_id`. A purchase field you omit or send as null takes the quote's value; the buyer's email, the addresses and the payment method are this request's own, never the quote's. Whatever you do send must describe the quoted purchase: the same variants, quantities and promo code. A quote that priced `plan` takes only the same `plan` you sent to `POST /payment_quotes` (or omit the purchase to take the quoted one), never `plan_id` or `line_items`, and a quote that priced variants by id never takes `plan`. Unless the quote located no buyer (`located_by` is null), the address the payment carries (its shipping address, else its billing address) must put the buyer where the quote priced tax, by country, state and postal code; otherwise the payment is refused with 400 before the payment method is used. A quote located by IP address or by the country the buyer chose (`located_by` is `ip_address` or `presentment_country`) is a preview and cannot be paid. A quote is consumed by one payment: a declined payment keeps it and can be retried; a new payment needs a new quote. A quote cannot be charged by a processor that doesn't take quotes, such as a seller's own connected PayPal account; such a payment is refused before the payment method is used. A quote priced in a `presentment_currency` is charged in that currency at the quote's `exchange_rate`. A payment refused over its quote carries an error `code`. `quote_expired`: the quote has expired; quote again. `quote_tax_unavailable`: the quote could not price tax; quote again, or omit `quote_id`. `quote_preview_only`: the quote was located by IP address or by the country the buyer chose; quote again with the buyer's address. `quote_in_use` (409): another payment holds the quote. `quote_mismatch`: the purchase or the buyer's address is not the one quoted. `quote_rate_expired`: the exchange rate the quote was priced at has moved too far to charge; quote again. `payment_method_currency_unsupported`: the payment method cannot pay in the quote's currency; use another method, or quote again in another currency. `quote_processor_unsupported`: the payment would be processed by a processor that doesn't take quotes, such as a seller's own connected PayPal account; use another method, or omit `quote_id` to have tax calculated when the payment is charged.
+**plan:** `*payments.CreateDirectRequestPlan` — Deprecated: send `variant`, which takes `billing_type` in place of `plan_type`. Accepted only from callers pinned to an API version before 2026-10-27-2.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**planID:** `*string` — Deprecated: send `variant_id`. Accepted only from callers pinned to an API version before 2026-10-27-2.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**quoteID:** `*string` — A payment quote from `POST /payment_quotes`, prefixed `pq_`. The payment charges exactly the quote: its purchase (its variants and quantities, or the `variant` it priced), which this body may then omit, its promo code, and its tax, the quote's `tax_amount` rather than a figure calculated now. Omit it, or send null, to have tax calculated when the payment is charged. The quote must belong to `account_id`. A purchase field you omit or send as null takes the quote's value; the buyer's email, the addresses and the payment method are this request's own, never the quote's. Whatever you do send must describe the quoted purchase: the same variants, quantities and promo code. A quote that priced `variant` takes only the same `variant` you sent to `POST /payment_quotes` (or omit the purchase to take the quoted one), never `variant_id` or `line_items`, and a quote that priced variants by id never takes `variant`. Unless the quote located no buyer (`located_by` is null), the address the payment carries (its shipping address, else its billing address) must put the buyer where the quote priced tax, by country, state and postal code; otherwise the payment is refused with 400 before the payment method is used. A quote located by IP address or by the country the buyer chose (`located_by` is `ip_address` or `presentment_country`) is a preview and cannot be paid. A quote is consumed by one payment: a declined payment keeps it and can be retried; a new payment needs a new quote. A quote cannot be charged by a processor that doesn't take quotes, such as a seller's own connected PayPal account; such a payment is refused before the payment method is used. A quote priced in a `presentment_currency` is charged in that currency at the quote's `exchange_rate`. A payment refused over its quote carries an error `code`. `quote_expired`: the quote has expired; quote again. `quote_tax_unavailable`: the quote could not price tax; quote again, or omit `quote_id`. `quote_preview_only`: the quote was located by IP address or by the country the buyer chose; quote again with the buyer's address. `quote_in_use` (409): another payment holds the quote. `quote_mismatch`: the purchase or the buyer's address is not the one quoted. `quote_rate_expired`: the exchange rate the quote was priced at has moved too far to charge; quote again. `payment_method_currency_unsupported`: the payment method cannot pay in the quote's currency; use another method, or quote again in another currency. `quote_processor_unsupported`: the payment would be processed by a processor that doesn't take quotes, such as a seller's own connected PayPal account; use another method, or omit `quote_id` to have tax calculated when the payment is charged.
     
 </dd>
 </dl>
@@ -48833,6 +49462,104 @@ client.Stats.TimeSeries.Retrieve(
 </dl>
 </details>
 
+## Trades Markets
+<details><summary><code>client.Trades.Markets.List() -> *trades.ListMarketsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns every market you can trade on Whop.
+
+- **Spot:** listed by symbol: `BTC`, `ETH`, `SOL` and `XAUT` (gold).
+- **Perpetuals:** such as `BTC`. Send the `id` as `market` when you create a trade.
+
+The same symbol can appear twice, once as a perpetual and once as spot, so use `id` together with `instrument_type` to tell them apart. Results are sorted by `id`, then `instrument_type`.
+
+This endpoint is public: no API key is needed, and each IP address can make up to 60 requests a minute.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &trades.ListMarketsRequest{}
+client.Trades.Markets.List(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**instrumentType:** `*trades.ListMarketsRequestInstrumentType` — Only return perpetuals or only spot markets.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `*int` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `*int` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Users OauthGrants
 <details><summary><code>client.Users.OauthGrants.List() -> *users.ListOauthGrantsResponse</code></summary>
 <dl>
@@ -49195,7 +49922,7 @@ client.Users.Passkeys.List(
 <dl>
 <dd>
 
-Registers a passkey for the authenticated user from the attestation a browser produced for a `registration` challenge. Mint that challenge first with `POST /users/me/passkeys/challenge`; it is single-use and expires 5 minutes after it is issued. Requires a user session.
+Registers a passkey for the authenticated user from the attestation a browser produced for a `registration` challenge. Mint that challenge first with `POST /users/me/passkeys/challenge` and run the ceremony with its `creation_options`; it is single-use and expires 5 minutes after it is issued. Send back the `user_handle` the options carried: registering with it replaces the account's passkeys made before Whop issued options, which can only be deleted. Requires a user session that has completed step-up verification.
 </dd>
 </dl>
 </dd>
@@ -49262,6 +49989,22 @@ client.Users.Passkeys.Create(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**transports:** `[]string` — The `getTransports()` result from the registration response. Values Whop does not recognize are dropped.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**userHandle:** `*string` — The `creation_options.user.id` the passkey was created with. Must match the challenge's options.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
@@ -49270,7 +50013,7 @@ client.Users.Passkeys.Create(
 </dl>
 </details>
 
-<details><summary><code>client.Users.Passkeys.Challenge(request) -> *users.ChallengePasskeysResponse</code></summary>
+<details><summary><code>client.Users.Passkeys.Challenge(request) -> *whopsdk.PasskeyChallenge</code></summary>
 <dl>
 <dd>
 
@@ -49282,7 +50025,7 @@ client.Users.Passkeys.Create(
 <dl>
 <dd>
 
-Mints the challenge a browser needs to run a WebAuthn ceremony against the authenticated user's own passkeys. A `registration` challenge enrolls a new passkey; a `deletion` challenge is bound to the one passkey named by `passkey_id` and proves the user still holds it. Challenges are single-use and expire 5 minutes after they are issued, so send a fresh `Idempotency-Key` per ceremony — a replayed key returns the original challenge, which may already have expired. Requires a user session.
+Mints the challenge and WebAuthn options a browser needs to run a ceremony against the authenticated user's own passkeys. A `registration` challenge enrolls a new passkey; a `deletion` challenge is bound to the one passkey named by `passkey_id` and proves the user still holds it. The options are in wire snake_case: convert the keys to camelCase before passing them to the browser. Challenges are single-use and expire 5 minutes after they are issued, so send a fresh `Idempotency-Key` per ceremony — a replayed key returns the original challenge, which may already have expired. Requires a user session. A `registration` challenge also requires step-up verification, so the user completes it before the browser ceremony.
 </dd>
 </dl>
 </dd>

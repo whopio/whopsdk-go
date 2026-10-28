@@ -21,7 +21,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-10-15-1"
+		apiVersionDateDefault := "2026-10-27-3"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -55,6 +55,33 @@ func (c *Client) Create(
 	opts ...option.RequestOption,
 ) (*whopsdk.CreateDepositsResponse, error) {
 	response, err := c.WithRawResponse.Create(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Sends a bank deposit back to the bank account that wired it and takes it back out of the balance. Identify the deposit by its `vbt_` ID, the `source.id` of its row in the account's financial activity. The available balance has to cover the deposit minus the deposit fee, which is refunded. Returns the reversal's own row in the financial activity: a `topup_reversal` debit for the full deposit amount, whose `source` is the bank deposit. The source's `status` is `reversal_in_progress` until the money is back with the sender, then `reversed`.
+//
+// Example:
+//
+//	request := &whopsdk.ReverseDepositsRequest{
+//	    ID: "vbt_xxxxxxxxxxxxxx",
+//	}
+//	client.Deposits.Reverse(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Reverse(
+	ctx context.Context,
+	request *whopsdk.ReverseDepositsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.LedgerActivity, error) {
+	response, err := c.WithRawResponse.Reverse(
 		ctx,
 		request,
 		opts...,

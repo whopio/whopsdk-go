@@ -88,38 +88,46 @@ func (c *CalculateTaxPlansRequest) MarshalJSON() ([]byte, error) {
 var (
 	createPlansRequestFieldAccountID                  = big.NewInt(1 << 0)
 	createPlansRequestFieldAdaptivePricingEnabled     = big.NewInt(1 << 1)
-	createPlansRequestFieldAttributes                 = big.NewInt(1 << 2)
-	createPlansRequestFieldBillingPeriod              = big.NewInt(1 << 3)
-	createPlansRequestFieldCheckoutStyling            = big.NewInt(1 << 4)
-	createPlansRequestFieldCurrency                   = big.NewInt(1 << 5)
-	createPlansRequestFieldCustomFields               = big.NewInt(1 << 6)
-	createPlansRequestFieldDescription                = big.NewInt(1 << 7)
-	createPlansRequestFieldExpirationDays             = big.NewInt(1 << 8)
-	createPlansRequestFieldImage                      = big.NewInt(1 << 9)
-	createPlansRequestFieldInitialPrice               = big.NewInt(1 << 10)
-	createPlansRequestFieldInternalNotes              = big.NewInt(1 << 11)
-	createPlansRequestFieldMetadata                   = big.NewInt(1 << 12)
-	createPlansRequestFieldOverrideTaxType            = big.NewInt(1 << 13)
-	createPlansRequestFieldPaymentMethodConfiguration = big.NewInt(1 << 14)
-	createPlansRequestFieldPlanType                   = big.NewInt(1 << 15)
-	createPlansRequestFieldProductID                  = big.NewInt(1 << 16)
-	createPlansRequestFieldReleaseMethod              = big.NewInt(1 << 17)
-	createPlansRequestFieldRenewalPrice               = big.NewInt(1 << 18)
-	createPlansRequestFieldSku                        = big.NewInt(1 << 19)
-	createPlansRequestFieldSplitPayRequiredPayments   = big.NewInt(1 << 20)
-	createPlansRequestFieldStock                      = big.NewInt(1 << 21)
-	createPlansRequestFieldThreeDsLevel               = big.NewInt(1 << 22)
-	createPlansRequestFieldTitle                      = big.NewInt(1 << 23)
-	createPlansRequestFieldTrialPeriodDays            = big.NewInt(1 << 24)
-	createPlansRequestFieldUnlimitedStock             = big.NewInt(1 << 25)
-	createPlansRequestFieldVisibility                 = big.NewInt(1 << 26)
+	createPlansRequestFieldAllowMultipleQuantity      = big.NewInt(1 << 2)
+	createPlansRequestFieldAttributes                 = big.NewInt(1 << 3)
+	createPlansRequestFieldBillingPeriod              = big.NewInt(1 << 4)
+	createPlansRequestFieldBillingType                = big.NewInt(1 << 5)
+	createPlansRequestFieldCancelDiscountIntervals    = big.NewInt(1 << 6)
+	createPlansRequestFieldCancelDiscountPercentage   = big.NewInt(1 << 7)
+	createPlansRequestFieldCheckoutStyling            = big.NewInt(1 << 8)
+	createPlansRequestFieldCurrency                   = big.NewInt(1 << 9)
+	createPlansRequestFieldCustomFields               = big.NewInt(1 << 10)
+	createPlansRequestFieldDescription                = big.NewInt(1 << 11)
+	createPlansRequestFieldExpirationDays             = big.NewInt(1 << 12)
+	createPlansRequestFieldImage                      = big.NewInt(1 << 13)
+	createPlansRequestFieldInitialPrice               = big.NewInt(1 << 14)
+	createPlansRequestFieldInternalNotes              = big.NewInt(1 << 15)
+	createPlansRequestFieldMetadata                   = big.NewInt(1 << 16)
+	createPlansRequestFieldOfferCancelDiscount        = big.NewInt(1 << 17)
+	createPlansRequestFieldOverrideTaxType            = big.NewInt(1 << 18)
+	createPlansRequestFieldPaymentMethodConfiguration = big.NewInt(1 << 19)
+	createPlansRequestFieldProductID                  = big.NewInt(1 << 20)
+	createPlansRequestFieldReleaseMethod              = big.NewInt(1 << 21)
+	createPlansRequestFieldRenewalPrice               = big.NewInt(1 << 22)
+	createPlansRequestFieldSku                        = big.NewInt(1 << 23)
+	createPlansRequestFieldSplitPayRequiredPayments   = big.NewInt(1 << 24)
+	createPlansRequestFieldStock                      = big.NewInt(1 << 25)
+	createPlansRequestFieldThreeDsLevel               = big.NewInt(1 << 26)
+	createPlansRequestFieldTitle                      = big.NewInt(1 << 27)
+	createPlansRequestFieldTrialPeriodDays            = big.NewInt(1 << 28)
+	createPlansRequestFieldUnlimitedStock             = big.NewInt(1 << 29)
+	createPlansRequestFieldVisibility                 = big.NewInt(1 << 30)
 )
 
 type CreatePlansRequest struct {
 	AccountID                  *string                                       `json:"account_id,omitempty" url:"-"`
 	AdaptivePricingEnabled     *bool                                         `json:"adaptive_pricing_enabled,omitempty" url:"-"`
+	AllowMultipleQuantity      *bool                                         `json:"allow_multiple_quantity,omitempty" url:"-"`
 	Attributes                 map[string]any                                `json:"attributes,omitempty" url:"-"`
 	BillingPeriod              *int                                          `json:"billing_period,omitempty" url:"-"`
+	BillingType                *string                                       `json:"billing_type,omitempty" url:"-"`
+	CancelDiscountIntervals    *int                                          `json:"cancel_discount_intervals,omitempty" url:"-"`
+	CancelDiscountPercentage   *int                                          `json:"cancel_discount_percentage,omitempty" url:"-"`
 	CheckoutStyling            map[string]any                                `json:"checkout_styling,omitempty" url:"-"`
 	Currency                   *string                                       `json:"currency,omitempty" url:"-"`
 	CustomFields               []*CreatePlansRequestCustomFieldsItem         `json:"custom_fields,omitempty" url:"-"`
@@ -129,9 +137,9 @@ type CreatePlansRequest struct {
 	InitialPrice               *float64                                      `json:"initial_price,omitempty" url:"-"`
 	InternalNotes              *string                                       `json:"internal_notes,omitempty" url:"-"`
 	Metadata                   map[string]any                                `json:"metadata,omitempty" url:"-"`
+	OfferCancelDiscount        *bool                                         `json:"offer_cancel_discount,omitempty" url:"-"`
 	OverrideTaxType            *string                                       `json:"override_tax_type,omitempty" url:"-"`
 	PaymentMethodConfiguration *CreatePlansRequestPaymentMethodConfiguration `json:"payment_method_configuration,omitempty" url:"-"`
-	PlanType                   *string                                       `json:"plan_type,omitempty" url:"-"`
 	ProductID                  *string                                       `json:"product_id,omitempty" url:"-"`
 	ReleaseMethod              *string                                       `json:"release_method,omitempty" url:"-"`
 	RenewalPrice               *float64                                      `json:"renewal_price,omitempty" url:"-"`
@@ -171,6 +179,13 @@ func (c *CreatePlansRequest) SetAdaptivePricingEnabled(adaptivePricingEnabled *b
 	c.require(createPlansRequestFieldAdaptivePricingEnabled)
 }
 
+// SetAllowMultipleQuantity sets the AllowMultipleQuantity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePlansRequest) SetAllowMultipleQuantity(allowMultipleQuantity *bool) {
+	c.AllowMultipleQuantity = allowMultipleQuantity
+	c.require(createPlansRequestFieldAllowMultipleQuantity)
+}
+
 // SetAttributes sets the Attributes field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreatePlansRequest) SetAttributes(attributes map[string]any) {
@@ -183,6 +198,27 @@ func (c *CreatePlansRequest) SetAttributes(attributes map[string]any) {
 func (c *CreatePlansRequest) SetBillingPeriod(billingPeriod *int) {
 	c.BillingPeriod = billingPeriod
 	c.require(createPlansRequestFieldBillingPeriod)
+}
+
+// SetBillingType sets the BillingType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePlansRequest) SetBillingType(billingType *string) {
+	c.BillingType = billingType
+	c.require(createPlansRequestFieldBillingType)
+}
+
+// SetCancelDiscountIntervals sets the CancelDiscountIntervals field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePlansRequest) SetCancelDiscountIntervals(cancelDiscountIntervals *int) {
+	c.CancelDiscountIntervals = cancelDiscountIntervals
+	c.require(createPlansRequestFieldCancelDiscountIntervals)
+}
+
+// SetCancelDiscountPercentage sets the CancelDiscountPercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePlansRequest) SetCancelDiscountPercentage(cancelDiscountPercentage *int) {
+	c.CancelDiscountPercentage = cancelDiscountPercentage
+	c.require(createPlansRequestFieldCancelDiscountPercentage)
 }
 
 // SetCheckoutStyling sets the CheckoutStyling field and marks it as non-optional;
@@ -248,6 +284,13 @@ func (c *CreatePlansRequest) SetMetadata(metadata map[string]any) {
 	c.require(createPlansRequestFieldMetadata)
 }
 
+// SetOfferCancelDiscount sets the OfferCancelDiscount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePlansRequest) SetOfferCancelDiscount(offerCancelDiscount *bool) {
+	c.OfferCancelDiscount = offerCancelDiscount
+	c.require(createPlansRequestFieldOfferCancelDiscount)
+}
+
 // SetOverrideTaxType sets the OverrideTaxType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreatePlansRequest) SetOverrideTaxType(overrideTaxType *string) {
@@ -260,13 +303,6 @@ func (c *CreatePlansRequest) SetOverrideTaxType(overrideTaxType *string) {
 func (c *CreatePlansRequest) SetPaymentMethodConfiguration(paymentMethodConfiguration *CreatePlansRequestPaymentMethodConfiguration) {
 	c.PaymentMethodConfiguration = paymentMethodConfiguration
 	c.require(createPlansRequestFieldPaymentMethodConfiguration)
-}
-
-// SetPlanType sets the PlanType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePlansRequest) SetPlanType(planType *string) {
-	c.PlanType = planType
-	c.require(createPlansRequestFieldPlanType)
 }
 
 // SetProductID sets the ProductID field and marks it as non-optional;
@@ -401,7 +437,7 @@ var (
 	listPlansRequestFieldOrder          = big.NewInt(1 << 2)
 	listPlansRequestFieldReleaseMethods = big.NewInt(1 << 3)
 	listPlansRequestFieldVisibilities   = big.NewInt(1 << 4)
-	listPlansRequestFieldPlanTypes      = big.NewInt(1 << 5)
+	listPlansRequestFieldBillingTypes   = big.NewInt(1 << 5)
 	listPlansRequestFieldProductIDs     = big.NewInt(1 << 6)
 	listPlansRequestFieldCreatedBefore  = big.NewInt(1 << 7)
 	listPlansRequestFieldCreatedAfter   = big.NewInt(1 << 8)
@@ -417,7 +453,7 @@ type ListPlansRequest struct {
 	Order          *ListPlansRequestOrder     `json:"-" url:"order,omitempty"`
 	ReleaseMethods []*string                  `json:"-" url:"release_methods,omitempty"`
 	Visibilities   []*string                  `json:"-" url:"visibilities,omitempty"`
-	PlanTypes      []*string                  `json:"-" url:"plan_types,omitempty"`
+	BillingTypes   []*string                  `json:"-" url:"billing_types,omitempty"`
 	ProductIDs     []*string                  `json:"-" url:"product_ids,omitempty"`
 	CreatedBefore  *string                    `json:"-" url:"created_before,omitempty"`
 	CreatedAfter   *string                    `json:"-" url:"created_after,omitempty"`
@@ -478,11 +514,11 @@ func (l *ListPlansRequest) SetVisibilities(visibilities []*string) {
 	l.require(listPlansRequestFieldVisibilities)
 }
 
-// SetPlanTypes sets the PlanTypes field and marks it as non-optional;
+// SetBillingTypes sets the BillingTypes field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPlansRequest) SetPlanTypes(planTypes []*string) {
-	l.PlanTypes = planTypes
-	l.require(listPlansRequestFieldPlanTypes)
+func (l *ListPlansRequest) SetBillingTypes(billingTypes []*string) {
+	l.BillingTypes = billingTypes
+	l.require(listPlansRequestFieldBillingTypes)
 }
 
 // SetProductIDs sets the ProductIDs field and marks it as non-optional;
@@ -565,47 +601,48 @@ func (r *RetrievePlansRequest) SetID(id string) {
 var (
 	planFieldAccount                             = big.NewInt(1 << 0)
 	planFieldAdaptivePricingEnabled              = big.NewInt(1 << 1)
-	planFieldAttributes                          = big.NewInt(1 << 2)
-	planFieldBillingPeriod                       = big.NewInt(1 << 3)
-	planFieldCancelDiscountIntervals             = big.NewInt(1 << 4)
-	planFieldCancelDiscountPercentage            = big.NewInt(1 << 5)
-	planFieldCheckoutStyling                     = big.NewInt(1 << 6)
-	planFieldCollectTax                          = big.NewInt(1 << 7)
-	planFieldCreatedAt                           = big.NewInt(1 << 8)
-	planFieldCurrency                            = big.NewInt(1 << 9)
-	planFieldCustomFields                        = big.NewInt(1 << 10)
-	planFieldDeletable                           = big.NewInt(1 << 11)
-	planFieldDescription                         = big.NewInt(1 << 12)
-	planFieldEffectivePaymentMethodConfiguration = big.NewInt(1 << 13)
-	planFieldExpirationDays                      = big.NewInt(1 << 14)
-	planFieldFormattedPrice                      = big.NewInt(1 << 15)
-	planFieldID                                  = big.NewInt(1 << 16)
-	planFieldImage                               = big.NewInt(1 << 17)
-	planFieldInitialPrice                        = big.NewInt(1 << 18)
-	planFieldInitialPriceDue                     = big.NewInt(1 << 19)
-	planFieldInternalNotes                       = big.NewInt(1 << 20)
-	planFieldInvoice                             = big.NewInt(1 << 21)
-	planFieldMemberCount                         = big.NewInt(1 << 22)
-	planFieldMetadata                            = big.NewInt(1 << 23)
-	planFieldOfferCancelDiscount                 = big.NewInt(1 << 24)
-	planFieldPaymentMethodConfiguration          = big.NewInt(1 << 25)
-	planFieldPlanType                            = big.NewInt(1 << 26)
-	planFieldProduct                             = big.NewInt(1 << 27)
-	planFieldPurchaseURL                         = big.NewInt(1 << 28)
-	planFieldReleaseMethod                       = big.NewInt(1 << 29)
-	planFieldRenewalPrice                        = big.NewInt(1 << 30)
-	planFieldSku                                 = big.NewInt(1 << 31)
-	planFieldSplitPayRequiredPayments            = big.NewInt(1 << 32)
-	planFieldStock                               = big.NewInt(1 << 33)
-	planFieldStrikeThroughInitialPrice           = big.NewInt(1 << 34)
-	planFieldStrikeThroughRenewalPrice           = big.NewInt(1 << 35)
-	planFieldTaxType                             = big.NewInt(1 << 36)
-	planFieldThreeDsLevel                        = big.NewInt(1 << 37)
-	planFieldTitle                               = big.NewInt(1 << 38)
-	planFieldTrialPeriodDays                     = big.NewInt(1 << 39)
-	planFieldUnlimitedStock                      = big.NewInt(1 << 40)
-	planFieldUpdatedAt                           = big.NewInt(1 << 41)
-	planFieldVisibility                          = big.NewInt(1 << 42)
+	planFieldAllowMultipleQuantity               = big.NewInt(1 << 2)
+	planFieldAttributes                          = big.NewInt(1 << 3)
+	planFieldBillingPeriod                       = big.NewInt(1 << 4)
+	planFieldBillingType                         = big.NewInt(1 << 5)
+	planFieldCancelDiscountIntervals             = big.NewInt(1 << 6)
+	planFieldCancelDiscountPercentage            = big.NewInt(1 << 7)
+	planFieldCheckoutStyling                     = big.NewInt(1 << 8)
+	planFieldCollectTax                          = big.NewInt(1 << 9)
+	planFieldCreatedAt                           = big.NewInt(1 << 10)
+	planFieldCurrency                            = big.NewInt(1 << 11)
+	planFieldCustomFields                        = big.NewInt(1 << 12)
+	planFieldDeletable                           = big.NewInt(1 << 13)
+	planFieldDescription                         = big.NewInt(1 << 14)
+	planFieldEffectivePaymentMethodConfiguration = big.NewInt(1 << 15)
+	planFieldExpirationDays                      = big.NewInt(1 << 16)
+	planFieldFormattedPrice                      = big.NewInt(1 << 17)
+	planFieldID                                  = big.NewInt(1 << 18)
+	planFieldImage                               = big.NewInt(1 << 19)
+	planFieldInitialPrice                        = big.NewInt(1 << 20)
+	planFieldInitialPriceDue                     = big.NewInt(1 << 21)
+	planFieldInternalNotes                       = big.NewInt(1 << 22)
+	planFieldInvoice                             = big.NewInt(1 << 23)
+	planFieldMemberCount                         = big.NewInt(1 << 24)
+	planFieldMetadata                            = big.NewInt(1 << 25)
+	planFieldOfferCancelDiscount                 = big.NewInt(1 << 26)
+	planFieldPaymentMethodConfiguration          = big.NewInt(1 << 27)
+	planFieldProduct                             = big.NewInt(1 << 28)
+	planFieldPurchaseURL                         = big.NewInt(1 << 29)
+	planFieldReleaseMethod                       = big.NewInt(1 << 30)
+	planFieldRenewalPrice                        = big.NewInt(1 << 31)
+	planFieldSku                                 = big.NewInt(1 << 32)
+	planFieldSplitPayRequiredPayments            = big.NewInt(1 << 33)
+	planFieldStock                               = big.NewInt(1 << 34)
+	planFieldStrikeThroughInitialPrice           = big.NewInt(1 << 35)
+	planFieldStrikeThroughRenewalPrice           = big.NewInt(1 << 36)
+	planFieldTaxType                             = big.NewInt(1 << 37)
+	planFieldThreeDsLevel                        = big.NewInt(1 << 38)
+	planFieldTitle                               = big.NewInt(1 << 39)
+	planFieldTrialPeriodDays                     = big.NewInt(1 << 40)
+	planFieldUnlimitedStock                      = big.NewInt(1 << 41)
+	planFieldUpdatedAt                           = big.NewInt(1 << 42)
+	planFieldVisibility                          = big.NewInt(1 << 43)
 )
 
 // planNullableFields maps the wire names of Plan's nullable fields (required or optional) to their field bits.
@@ -643,11 +680,15 @@ type Plan struct {
 	Account *AccountSummary `json:"account,omitempty" url:"account,omitempty"`
 	// Whether adaptive pricing is enabled for this variant. Raw setting — does not check processor compatibility or feature flags.
 	AdaptivePricingEnabled bool `json:"adaptive_pricing_enabled" url:"adaptive_pricing_enabled"`
+	// Whether more than one unit can be purchased in an order. Renewal variants cannot enable it. When `false`, checkouts, carts, and invoices reject a quantity above 1.
+	AllowMultipleQuantity bool `json:"allow_multiple_quantity" url:"allow_multiple_quantity"`
 	// Attribute values that distinguish this variant within its product, as a map of attribute name to value, e.g. `{"color": "Blue", "size": "Large"}`. Names are snake_case identifiers and come back in alphabetical order. Every attributed variant on a product carries the same attribute names and a distinct set of values; the product lists the full option set as `variant_attributes`. `null` when the variant has no attributes.
 	Attributes map[string]*string `json:"attributes,omitempty" url:"attributes,omitempty"`
 	// Number of days between recurring charges, such as 30 for monthly or 365 for annual. `null` for one-time variants.
 	BillingPeriod *float64 `json:"billing_period,omitempty" url:"billing_period,omitempty"`
-	// Billing intervals the cancellation discount applies to (`0` forever, `1` first payment, or a month count). `null` when none is offered or the actor lacks the `plan:basic:read` scope.
+	// Billing model for this variant.
+	BillingType PlanBillingType `json:"billing_type" url:"billing_type"`
+	// How long the cancellation discount lasts: `0` forever, `1` the next payment only, or a number of calendar months from when the customer accepts it. `null` when none is offered or the actor lacks the `plan:basic:read` scope.
 	CancelDiscountIntervals *float64 `json:"cancel_discount_intervals,omitempty" url:"cancel_discount_intervals,omitempty"`
 	// Cancellation discount as a whole-number percentage. `null` when none is offered or the actor lacks the `plan:basic:read` scope.
 	CancelDiscountPercentage *float64 `json:"cancel_discount_percentage,omitempty" url:"cancel_discount_percentage,omitempty"`
@@ -690,8 +731,6 @@ type Plan struct {
 	OfferCancelDiscount *bool `json:"offer_cancel_discount,omitempty" url:"offer_cancel_discount,omitempty"`
 	// Payment method configuration (`enabled`, `disabled`, `include_platform_defaults`); `null` when variant uses default settings.
 	PaymentMethodConfiguration map[string]any `json:"payment_method_configuration,omitempty" url:"payment_method_configuration,omitempty"`
-	// Billing model for this variant.
-	PlanType PlanPlanType `json:"plan_type" url:"plan_type"`
 	// Product this variant belongs to; `null` for standalone variants.
 	Product map[string]any `json:"product,omitempty" url:"product,omitempty"`
 	// URL where customers can purchase this variant directly.
@@ -746,6 +785,13 @@ func (p *Plan) GetAdaptivePricingEnabled() bool {
 	return p.AdaptivePricingEnabled
 }
 
+func (p *Plan) GetAllowMultipleQuantity() bool {
+	if p == nil {
+		return false
+	}
+	return p.AllowMultipleQuantity
+}
+
 func (p *Plan) GetAttributes() map[string]*string {
 	if p == nil {
 		return nil
@@ -758,6 +804,13 @@ func (p *Plan) GetBillingPeriod() *float64 {
 		return nil
 	}
 	return p.BillingPeriod
+}
+
+func (p *Plan) GetBillingType() PlanBillingType {
+	if p == nil {
+		return ""
+	}
+	return p.BillingType
 }
 
 func (p *Plan) GetCancelDiscountIntervals() *float64 {
@@ -914,13 +967,6 @@ func (p *Plan) GetPaymentMethodConfiguration() map[string]any {
 	return p.PaymentMethodConfiguration
 }
 
-func (p *Plan) GetPlanType() PlanPlanType {
-	if p == nil {
-		return ""
-	}
-	return p.PlanType
-}
-
 func (p *Plan) GetProduct() map[string]any {
 	if p == nil {
 		return nil
@@ -1063,6 +1109,13 @@ func (p *Plan) SetAdaptivePricingEnabled(adaptivePricingEnabled bool) {
 	p.require(planFieldAdaptivePricingEnabled)
 }
 
+// SetAllowMultipleQuantity sets the AllowMultipleQuantity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Plan) SetAllowMultipleQuantity(allowMultipleQuantity bool) {
+	p.AllowMultipleQuantity = allowMultipleQuantity
+	p.require(planFieldAllowMultipleQuantity)
+}
+
 // SetAttributes sets the Attributes field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *Plan) SetAttributes(attributes map[string]*string) {
@@ -1075,6 +1128,13 @@ func (p *Plan) SetAttributes(attributes map[string]*string) {
 func (p *Plan) SetBillingPeriod(billingPeriod *float64) {
 	p.BillingPeriod = billingPeriod
 	p.require(planFieldBillingPeriod)
+}
+
+// SetBillingType sets the BillingType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Plan) SetBillingType(billingType PlanBillingType) {
+	p.BillingType = billingType
+	p.require(planFieldBillingType)
 }
 
 // SetCancelDiscountIntervals sets the CancelDiscountIntervals field and marks it as non-optional;
@@ -1229,13 +1289,6 @@ func (p *Plan) SetOfferCancelDiscount(offerCancelDiscount *bool) {
 func (p *Plan) SetPaymentMethodConfiguration(paymentMethodConfiguration map[string]any) {
 	p.PaymentMethodConfiguration = paymentMethodConfiguration
 	p.require(planFieldPaymentMethodConfiguration)
-}
-
-// SetPlanType sets the PlanType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Plan) SetPlanType(planType PlanPlanType) {
-	p.PlanType = planType
-	p.require(planFieldPlanType)
 }
 
 // SetProduct sets the Product field and marks it as non-optional;
@@ -1397,6 +1450,29 @@ func (p *Plan) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", p)
+}
+
+// Billing model for this variant.
+type PlanBillingType string
+
+const (
+	PlanBillingTypeRenewal PlanBillingType = "renewal"
+	PlanBillingTypeOneTime PlanBillingType = "one_time"
+)
+
+func NewPlanBillingTypeFromString(s string) (PlanBillingType, error) {
+	switch s {
+	case "renewal":
+		return PlanBillingTypeRenewal, nil
+	case "one_time":
+		return PlanBillingTypeOneTime, nil
+	}
+	var t PlanBillingType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PlanBillingType) Ptr() *PlanBillingType {
+	return &p
 }
 
 // Three-letter ISO 4217 code of the currency every price on this variant is stated in, lowercase: the variant's own currency, or the `presentment_currency` the read asked for when the variant can be converted into it.
@@ -1689,43 +1765,44 @@ func (p PlanCurrency) Ptr() *PlanCurrency {
 var (
 	planListItemFieldAccount                    = big.NewInt(1 << 0)
 	planListItemFieldAdaptivePricingEnabled     = big.NewInt(1 << 1)
-	planListItemFieldAttributes                 = big.NewInt(1 << 2)
-	planListItemFieldBillingPeriod              = big.NewInt(1 << 3)
-	planListItemFieldCancelDiscountIntervals    = big.NewInt(1 << 4)
-	planListItemFieldCancelDiscountPercentage   = big.NewInt(1 << 5)
-	planListItemFieldCheckoutStyling            = big.NewInt(1 << 6)
-	planListItemFieldCreatedAt                  = big.NewInt(1 << 7)
-	planListItemFieldCurrency                   = big.NewInt(1 << 8)
-	planListItemFieldCustomFields               = big.NewInt(1 << 9)
-	planListItemFieldDescription                = big.NewInt(1 << 10)
-	planListItemFieldExpirationDays             = big.NewInt(1 << 11)
-	planListItemFieldFormattedPrice             = big.NewInt(1 << 12)
-	planListItemFieldID                         = big.NewInt(1 << 13)
-	planListItemFieldImage                      = big.NewInt(1 << 14)
-	planListItemFieldInitialPrice               = big.NewInt(1 << 15)
-	planListItemFieldInitialPriceDue            = big.NewInt(1 << 16)
-	planListItemFieldInternalNotes              = big.NewInt(1 << 17)
-	planListItemFieldInvoice                    = big.NewInt(1 << 18)
-	planListItemFieldMemberCount                = big.NewInt(1 << 19)
-	planListItemFieldMetadata                   = big.NewInt(1 << 20)
-	planListItemFieldOfferCancelDiscount        = big.NewInt(1 << 21)
-	planListItemFieldPaymentMethodConfiguration = big.NewInt(1 << 22)
-	planListItemFieldPlanType                   = big.NewInt(1 << 23)
-	planListItemFieldProduct                    = big.NewInt(1 << 24)
-	planListItemFieldPurchaseURL                = big.NewInt(1 << 25)
-	planListItemFieldReleaseMethod              = big.NewInt(1 << 26)
-	planListItemFieldRenewalPrice               = big.NewInt(1 << 27)
-	planListItemFieldSku                        = big.NewInt(1 << 28)
-	planListItemFieldSplitPayRequiredPayments   = big.NewInt(1 << 29)
-	planListItemFieldStock                      = big.NewInt(1 << 30)
-	planListItemFieldStrikeThroughInitialPrice  = big.NewInt(1 << 31)
-	planListItemFieldStrikeThroughRenewalPrice  = big.NewInt(1 << 32)
-	planListItemFieldThreeDsLevel               = big.NewInt(1 << 33)
-	planListItemFieldTitle                      = big.NewInt(1 << 34)
-	planListItemFieldTrialPeriodDays            = big.NewInt(1 << 35)
-	planListItemFieldUnlimitedStock             = big.NewInt(1 << 36)
-	planListItemFieldUpdatedAt                  = big.NewInt(1 << 37)
-	planListItemFieldVisibility                 = big.NewInt(1 << 38)
+	planListItemFieldAllowMultipleQuantity      = big.NewInt(1 << 2)
+	planListItemFieldAttributes                 = big.NewInt(1 << 3)
+	planListItemFieldBillingPeriod              = big.NewInt(1 << 4)
+	planListItemFieldBillingType                = big.NewInt(1 << 5)
+	planListItemFieldCancelDiscountIntervals    = big.NewInt(1 << 6)
+	planListItemFieldCancelDiscountPercentage   = big.NewInt(1 << 7)
+	planListItemFieldCheckoutStyling            = big.NewInt(1 << 8)
+	planListItemFieldCreatedAt                  = big.NewInt(1 << 9)
+	planListItemFieldCurrency                   = big.NewInt(1 << 10)
+	planListItemFieldCustomFields               = big.NewInt(1 << 11)
+	planListItemFieldDescription                = big.NewInt(1 << 12)
+	planListItemFieldExpirationDays             = big.NewInt(1 << 13)
+	planListItemFieldFormattedPrice             = big.NewInt(1 << 14)
+	planListItemFieldID                         = big.NewInt(1 << 15)
+	planListItemFieldImage                      = big.NewInt(1 << 16)
+	planListItemFieldInitialPrice               = big.NewInt(1 << 17)
+	planListItemFieldInitialPriceDue            = big.NewInt(1 << 18)
+	planListItemFieldInternalNotes              = big.NewInt(1 << 19)
+	planListItemFieldInvoice                    = big.NewInt(1 << 20)
+	planListItemFieldMemberCount                = big.NewInt(1 << 21)
+	planListItemFieldMetadata                   = big.NewInt(1 << 22)
+	planListItemFieldOfferCancelDiscount        = big.NewInt(1 << 23)
+	planListItemFieldPaymentMethodConfiguration = big.NewInt(1 << 24)
+	planListItemFieldProduct                    = big.NewInt(1 << 25)
+	planListItemFieldPurchaseURL                = big.NewInt(1 << 26)
+	planListItemFieldReleaseMethod              = big.NewInt(1 << 27)
+	planListItemFieldRenewalPrice               = big.NewInt(1 << 28)
+	planListItemFieldSku                        = big.NewInt(1 << 29)
+	planListItemFieldSplitPayRequiredPayments   = big.NewInt(1 << 30)
+	planListItemFieldStock                      = big.NewInt(1 << 31)
+	planListItemFieldStrikeThroughInitialPrice  = big.NewInt(1 << 32)
+	planListItemFieldStrikeThroughRenewalPrice  = big.NewInt(1 << 33)
+	planListItemFieldThreeDsLevel               = big.NewInt(1 << 34)
+	planListItemFieldTitle                      = big.NewInt(1 << 35)
+	planListItemFieldTrialPeriodDays            = big.NewInt(1 << 36)
+	planListItemFieldUnlimitedStock             = big.NewInt(1 << 37)
+	planListItemFieldUpdatedAt                  = big.NewInt(1 << 38)
+	planListItemFieldVisibility                 = big.NewInt(1 << 39)
 )
 
 // planListItemNullableFields maps the wire names of PlanListItem's nullable fields (required or optional) to their field bits.
@@ -1761,11 +1838,15 @@ type PlanListItem struct {
 	Account *AccountSummary `json:"account,omitempty" url:"account,omitempty"`
 	// Whether adaptive pricing is enabled for this variant. Raw setting — does not check processor compatibility or feature flags.
 	AdaptivePricingEnabled bool `json:"adaptive_pricing_enabled" url:"adaptive_pricing_enabled"`
+	// Whether more than one unit can be purchased in an order. Renewal variants cannot enable it. When `false`, checkouts, carts, and invoices reject a quantity above 1.
+	AllowMultipleQuantity bool `json:"allow_multiple_quantity" url:"allow_multiple_quantity"`
 	// Attribute values that distinguish this variant within its product, as a map of attribute name to value, e.g. `{"color": "Blue", "size": "Large"}`. Names are snake_case identifiers and come back in alphabetical order. Every attributed variant on a product carries the same attribute names and a distinct set of values; the product lists the full option set as `variant_attributes`. `null` when the variant has no attributes.
 	Attributes map[string]*string `json:"attributes,omitempty" url:"attributes,omitempty"`
 	// Number of days between recurring charges, such as 30 for monthly or 365 for annual. `null` for one-time variants.
 	BillingPeriod *float64 `json:"billing_period,omitempty" url:"billing_period,omitempty"`
-	// Billing intervals the cancellation discount applies to (`0` forever, `1` first payment, or a month count). `null` when none is offered or the actor lacks the `plan:basic:read` scope.
+	// Billing model for this variant.
+	BillingType PlanListItemBillingType `json:"billing_type" url:"billing_type"`
+	// How long the cancellation discount lasts: `0` forever, `1` the next payment only, or a number of calendar months from when the customer accepts it. `null` when none is offered or the actor lacks the `plan:basic:read` scope.
 	CancelDiscountIntervals *float64 `json:"cancel_discount_intervals,omitempty" url:"cancel_discount_intervals,omitempty"`
 	// Cancellation discount as a whole-number percentage. `null` when none is offered or the actor lacks the `plan:basic:read` scope.
 	CancelDiscountPercentage *float64 `json:"cancel_discount_percentage,omitempty" url:"cancel_discount_percentage,omitempty"`
@@ -1802,8 +1883,6 @@ type PlanListItem struct {
 	OfferCancelDiscount *bool `json:"offer_cancel_discount,omitempty" url:"offer_cancel_discount,omitempty"`
 	// Payment method configuration (`enabled`, `disabled`, `include_platform_defaults`); `null` when variant uses default settings.
 	PaymentMethodConfiguration map[string]any `json:"payment_method_configuration,omitempty" url:"payment_method_configuration,omitempty"`
-	// Billing model for this variant.
-	PlanType PlanListItemPlanType `json:"plan_type" url:"plan_type"`
 	// Product this variant belongs to; `null` for standalone variants.
 	Product map[string]any `json:"product,omitempty" url:"product,omitempty"`
 	// URL where customers can purchase this variant directly.
@@ -1856,6 +1935,13 @@ func (p *PlanListItem) GetAdaptivePricingEnabled() bool {
 	return p.AdaptivePricingEnabled
 }
 
+func (p *PlanListItem) GetAllowMultipleQuantity() bool {
+	if p == nil {
+		return false
+	}
+	return p.AllowMultipleQuantity
+}
+
 func (p *PlanListItem) GetAttributes() map[string]*string {
 	if p == nil {
 		return nil
@@ -1868,6 +1954,13 @@ func (p *PlanListItem) GetBillingPeriod() *float64 {
 		return nil
 	}
 	return p.BillingPeriod
+}
+
+func (p *PlanListItem) GetBillingType() PlanListItemBillingType {
+	if p == nil {
+		return ""
+	}
+	return p.BillingType
 }
 
 func (p *PlanListItem) GetCancelDiscountIntervals() *float64 {
@@ -2001,13 +2094,6 @@ func (p *PlanListItem) GetPaymentMethodConfiguration() map[string]any {
 		return nil
 	}
 	return p.PaymentMethodConfiguration
-}
-
-func (p *PlanListItem) GetPlanType() PlanListItemPlanType {
-	if p == nil {
-		return ""
-	}
-	return p.PlanType
 }
 
 func (p *PlanListItem) GetProduct() map[string]any {
@@ -2145,6 +2231,13 @@ func (p *PlanListItem) SetAdaptivePricingEnabled(adaptivePricingEnabled bool) {
 	p.require(planListItemFieldAdaptivePricingEnabled)
 }
 
+// SetAllowMultipleQuantity sets the AllowMultipleQuantity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetAllowMultipleQuantity(allowMultipleQuantity bool) {
+	p.AllowMultipleQuantity = allowMultipleQuantity
+	p.require(planListItemFieldAllowMultipleQuantity)
+}
+
 // SetAttributes sets the Attributes field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *PlanListItem) SetAttributes(attributes map[string]*string) {
@@ -2157,6 +2250,13 @@ func (p *PlanListItem) SetAttributes(attributes map[string]*string) {
 func (p *PlanListItem) SetBillingPeriod(billingPeriod *float64) {
 	p.BillingPeriod = billingPeriod
 	p.require(planListItemFieldBillingPeriod)
+}
+
+// SetBillingType sets the BillingType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetBillingType(billingType PlanListItemBillingType) {
+	p.BillingType = billingType
+	p.require(planListItemFieldBillingType)
 }
 
 // SetCancelDiscountIntervals sets the CancelDiscountIntervals field and marks it as non-optional;
@@ -2290,13 +2390,6 @@ func (p *PlanListItem) SetOfferCancelDiscount(offerCancelDiscount *bool) {
 func (p *PlanListItem) SetPaymentMethodConfiguration(paymentMethodConfiguration map[string]any) {
 	p.PaymentMethodConfiguration = paymentMethodConfiguration
 	p.require(planListItemFieldPaymentMethodConfiguration)
-}
-
-// SetPlanType sets the PlanType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PlanListItem) SetPlanType(planType PlanListItemPlanType) {
-	p.PlanType = planType
-	p.require(planListItemFieldPlanType)
 }
 
 // SetProduct sets the Product field and marks it as non-optional;
@@ -2454,25 +2547,25 @@ func (p *PlanListItem) String() string {
 }
 
 // Billing model for this variant.
-type PlanListItemPlanType string
+type PlanListItemBillingType string
 
 const (
-	PlanListItemPlanTypeRenewal PlanListItemPlanType = "renewal"
-	PlanListItemPlanTypeOneTime PlanListItemPlanType = "one_time"
+	PlanListItemBillingTypeRenewal PlanListItemBillingType = "renewal"
+	PlanListItemBillingTypeOneTime PlanListItemBillingType = "one_time"
 )
 
-func NewPlanListItemPlanTypeFromString(s string) (PlanListItemPlanType, error) {
+func NewPlanListItemBillingTypeFromString(s string) (PlanListItemBillingType, error) {
 	switch s {
 	case "renewal":
-		return PlanListItemPlanTypeRenewal, nil
+		return PlanListItemBillingTypeRenewal, nil
 	case "one_time":
-		return PlanListItemPlanTypeOneTime, nil
+		return PlanListItemBillingTypeOneTime, nil
 	}
-	var t PlanListItemPlanType
+	var t PlanListItemBillingType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (p PlanListItemPlanType) Ptr() *PlanListItemPlanType {
+func (p PlanListItemBillingType) Ptr() *PlanListItemBillingType {
 	return &p
 }
 
@@ -2551,29 +2644,6 @@ func NewPlanListItemVisibilityFromString(s string) (PlanListItemVisibility, erro
 }
 
 func (p PlanListItemVisibility) Ptr() *PlanListItemVisibility {
-	return &p
-}
-
-// Billing model for this variant.
-type PlanPlanType string
-
-const (
-	PlanPlanTypeRenewal PlanPlanType = "renewal"
-	PlanPlanTypeOneTime PlanPlanType = "one_time"
-)
-
-func NewPlanPlanTypeFromString(s string) (PlanPlanType, error) {
-	switch s {
-	case "renewal":
-		return PlanPlanTypeRenewal, nil
-	case "one_time":
-		return PlanPlanTypeOneTime, nil
-	}
-	var t PlanPlanType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PlanPlanType) Ptr() *PlanPlanType {
 	return &p
 }
 
@@ -4815,39 +4885,42 @@ func (u UpdatePlansRequestThreeDsLevel) Ptr() *UpdatePlansRequestThreeDsLevel {
 var (
 	updatePlansRequestFieldID                         = big.NewInt(1 << 0)
 	updatePlansRequestFieldAdaptivePricingEnabled     = big.NewInt(1 << 1)
-	updatePlansRequestFieldAttributes                 = big.NewInt(1 << 2)
-	updatePlansRequestFieldBillingPeriod              = big.NewInt(1 << 3)
-	updatePlansRequestFieldCancelDiscountIntervals    = big.NewInt(1 << 4)
-	updatePlansRequestFieldCancelDiscountPercentage   = big.NewInt(1 << 5)
-	updatePlansRequestFieldCheckoutStyling            = big.NewInt(1 << 6)
-	updatePlansRequestFieldCurrency                   = big.NewInt(1 << 7)
-	updatePlansRequestFieldCustomFields               = big.NewInt(1 << 8)
-	updatePlansRequestFieldDescription                = big.NewInt(1 << 9)
-	updatePlansRequestFieldExpirationDays             = big.NewInt(1 << 10)
-	updatePlansRequestFieldImage                      = big.NewInt(1 << 11)
-	updatePlansRequestFieldInitialPrice               = big.NewInt(1 << 12)
-	updatePlansRequestFieldInternalNotes              = big.NewInt(1 << 13)
-	updatePlansRequestFieldMetadata                   = big.NewInt(1 << 14)
-	updatePlansRequestFieldOfferCancelDiscount        = big.NewInt(1 << 15)
-	updatePlansRequestFieldOverrideTaxType            = big.NewInt(1 << 16)
-	updatePlansRequestFieldPaymentMethodConfiguration = big.NewInt(1 << 17)
-	updatePlansRequestFieldReleaseMethod              = big.NewInt(1 << 18)
-	updatePlansRequestFieldRenewalPrice               = big.NewInt(1 << 19)
-	updatePlansRequestFieldSku                        = big.NewInt(1 << 20)
-	updatePlansRequestFieldStock                      = big.NewInt(1 << 21)
-	updatePlansRequestFieldStrikeThroughInitialPrice  = big.NewInt(1 << 22)
-	updatePlansRequestFieldStrikeThroughRenewalPrice  = big.NewInt(1 << 23)
-	updatePlansRequestFieldThreeDsLevel               = big.NewInt(1 << 24)
-	updatePlansRequestFieldTitle                      = big.NewInt(1 << 25)
-	updatePlansRequestFieldTrialPeriodDays            = big.NewInt(1 << 26)
-	updatePlansRequestFieldUnlimitedStock             = big.NewInt(1 << 27)
-	updatePlansRequestFieldVisibility                 = big.NewInt(1 << 28)
+	updatePlansRequestFieldAllowMultipleQuantity      = big.NewInt(1 << 2)
+	updatePlansRequestFieldAttributes                 = big.NewInt(1 << 3)
+	updatePlansRequestFieldBillingPeriod              = big.NewInt(1 << 4)
+	updatePlansRequestFieldCancelDiscountIntervals    = big.NewInt(1 << 5)
+	updatePlansRequestFieldCancelDiscountPercentage   = big.NewInt(1 << 6)
+	updatePlansRequestFieldCheckoutStyling            = big.NewInt(1 << 7)
+	updatePlansRequestFieldCurrency                   = big.NewInt(1 << 8)
+	updatePlansRequestFieldCustomFields               = big.NewInt(1 << 9)
+	updatePlansRequestFieldDescription                = big.NewInt(1 << 10)
+	updatePlansRequestFieldExpirationDays             = big.NewInt(1 << 11)
+	updatePlansRequestFieldImage                      = big.NewInt(1 << 12)
+	updatePlansRequestFieldInitialPrice               = big.NewInt(1 << 13)
+	updatePlansRequestFieldInternalNotes              = big.NewInt(1 << 14)
+	updatePlansRequestFieldMetadata                   = big.NewInt(1 << 15)
+	updatePlansRequestFieldOfferCancelDiscount        = big.NewInt(1 << 16)
+	updatePlansRequestFieldOverrideTaxType            = big.NewInt(1 << 17)
+	updatePlansRequestFieldPaymentMethodConfiguration = big.NewInt(1 << 18)
+	updatePlansRequestFieldReleaseMethod              = big.NewInt(1 << 19)
+	updatePlansRequestFieldRenewalPrice               = big.NewInt(1 << 20)
+	updatePlansRequestFieldSku                        = big.NewInt(1 << 21)
+	updatePlansRequestFieldSplitPayRequiredPayments   = big.NewInt(1 << 22)
+	updatePlansRequestFieldStock                      = big.NewInt(1 << 23)
+	updatePlansRequestFieldStrikeThroughInitialPrice  = big.NewInt(1 << 24)
+	updatePlansRequestFieldStrikeThroughRenewalPrice  = big.NewInt(1 << 25)
+	updatePlansRequestFieldThreeDsLevel               = big.NewInt(1 << 26)
+	updatePlansRequestFieldTitle                      = big.NewInt(1 << 27)
+	updatePlansRequestFieldTrialPeriodDays            = big.NewInt(1 << 28)
+	updatePlansRequestFieldUnlimitedStock             = big.NewInt(1 << 29)
+	updatePlansRequestFieldVisibility                 = big.NewInt(1 << 30)
 )
 
 type UpdatePlansRequest struct {
 	// Variant ID, prefixed `plan_`.
 	ID                         string                                        `json:"-" url:"-"`
 	AdaptivePricingEnabled     *bool                                         `json:"adaptive_pricing_enabled,omitempty" url:"-"`
+	AllowMultipleQuantity      *bool                                         `json:"allow_multiple_quantity,omitempty" url:"-"`
 	Attributes                 map[string]any                                `json:"attributes,omitempty" url:"-"`
 	BillingPeriod              *int                                          `json:"billing_period,omitempty" url:"-"`
 	CancelDiscountIntervals    *int                                          `json:"cancel_discount_intervals,omitempty" url:"-"`
@@ -4867,6 +4940,7 @@ type UpdatePlansRequest struct {
 	ReleaseMethod              *string                                       `json:"release_method,omitempty" url:"-"`
 	RenewalPrice               *float64                                      `json:"renewal_price,omitempty" url:"-"`
 	Sku                        *string                                       `json:"sku,omitempty" url:"-"`
+	SplitPayRequiredPayments   *int                                          `json:"split_pay_required_payments,omitempty" url:"-"`
 	Stock                      *int                                          `json:"stock,omitempty" url:"-"`
 	StrikeThroughInitialPrice  *float64                                      `json:"strike_through_initial_price,omitempty" url:"-"`
 	StrikeThroughRenewalPrice  *float64                                      `json:"strike_through_renewal_price,omitempty" url:"-"`
@@ -4901,6 +4975,13 @@ func (u *UpdatePlansRequest) SetID(id string) {
 func (u *UpdatePlansRequest) SetAdaptivePricingEnabled(adaptivePricingEnabled *bool) {
 	u.AdaptivePricingEnabled = adaptivePricingEnabled
 	u.require(updatePlansRequestFieldAdaptivePricingEnabled)
+}
+
+// SetAllowMultipleQuantity sets the AllowMultipleQuantity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePlansRequest) SetAllowMultipleQuantity(allowMultipleQuantity *bool) {
+	u.AllowMultipleQuantity = allowMultipleQuantity
+	u.require(updatePlansRequestFieldAllowMultipleQuantity)
 }
 
 // SetAttributes sets the Attributes field and marks it as non-optional;
@@ -5034,6 +5115,13 @@ func (u *UpdatePlansRequest) SetRenewalPrice(renewalPrice *float64) {
 func (u *UpdatePlansRequest) SetSku(sku *string) {
 	u.Sku = sku
 	u.require(updatePlansRequestFieldSku)
+}
+
+// SetSplitPayRequiredPayments sets the SplitPayRequiredPayments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePlansRequest) SetSplitPayRequiredPayments(splitPayRequiredPayments *int) {
+	u.SplitPayRequiredPayments = splitPayRequiredPayments
+	u.require(updatePlansRequestFieldSplitPayRequiredPayments)
 }
 
 // SetStock sets the Stock field and marks it as non-optional;

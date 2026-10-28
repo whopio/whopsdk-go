@@ -218,6 +218,9 @@ func TestWebhooksListDeliveriesWithWireMock(
 	)
 	request := &whopsdk.ListDeliveriesWebhooksRequest{
 		ID: "id",
+		ResourceID: whopsdk.String(
+			"pay_xxxxxxxxxxxxx",
+		),
 	}
 	_, invocationErr := client.Webhooks.ListDeliveries(
 		context.TODO(),
@@ -228,7 +231,7 @@ func TestWebhooksListDeliveriesWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestWebhooksListDeliveriesWithWireMock", "GET", "/webhooks/id/deliveries", nil, 1)
+	VerifyRequestCount(t, "TestWebhooksListDeliveriesWithWireMock", "GET", "/webhooks/id/deliveries", map[string]interface{}{"resource_id": "pay_xxxxxxxxxxxxx"}, 1)
 }
 
 func TestWebhooksReplayDeliveryWithWireMock(

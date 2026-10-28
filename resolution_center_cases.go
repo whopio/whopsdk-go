@@ -1121,13 +1121,13 @@ var (
 	resolutionCenterCaseFieldLineItems        = big.NewInt(1 << 9)
 	resolutionCenterCaseFieldOutcome          = big.NewInt(1 << 10)
 	resolutionCenterCaseFieldPayment          = big.NewInt(1 << 11)
-	resolutionCenterCaseFieldPlanID           = big.NewInt(1 << 12)
-	resolutionCenterCaseFieldProductID        = big.NewInt(1 << 13)
-	resolutionCenterCaseFieldReason           = big.NewInt(1 << 14)
-	resolutionCenterCaseFieldRefund           = big.NewInt(1 << 15)
-	resolutionCenterCaseFieldResponseDueAt    = big.NewInt(1 << 16)
-	resolutionCenterCaseFieldStatus           = big.NewInt(1 << 17)
-	resolutionCenterCaseFieldUpdatedAt        = big.NewInt(1 << 18)
+	resolutionCenterCaseFieldProductID        = big.NewInt(1 << 12)
+	resolutionCenterCaseFieldReason           = big.NewInt(1 << 13)
+	resolutionCenterCaseFieldRefund           = big.NewInt(1 << 14)
+	resolutionCenterCaseFieldResponseDueAt    = big.NewInt(1 << 15)
+	resolutionCenterCaseFieldStatus           = big.NewInt(1 << 16)
+	resolutionCenterCaseFieldUpdatedAt        = big.NewInt(1 << 17)
+	resolutionCenterCaseFieldVariantID        = big.NewInt(1 << 18)
 )
 
 // resolutionCenterCaseNullableFields maps the wire names of ResolutionCenterCase's nullable fields (required or optional) to their field bits.
@@ -1135,10 +1135,10 @@ var resolutionCenterCaseNullableFields = map[string]*big.Int{
 	"account":         resolutionCenterCaseFieldAccount,
 	"currency":        resolutionCenterCaseFieldCurrency,
 	"outcome":         resolutionCenterCaseFieldOutcome,
-	"plan_id":         resolutionCenterCaseFieldPlanID,
 	"product_id":      resolutionCenterCaseFieldProductID,
 	"refund":          resolutionCenterCaseFieldRefund,
 	"response_due_at": resolutionCenterCaseFieldResponseDueAt,
+	"variant_id":      resolutionCenterCaseFieldVariantID,
 }
 
 type ResolutionCenterCase struct {
@@ -1164,8 +1164,6 @@ type ResolutionCenterCase struct {
 	Outcome *ResolutionCenterCaseOutcome `json:"outcome,omitempty" url:"outcome,omitempty"`
 	// The payment the case was opened against.
 	Payment *ResolutionPayment `json:"payment" url:"payment"`
-	// The variant the payment was made on, prefixed `plan_`.
-	PlanID *string `json:"plan_id,omitempty" url:"plan_id,omitempty"`
 	// The product the payment was for, prefixed `prod_`.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// What the customer says went wrong. Shares the `/disputes` vocabulary, so a case that later becomes a chargeback reports the same complaint.
@@ -1178,6 +1176,8 @@ type ResolutionCenterCase struct {
 	Status ResolutionCenterCaseStatus `json:"status" url:"status"`
 	// When the case was last changed, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
+	// The variant the payment was made on, prefixed `plan_`.
+	VariantID *string `json:"variant_id,omitempty" url:"variant_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1270,13 +1270,6 @@ func (r *ResolutionCenterCase) GetPayment() *ResolutionPayment {
 	return r.Payment
 }
 
-func (r *ResolutionCenterCase) GetPlanID() *string {
-	if r == nil {
-		return nil
-	}
-	return r.PlanID
-}
-
 func (r *ResolutionCenterCase) GetProductID() *string {
 	if r == nil {
 		return nil
@@ -1317,6 +1310,13 @@ func (r *ResolutionCenterCase) GetUpdatedAt() string {
 		return ""
 	}
 	return r.UpdatedAt
+}
+
+func (r *ResolutionCenterCase) GetVariantID() *string {
+	if r == nil {
+		return nil
+	}
+	return r.VariantID
 }
 
 func (r *ResolutionCenterCase) GetExtraProperties() map[string]interface{} {
@@ -1419,13 +1419,6 @@ func (r *ResolutionCenterCase) SetPayment(payment *ResolutionPayment) {
 	r.require(resolutionCenterCaseFieldPayment)
 }
 
-// SetPlanID sets the PlanID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ResolutionCenterCase) SetPlanID(planID *string) {
-	r.PlanID = planID
-	r.require(resolutionCenterCaseFieldPlanID)
-}
-
 // SetProductID sets the ProductID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (r *ResolutionCenterCase) SetProductID(productID *string) {
@@ -1466,6 +1459,13 @@ func (r *ResolutionCenterCase) SetStatus(status ResolutionCenterCaseStatus) {
 func (r *ResolutionCenterCase) SetUpdatedAt(updatedAt string) {
 	r.UpdatedAt = updatedAt
 	r.require(resolutionCenterCaseFieldUpdatedAt)
+}
+
+// SetVariantID sets the VariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResolutionCenterCase) SetVariantID(variantID *string) {
+	r.VariantID = variantID
+	r.require(resolutionCenterCaseFieldVariantID)
 }
 
 func (r *ResolutionCenterCase) UnmarshalJSON(data []byte) error {

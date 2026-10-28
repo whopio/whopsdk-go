@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-10-15-1"
+		apiVersionDateDefault := "2026-10-27-3"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -129,7 +129,7 @@ func (c *Client) List(
 //	    AccountID: whopsdk.String(
 //	        "biz_xxxxxxxxxxxxxx",
 //	    ),
-//	    PlanID: whopsdk.String(
+//	    VariantID: whopsdk.String(
 //	        "plan_xxxxxxxxxxxxx",
 //	    ),
 //	}
