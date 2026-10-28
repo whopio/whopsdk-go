@@ -88,11 +88,11 @@ var (
 type ConnectSocialAccountsRequest struct {
 	// The Account (biz_ identifier) to connect the external account for. An account-scoped API key may omit this to default to its own account. Omit for user profile connections.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
-	// The platform to connect the external account on. Use `meta_business` to connect Meta Business assets, which is how Facebook Pages and Instagram accounts are connected — there is no separate `instagram` value. Use `tiktok` for TikTok accounts, `snapchat` for Snapchat Public Profiles, `linkedin` to connect the authenticated user’s LinkedIn profile, `youtube` to connect their YouTube channel, or `x` to connect their X profile.
+	// The platform to connect the external account on. Use `meta_business` to connect Meta Business assets, which is how Facebook Pages and Instagram accounts are connected — there is no separate `instagram` value. Use `tiktok` for TikTok accounts, `snapchat` for Snapchat Public Profiles, `linkedin` to connect the authenticated user’s LinkedIn profile, `youtube` to connect their YouTube channel, or `x` to connect their X profile. Use `quickbooks` to connect the account’s QuickBooks Online company: pass `account_id`, omit `scopes`, and the user picks the company in QuickBooks.
 	Platform ConnectSocialAccountsRequestPlatform `json:"platform" url:"-"`
 	// Where to send the user once they finish connecting their accounts. Must be an `https` URL on whop.com; any other host is rejected. On success, the user is redirected with an `external_account_connected` query param naming the platform; if the connection fails, with an `external_account_error` query param instead. The same values also arrive as `social_account_connected` / `social_account_error`.
 	RedirectURL string `json:"redirect_url" url:"-"`
-	// The connection purpose. For `meta_business` and `snapchat`, `advertise` is required and connects company advertising assets. For `linkedin`, `youtube`, and `x`, omit scopes to connect the authenticated user’s profile; advertising is not supported. For `tiktok`, omit scopes to connect the authenticated user’s profile, or pass `advertise` to connect company advertising assets. Profile connections still request the platform permissions needed to read the profile.
+	// The connection purpose. For `meta_business` and `snapchat`, `advertise` is required and connects company advertising assets. For `linkedin`, `youtube`, and `x`, omit scopes to connect the authenticated user’s profile; advertising is not supported. For `tiktok`, omit scopes to connect the authenticated user’s profile, or pass `advertise` to connect company advertising assets. For `quickbooks`, omit scopes; the connection belongs to the account in `account_id`. Profile connections still request the platform permissions needed to read the profile.
 	Scopes []ConnectSocialAccountsRequestScopesItem `json:"scopes,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1492,16 +1492,17 @@ func (s *SocialAccountParent) String() string {
 type SocialAccountParentPlatform string
 
 const (
-	SocialAccountParentPlatformX         SocialAccountParentPlatform = "x"
-	SocialAccountParentPlatformInstagram SocialAccountParentPlatform = "instagram"
-	SocialAccountParentPlatformYoutube   SocialAccountParentPlatform = "youtube"
-	SocialAccountParentPlatformTiktok    SocialAccountParentPlatform = "tiktok"
-	SocialAccountParentPlatformFacebook  SocialAccountParentPlatform = "facebook"
-	SocialAccountParentPlatformDiscord   SocialAccountParentPlatform = "discord"
-	SocialAccountParentPlatformTelegram  SocialAccountParentPlatform = "telegram"
-	SocialAccountParentPlatformLinkedin  SocialAccountParentPlatform = "linkedin"
-	SocialAccountParentPlatformSnapchat  SocialAccountParentPlatform = "snapchat"
-	SocialAccountParentPlatformKlaviyo   SocialAccountParentPlatform = "klaviyo"
+	SocialAccountParentPlatformX          SocialAccountParentPlatform = "x"
+	SocialAccountParentPlatformInstagram  SocialAccountParentPlatform = "instagram"
+	SocialAccountParentPlatformYoutube    SocialAccountParentPlatform = "youtube"
+	SocialAccountParentPlatformTiktok     SocialAccountParentPlatform = "tiktok"
+	SocialAccountParentPlatformFacebook   SocialAccountParentPlatform = "facebook"
+	SocialAccountParentPlatformDiscord    SocialAccountParentPlatform = "discord"
+	SocialAccountParentPlatformTelegram   SocialAccountParentPlatform = "telegram"
+	SocialAccountParentPlatformLinkedin   SocialAccountParentPlatform = "linkedin"
+	SocialAccountParentPlatformSnapchat   SocialAccountParentPlatform = "snapchat"
+	SocialAccountParentPlatformKlaviyo    SocialAccountParentPlatform = "klaviyo"
+	SocialAccountParentPlatformQuickbooks SocialAccountParentPlatform = "quickbooks"
 )
 
 func NewSocialAccountParentPlatformFromString(s string) (SocialAccountParentPlatform, error) {
@@ -1526,6 +1527,8 @@ func NewSocialAccountParentPlatformFromString(s string) (SocialAccountParentPlat
 		return SocialAccountParentPlatformSnapchat, nil
 	case "klaviyo":
 		return SocialAccountParentPlatformKlaviyo, nil
+	case "quickbooks":
+		return SocialAccountParentPlatformQuickbooks, nil
 	}
 	var t SocialAccountParentPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1565,16 +1568,17 @@ func (s SocialAccountPartnershipStatus) Ptr() *SocialAccountPartnershipStatus {
 type SocialAccountPlatform string
 
 const (
-	SocialAccountPlatformX         SocialAccountPlatform = "x"
-	SocialAccountPlatformInstagram SocialAccountPlatform = "instagram"
-	SocialAccountPlatformYoutube   SocialAccountPlatform = "youtube"
-	SocialAccountPlatformTiktok    SocialAccountPlatform = "tiktok"
-	SocialAccountPlatformFacebook  SocialAccountPlatform = "facebook"
-	SocialAccountPlatformDiscord   SocialAccountPlatform = "discord"
-	SocialAccountPlatformTelegram  SocialAccountPlatform = "telegram"
-	SocialAccountPlatformLinkedin  SocialAccountPlatform = "linkedin"
-	SocialAccountPlatformSnapchat  SocialAccountPlatform = "snapchat"
-	SocialAccountPlatformKlaviyo   SocialAccountPlatform = "klaviyo"
+	SocialAccountPlatformX          SocialAccountPlatform = "x"
+	SocialAccountPlatformInstagram  SocialAccountPlatform = "instagram"
+	SocialAccountPlatformYoutube    SocialAccountPlatform = "youtube"
+	SocialAccountPlatformTiktok     SocialAccountPlatform = "tiktok"
+	SocialAccountPlatformFacebook   SocialAccountPlatform = "facebook"
+	SocialAccountPlatformDiscord    SocialAccountPlatform = "discord"
+	SocialAccountPlatformTelegram   SocialAccountPlatform = "telegram"
+	SocialAccountPlatformLinkedin   SocialAccountPlatform = "linkedin"
+	SocialAccountPlatformSnapchat   SocialAccountPlatform = "snapchat"
+	SocialAccountPlatformKlaviyo    SocialAccountPlatform = "klaviyo"
+	SocialAccountPlatformQuickbooks SocialAccountPlatform = "quickbooks"
 )
 
 func NewSocialAccountPlatformFromString(s string) (SocialAccountPlatform, error) {
@@ -1599,6 +1603,8 @@ func NewSocialAccountPlatformFromString(s string) (SocialAccountPlatform, error)
 		return SocialAccountPlatformSnapchat, nil
 	case "klaviyo":
 		return SocialAccountPlatformKlaviyo, nil
+	case "quickbooks":
+		return SocialAccountPlatformQuickbooks, nil
 	}
 	var t SocialAccountPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1993,7 +1999,7 @@ func (s SocialAccountPostRestrictionsItem) Ptr() *SocialAccountPostRestrictionsI
 	return &s
 }
 
-// The platform to connect the external account on. Use `meta_business` to connect Meta Business assets, which is how Facebook Pages and Instagram accounts are connected — there is no separate `instagram` value. Use `tiktok` for TikTok accounts, `snapchat` for Snapchat Public Profiles, `linkedin` to connect the authenticated user’s LinkedIn profile, `youtube` to connect their YouTube channel, or `x` to connect their X profile.
+// The platform to connect the external account on. Use `meta_business` to connect Meta Business assets, which is how Facebook Pages and Instagram accounts are connected — there is no separate `instagram` value. Use `tiktok` for TikTok accounts, `snapchat` for Snapchat Public Profiles, `linkedin` to connect the authenticated user’s LinkedIn profile, `youtube` to connect their YouTube channel, or `x` to connect their X profile. Use `quickbooks` to connect the account’s QuickBooks Online company: pass `account_id`, omit `scopes`, and the user picks the company in QuickBooks.
 type ConnectSocialAccountsRequestPlatform string
 
 const (
@@ -2003,6 +2009,7 @@ const (
 	ConnectSocialAccountsRequestPlatformYoutube      ConnectSocialAccountsRequestPlatform = "youtube"
 	ConnectSocialAccountsRequestPlatformX            ConnectSocialAccountsRequestPlatform = "x"
 	ConnectSocialAccountsRequestPlatformSnapchat     ConnectSocialAccountsRequestPlatform = "snapchat"
+	ConnectSocialAccountsRequestPlatformQuickbooks   ConnectSocialAccountsRequestPlatform = "quickbooks"
 )
 
 func NewConnectSocialAccountsRequestPlatformFromString(s string) (ConnectSocialAccountsRequestPlatform, error) {
@@ -2019,6 +2026,8 @@ func NewConnectSocialAccountsRequestPlatformFromString(s string) (ConnectSocialA
 		return ConnectSocialAccountsRequestPlatformX, nil
 	case "snapchat":
 		return ConnectSocialAccountsRequestPlatformSnapchat, nil
+	case "quickbooks":
+		return ConnectSocialAccountsRequestPlatformQuickbooks, nil
 	}
 	var t ConnectSocialAccountsRequestPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -2394,16 +2403,17 @@ func (l ListSocialAccountsRequestOrder) Ptr() *ListSocialAccountsRequestOrder {
 type ListSocialAccountsRequestPlatform string
 
 const (
-	ListSocialAccountsRequestPlatformX         ListSocialAccountsRequestPlatform = "x"
-	ListSocialAccountsRequestPlatformInstagram ListSocialAccountsRequestPlatform = "instagram"
-	ListSocialAccountsRequestPlatformYoutube   ListSocialAccountsRequestPlatform = "youtube"
-	ListSocialAccountsRequestPlatformTiktok    ListSocialAccountsRequestPlatform = "tiktok"
-	ListSocialAccountsRequestPlatformFacebook  ListSocialAccountsRequestPlatform = "facebook"
-	ListSocialAccountsRequestPlatformDiscord   ListSocialAccountsRequestPlatform = "discord"
-	ListSocialAccountsRequestPlatformTelegram  ListSocialAccountsRequestPlatform = "telegram"
-	ListSocialAccountsRequestPlatformLinkedin  ListSocialAccountsRequestPlatform = "linkedin"
-	ListSocialAccountsRequestPlatformSnapchat  ListSocialAccountsRequestPlatform = "snapchat"
-	ListSocialAccountsRequestPlatformKlaviyo   ListSocialAccountsRequestPlatform = "klaviyo"
+	ListSocialAccountsRequestPlatformX          ListSocialAccountsRequestPlatform = "x"
+	ListSocialAccountsRequestPlatformInstagram  ListSocialAccountsRequestPlatform = "instagram"
+	ListSocialAccountsRequestPlatformYoutube    ListSocialAccountsRequestPlatform = "youtube"
+	ListSocialAccountsRequestPlatformTiktok     ListSocialAccountsRequestPlatform = "tiktok"
+	ListSocialAccountsRequestPlatformFacebook   ListSocialAccountsRequestPlatform = "facebook"
+	ListSocialAccountsRequestPlatformDiscord    ListSocialAccountsRequestPlatform = "discord"
+	ListSocialAccountsRequestPlatformTelegram   ListSocialAccountsRequestPlatform = "telegram"
+	ListSocialAccountsRequestPlatformLinkedin   ListSocialAccountsRequestPlatform = "linkedin"
+	ListSocialAccountsRequestPlatformSnapchat   ListSocialAccountsRequestPlatform = "snapchat"
+	ListSocialAccountsRequestPlatformKlaviyo    ListSocialAccountsRequestPlatform = "klaviyo"
+	ListSocialAccountsRequestPlatformQuickbooks ListSocialAccountsRequestPlatform = "quickbooks"
 )
 
 func NewListSocialAccountsRequestPlatformFromString(s string) (ListSocialAccountsRequestPlatform, error) {
@@ -2428,6 +2438,8 @@ func NewListSocialAccountsRequestPlatformFromString(s string) (ListSocialAccount
 		return ListSocialAccountsRequestPlatformSnapchat, nil
 	case "klaviyo":
 		return ListSocialAccountsRequestPlatformKlaviyo, nil
+	case "quickbooks":
+		return ListSocialAccountsRequestPlatformQuickbooks, nil
 	}
 	var t ListSocialAccountsRequestPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
