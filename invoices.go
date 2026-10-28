@@ -46,7 +46,7 @@ type CreateInvoicesRequest struct {
 	MemberID *string `json:"member_id,omitempty" url:"-"`
 	// Up to 50 caller-owned string key/value pairs.
 	Metadata map[string]string `json:"metadata,omitempty" url:"-"`
-	// A saved payment method belonging to the member, prefixed `payt_`. Sending the invoice emails it now and charges this method on `due_at`, or right away when there is no `due_at` or it has passed. Issuing the invoice without sending it charges right away.
+	// A saved payment method belonging to the member, prefixed `payt_`. Sending or issuing the invoice charges this method at the `charge_at` passed to that call, otherwise on `due_at`, or right away when there is no `due_at` or it has passed. Sending also emails the invoice now when the charge is later; issuing does not.
 	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
 	// Email addresses saved for invoice delivery, independent of the billed customer. Saving them sends no email. Defaults to the customer email when omitted on create. Can be updated on draft, open, or uncollectible invoices.
 	RecipientEmails []string `json:"recipient_emails,omitempty" url:"-"`
@@ -206,12 +206,15 @@ func (g *GeneratePdfInvoicesRequest) SetID(id string) {
 }
 
 var (
-	issueInvoicesRequestFieldID = big.NewInt(1 << 0)
+	issueInvoicesRequestFieldID       = big.NewInt(1 << 0)
+	issueInvoicesRequestFieldChargeAt = big.NewInt(1 << 1)
 )
 
 type IssueInvoicesRequest struct {
 	// The invoice's pay_ ID.
 	ID string `json:"-" url:"-"`
+	// When to charge the draft's `payment_method_id`, as an ISO 8601 timestamp in the future. Only for a draft with a `payment_method_id` and a total above zero. Omit to charge on `due_at` if it is still ahead, or right away otherwise.
+	ChargeAt *time.Time `json:"charge_at,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -231,6 +234,42 @@ func (i *IssueInvoicesRequest) require(field *big.Int) {
 func (i *IssueInvoicesRequest) SetID(id string) {
 	i.ID = id
 	i.require(issueInvoicesRequestFieldID)
+}
+
+// SetChargeAt sets the ChargeAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IssueInvoicesRequest) SetChargeAt(chargeAt *time.Time) {
+	i.ChargeAt = chargeAt
+	i.require(issueInvoicesRequestFieldChargeAt)
+}
+
+func (i *IssueInvoicesRequest) UnmarshalJSON(data []byte) error {
+	type embed IssueInvoicesRequest
+	var body = struct {
+		embed
+		ChargeAt *internal.DateTime `json:"charge_at,omitempty"`
+	}{
+		embed: embed(*i),
+	}
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*i = IssueInvoicesRequest(body.embed)
+	i.ChargeAt = body.ChargeAt.TimePtr()
+	return nil
+}
+
+func (i *IssueInvoicesRequest) MarshalJSON() ([]byte, error) {
+	type embed IssueInvoicesRequest
+	var marshaler = struct {
+		embed
+		ChargeAt *internal.DateTime `json:"charge_at,omitempty"`
+	}{
+		embed:    embed(*i),
+		ChargeAt: internal.NewOptionalDateTime(i.ChargeAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
 }
 
 var (
@@ -429,13 +468,16 @@ func (r *RetrieveInvoicesRequest) SetID(id string) {
 }
 
 var (
-	sendInvoicesRequestFieldID     = big.NewInt(1 << 0)
-	sendInvoicesRequestFieldSendAt = big.NewInt(1 << 1)
+	sendInvoicesRequestFieldID       = big.NewInt(1 << 0)
+	sendInvoicesRequestFieldChargeAt = big.NewInt(1 << 1)
+	sendInvoicesRequestFieldSendAt   = big.NewInt(1 << 2)
 )
 
 type SendInvoicesRequest struct {
 	// The invoice's pay_ ID.
 	ID string `json:"-" url:"-"`
+	// When to charge the draft's `payment_method_id`, as an ISO 8601 timestamp in the future and no earlier than `send_at`. Only for a draft with a `payment_method_id` and a total above zero. Omit to charge on `due_at` if it is still ahead when the draft is sent, or right away otherwise. A scheduled send that runs after `charge_at` charges right away.
+	ChargeAt *time.Time `json:"charge_at,omitempty" url:"-"`
 	// When to send the draft, as an ISO 8601 timestamp in the future. Omit to send now.
 	SendAt *time.Time `json:"send_at,omitempty" url:"-"`
 
@@ -459,6 +501,13 @@ func (s *SendInvoicesRequest) SetID(id string) {
 	s.require(sendInvoicesRequestFieldID)
 }
 
+// SetChargeAt sets the ChargeAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendInvoicesRequest) SetChargeAt(chargeAt *time.Time) {
+	s.ChargeAt = chargeAt
+	s.require(sendInvoicesRequestFieldChargeAt)
+}
+
 // SetSendAt sets the SendAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SendInvoicesRequest) SetSendAt(sendAt *time.Time) {
@@ -470,7 +519,8 @@ func (s *SendInvoicesRequest) UnmarshalJSON(data []byte) error {
 	type embed SendInvoicesRequest
 	var body = struct {
 		embed
-		SendAt *internal.DateTime `json:"send_at,omitempty"`
+		ChargeAt *internal.DateTime `json:"charge_at,omitempty"`
+		SendAt   *internal.DateTime `json:"send_at,omitempty"`
 	}{
 		embed: embed(*s),
 	}
@@ -478,6 +528,7 @@ func (s *SendInvoicesRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*s = SendInvoicesRequest(body.embed)
+	s.ChargeAt = body.ChargeAt.TimePtr()
 	s.SendAt = body.SendAt.TimePtr()
 	return nil
 }
@@ -486,10 +537,12 @@ func (s *SendInvoicesRequest) MarshalJSON() ([]byte, error) {
 	type embed SendInvoicesRequest
 	var marshaler = struct {
 		embed
-		SendAt *internal.DateTime `json:"send_at,omitempty"`
+		ChargeAt *internal.DateTime `json:"charge_at,omitempty"`
+		SendAt   *internal.DateTime `json:"send_at,omitempty"`
 	}{
-		embed:  embed(*s),
-		SendAt: internal.NewOptionalDateTime(s.SendAt),
+		embed:    embed(*s),
+		ChargeAt: internal.NewOptionalDateTime(s.ChargeAt),
+		SendAt:   internal.NewOptionalDateTime(s.SendAt),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
 	return json.Marshal(explicitMarshaler)
@@ -569,7 +622,7 @@ type Invoice struct {
 	PaidAt           *string            `json:"paid_at,omitempty" url:"paid_at,omitempty"`
 	PaymentMethodID  *string            `json:"payment_method_id,omitempty" url:"payment_method_id,omitempty"`
 	RecipientEmails  []string           `json:"recipient_emails" url:"recipient_emails"`
-	// When the invoice's saved payment method will be charged, as an ISO 8601 timestamp. Set to `due_at` when an invoice with a `payment_method_id` is sent before it is due; `null` otherwise, once the charge starts, and once the invoice is paid, void, or uncollectible.
+	// When the invoice's saved payment method will be charged, as an ISO 8601 timestamp: the `charge_at` it was sent or issued with, or `due_at` when an invoice with a `payment_method_id` is sent or issued before it is due without one. On a draft, the `charge_at` of its scheduled send. `null` otherwise, once the charge starts, and once the invoice is paid, void, or uncollectible.
 	ScheduledChargeAt *string             `json:"scheduled_charge_at,omitempty" url:"scheduled_charge_at,omitempty"`
 	ScheduledSendAt   *string             `json:"scheduled_send_at,omitempty" url:"scheduled_send_at,omitempty"`
 	Status            InvoiceStatus       `json:"status" url:"status"`
@@ -5929,7 +5982,7 @@ type UpdateInvoicesRequest struct {
 	MemberID *string `json:"member_id,omitempty" url:"-"`
 	// Up to 50 caller-owned string key/value pairs.
 	Metadata map[string]string `json:"metadata,omitempty" url:"-"`
-	// A saved payment method belonging to the member, prefixed `payt_`. Sending the invoice emails it now and charges this method on `due_at`, or right away when there is no `due_at` or it has passed. Issuing the invoice without sending it charges right away.
+	// A saved payment method belonging to the member, prefixed `payt_`. Sending or issuing the invoice charges this method at the `charge_at` passed to that call, otherwise on `due_at`, or right away when there is no `due_at` or it has passed. Sending also emails the invoice now when the charge is later; issuing does not.
 	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
 	// Email addresses saved for invoice delivery, independent of the billed customer. Saving them sends no email. Defaults to the customer email when omitted on create. Can be updated on draft, open, or uncollectible invoices.
 	RecipientEmails []string `json:"recipient_emails,omitempty" url:"-"`

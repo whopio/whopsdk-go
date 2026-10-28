@@ -272,6 +272,7 @@ func (r *RawClient) Issue(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
+	headers.Add("Content-Type", "application/json")
 	var response *whopsdk.Invoice
 	raw, err := r.caller.Call(
 		ctx,
@@ -284,6 +285,7 @@ func (r *RawClient) Issue(
 			BodyProperties:  options.BodyProperties,
 			QueryParameters: options.QueryParameters,
 			Client:          options.HTTPClient,
+			Request:         request,
 			Response:        &response,
 			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
 		},
