@@ -234,12 +234,13 @@ var (
 	listAppsRequestFieldVerifiedAppsOnly = big.NewInt(1 << 4)
 	listAppsRequestFieldRecommended      = big.NewInt(1 << 5)
 	listAppsRequestFieldQuery            = big.NewInt(1 << 6)
-	listAppsRequestFieldOrder            = big.NewInt(1 << 7)
-	listAppsRequestFieldDirection        = big.NewInt(1 << 8)
-	listAppsRequestFieldFirst            = big.NewInt(1 << 9)
-	listAppsRequestFieldAfter            = big.NewInt(1 << 10)
-	listAppsRequestFieldLast             = big.NewInt(1 << 11)
-	listAppsRequestFieldBefore           = big.NewInt(1 << 12)
+	listAppsRequestFieldProductCategory  = big.NewInt(1 << 7)
+	listAppsRequestFieldOrder            = big.NewInt(1 << 8)
+	listAppsRequestFieldDirection        = big.NewInt(1 << 9)
+	listAppsRequestFieldFirst            = big.NewInt(1 << 10)
+	listAppsRequestFieldAfter            = big.NewInt(1 << 11)
+	listAppsRequestFieldLast             = big.NewInt(1 << 12)
+	listAppsRequestFieldBefore           = big.NewInt(1 << 13)
 )
 
 type ListAppsRequest struct {
@@ -257,6 +258,8 @@ type ListAppsRequest struct {
 	Recommended *bool `json:"-" url:"recommended,omitempty"`
 	// A search string matched against app names.
 	Query *string `json:"-" url:"query,omitempty"`
+	// Only return apps whose `product_category` is this product category, such as `pressure_washing`. An unknown product category is rejected.
+	ProductCategory *string `json:"-" url:"product_category,omitempty"`
 	// The field to sort apps by. Defaults to discoverable_at, showing the most recently published apps first. `template_usage` ranks Whop-verified apps first, then by how many businesses created apps from each app as a template. `template_recent_sales` ranks them by how many of those businesses processed a payment in the last 24 hours, recounted hourly, breaking ties by `template_usage`.
 	Order *ListAppsRequestOrder `json:"-" url:"order,omitempty"`
 	// Sort direction.
@@ -330,6 +333,13 @@ func (l *ListAppsRequest) SetRecommended(recommended *bool) {
 func (l *ListAppsRequest) SetQuery(query *string) {
 	l.Query = query
 	l.require(listAppsRequestFieldQuery)
+}
+
+// SetProductCategory sets the ProductCategory field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAppsRequest) SetProductCategory(productCategory *string) {
+	l.ProductCategory = productCategory
+	l.require(listAppsRequestFieldProductCategory)
 }
 
 // SetOrder sets the Order field and marks it as non-optional;
@@ -541,19 +551,20 @@ var (
 	appFieldOrigin                         = big.NewInt(1 << 27)
 	appFieldPerInstallSchedule             = big.NewInt(1 << 28)
 	appFieldPreviewToken                   = big.NewInt(1 << 29)
-	appFieldProductID                      = big.NewInt(1 << 30)
-	appFieldProductionAndroidBuild         = big.NewInt(1 << 31)
-	appFieldProductionIosBuild             = big.NewInt(1 << 32)
-	appFieldProductionWebBuild             = big.NewInt(1 << 33)
-	appFieldRedirectURIs                   = big.NewInt(1 << 34)
-	appFieldRequestedPermissions           = big.NewInt(1 << 35)
-	appFieldRequiredScopes                 = big.NewInt(1 << 36)
-	appFieldRoute                          = big.NewInt(1 << 37)
-	appFieldSchedule                       = big.NewInt(1 << 38)
-	appFieldSecrets                        = big.NewInt(1 << 39)
-	appFieldSkillsPath                     = big.NewInt(1 << 40)
-	appFieldStatus                         = big.NewInt(1 << 41)
-	appFieldVerified                       = big.NewInt(1 << 42)
+	appFieldProductCategory                = big.NewInt(1 << 30)
+	appFieldProductID                      = big.NewInt(1 << 31)
+	appFieldProductionAndroidBuild         = big.NewInt(1 << 32)
+	appFieldProductionIosBuild             = big.NewInt(1 << 33)
+	appFieldProductionWebBuild             = big.NewInt(1 << 34)
+	appFieldRedirectURIs                   = big.NewInt(1 << 35)
+	appFieldRequestedPermissions           = big.NewInt(1 << 36)
+	appFieldRequiredScopes                 = big.NewInt(1 << 37)
+	appFieldRoute                          = big.NewInt(1 << 38)
+	appFieldSchedule                       = big.NewInt(1 << 39)
+	appFieldSecrets                        = big.NewInt(1 << 40)
+	appFieldSkillsPath                     = big.NewInt(1 << 41)
+	appFieldStatus                         = big.NewInt(1 << 42)
+	appFieldVerified                       = big.NewInt(1 << 43)
 )
 
 // appNullableFields maps the wire names of App's nullable fields (required or optional) to their field bits.
@@ -575,6 +586,7 @@ var appNullableFields = map[string]*big.Int{
 	"origin":                   appFieldOrigin,
 	"per_install_schedule":     appFieldPerInstallSchedule,
 	"preview_token":            appFieldPreviewToken,
+	"product_category":         appFieldProductCategory,
 	"product_id":               appFieldProductID,
 	"production_android_build": appFieldProductionAndroidBuild,
 	"production_ios_build":     appFieldProductionIosBuild,
@@ -644,6 +656,8 @@ type App struct {
 	PerInstallSchedule *string `json:"per_install_schedule,omitempty" url:"per_install_schedule,omitempty"`
 	// A short-lived signed pass scoping the caller to this app's gated preview hosts — every build preview and the live dev-server sandbox. Add it to a preview host as the `__whop_preview` query param (or `x-whop-preview-token` header). `null` unless the caller is a team member who can read the app's developer settings.
 	PreviewToken *string `json:"preview_token,omitempty" url:"preview_token,omitempty"`
+	// Product category a business built from this app as a template sells, such as `pressure_washing`, or `null` when none has been set.
+	ProductCategory *string `json:"product_category,omitempty" url:"product_category,omitempty"`
 	// ID of the app's product listing on the Whop app store, or `null` when the app has no associated product.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// The approved build currently served on Android, or `null` when none is deployed.
@@ -884,6 +898,13 @@ func (a *App) GetPreviewToken() *string {
 		return nil
 	}
 	return a.PreviewToken
+}
+
+func (a *App) GetProductCategory() *string {
+	if a == nil {
+		return nil
+	}
+	return a.ProductCategory
 }
 
 func (a *App) GetProductID() *string {
@@ -1201,6 +1222,13 @@ func (a *App) SetPerInstallSchedule(perInstallSchedule *string) {
 func (a *App) SetPreviewToken(previewToken *string) {
 	a.PreviewToken = previewToken
 	a.require(appFieldPreviewToken)
+}
+
+// SetProductCategory sets the ProductCategory field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *App) SetProductCategory(productCategory *string) {
+	a.ProductCategory = productCategory
+	a.require(appFieldProductCategory)
 }
 
 // SetProductID sets the ProductID field and marks it as non-optional;
@@ -2530,25 +2558,27 @@ var (
 	appListItemFieldName                           = big.NewInt(1 << 17)
 	appListItemFieldOpenapiPath                    = big.NewInt(1 << 18)
 	appListItemFieldOrigin                         = big.NewInt(1 << 19)
-	appListItemFieldRoute                          = big.NewInt(1 << 20)
-	appListItemFieldSkillsPath                     = big.NewInt(1 << 21)
-	appListItemFieldStatus                         = big.NewInt(1 << 22)
-	appListItemFieldVerified                       = big.NewInt(1 << 23)
+	appListItemFieldProductCategory                = big.NewInt(1 << 20)
+	appListItemFieldRoute                          = big.NewInt(1 << 21)
+	appListItemFieldSkillsPath                     = big.NewInt(1 << 22)
+	appListItemFieldStatus                         = big.NewInt(1 << 23)
+	appListItemFieldVerified                       = big.NewInt(1 << 24)
 )
 
 // appListItemNullableFields maps the wire names of AppListItem's nullable fields (required or optional) to their field bits.
 var appListItemNullableFields = map[string]*big.Int{
-	"banner_image":    appListItemFieldBannerImage,
-	"base_url":        appListItemFieldBaseURL,
-	"dashboard_path":  appListItemFieldDashboardPath,
-	"description":     appListItemFieldDescription,
-	"discover_path":   appListItemFieldDiscoverPath,
-	"experience_path": appListItemFieldExperiencePath,
-	"hosted_url":      appListItemFieldHostedURL,
-	"openapi_path":    appListItemFieldOpenapiPath,
-	"origin":          appListItemFieldOrigin,
-	"route":           appListItemFieldRoute,
-	"skills_path":     appListItemFieldSkillsPath,
+	"banner_image":     appListItemFieldBannerImage,
+	"base_url":         appListItemFieldBaseURL,
+	"dashboard_path":   appListItemFieldDashboardPath,
+	"description":      appListItemFieldDescription,
+	"discover_path":    appListItemFieldDiscoverPath,
+	"experience_path":  appListItemFieldExperiencePath,
+	"hosted_url":       appListItemFieldHostedURL,
+	"openapi_path":     appListItemFieldOpenapiPath,
+	"origin":           appListItemFieldOrigin,
+	"product_category": appListItemFieldProductCategory,
+	"route":            appListItemFieldRoute,
+	"skills_path":      appListItemFieldSkillsPath,
 }
 
 type AppListItem struct {
@@ -2591,6 +2621,8 @@ type AppListItem struct {
 	OpenapiPath *string `json:"openapi_path,omitempty" url:"openapi_path,omitempty"`
 	// Full origin URL of the app's proxied domain, for example https://ab1c2d3e4f.apps.whop.com.
 	Origin *string `json:"origin,omitempty" url:"origin,omitempty"`
+	// Product category a business built from this app as a template sells, such as `pressure_washing`, or `null` when none has been set.
+	ProductCategory *string `json:"product_category,omitempty" url:"product_category,omitempty"`
 	// Claimed subdomain route where hosted web builds are served (`myapp` for myapp.whop.site), or `null` if no route is claimed.
 	// DEPRECATED: Read `domains` instead.
 	Route *string `json:"route,omitempty" url:"route,omitempty"`
@@ -2746,6 +2778,13 @@ func (a *AppListItem) GetOrigin() *string {
 		return nil
 	}
 	return a.Origin
+}
+
+func (a *AppListItem) GetProductCategory() *string {
+	if a == nil {
+		return nil
+	}
+	return a.ProductCategory
 }
 
 func (a *AppListItem) GetRoute() *string {
@@ -2930,6 +2969,13 @@ func (a *AppListItem) SetOpenapiPath(openapiPath *string) {
 func (a *AppListItem) SetOrigin(origin *string) {
 	a.Origin = origin
 	a.require(appListItemFieldOrigin)
+}
+
+// SetProductCategory sets the ProductCategory field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AppListItem) SetProductCategory(productCategory *string) {
+	a.ProductCategory = productCategory
+	a.require(appListItemFieldProductCategory)
 }
 
 // SetRoute sets the Route field and marks it as non-optional;
