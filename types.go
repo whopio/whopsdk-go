@@ -43572,10 +43572,11 @@ var (
 	paymentBankTransferFieldDocumentURL                 = big.NewInt(1 << 12)
 	paymentBankTransferFieldExpiresAt                   = big.NewInt(1 << 13)
 	paymentBankTransferFieldInstructions                = big.NewInt(1 << 14)
-	paymentBankTransferFieldReference                   = big.NewInt(1 << 15)
-	paymentBankTransferFieldRoutingNumber               = big.NewInt(1 << 16)
-	paymentBankTransferFieldSecondaryAccountNumber      = big.NewInt(1 << 17)
-	paymentBankTransferFieldSecondaryAccountNumberLabel = big.NewInt(1 << 18)
+	paymentBankTransferFieldIntermediaryBic             = big.NewInt(1 << 15)
+	paymentBankTransferFieldReference                   = big.NewInt(1 << 16)
+	paymentBankTransferFieldRoutingNumber               = big.NewInt(1 << 17)
+	paymentBankTransferFieldSecondaryAccountNumber      = big.NewInt(1 << 18)
+	paymentBankTransferFieldSecondaryAccountNumberLabel = big.NewInt(1 << 19)
 )
 
 type PaymentBankTransfer struct {
@@ -43609,6 +43610,8 @@ type PaymentBankTransfer struct {
 	ExpiresAt *string `json:"expires_at,omitempty" url:"expires_at,omitempty"`
 	// The rail's own step-by-step payment text, when it supplies one.
 	Instructions *string `json:"instructions,omitempty" url:"instructions,omitempty"`
+	// The SWIFT/BIC of the intermediary bank the buyer's bank should route the transfer through, when the buyer named the bank they are sending from.
+	IntermediaryBic *string `json:"intermediary_bic,omitempty" url:"intermediary_bic,omitempty"`
 	// The reference the buyer must attach to the transfer so it can be matched to this payment.
 	Reference *string `json:"reference,omitempty" url:"reference,omitempty"`
 	// The receiving bank's routing number for US transfers.
@@ -43728,6 +43731,13 @@ func (p *PaymentBankTransfer) GetInstructions() *string {
 		return nil
 	}
 	return p.Instructions
+}
+
+func (p *PaymentBankTransfer) GetIntermediaryBic() *string {
+	if p == nil {
+		return nil
+	}
+	return p.IntermediaryBic
 }
 
 func (p *PaymentBankTransfer) GetReference() *string {
@@ -43877,6 +43887,13 @@ func (p *PaymentBankTransfer) SetExpiresAt(expiresAt *string) {
 func (p *PaymentBankTransfer) SetInstructions(instructions *string) {
 	p.Instructions = instructions
 	p.require(paymentBankTransferFieldInstructions)
+}
+
+// SetIntermediaryBic sets the IntermediaryBic field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentBankTransfer) SetIntermediaryBic(intermediaryBic *string) {
+	p.IntermediaryBic = intermediaryBic
+	p.require(paymentBankTransferFieldIntermediaryBic)
 }
 
 // SetReference sets the Reference field and marks it as non-optional;
