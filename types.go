@@ -19793,14 +19793,15 @@ func (e *ExternalAccountParent) String() string {
 type ExternalAccountParentPlatform string
 
 const (
-	ExternalAccountParentPlatformX         ExternalAccountParentPlatform = "x"
-	ExternalAccountParentPlatformInstagram ExternalAccountParentPlatform = "instagram"
-	ExternalAccountParentPlatformYoutube   ExternalAccountParentPlatform = "youtube"
-	ExternalAccountParentPlatformTiktok    ExternalAccountParentPlatform = "tiktok"
-	ExternalAccountParentPlatformFacebook  ExternalAccountParentPlatform = "facebook"
-	ExternalAccountParentPlatformLinkedin  ExternalAccountParentPlatform = "linkedin"
-	ExternalAccountParentPlatformSnapchat  ExternalAccountParentPlatform = "snapchat"
-	ExternalAccountParentPlatformKlaviyo   ExternalAccountParentPlatform = "klaviyo"
+	ExternalAccountParentPlatformX          ExternalAccountParentPlatform = "x"
+	ExternalAccountParentPlatformInstagram  ExternalAccountParentPlatform = "instagram"
+	ExternalAccountParentPlatformYoutube    ExternalAccountParentPlatform = "youtube"
+	ExternalAccountParentPlatformTiktok     ExternalAccountParentPlatform = "tiktok"
+	ExternalAccountParentPlatformFacebook   ExternalAccountParentPlatform = "facebook"
+	ExternalAccountParentPlatformLinkedin   ExternalAccountParentPlatform = "linkedin"
+	ExternalAccountParentPlatformSnapchat   ExternalAccountParentPlatform = "snapchat"
+	ExternalAccountParentPlatformKlaviyo    ExternalAccountParentPlatform = "klaviyo"
+	ExternalAccountParentPlatformQuickbooks ExternalAccountParentPlatform = "quickbooks"
 )
 
 func NewExternalAccountParentPlatformFromString(s string) (ExternalAccountParentPlatform, error) {
@@ -19821,6 +19822,8 @@ func NewExternalAccountParentPlatformFromString(s string) (ExternalAccountParent
 		return ExternalAccountParentPlatformSnapchat, nil
 	case "klaviyo":
 		return ExternalAccountParentPlatformKlaviyo, nil
+	case "quickbooks":
+		return ExternalAccountParentPlatformQuickbooks, nil
 	}
 	var t ExternalAccountParentPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -19860,14 +19863,15 @@ func (e ExternalAccountPartnershipStatus) Ptr() *ExternalAccountPartnershipStatu
 type ExternalAccountPlatform string
 
 const (
-	ExternalAccountPlatformX         ExternalAccountPlatform = "x"
-	ExternalAccountPlatformInstagram ExternalAccountPlatform = "instagram"
-	ExternalAccountPlatformYoutube   ExternalAccountPlatform = "youtube"
-	ExternalAccountPlatformTiktok    ExternalAccountPlatform = "tiktok"
-	ExternalAccountPlatformFacebook  ExternalAccountPlatform = "facebook"
-	ExternalAccountPlatformLinkedin  ExternalAccountPlatform = "linkedin"
-	ExternalAccountPlatformSnapchat  ExternalAccountPlatform = "snapchat"
-	ExternalAccountPlatformKlaviyo   ExternalAccountPlatform = "klaviyo"
+	ExternalAccountPlatformX          ExternalAccountPlatform = "x"
+	ExternalAccountPlatformInstagram  ExternalAccountPlatform = "instagram"
+	ExternalAccountPlatformYoutube    ExternalAccountPlatform = "youtube"
+	ExternalAccountPlatformTiktok     ExternalAccountPlatform = "tiktok"
+	ExternalAccountPlatformFacebook   ExternalAccountPlatform = "facebook"
+	ExternalAccountPlatformLinkedin   ExternalAccountPlatform = "linkedin"
+	ExternalAccountPlatformSnapchat   ExternalAccountPlatform = "snapchat"
+	ExternalAccountPlatformKlaviyo    ExternalAccountPlatform = "klaviyo"
+	ExternalAccountPlatformQuickbooks ExternalAccountPlatform = "quickbooks"
 )
 
 func NewExternalAccountPlatformFromString(s string) (ExternalAccountPlatform, error) {
@@ -19888,6 +19892,8 @@ func NewExternalAccountPlatformFromString(s string) (ExternalAccountPlatform, er
 		return ExternalAccountPlatformSnapchat, nil
 	case "klaviyo":
 		return ExternalAccountPlatformKlaviyo, nil
+	case "quickbooks":
+		return ExternalAccountPlatformQuickbooks, nil
 	}
 	var t ExternalAccountPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

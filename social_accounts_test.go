@@ -7123,6 +7123,13 @@ func TestEnumConnectSocialAccountsRequestPlatform(t *testing.T) {
 		assert.Equal(t, ConnectSocialAccountsRequestPlatform("snapchat"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_quickbooks", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewConnectSocialAccountsRequestPlatformFromString("quickbooks")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ConnectSocialAccountsRequestPlatform("quickbooks"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewConnectSocialAccountsRequestPlatformFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -7324,6 +7331,13 @@ func TestEnumListSocialAccountsRequestPlatform(t *testing.T) {
 		assert.Equal(t, ListSocialAccountsRequestPlatform("klaviyo"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_quickbooks", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListSocialAccountsRequestPlatformFromString("quickbooks")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListSocialAccountsRequestPlatform("quickbooks"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewListSocialAccountsRequestPlatformFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -7517,6 +7531,13 @@ func TestEnumSocialAccountParentPlatform(t *testing.T) {
 		assert.Equal(t, SocialAccountParentPlatform("klaviyo"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_quickbooks", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSocialAccountParentPlatformFromString("quickbooks")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SocialAccountParentPlatform("quickbooks"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewSocialAccountParentPlatformFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -7636,6 +7657,13 @@ func TestEnumSocialAccountPlatform(t *testing.T) {
 		val, err := NewSocialAccountPlatformFromString("klaviyo")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, SocialAccountPlatform("klaviyo"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_quickbooks", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSocialAccountPlatformFromString("quickbooks")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SocialAccountPlatform("quickbooks"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
