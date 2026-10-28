@@ -1496,6 +1496,37 @@
       }
     },
     {
+      "id": "92f25e9b-6381-408c-8bc5-7b27f63b6925",
+      "name": "Create ad stats - default",
+      "request": {
+        "urlPathTemplate": "/ad_stats",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"ad_campaign_id\": \"adcamp_xxxxxxxxxxxxxx\",\n  \"ad_group_id\": \"adgrp_xxxxxxxxxxxxxx\",\n  \"ad_id\": \"ad_xxxxxxxxxxxxxx\",\n  \"clicks\": 150,\n  \"hour_started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"impressions\": 6000,\n  \"spend\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "92f25e9b-6381-408c-8bc5-7b27f63b6925",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "2df06a58-bf86-4295-9521-b390ae30caab",
       "name": "List Ads - default",
       "request": {
@@ -18200,6 +18231,6 @@
     }
   ],
   "meta": {
-    "total": 508
+    "total": 509
   }
 }

@@ -4796,6 +4796,104 @@ client.AdPixels.Update(
 </details>
 
 ## Ads
+<details><summary><code>client.Ads.ReportStats(request) -> *whopsdk.AdStat</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Records a runner's stats for one of their ads in one hour, and pays them for the spend. Send the ad's totals so far for an hour that started in the last 24 hours; they replace what the ad held for that hour, and its ad group's and campaign's hours are rebuilt from their ads. The spend can go up but never down. Reporting on a campaign starts with the hour of its first recorded report; earlier hours are refused. Spend over what is left of a budget (the runner's share of the day, the campaign's daily budget or the ad group's budget) is refused with the most the ad can record. Takes the runner's Whop session or a user OAuth token with `ad_campaign:update`. A token without that scope gets a 403, and anyone not holding the ad's campaign gets a 404.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.ReportStatsAdsRequest{
+    AdID: "ad_xxxxxxxxxxxxxx",
+    HourStartedAt: whopsdk.MustParseDateTime(
+        "2026-01-01T12:00:00Z",
+    ),
+    Spend: &whopsdk.ReportStatsAdsRequestSpend{
+        Double: 1.1,
+    },
+}
+client.Ads.ReportStats(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**adID:** `string` — The ad's ID, prefixed `ad_`: the campaign's ad or the runner's copy of it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**clicks:** `*whopsdk.ReportStatsAdsRequestClicks` — The ad's clicks in the hour so far, at most `impressions`. Zero when left out.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**hourStartedAt:** `time.Time` — Start of the hour, on the hour, within the last 24 hours.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**impressions:** `*whopsdk.ReportStatsAdsRequestImpressions` — The ad's impressions in the hour so far. Zero when left out.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**spend:** `*whopsdk.ReportStatsAdsRequestSpend` — USD spent on the ad in the hour so far, to the cent.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Ads.List() -> *whopsdk.ListAdsResponse</code></summary>
 <dl>
 <dd>
