@@ -406,90 +406,6 @@ func TestStringListPermissionsResponseDataItem(t *testing.T) {
 }
 
 func TestEnumPermissionAction(t *testing.T) {
-	t.Run("NewFromString_waitlist_entry_read", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("waitlist_entry:read")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("waitlist_entry:read"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_waitlist_entry_create", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("waitlist_entry:create")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("waitlist_entry:create"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_waitlist_entry_cancel", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("waitlist_entry:cancel")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("waitlist_entry:cancel"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_review_delete", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("review:delete")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("review:delete"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_experiment_manage", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("experiment:manage")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("experiment:manage"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_experiment_read", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("experiment:read")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("experiment:read"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_domain_manage", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("domain:manage")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("domain:manage"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_domain_read", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("domain:read")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("domain:read"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_email_manage", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("email:manage")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("email:manage"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_email_read", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("email:read")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("email:read"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_email_send", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("email:send")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("email:send"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_ai_prompt_create", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("ai_prompt:create")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("ai_prompt:create"), val, "enum value should match expected wire value")
-	})
-
 	t.Run("NewFromString_access_pass_basic_export", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewPermissionActionFromString("access_pass:basic:export")
@@ -616,20 +532,6 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("ad_pixel:manage"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_audience_basic_read", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("audience:basic:read")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("audience:basic:read"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_audience_update", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("audience:update")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("audience:update"), val, "enum value should match expected wire value")
-	})
-
 	t.Run("NewFromString_ad_publisher_read", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewPermissionActionFromString("ad_publisher:read")
@@ -658,6 +560,132 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("affiliate:update"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_ai_chat_create", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("ai_chat:create")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("ai_chat:create"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ai_chat_delete", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("ai_chat:delete")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("ai_chat:delete"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ai_chat_read", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("ai_chat:read")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("ai_chat:read"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ai_chat_update", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("ai_chat:update")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("ai_chat:update"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ai_prompt_create", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("ai_prompt:create")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("ai_prompt:create"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_airdrop_link_basic_read", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("airdrop_link:basic:read")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("airdrop_link:basic:read"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_airdrop_link_manage", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("airdrop_link:manage")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("airdrop_link:manage"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_app_authorization_create", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("app_authorization:create")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("app_authorization:create"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_app_authorization_delete", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("app_authorization:delete")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("app_authorization:delete"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_app_authorization_read", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("app_authorization:read")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("app_authorization:read"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_app_authorization_update", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("app_authorization:update")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("app_authorization:update"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_audience_basic_read", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("audience:basic:read")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("audience:basic:read"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_audience_update", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("audience:update")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("audience:update"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_authorized_role_attach", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("authorized_role:attach")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("authorized_role:attach"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_authorized_role_create", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("authorized_role:create")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("authorized_role:create"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_authorized_role_delete", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("authorized_role:delete")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("authorized_role:delete"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_authorized_role_detach", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("authorized_role:detach")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("authorized_role:detach"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_authorized_role_update", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("authorized_role:update")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("authorized_role:update"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_authorized_user_create", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewPermissionActionFromString("authorized_user:create")
@@ -679,88 +707,11 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("authorized_user:update"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_authorized_role_create", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("authorized_role:create")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("authorized_role:create"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_authorized_role_update", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("authorized_role:update")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("authorized_role:update"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_authorized_role_delete", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("authorized_role:delete")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("authorized_role:delete"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_authorized_role_attach", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("authorized_role:attach")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("authorized_role:attach"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_authorized_role_detach", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("authorized_role:detach")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("authorized_role:detach"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_app_authorization_create", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("app_authorization:create")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("app_authorization:create"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_app_authorization_read", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("app_authorization:read")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("app_authorization:read"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_app_authorization_update", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("app_authorization:update")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("app_authorization:update"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_app_authorization_delete", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("app_authorization:delete")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("app_authorization:delete"), val, "enum value should match expected wire value")
-	})
-
 	t.Run("NewFromString_bounty_basic_read", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewPermissionActionFromString("bounty:basic:read")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, PermissionAction("bounty:basic:read"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_bounty_create", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("bounty:create")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("bounty:create"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_bounty_capture_clip_create", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("bounty:capture_clip:create")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("bounty:capture_clip:create"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_bounty_capture_clip_complete", func(t *testing.T) {
@@ -770,6 +721,13 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("bounty:capture_clip:complete"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_bounty_capture_clip_create", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("bounty:capture_clip:create")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("bounty:capture_clip:create"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_bounty_capture_clip_discard", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewPermissionActionFromString("bounty:capture_clip:discard")
@@ -777,11 +735,11 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("bounty:capture_clip:discard"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_bounty_update", func(t *testing.T) {
+	t.Run("NewFromString_bounty_create", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("bounty:update")
+		val, err := NewPermissionActionFromString("bounty:create")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("bounty:update"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("bounty:create"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_bounty_submission_create", func(t *testing.T) {
@@ -805,18 +763,18 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("bounty:submission:vote"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_bounty_update", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("bounty:update")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("bounty:update"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_chat_manage_webhook", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewPermissionActionFromString("chat:manage_webhook")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, PermissionAction("chat:manage_webhook"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_chat_moderate", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("chat:moderate")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("chat:moderate"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_chat_message_create", func(t *testing.T) {
@@ -826,6 +784,13 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("chat:message:create"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_chat_moderate", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("chat:moderate")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("chat:moderate"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_chat_read", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewPermissionActionFromString("chat:read")
@@ -833,53 +798,46 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("chat:read"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_dms_read", func(t *testing.T) {
+	t.Run("NewFromString_checkout_configuration_basic_read", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("dms:read")
+		val, err := NewPermissionActionFromString("checkout_configuration:basic:read")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("dms:read"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("checkout_configuration:basic:read"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_dms_message_manage", func(t *testing.T) {
+	t.Run("NewFromString_checkout_configuration_create", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("dms:message:manage")
+		val, err := NewPermissionActionFromString("checkout_configuration:create")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("dms:message:manage"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("checkout_configuration:create"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_dms_channel_manage", func(t *testing.T) {
+	t.Run("NewFromString_checkout_configuration_delete", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("dms:channel:manage")
+		val, err := NewPermissionActionFromString("checkout_configuration:delete")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("dms:channel:manage"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("checkout_configuration:delete"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_forum_post_create", func(t *testing.T) {
+	t.Run("NewFromString_checkout_request_basic_read", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("forum:post:create")
+		val, err := NewPermissionActionFromString("checkout_request:basic:read")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("forum:post:create"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("checkout_request:basic:read"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_forum_read", func(t *testing.T) {
+	t.Run("NewFromString_checkout_request_create", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("forum:read")
+		val, err := NewPermissionActionFromString("checkout_request:create")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("forum:read"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("checkout_request:create"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_forum_moderate", func(t *testing.T) {
+	t.Run("NewFromString_child_company_basic_export", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("forum:moderate")
+		val, err := NewPermissionActionFromString("child_company:basic:export")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("forum:moderate"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_company_authorized_user_read", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("company:authorized_user:read")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("company:authorized_user:read"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("child_company:basic:export"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_company_authorized_user_email_read", func(t *testing.T) {
@@ -889,11 +847,11 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("company:authorized_user:email:read"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_company_balance_read", func(t *testing.T) {
+	t.Run("NewFromString_company_authorized_user_read", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("company:balance:read")
+		val, err := NewPermissionActionFromString("company:authorized_user:read")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("company:balance:read"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("company:authorized_user:read"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_company_balance_export", func(t *testing.T) {
@@ -903,18 +861,46 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("company:balance:export"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_company_token_transaction_read", func(t *testing.T) {
+	t.Run("NewFromString_company_balance_read", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("company_token_transaction:read")
+		val, err := NewPermissionActionFromString("company:balance:read")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("company_token_transaction:read"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("company:balance:read"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_company_token_transaction_create", func(t *testing.T) {
+	t.Run("NewFromString_company_basic_read", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("company_token_transaction:create")
+		val, err := NewPermissionActionFromString("company:basic:read")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("company_token_transaction:create"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("company:basic:read"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_company_create", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("company:create")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("company:create"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_company_create_child", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("company:create_child")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("company:create_child"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_company_delete", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("company:delete")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("company:delete"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_company_delete_child", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("company:delete_child")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("company:delete_child"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_company_log_read", func(t *testing.T) {
@@ -938,18 +924,11 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("company:manage_legal"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_company_basic_read", func(t *testing.T) {
+	t.Run("NewFromString_company_suspend_child", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("company:basic:read")
+		val, err := NewPermissionActionFromString("company:suspend_child")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("company:basic:read"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_company_update", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("company:update")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("company:update"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("company:suspend_child"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_company_transfer_ownership", func(t *testing.T) {
@@ -959,39 +938,11 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("company:transfer_ownership"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_company_create", func(t *testing.T) {
+	t.Run("NewFromString_company_update", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("company:create")
+		val, err := NewPermissionActionFromString("company:update")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("company:create"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_company_create_child", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("company:create_child")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("company:create_child"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_company_suspend_child", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("company:suspend_child")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("company:suspend_child"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_company_delete", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("company:delete")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("company:delete"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_company_delete_child", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("company:delete_child")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("company:delete_child"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("company:update"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_company_update_child_fees", func(t *testing.T) {
@@ -1001,46 +952,18 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("company:update_child_fees"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_child_company_basic_export", func(t *testing.T) {
+	t.Run("NewFromString_company_token_transaction_create", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("child_company:basic:export")
+		val, err := NewPermissionActionFromString("company_token_transaction:create")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("child_company:basic:export"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("company_token_transaction:create"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_social_account_create", func(t *testing.T) {
+	t.Run("NewFromString_company_token_transaction_read", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("social_account:create")
+		val, err := NewPermissionActionFromString("company_token_transaction:read")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("social_account:create"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_social_account_delete", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("social_account:delete")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("social_account:delete"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_social_account_read", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("social_account:read")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("social_account:read"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_social_link_update", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("social_link:update")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("social_link:update"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_custom_emoji_update", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("custom_emoji:update")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("custom_emoji:update"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("company_token_transaction:read"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_content_rewards_basic_export", func(t *testing.T) {
@@ -1085,53 +1008,67 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("content_rewards:update"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_developer_basic_read", func(t *testing.T) {
+	t.Run("NewFromString_course_analytics_read", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("developer:basic:read")
+		val, err := NewPermissionActionFromString("course_analytics:read")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("developer:basic:read"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("course_analytics:read"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_developer_create_app", func(t *testing.T) {
+	t.Run("NewFromString_course_lesson_interaction_read", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("developer:create_app")
+		val, err := NewPermissionActionFromString("course_lesson_interaction:read")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("developer:create_app"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("course_lesson_interaction:read"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_developer_manage_api_key", func(t *testing.T) {
+	t.Run("NewFromString_courses_read", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("developer:manage_api_key")
+		val, err := NewPermissionActionFromString("courses:read")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("developer:manage_api_key"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("courses:read"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_developer_manage_oauth", func(t *testing.T) {
+	t.Run("NewFromString_courses_update", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("developer:manage_oauth")
+		val, err := NewPermissionActionFromString("courses:update")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("developer:manage_oauth"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("courses:update"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_developer_manage_webhook", func(t *testing.T) {
+	t.Run("NewFromString_crypto_wallet_manage", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("developer:manage_webhook")
+		val, err := NewPermissionActionFromString("crypto_wallet:manage")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("developer:manage_webhook"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("crypto_wallet:manage"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_developer_logs_read", func(t *testing.T) {
+	t.Run("NewFromString_crypto_wallet_swap", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("developer:logs:read")
+		val, err := NewPermissionActionFromString("crypto_wallet:swap")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("developer:logs:read"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("crypto_wallet:swap"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_developer_manage_builds", func(t *testing.T) {
+	t.Run("NewFromString_crypto_wallet_trade", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("developer:manage_builds")
+		val, err := NewPermissionActionFromString("crypto_wallet:trade")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("developer:manage_builds"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("crypto_wallet:trade"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_crypto_wallet_trade_read", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("crypto_wallet:trade:read")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("crypto_wallet:trade:read"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_custom_emoji_update", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("custom_emoji:update")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("custom_emoji:update"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_developer_app_installation_read", func(t *testing.T) {
@@ -1148,6 +1085,55 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("developer:app_installation:update"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_developer_basic_read", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("developer:basic:read")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("developer:basic:read"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_developer_create_app", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("developer:create_app")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("developer:create_app"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_developer_logs_read", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("developer:logs:read")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("developer:logs:read"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_developer_manage_api_key", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("developer:manage_api_key")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("developer:manage_api_key"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_developer_manage_builds", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("developer:manage_builds")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("developer:manage_builds"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_developer_manage_oauth", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("developer:manage_oauth")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("developer:manage_oauth"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_developer_manage_webhook", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("developer:manage_webhook")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("developer:manage_webhook"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_developer_update_app", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewPermissionActionFromString("developer:update_app")
@@ -1160,6 +1146,69 @@ func TestEnumPermissionAction(t *testing.T) {
 		val, err := NewPermissionActionFromString("developer:update_app_authorization")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, PermissionAction("developer:update_app_authorization"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_dms_channel_manage", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("dms:channel:manage")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("dms:channel:manage"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_dms_message_manage", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("dms:message:manage")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("dms:message:manage"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_dms_read", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("dms:read")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("dms:read"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_domain_manage", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("domain:manage")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("domain:manage"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_domain_read", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("domain:read")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("domain:read"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_email", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("email")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("email"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_email_manage", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("email:manage")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("email:manage"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_email_read", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("email:read")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("email:read"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_email_send", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("email:send")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("email:send"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_event_create", func(t *testing.T) {
@@ -1211,6 +1260,41 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("experience:update"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_experiment_manage", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("experiment:manage")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("experiment:manage"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_experiment_read", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("experiment:read")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("experiment:read"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_forum_moderate", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("forum:moderate")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("forum:moderate"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_forum_post_create", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("forum:post:create")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("forum:post:create"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_forum_read", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("forum:read")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("forum:read"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_iap_read", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewPermissionActionFromString("iap:read")
@@ -1246,6 +1330,69 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("incorporation:write"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_invoice_basic_export", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("invoice:basic:export")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("invoice:basic:export"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_invoice_basic_read", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("invoice:basic:read")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("invoice:basic:read"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_invoice_create", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("invoice:create")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("invoice:create"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_invoice_update", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("invoice:update")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("invoice:update"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_lead_basic_export", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("lead:basic:export")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("lead:basic:export"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_lead_basic_read", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("lead:basic:read")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("lead:basic:read"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_lead_manage", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("lead:manage")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("lead:manage"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_livestream_chat_read", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("livestream:chat:read")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("livestream:chat:read"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_livestream_chat_write", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("livestream:chat:write")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("livestream:chat:write"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_livestream_create", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewPermissionActionFromString("livestream:create")
@@ -1265,20 +1412,6 @@ func TestEnumPermissionAction(t *testing.T) {
 		val, err := NewPermissionActionFromString("livestream:manage_recording")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, PermissionAction("livestream:manage_recording"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_livestream_chat_read", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("livestream:chat:read")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("livestream:chat:read"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_livestream_chat_write", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("livestream:chat:write")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("livestream:chat:write"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_livestream_moderate", func(t *testing.T) {
@@ -1323,11 +1456,32 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("member:email:read"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_member_phone_read", func(t *testing.T) {
+	t.Run("NewFromString_member_journey_read", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("member:phone:read")
+		val, err := NewPermissionActionFromString("member:journey:read")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("member:phone:read"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("member:journey:read"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_member_manage", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("member:manage")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("member:manage"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_member_moderate", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("member:moderate")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("member:moderate"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_member_payment_methods_manage", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("member:payment_methods:manage")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("member:payment_methods:manage"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_member_payment_methods_read", func(t *testing.T) {
@@ -1344,60 +1498,11 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("member:payment_methods:use"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_member_payment_methods_manage", func(t *testing.T) {
+	t.Run("NewFromString_member_phone_read", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("member:payment_methods:manage")
+		val, err := NewPermissionActionFromString("member:phone:read")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("member:payment_methods:manage"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_member_manage", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("member:manage")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("member:manage"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_membership_cancel", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("membership:cancel")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("membership:cancel"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_membership_resync_access", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("membership:resync_access")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("membership:resync_access"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_membership_create", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("membership:create")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("membership:create"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_membership_update", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("membership:update")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("membership:update"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_membership_transfer", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("membership:transfer")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("membership:transfer"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_member_moderate", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("member:moderate")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("member:moderate"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("member:phone:read"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_member_stats_export", func(t *testing.T) {
@@ -1414,11 +1519,151 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("member:stats:read"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_member_journey_read", func(t *testing.T) {
+	t.Run("NewFromString_membership_cancel", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("member:journey:read")
+		val, err := NewPermissionActionFromString("membership:cancel")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("member:journey:read"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("membership:cancel"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_membership_create", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("membership:create")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("membership:create"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_membership_resync_access", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("membership:resync_access")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("membership:resync_access"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_membership_transfer", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("membership:transfer")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("membership:transfer"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_membership_update", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("membership:update")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("membership:update"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_notification_create", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("notification:create")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("notification:create"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_oauth_token_exchange", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("oauth:token_exchange")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("oauth:token_exchange"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_openid", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("openid")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("openid"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_partner_basic_read", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("partner:basic:read")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("partner:basic:read"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_partner_commission_advance_accept", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("partner:commission_advance:accept")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("partner:commission_advance:accept"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_partner_commission_advance_update", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("partner:commission_advance:update")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("partner:commission_advance:update"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_partner_create", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("partner:create")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("partner:create"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_partner_email_read", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("partner:email:read")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("partner:email:read"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_partner_fees_update", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("partner:fees:update")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("partner:fees:update"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_partner_handoff", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("partner:handoff")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("partner:handoff"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_partner_invite_create", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("partner:invite:create")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("partner:invite:create"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_partner_referral_request_accept", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("partner:referral_request:accept")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("partner:referral_request:accept"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_partner_referral_request_cancel", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("partner:referral_request:cancel")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("partner:referral_request:cancel"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_partner_referral_request_create", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("partner:referral_request:create")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("partner:referral_request:create"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_partner_referral_request_decline", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("partner:referral_request:decline")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("partner:referral_request:decline"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_partner_referral_request_read", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("partner:referral_request:read")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("partner:referral_request:read"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_payment_basic_export", func(t *testing.T) {
@@ -1470,20 +1715,6 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("payment:dispute_alert:read"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_payment_setup_intent_read", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("payment:setup_intent:read")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("payment:setup_intent:read"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_payment_setup_intent_manage", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("payment:setup_intent:manage")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("payment:setup_intent:manage"), val, "enum value should match expected wire value")
-	})
-
 	t.Run("NewFromString_payment_manage", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewPermissionActionFromString("payment:manage")
@@ -1505,6 +1736,13 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("payment:resolution_center_case:export"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_payment_resolution_center_case_manage", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("payment:resolution_center_case:manage")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("payment:resolution_center_case:manage"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_payment_resolution_center_case_read", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewPermissionActionFromString("payment:resolution_center_case:read")
@@ -1512,11 +1750,32 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("payment:resolution_center_case:read"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_payment_resolution_center_case_manage", func(t *testing.T) {
+	t.Run("NewFromString_payment_setup_intent_manage", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("payment:resolution_center_case:manage")
+		val, err := NewPermissionActionFromString("payment:setup_intent:manage")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("payment:resolution_center_case:manage"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("payment:setup_intent:manage"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payment_setup_intent_read", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("payment:setup_intent:read")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("payment:setup_intent:read"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payout_account_read", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("payout:account:read")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("payout:account:read"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payout_account_update", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("payout:account:update")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("payout:account:update"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_payout_create_destination", func(t *testing.T) {
@@ -1540,11 +1799,11 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("payout:destination:read"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_payout_transfer_funds", func(t *testing.T) {
+	t.Run("NewFromString_payout_transfer_export", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("payout:transfer_funds")
+		val, err := NewPermissionActionFromString("payout:transfer:export")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("payout:transfer_funds"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("payout:transfer:export"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_payout_transfer_read", func(t *testing.T) {
@@ -1554,11 +1813,11 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("payout:transfer:read"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_payout_transfer_export", func(t *testing.T) {
+	t.Run("NewFromString_payout_transfer_funds", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("payout:transfer:export")
+		val, err := NewPermissionActionFromString("payout:transfer_funds")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("payout:transfer:export"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("payout:transfer_funds"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_payout_update_destination", func(t *testing.T) {
@@ -1575,13 +1834,6 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("payout:withdraw_funds"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_payout_withdrawal_read", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("payout:withdrawal:read")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("payout:withdrawal:read"), val, "enum value should match expected wire value")
-	})
-
 	t.Run("NewFromString_payout_withdrawal_export", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewPermissionActionFromString("payout:withdrawal:export")
@@ -1589,18 +1841,11 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("payout:withdrawal:export"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_payout_account_read", func(t *testing.T) {
+	t.Run("NewFromString_payout_withdrawal_read", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("payout:account:read")
+		val, err := NewPermissionActionFromString("payout:withdrawal:read")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("payout:account:read"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_payout_account_update", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("payout:account:update")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("payout:account:update"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("payout:withdrawal:read"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_plan_basic_export", func(t *testing.T) {
@@ -1652,13 +1897,6 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("plan:update"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_plan_waitlist_manage", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("plan:waitlist:manage")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("plan:waitlist:manage"), val, "enum value should match expected wire value")
-	})
-
 	t.Run("NewFromString_plan_waitlist_export", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewPermissionActionFromString("plan:waitlist:export")
@@ -1666,11 +1904,25 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("plan:waitlist:export"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_plan_waitlist_manage", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("plan:waitlist:manage")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("plan:waitlist:manage"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_plan_waitlist_read", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewPermissionActionFromString("plan:waitlist:read")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, PermissionAction("plan:waitlist:read"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_profile", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("profile")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("profile"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_promo_code_basic_export", func(t *testing.T) {
@@ -1722,95 +1974,53 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("referral:partner:create"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_partner_basic_read", func(t *testing.T) {
+	t.Run("NewFromString_review_delete", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("partner:basic:read")
+		val, err := NewPermissionActionFromString("review:delete")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("partner:basic:read"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("review:delete"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_partner_email_read", func(t *testing.T) {
+	t.Run("NewFromString_shipment_basic_read", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("partner:email:read")
+		val, err := NewPermissionActionFromString("shipment:basic:read")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("partner:email:read"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("shipment:basic:read"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_partner_invite_create", func(t *testing.T) {
+	t.Run("NewFromString_shipment_create", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("partner:invite:create")
+		val, err := NewPermissionActionFromString("shipment:create")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("partner:invite:create"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("shipment:create"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_partner_fees_update", func(t *testing.T) {
+	t.Run("NewFromString_social_account_create", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("partner:fees:update")
+		val, err := NewPermissionActionFromString("social_account:create")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("partner:fees:update"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("social_account:create"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_partner_commission_advance_update", func(t *testing.T) {
+	t.Run("NewFromString_social_account_delete", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("partner:commission_advance:update")
+		val, err := NewPermissionActionFromString("social_account:delete")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("partner:commission_advance:update"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("social_account:delete"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_partner_commission_advance_accept", func(t *testing.T) {
+	t.Run("NewFromString_social_account_read", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("partner:commission_advance:accept")
+		val, err := NewPermissionActionFromString("social_account:read")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("partner:commission_advance:accept"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("social_account:read"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_partner_referral_request_read", func(t *testing.T) {
+	t.Run("NewFromString_social_link_update", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("partner:referral_request:read")
+		val, err := NewPermissionActionFromString("social_link:update")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("partner:referral_request:read"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_partner_referral_request_create", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("partner:referral_request:create")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("partner:referral_request:create"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_partner_referral_request_accept", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("partner:referral_request:accept")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("partner:referral_request:accept"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_partner_referral_request_decline", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("partner:referral_request:decline")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("partner:referral_request:decline"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_partner_referral_request_cancel", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("partner:referral_request:cancel")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("partner:referral_request:cancel"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_partner_handoff", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("partner:handoff")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("partner:handoff"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_partner_create", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("partner:create")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("partner:create"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("social_link:update"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_stats_read", func(t *testing.T) {
@@ -1818,13 +2028,6 @@ func TestEnumPermissionAction(t *testing.T) {
 		val, err := NewPermissionActionFromString("stats:read")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, PermissionAction("stats:read"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_support_chat_read", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("support_chat:read")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("support_chat:read"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_support_chat_create", func(t *testing.T) {
@@ -1839,6 +2042,13 @@ func TestEnumPermissionAction(t *testing.T) {
 		val, err := NewPermissionActionFromString("support_chat:message:create")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, PermissionAction("support_chat:message:create"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_support_chat_read", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("support_chat:read")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("support_chat:read"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_tracking_link_basic_export", func(t *testing.T) {
@@ -1890,109 +2100,88 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("tracking_link:update"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_courses_read", func(t *testing.T) {
+	t.Run("NewFromString_user_abuse_report_create", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("courses:read")
+		val, err := NewPermissionActionFromString("user:abuse_report:create")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("courses:read"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("user:abuse_report:create"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_courses_update", func(t *testing.T) {
+	t.Run("NewFromString_user_abuse_report_read", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("courses:update")
+		val, err := NewPermissionActionFromString("user:abuse_report:read")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("courses:update"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("user:abuse_report:read"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_course_lesson_interaction_read", func(t *testing.T) {
+	t.Run("NewFromString_user_balance_read", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("course_lesson_interaction:read")
+		val, err := NewPermissionActionFromString("user:balance:read")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("course_lesson_interaction:read"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("user:balance:read"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_course_analytics_read", func(t *testing.T) {
+	t.Run("NewFromString_user_email_read", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("course_analytics:read")
+		val, err := NewPermissionActionFromString("user:email:read")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("course_analytics:read"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("user:email:read"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_lead_basic_read", func(t *testing.T) {
+	t.Run("NewFromString_user_notifications_read", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("lead:basic:read")
+		val, err := NewPermissionActionFromString("user:notifications:read")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("lead:basic:read"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("user:notifications:read"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_lead_basic_export", func(t *testing.T) {
+	t.Run("NewFromString_user_notifications_update", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("lead:basic:export")
+		val, err := NewPermissionActionFromString("user:notifications:update")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("lead:basic:export"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("user:notifications:update"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_invoice_create", func(t *testing.T) {
+	t.Run("NewFromString_user_payment_charge", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("invoice:create")
+		val, err := NewPermissionActionFromString("user:payment:charge")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("invoice:create"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("user:payment:charge"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_invoice_basic_read", func(t *testing.T) {
+	t.Run("NewFromString_user_profile_update", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("invoice:basic:read")
+		val, err := NewPermissionActionFromString("user:profile:update")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("invoice:basic:read"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("user:profile:update"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_invoice_basic_export", func(t *testing.T) {
+	t.Run("NewFromString_user_staff_read", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("invoice:basic:export")
+		val, err := NewPermissionActionFromString("user:staff:read")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("invoice:basic:export"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("user:staff:read"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_invoice_update", func(t *testing.T) {
+	t.Run("NewFromString_waitlist_entry_cancel", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("invoice:update")
+		val, err := NewPermissionActionFromString("waitlist_entry:cancel")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("invoice:update"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("waitlist_entry:cancel"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_webhook_receive_invoices", func(t *testing.T) {
+	t.Run("NewFromString_waitlist_entry_create", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("webhook_receive:invoices")
+		val, err := NewPermissionActionFromString("waitlist_entry:create")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("webhook_receive:invoices"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("waitlist_entry:create"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_webhook_receive_setup_intents", func(t *testing.T) {
+	t.Run("NewFromString_waitlist_entry_read", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("webhook_receive:setup_intents")
+		val, err := NewPermissionActionFromString("waitlist_entry:read")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("webhook_receive:setup_intents"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_webhook_receive_withdrawals", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("webhook_receive:withdrawals")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("webhook_receive:withdrawals"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_webhook_receive_swaps", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("webhook_receive:swaps")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("webhook_receive:swaps"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_webhook_receive_ledger_accounts", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("webhook_receive:ledger_accounts")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("webhook_receive:ledger_accounts"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("waitlist_entry:read"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_webhook_receive_accounts", func(t *testing.T) {
@@ -2000,90 +2189,6 @@ func TestEnumPermissionAction(t *testing.T) {
 		val, err := NewPermissionActionFromString("webhook_receive:accounts")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, PermissionAction("webhook_receive:accounts"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_webhook_receive_deposits", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("webhook_receive:deposits")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("webhook_receive:deposits"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_webhook_receive_financial_activity", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("webhook_receive:financial_activity")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("webhook_receive:financial_activity"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_webhook_receive_transfers", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("webhook_receive:transfers")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("webhook_receive:transfers"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_webhook_receive_card_transactions", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("webhook_receive:card_transactions")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("webhook_receive:card_transactions"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_webhook_receive_cards", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("webhook_receive:cards")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("webhook_receive:cards"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_webhook_receive_card_applications", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("webhook_receive:card_applications")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("webhook_receive:card_applications"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_webhook_receive_payout_methods", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("webhook_receive:payout_methods")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("webhook_receive:payout_methods"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_webhook_receive_verifications", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("webhook_receive:verifications")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("webhook_receive:verifications"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_webhook_receive_identity_profiles", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("webhook_receive:identity_profiles")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("webhook_receive:identity_profiles"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_webhook_receive_payout_accounts", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("webhook_receive:payout_accounts")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("webhook_receive:payout_accounts"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_webhook_receive_chat", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("webhook_receive:chat")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("webhook_receive:chat"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_webhook_receive_entries", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("webhook_receive:entries")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("webhook_receive:entries"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_webhook_receive_ad_campaigns", func(t *testing.T) {
@@ -2107,18 +2212,74 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("webhook_receive:ads"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_webhook_receive_products", func(t *testing.T) {
+	t.Run("NewFromString_webhook_receive_app_installations", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("webhook_receive:products")
+		val, err := NewPermissionActionFromString("webhook_receive:app_installations")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("webhook_receive:products"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("webhook_receive:app_installations"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_webhook_receive_plans", func(t *testing.T) {
+	t.Run("NewFromString_webhook_receive_app_memberships", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("webhook_receive:plans")
+		val, err := NewPermissionActionFromString("webhook_receive:app_memberships")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("webhook_receive:plans"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("webhook_receive:app_memberships"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_webhook_receive_app_payments", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("webhook_receive:app_payments")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("webhook_receive:app_payments"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_webhook_receive_card_applications", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("webhook_receive:card_applications")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("webhook_receive:card_applications"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_webhook_receive_card_transactions", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("webhook_receive:card_transactions")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("webhook_receive:card_transactions"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_webhook_receive_cards", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("webhook_receive:cards")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("webhook_receive:cards"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_webhook_receive_chat", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("webhook_receive:chat")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("webhook_receive:chat"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_webhook_receive_courses", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("webhook_receive:courses")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("webhook_receive:courses"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_webhook_receive_deposits", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("webhook_receive:deposits")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("webhook_receive:deposits"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_webhook_receive_disputes", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("webhook_receive:disputes")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("webhook_receive:disputes"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_webhook_receive_domains", func(t *testing.T) {
@@ -2128,18 +2289,11 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("webhook_receive:domains"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_webhook_receive_shipments", func(t *testing.T) {
+	t.Run("NewFromString_webhook_receive_entries", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("webhook_receive:shipments")
+		val, err := NewPermissionActionFromString("webhook_receive:entries")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("webhook_receive:shipments"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_webhook_receive_members", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("webhook_receive:members")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("webhook_receive:members"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("webhook_receive:entries"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_webhook_receive_exports", func(t *testing.T) {
@@ -2149,11 +2303,39 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("webhook_receive:exports"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_webhook_receive_courses", func(t *testing.T) {
+	t.Run("NewFromString_webhook_receive_financial_activity", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("webhook_receive:courses")
+		val, err := NewPermissionActionFromString("webhook_receive:financial_activity")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("webhook_receive:courses"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("webhook_receive:financial_activity"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_webhook_receive_identity_profiles", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("webhook_receive:identity_profiles")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("webhook_receive:identity_profiles"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_webhook_receive_invoices", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("webhook_receive:invoices")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("webhook_receive:invoices"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_webhook_receive_ledger_accounts", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("webhook_receive:ledger_accounts")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("webhook_receive:ledger_accounts"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_webhook_receive_members", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("webhook_receive:members")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("webhook_receive:members"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_webhook_receive_memberships", func(t *testing.T) {
@@ -2170,18 +2352,39 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("webhook_receive:payments"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_webhook_receive_payout_accounts", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("webhook_receive:payout_accounts")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("webhook_receive:payout_accounts"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_webhook_receive_payout_methods", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("webhook_receive:payout_methods")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("webhook_receive:payout_methods"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_webhook_receive_plans", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("webhook_receive:plans")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("webhook_receive:plans"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_webhook_receive_products", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("webhook_receive:products")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("webhook_receive:products"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_webhook_receive_refunds", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewPermissionActionFromString("webhook_receive:refunds")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, PermissionAction("webhook_receive:refunds"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_webhook_receive_disputes", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("webhook_receive:disputes")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("webhook_receive:disputes"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_webhook_receive_resolutions", func(t *testing.T) {
@@ -2191,249 +2394,46 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("webhook_receive:resolutions"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_webhook_receive_app_payments", func(t *testing.T) {
+	t.Run("NewFromString_webhook_receive_setup_intents", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("webhook_receive:app_payments")
+		val, err := NewPermissionActionFromString("webhook_receive:setup_intents")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("webhook_receive:app_payments"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("webhook_receive:setup_intents"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_webhook_receive_app_installations", func(t *testing.T) {
+	t.Run("NewFromString_webhook_receive_shipments", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("webhook_receive:app_installations")
+		val, err := NewPermissionActionFromString("webhook_receive:shipments")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("webhook_receive:app_installations"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("webhook_receive:shipments"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_webhook_receive_app_memberships", func(t *testing.T) {
+	t.Run("NewFromString_webhook_receive_swaps", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("webhook_receive:app_memberships")
+		val, err := NewPermissionActionFromString("webhook_receive:swaps")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("webhook_receive:app_memberships"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("webhook_receive:swaps"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_shipment_create", func(t *testing.T) {
+	t.Run("NewFromString_webhook_receive_transfers", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("shipment:create")
+		val, err := NewPermissionActionFromString("webhook_receive:transfers")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("shipment:create"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("webhook_receive:transfers"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_shipment_basic_read", func(t *testing.T) {
+	t.Run("NewFromString_webhook_receive_verifications", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("shipment:basic:read")
+		val, err := NewPermissionActionFromString("webhook_receive:verifications")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("shipment:basic:read"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("webhook_receive:verifications"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_checkout_configuration_basic_read", func(t *testing.T) {
+	t.Run("NewFromString_webhook_receive_withdrawals", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPermissionActionFromString("checkout_configuration:basic:read")
+		val, err := NewPermissionActionFromString("webhook_receive:withdrawals")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("checkout_configuration:basic:read"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_checkout_configuration_create", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("checkout_configuration:create")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("checkout_configuration:create"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_checkout_configuration_delete", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("checkout_configuration:delete")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("checkout_configuration:delete"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_checkout_request_create", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("checkout_request:create")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("checkout_request:create"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_checkout_request_basic_read", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("checkout_request:basic:read")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("checkout_request:basic:read"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_crypto_wallet_manage", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("crypto_wallet:manage")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("crypto_wallet:manage"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_crypto_wallet_swap", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("crypto_wallet:swap")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("crypto_wallet:swap"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_crypto_wallet_trade", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("crypto_wallet:trade")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("crypto_wallet:trade"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_crypto_wallet_trade_read", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("crypto_wallet:trade:read")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("crypto_wallet:trade:read"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_airdrop_link_basic_read", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("airdrop_link:basic:read")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("airdrop_link:basic:read"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_airdrop_link_manage", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("airdrop_link:manage")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("airdrop_link:manage"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_lead_manage", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("lead:manage")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("lead:manage"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_notification_create", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("notification:create")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("notification:create"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_user_balance_read", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("user:balance:read")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("user:balance:read"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_user_email_read", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("user:email:read")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("user:email:read"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_user_payment_charge", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("user:payment:charge")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("user:payment:charge"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_user_staff_read", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("user:staff:read")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("user:staff:read"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_oauth_token_exchange", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("oauth:token_exchange")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("oauth:token_exchange"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_openid", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("openid")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("openid"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_profile", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("profile")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("profile"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_email", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("email")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("email"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_ai_chat_read", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("ai_chat:read")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("ai_chat:read"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_ai_chat_create", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("ai_chat:create")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("ai_chat:create"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_ai_chat_delete", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("ai_chat:delete")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("ai_chat:delete"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_ai_chat_update", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("ai_chat:update")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("ai_chat:update"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_user_notifications_read", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("user:notifications:read")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("user:notifications:read"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_user_abuse_report_create", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("user:abuse_report:create")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("user:abuse_report:create"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_user_abuse_report_read", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("user:abuse_report:read")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("user:abuse_report:read"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_user_notifications_update", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("user:notifications:update")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("user:notifications:update"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_user_profile_update", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPermissionActionFromString("user:profile:update")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PermissionAction("user:profile:update"), val, "enum value should match expected wire value")
+		assert.Equal(t, PermissionAction("webhook_receive:withdrawals"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -2442,7 +2442,7 @@ func TestEnumPermissionAction(t *testing.T) {
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewPermissionActionFromString("waitlist_entry:read")
+		val, err := NewPermissionActionFromString("access_pass:basic:export")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

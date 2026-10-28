@@ -177,12 +177,15 @@ func (r *ReferredUsersPartnersRequest) SetBefore(before *string) {
 }
 
 var (
-	retrievePartnersRequestFieldID = big.NewInt(1 << 0)
+	retrievePartnersRequestFieldID        = big.NewInt(1 << 0)
+	retrievePartnersRequestFieldAccountID = big.NewInt(1 << 1)
 )
 
 type RetrievePartnersRequest struct {
 	// The authenticated partner's user ID, prefixed user_, or me. Other users' profiles are not accessible.
 	ID string `json:"-" url:"-"`
+	// Return `payout_rates` for this business, prefixed `biz_`, instead of the caller's own: the business's rate rows, else the platform defaults. Requires company:basic:read on that business, which every team member holds. The rest of the profile stays the caller's.
+	AccountID *string `json:"-" url:"account_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -204,25 +207,36 @@ func (r *RetrievePartnersRequest) SetID(id string) {
 	r.require(retrievePartnersRequestFieldID)
 }
 
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePartnersRequest) SetAccountID(accountID *string) {
+	r.AccountID = accountID
+	r.require(retrievePartnersRequestFieldAccountID)
+}
+
 var (
-	partnerFieldCertificationComplete      = big.NewInt(1 << 0)
-	partnerFieldJoinedAt                   = big.NewInt(1 << 1)
-	partnerFieldPayoutRates                = big.NewInt(1 << 2)
-	partnerFieldReferredBusinessesCount    = big.NewInt(1 << 3)
-	partnerFieldReferringPartner           = big.NewInt(1 << 4)
-	partnerFieldUser                       = big.NewInt(1 << 5)
-	partnerFieldVerificationWaitlistJoined = big.NewInt(1 << 6)
-	partnerFieldWhopPartnerVerifiedAt      = big.NewInt(1 << 7)
+	partnerFieldAccountID                  = big.NewInt(1 << 0)
+	partnerFieldCertificationComplete      = big.NewInt(1 << 1)
+	partnerFieldJoinedAt                   = big.NewInt(1 << 2)
+	partnerFieldPayoutRates                = big.NewInt(1 << 3)
+	partnerFieldReferredBusinessesCount    = big.NewInt(1 << 4)
+	partnerFieldReferringPartner           = big.NewInt(1 << 5)
+	partnerFieldUser                       = big.NewInt(1 << 6)
+	partnerFieldVerificationWaitlistJoined = big.NewInt(1 << 7)
+	partnerFieldWhopPartnerVerifiedAt      = big.NewInt(1 << 8)
 )
 
 // partnerNullableFields maps the wire names of Partner's nullable fields (required or optional) to their field bits.
 var partnerNullableFields = map[string]*big.Int{
+	"account_id":               partnerFieldAccountID,
 	"joined_at":                partnerFieldJoinedAt,
 	"referring_partner":        partnerFieldReferringPartner,
 	"whop_partner_verified_at": partnerFieldWhopPartnerVerifiedAt,
 }
 
 type Partner struct {
+	// The business whose `payout_rates` these are, prefixed `biz_`, when the request sent `account_id`. `null` when the rates are the caller's own.
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
 	// Whether the user finished the partner certification course: every visible quiz and knowledge check has a passing result, or, when the course has none, every visible lesson is marked completed.
 	CertificationComplete bool `json:"certification_complete" url:"certification_complete"`
 	// When the user joined the partner program, as an ISO 8601 timestamp. Null when they have not joined.
@@ -244,6 +258,13 @@ type Partner struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (p *Partner) GetAccountID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AccountID
 }
 
 func (p *Partner) GetCertificationComplete() bool {
@@ -316,6 +337,13 @@ func (p *Partner) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	p.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Partner) SetAccountID(accountID *string) {
+	p.AccountID = accountID
+	p.require(partnerFieldAccountID)
 }
 
 // SetCertificationComplete sets the CertificationComplete field and marks it as non-optional;
