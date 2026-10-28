@@ -63,10 +63,15 @@ func (c *CreateVerificationsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	listVerificationsRequestFieldAccountID = big.NewInt(1 << 0)
-	listVerificationsRequestFieldUserID    = big.NewInt(1 << 1)
-	listVerificationsRequestFieldOrder     = big.NewInt(1 << 2)
-	listVerificationsRequestFieldDirection = big.NewInt(1 << 3)
+	listVerificationsRequestFieldAccountID          = big.NewInt(1 << 0)
+	listVerificationsRequestFieldUserID             = big.NewInt(1 << 1)
+	listVerificationsRequestFieldIncludeSubaccounts = big.NewInt(1 << 2)
+	listVerificationsRequestFieldFirst              = big.NewInt(1 << 3)
+	listVerificationsRequestFieldAfter              = big.NewInt(1 << 4)
+	listVerificationsRequestFieldLast               = big.NewInt(1 << 5)
+	listVerificationsRequestFieldBefore             = big.NewInt(1 << 6)
+	listVerificationsRequestFieldOrder              = big.NewInt(1 << 7)
+	listVerificationsRequestFieldDirection          = big.NewInt(1 << 8)
 )
 
 type ListVerificationsRequest struct {
@@ -74,6 +79,16 @@ type ListVerificationsRequest struct {
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// The caller's own user ID, prefixed `user_`, to list personal verifications. Provide this or `account_id`.
 	UserID *string `json:"-" url:"user_id,omitempty"`
+	// Also cover the account's subaccounts. Requires `account_id`, and is a 400 without it. Lists the verifications of the account and every subaccount in account order, oldest account first, paging forward; `status`, `order`, `direction`, `last` and `before` are a 400. Leaves out removed subaccounts and ones you can't read verifications on. A page can hold fewer than `first` verifications while `has_next_page` is `true`; keep following `end_cursor`. On a subaccount, lists only that account's verifications.
+	IncludeSubaccounts *bool `json:"-" url:"include_subaccounts,omitempty"`
+	// Number of results to return from the start of the range.
+	First *int `json:"-" url:"first,omitempty"`
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+	After *string `json:"-" url:"after,omitempty"`
+	// Number of results to return from the end of the range.
+	Last *int `json:"-" url:"last,omitempty"`
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+	Before *string `json:"-" url:"before,omitempty"`
 	// Field used to sort returned verifications.
 	Order *ListVerificationsRequestOrder `json:"-" url:"order,omitempty"`
 	// Sort direction for returned verifications.
@@ -104,6 +119,41 @@ func (l *ListVerificationsRequest) SetAccountID(accountID *string) {
 func (l *ListVerificationsRequest) SetUserID(userID *string) {
 	l.UserID = userID
 	l.require(listVerificationsRequestFieldUserID)
+}
+
+// SetIncludeSubaccounts sets the IncludeSubaccounts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsRequest) SetIncludeSubaccounts(includeSubaccounts *bool) {
+	l.IncludeSubaccounts = includeSubaccounts
+	l.require(listVerificationsRequestFieldIncludeSubaccounts)
+}
+
+// SetFirst sets the First field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsRequest) SetFirst(first *int) {
+	l.First = first
+	l.require(listVerificationsRequestFieldFirst)
+}
+
+// SetAfter sets the After field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsRequest) SetAfter(after *string) {
+	l.After = after
+	l.require(listVerificationsRequestFieldAfter)
+}
+
+// SetLast sets the Last field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsRequest) SetLast(last *int) {
+	l.Last = last
+	l.require(listVerificationsRequestFieldLast)
+}
+
+// SetBefore sets the Before field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsRequest) SetBefore(before *string) {
+	l.Before = before
+	l.require(listVerificationsRequestFieldBefore)
 }
 
 // SetOrder sets the Order field and marks it as non-optional;
@@ -2444,27 +2494,28 @@ func (c *CreateVerificationsRequestBodyIndividualDocuments) String() string {
 }
 
 var (
-	createVerificationsResponseFieldAddress              = big.NewInt(1 << 0)
-	createVerificationsResponseFieldBusinessName         = big.NewInt(1 << 1)
-	createVerificationsResponseFieldBusinessStructure    = big.NewInt(1 << 2)
-	createVerificationsResponseFieldCountry              = big.NewInt(1 << 3)
-	createVerificationsResponseFieldCreatedAt            = big.NewInt(1 << 4)
-	createVerificationsResponseFieldDateOfBirth          = big.NewInt(1 << 5)
-	createVerificationsResponseFieldEmail                = big.NewInt(1 << 6)
-	createVerificationsResponseFieldFirstName            = big.NewInt(1 << 7)
-	createVerificationsResponseFieldID                   = big.NewInt(1 << 8)
-	createVerificationsResponseFieldIncorporationDate    = big.NewInt(1 << 9)
-	createVerificationsResponseFieldKind                 = big.NewInt(1 << 10)
-	createVerificationsResponseFieldLastName             = big.NewInt(1 << 11)
-	createVerificationsResponseFieldOwners               = big.NewInt(1 << 12)
-	createVerificationsResponseFieldPhone                = big.NewInt(1 << 13)
-	createVerificationsResponseFieldPlaceOfIncorporation = big.NewInt(1 << 14)
-	createVerificationsResponseFieldRegistrationNumber   = big.NewInt(1 << 15)
-	createVerificationsResponseFieldRequestedInformation = big.NewInt(1 << 16)
-	createVerificationsResponseFieldRequiredDocuments    = big.NewInt(1 << 17)
-	createVerificationsResponseFieldSessionURL           = big.NewInt(1 << 18)
-	createVerificationsResponseFieldStatus               = big.NewInt(1 << 19)
-	createVerificationsResponseFieldUpdatedAt            = big.NewInt(1 << 20)
+	createVerificationsResponseFieldAccountIDs           = big.NewInt(1 << 0)
+	createVerificationsResponseFieldAddress              = big.NewInt(1 << 1)
+	createVerificationsResponseFieldBusinessName         = big.NewInt(1 << 2)
+	createVerificationsResponseFieldBusinessStructure    = big.NewInt(1 << 3)
+	createVerificationsResponseFieldCountry              = big.NewInt(1 << 4)
+	createVerificationsResponseFieldCreatedAt            = big.NewInt(1 << 5)
+	createVerificationsResponseFieldDateOfBirth          = big.NewInt(1 << 6)
+	createVerificationsResponseFieldEmail                = big.NewInt(1 << 7)
+	createVerificationsResponseFieldFirstName            = big.NewInt(1 << 8)
+	createVerificationsResponseFieldID                   = big.NewInt(1 << 9)
+	createVerificationsResponseFieldIncorporationDate    = big.NewInt(1 << 10)
+	createVerificationsResponseFieldKind                 = big.NewInt(1 << 11)
+	createVerificationsResponseFieldLastName             = big.NewInt(1 << 12)
+	createVerificationsResponseFieldOwners               = big.NewInt(1 << 13)
+	createVerificationsResponseFieldPhone                = big.NewInt(1 << 14)
+	createVerificationsResponseFieldPlaceOfIncorporation = big.NewInt(1 << 15)
+	createVerificationsResponseFieldRegistrationNumber   = big.NewInt(1 << 16)
+	createVerificationsResponseFieldRequestedInformation = big.NewInt(1 << 17)
+	createVerificationsResponseFieldRequiredDocuments    = big.NewInt(1 << 18)
+	createVerificationsResponseFieldSessionURL           = big.NewInt(1 << 19)
+	createVerificationsResponseFieldStatus               = big.NewInt(1 << 20)
+	createVerificationsResponseFieldUpdatedAt            = big.NewInt(1 << 21)
 )
 
 // createVerificationsResponseNullableFields maps the wire names of CreateVerificationsResponse's nullable fields (required or optional) to their field bits.
@@ -2485,6 +2536,8 @@ var createVerificationsResponseNullableFields = map[string]*big.Int{
 }
 
 type CreateVerificationsResponse struct {
+	// Accounts this verification was read for, each prefixed `biz_`: the account you listed by, the account or subaccount it belongs to with `include_subaccounts`, or every account you can read that it belongs to when retrieved by ID. Usually one. Empty for a personal verification.
+	AccountIDs []string `json:"account_ids" url:"account_ids"`
 	// Address on the verification profile. `null` when no address is set.
 	Address *CreateVerificationsResponseAddress `json:"address,omitempty" url:"address,omitempty"`
 	// Legal business name.
@@ -2530,6 +2583,13 @@ type CreateVerificationsResponse struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (c *CreateVerificationsResponse) GetAccountIDs() []string {
+	if c == nil {
+		return nil
+	}
+	return c.AccountIDs
 }
 
 func (c *CreateVerificationsResponse) GetAddress() *CreateVerificationsResponseAddress {
@@ -2693,6 +2753,13 @@ func (c *CreateVerificationsResponse) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	c.explicitFields = next
+}
+
+// SetAccountIDs sets the AccountIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponse) SetAccountIDs(accountIDs []string) {
+	c.AccountIDs = accountIDs
+	c.require(createVerificationsResponseFieldAccountIDs)
 }
 
 // SetAddress sets the Address field and marks it as non-optional;
@@ -4361,11 +4428,13 @@ func (l ListVerificationsRequestOrder) Ptr() *ListVerificationsRequestOrder {
 }
 
 var (
-	listVerificationsResponseFieldData = big.NewInt(1 << 0)
+	listVerificationsResponseFieldData     = big.NewInt(1 << 0)
+	listVerificationsResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
 type ListVerificationsResponse struct {
-	Data []*ListVerificationsResponseDataItem `json:"data,omitempty" url:"data,omitempty"`
+	Data     []*ListVerificationsResponseDataItem `json:"data" url:"data"`
+	PageInfo *ListVerificationsResponsePageInfo   `json:"page_info" url:"page_info"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -4379,6 +4448,13 @@ func (l *ListVerificationsResponse) GetData() []*ListVerificationsResponseDataIt
 		return nil
 	}
 	return l.Data
+}
+
+func (l *ListVerificationsResponse) GetPageInfo() *ListVerificationsResponsePageInfo {
+	if l == nil {
+		return nil
+	}
+	return l.PageInfo
 }
 
 func (l *ListVerificationsResponse) GetExtraProperties() map[string]interface{} {
@@ -4402,6 +4478,13 @@ func (l *ListVerificationsResponse) require(field *big.Int) {
 func (l *ListVerificationsResponse) SetData(data []*ListVerificationsResponseDataItem) {
 	l.Data = data
 	l.require(listVerificationsResponseFieldData)
+}
+
+// SetPageInfo sets the PageInfo field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponse) SetPageInfo(pageInfo *ListVerificationsResponsePageInfo) {
+	l.PageInfo = pageInfo
+	l.require(listVerificationsResponseFieldPageInfo)
 }
 
 func (l *ListVerificationsResponse) UnmarshalJSON(data []byte) error {
@@ -4447,27 +4530,28 @@ func (l *ListVerificationsResponse) String() string {
 }
 
 var (
-	listVerificationsResponseDataItemFieldAddress              = big.NewInt(1 << 0)
-	listVerificationsResponseDataItemFieldBusinessName         = big.NewInt(1 << 1)
-	listVerificationsResponseDataItemFieldBusinessStructure    = big.NewInt(1 << 2)
-	listVerificationsResponseDataItemFieldCountry              = big.NewInt(1 << 3)
-	listVerificationsResponseDataItemFieldCreatedAt            = big.NewInt(1 << 4)
-	listVerificationsResponseDataItemFieldDateOfBirth          = big.NewInt(1 << 5)
-	listVerificationsResponseDataItemFieldEmail                = big.NewInt(1 << 6)
-	listVerificationsResponseDataItemFieldFirstName            = big.NewInt(1 << 7)
-	listVerificationsResponseDataItemFieldID                   = big.NewInt(1 << 8)
-	listVerificationsResponseDataItemFieldIncorporationDate    = big.NewInt(1 << 9)
-	listVerificationsResponseDataItemFieldKind                 = big.NewInt(1 << 10)
-	listVerificationsResponseDataItemFieldLastName             = big.NewInt(1 << 11)
-	listVerificationsResponseDataItemFieldOwners               = big.NewInt(1 << 12)
-	listVerificationsResponseDataItemFieldPhone                = big.NewInt(1 << 13)
-	listVerificationsResponseDataItemFieldPlaceOfIncorporation = big.NewInt(1 << 14)
-	listVerificationsResponseDataItemFieldRegistrationNumber   = big.NewInt(1 << 15)
-	listVerificationsResponseDataItemFieldRequestedInformation = big.NewInt(1 << 16)
-	listVerificationsResponseDataItemFieldRequiredDocuments    = big.NewInt(1 << 17)
-	listVerificationsResponseDataItemFieldSessionURL           = big.NewInt(1 << 18)
-	listVerificationsResponseDataItemFieldStatus               = big.NewInt(1 << 19)
-	listVerificationsResponseDataItemFieldUpdatedAt            = big.NewInt(1 << 20)
+	listVerificationsResponseDataItemFieldAccountIDs           = big.NewInt(1 << 0)
+	listVerificationsResponseDataItemFieldAddress              = big.NewInt(1 << 1)
+	listVerificationsResponseDataItemFieldBusinessName         = big.NewInt(1 << 2)
+	listVerificationsResponseDataItemFieldBusinessStructure    = big.NewInt(1 << 3)
+	listVerificationsResponseDataItemFieldCountry              = big.NewInt(1 << 4)
+	listVerificationsResponseDataItemFieldCreatedAt            = big.NewInt(1 << 5)
+	listVerificationsResponseDataItemFieldDateOfBirth          = big.NewInt(1 << 6)
+	listVerificationsResponseDataItemFieldEmail                = big.NewInt(1 << 7)
+	listVerificationsResponseDataItemFieldFirstName            = big.NewInt(1 << 8)
+	listVerificationsResponseDataItemFieldID                   = big.NewInt(1 << 9)
+	listVerificationsResponseDataItemFieldIncorporationDate    = big.NewInt(1 << 10)
+	listVerificationsResponseDataItemFieldKind                 = big.NewInt(1 << 11)
+	listVerificationsResponseDataItemFieldLastName             = big.NewInt(1 << 12)
+	listVerificationsResponseDataItemFieldOwners               = big.NewInt(1 << 13)
+	listVerificationsResponseDataItemFieldPhone                = big.NewInt(1 << 14)
+	listVerificationsResponseDataItemFieldPlaceOfIncorporation = big.NewInt(1 << 15)
+	listVerificationsResponseDataItemFieldRegistrationNumber   = big.NewInt(1 << 16)
+	listVerificationsResponseDataItemFieldRequestedInformation = big.NewInt(1 << 17)
+	listVerificationsResponseDataItemFieldRequiredDocuments    = big.NewInt(1 << 18)
+	listVerificationsResponseDataItemFieldSessionURL           = big.NewInt(1 << 19)
+	listVerificationsResponseDataItemFieldStatus               = big.NewInt(1 << 20)
+	listVerificationsResponseDataItemFieldUpdatedAt            = big.NewInt(1 << 21)
 )
 
 // listVerificationsResponseDataItemNullableFields maps the wire names of ListVerificationsResponseDataItem's nullable fields (required or optional) to their field bits.
@@ -4488,6 +4572,8 @@ var listVerificationsResponseDataItemNullableFields = map[string]*big.Int{
 }
 
 type ListVerificationsResponseDataItem struct {
+	// Accounts this verification was read for, each prefixed `biz_`: the account you listed by, the account or subaccount it belongs to with `include_subaccounts`, or every account you can read that it belongs to when retrieved by ID. Usually one. Empty for a personal verification.
+	AccountIDs []string `json:"account_ids" url:"account_ids"`
 	// Address on the verification profile. `null` when no address is set.
 	Address *ListVerificationsResponseDataItemAddress `json:"address,omitempty" url:"address,omitempty"`
 	// Legal business name.
@@ -4533,6 +4619,13 @@ type ListVerificationsResponseDataItem struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (l *ListVerificationsResponseDataItem) GetAccountIDs() []string {
+	if l == nil {
+		return nil
+	}
+	return l.AccountIDs
 }
 
 func (l *ListVerificationsResponseDataItem) GetAddress() *ListVerificationsResponseDataItemAddress {
@@ -4696,6 +4789,13 @@ func (l *ListVerificationsResponseDataItem) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	l.explicitFields = next
+}
+
+// SetAccountIDs sets the AccountIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItem) SetAccountIDs(accountIDs []string) {
+	l.AccountIDs = accountIDs
+	l.require(listVerificationsResponseDataItemFieldAccountIDs)
 }
 
 // SetAddress sets the Address field and marks it as non-optional;
@@ -6320,6 +6420,153 @@ func (l ListVerificationsResponseDataItemStatus) Ptr() *ListVerificationsRespons
 }
 
 var (
+	listVerificationsResponsePageInfoFieldEndCursor       = big.NewInt(1 << 0)
+	listVerificationsResponsePageInfoFieldHasNextPage     = big.NewInt(1 << 1)
+	listVerificationsResponsePageInfoFieldHasPreviousPage = big.NewInt(1 << 2)
+	listVerificationsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
+)
+
+// listVerificationsResponsePageInfoNullableFields maps the wire names of ListVerificationsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listVerificationsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listVerificationsResponsePageInfoFieldEndCursor,
+	"start_cursor": listVerificationsResponsePageInfoFieldStartCursor,
+}
+
+type ListVerificationsResponsePageInfo struct {
+	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
+	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
+	HasPreviousPage bool    `json:"has_previous_page" url:"has_previous_page"`
+	StartCursor     *string `json:"start_cursor,omitempty" url:"start_cursor,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListVerificationsResponsePageInfo) GetEndCursor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.EndCursor
+}
+
+func (l *ListVerificationsResponsePageInfo) GetHasNextPage() bool {
+	if l == nil {
+		return false
+	}
+	return l.HasNextPage
+}
+
+func (l *ListVerificationsResponsePageInfo) GetHasPreviousPage() bool {
+	if l == nil {
+		return false
+	}
+	return l.HasPreviousPage
+}
+
+func (l *ListVerificationsResponsePageInfo) GetStartCursor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.StartCursor
+}
+
+func (l *ListVerificationsResponsePageInfo) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListVerificationsResponsePageInfo) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetEndCursor sets the EndCursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponsePageInfo) SetEndCursor(endCursor *string) {
+	l.EndCursor = endCursor
+	l.require(listVerificationsResponsePageInfoFieldEndCursor)
+}
+
+// SetHasNextPage sets the HasNextPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponsePageInfo) SetHasNextPage(hasNextPage bool) {
+	l.HasNextPage = hasNextPage
+	l.require(listVerificationsResponsePageInfoFieldHasNextPage)
+}
+
+// SetHasPreviousPage sets the HasPreviousPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponsePageInfo) SetHasPreviousPage(hasPreviousPage bool) {
+	l.HasPreviousPage = hasPreviousPage
+	l.require(listVerificationsResponsePageInfoFieldHasPreviousPage)
+}
+
+// SetStartCursor sets the StartCursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponsePageInfo) SetStartCursor(startCursor *string) {
+	l.StartCursor = startCursor
+	l.require(listVerificationsResponsePageInfoFieldStartCursor)
+}
+
+func (l *ListVerificationsResponsePageInfo) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListVerificationsResponsePageInfo
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListVerificationsResponsePageInfo(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listVerificationsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListVerificationsResponsePageInfo) MarshalJSON() ([]byte, error) {
+	type embed ListVerificationsResponsePageInfo
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListVerificationsResponsePageInfo) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
 	postIdentityProfileUpdatedPayloadFieldAccountID          = big.NewInt(1 << 0)
 	postIdentityProfileUpdatedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
 	postIdentityProfileUpdatedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
@@ -6939,27 +7186,28 @@ func (p PostVerificationSucceededPayloadType) Ptr() *PostVerificationSucceededPa
 }
 
 var (
-	retrieveVerificationsResponseFieldAddress              = big.NewInt(1 << 0)
-	retrieveVerificationsResponseFieldBusinessName         = big.NewInt(1 << 1)
-	retrieveVerificationsResponseFieldBusinessStructure    = big.NewInt(1 << 2)
-	retrieveVerificationsResponseFieldCountry              = big.NewInt(1 << 3)
-	retrieveVerificationsResponseFieldCreatedAt            = big.NewInt(1 << 4)
-	retrieveVerificationsResponseFieldDateOfBirth          = big.NewInt(1 << 5)
-	retrieveVerificationsResponseFieldEmail                = big.NewInt(1 << 6)
-	retrieveVerificationsResponseFieldFirstName            = big.NewInt(1 << 7)
-	retrieveVerificationsResponseFieldID                   = big.NewInt(1 << 8)
-	retrieveVerificationsResponseFieldIncorporationDate    = big.NewInt(1 << 9)
-	retrieveVerificationsResponseFieldKind                 = big.NewInt(1 << 10)
-	retrieveVerificationsResponseFieldLastName             = big.NewInt(1 << 11)
-	retrieveVerificationsResponseFieldOwners               = big.NewInt(1 << 12)
-	retrieveVerificationsResponseFieldPhone                = big.NewInt(1 << 13)
-	retrieveVerificationsResponseFieldPlaceOfIncorporation = big.NewInt(1 << 14)
-	retrieveVerificationsResponseFieldRegistrationNumber   = big.NewInt(1 << 15)
-	retrieveVerificationsResponseFieldRequestedInformation = big.NewInt(1 << 16)
-	retrieveVerificationsResponseFieldRequiredDocuments    = big.NewInt(1 << 17)
-	retrieveVerificationsResponseFieldSessionURL           = big.NewInt(1 << 18)
-	retrieveVerificationsResponseFieldStatus               = big.NewInt(1 << 19)
-	retrieveVerificationsResponseFieldUpdatedAt            = big.NewInt(1 << 20)
+	retrieveVerificationsResponseFieldAccountIDs           = big.NewInt(1 << 0)
+	retrieveVerificationsResponseFieldAddress              = big.NewInt(1 << 1)
+	retrieveVerificationsResponseFieldBusinessName         = big.NewInt(1 << 2)
+	retrieveVerificationsResponseFieldBusinessStructure    = big.NewInt(1 << 3)
+	retrieveVerificationsResponseFieldCountry              = big.NewInt(1 << 4)
+	retrieveVerificationsResponseFieldCreatedAt            = big.NewInt(1 << 5)
+	retrieveVerificationsResponseFieldDateOfBirth          = big.NewInt(1 << 6)
+	retrieveVerificationsResponseFieldEmail                = big.NewInt(1 << 7)
+	retrieveVerificationsResponseFieldFirstName            = big.NewInt(1 << 8)
+	retrieveVerificationsResponseFieldID                   = big.NewInt(1 << 9)
+	retrieveVerificationsResponseFieldIncorporationDate    = big.NewInt(1 << 10)
+	retrieveVerificationsResponseFieldKind                 = big.NewInt(1 << 11)
+	retrieveVerificationsResponseFieldLastName             = big.NewInt(1 << 12)
+	retrieveVerificationsResponseFieldOwners               = big.NewInt(1 << 13)
+	retrieveVerificationsResponseFieldPhone                = big.NewInt(1 << 14)
+	retrieveVerificationsResponseFieldPlaceOfIncorporation = big.NewInt(1 << 15)
+	retrieveVerificationsResponseFieldRegistrationNumber   = big.NewInt(1 << 16)
+	retrieveVerificationsResponseFieldRequestedInformation = big.NewInt(1 << 17)
+	retrieveVerificationsResponseFieldRequiredDocuments    = big.NewInt(1 << 18)
+	retrieveVerificationsResponseFieldSessionURL           = big.NewInt(1 << 19)
+	retrieveVerificationsResponseFieldStatus               = big.NewInt(1 << 20)
+	retrieveVerificationsResponseFieldUpdatedAt            = big.NewInt(1 << 21)
 )
 
 // retrieveVerificationsResponseNullableFields maps the wire names of RetrieveVerificationsResponse's nullable fields (required or optional) to their field bits.
@@ -6980,6 +7228,8 @@ var retrieveVerificationsResponseNullableFields = map[string]*big.Int{
 }
 
 type RetrieveVerificationsResponse struct {
+	// Accounts this verification was read for, each prefixed `biz_`: the account you listed by, the account or subaccount it belongs to with `include_subaccounts`, or every account you can read that it belongs to when retrieved by ID. Usually one. Empty for a personal verification.
+	AccountIDs []string `json:"account_ids" url:"account_ids"`
 	// Address on the verification profile. `null` when no address is set.
 	Address *RetrieveVerificationsResponseAddress `json:"address,omitempty" url:"address,omitempty"`
 	// Legal business name.
@@ -7025,6 +7275,13 @@ type RetrieveVerificationsResponse struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (r *RetrieveVerificationsResponse) GetAccountIDs() []string {
+	if r == nil {
+		return nil
+	}
+	return r.AccountIDs
 }
 
 func (r *RetrieveVerificationsResponse) GetAddress() *RetrieveVerificationsResponseAddress {
@@ -7188,6 +7445,13 @@ func (r *RetrieveVerificationsResponse) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	r.explicitFields = next
+}
+
+// SetAccountIDs sets the AccountIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponse) SetAccountIDs(accountIDs []string) {
+	r.AccountIDs = accountIDs
+	r.require(retrieveVerificationsResponseFieldAccountIDs)
 }
 
 // SetAddress sets the Address field and marks it as non-optional;
@@ -11985,27 +12249,28 @@ func (u UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItemVal
 }
 
 var (
-	updateVerificationsResponseFieldAddress              = big.NewInt(1 << 0)
-	updateVerificationsResponseFieldBusinessName         = big.NewInt(1 << 1)
-	updateVerificationsResponseFieldBusinessStructure    = big.NewInt(1 << 2)
-	updateVerificationsResponseFieldCountry              = big.NewInt(1 << 3)
-	updateVerificationsResponseFieldCreatedAt            = big.NewInt(1 << 4)
-	updateVerificationsResponseFieldDateOfBirth          = big.NewInt(1 << 5)
-	updateVerificationsResponseFieldEmail                = big.NewInt(1 << 6)
-	updateVerificationsResponseFieldFirstName            = big.NewInt(1 << 7)
-	updateVerificationsResponseFieldID                   = big.NewInt(1 << 8)
-	updateVerificationsResponseFieldIncorporationDate    = big.NewInt(1 << 9)
-	updateVerificationsResponseFieldKind                 = big.NewInt(1 << 10)
-	updateVerificationsResponseFieldLastName             = big.NewInt(1 << 11)
-	updateVerificationsResponseFieldOwners               = big.NewInt(1 << 12)
-	updateVerificationsResponseFieldPhone                = big.NewInt(1 << 13)
-	updateVerificationsResponseFieldPlaceOfIncorporation = big.NewInt(1 << 14)
-	updateVerificationsResponseFieldRegistrationNumber   = big.NewInt(1 << 15)
-	updateVerificationsResponseFieldRequestedInformation = big.NewInt(1 << 16)
-	updateVerificationsResponseFieldRequiredDocuments    = big.NewInt(1 << 17)
-	updateVerificationsResponseFieldSessionURL           = big.NewInt(1 << 18)
-	updateVerificationsResponseFieldStatus               = big.NewInt(1 << 19)
-	updateVerificationsResponseFieldUpdatedAt            = big.NewInt(1 << 20)
+	updateVerificationsResponseFieldAccountIDs           = big.NewInt(1 << 0)
+	updateVerificationsResponseFieldAddress              = big.NewInt(1 << 1)
+	updateVerificationsResponseFieldBusinessName         = big.NewInt(1 << 2)
+	updateVerificationsResponseFieldBusinessStructure    = big.NewInt(1 << 3)
+	updateVerificationsResponseFieldCountry              = big.NewInt(1 << 4)
+	updateVerificationsResponseFieldCreatedAt            = big.NewInt(1 << 5)
+	updateVerificationsResponseFieldDateOfBirth          = big.NewInt(1 << 6)
+	updateVerificationsResponseFieldEmail                = big.NewInt(1 << 7)
+	updateVerificationsResponseFieldFirstName            = big.NewInt(1 << 8)
+	updateVerificationsResponseFieldID                   = big.NewInt(1 << 9)
+	updateVerificationsResponseFieldIncorporationDate    = big.NewInt(1 << 10)
+	updateVerificationsResponseFieldKind                 = big.NewInt(1 << 11)
+	updateVerificationsResponseFieldLastName             = big.NewInt(1 << 12)
+	updateVerificationsResponseFieldOwners               = big.NewInt(1 << 13)
+	updateVerificationsResponseFieldPhone                = big.NewInt(1 << 14)
+	updateVerificationsResponseFieldPlaceOfIncorporation = big.NewInt(1 << 15)
+	updateVerificationsResponseFieldRegistrationNumber   = big.NewInt(1 << 16)
+	updateVerificationsResponseFieldRequestedInformation = big.NewInt(1 << 17)
+	updateVerificationsResponseFieldRequiredDocuments    = big.NewInt(1 << 18)
+	updateVerificationsResponseFieldSessionURL           = big.NewInt(1 << 19)
+	updateVerificationsResponseFieldStatus               = big.NewInt(1 << 20)
+	updateVerificationsResponseFieldUpdatedAt            = big.NewInt(1 << 21)
 )
 
 // updateVerificationsResponseNullableFields maps the wire names of UpdateVerificationsResponse's nullable fields (required or optional) to their field bits.
@@ -12026,6 +12291,8 @@ var updateVerificationsResponseNullableFields = map[string]*big.Int{
 }
 
 type UpdateVerificationsResponse struct {
+	// Accounts this verification was read for, each prefixed `biz_`: the account you listed by, the account or subaccount it belongs to with `include_subaccounts`, or every account you can read that it belongs to when retrieved by ID. Usually one. Empty for a personal verification.
+	AccountIDs []string `json:"account_ids" url:"account_ids"`
 	// Address on the verification profile. `null` when no address is set.
 	Address *UpdateVerificationsResponseAddress `json:"address,omitempty" url:"address,omitempty"`
 	// Legal business name.
@@ -12071,6 +12338,13 @@ type UpdateVerificationsResponse struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (u *UpdateVerificationsResponse) GetAccountIDs() []string {
+	if u == nil {
+		return nil
+	}
+	return u.AccountIDs
 }
 
 func (u *UpdateVerificationsResponse) GetAddress() *UpdateVerificationsResponseAddress {
@@ -12234,6 +12508,13 @@ func (u *UpdateVerificationsResponse) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	u.explicitFields = next
+}
+
+// SetAccountIDs sets the AccountIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponse) SetAccountIDs(accountIDs []string) {
+	u.AccountIDs = accountIDs
+	u.require(updateVerificationsResponseFieldAccountIDs)
 }
 
 // SetAddress sets the Address field and marks it as non-optional;
