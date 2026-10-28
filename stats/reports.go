@@ -23,8 +23,9 @@ var (
 	platformTrendsReportsRequestFieldProductCategory = big.NewInt(1 << 9)
 	platformTrendsReportsRequestFieldAccountCountry  = big.NewInt(1 << 10)
 	platformTrendsReportsRequestFieldCustomerCountry = big.NewInt(1 << 11)
-	platformTrendsReportsRequestFieldFirst           = big.NewInt(1 << 12)
-	platformTrendsReportsRequestFieldAfter           = big.NewInt(1 << 13)
+	platformTrendsReportsRequestFieldBlueprint       = big.NewInt(1 << 12)
+	platformTrendsReportsRequestFieldFirst           = big.NewInt(1 << 13)
+	platformTrendsReportsRequestFieldAfter           = big.NewInt(1 << 14)
 )
 
 type PlatformTrendsReportsRequest struct {
@@ -52,6 +53,8 @@ type PlatformTrendsReportsRequest struct {
 	AccountCountry *string `json:"-" url:"account_country,omitempty"`
 	// Only counts payments from customers in these comma-separated countries, as ISO 3166-1 alpha-2 codes such as `US`.
 	CustomerCountry *string `json:"-" url:"customer_country,omitempty"`
+	// Only counts payments to businesses with an app created from one of these comma-separated blueprint app IDs, such as `app_xxxxxxxxxxxxxx`.
+	Blueprint *string `json:"-" url:"blueprint,omitempty"`
 	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
 	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
@@ -152,6 +155,13 @@ func (p *PlatformTrendsReportsRequest) SetAccountCountry(accountCountry *string)
 func (p *PlatformTrendsReportsRequest) SetCustomerCountry(customerCountry *string) {
 	p.CustomerCountry = customerCountry
 	p.require(platformTrendsReportsRequestFieldCustomerCountry)
+}
+
+// SetBlueprint sets the Blueprint field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsRequest) SetBlueprint(blueprint *string) {
+	p.Blueprint = blueprint
+	p.require(platformTrendsReportsRequestFieldBlueprint)
 }
 
 // SetFirst sets the First field and marks it as non-optional;
