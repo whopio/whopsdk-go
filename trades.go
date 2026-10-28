@@ -335,53 +335,55 @@ func (r *RetrieveTradesRequest) SetID(id string) {
 }
 
 var (
-	tradeFieldAccountID      = big.NewInt(1 << 0)
-	tradeFieldAmount         = big.NewInt(1 << 1)
-	tradeFieldAveragePrice   = big.NewInt(1 << 2)
-	tradeFieldClientOrderID  = big.NewInt(1 << 3)
-	tradeFieldCompletedAt    = big.NewInt(1 << 4)
-	tradeFieldCreatedAt      = big.NewInt(1 << 5)
-	tradeFieldFailureCode    = big.NewInt(1 << 6)
-	tradeFieldFilledSize     = big.NewInt(1 << 7)
-	tradeFieldFundsLocation  = big.NewInt(1 << 8)
-	tradeFieldID             = big.NewInt(1 << 9)
-	tradeFieldInstrumentType = big.NewInt(1 << 10)
-	tradeFieldLeverage       = big.NewInt(1 << 11)
-	tradeFieldMarket         = big.NewInt(1 << 12)
-	tradeFieldMetadata       = big.NewInt(1 << 13)
-	tradeFieldObject         = big.NewInt(1 << 14)
-	tradeFieldOrderType      = big.NewInt(1 << 15)
-	tradeFieldPrice          = big.NewInt(1 << 16)
-	tradeFieldReduceOnly     = big.NewInt(1 << 17)
-	tradeFieldSide           = big.NewInt(1 << 18)
-	tradeFieldSize           = big.NewInt(1 << 19)
-	tradeFieldStatus         = big.NewInt(1 << 20)
-	tradeFieldStatusDetail   = big.NewInt(1 << 21)
-	tradeFieldType           = big.NewInt(1 << 22)
-	tradeFieldUpdatedAt      = big.NewInt(1 << 23)
-	tradeFieldUserID         = big.NewInt(1 << 24)
+	tradeFieldAccountID       = big.NewInt(1 << 0)
+	tradeFieldAmount          = big.NewInt(1 << 1)
+	tradeFieldAveragePrice    = big.NewInt(1 << 2)
+	tradeFieldClientOrderID   = big.NewInt(1 << 3)
+	tradeFieldCompletedAt     = big.NewInt(1 << 4)
+	tradeFieldCreatedAt       = big.NewInt(1 << 5)
+	tradeFieldExternalOrderID = big.NewInt(1 << 6)
+	tradeFieldFailureCode     = big.NewInt(1 << 7)
+	tradeFieldFilledSize      = big.NewInt(1 << 8)
+	tradeFieldFundsLocation   = big.NewInt(1 << 9)
+	tradeFieldID              = big.NewInt(1 << 10)
+	tradeFieldInstrumentType  = big.NewInt(1 << 11)
+	tradeFieldLeverage        = big.NewInt(1 << 12)
+	tradeFieldMarket          = big.NewInt(1 << 13)
+	tradeFieldMetadata        = big.NewInt(1 << 14)
+	tradeFieldObject          = big.NewInt(1 << 15)
+	tradeFieldOrderType       = big.NewInt(1 << 16)
+	tradeFieldPrice           = big.NewInt(1 << 17)
+	tradeFieldReduceOnly      = big.NewInt(1 << 18)
+	tradeFieldSide            = big.NewInt(1 << 19)
+	tradeFieldSize            = big.NewInt(1 << 20)
+	tradeFieldStatus          = big.NewInt(1 << 21)
+	tradeFieldStatusDetail    = big.NewInt(1 << 22)
+	tradeFieldType            = big.NewInt(1 << 23)
+	tradeFieldUpdatedAt       = big.NewInt(1 << 24)
+	tradeFieldUserID          = big.NewInt(1 << 25)
 )
 
 // tradeNullableFields maps the wire names of Trade's nullable fields (required or optional) to their field bits.
 var tradeNullableFields = map[string]*big.Int{
-	"account_id":      tradeFieldAccountID,
-	"amount":          tradeFieldAmount,
-	"average_price":   tradeFieldAveragePrice,
-	"client_order_id": tradeFieldClientOrderID,
-	"completed_at":    tradeFieldCompletedAt,
-	"failure_code":    tradeFieldFailureCode,
-	"filled_size":     tradeFieldFilledSize,
-	"funds_location":  tradeFieldFundsLocation,
-	"instrument_type": tradeFieldInstrumentType,
-	"leverage":        tradeFieldLeverage,
-	"market":          tradeFieldMarket,
-	"order_type":      tradeFieldOrderType,
-	"price":           tradeFieldPrice,
-	"reduce_only":     tradeFieldReduceOnly,
-	"side":            tradeFieldSide,
-	"size":            tradeFieldSize,
-	"status_detail":   tradeFieldStatusDetail,
-	"user_id":         tradeFieldUserID,
+	"account_id":        tradeFieldAccountID,
+	"amount":            tradeFieldAmount,
+	"average_price":     tradeFieldAveragePrice,
+	"client_order_id":   tradeFieldClientOrderID,
+	"completed_at":      tradeFieldCompletedAt,
+	"external_order_id": tradeFieldExternalOrderID,
+	"failure_code":      tradeFieldFailureCode,
+	"filled_size":       tradeFieldFilledSize,
+	"funds_location":    tradeFieldFundsLocation,
+	"instrument_type":   tradeFieldInstrumentType,
+	"leverage":          tradeFieldLeverage,
+	"market":            tradeFieldMarket,
+	"order_type":        tradeFieldOrderType,
+	"price":             tradeFieldPrice,
+	"reduce_only":       tradeFieldReduceOnly,
+	"side":              tradeFieldSide,
+	"size":              tradeFieldSize,
+	"status_detail":     tradeFieldStatusDetail,
+	"user_id":           tradeFieldUserID,
 }
 
 type Trade struct {
@@ -397,6 +399,8 @@ type Trade struct {
 	CompletedAt *string `json:"completed_at,omitempty" url:"completed_at,omitempty"`
 	// When the trade was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
+	// ID Whop sends to the exchange with this trade's order, so the exchange's order updates can be matched to the trade. On Hyperliquid, the order's `cloid` reported in `orderUpdates`, a `0x`-prefixed 32-character hex string. Not the caller's `client_order_id`. `null` for a deposit or withdraw.
+	ExternalOrderID *string `json:"external_order_id,omitempty" url:"external_order_id,omitempty"`
 	// Why the trade failed, or `null`.
 	FailureCode *TradeFailureCode `json:"failure_code,omitempty" url:"failure_code,omitempty"`
 	// The size the order filled, in units of the market, as a decimal string. `null` until it fills.
@@ -482,6 +486,13 @@ func (t *Trade) GetCreatedAt() string {
 		return ""
 	}
 	return t.CreatedAt
+}
+
+func (t *Trade) GetExternalOrderID() *string {
+	if t == nil {
+		return nil
+	}
+	return t.ExternalOrderID
 }
 
 func (t *Trade) GetFailureCode() *TradeFailureCode {
@@ -673,6 +684,13 @@ func (t *Trade) SetCompletedAt(completedAt *string) {
 func (t *Trade) SetCreatedAt(createdAt string) {
 	t.CreatedAt = createdAt
 	t.require(tradeFieldCreatedAt)
+}
+
+// SetExternalOrderID sets the ExternalOrderID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *Trade) SetExternalOrderID(externalOrderID *string) {
+	t.ExternalOrderID = externalOrderID
+	t.require(tradeFieldExternalOrderID)
 }
 
 // SetFailureCode sets the FailureCode field and marks it as non-optional;

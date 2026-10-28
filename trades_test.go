@@ -1051,6 +1051,14 @@ func TestSettersTrade(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetExternalOrderID", func(t *testing.T) {
+		obj := &Trade{}
+		var fernTestValueExternalOrderID *string
+		obj.SetExternalOrderID(fernTestValueExternalOrderID)
+		assert.Equal(t, fernTestValueExternalOrderID, obj.ExternalOrderID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetFailureCode", func(t *testing.T) {
 		obj := &Trade{}
 		var fernTestValueFailureCode *TradeFailureCode
@@ -1392,6 +1400,39 @@ func TestGettersTrade(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCreatedAt() // Should return zero value
+	})
+
+	t.Run("GetExternalOrderID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Trade{}
+		var expected *string
+		obj.ExternalOrderID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetExternalOrderID(), "getter should return the property value")
+	})
+
+	t.Run("GetExternalOrderID_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Trade{}
+		obj.ExternalOrderID = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetExternalOrderID(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetExternalOrderID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Trade
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetExternalOrderID() // Should return zero value
 	})
 
 	t.Run("GetFailureCode", func(t *testing.T) {
@@ -2137,6 +2178,37 @@ func TestSettersMarkExplicitTrade(t *testing.T) {
 
 		// Act
 		obj.SetCreatedAt(fernTestValueCreatedAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetExternalOrderID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Trade{}
+		var fernTestValueExternalOrderID *string
+
+		// Act
+		obj.SetExternalOrderID(fernTestValueExternalOrderID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3331,6 +3403,7 @@ func TestRequiredNullableRoundTripTrade(t *testing.T) {
 		"average_price",
 		"client_order_id",
 		"completed_at",
+		"external_order_id",
 		"failure_code",
 		"filled_size",
 		"funds_location",
@@ -3356,7 +3429,7 @@ func TestRequiredNullableRoundTripTrade(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Trade
-		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"amount":null,"average_price":null,"client_order_id":null,"completed_at":null,"failure_code":null,"filled_size":null,"funds_location":null,"instrument_type":null,"leverage":null,"market":null,"order_type":null,"price":null,"reduce_only":null,"side":null,"size":null,"status_detail":null,"user_id":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"amount":null,"average_price":null,"client_order_id":null,"completed_at":null,"external_order_id":null,"failure_code":null,"filled_size":null,"funds_location":null,"instrument_type":null,"leverage":null,"market":null,"order_type":null,"price":null,"reduce_only":null,"side":null,"size":null,"status_detail":null,"user_id":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
