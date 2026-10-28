@@ -24025,7 +24025,7 @@ client.Invoices.Issue(
 <dl>
 <dd>
 
-Marks an open invoice as uncollectible. Reminders stop, but the customer can still pay it.
+Marks an open invoice as uncollectible. Its checkout link stops working.
 </dd>
 </dl>
 </dd>
@@ -41863,7 +41863,7 @@ client.Users.RecommendActions(
 <dl>
 <dd>
 
-Lists an account's variants. To list a product's public, buyable variants without authentication, omit `account_id` and pass `product_ids`.
+Lists an account's variants, leaving out variants generated for a legacy invoice; retrieve one of those by ID. To list a product's public, buyable variants without authentication, omit `account_id` and pass `product_ids`.
 </dd>
 </dl>
 </dd>

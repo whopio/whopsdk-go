@@ -551,7 +551,7 @@ type Invoice struct {
 	BillingAddress     *PaymentAddress `json:"billing_address,omitempty" url:"billing_address,omitempty"`
 	BuyerFeeAmount     *Money          `json:"buyer_fee_amount" url:"buyer_fee_amount"`
 	BuyerFeePercentage float64         `json:"buyer_fee_percentage" url:"buyer_fee_percentage"`
-	// A signed link that opens this invoice in a checkout session so the buyer can pay it: pass it as `link` to `POST /checkout_sessions`. Present once the invoice is issued and open; null while it is a draft, once it is paid or void, and when you lack `payment:charge`.
+	// A signed link that opens this invoice in a checkout session so the buyer can pay it: pass it as `link` to `POST /checkout_sessions`. Present while the invoice is open; null in any other status, for an invoice billed to a business buyer or whose membership was canceled, and when you lack `payment:charge`.
 	CheckoutLink     *string            `json:"checkout_link,omitempty" url:"checkout_link,omitempty"`
 	CreatedAt        string             `json:"created_at" url:"created_at"`
 	CustomerName     *string            `json:"customer_name,omitempty" url:"customer_name,omitempty"`
