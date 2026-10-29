@@ -1645,7 +1645,7 @@ var leaderboardPartnersResponseNullableFields = map[string]*big.Int{
 }
 
 type LeaderboardPartnersResponse struct {
-	// The top referrers by total earnings, best first.
+	// The top 10 referrers by total earnings, best first.
 	Leaders []*LeaderboardPartnersResponseLeadersItem `json:"leaders" url:"leaders"`
 	// The caller's own standing; null when the caller has no referral earnings.
 	Me *LeaderboardPartnersResponseMe `json:"me,omitempty" url:"me,omitempty"`
