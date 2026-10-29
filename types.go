@@ -5351,6 +5351,7 @@ const (
 	AccountRequiredActionActionSubmitInformationRequest        AccountRequiredActionAction = "submit_information_request"
 	AccountRequiredActionActionUpdateAutomaticWithdrawalMethod AccountRequiredActionAction = "update_automatic_withdrawal_method"
 	AccountRequiredActionActionReauthorizePayoutMethods        AccountRequiredActionAction = "reauthorize_payout_methods"
+	AccountRequiredActionActionUpdatePayoutMethod              AccountRequiredActionAction = "update_payout_method"
 	AccountRequiredActionActionUpdatePayoutProfile             AccountRequiredActionAction = "update_payout_profile"
 	AccountRequiredActionActionCardUsageReview                 AccountRequiredActionAction = "card_usage_review"
 	AccountRequiredActionActionVerifyIdentity                  AccountRequiredActionAction = "verify_identity"
@@ -5375,6 +5376,8 @@ func NewAccountRequiredActionActionFromString(s string) (AccountRequiredActionAc
 		return AccountRequiredActionActionUpdateAutomaticWithdrawalMethod, nil
 	case "reauthorize_payout_methods":
 		return AccountRequiredActionActionReauthorizePayoutMethods, nil
+	case "update_payout_method":
+		return AccountRequiredActionActionUpdatePayoutMethod, nil
 	case "update_payout_profile":
 		return AccountRequiredActionActionUpdatePayoutProfile, nil
 	case "card_usage_review":
@@ -57907,16 +57910,19 @@ func (p PaymentProviders) Ptr() *PaymentProviders {
 
 var (
 	paymentQrFieldAmount      = big.NewInt(1 << 0)
-	paymentQrFieldDocumentURL = big.NewInt(1 << 1)
-	paymentQrFieldExpiresAt   = big.NewInt(1 << 2)
-	paymentQrFieldKey         = big.NewInt(1 << 3)
-	paymentQrFieldQrCode      = big.NewInt(1 << 4)
-	paymentQrFieldQrFormat    = big.NewInt(1 << 5)
+	paymentQrFieldCopyCode    = big.NewInt(1 << 1)
+	paymentQrFieldDocumentURL = big.NewInt(1 << 2)
+	paymentQrFieldExpiresAt   = big.NewInt(1 << 3)
+	paymentQrFieldKey         = big.NewInt(1 << 4)
+	paymentQrFieldQrCode      = big.NewInt(1 << 5)
+	paymentQrFieldQrFormat    = big.NewInt(1 << 6)
 )
 
 type PaymentQr struct {
 	// Exactly what the buyer must pay, in the charged currency.
 	Amount *Money `json:"amount,omitempty" url:"amount,omitempty"`
+	// The code the buyer pastes into their payment app instead of scanning, such as Pix's copy-and-paste code, so they can pay from the device showing the QR. Only present for methods that accept a pasted code.
+	CopyCode *string `json:"copy_code,omitempty" url:"copy_code,omitempty"`
 	// A hosted page with the complete, printable instructions. If you would rather not render the details yourself, send the buyer here.
 	DocumentURL *string `json:"document_url,omitempty" url:"document_url,omitempty"`
 	// When the code stops being payable, as an ISO 8601 timestamp.
@@ -57940,6 +57946,13 @@ func (p *PaymentQr) GetAmount() *Money {
 		return nil
 	}
 	return p.Amount
+}
+
+func (p *PaymentQr) GetCopyCode() *string {
+	if p == nil {
+		return nil
+	}
+	return p.CopyCode
 }
 
 func (p *PaymentQr) GetDocumentURL() *string {
@@ -57998,6 +58011,13 @@ func (p *PaymentQr) require(field *big.Int) {
 func (p *PaymentQr) SetAmount(amount *Money) {
 	p.Amount = amount
 	p.require(paymentQrFieldAmount)
+}
+
+// SetCopyCode sets the CopyCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentQr) SetCopyCode(copyCode *string) {
+	p.CopyCode = copyCode
+	p.require(paymentQrFieldCopyCode)
 }
 
 // SetDocumentURL sets the DocumentURL field and marks it as non-optional;
