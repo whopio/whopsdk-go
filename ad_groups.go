@@ -259,8 +259,7 @@ func (d *DeleteAdGroupsRequest) SetID(id string) {
 var (
 	duplicateAdGroupsRequestFieldID                 = big.NewInt(1 << 0)
 	duplicateAdGroupsRequestFieldCount              = big.NewInt(1 << 1)
-	duplicateAdGroupsRequestFieldPreserveEngagement = big.NewInt(1 << 2)
-	duplicateAdGroupsRequestFieldTargetAdCampaignID = big.NewInt(1 << 3)
+	duplicateAdGroupsRequestFieldTargetAdCampaignID = big.NewInt(1 << 2)
 )
 
 type DuplicateAdGroupsRequest struct {
@@ -268,8 +267,6 @@ type DuplicateAdGroupsRequest struct {
 	ID string `json:"-" url:"-"`
 	// Number of copies to create (1-10). Defaults to 1.
 	Count *int `json:"count,omitempty" url:"-"`
-	// Whether the copied ads keep the original posts' engagement (likes, comments, shares). Defaults to false.
-	PreserveEngagement *bool `json:"preserve_engagement,omitempty" url:"-"`
 	// Campaign to duplicate into. Must belong to the same account and be compatible with the ad group's targeting and goals. Defaults to the ad group's own campaign.
 	TargetAdCampaignID *string `json:"target_ad_campaign_id,omitempty" url:"-"`
 
@@ -298,13 +295,6 @@ func (d *DuplicateAdGroupsRequest) SetID(id string) {
 func (d *DuplicateAdGroupsRequest) SetCount(count *int) {
 	d.Count = count
 	d.require(duplicateAdGroupsRequestFieldCount)
-}
-
-// SetPreserveEngagement sets the PreserveEngagement field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DuplicateAdGroupsRequest) SetPreserveEngagement(preserveEngagement *bool) {
-	d.PreserveEngagement = preserveEngagement
-	d.require(duplicateAdGroupsRequestFieldPreserveEngagement)
 }
 
 // SetTargetAdCampaignID sets the TargetAdCampaignID field and marks it as non-optional;

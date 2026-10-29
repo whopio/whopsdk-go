@@ -180,33 +180,6 @@ func TestSocialAccountsDeleteWithWireMock(
 	VerifyRequestCount(t, "TestSocialAccountsDeleteWithWireMock", "DELETE", "/social_accounts/id", nil, 1)
 }
 
-func TestSocialAccountsLeadFormsWithWireMock(
-	t *testing.T,
-) {
-	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
-	if WireMockBaseURL == "" {
-		WireMockBaseURL = "http://localhost:8080"
-	}
-	client := client.NewWhop(
-		option.WithBaseURL(WireMockBaseURL),
-		option.WithToken("test-token"),
-	)
-	request := &whopsdk.LeadFormsSocialAccountsRequest{
-		ID:        "id",
-		AccountID: "account_id",
-	}
-	_, invocationErr := client.SocialAccounts.LeadForms(
-		context.TODO(),
-		request,
-		option.WithHTTPHeader(
-			http.Header{"X-Test-Id": []string{"TestSocialAccountsLeadFormsWithWireMock"}},
-		),
-	)
-
-	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestSocialAccountsLeadFormsWithWireMock", "GET", "/social_accounts/id/lead_forms", map[string]interface{}{"account_id": "account_id"}, 1)
-}
-
 func TestSocialAccountsPartnersWithWireMock(
 	t *testing.T,
 ) {
@@ -285,33 +258,6 @@ func TestSocialAccountsRemovePartnerWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestSocialAccountsRemovePartnerWithWireMock", "DELETE", "/social_accounts/id/partners/partner_id", nil, 1)
-}
-
-func TestSocialAccountsPostsWithWireMock(
-	t *testing.T,
-) {
-	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
-	if WireMockBaseURL == "" {
-		WireMockBaseURL = "http://localhost:8080"
-	}
-	client := client.NewWhop(
-		option.WithBaseURL(WireMockBaseURL),
-		option.WithToken("test-token"),
-	)
-	request := &whopsdk.PostsSocialAccountsRequest{
-		ID:        "id",
-		AccountID: "account_id",
-	}
-	_, invocationErr := client.SocialAccounts.Posts(
-		context.TODO(),
-		request,
-		option.WithHTTPHeader(
-			http.Header{"X-Test-Id": []string{"TestSocialAccountsPostsWithWireMock"}},
-		),
-	)
-
-	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestSocialAccountsPostsWithWireMock", "GET", "/social_accounts/id/posts", map[string]interface{}{"account_id": "account_id"}, 1)
 }
 
 func TestSocialAccountsRefreshWithWireMock(

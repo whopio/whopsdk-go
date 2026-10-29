@@ -208,9 +208,8 @@ func (d *DeleteAdCampaignsRequest) SetID(id string) {
 }
 
 var (
-	duplicateAdCampaignsRequestFieldID                 = big.NewInt(1 << 0)
-	duplicateAdCampaignsRequestFieldCount              = big.NewInt(1 << 1)
-	duplicateAdCampaignsRequestFieldPreserveEngagement = big.NewInt(1 << 2)
+	duplicateAdCampaignsRequestFieldID    = big.NewInt(1 << 0)
+	duplicateAdCampaignsRequestFieldCount = big.NewInt(1 << 1)
 )
 
 type DuplicateAdCampaignsRequest struct {
@@ -218,8 +217,6 @@ type DuplicateAdCampaignsRequest struct {
 	ID string `json:"-" url:"-"`
 	// Number of copies to create (1-10). Defaults to 1.
 	Count *int `json:"count,omitempty" url:"-"`
-	// Whether the copied ads keep the original posts' engagement (likes, comments, shares). Defaults to false.
-	PreserveEngagement *bool `json:"preserve_engagement,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -246,13 +243,6 @@ func (d *DuplicateAdCampaignsRequest) SetID(id string) {
 func (d *DuplicateAdCampaignsRequest) SetCount(count *int) {
 	d.Count = count
 	d.require(duplicateAdCampaignsRequestFieldCount)
-}
-
-// SetPreserveEngagement sets the PreserveEngagement field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DuplicateAdCampaignsRequest) SetPreserveEngagement(preserveEngagement *bool) {
-	d.PreserveEngagement = preserveEngagement
-	d.require(duplicateAdCampaignsRequestFieldPreserveEngagement)
 }
 
 func (d *DuplicateAdCampaignsRequest) UnmarshalJSON(data []byte) error {
