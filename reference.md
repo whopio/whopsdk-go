@@ -17894,14 +17894,6 @@ Use a standard event (lead, submit_application, contact, complete_registration, 
 <dl>
 <dd>
 
-**planID:** `*string` — The variant associated with the event.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **productID:** `*string` — The product associated with the event.
     
 </dd>
@@ -17959,6 +17951,14 @@ Use a standard event (lead, submit_application, contact, complete_registration, 
 <dd>
 
 **value:** `*float64` — Monetary value associated with the event.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**variantID:** `*string` — The variant associated with the event.
     
 </dd>
 </dl>

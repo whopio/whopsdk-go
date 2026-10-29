@@ -22,15 +22,15 @@ var (
 	createEventsRequestFieldEventID      = big.NewInt(1 << 8)
 	createEventsRequestFieldEventName    = big.NewInt(1 << 9)
 	createEventsRequestFieldEventTime    = big.NewInt(1 << 10)
-	createEventsRequestFieldPlanID       = big.NewInt(1 << 11)
-	createEventsRequestFieldProductID    = big.NewInt(1 << 12)
-	createEventsRequestFieldReferrerURL  = big.NewInt(1 << 13)
-	createEventsRequestFieldResumed      = big.NewInt(1 << 14)
-	createEventsRequestFieldSource       = big.NewInt(1 << 15)
-	createEventsRequestFieldTitle        = big.NewInt(1 << 16)
-	createEventsRequestFieldURL          = big.NewInt(1 << 17)
-	createEventsRequestFieldUser         = big.NewInt(1 << 18)
-	createEventsRequestFieldValue        = big.NewInt(1 << 19)
+	createEventsRequestFieldProductID    = big.NewInt(1 << 11)
+	createEventsRequestFieldReferrerURL  = big.NewInt(1 << 12)
+	createEventsRequestFieldResumed      = big.NewInt(1 << 13)
+	createEventsRequestFieldSource       = big.NewInt(1 << 14)
+	createEventsRequestFieldTitle        = big.NewInt(1 << 15)
+	createEventsRequestFieldURL          = big.NewInt(1 << 16)
+	createEventsRequestFieldUser         = big.NewInt(1 << 17)
+	createEventsRequestFieldValue        = big.NewInt(1 << 18)
+	createEventsRequestFieldVariantID    = big.NewInt(1 << 19)
 )
 
 type CreateEventsRequest struct {
@@ -58,8 +58,6 @@ type CreateEventsRequest struct {
 	EventName string `json:"event_name" url:"-"`
 	// When the event occurred. Defaults to now.
 	EventTime *time.Time `json:"event_time,omitempty" url:"-"`
-	// The variant associated with the event.
-	PlanID *string `json:"plan_id,omitempty" url:"-"`
 	// The product associated with the event.
 	ProductID *string `json:"product_id,omitempty" url:"-"`
 	// The referring URL.
@@ -76,6 +74,8 @@ type CreateEventsRequest struct {
 	User *CreateEventsRequestUser `json:"user,omitempty" url:"-"`
 	// Monetary value associated with the event.
 	Value *float64 `json:"value,omitempty" url:"-"`
+	// The variant associated with the event.
+	VariantID *string `json:"variant_id,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -167,13 +167,6 @@ func (c *CreateEventsRequest) SetEventTime(eventTime *time.Time) {
 	c.require(createEventsRequestFieldEventTime)
 }
 
-// SetPlanID sets the PlanID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateEventsRequest) SetPlanID(planID *string) {
-	c.PlanID = planID
-	c.require(createEventsRequestFieldPlanID)
-}
-
 // SetProductID sets the ProductID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateEventsRequest) SetProductID(productID *string) {
@@ -228,6 +221,13 @@ func (c *CreateEventsRequest) SetUser(user *CreateEventsRequestUser) {
 func (c *CreateEventsRequest) SetValue(value *float64) {
 	c.Value = value
 	c.require(createEventsRequestFieldValue)
+}
+
+// SetVariantID sets the VariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateEventsRequest) SetVariantID(variantID *string) {
+	c.VariantID = variantID
+	c.require(createEventsRequestFieldVariantID)
 }
 
 func (c *CreateEventsRequest) UnmarshalJSON(data []byte) error {
