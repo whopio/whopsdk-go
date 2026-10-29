@@ -171,25 +171,27 @@ var (
 	disputeAlertFieldAmount        = big.NewInt(1 << 1)
 	disputeAlertFieldAutoRefunded  = big.NewInt(1 << 2)
 	disputeAlertFieldCardBrand     = big.NewInt(1 << 3)
-	disputeAlertFieldCreatedAt     = big.NewInt(1 << 4)
-	disputeAlertFieldCurrency      = big.NewInt(1 << 5)
-	disputeAlertFieldFee           = big.NewInt(1 << 6)
-	disputeAlertFieldFeeCharged    = big.NewInt(1 << 7)
-	disputeAlertFieldID            = big.NewInt(1 << 8)
-	disputeAlertFieldIssuer        = big.NewInt(1 << 9)
-	disputeAlertFieldPaymentID     = big.NewInt(1 << 10)
-	disputeAlertFieldProductID     = big.NewInt(1 << 11)
-	disputeAlertFieldReportedAt    = big.NewInt(1 << 12)
-	disputeAlertFieldSource        = big.NewInt(1 << 13)
-	disputeAlertFieldTransactionAt = big.NewInt(1 << 14)
-	disputeAlertFieldType          = big.NewInt(1 << 15)
-	disputeAlertFieldUpdatedAt     = big.NewInt(1 << 16)
+	disputeAlertFieldCategory      = big.NewInt(1 << 4)
+	disputeAlertFieldCreatedAt     = big.NewInt(1 << 5)
+	disputeAlertFieldCurrency      = big.NewInt(1 << 6)
+	disputeAlertFieldFee           = big.NewInt(1 << 7)
+	disputeAlertFieldFeeCharged    = big.NewInt(1 << 8)
+	disputeAlertFieldID            = big.NewInt(1 << 9)
+	disputeAlertFieldIssuer        = big.NewInt(1 << 10)
+	disputeAlertFieldPaymentID     = big.NewInt(1 << 11)
+	disputeAlertFieldProductID     = big.NewInt(1 << 12)
+	disputeAlertFieldReportedAt    = big.NewInt(1 << 13)
+	disputeAlertFieldSource        = big.NewInt(1 << 14)
+	disputeAlertFieldTransactionAt = big.NewInt(1 << 15)
+	disputeAlertFieldType          = big.NewInt(1 << 16)
+	disputeAlertFieldUpdatedAt     = big.NewInt(1 << 17)
 )
 
 // disputeAlertNullableFields maps the wire names of DisputeAlert's nullable fields (required or optional) to their field bits.
 var disputeAlertNullableFields = map[string]*big.Int{
 	"account_id":     disputeAlertFieldAccountID,
 	"card_brand":     disputeAlertFieldCardBrand,
+	"category":       disputeAlertFieldCategory,
 	"fee":            disputeAlertFieldFee,
 	"issuer":         disputeAlertFieldIssuer,
 	"payment_id":     disputeAlertFieldPaymentID,
@@ -207,6 +209,8 @@ type DisputeAlert struct {
 	AutoRefunded bool `json:"auto_refunded" url:"auto_refunded"`
 	// The card network as reported by the issuer, lowercased, such as `visa` or `mastercard`. `unknown` when the report carries neither a network nor a recognizable BIN.
 	CardBrand *string `json:"card_brand,omitempty" url:"card_brand,omitempty"`
+	// What the cardholder claims. `fraud` when they say they didn't make the payment: always for an `early_fraud_warning`, and for Ethoca fraud alerts and Visa RDR cases filed under a fraud reason. `customer_dispute` when they made the payment but dispute it, such as a product not received or a canceled subscription. `null` when the alert carries no claim, such as an issuer's request for transaction documents.
+	Category *DisputeAlertCategory `json:"category,omitempty" url:"category,omitempty"`
 	// When Whop received the alert, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Three-letter ISO currency code of the alerted amount.
@@ -268,6 +272,13 @@ func (d *DisputeAlert) GetCardBrand() *string {
 		return nil
 	}
 	return d.CardBrand
+}
+
+func (d *DisputeAlert) GetCategory() *DisputeAlertCategory {
+	if d == nil {
+		return nil
+	}
+	return d.Category
 }
 
 func (d *DisputeAlert) GetCreatedAt() string {
@@ -403,6 +414,13 @@ func (d *DisputeAlert) SetAutoRefunded(autoRefunded bool) {
 func (d *DisputeAlert) SetCardBrand(cardBrand *string) {
 	d.CardBrand = cardBrand
 	d.require(disputeAlertFieldCardBrand)
+}
+
+// SetCategory sets the Category field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeAlert) SetCategory(category *DisputeAlertCategory) {
+	d.Category = category
+	d.require(disputeAlertFieldCategory)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -543,6 +561,29 @@ func (d *DisputeAlert) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", d)
+}
+
+// What the cardholder claims. `fraud` when they say they didn't make the payment: always for an `early_fraud_warning`, and for Ethoca fraud alerts and Visa RDR cases filed under a fraud reason. `customer_dispute` when they made the payment but dispute it, such as a product not received or a canceled subscription. `null` when the alert carries no claim, such as an issuer's request for transaction documents.
+type DisputeAlertCategory string
+
+const (
+	DisputeAlertCategoryFraud           DisputeAlertCategory = "fraud"
+	DisputeAlertCategoryCustomerDispute DisputeAlertCategory = "customer_dispute"
+)
+
+func NewDisputeAlertCategoryFromString(s string) (DisputeAlertCategory, error) {
+	switch s {
+	case "fraud":
+		return DisputeAlertCategoryFraud, nil
+	case "customer_dispute":
+		return DisputeAlertCategoryCustomerDispute, nil
+	}
+	var t DisputeAlertCategory
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (d DisputeAlertCategory) Ptr() *DisputeAlertCategory {
+	return &d
 }
 
 // The network program that sent the alert, which `type` alone doesn't tell apart. `ethoca` for Mastercard Ethoca, `cdrn` for Visa Verifi CDRN, `rdr` for Visa RDR, `tc40` / `safe` for a Visa / Mastercard fraud report, `paypal` for a PayPal alert. `null` when the network didn't say.

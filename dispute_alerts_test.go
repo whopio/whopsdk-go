@@ -523,6 +523,14 @@ func TestSettersDisputeAlert(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetCategory", func(t *testing.T) {
+		obj := &DisputeAlert{}
+		var fernTestValueCategory *DisputeAlertCategory
+		obj.SetCategory(fernTestValueCategory)
+		assert.Equal(t, fernTestValueCategory, obj.Category)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCreatedAt", func(t *testing.T) {
 		obj := &DisputeAlert{}
 		var fernTestValueCreatedAt string
@@ -740,6 +748,39 @@ func TestGettersDisputeAlert(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCardBrand() // Should return zero value
+	})
+
+	t.Run("GetCategory", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DisputeAlert{}
+		var expected *DisputeAlertCategory
+		obj.Category = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCategory(), "getter should return the property value")
+	})
+
+	t.Run("GetCategory_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DisputeAlert{}
+		obj.Category = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCategory(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCategory_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *DisputeAlert
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCategory() // Should return zero value
 	})
 
 	t.Run("GetCreatedAt", func(t *testing.T) {
@@ -1205,6 +1246,37 @@ func TestSettersMarkExplicitDisputeAlert(t *testing.T) {
 
 		// Act
 		obj.SetCardBrand(fernTestValueCardBrand)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetCategory_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DisputeAlert{}
+		var fernTestValueCategory *DisputeAlertCategory
+
+		// Act
+		obj.SetCategory(fernTestValueCategory)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -2744,6 +2816,7 @@ func TestRequiredNullableRoundTripDisputeAlert(t *testing.T) {
 	requiredNullableKeys := []string{
 		"account_id",
 		"card_brand",
+		"category",
 		"fee",
 		"issuer",
 		"payment_id",
@@ -2762,7 +2835,7 @@ func TestRequiredNullableRoundTripDisputeAlert(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj DisputeAlert
-		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"card_brand":null,"fee":null,"issuer":null,"payment_id":null,"product_id":null,"source":null,"transaction_at":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"card_brand":null,"category":null,"fee":null,"issuer":null,"payment_id":null,"product_id":null,"source":null,"transaction_at":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -2981,6 +3054,35 @@ func TestStringPostDisputeAlertCreatedPayload(t *testing.T) {
 		var obj *PostDisputeAlertCreatedPayload
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestEnumDisputeAlertCategory(t *testing.T) {
+	t.Run("NewFromString_fraud", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewDisputeAlertCategoryFromString("fraud")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, DisputeAlertCategory("fraud"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_customer_dispute", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewDisputeAlertCategoryFromString("customer_dispute")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, DisputeAlertCategory("customer_dispute"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewDisputeAlertCategoryFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewDisputeAlertCategoryFromString("fraud")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
 	})
 }
 
