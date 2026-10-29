@@ -5,6 +5,7 @@ package payouts
 import (
 	json "encoding/json"
 	fmt "fmt"
+	v2 "github.com/whopio/whopsdk-go/v2"
 	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 	time "time"
@@ -274,15 +275,16 @@ func (l *ListSupportedMethodsResponse) String() string {
 
 var (
 	listSupportedMethodsResponseDataItemFieldDeliveryType             = big.NewInt(1 << 0)
-	listSupportedMethodsResponseDataItemFieldIconURL                  = big.NewInt(1 << 1)
-	listSupportedMethodsResponseDataItemFieldID                       = big.NewInt(1 << 2)
-	listSupportedMethodsResponseDataItemFieldName                     = big.NewInt(1 << 3)
-	listSupportedMethodsResponseDataItemFieldObject                   = big.NewInt(1 << 4)
-	listSupportedMethodsResponseDataItemFieldQuotes                   = big.NewInt(1 << 5)
-	listSupportedMethodsResponseDataItemFieldRequiredFields           = big.NewInt(1 << 6)
-	listSupportedMethodsResponseDataItemFieldSupportsInstantDelivery  = big.NewInt(1 << 7)
-	listSupportedMethodsResponseDataItemFieldSupportsPaypalLogin      = big.NewInt(1 << 8)
-	listSupportedMethodsResponseDataItemFieldSupportsStandardDelivery = big.NewInt(1 << 9)
+	listSupportedMethodsResponseDataItemFieldFeeStructure             = big.NewInt(1 << 1)
+	listSupportedMethodsResponseDataItemFieldIconURL                  = big.NewInt(1 << 2)
+	listSupportedMethodsResponseDataItemFieldID                       = big.NewInt(1 << 3)
+	listSupportedMethodsResponseDataItemFieldName                     = big.NewInt(1 << 4)
+	listSupportedMethodsResponseDataItemFieldObject                   = big.NewInt(1 << 5)
+	listSupportedMethodsResponseDataItemFieldQuotes                   = big.NewInt(1 << 6)
+	listSupportedMethodsResponseDataItemFieldRequiredFields           = big.NewInt(1 << 7)
+	listSupportedMethodsResponseDataItemFieldSupportsInstantDelivery  = big.NewInt(1 << 8)
+	listSupportedMethodsResponseDataItemFieldSupportsPaypalLogin      = big.NewInt(1 << 9)
+	listSupportedMethodsResponseDataItemFieldSupportsStandardDelivery = big.NewInt(1 << 10)
 )
 
 // listSupportedMethodsResponseDataItemNullableFields maps the wire names of ListSupportedMethodsResponseDataItem's nullable fields (required or optional) to their field bits.
@@ -296,6 +298,8 @@ var listSupportedMethodsResponseDataItemNullableFields = map[string]*big.Int{
 type ListSupportedMethodsResponseDataItem struct {
 	// How funds are delivered, for example `bank_deposit`.
 	DeliveryType ListSupportedMethodsResponseDataItemDeliveryType `json:"delivery_type" url:"delivery_type"`
+	// Fee terms for payouts to this method: a percentage of the payout amount plus a fixed fee. The quotes carry the exact fee for a specific amount.
+	FeeStructure *ListSupportedMethodsResponseDataItemFeeStructure `json:"fee_structure" url:"fee_structure"`
 	// Supported payout method icon URL.
 	IconURL *string `json:"icon_url,omitempty" url:"icon_url,omitempty"`
 	// Supported payout method ID.
@@ -324,6 +328,13 @@ func (l *ListSupportedMethodsResponseDataItem) GetDeliveryType() ListSupportedMe
 		return ""
 	}
 	return l.DeliveryType
+}
+
+func (l *ListSupportedMethodsResponseDataItem) GetFeeStructure() *ListSupportedMethodsResponseDataItemFeeStructure {
+	if l == nil {
+		return nil
+	}
+	return l.FeeStructure
 }
 
 func (l *ListSupportedMethodsResponseDataItem) GetIconURL() *string {
@@ -410,6 +421,13 @@ func (l *ListSupportedMethodsResponseDataItem) require(field *big.Int) {
 func (l *ListSupportedMethodsResponseDataItem) SetDeliveryType(deliveryType ListSupportedMethodsResponseDataItemDeliveryType) {
 	l.DeliveryType = deliveryType
 	l.require(listSupportedMethodsResponseDataItemFieldDeliveryType)
+}
+
+// SetFeeStructure sets the FeeStructure field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSupportedMethodsResponseDataItem) SetFeeStructure(feeStructure *ListSupportedMethodsResponseDataItemFeeStructure) {
+	l.FeeStructure = feeStructure
+	l.require(listSupportedMethodsResponseDataItemFieldFeeStructure)
 }
 
 // SetIconURL sets the IconURL field and marks it as non-optional;
@@ -563,6 +581,111 @@ func NewListSupportedMethodsResponseDataItemDeliveryTypeFromString(s string) (Li
 
 func (l ListSupportedMethodsResponseDataItemDeliveryType) Ptr() *ListSupportedMethodsResponseDataItemDeliveryType {
 	return &l
+}
+
+var (
+	listSupportedMethodsResponseDataItemFeeStructureFieldFixed      = big.NewInt(1 << 0)
+	listSupportedMethodsResponseDataItemFeeStructureFieldPercentage = big.NewInt(1 << 1)
+)
+
+// Fee terms for payouts to this method: a percentage of the payout amount plus a fixed fee. The quotes carry the exact fee for a specific amount.
+type ListSupportedMethodsResponseDataItemFeeStructure struct {
+	// Fixed fee charged on every payout, on top of the percentage.
+	Fixed *v2.Money `json:"fixed" url:"fixed"`
+	// Percentage of the payout amount charged as a fee.
+	Percentage float64 `json:"percentage" url:"percentage"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListSupportedMethodsResponseDataItemFeeStructure) GetFixed() *v2.Money {
+	if l == nil {
+		return nil
+	}
+	return l.Fixed
+}
+
+func (l *ListSupportedMethodsResponseDataItemFeeStructure) GetPercentage() float64 {
+	if l == nil {
+		return 0
+	}
+	return l.Percentage
+}
+
+func (l *ListSupportedMethodsResponseDataItemFeeStructure) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListSupportedMethodsResponseDataItemFeeStructure) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetFixed sets the Fixed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSupportedMethodsResponseDataItemFeeStructure) SetFixed(fixed *v2.Money) {
+	l.Fixed = fixed
+	l.require(listSupportedMethodsResponseDataItemFeeStructureFieldFixed)
+}
+
+// SetPercentage sets the Percentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSupportedMethodsResponseDataItemFeeStructure) SetPercentage(percentage float64) {
+	l.Percentage = percentage
+	l.require(listSupportedMethodsResponseDataItemFeeStructureFieldPercentage)
+}
+
+func (l *ListSupportedMethodsResponseDataItemFeeStructure) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListSupportedMethodsResponseDataItemFeeStructure
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListSupportedMethodsResponseDataItemFeeStructure(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListSupportedMethodsResponseDataItemFeeStructure) MarshalJSON() ([]byte, error) {
+	type embed ListSupportedMethodsResponseDataItemFeeStructure
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListSupportedMethodsResponseDataItemFeeStructure) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
 }
 
 type ListSupportedMethodsResponseDataItemObject string
