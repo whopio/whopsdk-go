@@ -5108,7 +5108,7 @@ type AccountTaxIdentifier struct {
 	ID string `json:"id" url:"id"`
 	// Tax ID type.
 	TaxIDType AccountTaxIdentifierTaxIDType `json:"tax_id_type" url:"tax_id_type"`
-	// Tax ID value.
+	// Tax ID value, for example `DE123456789`. See the [tax IDs guide](/developer/guides/tax-ids).
 	TaxIDValue string `json:"tax_id_value" url:"tax_id_value"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -9703,9 +9703,9 @@ var (
 )
 
 type UpdateAccountsRequestTaxIdentifiersItem struct {
-	// Tax ID type, for example `eu_vat`, `gb_vat`, or `us_ein`.
+	// Tax ID type, for example `eu_vat`, `gb_vat`, or `us_ein`. See the [tax IDs guide](/developer/guides/tax-ids) for an example of each type.
 	TaxIDType UpdateAccountsRequestTaxIdentifiersItemTaxIDType `json:"tax_id_type" url:"tax_id_type"`
-	// Tax ID value, for example `DE123456789`.
+	// Tax ID value, for example `DE123456789`. An `eu_vat` number must start with its two-letter country code (Greece uses `EL`); spaces, dots, and dashes are removed and letters are uppercased. See the [tax IDs guide](/developer/guides/tax-ids).
 	TaxIDValue string `json:"tax_id_value" url:"tax_id_value"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -9801,7 +9801,7 @@ func (u *UpdateAccountsRequestTaxIdentifiersItem) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Tax ID type, for example `eu_vat`, `gb_vat`, or `us_ein`.
+// Tax ID type, for example `eu_vat`, `gb_vat`, or `us_ein`. See the [tax IDs guide](/developer/guides/tax-ids) for an example of each type.
 type UpdateAccountsRequestTaxIdentifiersItemTaxIDType string
 
 const (
@@ -10444,7 +10444,7 @@ type UpdateAccountsRequest struct {
 	TargetAudience *string `json:"target_audience,omitempty" url:"-"`
 	// US state codes (50 states plus `DC`) where the account collects tax. Replaces the full set on update. Only settable when `tax_remitted_by` is `self`.
 	TaxCollectionEnabledStates []UpdateAccountsRequestTaxCollectionEnabledStatesItem `json:"tax_collection_enabled_states,omitempty" url:"-"`
-	// Account tax/VAT registrations to add or update. When `tax_remitted_by` is `self`, tax is calculated and collected only in the countries where the account holds a registration.
+	// Tax IDs to add to the account, or to replace when the account already has one of that type. When `tax_remitted_by` is `self`, tax outside the US is calculated and collected only in the countries where the account has a tax ID. US collection follows `tax_collection_enabled_states`.
 	TaxIdentifiers []*UpdateAccountsRequestTaxIdentifiersItem `json:"tax_identifiers,omitempty" url:"-"`
 	// Determines whether Whop or the account calculates and remits tax. The account must provide a supported-country business address when it self-remits.
 	TaxRemittedBy *UpdateAccountsRequestTaxRemittedBy `json:"tax_remitted_by,omitempty" url:"-"`

@@ -5359,6 +5359,7 @@ const (
 	AccountRequiredActionActionSignFormationDocuments          AccountRequiredActionAction = "sign_formation_documents"
 	AccountRequiredActionActionConfigureTaxRemitter            AccountRequiredActionAction = "configure_tax_remitter"
 	AccountRequiredActionActionAddVatRegistration              AccountRequiredActionAction = "add_vat_registration"
+	AccountRequiredActionActionConfirmTaxDetails               AccountRequiredActionAction = "confirm_tax_details"
 	AccountRequiredActionActionAcceptPayoutTerms               AccountRequiredActionAction = "accept_payout_terms"
 	AccountRequiredActionActionEnableTwoFactorAuthentication   AccountRequiredActionAction = "enable_two_factor_authentication"
 	AccountRequiredActionActionRespondToAbuseReport            AccountRequiredActionAction = "respond_to_abuse_report"
@@ -5392,6 +5393,8 @@ func NewAccountRequiredActionActionFromString(s string) (AccountRequiredActionAc
 		return AccountRequiredActionActionConfigureTaxRemitter, nil
 	case "add_vat_registration":
 		return AccountRequiredActionActionAddVatRegistration, nil
+	case "confirm_tax_details":
+		return AccountRequiredActionActionConfirmTaxDetails, nil
 	case "accept_payout_terms":
 		return AccountRequiredActionActionAcceptPayoutTerms, nil
 	case "enable_two_factor_authentication":

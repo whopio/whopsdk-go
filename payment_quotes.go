@@ -1875,9 +1875,9 @@ var (
 )
 
 type CreatePaymentQuotesRequestTaxIDsItem struct {
-	// The registration type.
+	// The registration type. See the [tax IDs guide](/developer/guides/tax-ids) for an example of each type.
 	Type CreatePaymentQuotesRequestTaxIDsItemType `json:"type" url:"type"`
-	// The registration number as issued.
+	// The registration number as issued. An `eu_vat` number must start with its two-letter country code (Greece uses `EL`). See the [tax IDs guide](/developer/guides/tax-ids).
 	Value string `json:"value" url:"value"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1973,7 +1973,7 @@ func (c *CreatePaymentQuotesRequestTaxIDsItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The registration type.
+// The registration type. See the [tax IDs guide](/developer/guides/tax-ids) for an example of each type.
 type CreatePaymentQuotesRequestTaxIDsItemType string
 
 const (
