@@ -154,6 +154,7 @@ const (
 	PermissionActionDeveloperManageAPIKey             PermissionAction = "developer:manage_api_key"
 	PermissionActionDeveloperManageBuilds             PermissionAction = "developer:manage_builds"
 	PermissionActionDeveloperManageOauth              PermissionAction = "developer:manage_oauth"
+	PermissionActionDeveloperManageOidcTrust          PermissionAction = "developer:manage_oidc_trust"
 	PermissionActionDeveloperManageWebhook            PermissionAction = "developer:manage_webhook"
 	PermissionActionDeveloperUpdateApp                PermissionAction = "developer:update_app"
 	PermissionActionDeveloperUpdateAppAuthorization   PermissionAction = "developer:update_app_authorization"
@@ -551,6 +552,8 @@ func NewPermissionActionFromString(s string) (PermissionAction, error) {
 		return PermissionActionDeveloperManageBuilds, nil
 	case "developer:manage_oauth":
 		return PermissionActionDeveloperManageOauth, nil
+	case "developer:manage_oidc_trust":
+		return PermissionActionDeveloperManageOidcTrust, nil
 	case "developer:manage_webhook":
 		return PermissionActionDeveloperManageWebhook, nil
 	case "developer:update_app":
