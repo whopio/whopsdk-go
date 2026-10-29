@@ -606,15 +606,16 @@ var (
 	createCardsResponseFieldExpirationMonth = big.NewInt(1 << 3)
 	createCardsResponseFieldExpirationYear  = big.NewInt(1 << 4)
 	createCardsResponseFieldID              = big.NewInt(1 << 5)
-	createCardsResponseFieldLast4           = big.NewInt(1 << 6)
-	createCardsResponseFieldLimit           = big.NewInt(1 << 7)
-	createCardsResponseFieldName            = big.NewInt(1 << 8)
-	createCardsResponseFieldObject          = big.NewInt(1 << 9)
-	createCardsResponseFieldSecrets         = big.NewInt(1 << 10)
-	createCardsResponseFieldSpentLastMonth  = big.NewInt(1 << 11)
-	createCardsResponseFieldStatus          = big.NewInt(1 << 12)
-	createCardsResponseFieldType            = big.NewInt(1 << 13)
-	createCardsResponseFieldUserID          = big.NewInt(1 << 14)
+	createCardsResponseFieldIssued          = big.NewInt(1 << 6)
+	createCardsResponseFieldLast4           = big.NewInt(1 << 7)
+	createCardsResponseFieldLimit           = big.NewInt(1 << 8)
+	createCardsResponseFieldName            = big.NewInt(1 << 9)
+	createCardsResponseFieldObject          = big.NewInt(1 << 10)
+	createCardsResponseFieldSecrets         = big.NewInt(1 << 11)
+	createCardsResponseFieldSpentLastMonth  = big.NewInt(1 << 12)
+	createCardsResponseFieldStatus          = big.NewInt(1 << 13)
+	createCardsResponseFieldType            = big.NewInt(1 << 14)
+	createCardsResponseFieldUserID          = big.NewInt(1 << 15)
 )
 
 // createCardsResponseNullableFields maps the wire names of CreateCardsResponse's nullable fields (required or optional) to their field bits.
@@ -647,6 +648,8 @@ type CreateCardsResponse struct {
 	ExpirationYear *string `json:"expiration_year,omitempty" url:"expiration_year,omitempty"`
 	// Card ID, prefixed `icrd_`.
 	ID string `json:"id" url:"id"`
+	// `true` once the issuer has issued the card. `false` for an invited card still waiting on its cardholder's onboarding or review, or one the issuer declined; it has no card number until it is issued.
+	Issued bool `json:"issued" url:"issued"`
 	// Last four digits of the card number. `null` for pending invitation cards.
 	Last4 *string `json:"last4,omitempty" url:"last4,omitempty"`
 	// The spending limit configuration.
@@ -712,6 +715,13 @@ func (c *CreateCardsResponse) GetID() string {
 		return ""
 	}
 	return c.ID
+}
+
+func (c *CreateCardsResponse) GetIssued() bool {
+	if c == nil {
+		return false
+	}
+	return c.Issued
 }
 
 func (c *CreateCardsResponse) GetLast4() *string {
@@ -833,6 +843,13 @@ func (c *CreateCardsResponse) SetExpirationYear(expirationYear *string) {
 func (c *CreateCardsResponse) SetID(id string) {
 	c.ID = id
 	c.require(createCardsResponseFieldID)
+}
+
+// SetIssued sets the Issued field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateCardsResponse) SetIssued(issued bool) {
+	c.Issued = issued
+	c.require(createCardsResponseFieldIssued)
 }
 
 // SetLast4 sets the Last4 field and marks it as non-optional;
@@ -1605,15 +1622,16 @@ var (
 	listCardsResponseDataItemFieldExpirationMonth = big.NewInt(1 << 3)
 	listCardsResponseDataItemFieldExpirationYear  = big.NewInt(1 << 4)
 	listCardsResponseDataItemFieldID              = big.NewInt(1 << 5)
-	listCardsResponseDataItemFieldLast4           = big.NewInt(1 << 6)
-	listCardsResponseDataItemFieldLimit           = big.NewInt(1 << 7)
-	listCardsResponseDataItemFieldName            = big.NewInt(1 << 8)
-	listCardsResponseDataItemFieldObject          = big.NewInt(1 << 9)
-	listCardsResponseDataItemFieldSecrets         = big.NewInt(1 << 10)
-	listCardsResponseDataItemFieldSpentLastMonth  = big.NewInt(1 << 11)
-	listCardsResponseDataItemFieldStatus          = big.NewInt(1 << 12)
-	listCardsResponseDataItemFieldType            = big.NewInt(1 << 13)
-	listCardsResponseDataItemFieldUserID          = big.NewInt(1 << 14)
+	listCardsResponseDataItemFieldIssued          = big.NewInt(1 << 6)
+	listCardsResponseDataItemFieldLast4           = big.NewInt(1 << 7)
+	listCardsResponseDataItemFieldLimit           = big.NewInt(1 << 8)
+	listCardsResponseDataItemFieldName            = big.NewInt(1 << 9)
+	listCardsResponseDataItemFieldObject          = big.NewInt(1 << 10)
+	listCardsResponseDataItemFieldSecrets         = big.NewInt(1 << 11)
+	listCardsResponseDataItemFieldSpentLastMonth  = big.NewInt(1 << 12)
+	listCardsResponseDataItemFieldStatus          = big.NewInt(1 << 13)
+	listCardsResponseDataItemFieldType            = big.NewInt(1 << 14)
+	listCardsResponseDataItemFieldUserID          = big.NewInt(1 << 15)
 )
 
 // listCardsResponseDataItemNullableFields maps the wire names of ListCardsResponseDataItem's nullable fields (required or optional) to their field bits.
@@ -1646,6 +1664,8 @@ type ListCardsResponseDataItem struct {
 	ExpirationYear *string `json:"expiration_year,omitempty" url:"expiration_year,omitempty"`
 	// Card ID, prefixed `icrd_`.
 	ID string `json:"id" url:"id"`
+	// `true` once the issuer has issued the card. `false` for an invited card still waiting on its cardholder's onboarding or review, or one the issuer declined; it has no card number until it is issued.
+	Issued bool `json:"issued" url:"issued"`
 	// Last four digits of the card number. `null` for pending invitation cards.
 	Last4 *string `json:"last4,omitempty" url:"last4,omitempty"`
 	// The spending limit configuration.
@@ -1711,6 +1731,13 @@ func (l *ListCardsResponseDataItem) GetID() string {
 		return ""
 	}
 	return l.ID
+}
+
+func (l *ListCardsResponseDataItem) GetIssued() bool {
+	if l == nil {
+		return false
+	}
+	return l.Issued
 }
 
 func (l *ListCardsResponseDataItem) GetLast4() *string {
@@ -1832,6 +1859,13 @@ func (l *ListCardsResponseDataItem) SetExpirationYear(expirationYear *string) {
 func (l *ListCardsResponseDataItem) SetID(id string) {
 	l.ID = id
 	l.require(listCardsResponseDataItemFieldID)
+}
+
+// SetIssued sets the Issued field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCardsResponseDataItem) SetIssued(issued bool) {
+	l.Issued = issued
+	l.require(listCardsResponseDataItemFieldIssued)
 }
 
 // SetLast4 sets the Last4 field and marks it as non-optional;
@@ -4664,15 +4698,16 @@ var (
 	postCardCanceledPayloadDataFieldExpirationMonth = big.NewInt(1 << 3)
 	postCardCanceledPayloadDataFieldExpirationYear  = big.NewInt(1 << 4)
 	postCardCanceledPayloadDataFieldID              = big.NewInt(1 << 5)
-	postCardCanceledPayloadDataFieldLast4           = big.NewInt(1 << 6)
-	postCardCanceledPayloadDataFieldLimit           = big.NewInt(1 << 7)
-	postCardCanceledPayloadDataFieldName            = big.NewInt(1 << 8)
-	postCardCanceledPayloadDataFieldObject          = big.NewInt(1 << 9)
-	postCardCanceledPayloadDataFieldSecrets         = big.NewInt(1 << 10)
-	postCardCanceledPayloadDataFieldSpentLastMonth  = big.NewInt(1 << 11)
-	postCardCanceledPayloadDataFieldStatus          = big.NewInt(1 << 12)
-	postCardCanceledPayloadDataFieldType            = big.NewInt(1 << 13)
-	postCardCanceledPayloadDataFieldUserID          = big.NewInt(1 << 14)
+	postCardCanceledPayloadDataFieldIssued          = big.NewInt(1 << 6)
+	postCardCanceledPayloadDataFieldLast4           = big.NewInt(1 << 7)
+	postCardCanceledPayloadDataFieldLimit           = big.NewInt(1 << 8)
+	postCardCanceledPayloadDataFieldName            = big.NewInt(1 << 9)
+	postCardCanceledPayloadDataFieldObject          = big.NewInt(1 << 10)
+	postCardCanceledPayloadDataFieldSecrets         = big.NewInt(1 << 11)
+	postCardCanceledPayloadDataFieldSpentLastMonth  = big.NewInt(1 << 12)
+	postCardCanceledPayloadDataFieldStatus          = big.NewInt(1 << 13)
+	postCardCanceledPayloadDataFieldType            = big.NewInt(1 << 14)
+	postCardCanceledPayloadDataFieldUserID          = big.NewInt(1 << 15)
 )
 
 // postCardCanceledPayloadDataNullableFields maps the wire names of PostCardCanceledPayloadData's nullable fields (required or optional) to their field bits.
@@ -4705,6 +4740,8 @@ type PostCardCanceledPayloadData struct {
 	ExpirationYear *string `json:"expiration_year,omitempty" url:"expiration_year,omitempty"`
 	// Card ID, prefixed `icrd_`.
 	ID string `json:"id" url:"id"`
+	// `true` once the issuer has issued the card. `false` for an invited card still waiting on its cardholder's onboarding or review, or one the issuer declined; it has no card number until it is issued.
+	Issued bool `json:"issued" url:"issued"`
 	// Last four digits of the card number. `null` for pending invitation cards.
 	Last4 *string `json:"last4,omitempty" url:"last4,omitempty"`
 	// The spending limit configuration.
@@ -4770,6 +4807,13 @@ func (p *PostCardCanceledPayloadData) GetID() string {
 		return ""
 	}
 	return p.ID
+}
+
+func (p *PostCardCanceledPayloadData) GetIssued() bool {
+	if p == nil {
+		return false
+	}
+	return p.Issued
 }
 
 func (p *PostCardCanceledPayloadData) GetLast4() *string {
@@ -4891,6 +4935,13 @@ func (p *PostCardCanceledPayloadData) SetExpirationYear(expirationYear *string) 
 func (p *PostCardCanceledPayloadData) SetID(id string) {
 	p.ID = id
 	p.require(postCardCanceledPayloadDataFieldID)
+}
+
+// SetIssued sets the Issued field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostCardCanceledPayloadData) SetIssued(issued bool) {
+	p.Issued = issued
+	p.require(postCardCanceledPayloadDataFieldIssued)
 }
 
 // SetLast4 sets the Last4 field and marks it as non-optional;
@@ -5843,15 +5894,16 @@ var (
 	postCardCreatedPayloadDataFieldExpirationMonth = big.NewInt(1 << 3)
 	postCardCreatedPayloadDataFieldExpirationYear  = big.NewInt(1 << 4)
 	postCardCreatedPayloadDataFieldID              = big.NewInt(1 << 5)
-	postCardCreatedPayloadDataFieldLast4           = big.NewInt(1 << 6)
-	postCardCreatedPayloadDataFieldLimit           = big.NewInt(1 << 7)
-	postCardCreatedPayloadDataFieldName            = big.NewInt(1 << 8)
-	postCardCreatedPayloadDataFieldObject          = big.NewInt(1 << 9)
-	postCardCreatedPayloadDataFieldSecrets         = big.NewInt(1 << 10)
-	postCardCreatedPayloadDataFieldSpentLastMonth  = big.NewInt(1 << 11)
-	postCardCreatedPayloadDataFieldStatus          = big.NewInt(1 << 12)
-	postCardCreatedPayloadDataFieldType            = big.NewInt(1 << 13)
-	postCardCreatedPayloadDataFieldUserID          = big.NewInt(1 << 14)
+	postCardCreatedPayloadDataFieldIssued          = big.NewInt(1 << 6)
+	postCardCreatedPayloadDataFieldLast4           = big.NewInt(1 << 7)
+	postCardCreatedPayloadDataFieldLimit           = big.NewInt(1 << 8)
+	postCardCreatedPayloadDataFieldName            = big.NewInt(1 << 9)
+	postCardCreatedPayloadDataFieldObject          = big.NewInt(1 << 10)
+	postCardCreatedPayloadDataFieldSecrets         = big.NewInt(1 << 11)
+	postCardCreatedPayloadDataFieldSpentLastMonth  = big.NewInt(1 << 12)
+	postCardCreatedPayloadDataFieldStatus          = big.NewInt(1 << 13)
+	postCardCreatedPayloadDataFieldType            = big.NewInt(1 << 14)
+	postCardCreatedPayloadDataFieldUserID          = big.NewInt(1 << 15)
 )
 
 // postCardCreatedPayloadDataNullableFields maps the wire names of PostCardCreatedPayloadData's nullable fields (required or optional) to their field bits.
@@ -5884,6 +5936,8 @@ type PostCardCreatedPayloadData struct {
 	ExpirationYear *string `json:"expiration_year,omitempty" url:"expiration_year,omitempty"`
 	// Card ID, prefixed `icrd_`.
 	ID string `json:"id" url:"id"`
+	// `true` once the issuer has issued the card. `false` for an invited card still waiting on its cardholder's onboarding or review, or one the issuer declined; it has no card number until it is issued.
+	Issued bool `json:"issued" url:"issued"`
 	// Last four digits of the card number. `null` for pending invitation cards.
 	Last4 *string `json:"last4,omitempty" url:"last4,omitempty"`
 	// The spending limit configuration.
@@ -5949,6 +6003,13 @@ func (p *PostCardCreatedPayloadData) GetID() string {
 		return ""
 	}
 	return p.ID
+}
+
+func (p *PostCardCreatedPayloadData) GetIssued() bool {
+	if p == nil {
+		return false
+	}
+	return p.Issued
 }
 
 func (p *PostCardCreatedPayloadData) GetLast4() *string {
@@ -6070,6 +6131,13 @@ func (p *PostCardCreatedPayloadData) SetExpirationYear(expirationYear *string) {
 func (p *PostCardCreatedPayloadData) SetID(id string) {
 	p.ID = id
 	p.require(postCardCreatedPayloadDataFieldID)
+}
+
+// SetIssued sets the Issued field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostCardCreatedPayloadData) SetIssued(issued bool) {
+	p.Issued = issued
+	p.require(postCardCreatedPayloadDataFieldIssued)
 }
 
 // SetLast4 sets the Last4 field and marks it as non-optional;
@@ -7022,15 +7090,16 @@ var (
 	postCardFrozenPayloadDataFieldExpirationMonth = big.NewInt(1 << 3)
 	postCardFrozenPayloadDataFieldExpirationYear  = big.NewInt(1 << 4)
 	postCardFrozenPayloadDataFieldID              = big.NewInt(1 << 5)
-	postCardFrozenPayloadDataFieldLast4           = big.NewInt(1 << 6)
-	postCardFrozenPayloadDataFieldLimit           = big.NewInt(1 << 7)
-	postCardFrozenPayloadDataFieldName            = big.NewInt(1 << 8)
-	postCardFrozenPayloadDataFieldObject          = big.NewInt(1 << 9)
-	postCardFrozenPayloadDataFieldSecrets         = big.NewInt(1 << 10)
-	postCardFrozenPayloadDataFieldSpentLastMonth  = big.NewInt(1 << 11)
-	postCardFrozenPayloadDataFieldStatus          = big.NewInt(1 << 12)
-	postCardFrozenPayloadDataFieldType            = big.NewInt(1 << 13)
-	postCardFrozenPayloadDataFieldUserID          = big.NewInt(1 << 14)
+	postCardFrozenPayloadDataFieldIssued          = big.NewInt(1 << 6)
+	postCardFrozenPayloadDataFieldLast4           = big.NewInt(1 << 7)
+	postCardFrozenPayloadDataFieldLimit           = big.NewInt(1 << 8)
+	postCardFrozenPayloadDataFieldName            = big.NewInt(1 << 9)
+	postCardFrozenPayloadDataFieldObject          = big.NewInt(1 << 10)
+	postCardFrozenPayloadDataFieldSecrets         = big.NewInt(1 << 11)
+	postCardFrozenPayloadDataFieldSpentLastMonth  = big.NewInt(1 << 12)
+	postCardFrozenPayloadDataFieldStatus          = big.NewInt(1 << 13)
+	postCardFrozenPayloadDataFieldType            = big.NewInt(1 << 14)
+	postCardFrozenPayloadDataFieldUserID          = big.NewInt(1 << 15)
 )
 
 // postCardFrozenPayloadDataNullableFields maps the wire names of PostCardFrozenPayloadData's nullable fields (required or optional) to their field bits.
@@ -7063,6 +7132,8 @@ type PostCardFrozenPayloadData struct {
 	ExpirationYear *string `json:"expiration_year,omitempty" url:"expiration_year,omitempty"`
 	// Card ID, prefixed `icrd_`.
 	ID string `json:"id" url:"id"`
+	// `true` once the issuer has issued the card. `false` for an invited card still waiting on its cardholder's onboarding or review, or one the issuer declined; it has no card number until it is issued.
+	Issued bool `json:"issued" url:"issued"`
 	// Last four digits of the card number. `null` for pending invitation cards.
 	Last4 *string `json:"last4,omitempty" url:"last4,omitempty"`
 	// The spending limit configuration.
@@ -7128,6 +7199,13 @@ func (p *PostCardFrozenPayloadData) GetID() string {
 		return ""
 	}
 	return p.ID
+}
+
+func (p *PostCardFrozenPayloadData) GetIssued() bool {
+	if p == nil {
+		return false
+	}
+	return p.Issued
 }
 
 func (p *PostCardFrozenPayloadData) GetLast4() *string {
@@ -7249,6 +7327,13 @@ func (p *PostCardFrozenPayloadData) SetExpirationYear(expirationYear *string) {
 func (p *PostCardFrozenPayloadData) SetID(id string) {
 	p.ID = id
 	p.require(postCardFrozenPayloadDataFieldID)
+}
+
+// SetIssued sets the Issued field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostCardFrozenPayloadData) SetIssued(issued bool) {
+	p.Issued = issued
+	p.require(postCardFrozenPayloadDataFieldIssued)
 }
 
 // SetLast4 sets the Last4 field and marks it as non-optional;
@@ -9531,15 +9616,16 @@ var (
 	postCardUpdatedPayloadDataFieldExpirationMonth = big.NewInt(1 << 3)
 	postCardUpdatedPayloadDataFieldExpirationYear  = big.NewInt(1 << 4)
 	postCardUpdatedPayloadDataFieldID              = big.NewInt(1 << 5)
-	postCardUpdatedPayloadDataFieldLast4           = big.NewInt(1 << 6)
-	postCardUpdatedPayloadDataFieldLimit           = big.NewInt(1 << 7)
-	postCardUpdatedPayloadDataFieldName            = big.NewInt(1 << 8)
-	postCardUpdatedPayloadDataFieldObject          = big.NewInt(1 << 9)
-	postCardUpdatedPayloadDataFieldSecrets         = big.NewInt(1 << 10)
-	postCardUpdatedPayloadDataFieldSpentLastMonth  = big.NewInt(1 << 11)
-	postCardUpdatedPayloadDataFieldStatus          = big.NewInt(1 << 12)
-	postCardUpdatedPayloadDataFieldType            = big.NewInt(1 << 13)
-	postCardUpdatedPayloadDataFieldUserID          = big.NewInt(1 << 14)
+	postCardUpdatedPayloadDataFieldIssued          = big.NewInt(1 << 6)
+	postCardUpdatedPayloadDataFieldLast4           = big.NewInt(1 << 7)
+	postCardUpdatedPayloadDataFieldLimit           = big.NewInt(1 << 8)
+	postCardUpdatedPayloadDataFieldName            = big.NewInt(1 << 9)
+	postCardUpdatedPayloadDataFieldObject          = big.NewInt(1 << 10)
+	postCardUpdatedPayloadDataFieldSecrets         = big.NewInt(1 << 11)
+	postCardUpdatedPayloadDataFieldSpentLastMonth  = big.NewInt(1 << 12)
+	postCardUpdatedPayloadDataFieldStatus          = big.NewInt(1 << 13)
+	postCardUpdatedPayloadDataFieldType            = big.NewInt(1 << 14)
+	postCardUpdatedPayloadDataFieldUserID          = big.NewInt(1 << 15)
 )
 
 // postCardUpdatedPayloadDataNullableFields maps the wire names of PostCardUpdatedPayloadData's nullable fields (required or optional) to their field bits.
@@ -9572,6 +9658,8 @@ type PostCardUpdatedPayloadData struct {
 	ExpirationYear *string `json:"expiration_year,omitempty" url:"expiration_year,omitempty"`
 	// Card ID, prefixed `icrd_`.
 	ID string `json:"id" url:"id"`
+	// `true` once the issuer has issued the card. `false` for an invited card still waiting on its cardholder's onboarding or review, or one the issuer declined; it has no card number until it is issued.
+	Issued bool `json:"issued" url:"issued"`
 	// Last four digits of the card number. `null` for pending invitation cards.
 	Last4 *string `json:"last4,omitempty" url:"last4,omitempty"`
 	// The spending limit configuration.
@@ -9637,6 +9725,13 @@ func (p *PostCardUpdatedPayloadData) GetID() string {
 		return ""
 	}
 	return p.ID
+}
+
+func (p *PostCardUpdatedPayloadData) GetIssued() bool {
+	if p == nil {
+		return false
+	}
+	return p.Issued
 }
 
 func (p *PostCardUpdatedPayloadData) GetLast4() *string {
@@ -9758,6 +9853,13 @@ func (p *PostCardUpdatedPayloadData) SetExpirationYear(expirationYear *string) {
 func (p *PostCardUpdatedPayloadData) SetID(id string) {
 	p.ID = id
 	p.require(postCardUpdatedPayloadDataFieldID)
+}
+
+// SetIssued sets the Issued field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostCardUpdatedPayloadData) SetIssued(issued bool) {
+	p.Issued = issued
+	p.require(postCardUpdatedPayloadDataFieldIssued)
 }
 
 // SetLast4 sets the Last4 field and marks it as non-optional;
@@ -10464,15 +10566,16 @@ var (
 	retrieveCardsResponseFieldExpirationMonth = big.NewInt(1 << 3)
 	retrieveCardsResponseFieldExpirationYear  = big.NewInt(1 << 4)
 	retrieveCardsResponseFieldID              = big.NewInt(1 << 5)
-	retrieveCardsResponseFieldLast4           = big.NewInt(1 << 6)
-	retrieveCardsResponseFieldLimit           = big.NewInt(1 << 7)
-	retrieveCardsResponseFieldName            = big.NewInt(1 << 8)
-	retrieveCardsResponseFieldObject          = big.NewInt(1 << 9)
-	retrieveCardsResponseFieldSecrets         = big.NewInt(1 << 10)
-	retrieveCardsResponseFieldSpentLastMonth  = big.NewInt(1 << 11)
-	retrieveCardsResponseFieldStatus          = big.NewInt(1 << 12)
-	retrieveCardsResponseFieldType            = big.NewInt(1 << 13)
-	retrieveCardsResponseFieldUserID          = big.NewInt(1 << 14)
+	retrieveCardsResponseFieldIssued          = big.NewInt(1 << 6)
+	retrieveCardsResponseFieldLast4           = big.NewInt(1 << 7)
+	retrieveCardsResponseFieldLimit           = big.NewInt(1 << 8)
+	retrieveCardsResponseFieldName            = big.NewInt(1 << 9)
+	retrieveCardsResponseFieldObject          = big.NewInt(1 << 10)
+	retrieveCardsResponseFieldSecrets         = big.NewInt(1 << 11)
+	retrieveCardsResponseFieldSpentLastMonth  = big.NewInt(1 << 12)
+	retrieveCardsResponseFieldStatus          = big.NewInt(1 << 13)
+	retrieveCardsResponseFieldType            = big.NewInt(1 << 14)
+	retrieveCardsResponseFieldUserID          = big.NewInt(1 << 15)
 )
 
 // retrieveCardsResponseNullableFields maps the wire names of RetrieveCardsResponse's nullable fields (required or optional) to their field bits.
@@ -10505,6 +10608,8 @@ type RetrieveCardsResponse struct {
 	ExpirationYear *string `json:"expiration_year,omitempty" url:"expiration_year,omitempty"`
 	// Card ID, prefixed `icrd_`.
 	ID string `json:"id" url:"id"`
+	// `true` once the issuer has issued the card. `false` for an invited card still waiting on its cardholder's onboarding or review, or one the issuer declined; it has no card number until it is issued.
+	Issued bool `json:"issued" url:"issued"`
 	// Last four digits of the card number. `null` for pending invitation cards.
 	Last4 *string `json:"last4,omitempty" url:"last4,omitempty"`
 	// The spending limit configuration.
@@ -10570,6 +10675,13 @@ func (r *RetrieveCardsResponse) GetID() string {
 		return ""
 	}
 	return r.ID
+}
+
+func (r *RetrieveCardsResponse) GetIssued() bool {
+	if r == nil {
+		return false
+	}
+	return r.Issued
 }
 
 func (r *RetrieveCardsResponse) GetLast4() *string {
@@ -10691,6 +10803,13 @@ func (r *RetrieveCardsResponse) SetExpirationYear(expirationYear *string) {
 func (r *RetrieveCardsResponse) SetID(id string) {
 	r.ID = id
 	r.require(retrieveCardsResponseFieldID)
+}
+
+// SetIssued sets the Issued field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveCardsResponse) SetIssued(issued bool) {
+	r.Issued = issued
+	r.require(retrieveCardsResponseFieldIssued)
 }
 
 // SetLast4 sets the Last4 field and marks it as non-optional;
@@ -11718,15 +11837,16 @@ var (
 	updateCardsResponseFieldExpirationMonth = big.NewInt(1 << 3)
 	updateCardsResponseFieldExpirationYear  = big.NewInt(1 << 4)
 	updateCardsResponseFieldID              = big.NewInt(1 << 5)
-	updateCardsResponseFieldLast4           = big.NewInt(1 << 6)
-	updateCardsResponseFieldLimit           = big.NewInt(1 << 7)
-	updateCardsResponseFieldName            = big.NewInt(1 << 8)
-	updateCardsResponseFieldObject          = big.NewInt(1 << 9)
-	updateCardsResponseFieldSecrets         = big.NewInt(1 << 10)
-	updateCardsResponseFieldSpentLastMonth  = big.NewInt(1 << 11)
-	updateCardsResponseFieldStatus          = big.NewInt(1 << 12)
-	updateCardsResponseFieldType            = big.NewInt(1 << 13)
-	updateCardsResponseFieldUserID          = big.NewInt(1 << 14)
+	updateCardsResponseFieldIssued          = big.NewInt(1 << 6)
+	updateCardsResponseFieldLast4           = big.NewInt(1 << 7)
+	updateCardsResponseFieldLimit           = big.NewInt(1 << 8)
+	updateCardsResponseFieldName            = big.NewInt(1 << 9)
+	updateCardsResponseFieldObject          = big.NewInt(1 << 10)
+	updateCardsResponseFieldSecrets         = big.NewInt(1 << 11)
+	updateCardsResponseFieldSpentLastMonth  = big.NewInt(1 << 12)
+	updateCardsResponseFieldStatus          = big.NewInt(1 << 13)
+	updateCardsResponseFieldType            = big.NewInt(1 << 14)
+	updateCardsResponseFieldUserID          = big.NewInt(1 << 15)
 )
 
 // updateCardsResponseNullableFields maps the wire names of UpdateCardsResponse's nullable fields (required or optional) to their field bits.
@@ -11759,6 +11879,8 @@ type UpdateCardsResponse struct {
 	ExpirationYear *string `json:"expiration_year,omitempty" url:"expiration_year,omitempty"`
 	// Card ID, prefixed `icrd_`.
 	ID string `json:"id" url:"id"`
+	// `true` once the issuer has issued the card. `false` for an invited card still waiting on its cardholder's onboarding or review, or one the issuer declined; it has no card number until it is issued.
+	Issued bool `json:"issued" url:"issued"`
 	// Last four digits of the card number. `null` for pending invitation cards.
 	Last4 *string `json:"last4,omitempty" url:"last4,omitempty"`
 	// The spending limit configuration.
@@ -11824,6 +11946,13 @@ func (u *UpdateCardsResponse) GetID() string {
 		return ""
 	}
 	return u.ID
+}
+
+func (u *UpdateCardsResponse) GetIssued() bool {
+	if u == nil {
+		return false
+	}
+	return u.Issued
 }
 
 func (u *UpdateCardsResponse) GetLast4() *string {
@@ -11945,6 +12074,13 @@ func (u *UpdateCardsResponse) SetExpirationYear(expirationYear *string) {
 func (u *UpdateCardsResponse) SetID(id string) {
 	u.ID = id
 	u.require(updateCardsResponseFieldID)
+}
+
+// SetIssued sets the Issued field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCardsResponse) SetIssued(issued bool) {
+	u.Issued = issued
+	u.require(updateCardsResponseFieldIssued)
 }
 
 // SetLast4 sets the Last4 field and marks it as non-optional;
