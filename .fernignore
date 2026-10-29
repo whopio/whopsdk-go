@@ -40,3 +40,10 @@ LICENSE
 .fern/replay.lock
 .fern/replay.yml
 .gitattributes
+
+# oidc/ is the hand-written OIDC helper package: oidc.NewHTTPClient returns a client for
+# option.WithHTTPClient that trades a cloud provider's identity token for a short-lived Whop
+# access token, renews it, and fails the request with the exchange's error instead of sending it
+# unauthenticated. It uses only the standard library and no generated code, and Go compiles any
+# package directory, so nothing generated has to import it.
+oidc/
