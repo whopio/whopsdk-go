@@ -90,7 +90,7 @@ type CreatePasskeysRequest struct {
 	// The `getTransports()` result from the registration response. Values Whop does not recognize are dropped.
 	Transports []string `json:"transports,omitempty" url:"-"`
 	// The `creation_options.user.id` the passkey was created with. Must match the challenge's options.
-	UserHandle *string `json:"user_handle,omitempty" url:"-"`
+	UserHandle string `json:"user_handle" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -142,7 +142,7 @@ func (c *CreatePasskeysRequest) SetTransports(transports []string) {
 
 // SetUserHandle sets the UserHandle field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePasskeysRequest) SetUserHandle(userHandle *string) {
+func (c *CreatePasskeysRequest) SetUserHandle(userHandle string) {
 	c.UserHandle = userHandle
 	c.require(createPasskeysRequestFieldUserHandle)
 }
