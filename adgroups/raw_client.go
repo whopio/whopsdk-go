@@ -56,9 +56,6 @@ func (r *RawClient) Create(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
-	if request.AdsPlatform != nil {
-		headers.Add("X-Ads-Platform", string(*request.AdsPlatform))
-	}
 	headers.Add("Content-Type", "application/json")
 	var response *whopsdk.AdGroup
 	raw, err := r.caller.Call(
@@ -81,115 +78,6 @@ func (r *RawClient) Create(
 		return nil, err
 	}
 	return &core.Response[*whopsdk.AdGroup]{
-		StatusCode: raw.StatusCode,
-		Header:     raw.Header,
-		Body:       response,
-	}, nil
-}
-
-func (r *RawClient) EstimateReach(
-	ctx context.Context,
-	request *whopsdk.EstimateReachAdGroupsRequest,
-	opts ...option.RequestOption,
-) (*core.Response[*whopsdk.ReachEstimate], error) {
-	options := core.NewRequestOptions(opts...)
-	baseURL := internal.ResolveBaseURL(
-		options.BaseURL,
-		internal.ResolveEnvironmentBaseURL(
-			options.Environment,
-			"API",
-		),
-		r.baseURL,
-		internal.ResolveEnvironmentBaseURL(
-			r.options.Environment,
-			"API",
-		),
-		"https://api.whop.com/api/v1",
-	)
-	endpointURL := baseURL + "/ad_groups/estimate_reach"
-	headers := internal.MergeHeaders(
-		r.options.ToHeader(),
-		options.ToHeader(),
-	)
-	headers.Add("Content-Type", "application/json")
-	var response *whopsdk.ReachEstimate
-	raw, err := r.caller.Call(
-		ctx,
-		&internal.CallParams{
-			URL:             endpointURL,
-			Method:          http.MethodPost,
-			Headers:         headers,
-			MaxAttempts:     options.MaxAttempts,
-			DisableRetries:  options.DisableRetries,
-			BodyProperties:  options.BodyProperties,
-			QueryParameters: options.QueryParameters,
-			Client:          options.HTTPClient,
-			Request:         request,
-			Response:        &response,
-			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
-		},
-	)
-	if err != nil {
-		return nil, err
-	}
-	return &core.Response[*whopsdk.ReachEstimate]{
-		StatusCode: raw.StatusCode,
-		Header:     raw.Header,
-		Body:       response,
-	}, nil
-}
-
-func (r *RawClient) SearchTargetingOptions(
-	ctx context.Context,
-	request *whopsdk.SearchTargetingOptionsAdGroupsRequest,
-	opts ...option.RequestOption,
-) (*core.Response[*whopsdk.SearchTargetingOptionsAdGroupsResponse], error) {
-	options := core.NewRequestOptions(opts...)
-	baseURL := internal.ResolveBaseURL(
-		options.BaseURL,
-		internal.ResolveEnvironmentBaseURL(
-			options.Environment,
-			"API",
-		),
-		r.baseURL,
-		internal.ResolveEnvironmentBaseURL(
-			r.options.Environment,
-			"API",
-		),
-		"https://api.whop.com/api/v1",
-	)
-	endpointURL := baseURL + "/ad_groups/targeting_options"
-	queryParams, err := internal.QueryValues(request)
-	if err != nil {
-		return nil, err
-	}
-	if len(queryParams) > 0 {
-		endpointURL += "?" + queryParams.Encode()
-	}
-	headers := internal.MergeHeaders(
-		r.options.ToHeader(),
-		options.ToHeader(),
-	)
-	var response *whopsdk.SearchTargetingOptionsAdGroupsResponse
-	raw, err := r.caller.Call(
-		ctx,
-		&internal.CallParams{
-			URL:             endpointURL,
-			Method:          http.MethodGet,
-			Headers:         headers,
-			MaxAttempts:     options.MaxAttempts,
-			DisableRetries:  options.DisableRetries,
-			BodyProperties:  options.BodyProperties,
-			QueryParameters: options.QueryParameters,
-			Client:          options.HTTPClient,
-			Response:        &response,
-			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
-		},
-	)
-	if err != nil {
-		return nil, err
-	}
-	return &core.Response[*whopsdk.SearchTargetingOptionsAdGroupsResponse]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,
@@ -336,9 +224,6 @@ func (r *RawClient) Update(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
-	if request.AdsPlatform != nil {
-		headers.Add("X-Ads-Platform", string(*request.AdsPlatform))
-	}
 	headers.Add("Content-Type", "application/json")
 	var response *whopsdk.AdGroup
 	raw, err := r.caller.Call(

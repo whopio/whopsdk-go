@@ -6009,6 +6009,13 @@ func TestEnumAPIKeyAPIVersionDate(t *testing.T) {
 		assert.Equal(t, APIKeyAPIVersionDate("2026-10-29"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_2026_10_29_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-29-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-29-1"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewAPIKeyAPIVersionDateFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -6618,6 +6625,13 @@ func TestEnumCreateAPIKeysRequestAPIVersionDate(t *testing.T) {
 		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-29")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-29"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_29_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-29-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-29-1"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -7395,6 +7409,13 @@ func TestEnumUpdateAPIKeysRequestAPIVersionDate(t *testing.T) {
 		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-29")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-29"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_29_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-29-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-29-1"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {

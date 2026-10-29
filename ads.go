@@ -11,29 +11,26 @@ import (
 )
 
 var (
-	createAdsRequestFieldAdsPlatform   = big.NewInt(1 << 0)
-	createAdsRequestFieldAdGroup       = big.NewInt(1 << 1)
-	createAdsRequestFieldAdGroupID     = big.NewInt(1 << 2)
-	createAdsRequestFieldCallToAction  = big.NewInt(1 << 3)
-	createAdsRequestFieldCreatives     = big.NewInt(1 << 4)
-	createAdsRequestFieldDescriptions  = big.NewInt(1 << 5)
-	createAdsRequestFieldHeadlines     = big.NewInt(1 << 6)
-	createAdsRequestFieldPrimaryTexts  = big.NewInt(1 << 7)
-	createAdsRequestFieldTitle         = big.NewInt(1 << 8)
-	createAdsRequestFieldURL           = big.NewInt(1 << 9)
-	createAdsRequestFieldURLParameters = big.NewInt(1 << 10)
+	createAdsRequestFieldAdGroup       = big.NewInt(1 << 0)
+	createAdsRequestFieldAdGroupID     = big.NewInt(1 << 1)
+	createAdsRequestFieldCallToAction  = big.NewInt(1 << 2)
+	createAdsRequestFieldCreatives     = big.NewInt(1 << 3)
+	createAdsRequestFieldDescriptions  = big.NewInt(1 << 4)
+	createAdsRequestFieldHeadlines     = big.NewInt(1 << 5)
+	createAdsRequestFieldPrimaryTexts  = big.NewInt(1 << 6)
+	createAdsRequestFieldTitle         = big.NewInt(1 << 7)
+	createAdsRequestFieldURL           = big.NewInt(1 << 8)
+	createAdsRequestFieldURLParameters = big.NewInt(1 << 9)
 )
 
 type CreateAdsRequest struct {
-	// The platform returned when you last retrieved the campaign, ad group, or ad. A different current platform rejects the request with campaign_changed; retrieve the resource again before editing. Required after a delivery-platform migration when creating ads or ad groups, or changing fields other than title, status, budget, and account scope.
-	AdsPlatform *CreateAdsRequestXAdsPlatform `json:"-" url:"-"`
 	// An inline ad group to create (same shape as POST /ad_groups, including ad_campaign_id). Creates the ad group and the ad together. Provide this OR ad_group_id.
 	AdGroup map[string]any `json:"ad_group,omitempty" url:"-"`
 	// The existing ad group to create the ad in. Provide this OR ad_group, not both.
 	AdGroupID *string `json:"ad_group_id,omitempty" url:"-"`
 	// The call-to-action button shown on the ad.
 	CallToAction *CreateAdsRequestCallToAction `json:"call_to_action,omitempty" url:"-"`
-	// The ad's creative assets. Each entry is an uploaded file id with an optional format; omit format for the original asset. Entries with no format become a carousel's ordered cards, sharing the ad's copy — 2-10 of them on Meta, while TikTok runs even a single image as a one-card carousel.
+	// The ad's creative assets. Each entry is an uploaded file id with an optional format; omit format for the original asset. Entries with no format become a carousel's ordered cards, sharing the ad's copy.
 	Creatives []*CreateAdsRequestCreativesItem `json:"creatives,omitempty" url:"-"`
 	// The description shown on the ad.
 	Descriptions []*CreateAdsRequestDescriptionsItem `json:"descriptions,omitempty" url:"-"`
@@ -45,7 +42,7 @@ type CreateAdsRequest struct {
 	Title *string `json:"title,omitempty" url:"-"`
 	// The URL the ad links to. Query parameters are merged into url_parameters, so the stored URL is always bare.
 	URL *string `json:"url,omitempty" url:"-"`
-	// Query parameters to append to the destination URL, keyed by parameter name. Merged with any query string on `url`. Whop adds its own click-attribution parameters; those are reserved and rejected if you set them. Which keys are reserved depends on the ad's network — Meta: utm_meta_ad_id, utm_meta_adset_id, utm_meta_campaign_id, utm_source, utm_placement, utm_medium, utm_content, utm_adset, utm_whop, wacid, wasid, waid, tw_source, tw_adid; TikTok: waid, wasid, wacid, ad_id, adset_id, campaign_id, utm_source, utm_medium, utm_placement, utm_whop, tw_source, tw_adid.
+	// Query parameters to append to the destination URL, keyed by parameter name. Merged with any query string on `url`. Whop adds its own click-attribution parameters; those are reserved, and setting one returns an error that names it.
 	URLParameters map[string]any `json:"url_parameters,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -59,13 +56,6 @@ func (c *CreateAdsRequest) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	c.explicitFields = next
-}
-
-// SetAdsPlatform sets the AdsPlatform field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequest) SetAdsPlatform(adsPlatform *CreateAdsRequestXAdsPlatform) {
-	c.AdsPlatform = adsPlatform
-	c.require(createAdsRequestFieldAdsPlatform)
 }
 
 // SetAdGroup sets the AdGroup field and marks it as non-optional;
@@ -706,30 +696,29 @@ var (
 	adFieldLeadValue                    = big.NewInt(1 << 35)
 	adFieldLeads                        = big.NewInt(1 << 36)
 	adFieldLinkClicks                   = big.NewInt(1 << 37)
-	adFieldPostID                       = big.NewInt(1 << 38)
-	adFieldPrimaryTexts                 = big.NewInt(1 << 39)
-	adFieldPurchaseValue                = big.NewInt(1 << 40)
-	adFieldPurchases                    = big.NewInt(1 << 41)
-	adFieldReach                        = big.NewInt(1 << 42)
-	adFieldResultEvent                  = big.NewInt(1 << 43)
-	adFieldResultEventName              = big.NewInt(1 << 44)
-	adFieldResults                      = big.NewInt(1 << 45)
-	adFieldReturnOnAdSpend              = big.NewInt(1 << 46)
-	adFieldScheduleValue                = big.NewInt(1 << 47)
-	adFieldSchedules                    = big.NewInt(1 << 48)
-	adFieldSpend                        = big.NewInt(1 << 49)
-	adFieldSpendCurrency                = big.NewInt(1 << 50)
-	adFieldStatus                       = big.NewInt(1 << 51)
-	adFieldSubmittedApplicationValue    = big.NewInt(1 << 52)
-	adFieldSubmittedApplications        = big.NewInt(1 << 53)
-	adFieldTitle                        = big.NewInt(1 << 54)
-	adFieldUniqueClickThroughRate       = big.NewInt(1 << 55)
-	adFieldUniqueClicks                 = big.NewInt(1 << 56)
-	adFieldUpdatedAt                    = big.NewInt(1 << 57)
-	adFieldURL                          = big.NewInt(1 << 58)
-	adFieldURLParameters                = big.NewInt(1 << 59)
-	adFieldViewedContentValue           = big.NewInt(1 << 60)
-	adFieldViewedContents               = big.NewInt(1 << 61)
+	adFieldPrimaryTexts                 = big.NewInt(1 << 38)
+	adFieldPurchaseValue                = big.NewInt(1 << 39)
+	adFieldPurchases                    = big.NewInt(1 << 40)
+	adFieldReach                        = big.NewInt(1 << 41)
+	adFieldResultEvent                  = big.NewInt(1 << 42)
+	adFieldResultEventName              = big.NewInt(1 << 43)
+	adFieldResults                      = big.NewInt(1 << 44)
+	adFieldReturnOnAdSpend              = big.NewInt(1 << 45)
+	adFieldScheduleValue                = big.NewInt(1 << 46)
+	adFieldSchedules                    = big.NewInt(1 << 47)
+	adFieldSpend                        = big.NewInt(1 << 48)
+	adFieldSpendCurrency                = big.NewInt(1 << 49)
+	adFieldStatus                       = big.NewInt(1 << 50)
+	adFieldSubmittedApplicationValue    = big.NewInt(1 << 51)
+	adFieldSubmittedApplications        = big.NewInt(1 << 52)
+	adFieldTitle                        = big.NewInt(1 << 53)
+	adFieldUniqueClickThroughRate       = big.NewInt(1 << 54)
+	adFieldUniqueClicks                 = big.NewInt(1 << 55)
+	adFieldUpdatedAt                    = big.NewInt(1 << 56)
+	adFieldURL                          = big.NewInt(1 << 57)
+	adFieldURLParameters                = big.NewInt(1 << 58)
+	adFieldViewedContentValue           = big.NewInt(1 << 59)
+	adFieldViewedContents               = big.NewInt(1 << 60)
 )
 
 // adNullableFields maps the wire names of Ad's nullable fields (required or optional) to their field bits.
@@ -746,7 +735,6 @@ var adNullableFields = map[string]*big.Int{
 	"cost_per_unique_click":           adFieldCostPerUniqueClick,
 	"cost_per_viewed_content":         adFieldCostPerViewedContent,
 	"frequency":                       adFieldFrequency,
-	"post_id":                         adFieldPostID,
 	"result_event":                    adFieldResultEvent,
 	"result_event_name":               adFieldResultEventName,
 	"results":                         adFieldResults,
@@ -815,7 +803,7 @@ type Ad struct {
 	// Whether the ad is delivering right now, and if not, why. When several states apply at once, the highest-precedence one is returned.
 	DeliveryStatus AdDeliveryStatus `json:"delivery_status" url:"delivery_status"`
 	Descriptions   []*AdText        `json:"descriptions" url:"descriptions"`
-	// Platform-reported impressions divided by reach.
+	// Impressions divided by reach.
 	Frequency *float64  `json:"frequency,omitempty" url:"frequency,omitempty"`
 	Headlines []*AdText `json:"headlines" url:"headlines"`
 	// Unique identifier for the ad, prefixed `ad_`.
@@ -828,9 +816,7 @@ type Ad struct {
 	// Whop pixel-attributed leads, last-click.
 	Leads float64 `json:"leads" url:"leads"`
 	// Page views on your destination from people who clicked the ad, recorded by the Whop pixel. Counted the same way on every ad platform.
-	LinkClicks float64 `json:"link_clicks" url:"link_clicks"`
-	// The post the ad network serves for this ad, as `pageID_postID` on Meta — the post Meta created for an uploaded creative, or the post being promoted. Use it to open the live post. `null` until the network has created the post.
-	PostID       *string   `json:"post_id,omitempty" url:"post_id,omitempty"`
+	LinkClicks   float64   `json:"link_clicks" url:"link_clicks"`
 	PrimaryTexts []*AdText `json:"primary_texts" url:"primary_texts"`
 	// USD value of pixel-attributed purchases.
 	PurchaseValue float64 `json:"purchase_value" url:"purchase_value"`
@@ -870,7 +856,7 @@ type Ad struct {
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
 	// The URL the ad links to, without its query string. Parameters belong in `url_parameters`; any you send on `url` are moved there.
 	URL *string `json:"url,omitempty" url:"url,omitempty"`
-	// Every query parameter appended to the URL, keyed by parameter name — including any you sent on `url` itself. Whop adds its own click-attribution parameters on top; those are reserved and rejected if you set them. Which keys are reserved depends on the ad's network — Meta: utm_meta_ad_id, utm_meta_adset_id, utm_meta_campaign_id, utm_source, utm_placement, utm_medium, utm_content, utm_adset, utm_whop, wacid, wasid, waid, tw_source, tw_adid; TikTok: waid, wasid, wacid, ad_id, adset_id, campaign_id, utm_source, utm_medium, utm_placement, utm_whop, tw_source, tw_adid.
+	// Every query parameter appended to the URL, keyed by parameter name — including any you sent on `url` itself. Whop adds its own click-attribution parameters; those are reserved, and setting one returns an error that names it.
 	URLParameters map[string]any `json:"url_parameters" url:"url_parameters"`
 	// USD value attributed to view-content events. Sums the value sent with each event, normalized to USD; events without a value contribute 0.
 	ViewedContentValue float64 `json:"viewed_content_value" url:"viewed_content_value"`
@@ -1148,13 +1134,6 @@ func (a *Ad) GetLinkClicks() float64 {
 		return 0
 	}
 	return a.LinkClicks
-}
-
-func (a *Ad) GetPostID() *string {
-	if a == nil {
-		return nil
-	}
-	return a.PostID
 }
 
 func (a *Ad) GetPrimaryTexts() []*AdText {
@@ -1598,13 +1577,6 @@ func (a *Ad) SetLeads(leads float64) {
 func (a *Ad) SetLinkClicks(linkClicks float64) {
 	a.LinkClicks = linkClicks
 	a.require(adFieldLinkClicks)
-}
-
-// SetPostID sets the PostID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *Ad) SetPostID(postID *string) {
-	a.PostID = postID
-	a.require(adFieldPostID)
 }
 
 // SetPrimaryTexts sets the PrimaryTexts field and marks it as non-optional;
@@ -3358,31 +3330,6 @@ func (c *CreateAdsRequestPrimaryTextsItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-type CreateAdsRequestXAdsPlatform string
-
-const (
-	CreateAdsRequestXAdsPlatformMeta   CreateAdsRequestXAdsPlatform = "meta"
-	CreateAdsRequestXAdsPlatformGoogle CreateAdsRequestXAdsPlatform = "google"
-	CreateAdsRequestXAdsPlatformTiktok CreateAdsRequestXAdsPlatform = "tiktok"
-)
-
-func NewCreateAdsRequestXAdsPlatformFromString(s string) (CreateAdsRequestXAdsPlatform, error) {
-	switch s {
-	case "meta":
-		return CreateAdsRequestXAdsPlatformMeta, nil
-	case "google":
-		return CreateAdsRequestXAdsPlatformGoogle, nil
-	case "tiktok":
-		return CreateAdsRequestXAdsPlatformTiktok, nil
-	}
-	var t CreateAdsRequestXAdsPlatform
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CreateAdsRequestXAdsPlatform) Ptr() *CreateAdsRequestXAdsPlatform {
-	return &c
-}
-
 var (
 	deleteAdsResponseFieldDeleted = big.NewInt(1 << 0)
 	deleteAdsResponseFieldID      = big.NewInt(1 << 1)
@@ -4212,19 +4159,17 @@ var (
 	postAdUpdatedPayloadDataFieldHeadlines      = big.NewInt(1 << 7)
 	postAdUpdatedPayloadDataFieldID             = big.NewInt(1 << 8)
 	postAdUpdatedPayloadDataFieldIssues         = big.NewInt(1 << 9)
-	postAdUpdatedPayloadDataFieldPostID         = big.NewInt(1 << 10)
-	postAdUpdatedPayloadDataFieldPrimaryTexts   = big.NewInt(1 << 11)
-	postAdUpdatedPayloadDataFieldStatus         = big.NewInt(1 << 12)
-	postAdUpdatedPayloadDataFieldTitle          = big.NewInt(1 << 13)
-	postAdUpdatedPayloadDataFieldUpdatedAt      = big.NewInt(1 << 14)
-	postAdUpdatedPayloadDataFieldURL            = big.NewInt(1 << 15)
-	postAdUpdatedPayloadDataFieldURLParameters  = big.NewInt(1 << 16)
+	postAdUpdatedPayloadDataFieldPrimaryTexts   = big.NewInt(1 << 10)
+	postAdUpdatedPayloadDataFieldStatus         = big.NewInt(1 << 11)
+	postAdUpdatedPayloadDataFieldTitle          = big.NewInt(1 << 12)
+	postAdUpdatedPayloadDataFieldUpdatedAt      = big.NewInt(1 << 13)
+	postAdUpdatedPayloadDataFieldURL            = big.NewInt(1 << 14)
+	postAdUpdatedPayloadDataFieldURLParameters  = big.NewInt(1 << 15)
 )
 
 // postAdUpdatedPayloadDataNullableFields maps the wire names of PostAdUpdatedPayloadData's nullable fields (required or optional) to their field bits.
 var postAdUpdatedPayloadDataNullableFields = map[string]*big.Int{
 	"call_to_action": postAdUpdatedPayloadDataFieldCallToAction,
-	"post_id":        postAdUpdatedPayloadDataFieldPostID,
 	"title":          postAdUpdatedPayloadDataFieldTitle,
 	"url":            postAdUpdatedPayloadDataFieldURL,
 }
@@ -4244,11 +4189,9 @@ type PostAdUpdatedPayloadData struct {
 	Descriptions   []*AdText                              `json:"descriptions" url:"descriptions"`
 	Headlines      []*AdText                              `json:"headlines" url:"headlines"`
 	// Unique identifier for the ad, prefixed `ad_`.
-	ID     string             `json:"id" url:"id"`
-	Issues []*AdPlatformIssue `json:"issues" url:"issues"`
-	// The post the ad network serves for this ad, as `pageID_postID` on Meta — the post Meta created for an uploaded creative, or the post being promoted. Use it to open the live post. `null` until the network has created the post.
-	PostID       *string   `json:"post_id,omitempty" url:"post_id,omitempty"`
-	PrimaryTexts []*AdText `json:"primary_texts" url:"primary_texts"`
+	ID           string             `json:"id" url:"id"`
+	Issues       []*AdPlatformIssue `json:"issues" url:"issues"`
+	PrimaryTexts []*AdText          `json:"primary_texts" url:"primary_texts"`
 	// Whether the ad is enabled. `active` and `paused` are set by you; `in_review` and `rejected` come from ad review.
 	Status PostAdUpdatedPayloadDataStatus `json:"status" url:"status"`
 	// Display title of the ad.
@@ -4257,7 +4200,7 @@ type PostAdUpdatedPayloadData struct {
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
 	// The URL the ad links to, without its query string. Parameters belong in `url_parameters`; any you send on `url` are moved there.
 	URL *string `json:"url,omitempty" url:"url,omitempty"`
-	// Every query parameter appended to the URL, keyed by parameter name — including any you sent on `url` itself. Whop adds its own click-attribution parameters on top; those are reserved and rejected if you set them. Which keys are reserved depends on the ad's network — Meta: utm_meta_ad_id, utm_meta_adset_id, utm_meta_campaign_id, utm_source, utm_placement, utm_medium, utm_content, utm_adset, utm_whop, wacid, wasid, waid, tw_source, tw_adid; TikTok: waid, wasid, wacid, ad_id, adset_id, campaign_id, utm_source, utm_medium, utm_placement, utm_whop, tw_source, tw_adid.
+	// Every query parameter appended to the URL, keyed by parameter name — including any you sent on `url` itself. Whop adds its own click-attribution parameters; those are reserved, and setting one returns an error that names it.
 	URLParameters map[string]any `json:"url_parameters" url:"url_parameters"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -4335,13 +4278,6 @@ func (p *PostAdUpdatedPayloadData) GetIssues() []*AdPlatformIssue {
 		return nil
 	}
 	return p.Issues
-}
-
-func (p *PostAdUpdatedPayloadData) GetPostID() *string {
-	if p == nil {
-		return nil
-	}
-	return p.PostID
 }
 
 func (p *PostAdUpdatedPayloadData) GetPrimaryTexts() []*AdText {
@@ -4470,13 +4406,6 @@ func (p *PostAdUpdatedPayloadData) SetID(id string) {
 func (p *PostAdUpdatedPayloadData) SetIssues(issues []*AdPlatformIssue) {
 	p.Issues = issues
 	p.require(postAdUpdatedPayloadDataFieldIssues)
-}
-
-// SetPostID sets the PostID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostAdUpdatedPayloadData) SetPostID(postID *string) {
-	p.PostID = postID
-	p.require(postAdUpdatedPayloadDataFieldPostID)
 }
 
 // SetPrimaryTexts sets the PrimaryTexts field and marks it as non-optional;
@@ -5638,31 +5567,6 @@ func (u *UpdateAdsRequestPrimaryTextsItem) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-type UpdateAdsRequestXAdsPlatform string
-
-const (
-	UpdateAdsRequestXAdsPlatformMeta   UpdateAdsRequestXAdsPlatform = "meta"
-	UpdateAdsRequestXAdsPlatformGoogle UpdateAdsRequestXAdsPlatform = "google"
-	UpdateAdsRequestXAdsPlatformTiktok UpdateAdsRequestXAdsPlatform = "tiktok"
-)
-
-func NewUpdateAdsRequestXAdsPlatformFromString(s string) (UpdateAdsRequestXAdsPlatform, error) {
-	switch s {
-	case "meta":
-		return UpdateAdsRequestXAdsPlatformMeta, nil
-	case "google":
-		return UpdateAdsRequestXAdsPlatformGoogle, nil
-	case "tiktok":
-		return UpdateAdsRequestXAdsPlatformTiktok, nil
-	}
-	var t UpdateAdsRequestXAdsPlatform
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (u UpdateAdsRequestXAdsPlatform) Ptr() *UpdateAdsRequestXAdsPlatform {
-	return &u
-}
-
 var (
 	unpauseAdsRequestFieldID = big.NewInt(1 << 0)
 )
@@ -5692,26 +5596,23 @@ func (u *UnpauseAdsRequest) SetID(id string) {
 }
 
 var (
-	updateAdsRequestFieldAdsPlatform   = big.NewInt(1 << 0)
-	updateAdsRequestFieldID            = big.NewInt(1 << 1)
-	updateAdsRequestFieldCallToAction  = big.NewInt(1 << 2)
-	updateAdsRequestFieldCreatives     = big.NewInt(1 << 3)
-	updateAdsRequestFieldDescriptions  = big.NewInt(1 << 4)
-	updateAdsRequestFieldHeadlines     = big.NewInt(1 << 5)
-	updateAdsRequestFieldPrimaryTexts  = big.NewInt(1 << 6)
-	updateAdsRequestFieldTitle         = big.NewInt(1 << 7)
-	updateAdsRequestFieldURL           = big.NewInt(1 << 8)
-	updateAdsRequestFieldURLParameters = big.NewInt(1 << 9)
+	updateAdsRequestFieldID            = big.NewInt(1 << 0)
+	updateAdsRequestFieldCallToAction  = big.NewInt(1 << 1)
+	updateAdsRequestFieldCreatives     = big.NewInt(1 << 2)
+	updateAdsRequestFieldDescriptions  = big.NewInt(1 << 3)
+	updateAdsRequestFieldHeadlines     = big.NewInt(1 << 4)
+	updateAdsRequestFieldPrimaryTexts  = big.NewInt(1 << 5)
+	updateAdsRequestFieldTitle         = big.NewInt(1 << 6)
+	updateAdsRequestFieldURL           = big.NewInt(1 << 7)
+	updateAdsRequestFieldURLParameters = big.NewInt(1 << 8)
 )
 
 type UpdateAdsRequest struct {
-	// The platform returned when you last retrieved the campaign, ad group, or ad. A different current platform rejects the request with campaign_changed; retrieve the resource again before editing. Required after a delivery-platform migration when creating ads or ad groups, or changing fields other than title, status, budget, and account scope.
-	AdsPlatform *UpdateAdsRequestXAdsPlatform `json:"-" url:"-"`
 	// The ad ID.
 	ID string `json:"-" url:"-"`
 	// The call-to-action button shown on the ad.
 	CallToAction *UpdateAdsRequestCallToAction `json:"call_to_action,omitempty" url:"-"`
-	// The ad's creative assets. Each entry is an uploaded file id with an optional format; omit format for the original asset. Replaces a live ad's creative on the platform. Entries with no format replace it with a carousel's ordered cards — 2-10 of them on Meta, while TikTok runs even a single image as a one-card carousel.
+	// The ad's creative assets. Each entry is an uploaded file id with an optional format; omit format for the original asset. Replaces a live ad's creative. Entries with no format replace it with a carousel's ordered cards.
 	Creatives []*UpdateAdsRequestCreativesItem `json:"creatives,omitempty" url:"-"`
 	// The description shown on the ad.
 	Descriptions []*UpdateAdsRequestDescriptionsItem `json:"descriptions,omitempty" url:"-"`
@@ -5723,7 +5624,7 @@ type UpdateAdsRequest struct {
 	Title *string `json:"title,omitempty" url:"-"`
 	// The URL the ad links to. Query parameters are merged into url_parameters, so the stored URL is always bare.
 	URL *string `json:"url,omitempty" url:"-"`
-	// Query parameters to append to the destination URL, keyed by parameter name. Merged with any query string on `url`. Whop adds its own click-attribution parameters; those are reserved and rejected if you set them. Which keys are reserved depends on the ad's network — Meta: utm_meta_ad_id, utm_meta_adset_id, utm_meta_campaign_id, utm_source, utm_placement, utm_medium, utm_content, utm_adset, utm_whop, wacid, wasid, waid, tw_source, tw_adid; TikTok: waid, wasid, wacid, ad_id, adset_id, campaign_id, utm_source, utm_medium, utm_placement, utm_whop, tw_source, tw_adid.
+	// Query parameters to append to the destination URL, keyed by parameter name. Merged with any query string on `url`. Whop adds its own click-attribution parameters; those are reserved, and setting one returns an error that names it.
 	URLParameters map[string]any `json:"url_parameters,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -5737,13 +5638,6 @@ func (u *UpdateAdsRequest) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	u.explicitFields = next
-}
-
-// SetAdsPlatform sets the AdsPlatform field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequest) SetAdsPlatform(adsPlatform *UpdateAdsRequestXAdsPlatform) {
-	u.AdsPlatform = adsPlatform
-	u.require(updateAdsRequestFieldAdsPlatform)
 }
 
 // SetID sets the ID field and marks it as non-optional;

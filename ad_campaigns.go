@@ -39,7 +39,7 @@ type CreateAdCampaignsRequest struct {
 	BudgetOptimization *CreateAdCampaignsRequestBudgetOptimization `json:"budget_optimization,omitempty" url:"-"`
 	// Whether the budget is spent per day (`daily`) or over the campaign's full run (`lifetime`). Defaults to `daily`.
 	BudgetType *CreateAdCampaignsRequestBudgetType `json:"budget_type,omitempty" url:"-"`
-	// The kind of campaign to create. `standard` is the ad network's standard campaign; `search` shows text ads on search results for the ad groups' keywords. Defaults to `standard`. Can't be changed after creation.
+	// The kind of campaign to create. `standard` runs image and video ads; `search` shows text ads on search results for the ad groups' keywords. Defaults to `standard`. Can't be changed after creation.
 	CampaignType *CreateAdCampaignsRequestCampaignType `json:"campaign_type,omitempty" url:"-"`
 	// The cost per result, in USD, you want this campaign to achieve. A target only: it is not a bid, cost cap, or bid cap, and doesn't change how the campaign's ads bid. Ad groups set cost and bid caps with their own `desired_cost_per_result`. Omit or send `null` for no target.
 	DesiredCostPerResult *float64 `json:"desired_cost_per_result,omitempty" url:"-"`
@@ -663,7 +663,7 @@ type AdCampaign struct {
 	BudgetOptimization *AdCampaignBudgetOptimization `json:"budget_optimization,omitempty" url:"budget_optimization,omitempty"`
 	// Whether `budget_amount` is spent per day (`daily`) or over the campaign's full run (`lifetime`).
 	BudgetType *AdCampaignBudgetType `json:"budget_type,omitempty" url:"budget_type,omitempty"`
-	// The kind of campaign, fixed at creation. `standard` is the ad network's standard campaign; `search` shows text ads on search results for the ad groups' keywords.
+	// The kind of campaign, fixed at creation. `standard` runs image and video ads; `search` shows text ads on search results for the ad groups' keywords.
 	CampaignType AdCampaignCampaignType `json:"campaign_type" url:"campaign_type"`
 	// Clicks divided by impressions, between 0 and 1.
 	ClickThroughRate float64 `json:"click_through_rate" url:"click_through_rate"`
@@ -713,9 +713,9 @@ type AdCampaign struct {
 	DeliveryStatus AdCampaignDeliveryStatus `json:"delivery_status" url:"delivery_status"`
 	// The cost per result, in USD, the advertiser wants this campaign to achieve. A target only: it is not a bid, cost cap, or bid cap, and doesn't change how the campaign's ads bid. `null` when no target is set.
 	DesiredCostPerResult *float64 `json:"desired_cost_per_result,omitempty" url:"desired_cost_per_result,omitempty"`
-	// Google only: when the campaign stops delivering, as an ISO 8601 timestamp. `null` runs it until paused.
+	// When the campaign stops delivering, as an ISO 8601 timestamp. `null` when it runs until paused, or when its ad groups set their own schedule.
 	EndsAt *string `json:"ends_at,omitempty" url:"ends_at,omitempty"`
-	// Platform-reported impressions divided by reach.
+	// Impressions divided by reach.
 	Frequency *float64 `json:"frequency,omitempty" url:"frequency,omitempty"`
 	// Unique identifier for the ad campaign, prefixed `adcamp_`.
 	ID string `json:"id" url:"id"`
@@ -753,7 +753,7 @@ type AdCampaign struct {
 	Spend float64 `json:"spend" url:"spend"`
 	// The ISO 4217 currency code of all monetary metrics.
 	SpendCurrency *string `json:"spend_currency,omitempty" url:"spend_currency,omitempty"`
-	// Google only: when the campaign starts delivering, as an ISO 8601 timestamp. `null` starts it as soon as it launches.
+	// When the campaign starts delivering, as an ISO 8601 timestamp. `null` when it starts as soon as it launches, or when its ad groups set their own schedule.
 	StartsAt *string `json:"starts_at,omitempty" url:"starts_at,omitempty"`
 	// The configured lifecycle status of the ad campaign. Billing failures preserve active or paused here and set delivery_status to payment_failed.
 	Status AdCampaignStatus `json:"status" url:"status"`
@@ -1814,7 +1814,7 @@ func (a AdCampaignBudgetType) Ptr() *AdCampaignBudgetType {
 	return &a
 }
 
-// The kind of campaign, fixed at creation. `standard` is the ad network's standard campaign; `search` shows text ads on search results for the ad groups' keywords.
+// The kind of campaign, fixed at creation. `standard` runs image and video ads; `search` shows text ads on search results for the ad groups' keywords.
 type AdCampaignCampaignType string
 
 const (
@@ -2132,7 +2132,7 @@ func (c CreateAdCampaignsRequestBudgetType) Ptr() *CreateAdCampaignsRequestBudge
 	return &c
 }
 
-// The kind of campaign to create. `standard` is the ad network's standard campaign; `search` shows text ads on search results for the ad groups' keywords. Defaults to `standard`. Can't be changed after creation.
+// The kind of campaign to create. `standard` runs image and video ads; `search` shows text ads on search results for the ad groups' keywords. Defaults to `standard`. Can't be changed after creation.
 type CreateAdCampaignsRequestCampaignType string
 
 const (
@@ -3100,7 +3100,7 @@ type PostAdCampaignPaymentFailedPayloadData struct {
 	BudgetOptimization *PostAdCampaignPaymentFailedPayloadDataBudgetOptimization `json:"budget_optimization,omitempty" url:"budget_optimization,omitempty"`
 	// Whether `budget_amount` is spent per day (`daily`) or over the campaign's full run (`lifetime`).
 	BudgetType *PostAdCampaignPaymentFailedPayloadDataBudgetType `json:"budget_type,omitempty" url:"budget_type,omitempty"`
-	// The kind of campaign, fixed at creation. `standard` is the ad network's standard campaign; `search` shows text ads on search results for the ad groups' keywords.
+	// The kind of campaign, fixed at creation. `standard` runs image and video ads; `search` shows text ads on search results for the ad groups' keywords.
 	CampaignType PostAdCampaignPaymentFailedPayloadDataCampaignType `json:"campaign_type" url:"campaign_type"`
 	// When the campaign was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
@@ -3108,7 +3108,7 @@ type PostAdCampaignPaymentFailedPayloadData struct {
 	DeliveryStatus PostAdCampaignPaymentFailedPayloadDataDeliveryStatus `json:"delivery_status" url:"delivery_status"`
 	// The cost per result, in USD, the advertiser wants this campaign to achieve. A target only: it is not a bid, cost cap, or bid cap, and doesn't change how the campaign's ads bid. `null` when no target is set.
 	DesiredCostPerResult *float64 `json:"desired_cost_per_result,omitempty" url:"desired_cost_per_result,omitempty"`
-	// Google only: when the campaign stops delivering, as an ISO 8601 timestamp. `null` runs it until paused.
+	// When the campaign stops delivering, as an ISO 8601 timestamp. `null` when it runs until paused, or when its ad groups set their own schedule.
 	EndsAt *string `json:"ends_at,omitempty" url:"ends_at,omitempty"`
 	// Unique identifier for the ad campaign, prefixed `adcamp_`.
 	ID     string             `json:"id" url:"id"`
@@ -3116,7 +3116,7 @@ type PostAdCampaignPaymentFailedPayloadData struct {
 	// The goal the campaign optimizes toward. `awareness` appears only on campaigns created before it was retired; those campaigns can't launch.
 	Objective           *PostAdCampaignPaymentFailedPayloadDataObjective                `json:"objective,omitempty" url:"objective,omitempty"`
 	SpecialAdCategories []PostAdCampaignPaymentFailedPayloadDataSpecialAdCategoriesItem `json:"special_ad_categories" url:"special_ad_categories"`
-	// Google only: when the campaign starts delivering, as an ISO 8601 timestamp. `null` starts it as soon as it launches.
+	// When the campaign starts delivering, as an ISO 8601 timestamp. `null` when it starts as soon as it launches, or when its ad groups set their own schedule.
 	StartsAt *string `json:"starts_at,omitempty" url:"starts_at,omitempty"`
 	// The configured lifecycle status of the ad campaign. Billing failures preserve active or paused here and set delivery_status to payment_failed.
 	Status PostAdCampaignPaymentFailedPayloadDataStatus `json:"status" url:"status"`
@@ -3535,7 +3535,7 @@ func (p PostAdCampaignPaymentFailedPayloadDataBudgetType) Ptr() *PostAdCampaignP
 	return &p
 }
 
-// The kind of campaign, fixed at creation. `standard` is the ad network's standard campaign; `search` shows text ads on search results for the ad groups' keywords.
+// The kind of campaign, fixed at creation. `standard` runs image and video ads; `search` shows text ads on search results for the ad groups' keywords.
 type PostAdCampaignPaymentFailedPayloadDataCampaignType string
 
 const (
@@ -4048,7 +4048,7 @@ type PostAdCampaignUpdatedPayloadData struct {
 	BudgetOptimization *PostAdCampaignUpdatedPayloadDataBudgetOptimization `json:"budget_optimization,omitempty" url:"budget_optimization,omitempty"`
 	// Whether `budget_amount` is spent per day (`daily`) or over the campaign's full run (`lifetime`).
 	BudgetType *PostAdCampaignUpdatedPayloadDataBudgetType `json:"budget_type,omitempty" url:"budget_type,omitempty"`
-	// The kind of campaign, fixed at creation. `standard` is the ad network's standard campaign; `search` shows text ads on search results for the ad groups' keywords.
+	// The kind of campaign, fixed at creation. `standard` runs image and video ads; `search` shows text ads on search results for the ad groups' keywords.
 	CampaignType PostAdCampaignUpdatedPayloadDataCampaignType `json:"campaign_type" url:"campaign_type"`
 	// When the campaign was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
@@ -4056,7 +4056,7 @@ type PostAdCampaignUpdatedPayloadData struct {
 	DeliveryStatus PostAdCampaignUpdatedPayloadDataDeliveryStatus `json:"delivery_status" url:"delivery_status"`
 	// The cost per result, in USD, the advertiser wants this campaign to achieve. A target only: it is not a bid, cost cap, or bid cap, and doesn't change how the campaign's ads bid. `null` when no target is set.
 	DesiredCostPerResult *float64 `json:"desired_cost_per_result,omitempty" url:"desired_cost_per_result,omitempty"`
-	// Google only: when the campaign stops delivering, as an ISO 8601 timestamp. `null` runs it until paused.
+	// When the campaign stops delivering, as an ISO 8601 timestamp. `null` when it runs until paused, or when its ad groups set their own schedule.
 	EndsAt *string `json:"ends_at,omitempty" url:"ends_at,omitempty"`
 	// Unique identifier for the ad campaign, prefixed `adcamp_`.
 	ID     string             `json:"id" url:"id"`
@@ -4064,7 +4064,7 @@ type PostAdCampaignUpdatedPayloadData struct {
 	// The goal the campaign optimizes toward. `awareness` appears only on campaigns created before it was retired; those campaigns can't launch.
 	Objective           *PostAdCampaignUpdatedPayloadDataObjective                `json:"objective,omitempty" url:"objective,omitempty"`
 	SpecialAdCategories []PostAdCampaignUpdatedPayloadDataSpecialAdCategoriesItem `json:"special_ad_categories" url:"special_ad_categories"`
-	// Google only: when the campaign starts delivering, as an ISO 8601 timestamp. `null` starts it as soon as it launches.
+	// When the campaign starts delivering, as an ISO 8601 timestamp. `null` when it starts as soon as it launches, or when its ad groups set their own schedule.
 	StartsAt *string `json:"starts_at,omitempty" url:"starts_at,omitempty"`
 	// The configured lifecycle status of the ad campaign. Billing failures preserve active or paused here and set delivery_status to payment_failed.
 	Status PostAdCampaignUpdatedPayloadDataStatus `json:"status" url:"status"`
@@ -4483,7 +4483,7 @@ func (p PostAdCampaignUpdatedPayloadDataBudgetType) Ptr() *PostAdCampaignUpdated
 	return &p
 }
 
-// The kind of campaign, fixed at creation. `standard` is the ad network's standard campaign; `search` shows text ads on search results for the ad groups' keywords.
+// The kind of campaign, fixed at creation. `standard` runs image and video ads; `search` shows text ads on search results for the ad groups' keywords.
 type PostAdCampaignUpdatedPayloadDataCampaignType string
 
 const (
@@ -4750,7 +4750,7 @@ func (u UpdateAdCampaignsRequestBidType) Ptr() *UpdateAdCampaignsRequestBidType 
 	return &u
 }
 
-// Which level owns the budget: the whole campaign (`ad_campaign`) or each ad group individually (`ad_group`). Only changeable before the campaign is live on the ad network; switching to `ad_campaign` requires budget_amount in the same request, and switching to `ad_group` clears the campaign budget.
+// Which level owns the budget: the whole campaign (`ad_campaign`) or each ad group individually (`ad_group`). Only changeable before the campaign launches; switching to `ad_campaign` requires budget_amount in the same request, and switching to `ad_group` clears the campaign budget.
 type UpdateAdCampaignsRequestBudgetOptimization string
 
 const (
@@ -4867,31 +4867,6 @@ func (u UpdateAdCampaignsRequestStatus) Ptr() *UpdateAdCampaignsRequestStatus {
 	return &u
 }
 
-type UpdateAdCampaignsRequestXAdsPlatform string
-
-const (
-	UpdateAdCampaignsRequestXAdsPlatformMeta   UpdateAdCampaignsRequestXAdsPlatform = "meta"
-	UpdateAdCampaignsRequestXAdsPlatformGoogle UpdateAdCampaignsRequestXAdsPlatform = "google"
-	UpdateAdCampaignsRequestXAdsPlatformTiktok UpdateAdCampaignsRequestXAdsPlatform = "tiktok"
-)
-
-func NewUpdateAdCampaignsRequestXAdsPlatformFromString(s string) (UpdateAdCampaignsRequestXAdsPlatform, error) {
-	switch s {
-	case "meta":
-		return UpdateAdCampaignsRequestXAdsPlatformMeta, nil
-	case "google":
-		return UpdateAdCampaignsRequestXAdsPlatformGoogle, nil
-	case "tiktok":
-		return UpdateAdCampaignsRequestXAdsPlatformTiktok, nil
-	}
-	var t UpdateAdCampaignsRequestXAdsPlatform
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (u UpdateAdCampaignsRequestXAdsPlatform) Ptr() *UpdateAdCampaignsRequestXAdsPlatform {
-	return &u
-}
-
 var (
 	unpauseAdCampaignsRequestFieldID = big.NewInt(1 << 0)
 )
@@ -4921,25 +4896,22 @@ func (u *UnpauseAdCampaignsRequest) SetID(id string) {
 }
 
 var (
-	updateAdCampaignsRequestFieldAdsPlatform          = big.NewInt(1 << 0)
-	updateAdCampaignsRequestFieldID                   = big.NewInt(1 << 1)
-	updateAdCampaignsRequestFieldBidType              = big.NewInt(1 << 2)
-	updateAdCampaignsRequestFieldBudgetAmount         = big.NewInt(1 << 3)
-	updateAdCampaignsRequestFieldBudgetAmountLocal    = big.NewInt(1 << 4)
-	updateAdCampaignsRequestFieldBudgetOptimization   = big.NewInt(1 << 5)
-	updateAdCampaignsRequestFieldBudgetType           = big.NewInt(1 << 6)
-	updateAdCampaignsRequestFieldCampaignType         = big.NewInt(1 << 7)
-	updateAdCampaignsRequestFieldDesiredCostPerResult = big.NewInt(1 << 8)
-	updateAdCampaignsRequestFieldEndsAt               = big.NewInt(1 << 9)
-	updateAdCampaignsRequestFieldSpecialAdCategories  = big.NewInt(1 << 10)
-	updateAdCampaignsRequestFieldStartsAt             = big.NewInt(1 << 11)
-	updateAdCampaignsRequestFieldStatus               = big.NewInt(1 << 12)
-	updateAdCampaignsRequestFieldTitle                = big.NewInt(1 << 13)
+	updateAdCampaignsRequestFieldID                   = big.NewInt(1 << 0)
+	updateAdCampaignsRequestFieldBidType              = big.NewInt(1 << 1)
+	updateAdCampaignsRequestFieldBudgetAmount         = big.NewInt(1 << 2)
+	updateAdCampaignsRequestFieldBudgetAmountLocal    = big.NewInt(1 << 3)
+	updateAdCampaignsRequestFieldBudgetOptimization   = big.NewInt(1 << 4)
+	updateAdCampaignsRequestFieldBudgetType           = big.NewInt(1 << 5)
+	updateAdCampaignsRequestFieldCampaignType         = big.NewInt(1 << 6)
+	updateAdCampaignsRequestFieldDesiredCostPerResult = big.NewInt(1 << 7)
+	updateAdCampaignsRequestFieldEndsAt               = big.NewInt(1 << 8)
+	updateAdCampaignsRequestFieldSpecialAdCategories  = big.NewInt(1 << 9)
+	updateAdCampaignsRequestFieldStartsAt             = big.NewInt(1 << 10)
+	updateAdCampaignsRequestFieldStatus               = big.NewInt(1 << 11)
+	updateAdCampaignsRequestFieldTitle                = big.NewInt(1 << 12)
 )
 
 type UpdateAdCampaignsRequest struct {
-	// The platform returned when you last retrieved the campaign, ad group, or ad. A different current platform rejects the request with campaign_changed; retrieve the resource again before editing. Required after a delivery-platform migration when creating ads or ad groups, or changing fields other than title, status, budget, and account scope.
-	AdsPlatform *UpdateAdCampaignsRequestXAdsPlatform `json:"-" url:"-"`
 	// The ad campaign ID.
 	ID string `json:"-" url:"-"`
 	// How delivery bids in the ad auction: `minimum_cost` gets the most results for the budget, `average_target` holds an average cost per result, `maximum_target` never bids above a cap. Switching to `minimum_cost` clears the cap amounts stored on the campaign's ad groups. Only for campaigns that own the budget.
@@ -4948,7 +4920,7 @@ type UpdateAdCampaignsRequest struct {
 	BudgetAmount *float64 `json:"budget_amount,omitempty" url:"-"`
 	// The campaign budget stated in the account's ads reporting currency (`budget_currency` on the response) instead of USD. Converted to USD at the current exchange rate and stored as budget_amount; an amount equal to the current budget_amount_local keeps the stored USD budget as is. Provide this or budget_amount, not both.
 	BudgetAmountLocal *float64 `json:"budget_amount_local,omitempty" url:"-"`
-	// Which level owns the budget: the whole campaign (`ad_campaign`) or each ad group individually (`ad_group`). Only changeable before the campaign is live on the ad network; switching to `ad_campaign` requires budget_amount in the same request, and switching to `ad_group` clears the campaign budget.
+	// Which level owns the budget: the whole campaign (`ad_campaign`) or each ad group individually (`ad_group`). Only changeable before the campaign launches; switching to `ad_campaign` requires budget_amount in the same request, and switching to `ad_group` clears the campaign budget.
 	BudgetOptimization *UpdateAdCampaignsRequestBudgetOptimization `json:"budget_optimization,omitempty" url:"-"`
 	// Whether `budget_amount` is spent per day (`daily`) or over the campaign's full run (`lifetime`). Only changeable while the campaign is a draft; send budget_amount in the same request so the amount lands on the new type.
 	BudgetType *UpdateAdCampaignsRequestBudgetType `json:"budget_type,omitempty" url:"-"`
@@ -4978,13 +4950,6 @@ func (u *UpdateAdCampaignsRequest) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	u.explicitFields = next
-}
-
-// SetAdsPlatform sets the AdsPlatform field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdCampaignsRequest) SetAdsPlatform(adsPlatform *UpdateAdCampaignsRequestXAdsPlatform) {
-	u.AdsPlatform = adsPlatform
-	u.require(updateAdCampaignsRequestFieldAdsPlatform)
 }
 
 // SetID sets the ID field and marks it as non-optional;
