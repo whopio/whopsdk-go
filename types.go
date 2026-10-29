@@ -42192,9 +42192,11 @@ var (
 	paymentFieldUpdatedAt                  = big.NewInt(1 << 59)
 	paymentFieldUsdTotal                   = big.NewInt(1 << 60)
 	paymentFieldUser                       = big.NewInt(1 << 61)
-	paymentFieldVariantID                  = big.NewInt(1 << 62)
-	paymentFieldVerificationChecks         = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	paymentFieldVoidable                   = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	paymentFieldUserAgent                  = big.NewInt(1 << 62)
+	paymentFieldVariantID                  = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	paymentFieldVerificationChecks         = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	paymentFieldVoidable                   = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	paymentFieldWuid                       = big.NewInt(0).Lsh(big.NewInt(1), 66)
 )
 
 // paymentNullableFields maps the wire names of Payment's nullable fields (required or optional) to their field bits.
@@ -42245,8 +42247,10 @@ var paymentNullableFields = map[string]*big.Int{
 	"total":                        paymentFieldTotal,
 	"usd_total":                    paymentFieldUsdTotal,
 	"user":                         paymentFieldUser,
+	"user_agent":                   paymentFieldUserAgent,
 	"variant_id":                   paymentFieldVariantID,
 	"verification_checks":          paymentFieldVerificationChecks,
+	"wuid":                         paymentFieldWuid,
 }
 
 type Payment struct {
@@ -42289,7 +42293,7 @@ type Payment struct {
 	Holds                      []*PaymentHold `json:"holds" url:"holds"`
 	// Payment ID, prefixed `pay_`.
 	ID string `json:"id" url:"id"`
-	// The buyer's IP address at checkout, as identified by Whop's fraud screening. Null when the payment was not screened at checkout, such as a subscription renewal or a charge made without the buyer present.
+	// The buyer's IP address at checkout: the one Whop's fraud screening identified, otherwise the one Whop captured from the buyer's browser at checkout. Null when the buyer was not present at checkout, such as a subscription renewal or a charge made without the buyer present.
 	IPAddress *string `json:"ip_address,omitempty" url:"ip_address,omitempty"`
 	// When the most recent charge attempt ran, or null.
 	LastPaymentAttemptAt *string            `json:"last_payment_attempt_at,omitempty" url:"last_payment_attempt_at,omitempty"`
@@ -42372,12 +42376,16 @@ type Payment struct {
 	UsdTotal *Money `json:"usd_total,omitempty" url:"usd_total,omitempty"`
 	// The buyer. Null when the payment belongs to a company buyer rather than a user.
 	User *UserSummary `json:"user,omitempty" url:"user,omitempty"`
+	// The buyer's browser user agent at checkout. Null when the buyer was not present at checkout, such as a subscription renewal, or without the member:basic:read permission.
+	UserAgent *string `json:"user_agent,omitempty" url:"user_agent,omitempty"`
 	// The variant that was charged, prefixed `plan_`.
 	VariantID *string `json:"variant_id,omitempty" url:"variant_id,omitempty"`
 	// The Address Verification Service (AVS), cardholder name, and Card Verification Value (CVV/CVC) results, or null when the processor returned none.
 	VerificationChecks *PaymentVerificationChecks `json:"verification_checks,omitempty" url:"verification_checks,omitempty"`
 	// True when the payment can be voided or canceled. The request is rejected if the payment is no longer eligible — see `POST /payments/{id}/void`.
 	Voidable bool `json:"voidable" url:"voidable"`
+	// The Whop pixel's visitor ID for the buyer's browser at checkout, prefixed `wuid_`. Null when the checkout page had no Whop pixel, when the buyer was not present at checkout, or without the member:basic:read permission.
+	Wuid *string `json:"wuid,omitempty" url:"wuid,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -42820,6 +42828,13 @@ func (p *Payment) GetUser() *UserSummary {
 	return p.User
 }
 
+func (p *Payment) GetUserAgent() *string {
+	if p == nil {
+		return nil
+	}
+	return p.UserAgent
+}
+
 func (p *Payment) GetVariantID() *string {
 	if p == nil {
 		return nil
@@ -42839,6 +42854,13 @@ func (p *Payment) GetVoidable() bool {
 		return false
 	}
 	return p.Voidable
+}
+
+func (p *Payment) GetWuid() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Wuid
 }
 
 func (p *Payment) GetExtraProperties() map[string]interface{} {
@@ -43291,6 +43313,13 @@ func (p *Payment) SetUser(user *UserSummary) {
 	p.require(paymentFieldUser)
 }
 
+// SetUserAgent sets the UserAgent field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Payment) SetUserAgent(userAgent *string) {
+	p.UserAgent = userAgent
+	p.require(paymentFieldUserAgent)
+}
+
 // SetVariantID sets the VariantID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *Payment) SetVariantID(variantID *string) {
@@ -43310,6 +43339,13 @@ func (p *Payment) SetVerificationChecks(verificationChecks *PaymentVerificationC
 func (p *Payment) SetVoidable(voidable bool) {
 	p.Voidable = voidable
 	p.require(paymentFieldVoidable)
+}
+
+// SetWuid sets the Wuid field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Payment) SetWuid(wuid *string) {
+	p.Wuid = wuid
+	p.require(paymentFieldWuid)
 }
 
 func (p *Payment) UnmarshalJSON(data []byte) error {
