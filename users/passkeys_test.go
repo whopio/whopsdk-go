@@ -137,7 +137,7 @@ func TestSettersCreatePasskeysRequest(t *testing.T) {
 
 	t.Run("SetUserHandle", func(t *testing.T) {
 		obj := &CreatePasskeysRequest{}
-		var fernTestValueUserHandle *string
+		var fernTestValueUserHandle string
 		obj.SetUserHandle(fernTestValueUserHandle)
 		assert.Equal(t, fernTestValueUserHandle, obj.UserHandle)
 		assert.NotNil(t, obj.explicitFields)
@@ -305,7 +305,7 @@ func TestSettersMarkExplicitCreatePasskeysRequest(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreatePasskeysRequest{}
-		var fernTestValueUserHandle *string
+		var fernTestValueUserHandle string
 
 		// Act
 		obj.SetUserHandle(fernTestValueUserHandle)

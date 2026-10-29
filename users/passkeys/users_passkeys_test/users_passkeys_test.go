@@ -117,6 +117,7 @@ func TestUsersPasskeysCreateWithWireMock(
 		ClientDataJSON:    "Y2xpZW50LWRhdGE",
 		CredentialID:      "bmV3LWNyZWRlbnRpYWw",
 		Nickname:          "Work laptop",
+		UserHandle:        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 	}
 	_, invocationErr := client.Users.Passkeys.Create(
 		context.TODO(),
