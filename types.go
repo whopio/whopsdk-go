@@ -606,7 +606,7 @@ type AccountCapabilities struct {
 	CryptoPayout AccountCapabilitiesCryptoPayout `json:"crypto_payout" url:"crypto_payout"`
 	// Instant payouts to an eligible payout destination
 	InstantPayout AccountCapabilitiesInstantPayout `json:"instant_payout" url:"instant_payout"`
-	// Launching ad campaigns through Whop Ads. `inactive` until the account's identity or business is verified, and while a requested ads services agreement is awaiting the account's signature.
+	// Launching ad campaigns through Whop Ads. `inactive` until the account's identity or business is verified, while a requested ads services agreement is awaiting the account's signature, and while the account is suspended from Whop Ads.
 	RunAds AccountCapabilitiesRunAds `json:"run_ads" url:"run_ads"`
 	// Standard payouts to an external payout destination
 	StandardPayout AccountCapabilitiesStandardPayout `json:"standard_payout" url:"standard_payout"`
@@ -1080,7 +1080,7 @@ func (a AccountCapabilitiesInstantPayout) Ptr() *AccountCapabilitiesInstantPayou
 	return &a
 }
 
-// Launching ad campaigns through Whop Ads. `inactive` until the account's identity or business is verified, and while a requested ads services agreement is awaiting the account's signature.
+// Launching ad campaigns through Whop Ads. `inactive` until the account's identity or business is verified, while a requested ads services agreement is awaiting the account's signature, and while the account is suspended from Whop Ads.
 type AccountCapabilitiesRunAds string
 
 const (
