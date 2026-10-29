@@ -194,65 +194,6 @@ func (r *RawClient) Delete(
 	}, nil
 }
 
-func (r *RawClient) LeadForms(
-	ctx context.Context,
-	request *whopsdk.LeadFormsSocialAccountsRequest,
-	opts ...option.RequestOption,
-) (*core.Response[*whopsdk.LeadFormsSocialAccountsResponse], error) {
-	options := core.NewRequestOptions(opts...)
-	baseURL := internal.ResolveBaseURL(
-		options.BaseURL,
-		internal.ResolveEnvironmentBaseURL(
-			options.Environment,
-			"API",
-		),
-		r.baseURL,
-		internal.ResolveEnvironmentBaseURL(
-			r.options.Environment,
-			"API",
-		),
-		"https://api.whop.com/api/v1",
-	)
-	endpointURL := internal.EncodeURL(
-		baseURL+"/social_accounts/%v/lead_forms",
-		request.ID,
-	)
-	queryParams, err := internal.QueryValues(request)
-	if err != nil {
-		return nil, err
-	}
-	if len(queryParams) > 0 {
-		endpointURL += "?" + queryParams.Encode()
-	}
-	headers := internal.MergeHeaders(
-		r.options.ToHeader(),
-		options.ToHeader(),
-	)
-	var response *whopsdk.LeadFormsSocialAccountsResponse
-	raw, err := r.caller.Call(
-		ctx,
-		&internal.CallParams{
-			URL:             endpointURL,
-			Method:          http.MethodGet,
-			Headers:         headers,
-			MaxAttempts:     options.MaxAttempts,
-			DisableRetries:  options.DisableRetries,
-			BodyProperties:  options.BodyProperties,
-			QueryParameters: options.QueryParameters,
-			Client:          options.HTTPClient,
-			Response:        &response,
-		},
-	)
-	if err != nil {
-		return nil, err
-	}
-	return &core.Response[*whopsdk.LeadFormsSocialAccountsResponse]{
-		StatusCode: raw.StatusCode,
-		Header:     raw.Header,
-		Body:       response,
-	}, nil
-}
-
 func (r *RawClient) AddPartner(
 	ctx context.Context,
 	request *whopsdk.AddPartnerSocialAccountsRequest,

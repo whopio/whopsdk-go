@@ -2319,14 +2319,6 @@ client.AdCampaigns.Duplicate(
     
 </dd>
 </dl>
-
-<dl>
-<dd>
-
-**preserveEngagement:** `*bool` — Whether the copied ads keep the original posts' engagement (likes, comments, shares). Defaults to false.
-    
-</dd>
-</dl>
 </dd>
 </dl>
 
@@ -3878,14 +3870,6 @@ client.AdGroups.Duplicate(
 <dl>
 <dd>
 
-**preserveEngagement:** `*bool` — Whether the copied ads keep the original posts' engagement (likes, comments, shares). Defaults to false.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **targetAdCampaignID:** `*string` — Campaign to duplicate into. Must belong to the same account and be compatible with the ad group's targeting and goals. Defaults to the ad group's own campaign.
     
 </dd>
@@ -5162,14 +5146,6 @@ client.Ads.Duplicate(
 <dd>
 
 **count:** `*int` — Number of copies to create (1-10). Defaults to 1.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**preserveEngagement:** `*bool` — Whether the copies keep the original post's engagement (likes, comments, shares). Defaults to false.
     
 </dd>
 </dl>
@@ -37629,75 +37605,6 @@ client.SocialAccounts.Delete(
 </dl>
 </details>
 
-<details><summary><code>client.SocialAccounts.LeadForms(ID) -> *whopsdk.LeadFormsSocialAccountsResponse</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Deprecated compatibility endpoint. List lead forms with `GET /external_accounts/{id}/lead_forms` instead.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.LeadFormsSocialAccountsRequest{
-    ID: "id",
-    AccountID: "account_id",
-}
-client.SocialAccounts.LeadForms(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `string` — The social account (a sacc_ identifier) whose lead forms to list.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**accountID:** `string` 
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
 <details><summary><code>client.SocialAccounts.Partners(ID) -> *whopsdk.PartnersSocialAccountsResponse</code></summary>
 <dl>
 <dd>
@@ -37925,99 +37832,6 @@ client.SocialAccounts.RemovePartner(
 <dd>
 
 **accountID:** `*string` — The Account (biz_ identifier) that advertises as the Instagram account. An account-scoped API key may omit this to default to its own account.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.SocialAccounts.Posts(ID) -> *whopsdk.PostsSocialAccountsResponse</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Deprecated compatibility endpoint. List posts with `GET /external_accounts/{id}/posts` instead.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.PostsSocialAccountsRequest{
-    ID: "id",
-    AccountID: "account_id",
-}
-client.SocialAccounts.Posts(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `string` — The social account (a sacc_ identifier) whose posts to list.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**accountID:** `string` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**postID:** `*string` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**first:** `*int` — Number of results to return from the start of the range.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -45803,170 +45617,6 @@ client.ExternalAccounts.Partners.Delete(
 <dd>
 
 **accountID:** `*string` — The Account (biz_ identifier) that advertises as the Instagram account. An account-scoped API key may omit this to default to its own account.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-## ExternalAccounts LeadForms
-<details><summary><code>client.ExternalAccounts.LeadForms.List(ID) -> *externalaccounts.ListLeadFormsResponse</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Lists the active lead (instant) forms that already exist on a connected Facebook page, so an ad can reuse one as its `lead_gen_form_id` instead of authoring a new form. Every active form comes back in a single response — the list is not paginated.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &externalaccounts.ListLeadFormsRequest{
-    ID: "id",
-    AccountID: "account_id",
-}
-client.ExternalAccounts.LeadForms.List(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `string` — The external account (a sacc_ identifier) whose lead forms to list.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**accountID:** `string` — The Account (a biz_ identifier) the external account is connected to.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-## ExternalAccounts Posts
-<details><summary><code>client.ExternalAccounts.Posts.List(ID) -> *externalaccounts.ListPostsResponse</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Lists the existing posts of a connected Facebook page, Instagram account, or TikTok account.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &externalaccounts.ListPostsRequest{
-    ID: "id",
-    AccountID: "account_id",
-}
-client.ExternalAccounts.Posts.List(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `string` — The external account (a sacc_ identifier) whose posts to list.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**accountID:** `string` — The Account (a biz_ identifier) the external account is connected to.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**postID:** `*string` — Return only the single post with this platform id, instead of the full list.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**first:** `*int` — Number of results to return from the start of the range.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>

@@ -8,9 +8,7 @@ import (
 
 	whopsdk "github.com/whopio/whopsdk-go/v2"
 	core "github.com/whopio/whopsdk-go/v2/core"
-	leadforms "github.com/whopio/whopsdk-go/v2/externalaccounts/leadforms"
 	partners "github.com/whopio/whopsdk-go/v2/externalaccounts/partners"
-	posts "github.com/whopio/whopsdk-go/v2/externalaccounts/posts"
 	internal "github.com/whopio/whopsdk-go/v2/internal"
 	option "github.com/whopio/whopsdk-go/v2/option"
 )
@@ -18,8 +16,6 @@ import (
 type Client struct {
 	WithRawResponse *RawClient
 	Partners        *partners.Client
-	LeadForms       *leadforms.Client
-	Posts           *posts.Client
 
 	options *core.RequestOptions
 	baseURL string
@@ -28,13 +24,11 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-10-29-1"
+		apiVersionDateDefault := "2026-10-29-2"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
 		Partners:        partners.NewClient(options),
-		LeadForms:       leadforms.NewClient(options),
-		Posts:           posts.NewClient(options),
 		WithRawResponse: NewRawClient(options),
 		options:         options,
 		baseURL:         options.BaseURL,

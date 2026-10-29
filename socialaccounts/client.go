@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-10-29-1"
+		apiVersionDateDefault := "2026-10-29-2"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -200,34 +200,6 @@ func (c *Client) Delete(
 	return response.Body, nil
 }
 
-// Deprecated compatibility endpoint. List lead forms with `GET /external_accounts/{id}/lead_forms` instead.
-//
-// Example:
-//
-//	request := &whopsdk.LeadFormsSocialAccountsRequest{
-//	    ID: "id",
-//	    AccountID: "account_id",
-//	}
-//	client.SocialAccounts.LeadForms(
-//	    context.TODO(),
-//	    request,
-//	)
-func (c *Client) LeadForms(
-	ctx context.Context,
-	request *whopsdk.LeadFormsSocialAccountsRequest,
-	opts ...option.RequestOption,
-) (*whopsdk.LeadFormsSocialAccountsResponse, error) {
-	response, err := c.WithRawResponse.LeadForms(
-		ctx,
-		request,
-		opts...,
-	)
-	if err != nil {
-		return nil, err
-	}
-	return response.Body, nil
-}
-
 // Deprecated compatibility endpoint. List partners with `GET /external_accounts/{external_account_id}/partners` instead.
 //
 // Example:
@@ -366,91 +338,6 @@ func (c *Client) RemovePartner(
 		return nil, err
 	}
 	return response.Body, nil
-}
-
-// Deprecated compatibility endpoint. List posts with `GET /external_accounts/{id}/posts` instead.
-//
-// Example:
-//
-//	request := &whopsdk.PostsSocialAccountsRequest{
-//	    ID: "id",
-//	    AccountID: "account_id",
-//	}
-//	client.SocialAccounts.Posts(
-//	    context.TODO(),
-//	    request,
-//	)
-func (c *Client) Posts(
-	ctx context.Context,
-	request *whopsdk.PostsSocialAccountsRequest,
-	opts ...option.RequestOption,
-) (*core.Page[*string, *whopsdk.SocialAccountPost, *whopsdk.PostsSocialAccountsResponse], error) {
-	options := core.NewRequestOptions(opts...)
-	baseURL := internal.ResolveBaseURL(
-		options.BaseURL,
-		internal.ResolveEnvironmentBaseURL(
-			options.Environment,
-			"API",
-		),
-		c.baseURL,
-		internal.ResolveEnvironmentBaseURL(
-			c.options.Environment,
-			"API",
-		),
-		"https://api.whop.com/api/v1",
-	)
-	endpointURL := internal.EncodeURL(
-		baseURL+"/social_accounts/%v/posts",
-		request.ID,
-	)
-	queryParams, err := internal.QueryValues(request)
-	if err != nil {
-		return nil, err
-	}
-	headers := internal.MergeHeaders(
-		c.options.ToHeader(),
-		options.ToHeader(),
-	)
-	prepareCall := func(pageRequest *core.PageRequest[*string]) *internal.CallParams {
-		if pageRequest.Cursor != nil {
-			queryParams.Set("after", *pageRequest.Cursor)
-		}
-		nextURL := endpointURL
-		if len(queryParams) > 0 {
-			nextURL += "?" + queryParams.Encode()
-		}
-		return &internal.CallParams{
-			URL:             nextURL,
-			Method:          http.MethodGet,
-			Headers:         headers,
-			MaxAttempts:     options.MaxAttempts,
-			DisableRetries:  options.DisableRetries,
-			BodyProperties:  options.BodyProperties,
-			QueryParameters: options.QueryParameters,
-			Client:          options.HTTPClient,
-			Response:        pageRequest.Response,
-		}
-	}
-	readPageResponse := func(response *whopsdk.PostsSocialAccountsResponse) *core.PageResponse[*string, *whopsdk.SocialAccountPost, *whopsdk.PostsSocialAccountsResponse] {
-		var zeroValue *string
-		var next *string
-		if response.PageInfo != nil {
-			next = response.PageInfo.EndCursor
-		}
-		results := response.GetData()
-		return &core.PageResponse[*string, *whopsdk.SocialAccountPost, *whopsdk.PostsSocialAccountsResponse]{
-			Results:  results,
-			Response: response,
-			Next:     next,
-			Done:     next == zeroValue || *next == "",
-		}
-	}
-	pager := internal.NewCursorPager(
-		c.caller,
-		prepareCall,
-		readPageResponse,
-	)
-	return pager.GetPage(ctx, request.After)
 }
 
 // Deprecated compatibility endpoint. Refresh external accounts with `POST /external_accounts/{id}/refresh` instead.
