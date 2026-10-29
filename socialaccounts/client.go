@@ -122,8 +122,8 @@ func (c *Client) List(
 //
 // Example:
 //
-//	request := &whopsdk.CreateSocialAccountsRequest{
-//	    Platform: whopsdk.CreateSocialAccountsRequestPlatformFacebook,
+//	request := &whopsdk.CreateSocialAccountsRequestBody{
+//	    Facebook: &whopsdk.CreateSocialAccountsRequestBodyFacebook{},
 //	}
 //	client.SocialAccounts.Create(
 //	    context.TODO(),
@@ -131,7 +131,7 @@ func (c *Client) List(
 //	)
 func (c *Client) Create(
 	ctx context.Context,
-	request *whopsdk.CreateSocialAccountsRequest,
+	request *whopsdk.CreateSocialAccountsRequestBody,
 	opts ...option.RequestOption,
 ) (*whopsdk.SocialAccount, error) {
 	response, err := c.WithRawResponse.Create(

@@ -112,8 +112,8 @@ func TestExternalAccountsCreateWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &whopsdk.CreateExternalAccountsRequest{
-		Platform: whopsdk.CreateExternalAccountsRequestPlatformFacebook,
+	request := &whopsdk.CreateExternalAccountsRequestBody{
+		Facebook: &whopsdk.CreateExternalAccountsRequestBodyFacebook{},
 	}
 	_, invocationErr := client.ExternalAccounts.Create(
 		context.TODO(),

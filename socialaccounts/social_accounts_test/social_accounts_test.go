@@ -112,8 +112,8 @@ func TestSocialAccountsCreateWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &whopsdk.CreateSocialAccountsRequest{
-		Platform: whopsdk.CreateSocialAccountsRequestPlatformFacebook,
+	request := &whopsdk.CreateSocialAccountsRequestBody{
+		Facebook: &whopsdk.CreateSocialAccountsRequestBodyFacebook{},
 	}
 	_, invocationErr := client.SocialAccounts.Create(
 		context.TODO(),
