@@ -5489,24 +5489,25 @@ var (
 	retrieveBusinessesResponseFieldAccount                             = big.NewInt(1 << 0)
 	retrieveBusinessesResponseFieldBlueprintPartner                    = big.NewInt(1 << 1)
 	retrieveBusinessesResponseFieldCommissionAdvance                   = big.NewInt(1 << 2)
-	retrieveBusinessesResponseFieldCommissionAdvanceProjectionsAllowed = big.NewInt(1 << 3)
-	retrieveBusinessesResponseFieldCommissionAdvanceRate               = big.NewInt(1 << 4)
-	retrieveBusinessesResponseFieldCreatedAt                           = big.NewInt(1 << 5)
-	retrieveBusinessesResponseFieldDealClosedReason                    = big.NewInt(1 << 6)
-	retrieveBusinessesResponseFieldEarningsUsd                         = big.NewInt(1 << 7)
-	retrieveBusinessesResponseFieldFirstTierPartner                    = big.NewInt(1 << 8)
-	retrieveBusinessesResponseFieldID                                  = big.NewInt(1 << 9)
-	retrieveBusinessesResponseFieldMyPartnerTier                       = big.NewInt(1 << 10)
-	retrieveBusinessesResponseFieldObject                              = big.NewInt(1 << 11)
-	retrieveBusinessesResponseFieldOwner                               = big.NewInt(1 << 12)
-	retrieveBusinessesResponseFieldPayoutPercentages                   = big.NewInt(1 << 13)
-	retrieveBusinessesResponseFieldPendingOwnerInvites                 = big.NewInt(1 << 14)
-	retrieveBusinessesResponseFieldReferralExpiresAt                   = big.NewInt(1 << 15)
-	retrieveBusinessesResponseFieldReferralStartedAt                   = big.NewInt(1 << 16)
-	retrieveBusinessesResponseFieldReferringBusiness                   = big.NewInt(1 << 17)
-	retrieveBusinessesResponseFieldSecondTierPartner                   = big.NewInt(1 << 18)
-	retrieveBusinessesResponseFieldStatus                              = big.NewInt(1 << 19)
-	retrieveBusinessesResponseFieldVolumeUsd                           = big.NewInt(1 << 20)
+	retrieveBusinessesResponseFieldCommissionAdvanceCap                = big.NewInt(1 << 3)
+	retrieveBusinessesResponseFieldCommissionAdvanceProjectionsAllowed = big.NewInt(1 << 4)
+	retrieveBusinessesResponseFieldCommissionAdvanceRate               = big.NewInt(1 << 5)
+	retrieveBusinessesResponseFieldCreatedAt                           = big.NewInt(1 << 6)
+	retrieveBusinessesResponseFieldDealClosedReason                    = big.NewInt(1 << 7)
+	retrieveBusinessesResponseFieldEarningsUsd                         = big.NewInt(1 << 8)
+	retrieveBusinessesResponseFieldFirstTierPartner                    = big.NewInt(1 << 9)
+	retrieveBusinessesResponseFieldID                                  = big.NewInt(1 << 10)
+	retrieveBusinessesResponseFieldMyPartnerTier                       = big.NewInt(1 << 11)
+	retrieveBusinessesResponseFieldObject                              = big.NewInt(1 << 12)
+	retrieveBusinessesResponseFieldOwner                               = big.NewInt(1 << 13)
+	retrieveBusinessesResponseFieldPayoutPercentages                   = big.NewInt(1 << 14)
+	retrieveBusinessesResponseFieldPendingOwnerInvites                 = big.NewInt(1 << 15)
+	retrieveBusinessesResponseFieldReferralExpiresAt                   = big.NewInt(1 << 16)
+	retrieveBusinessesResponseFieldReferralStartedAt                   = big.NewInt(1 << 17)
+	retrieveBusinessesResponseFieldReferringBusiness                   = big.NewInt(1 << 18)
+	retrieveBusinessesResponseFieldSecondTierPartner                   = big.NewInt(1 << 19)
+	retrieveBusinessesResponseFieldStatus                              = big.NewInt(1 << 20)
+	retrieveBusinessesResponseFieldVolumeUsd                           = big.NewInt(1 << 21)
 )
 
 // retrieveBusinessesResponseNullableFields maps the wire names of RetrieveBusinessesResponse's nullable fields (required or optional) to their field bits.
@@ -5531,9 +5532,11 @@ type RetrieveBusinessesResponse struct {
 	BlueprintPartner *RetrieveBusinessesResponseBlueprintPartner `json:"blueprint_partner,omitempty" url:"blueprint_partner,omitempty"`
 	// CPA terms for the referring partner. Omitted for other callers. An offer token requires partner:commission_advance:accept permission.
 	CommissionAdvance *v2.PartnerAdvance `json:"commission_advance,omitempty" url:"commission_advance,omitempty"`
+	// The most the referring organization advances per business, in USD. Returned only with commission_advance_rate.
+	CommissionAdvanceCap *v2.Money `json:"commission_advance_cap,omitempty" url:"commission_advance_cap,omitempty"`
 	// Whether this referral meets the partner and ownership requirements for saving commission advance projections. Returned only to the referring partner; existing advance terms and update permissions still apply.
 	CommissionAdvanceProjectionsAllowed *bool `json:"commission_advance_projections_allowed,omitempty" url:"commission_advance_projections_allowed,omitempty"`
-	// Estimated upfront advance per USD of annual card and BNPL payments, including advance share and remaining term. Multiply annual payments by this rate, cap at 2500 USD, and round down to cents. Uses observed commissions or, without history, reference US card fees minus estimated percentage costs times the partner share. Null when projections or pricing are unavailable. Only returned to the referring partner. Qualification and final offers use actual activity.
+	// Estimated upfront advance per USD of annual card and BNPL payments, including advance share and remaining term. Multiply annual payments by this rate, cap at commission_advance_cap, and round down to cents. Uses observed commissions or, without history, reference US card fees minus estimated percentage costs times the partner share. Null when projections or pricing are unavailable. Only returned to the referring partner. Qualification and final offers use actual activity.
 	CommissionAdvanceRate *string `json:"commission_advance_rate,omitempty" url:"commission_advance_rate,omitempty"`
 	// When the partner business was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
@@ -5591,6 +5594,13 @@ func (r *RetrieveBusinessesResponse) GetCommissionAdvance() *v2.PartnerAdvance {
 		return nil
 	}
 	return r.CommissionAdvance
+}
+
+func (r *RetrieveBusinessesResponse) GetCommissionAdvanceCap() *v2.Money {
+	if r == nil {
+		return nil
+	}
+	return r.CommissionAdvanceCap
 }
 
 func (r *RetrieveBusinessesResponse) GetCommissionAdvanceProjectionsAllowed() *bool {
@@ -5754,6 +5764,13 @@ func (r *RetrieveBusinessesResponse) SetBlueprintPartner(blueprintPartner *Retri
 func (r *RetrieveBusinessesResponse) SetCommissionAdvance(commissionAdvance *v2.PartnerAdvance) {
 	r.CommissionAdvance = commissionAdvance
 	r.require(retrieveBusinessesResponseFieldCommissionAdvance)
+}
+
+// SetCommissionAdvanceCap sets the CommissionAdvanceCap field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBusinessesResponse) SetCommissionAdvanceCap(commissionAdvanceCap *v2.Money) {
+	r.CommissionAdvanceCap = commissionAdvanceCap
+	r.require(retrieveBusinessesResponseFieldCommissionAdvanceCap)
 }
 
 // SetCommissionAdvanceProjectionsAllowed sets the CommissionAdvanceProjectionsAllowed field and marks it as non-optional;
