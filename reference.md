@@ -1891,7 +1891,7 @@ client.AdCampaigns.Create(
 <dl>
 <dd>
 
-**campaignType:** `*whopsdk.CreateAdCampaignsRequestCampaignType` — The kind of campaign to create. `standard` is the ad network's standard campaign; `search` shows text ads on search results for the ad groups' keywords. Defaults to `standard`. Can't be changed after creation.
+**campaignType:** `*whopsdk.CreateAdCampaignsRequestCampaignType` — The kind of campaign to create. `standard` runs image and video ads; `search` shows text ads on search results for the ad groups' keywords. Defaults to `standard`. Can't be changed after creation.
     
 </dd>
 </dl>
@@ -2055,7 +2055,7 @@ client.AdCampaigns.Retrieve(
 <dl>
 <dd>
 
-Deletes an ad campaign and archives it on the ad platform (cascades to ad groups and ads).
+Deletes an ad campaign with its ad groups and ads, and stops their delivery.
 </dd>
 </dl>
 </dd>
@@ -2159,14 +2159,6 @@ client.AdCampaigns.Update(
 <dl>
 <dd>
 
-**adsPlatform:** `*whopsdk.UpdateAdCampaignsRequestXAdsPlatform` — The platform returned when you last retrieved the campaign, ad group, or ad. A different current platform rejects the request with campaign_changed; retrieve the resource again before editing. Required after a delivery-platform migration when creating ads or ad groups, or changing fields other than title, status, budget, and account scope.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **bidType:** `*whopsdk.UpdateAdCampaignsRequestBidType` — How delivery bids in the ad auction: `minimum_cost` gets the most results for the budget, `average_target` holds an average cost per result, `maximum_target` never bids above a cap. Switching to `minimum_cost` clears the cap amounts stored on the campaign's ad groups. Only for campaigns that own the budget.
     
 </dd>
@@ -2191,7 +2183,7 @@ client.AdCampaigns.Update(
 <dl>
 <dd>
 
-**budgetOptimization:** `*whopsdk.UpdateAdCampaignsRequestBudgetOptimization` — Which level owns the budget: the whole campaign (`ad_campaign`) or each ad group individually (`ad_group`). Only changeable before the campaign is live on the ad network; switching to `ad_campaign` requires budget_amount in the same request, and switching to `ad_group` clears the campaign budget.
+**budgetOptimization:** `*whopsdk.UpdateAdCampaignsRequestBudgetOptimization` — Which level owns the budget: the whole campaign (`ad_campaign`) or each ad group individually (`ad_group`). Only changeable before the campaign launches; switching to `ad_campaign` requires budget_amount in the same request, and switching to `ad_group` clears the campaign budget.
     
 </dd>
 </dl>
@@ -2631,7 +2623,6 @@ request := &whopsdk.CreateAdConversionValueRulesRequest{
     },
     Targets: []*whopsdk.CreateAdConversionValueRulesRequestTargetsItem{
         &whopsdk.CreateAdConversionValueRulesRequestTargetsItem{
-            Platform: whopsdk.CreateAdConversionValueRulesRequestTargetsItemPlatformTiktok,
             Scope: whopsdk.CreateAdConversionValueRulesRequestTargetsItemScopeBusiness,
         },
     },
@@ -3327,14 +3318,6 @@ client.AdGroups.Create(
 <dl>
 <dd>
 
-**adsPlatform:** `*whopsdk.CreateAdGroupsRequestXAdsPlatform` — The platform returned when you last retrieved the campaign, ad group, or ad. A different current platform rejects the request with campaign_changed; retrieve the resource again before editing. Required after a delivery-platform migration when creating ads or ad groups, or changing fields other than title, status, budget, and account scope.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **adCampaignID:** `string` — The ad campaign to create the ad group in, prefixed `adcamp_`.
     
 </dd>
@@ -3483,238 +3466,6 @@ client.AdGroups.Create(
 </dl>
 </details>
 
-<details><summary><code>client.AdGroups.EstimateReach(request) -> *whopsdk.ReachEstimate</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Estimates how many people a draft targeting spec can reach, before an ad group is created. The body takes the same targeting fields as creating an ad group, and nothing is persisted.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.EstimateReachAdGroupsRequest{
-    Platform: whopsdk.EstimateReachAdGroupsRequestPlatformMeta,
-}
-client.AdGroups.EstimateReach(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**accountID:** `*string` — Account to estimate on behalf of. Defaults to the authenticated account.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**audiences:** `*whopsdk.AdGroupAudiencesBody` — Saved audiences to deliver to or exclude. Can't be combined with demographics.automatic.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**demographics:** `*whopsdk.AdGroupDemographicsBody` — Age, gender, and automatic-audience targeting.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**detailedTargeting:** `*whopsdk.AdGroupDetailedTargetingBody` — Interest, behavior, and demographic targeting, using categories from the ad platform's targeting taxonomy. At most 100 entries per section.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**devices:** `*whopsdk.AdGroupDevicesBody` — Device platforms and operating systems to target.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**languages:** `[]string` — Languages to target, as ISO 639 codes such as `en` or `es`. Empty or omitted targets all languages.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**platform:** `whopsdk.EstimateReachAdGroupsRequestPlatform` — The ad network the estimate runs on.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**regions:** `*whopsdk.AdGroupRegionsBody` — Locations to target and exclude.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.AdGroups.SearchTargetingOptions() -> *whopsdk.SearchTargetingOptionsAdGroupsResponse</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Searches the ad platform's targeting taxonomy for options to target an ad group with. Each result comes back in the exact shape the ad-group body accepts for its `type`, so it can be used in `detailed_targeting`, `regions`, or `languages` as-is.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.SearchTargetingOptionsAdGroupsRequest{
-    Platform: whopsdk.SearchTargetingOptionsAdGroupsRequestPlatformMeta,
-}
-client.AdGroups.SearchTargetingOptions(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**accountID:** `*string` — Account to search on behalf of. Defaults to the authenticated account.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**platform:** `whopsdk.SearchTargetingOptionsAdGroupsRequestPlatform` — The ad network whose targeting taxonomy to search.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**query:** `*string` — The search term. Blank browses the small fixed lists (behaviors, browse demographic categories, and languages); interests, work employers, job titles, schools, majors, and locations return nothing without one.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**types:** `*whopsdk.SearchTargetingOptionsAdGroupsRequestTypesItem` — Kinds of targeting options to search. Defaults to all of them.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**locationTypes:** `*whopsdk.SearchTargetingOptionsAdGroupsRequestLocationTypesItem` — Narrow location results to these kinds of places. Only applies when `types` includes `locations`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**country:** `*string` — Narrow location results to one country, as an ISO 3166-1 code such as `US`. Only applies when `types` includes `locations`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**limit:** `*int` — Maximum number of results per requested type.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**specialAdCategories:** `*whopsdk.SearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItem` — The campaign's declared special ad categories. Under `housing`, `employment`, or `financial_products` the ad platform allows interests only, drawn from a short approved list, so results are narrowed to what such a campaign can launch with and other kinds return nothing. Blank `query` browses that approved list instead of the usual fixed lists.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
 <details><summary><code>client.AdGroups.Retrieve(ID) -> *whopsdk.AdGroup</code></summary>
 <dl>
 <dd>
@@ -3819,7 +3570,7 @@ client.AdGroups.Retrieve(
 <dl>
 <dd>
 
-Deletes an ad group, removing it from the ad platform so it stops delivering.
+Deletes an ad group and stops its delivery.
 </dd>
 </dl>
 </dd>
@@ -3916,14 +3667,6 @@ client.AdGroups.Update(
 <dd>
 
 **id:** `string` — The ad group ID.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**adsPlatform:** `*whopsdk.UpdateAdGroupsRequestXAdsPlatform` — The platform returned when you last retrieved the campaign, ad group, or ad. A different current platform rejects the request with campaign_changed; retrieve the resource again before editing. Required after a delivery-platform migration when creating ads or ad groups, or changing fields other than title, status, budget, and account scope.
     
 </dd>
 </dl>
@@ -5002,14 +4745,6 @@ client.Ads.Create(
 <dl>
 <dd>
 
-**adsPlatform:** `*whopsdk.CreateAdsRequestXAdsPlatform` — The platform returned when you last retrieved the campaign, ad group, or ad. A different current platform rejects the request with campaign_changed; retrieve the resource again before editing. Required after a delivery-platform migration when creating ads or ad groups, or changing fields other than title, status, budget, and account scope.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **adGroup:** `map[string]any` — An inline ad group to create (same shape as POST /ad_groups, including ad_campaign_id). Creates the ad group and the ad together. Provide this OR ad_group_id.
     
 </dd>
@@ -5034,7 +4769,7 @@ client.Ads.Create(
 <dl>
 <dd>
 
-**creatives:** `[]*whopsdk.CreateAdsRequestCreativesItem` — The ad's creative assets. Each entry is an uploaded file id with an optional format; omit format for the original asset. Entries with no format become a carousel's ordered cards, sharing the ad's copy — 2-10 of them on Meta, while TikTok runs even a single image as a one-card carousel.
+**creatives:** `[]*whopsdk.CreateAdsRequestCreativesItem` — The ad's creative assets. Each entry is an uploaded file id with an optional format; omit format for the original asset. Entries with no format become a carousel's ordered cards, sharing the ad's copy.
     
 </dd>
 </dl>
@@ -5082,7 +4817,7 @@ client.Ads.Create(
 <dl>
 <dd>
 
-**urlParameters:** `map[string]any` — Query parameters to append to the destination URL, keyed by parameter name. Merged with any query string on `url`. Whop adds its own click-attribution parameters; those are reserved and rejected if you set them. Which keys are reserved depends on the ad's network — Meta: utm_meta_ad_id, utm_meta_adset_id, utm_meta_campaign_id, utm_source, utm_placement, utm_medium, utm_content, utm_adset, utm_whop, wacid, wasid, waid, tw_source, tw_adid; TikTok: waid, wasid, wacid, ad_id, adset_id, campaign_id, utm_source, utm_medium, utm_placement, utm_whop, tw_source, tw_adid.
+**urlParameters:** `map[string]any` — Query parameters to append to the destination URL, keyed by parameter name. Merged with any query string on `url`. Whop adds its own click-attribution parameters; those are reserved, and setting one returns an error that names it.
     
 </dd>
 </dl>
@@ -5302,14 +5037,6 @@ client.Ads.Update(
 <dl>
 <dd>
 
-**adsPlatform:** `*whopsdk.UpdateAdsRequestXAdsPlatform` — The platform returned when you last retrieved the campaign, ad group, or ad. A different current platform rejects the request with campaign_changed; retrieve the resource again before editing. Required after a delivery-platform migration when creating ads or ad groups, or changing fields other than title, status, budget, and account scope.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **callToAction:** `*whopsdk.UpdateAdsRequestCallToAction` — The call-to-action button shown on the ad.
     
 </dd>
@@ -5318,7 +5045,7 @@ client.Ads.Update(
 <dl>
 <dd>
 
-**creatives:** `[]*whopsdk.UpdateAdsRequestCreativesItem` — The ad's creative assets. Each entry is an uploaded file id with an optional format; omit format for the original asset. Replaces a live ad's creative on the platform. Entries with no format replace it with a carousel's ordered cards — 2-10 of them on Meta, while TikTok runs even a single image as a one-card carousel.
+**creatives:** `[]*whopsdk.UpdateAdsRequestCreativesItem` — The ad's creative assets. Each entry is an uploaded file id with an optional format; omit format for the original asset. Replaces a live ad's creative. Entries with no format replace it with a carousel's ordered cards.
     
 </dd>
 </dl>
@@ -5366,7 +5093,7 @@ client.Ads.Update(
 <dl>
 <dd>
 
-**urlParameters:** `map[string]any` — Query parameters to append to the destination URL, keyed by parameter name. Merged with any query string on `url`. Whop adds its own click-attribution parameters; those are reserved and rejected if you set them. Which keys are reserved depends on the ad's network — Meta: utm_meta_ad_id, utm_meta_adset_id, utm_meta_campaign_id, utm_source, utm_placement, utm_medium, utm_content, utm_adset, utm_whop, wacid, wasid, waid, tw_source, tw_adid; TikTok: waid, wasid, wacid, ad_id, adset_id, campaign_id, utm_source, utm_medium, utm_placement, utm_whop, tw_source, tw_adid.
+**urlParameters:** `map[string]any` — Query parameters to append to the destination URL, keyed by parameter name. Merged with any query string on `url`. Whop adds its own click-attribution parameters; those are reserved, and setting one returns an error that names it.
     
 </dd>
 </dl>
@@ -24787,7 +24514,7 @@ client.Media.Generate(
 <dl>
 <dd>
 
-**referenceMedia:** `[]string` — Optional reference image file IDs (`file_` prefixed), up to 4. For video, a single reference seeds the opening frame; multiple references guide subject and style instead.
+**referenceMedia:** `[]string` — Optional reference file IDs (`file_` prefixed), up to 4. Images guide the output: for video, a single image seeds the opening frame; multiple images guide subject and style instead. Include one video to remake it: its motion and scene are kept and the images are swapped in. Video only; needs an image and can't be combined with `duration_seconds`. The output matches the video's length, up to 30 seconds, and is billed on it.
     
 </dd>
 </dl>

@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-10-29"
+		apiVersionDateDefault := "2026-10-29-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -174,7 +174,7 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Deletes an ad campaign and archives it on the ad platform (cascades to ad groups and ads).
+// Deletes an ad campaign with its ad groups and ads, and stops their delivery.
 //
 // Example:
 //

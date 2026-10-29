@@ -1343,7 +1343,8 @@ var createAdConversionValueRulesRequestTargetsItemNullableFields = map[string]*b
 }
 
 type CreateAdConversionValueRulesRequestTargetsItem struct {
-	Platform CreateAdConversionValueRulesRequestTargetsItemPlatform `json:"platform" url:"platform"`
+	// Limits the target to one network. Omit it to cover every network Whop runs the target on.
+	Platform *CreateAdConversionValueRulesRequestTargetsItemPlatform `json:"platform,omitempty" url:"platform,omitempty"`
 	// Campaign, ad group, or ad ID. Null for a business target.
 	ResourceID *string                                             `json:"resource_id,omitempty" url:"resource_id,omitempty"`
 	Scope      CreateAdConversionValueRulesRequestTargetsItemScope `json:"scope" url:"scope"`
@@ -1355,9 +1356,9 @@ type CreateAdConversionValueRulesRequestTargetsItem struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreateAdConversionValueRulesRequestTargetsItem) GetPlatform() CreateAdConversionValueRulesRequestTargetsItemPlatform {
+func (c *CreateAdConversionValueRulesRequestTargetsItem) GetPlatform() *CreateAdConversionValueRulesRequestTargetsItemPlatform {
 	if c == nil {
-		return ""
+		return nil
 	}
 	return c.Platform
 }
@@ -1394,7 +1395,7 @@ func (c *CreateAdConversionValueRulesRequestTargetsItem) require(field *big.Int)
 
 // SetPlatform sets the Platform field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdConversionValueRulesRequestTargetsItem) SetPlatform(platform CreateAdConversionValueRulesRequestTargetsItemPlatform) {
+func (c *CreateAdConversionValueRulesRequestTargetsItem) SetPlatform(platform *CreateAdConversionValueRulesRequestTargetsItemPlatform) {
 	c.Platform = platform
 	c.require(createAdConversionValueRulesRequestTargetsItemFieldPlatform)
 }
@@ -1462,6 +1463,7 @@ func (c *CreateAdConversionValueRulesRequestTargetsItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
+// Limits the target to one network. Omit it to cover every network Whop runs the target on.
 type CreateAdConversionValueRulesRequestTargetsItemPlatform string
 
 const (
@@ -2255,7 +2257,8 @@ var updateAdConversionValueRulesRequestTargetsItemNullableFields = map[string]*b
 }
 
 type UpdateAdConversionValueRulesRequestTargetsItem struct {
-	Platform UpdateAdConversionValueRulesRequestTargetsItemPlatform `json:"platform" url:"platform"`
+	// Limits the target to one network. Omit it to cover every network Whop runs the target on.
+	Platform *UpdateAdConversionValueRulesRequestTargetsItemPlatform `json:"platform,omitempty" url:"platform,omitempty"`
 	// Campaign, ad group, or ad ID. Null for a business target.
 	ResourceID *string                                             `json:"resource_id,omitempty" url:"resource_id,omitempty"`
 	Scope      UpdateAdConversionValueRulesRequestTargetsItemScope `json:"scope" url:"scope"`
@@ -2267,9 +2270,9 @@ type UpdateAdConversionValueRulesRequestTargetsItem struct {
 	rawJSON         json.RawMessage
 }
 
-func (u *UpdateAdConversionValueRulesRequestTargetsItem) GetPlatform() UpdateAdConversionValueRulesRequestTargetsItemPlatform {
+func (u *UpdateAdConversionValueRulesRequestTargetsItem) GetPlatform() *UpdateAdConversionValueRulesRequestTargetsItemPlatform {
 	if u == nil {
-		return ""
+		return nil
 	}
 	return u.Platform
 }
@@ -2306,7 +2309,7 @@ func (u *UpdateAdConversionValueRulesRequestTargetsItem) require(field *big.Int)
 
 // SetPlatform sets the Platform field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdConversionValueRulesRequestTargetsItem) SetPlatform(platform UpdateAdConversionValueRulesRequestTargetsItemPlatform) {
+func (u *UpdateAdConversionValueRulesRequestTargetsItem) SetPlatform(platform *UpdateAdConversionValueRulesRequestTargetsItemPlatform) {
 	u.Platform = platform
 	u.require(updateAdConversionValueRulesRequestTargetsItemFieldPlatform)
 }
@@ -2374,6 +2377,7 @@ func (u *UpdateAdConversionValueRulesRequestTargetsItem) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
+// Limits the target to one network. Omit it to cover every network Whop runs the target on.
 type UpdateAdConversionValueRulesRequestTargetsItemPlatform string
 
 const (

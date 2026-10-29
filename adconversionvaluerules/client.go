@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-10-29"
+		apiVersionDateDefault := "2026-10-29-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -132,7 +132,6 @@ func (c *Client) List(
 //	    },
 //	    Targets: []*whopsdk.CreateAdConversionValueRulesRequestTargetsItem{
 //	        &whopsdk.CreateAdConversionValueRulesRequestTargetsItem{
-//	            Platform: whopsdk.CreateAdConversionValueRulesRequestTargetsItemPlatformTiktok,
 //	            Scope: whopsdk.CreateAdConversionValueRulesRequestTargetsItemScopeBusiness,
 //	        },
 //	    },

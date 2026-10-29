@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-10-29"
+		apiVersionDateDefault := "2026-10-29-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -151,60 +151,6 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Estimates how many people a draft targeting spec can reach, before an ad group is created. The body takes the same targeting fields as creating an ad group, and nothing is persisted.
-//
-// Example:
-//
-//	request := &whopsdk.EstimateReachAdGroupsRequest{
-//	    Platform: whopsdk.EstimateReachAdGroupsRequestPlatformMeta,
-//	}
-//	client.AdGroups.EstimateReach(
-//	    context.TODO(),
-//	    request,
-//	)
-func (c *Client) EstimateReach(
-	ctx context.Context,
-	request *whopsdk.EstimateReachAdGroupsRequest,
-	opts ...option.RequestOption,
-) (*whopsdk.ReachEstimate, error) {
-	response, err := c.WithRawResponse.EstimateReach(
-		ctx,
-		request,
-		opts...,
-	)
-	if err != nil {
-		return nil, err
-	}
-	return response.Body, nil
-}
-
-// Searches the ad platform's targeting taxonomy for options to target an ad group with. Each result comes back in the exact shape the ad-group body accepts for its `type`, so it can be used in `detailed_targeting`, `regions`, or `languages` as-is.
-//
-// Example:
-//
-//	request := &whopsdk.SearchTargetingOptionsAdGroupsRequest{
-//	    Platform: whopsdk.SearchTargetingOptionsAdGroupsRequestPlatformMeta,
-//	}
-//	client.AdGroups.SearchTargetingOptions(
-//	    context.TODO(),
-//	    request,
-//	)
-func (c *Client) SearchTargetingOptions(
-	ctx context.Context,
-	request *whopsdk.SearchTargetingOptionsAdGroupsRequest,
-	opts ...option.RequestOption,
-) (*whopsdk.SearchTargetingOptionsAdGroupsResponse, error) {
-	response, err := c.WithRawResponse.SearchTargetingOptions(
-		ctx,
-		request,
-		opts...,
-	)
-	if err != nil {
-		return nil, err
-	}
-	return response.Body, nil
-}
-
 // Retrieves an ad group, with performance stats for the window set by `stats_from` and `stats_to`.
 //
 // Example:
@@ -232,7 +178,7 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Deletes an ad group, removing it from the ad platform so it stops delivering.
+// Deletes an ad group and stops its delivery.
 //
 // Example:
 //

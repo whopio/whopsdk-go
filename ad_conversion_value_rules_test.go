@@ -2337,7 +2337,7 @@ func TestSettersMarkExplicitCreateAdConversionValueRulesRequestFixedValue(t *tes
 func TestSettersCreateAdConversionValueRulesRequestTargetsItem(t *testing.T) {
 	t.Run("SetPlatform", func(t *testing.T) {
 		obj := &CreateAdConversionValueRulesRequestTargetsItem{}
-		var fernTestValuePlatform CreateAdConversionValueRulesRequestTargetsItemPlatform
+		var fernTestValuePlatform *CreateAdConversionValueRulesRequestTargetsItemPlatform
 		obj.SetPlatform(fernTestValuePlatform)
 		assert.Equal(t, fernTestValuePlatform, obj.Platform)
 		assert.NotNil(t, obj.explicitFields)
@@ -2366,11 +2366,21 @@ func TestGettersCreateAdConversionValueRulesRequestTargetsItem(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateAdConversionValueRulesRequestTargetsItem{}
-		var expected CreateAdConversionValueRulesRequestTargetsItemPlatform
+		var expected *CreateAdConversionValueRulesRequestTargetsItemPlatform
 		obj.Platform = expected
 
 		// Act & Assert
 		assert.Equal(t, expected, obj.GetPlatform(), "getter should return the property value")
+	})
+
+	t.Run("GetPlatform_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdConversionValueRulesRequestTargetsItem{}
+		obj.Platform = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPlatform(), "getter should return nil when property is nil")
 	})
 
 	t.Run("GetPlatform_NilReceiver", func(t *testing.T) {
@@ -2448,7 +2458,7 @@ func TestSettersMarkExplicitCreateAdConversionValueRulesRequestTargetsItem(t *te
 		t.Parallel()
 		// Arrange
 		obj := &CreateAdConversionValueRulesRequestTargetsItem{}
-		var fernTestValuePlatform CreateAdConversionValueRulesRequestTargetsItemPlatform
+		var fernTestValuePlatform *CreateAdConversionValueRulesRequestTargetsItemPlatform
 
 		// Act
 		obj.SetPlatform(fernTestValuePlatform)
@@ -3381,7 +3391,7 @@ func TestSettersMarkExplicitUpdateAdConversionValueRulesRequestFixedValue(t *tes
 func TestSettersUpdateAdConversionValueRulesRequestTargetsItem(t *testing.T) {
 	t.Run("SetPlatform", func(t *testing.T) {
 		obj := &UpdateAdConversionValueRulesRequestTargetsItem{}
-		var fernTestValuePlatform UpdateAdConversionValueRulesRequestTargetsItemPlatform
+		var fernTestValuePlatform *UpdateAdConversionValueRulesRequestTargetsItemPlatform
 		obj.SetPlatform(fernTestValuePlatform)
 		assert.Equal(t, fernTestValuePlatform, obj.Platform)
 		assert.NotNil(t, obj.explicitFields)
@@ -3410,11 +3420,21 @@ func TestGettersUpdateAdConversionValueRulesRequestTargetsItem(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &UpdateAdConversionValueRulesRequestTargetsItem{}
-		var expected UpdateAdConversionValueRulesRequestTargetsItemPlatform
+		var expected *UpdateAdConversionValueRulesRequestTargetsItemPlatform
 		obj.Platform = expected
 
 		// Act & Assert
 		assert.Equal(t, expected, obj.GetPlatform(), "getter should return the property value")
+	})
+
+	t.Run("GetPlatform_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdConversionValueRulesRequestTargetsItem{}
+		obj.Platform = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPlatform(), "getter should return nil when property is nil")
 	})
 
 	t.Run("GetPlatform_NilReceiver", func(t *testing.T) {
@@ -3492,7 +3512,7 @@ func TestSettersMarkExplicitUpdateAdConversionValueRulesRequestTargetsItem(t *te
 		t.Parallel()
 		// Arrange
 		obj := &UpdateAdConversionValueRulesRequestTargetsItem{}
-		var fernTestValuePlatform UpdateAdConversionValueRulesRequestTargetsItemPlatform
+		var fernTestValuePlatform *UpdateAdConversionValueRulesRequestTargetsItemPlatform
 
 		// Act
 		obj.SetPlatform(fernTestValuePlatform)

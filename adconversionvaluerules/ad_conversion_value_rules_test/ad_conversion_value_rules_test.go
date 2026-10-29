@@ -122,8 +122,7 @@ func TestAdConversionValueRulesCreateWithWireMock(
 		},
 		Targets: []*whopsdk.CreateAdConversionValueRulesRequestTargetsItem{
 			&whopsdk.CreateAdConversionValueRulesRequestTargetsItem{
-				Platform: whopsdk.CreateAdConversionValueRulesRequestTargetsItemPlatformTiktok,
-				Scope:    whopsdk.CreateAdConversionValueRulesRequestTargetsItemScopeBusiness,
+				Scope: whopsdk.CreateAdConversionValueRulesRequestTargetsItemScopeBusiness,
 			},
 		},
 	}
