@@ -107,7 +107,7 @@ var (
 )
 
 type ReverseDepositsRequest struct {
-	// The ID of the deposit to reverse: a bank deposit, prefixed `vbt_`, or a card deposit's payment, prefixed `pay_`.
+	// A bank deposit ID, prefixed `vbt_`, or a card deposit's payment ID, prefixed `pay_`.
 	ID string `json:"-" url:"-"`
 	// The business that received the deposit, prefixed `biz_`. Pass this or `user_id`.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
