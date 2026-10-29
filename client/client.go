@@ -48,7 +48,7 @@ import (
 	experiences "github.com/whopio/whopsdk-go/v2/experiences"
 	experiments "github.com/whopio/whopsdk-go/v2/experiments"
 	exports "github.com/whopio/whopsdk-go/v2/exports"
-	externalaccountsclient "github.com/whopio/whopsdk-go/v2/externalaccounts/client"
+	externalaccounts "github.com/whopio/whopsdk-go/v2/externalaccounts"
 	feedbacksubmissions "github.com/whopio/whopsdk-go/v2/feedbacksubmissions"
 	feemarkups "github.com/whopio/whopsdk-go/v2/feemarkups"
 	files "github.com/whopio/whopsdk-go/v2/files"
@@ -150,7 +150,7 @@ type Whop struct {
 	Experiences              *experiences.Client
 	Experiments              *experiments.Client
 	Exports                  *exports.Client
-	ExternalAccounts         *externalaccountsclient.Client
+	ExternalAccounts         *externalaccounts.Client
 	FeeMarkups               *feemarkups.Client
 	FeedbackSubmissions      *feedbacksubmissions.Client
 	Files                    *files.Client
@@ -212,7 +212,7 @@ type Whop struct {
 func NewWhop(opts ...option.RequestOption) *Whop {
 	options := core.NewRequestOptions(opts...)
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-10-29-2"
+		apiVersionDateDefault := "2026-10-29-3"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Whop{
@@ -260,7 +260,7 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		Experiences:              experiences.NewClient(options),
 		Experiments:              experiments.NewClient(options),
 		Exports:                  exports.NewClient(options),
-		ExternalAccounts:         externalaccountsclient.NewClient(options),
+		ExternalAccounts:         externalaccounts.NewClient(options),
 		FeeMarkups:               feemarkups.NewClient(options),
 		FeedbackSubmissions:      feedbacksubmissions.NewClient(options),
 		Files:                    files.NewClient(options),

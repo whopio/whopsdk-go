@@ -2,5 +2,5 @@
 
 // An External Account represents an account on another platform linked to a Whop account or user, such as a Facebook page, Instagram account, TikTok account, or Klaviyo account. You connect it through OAuth or an API key, or Whop creates it for you. External account IDs are prefixed `sacc_`.
 //
-// Use the External Accounts API to list connected accounts, [connect a profile through OAuth](/api-reference/beta/external-accounts/connect-an-external-account), [create a Whop-managed Facebook page or TikTok account, or connect a Klaviyo account with its API key](/api-reference/beta/external-accounts/create-an-external-account), disconnect an external account, and manage the creators an Instagram account runs partnership ads with.
+// Use the External Accounts API to list connected accounts, [connect a profile through OAuth](/api-reference/beta/external-accounts/connect-an-external-account), [create a Whop-managed Facebook page or TikTok account, or connect a Klaviyo account with its API key](/api-reference/beta/external-accounts/create-an-external-account), and disconnect an external account.
 package externalaccounts

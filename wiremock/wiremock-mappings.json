@@ -1488,7 +1488,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"ad_campaign\": {\n        \"id\": \"adcamp_xxxxxxxxxxxxxx\"\n      },\n      \"ad_group\": {\n        \"id\": \"adcamp_xxxxxxxxxxxxxx\"\n      },\n      \"added_to_cart_value\": 1850,\n      \"added_to_carts\": 74,\n      \"call_to_action\": \"learn_more\",\n      \"click_through_rate\": 0.0261,\n      \"clicks\": 1337,\n      \"completed_registration_value\": 95,\n      \"completed_registrations\": 19,\n      \"contact_value\": 175,\n      \"contacts\": 27,\n      \"cost_per_added_to_cart\": 6.515675675675676,\n      \"cost_per_click\": 0.36,\n      \"cost_per_completed_registration\": 25.37684210526316,\n      \"cost_per_contact\": 17.85777777777778,\n      \"cost_per_lead\": 3.984793388429752,\n      \"cost_per_mille\": 9.42,\n      \"cost_per_purchase\": 12.68842105263158,\n      \"cost_per_result\": 3.984793388429752,\n      \"cost_per_schedule\": 10.48173913043478,\n      \"cost_per_submitted_application\": 40.18,\n      \"cost_per_unique_click\": 0.48,\n      \"cost_per_viewed_content\": 0.2253084112149533,\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"creatives\": [\n        {\n          \"crop\": {\n            \"height\": 1000,\n            \"width\": 1000,\n            \"x\": 40,\n            \"y\": 0\n          },\n          \"format\": null,\n          \"id\": \"file_xxxxxxxxxxxxxx\",\n          \"language\": null,\n          \"media_type\": \"image\",\n          \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\"\n        }\n      ],\n      \"custom_conversions\": 63,\n      \"custom_event_counts\": {\n        \"booked_detail\": 63\n      },\n      \"custom_event_values\": {\n        \"booked_detail\": 4820\n      },\n      \"delivery_status\": \"in_appeal\",\n      \"descriptions\": [\n        {\n          \"language\": \"en\",\n          \"text\": \"Austin's mobile detailers\"\n        }\n      ],\n      \"frequency\": 1.1,\n      \"headlines\": [\n        {\n          \"language\": \"en\",\n          \"text\": \"Austin's mobile detailers\"\n        }\n      ],\n      \"id\": \"ad_xxxxxxxxxxxxxx\",\n      \"impressions\": 51204,\n      \"issues\": [\n        {\n          \"category\": \"information\",\n          \"id\": \"adiss_xxxxxxxxxxxxxx\",\n          \"message\": \"Your ad didn't pass our content review. Update it to follow our ad guidelines and resubmit.\",\n          \"resource_id\": \"ad_xxxxxxxxxxxxxx\",\n          \"resource_type\": \"ad_campaign\",\n          \"title\": \"Ad issue\"\n        }\n      ],\n      \"lead_value\": 1180,\n      \"leads\": 121,\n      \"link_clicks\": 1071,\n      \"primary_texts\": [\n        {\n          \"language\": \"en\",\n          \"text\": \"Austin's mobile detailers\"\n        }\n      ],\n      \"purchase_value\": 9462,\n      \"purchases\": 38,\n      \"reach\": 0,\n      \"result_event\": \"purchase\",\n      \"result_event_name\": \"booked_detail\",\n      \"results\": 121,\n      \"return_on_ad_spend\": 19.62419113987058,\n      \"schedule_value\": 640,\n      \"schedules\": 46,\n      \"spend\": 482.16,\n      \"spend_currency\": \"usd\",\n      \"status\": \"active\",\n      \"submitted_application_value\": 300,\n      \"submitted_applications\": 12,\n      \"title\": \"Ceramic coating — saved quote form\",\n      \"unique_click_through_rate\": 1.1,\n      \"unique_clicks\": 1012,\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n      \"url\": \"https://shinetime.example/ceramic-coating\",\n      \"url_parameters\": {\n        \"key\": \"value\"\n      },\n      \"viewed_content_value\": 0,\n      \"viewed_contents\": 2140\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"ad_campaign\": {\n        \"id\": \"adcamp_xxxxxxxxxxxxxx\"\n      },\n      \"ad_group\": {\n        \"id\": \"adcamp_xxxxxxxxxxxxxx\"\n      },\n      \"added_to_cart_value\": 1850,\n      \"added_to_carts\": 74,\n      \"call_to_action\": \"learn_more\",\n      \"click_through_rate\": 0.0261,\n      \"clicks\": 1337,\n      \"completed_registration_value\": 95,\n      \"completed_registrations\": 19,\n      \"contact_value\": 175,\n      \"contacts\": 27,\n      \"cost_per_added_to_cart\": 6.515675675675676,\n      \"cost_per_click\": 0.36,\n      \"cost_per_completed_registration\": 25.37684210526316,\n      \"cost_per_contact\": 17.85777777777778,\n      \"cost_per_lead\": 3.984793388429752,\n      \"cost_per_mille\": 9.42,\n      \"cost_per_purchase\": 12.68842105263158,\n      \"cost_per_result\": 7.653333333333333,\n      \"cost_per_schedule\": 10.48173913043478,\n      \"cost_per_submitted_application\": 40.18,\n      \"cost_per_unique_click\": 0.48,\n      \"cost_per_viewed_content\": 0.2253084112149533,\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"creatives\": [\n        {\n          \"crop\": {\n            \"height\": 1000,\n            \"width\": 1000,\n            \"x\": 40,\n            \"y\": 0\n          },\n          \"format\": null,\n          \"id\": \"file_xxxxxxxxxxxxxx\",\n          \"language\": null,\n          \"media_type\": \"image\",\n          \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\"\n        }\n      ],\n      \"custom_conversions\": 63,\n      \"custom_event_counts\": {\n        \"booked_detail\": 63\n      },\n      \"custom_event_values\": {\n        \"booked_detail\": 4820\n      },\n      \"delivery_status\": \"in_appeal\",\n      \"descriptions\": [\n        {\n          \"language\": \"en\",\n          \"text\": \"Austin's mobile detailers\"\n        }\n      ],\n      \"frequency\": 1.1,\n      \"headlines\": [\n        {\n          \"language\": \"en\",\n          \"text\": \"Austin's mobile detailers\"\n        }\n      ],\n      \"id\": \"ad_xxxxxxxxxxxxxx\",\n      \"impressions\": 51204,\n      \"issues\": [\n        {\n          \"category\": \"information\",\n          \"id\": \"adiss_xxxxxxxxxxxxxx\",\n          \"message\": \"Your ad didn't pass our content review. Update it to follow our ad guidelines and resubmit.\",\n          \"resource_id\": \"ad_xxxxxxxxxxxxxx\",\n          \"resource_type\": \"ad_campaign\",\n          \"title\": \"Ad issue\"\n        }\n      ],\n      \"lead_value\": 1180,\n      \"leads\": 121,\n      \"link_clicks\": 1071,\n      \"primary_texts\": [\n        {\n          \"language\": \"en\",\n          \"text\": \"Austin's mobile detailers\"\n        }\n      ],\n      \"purchase_value\": 9462,\n      \"purchases\": 38,\n      \"reach\": 0,\n      \"result_event\": \"purchase\",\n      \"result_event_name\": \"booked_detail\",\n      \"results\": 63,\n      \"return_on_ad_spend\": 19.62419113987058,\n      \"schedule_value\": 640,\n      \"schedules\": 46,\n      \"spend\": 482.16,\n      \"spend_currency\": \"usd\",\n      \"status\": \"active\",\n      \"submitted_application_value\": 300,\n      \"submitted_applications\": 12,\n      \"title\": \"Ceramic coating — spring hook v2\",\n      \"unique_click_through_rate\": 1.1,\n      \"unique_clicks\": 1012,\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n      \"url\": \"https://shinetime.example/ceramic-coating\",\n      \"url_parameters\": {\n        \"key\": \"value\"\n      },\n      \"viewed_content_value\": 0,\n      \"viewed_contents\": 2140\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -1520,7 +1520,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"ad_campaign\": {\n    \"id\": \"adcamp_xxxxxxxxxxxxxx\"\n  },\n  \"ad_group\": {\n    \"id\": \"adcamp_xxxxxxxxxxxxxx\"\n  },\n  \"added_to_cart_value\": 1850,\n  \"added_to_carts\": 74,\n  \"call_to_action\": \"learn_more\",\n  \"click_through_rate\": 0.0261,\n  \"clicks\": 1337,\n  \"completed_registration_value\": 95,\n  \"completed_registrations\": 19,\n  \"contact_value\": 175,\n  \"contacts\": 27,\n  \"cost_per_added_to_cart\": 6.515675675675676,\n  \"cost_per_click\": 0.36,\n  \"cost_per_completed_registration\": 25.37684210526316,\n  \"cost_per_contact\": 17.85777777777778,\n  \"cost_per_lead\": 3.984793388429752,\n  \"cost_per_mille\": 9.42,\n  \"cost_per_purchase\": 12.68842105263158,\n  \"cost_per_result\": 3.984793388429752,\n  \"cost_per_schedule\": 10.48173913043478,\n  \"cost_per_submitted_application\": 40.18,\n  \"cost_per_unique_click\": 0.48,\n  \"cost_per_viewed_content\": 0.2253084112149533,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"creatives\": [\n    {\n      \"crop\": {\n        \"height\": 1000,\n        \"width\": 1000,\n        \"x\": 40,\n        \"y\": 0\n      },\n      \"format\": \"square\",\n      \"id\": \"file_xxxxxxxxxxxxxx\",\n      \"language\": \"language\",\n      \"media_type\": \"image\",\n      \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\"\n    }\n  ],\n  \"custom_conversions\": 63,\n  \"custom_event_counts\": {\n    \"booked_detail\": 63\n  },\n  \"custom_event_values\": {\n    \"booked_detail\": 4820\n  },\n  \"delivery_status\": \"in_appeal\",\n  \"descriptions\": [\n    {\n      \"language\": \"en\",\n      \"text\": \"Austin's mobile detailers\"\n    }\n  ],\n  \"frequency\": 1.1,\n  \"headlines\": [\n    {\n      \"language\": \"en\",\n      \"text\": \"Austin's mobile detailers\"\n    }\n  ],\n  \"id\": \"ad_xxxxxxxxxxxxxx\",\n  \"impressions\": 51204,\n  \"issues\": [\n    {\n      \"category\": \"information\",\n      \"id\": \"adiss_xxxxxxxxxxxxxx\",\n      \"message\": \"Your ad didn't pass our content review. Update it to follow our ad guidelines and resubmit.\",\n      \"resource_id\": \"ad_xxxxxxxxxxxxxx\",\n      \"resource_type\": \"ad_campaign\",\n      \"title\": \"Ad issue\"\n    }\n  ],\n  \"lead_value\": 1180,\n  \"leads\": 121,\n  \"link_clicks\": 1071,\n  \"primary_texts\": [\n    {\n      \"language\": \"en\",\n      \"text\": \"Austin's mobile detailers\"\n    }\n  ],\n  \"purchase_value\": 9462,\n  \"purchases\": 38,\n  \"reach\": 0,\n  \"result_event\": \"purchase\",\n  \"result_event_name\": \"booked_detail\",\n  \"results\": 121,\n  \"return_on_ad_spend\": 19.62419113987058,\n  \"schedule_value\": 640,\n  \"schedules\": 46,\n  \"spend\": 482.16,\n  \"spend_currency\": \"usd\",\n  \"status\": \"active\",\n  \"submitted_application_value\": 300,\n  \"submitted_applications\": 12,\n  \"title\": \"Ceramic coating — saved quote form\",\n  \"unique_click_through_rate\": 1.1,\n  \"unique_clicks\": 1012,\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"url\": \"https://shinetime.example/ceramic-coating\",\n  \"url_parameters\": {\n    \"key\": \"value\"\n  },\n  \"viewed_content_value\": 0,\n  \"viewed_contents\": 2140\n}",
+        "body": "{\n  \"ad_campaign\": {\n    \"id\": \"adcamp_xxxxxxxxxxxxxx\"\n  },\n  \"ad_group\": {\n    \"id\": \"adcamp_xxxxxxxxxxxxxx\"\n  },\n  \"added_to_cart_value\": 1850,\n  \"added_to_carts\": 74,\n  \"call_to_action\": \"learn_more\",\n  \"click_through_rate\": 0.0261,\n  \"clicks\": 1337,\n  \"completed_registration_value\": 95,\n  \"completed_registrations\": 19,\n  \"contact_value\": 175,\n  \"contacts\": 27,\n  \"cost_per_added_to_cart\": 6.515675675675676,\n  \"cost_per_click\": 0.36,\n  \"cost_per_completed_registration\": 25.37684210526316,\n  \"cost_per_contact\": 17.85777777777778,\n  \"cost_per_lead\": 3.984793388429752,\n  \"cost_per_mille\": 9.42,\n  \"cost_per_purchase\": 12.68842105263158,\n  \"cost_per_result\": 7.653333333333333,\n  \"cost_per_schedule\": 10.48173913043478,\n  \"cost_per_submitted_application\": 40.18,\n  \"cost_per_unique_click\": 0.48,\n  \"cost_per_viewed_content\": 0.2253084112149533,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"creatives\": [\n    {\n      \"crop\": {\n        \"height\": 1000,\n        \"width\": 1000,\n        \"x\": 40,\n        \"y\": 0\n      },\n      \"format\": \"square\",\n      \"id\": \"file_xxxxxxxxxxxxxx\",\n      \"language\": \"language\",\n      \"media_type\": \"image\",\n      \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\"\n    }\n  ],\n  \"custom_conversions\": 63,\n  \"custom_event_counts\": {\n    \"booked_detail\": 63\n  },\n  \"custom_event_values\": {\n    \"booked_detail\": 4820\n  },\n  \"delivery_status\": \"in_appeal\",\n  \"descriptions\": [\n    {\n      \"language\": \"en\",\n      \"text\": \"Austin's mobile detailers\"\n    }\n  ],\n  \"frequency\": 1.1,\n  \"headlines\": [\n    {\n      \"language\": \"en\",\n      \"text\": \"Austin's mobile detailers\"\n    }\n  ],\n  \"id\": \"ad_xxxxxxxxxxxxxx\",\n  \"impressions\": 51204,\n  \"issues\": [\n    {\n      \"category\": \"information\",\n      \"id\": \"adiss_xxxxxxxxxxxxxx\",\n      \"message\": \"Your ad didn't pass our content review. Update it to follow our ad guidelines and resubmit.\",\n      \"resource_id\": \"ad_xxxxxxxxxxxxxx\",\n      \"resource_type\": \"ad_campaign\",\n      \"title\": \"Ad issue\"\n    }\n  ],\n  \"lead_value\": 1180,\n  \"leads\": 121,\n  \"link_clicks\": 1071,\n  \"primary_texts\": [\n    {\n      \"language\": \"en\",\n      \"text\": \"Austin's mobile detailers\"\n    }\n  ],\n  \"purchase_value\": 9462,\n  \"purchases\": 38,\n  \"reach\": 0,\n  \"result_event\": \"purchase\",\n  \"result_event_name\": \"booked_detail\",\n  \"results\": 63,\n  \"return_on_ad_spend\": 19.62419113987058,\n  \"schedule_value\": 640,\n  \"schedules\": 46,\n  \"spend\": 482.16,\n  \"spend_currency\": \"usd\",\n  \"status\": \"active\",\n  \"submitted_application_value\": 300,\n  \"submitted_applications\": 12,\n  \"title\": \"Ceramic coating — spring hook v2\",\n  \"unique_click_through_rate\": 1.1,\n  \"unique_clicks\": 1012,\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"url\": \"https://shinetime.example/ceramic-coating\",\n  \"url_parameters\": {\n    \"key\": \"value\"\n  },\n  \"viewed_content_value\": 0,\n  \"viewed_contents\": 2140\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -1556,7 +1556,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"ad_campaign\": {\n    \"id\": \"adcamp_xxxxxxxxxxxxxx\"\n  },\n  \"ad_group\": {\n    \"id\": \"adcamp_xxxxxxxxxxxxxx\"\n  },\n  \"added_to_cart_value\": 1850,\n  \"added_to_carts\": 74,\n  \"call_to_action\": \"learn_more\",\n  \"click_through_rate\": 0.0261,\n  \"clicks\": 1337,\n  \"completed_registration_value\": 95,\n  \"completed_registrations\": 19,\n  \"contact_value\": 175,\n  \"contacts\": 27,\n  \"cost_per_added_to_cart\": 6.515675675675676,\n  \"cost_per_click\": 0.36,\n  \"cost_per_completed_registration\": 25.37684210526316,\n  \"cost_per_contact\": 17.85777777777778,\n  \"cost_per_lead\": 3.984793388429752,\n  \"cost_per_mille\": 9.42,\n  \"cost_per_purchase\": 12.68842105263158,\n  \"cost_per_result\": 3.984793388429752,\n  \"cost_per_schedule\": 10.48173913043478,\n  \"cost_per_submitted_application\": 40.18,\n  \"cost_per_unique_click\": 0.48,\n  \"cost_per_viewed_content\": 0.2253084112149533,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"creatives\": [\n    {\n      \"crop\": {\n        \"height\": 1000,\n        \"width\": 1000,\n        \"x\": 40,\n        \"y\": 0\n      },\n      \"format\": \"square\",\n      \"id\": \"file_xxxxxxxxxxxxxx\",\n      \"language\": \"language\",\n      \"media_type\": \"image\",\n      \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\"\n    }\n  ],\n  \"custom_conversions\": 63,\n  \"custom_event_counts\": {\n    \"booked_detail\": 63\n  },\n  \"custom_event_values\": {\n    \"booked_detail\": 4820\n  },\n  \"delivery_status\": \"in_appeal\",\n  \"descriptions\": [\n    {\n      \"language\": \"en\",\n      \"text\": \"Austin's mobile detailers\"\n    }\n  ],\n  \"frequency\": 1.1,\n  \"headlines\": [\n    {\n      \"language\": \"en\",\n      \"text\": \"Austin's mobile detailers\"\n    }\n  ],\n  \"id\": \"ad_xxxxxxxxxxxxxx\",\n  \"impressions\": 51204,\n  \"issues\": [\n    {\n      \"category\": \"information\",\n      \"id\": \"adiss_xxxxxxxxxxxxxx\",\n      \"message\": \"Your ad didn't pass our content review. Update it to follow our ad guidelines and resubmit.\",\n      \"resource_id\": \"ad_xxxxxxxxxxxxxx\",\n      \"resource_type\": \"ad_campaign\",\n      \"title\": \"Ad issue\"\n    }\n  ],\n  \"lead_value\": 1180,\n  \"leads\": 121,\n  \"link_clicks\": 1071,\n  \"primary_texts\": [\n    {\n      \"language\": \"en\",\n      \"text\": \"Austin's mobile detailers\"\n    }\n  ],\n  \"purchase_value\": 9462,\n  \"purchases\": 38,\n  \"reach\": 0,\n  \"result_event\": \"purchase\",\n  \"result_event_name\": \"booked_detail\",\n  \"results\": 121,\n  \"return_on_ad_spend\": 19.62419113987058,\n  \"schedule_value\": 640,\n  \"schedules\": 46,\n  \"spend\": 482.16,\n  \"spend_currency\": \"usd\",\n  \"status\": \"active\",\n  \"submitted_application_value\": 300,\n  \"submitted_applications\": 12,\n  \"title\": \"Ceramic coating — saved quote form\",\n  \"unique_click_through_rate\": 1.1,\n  \"unique_clicks\": 1012,\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"url\": \"https://shinetime.example/ceramic-coating\",\n  \"url_parameters\": {\n    \"key\": \"value\"\n  },\n  \"viewed_content_value\": 0,\n  \"viewed_contents\": 2140\n}",
+        "body": "{\n  \"ad_campaign\": {\n    \"id\": \"adcamp_xxxxxxxxxxxxxx\"\n  },\n  \"ad_group\": {\n    \"id\": \"adcamp_xxxxxxxxxxxxxx\"\n  },\n  \"added_to_cart_value\": 1850,\n  \"added_to_carts\": 74,\n  \"call_to_action\": \"learn_more\",\n  \"click_through_rate\": 0.0261,\n  \"clicks\": 1337,\n  \"completed_registration_value\": 95,\n  \"completed_registrations\": 19,\n  \"contact_value\": 175,\n  \"contacts\": 27,\n  \"cost_per_added_to_cart\": 6.515675675675676,\n  \"cost_per_click\": 0.36,\n  \"cost_per_completed_registration\": 25.37684210526316,\n  \"cost_per_contact\": 17.85777777777778,\n  \"cost_per_lead\": 3.984793388429752,\n  \"cost_per_mille\": 9.42,\n  \"cost_per_purchase\": 12.68842105263158,\n  \"cost_per_result\": 7.653333333333333,\n  \"cost_per_schedule\": 10.48173913043478,\n  \"cost_per_submitted_application\": 40.18,\n  \"cost_per_unique_click\": 0.48,\n  \"cost_per_viewed_content\": 0.2253084112149533,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"creatives\": [\n    {\n      \"crop\": {\n        \"height\": 1000,\n        \"width\": 1000,\n        \"x\": 40,\n        \"y\": 0\n      },\n      \"format\": \"square\",\n      \"id\": \"file_xxxxxxxxxxxxxx\",\n      \"language\": \"language\",\n      \"media_type\": \"image\",\n      \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\"\n    }\n  ],\n  \"custom_conversions\": 63,\n  \"custom_event_counts\": {\n    \"booked_detail\": 63\n  },\n  \"custom_event_values\": {\n    \"booked_detail\": 4820\n  },\n  \"delivery_status\": \"in_appeal\",\n  \"descriptions\": [\n    {\n      \"language\": \"en\",\n      \"text\": \"Austin's mobile detailers\"\n    }\n  ],\n  \"frequency\": 1.1,\n  \"headlines\": [\n    {\n      \"language\": \"en\",\n      \"text\": \"Austin's mobile detailers\"\n    }\n  ],\n  \"id\": \"ad_xxxxxxxxxxxxxx\",\n  \"impressions\": 51204,\n  \"issues\": [\n    {\n      \"category\": \"information\",\n      \"id\": \"adiss_xxxxxxxxxxxxxx\",\n      \"message\": \"Your ad didn't pass our content review. Update it to follow our ad guidelines and resubmit.\",\n      \"resource_id\": \"ad_xxxxxxxxxxxxxx\",\n      \"resource_type\": \"ad_campaign\",\n      \"title\": \"Ad issue\"\n    }\n  ],\n  \"lead_value\": 1180,\n  \"leads\": 121,\n  \"link_clicks\": 1071,\n  \"primary_texts\": [\n    {\n      \"language\": \"en\",\n      \"text\": \"Austin's mobile detailers\"\n    }\n  ],\n  \"purchase_value\": 9462,\n  \"purchases\": 38,\n  \"reach\": 0,\n  \"result_event\": \"purchase\",\n  \"result_event_name\": \"booked_detail\",\n  \"results\": 63,\n  \"return_on_ad_spend\": 19.62419113987058,\n  \"schedule_value\": 640,\n  \"schedules\": 46,\n  \"spend\": 482.16,\n  \"spend_currency\": \"usd\",\n  \"status\": \"active\",\n  \"submitted_application_value\": 300,\n  \"submitted_applications\": 12,\n  \"title\": \"Ceramic coating — spring hook v2\",\n  \"unique_click_through_rate\": 1.1,\n  \"unique_clicks\": 1012,\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"url\": \"https://shinetime.example/ceramic-coating\",\n  \"url_parameters\": {\n    \"key\": \"value\"\n  },\n  \"viewed_content_value\": 0,\n  \"viewed_contents\": 2140\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -1628,7 +1628,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"ad_campaign\": {\n    \"id\": \"adcamp_xxxxxxxxxxxxxx\"\n  },\n  \"ad_group\": {\n    \"id\": \"adcamp_xxxxxxxxxxxxxx\"\n  },\n  \"added_to_cart_value\": 1850,\n  \"added_to_carts\": 74,\n  \"call_to_action\": \"learn_more\",\n  \"click_through_rate\": 0.0261,\n  \"clicks\": 1337,\n  \"completed_registration_value\": 95,\n  \"completed_registrations\": 19,\n  \"contact_value\": 175,\n  \"contacts\": 27,\n  \"cost_per_added_to_cart\": 6.515675675675676,\n  \"cost_per_click\": 0.36,\n  \"cost_per_completed_registration\": 25.37684210526316,\n  \"cost_per_contact\": 17.85777777777778,\n  \"cost_per_lead\": 3.984793388429752,\n  \"cost_per_mille\": 9.42,\n  \"cost_per_purchase\": 12.68842105263158,\n  \"cost_per_result\": 3.984793388429752,\n  \"cost_per_schedule\": 10.48173913043478,\n  \"cost_per_submitted_application\": 40.18,\n  \"cost_per_unique_click\": 0.48,\n  \"cost_per_viewed_content\": 0.2253084112149533,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"creatives\": [\n    {\n      \"crop\": {\n        \"height\": 1000,\n        \"width\": 1000,\n        \"x\": 40,\n        \"y\": 0\n      },\n      \"format\": \"square\",\n      \"id\": \"file_xxxxxxxxxxxxxx\",\n      \"language\": \"language\",\n      \"media_type\": \"image\",\n      \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\"\n    }\n  ],\n  \"custom_conversions\": 63,\n  \"custom_event_counts\": {\n    \"booked_detail\": 63\n  },\n  \"custom_event_values\": {\n    \"booked_detail\": 4820\n  },\n  \"delivery_status\": \"in_appeal\",\n  \"descriptions\": [\n    {\n      \"language\": \"en\",\n      \"text\": \"Austin's mobile detailers\"\n    }\n  ],\n  \"frequency\": 1.1,\n  \"headlines\": [\n    {\n      \"language\": \"en\",\n      \"text\": \"Austin's mobile detailers\"\n    }\n  ],\n  \"id\": \"ad_xxxxxxxxxxxxxx\",\n  \"impressions\": 51204,\n  \"issues\": [\n    {\n      \"category\": \"information\",\n      \"id\": \"adiss_xxxxxxxxxxxxxx\",\n      \"message\": \"Your ad didn't pass our content review. Update it to follow our ad guidelines and resubmit.\",\n      \"resource_id\": \"ad_xxxxxxxxxxxxxx\",\n      \"resource_type\": \"ad_campaign\",\n      \"title\": \"Ad issue\"\n    }\n  ],\n  \"lead_value\": 1180,\n  \"leads\": 121,\n  \"link_clicks\": 1071,\n  \"primary_texts\": [\n    {\n      \"language\": \"en\",\n      \"text\": \"Austin's mobile detailers\"\n    }\n  ],\n  \"purchase_value\": 9462,\n  \"purchases\": 38,\n  \"reach\": 0,\n  \"result_event\": \"purchase\",\n  \"result_event_name\": \"booked_detail\",\n  \"results\": 121,\n  \"return_on_ad_spend\": 19.62419113987058,\n  \"schedule_value\": 640,\n  \"schedules\": 46,\n  \"spend\": 482.16,\n  \"spend_currency\": \"usd\",\n  \"status\": \"active\",\n  \"submitted_application_value\": 300,\n  \"submitted_applications\": 12,\n  \"title\": \"Ceramic coating — saved quote form\",\n  \"unique_click_through_rate\": 1.1,\n  \"unique_clicks\": 1012,\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"url\": \"https://shinetime.example/ceramic-coating\",\n  \"url_parameters\": {\n    \"key\": \"value\"\n  },\n  \"viewed_content_value\": 0,\n  \"viewed_contents\": 2140\n}",
+        "body": "{\n  \"ad_campaign\": {\n    \"id\": \"adcamp_xxxxxxxxxxxxxx\"\n  },\n  \"ad_group\": {\n    \"id\": \"adcamp_xxxxxxxxxxxxxx\"\n  },\n  \"added_to_cart_value\": 1850,\n  \"added_to_carts\": 74,\n  \"call_to_action\": \"learn_more\",\n  \"click_through_rate\": 0.0261,\n  \"clicks\": 1337,\n  \"completed_registration_value\": 95,\n  \"completed_registrations\": 19,\n  \"contact_value\": 175,\n  \"contacts\": 27,\n  \"cost_per_added_to_cart\": 6.515675675675676,\n  \"cost_per_click\": 0.36,\n  \"cost_per_completed_registration\": 25.37684210526316,\n  \"cost_per_contact\": 17.85777777777778,\n  \"cost_per_lead\": 3.984793388429752,\n  \"cost_per_mille\": 9.42,\n  \"cost_per_purchase\": 12.68842105263158,\n  \"cost_per_result\": 7.653333333333333,\n  \"cost_per_schedule\": 10.48173913043478,\n  \"cost_per_submitted_application\": 40.18,\n  \"cost_per_unique_click\": 0.48,\n  \"cost_per_viewed_content\": 0.2253084112149533,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"creatives\": [\n    {\n      \"crop\": {\n        \"height\": 1000,\n        \"width\": 1000,\n        \"x\": 40,\n        \"y\": 0\n      },\n      \"format\": \"square\",\n      \"id\": \"file_xxxxxxxxxxxxxx\",\n      \"language\": \"language\",\n      \"media_type\": \"image\",\n      \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\"\n    }\n  ],\n  \"custom_conversions\": 63,\n  \"custom_event_counts\": {\n    \"booked_detail\": 63\n  },\n  \"custom_event_values\": {\n    \"booked_detail\": 4820\n  },\n  \"delivery_status\": \"in_appeal\",\n  \"descriptions\": [\n    {\n      \"language\": \"en\",\n      \"text\": \"Austin's mobile detailers\"\n    }\n  ],\n  \"frequency\": 1.1,\n  \"headlines\": [\n    {\n      \"language\": \"en\",\n      \"text\": \"Austin's mobile detailers\"\n    }\n  ],\n  \"id\": \"ad_xxxxxxxxxxxxxx\",\n  \"impressions\": 51204,\n  \"issues\": [\n    {\n      \"category\": \"information\",\n      \"id\": \"adiss_xxxxxxxxxxxxxx\",\n      \"message\": \"Your ad didn't pass our content review. Update it to follow our ad guidelines and resubmit.\",\n      \"resource_id\": \"ad_xxxxxxxxxxxxxx\",\n      \"resource_type\": \"ad_campaign\",\n      \"title\": \"Ad issue\"\n    }\n  ],\n  \"lead_value\": 1180,\n  \"leads\": 121,\n  \"link_clicks\": 1071,\n  \"primary_texts\": [\n    {\n      \"language\": \"en\",\n      \"text\": \"Austin's mobile detailers\"\n    }\n  ],\n  \"purchase_value\": 9462,\n  \"purchases\": 38,\n  \"reach\": 0,\n  \"result_event\": \"purchase\",\n  \"result_event_name\": \"booked_detail\",\n  \"results\": 63,\n  \"return_on_ad_spend\": 19.62419113987058,\n  \"schedule_value\": 640,\n  \"schedules\": 46,\n  \"spend\": 482.16,\n  \"spend_currency\": \"usd\",\n  \"status\": \"active\",\n  \"submitted_application_value\": 300,\n  \"submitted_applications\": 12,\n  \"title\": \"Ceramic coating — spring hook v2\",\n  \"unique_click_through_rate\": 1.1,\n  \"unique_clicks\": 1012,\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"url\": \"https://shinetime.example/ceramic-coating\",\n  \"url_parameters\": {\n    \"key\": \"value\"\n  },\n  \"viewed_content_value\": 0,\n  \"viewed_contents\": 2140\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -1664,7 +1664,7 @@
       },
       "response": {
         "status": 201,
-        "body": "{\n  \"data\": [\n    {\n      \"ad_campaign\": {\n        \"id\": \"adcamp_xxxxxxxxxxxxxx\"\n      },\n      \"ad_group\": {\n        \"id\": \"adcamp_xxxxxxxxxxxxxx\"\n      },\n      \"added_to_cart_value\": 1850,\n      \"added_to_carts\": 74,\n      \"call_to_action\": \"learn_more\",\n      \"click_through_rate\": 0.0261,\n      \"clicks\": 1337,\n      \"completed_registration_value\": 95,\n      \"completed_registrations\": 19,\n      \"contact_value\": 175,\n      \"contacts\": 27,\n      \"cost_per_added_to_cart\": 6.515675675675676,\n      \"cost_per_click\": 0.36,\n      \"cost_per_completed_registration\": 25.37684210526316,\n      \"cost_per_contact\": 17.85777777777778,\n      \"cost_per_lead\": 3.984793388429752,\n      \"cost_per_mille\": 9.42,\n      \"cost_per_purchase\": 12.68842105263158,\n      \"cost_per_result\": 3.984793388429752,\n      \"cost_per_schedule\": 10.48173913043478,\n      \"cost_per_submitted_application\": 40.18,\n      \"cost_per_unique_click\": 0.48,\n      \"cost_per_viewed_content\": 0.2253084112149533,\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"creatives\": [\n        {\n          \"crop\": {\n            \"height\": 1000,\n            \"width\": 1000,\n            \"x\": 40,\n            \"y\": 0\n          },\n          \"format\": null,\n          \"id\": \"file_xxxxxxxxxxxxxx\",\n          \"language\": null,\n          \"media_type\": \"image\",\n          \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\"\n        }\n      ],\n      \"custom_conversions\": 63,\n      \"custom_event_counts\": {\n        \"booked_detail\": 63\n      },\n      \"custom_event_values\": {\n        \"booked_detail\": 4820\n      },\n      \"delivery_status\": \"in_appeal\",\n      \"descriptions\": [\n        {\n          \"language\": \"en\",\n          \"text\": \"Austin's mobile detailers\"\n        }\n      ],\n      \"frequency\": 1.1,\n      \"headlines\": [\n        {\n          \"language\": \"en\",\n          \"text\": \"Austin's mobile detailers\"\n        }\n      ],\n      \"id\": \"ad_xxxxxxxxxxxxxx\",\n      \"impressions\": 51204,\n      \"issues\": [\n        {\n          \"category\": \"information\",\n          \"id\": \"adiss_xxxxxxxxxxxxxx\",\n          \"message\": \"Your ad didn't pass our content review. Update it to follow our ad guidelines and resubmit.\",\n          \"resource_id\": \"ad_xxxxxxxxxxxxxx\",\n          \"resource_type\": \"ad_campaign\",\n          \"title\": \"Ad issue\"\n        }\n      ],\n      \"lead_value\": 1180,\n      \"leads\": 121,\n      \"link_clicks\": 1071,\n      \"primary_texts\": [\n        {\n          \"language\": \"en\",\n          \"text\": \"Austin's mobile detailers\"\n        }\n      ],\n      \"purchase_value\": 9462,\n      \"purchases\": 38,\n      \"reach\": 0,\n      \"result_event\": \"purchase\",\n      \"result_event_name\": \"booked_detail\",\n      \"results\": 121,\n      \"return_on_ad_spend\": 19.62419113987058,\n      \"schedule_value\": 640,\n      \"schedules\": 46,\n      \"spend\": 482.16,\n      \"spend_currency\": \"usd\",\n      \"status\": \"active\",\n      \"submitted_application_value\": 300,\n      \"submitted_applications\": 12,\n      \"title\": \"Ceramic coating — saved quote form\",\n      \"unique_click_through_rate\": 1.1,\n      \"unique_clicks\": 1012,\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n      \"url\": \"https://shinetime.example/ceramic-coating\",\n      \"url_parameters\": {\n        \"key\": \"value\"\n      },\n      \"viewed_content_value\": 0,\n      \"viewed_contents\": 2140\n    }\n  ]\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"ad_campaign\": {\n        \"id\": \"adcamp_xxxxxxxxxxxxxx\"\n      },\n      \"ad_group\": {\n        \"id\": \"adcamp_xxxxxxxxxxxxxx\"\n      },\n      \"added_to_cart_value\": 1850,\n      \"added_to_carts\": 74,\n      \"call_to_action\": \"learn_more\",\n      \"click_through_rate\": 0.0261,\n      \"clicks\": 1337,\n      \"completed_registration_value\": 95,\n      \"completed_registrations\": 19,\n      \"contact_value\": 175,\n      \"contacts\": 27,\n      \"cost_per_added_to_cart\": 6.515675675675676,\n      \"cost_per_click\": 0.36,\n      \"cost_per_completed_registration\": 25.37684210526316,\n      \"cost_per_contact\": 17.85777777777778,\n      \"cost_per_lead\": 3.984793388429752,\n      \"cost_per_mille\": 9.42,\n      \"cost_per_purchase\": 12.68842105263158,\n      \"cost_per_result\": 7.653333333333333,\n      \"cost_per_schedule\": 10.48173913043478,\n      \"cost_per_submitted_application\": 40.18,\n      \"cost_per_unique_click\": 0.48,\n      \"cost_per_viewed_content\": 0.2253084112149533,\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"creatives\": [\n        {\n          \"crop\": {\n            \"height\": 1000,\n            \"width\": 1000,\n            \"x\": 40,\n            \"y\": 0\n          },\n          \"format\": null,\n          \"id\": \"file_xxxxxxxxxxxxxx\",\n          \"language\": null,\n          \"media_type\": \"image\",\n          \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\"\n        }\n      ],\n      \"custom_conversions\": 63,\n      \"custom_event_counts\": {\n        \"booked_detail\": 63\n      },\n      \"custom_event_values\": {\n        \"booked_detail\": 4820\n      },\n      \"delivery_status\": \"in_appeal\",\n      \"descriptions\": [\n        {\n          \"language\": \"en\",\n          \"text\": \"Austin's mobile detailers\"\n        }\n      ],\n      \"frequency\": 1.1,\n      \"headlines\": [\n        {\n          \"language\": \"en\",\n          \"text\": \"Austin's mobile detailers\"\n        }\n      ],\n      \"id\": \"ad_xxxxxxxxxxxxxx\",\n      \"impressions\": 51204,\n      \"issues\": [\n        {\n          \"category\": \"information\",\n          \"id\": \"adiss_xxxxxxxxxxxxxx\",\n          \"message\": \"Your ad didn't pass our content review. Update it to follow our ad guidelines and resubmit.\",\n          \"resource_id\": \"ad_xxxxxxxxxxxxxx\",\n          \"resource_type\": \"ad_campaign\",\n          \"title\": \"Ad issue\"\n        }\n      ],\n      \"lead_value\": 1180,\n      \"leads\": 121,\n      \"link_clicks\": 1071,\n      \"primary_texts\": [\n        {\n          \"language\": \"en\",\n          \"text\": \"Austin's mobile detailers\"\n        }\n      ],\n      \"purchase_value\": 9462,\n      \"purchases\": 38,\n      \"reach\": 0,\n      \"result_event\": \"purchase\",\n      \"result_event_name\": \"booked_detail\",\n      \"results\": 63,\n      \"return_on_ad_spend\": 19.62419113987058,\n      \"schedule_value\": 640,\n      \"schedules\": 46,\n      \"spend\": 482.16,\n      \"spend_currency\": \"usd\",\n      \"status\": \"active\",\n      \"submitted_application_value\": 300,\n      \"submitted_applications\": 12,\n      \"title\": \"Ceramic coating — spring hook v2\",\n      \"unique_click_through_rate\": 1.1,\n      \"unique_clicks\": 1012,\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n      \"url\": \"https://shinetime.example/ceramic-coating\",\n      \"url_parameters\": {\n        \"key\": \"value\"\n      },\n      \"viewed_content_value\": 0,\n      \"viewed_contents\": 2140\n    }\n  ]\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -1700,7 +1700,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"ad_campaign\": {\n    \"id\": \"adcamp_xxxxxxxxxxxxxx\"\n  },\n  \"ad_group\": {\n    \"id\": \"adcamp_xxxxxxxxxxxxxx\"\n  },\n  \"added_to_cart_value\": 1850,\n  \"added_to_carts\": 74,\n  \"call_to_action\": \"learn_more\",\n  \"click_through_rate\": 0.0261,\n  \"clicks\": 1337,\n  \"completed_registration_value\": 95,\n  \"completed_registrations\": 19,\n  \"contact_value\": 175,\n  \"contacts\": 27,\n  \"cost_per_added_to_cart\": 6.515675675675676,\n  \"cost_per_click\": 0.36,\n  \"cost_per_completed_registration\": 25.37684210526316,\n  \"cost_per_contact\": 17.85777777777778,\n  \"cost_per_lead\": 3.984793388429752,\n  \"cost_per_mille\": 9.42,\n  \"cost_per_purchase\": 12.68842105263158,\n  \"cost_per_result\": 3.984793388429752,\n  \"cost_per_schedule\": 10.48173913043478,\n  \"cost_per_submitted_application\": 40.18,\n  \"cost_per_unique_click\": 0.48,\n  \"cost_per_viewed_content\": 0.2253084112149533,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"creatives\": [\n    {\n      \"crop\": {\n        \"height\": 1000,\n        \"width\": 1000,\n        \"x\": 40,\n        \"y\": 0\n      },\n      \"format\": \"square\",\n      \"id\": \"file_xxxxxxxxxxxxxx\",\n      \"language\": \"language\",\n      \"media_type\": \"image\",\n      \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\"\n    }\n  ],\n  \"custom_conversions\": 63,\n  \"custom_event_counts\": {\n    \"booked_detail\": 63\n  },\n  \"custom_event_values\": {\n    \"booked_detail\": 4820\n  },\n  \"delivery_status\": \"in_appeal\",\n  \"descriptions\": [\n    {\n      \"language\": \"en\",\n      \"text\": \"Austin's mobile detailers\"\n    }\n  ],\n  \"frequency\": 1.1,\n  \"headlines\": [\n    {\n      \"language\": \"en\",\n      \"text\": \"Austin's mobile detailers\"\n    }\n  ],\n  \"id\": \"ad_xxxxxxxxxxxxxx\",\n  \"impressions\": 51204,\n  \"issues\": [\n    {\n      \"category\": \"information\",\n      \"id\": \"adiss_xxxxxxxxxxxxxx\",\n      \"message\": \"Your ad didn't pass our content review. Update it to follow our ad guidelines and resubmit.\",\n      \"resource_id\": \"ad_xxxxxxxxxxxxxx\",\n      \"resource_type\": \"ad_campaign\",\n      \"title\": \"Ad issue\"\n    }\n  ],\n  \"lead_value\": 1180,\n  \"leads\": 121,\n  \"link_clicks\": 1071,\n  \"primary_texts\": [\n    {\n      \"language\": \"en\",\n      \"text\": \"Austin's mobile detailers\"\n    }\n  ],\n  \"purchase_value\": 9462,\n  \"purchases\": 38,\n  \"reach\": 0,\n  \"result_event\": \"purchase\",\n  \"result_event_name\": \"booked_detail\",\n  \"results\": 121,\n  \"return_on_ad_spend\": 19.62419113987058,\n  \"schedule_value\": 640,\n  \"schedules\": 46,\n  \"spend\": 482.16,\n  \"spend_currency\": \"usd\",\n  \"status\": \"active\",\n  \"submitted_application_value\": 300,\n  \"submitted_applications\": 12,\n  \"title\": \"Ceramic coating — saved quote form\",\n  \"unique_click_through_rate\": 1.1,\n  \"unique_clicks\": 1012,\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"url\": \"https://shinetime.example/ceramic-coating\",\n  \"url_parameters\": {\n    \"key\": \"value\"\n  },\n  \"viewed_content_value\": 0,\n  \"viewed_contents\": 2140\n}",
+        "body": "{\n  \"ad_campaign\": {\n    \"id\": \"adcamp_xxxxxxxxxxxxxx\"\n  },\n  \"ad_group\": {\n    \"id\": \"adcamp_xxxxxxxxxxxxxx\"\n  },\n  \"added_to_cart_value\": 1850,\n  \"added_to_carts\": 74,\n  \"call_to_action\": \"learn_more\",\n  \"click_through_rate\": 0.0261,\n  \"clicks\": 1337,\n  \"completed_registration_value\": 95,\n  \"completed_registrations\": 19,\n  \"contact_value\": 175,\n  \"contacts\": 27,\n  \"cost_per_added_to_cart\": 6.515675675675676,\n  \"cost_per_click\": 0.36,\n  \"cost_per_completed_registration\": 25.37684210526316,\n  \"cost_per_contact\": 17.85777777777778,\n  \"cost_per_lead\": 3.984793388429752,\n  \"cost_per_mille\": 9.42,\n  \"cost_per_purchase\": 12.68842105263158,\n  \"cost_per_result\": 7.653333333333333,\n  \"cost_per_schedule\": 10.48173913043478,\n  \"cost_per_submitted_application\": 40.18,\n  \"cost_per_unique_click\": 0.48,\n  \"cost_per_viewed_content\": 0.2253084112149533,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"creatives\": [\n    {\n      \"crop\": {\n        \"height\": 1000,\n        \"width\": 1000,\n        \"x\": 40,\n        \"y\": 0\n      },\n      \"format\": \"square\",\n      \"id\": \"file_xxxxxxxxxxxxxx\",\n      \"language\": \"language\",\n      \"media_type\": \"image\",\n      \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\"\n    }\n  ],\n  \"custom_conversions\": 63,\n  \"custom_event_counts\": {\n    \"booked_detail\": 63\n  },\n  \"custom_event_values\": {\n    \"booked_detail\": 4820\n  },\n  \"delivery_status\": \"in_appeal\",\n  \"descriptions\": [\n    {\n      \"language\": \"en\",\n      \"text\": \"Austin's mobile detailers\"\n    }\n  ],\n  \"frequency\": 1.1,\n  \"headlines\": [\n    {\n      \"language\": \"en\",\n      \"text\": \"Austin's mobile detailers\"\n    }\n  ],\n  \"id\": \"ad_xxxxxxxxxxxxxx\",\n  \"impressions\": 51204,\n  \"issues\": [\n    {\n      \"category\": \"information\",\n      \"id\": \"adiss_xxxxxxxxxxxxxx\",\n      \"message\": \"Your ad didn't pass our content review. Update it to follow our ad guidelines and resubmit.\",\n      \"resource_id\": \"ad_xxxxxxxxxxxxxx\",\n      \"resource_type\": \"ad_campaign\",\n      \"title\": \"Ad issue\"\n    }\n  ],\n  \"lead_value\": 1180,\n  \"leads\": 121,\n  \"link_clicks\": 1071,\n  \"primary_texts\": [\n    {\n      \"language\": \"en\",\n      \"text\": \"Austin's mobile detailers\"\n    }\n  ],\n  \"purchase_value\": 9462,\n  \"purchases\": 38,\n  \"reach\": 0,\n  \"result_event\": \"purchase\",\n  \"result_event_name\": \"booked_detail\",\n  \"results\": 63,\n  \"return_on_ad_spend\": 19.62419113987058,\n  \"schedule_value\": 640,\n  \"schedules\": 46,\n  \"spend\": 482.16,\n  \"spend_currency\": \"usd\",\n  \"status\": \"active\",\n  \"submitted_application_value\": 300,\n  \"submitted_applications\": 12,\n  \"title\": \"Ceramic coating — spring hook v2\",\n  \"unique_click_through_rate\": 1.1,\n  \"unique_clicks\": 1012,\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"url\": \"https://shinetime.example/ceramic-coating\",\n  \"url_parameters\": {\n    \"key\": \"value\"\n  },\n  \"viewed_content_value\": 0,\n  \"viewed_contents\": 2140\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -1736,7 +1736,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"ad_campaign\": {\n    \"id\": \"adcamp_xxxxxxxxxxxxxx\"\n  },\n  \"ad_group\": {\n    \"id\": \"adcamp_xxxxxxxxxxxxxx\"\n  },\n  \"added_to_cart_value\": 1850,\n  \"added_to_carts\": 74,\n  \"call_to_action\": \"learn_more\",\n  \"click_through_rate\": 0.0261,\n  \"clicks\": 1337,\n  \"completed_registration_value\": 95,\n  \"completed_registrations\": 19,\n  \"contact_value\": 175,\n  \"contacts\": 27,\n  \"cost_per_added_to_cart\": 6.515675675675676,\n  \"cost_per_click\": 0.36,\n  \"cost_per_completed_registration\": 25.37684210526316,\n  \"cost_per_contact\": 17.85777777777778,\n  \"cost_per_lead\": 3.984793388429752,\n  \"cost_per_mille\": 9.42,\n  \"cost_per_purchase\": 12.68842105263158,\n  \"cost_per_result\": 3.984793388429752,\n  \"cost_per_schedule\": 10.48173913043478,\n  \"cost_per_submitted_application\": 40.18,\n  \"cost_per_unique_click\": 0.48,\n  \"cost_per_viewed_content\": 0.2253084112149533,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"creatives\": [\n    {\n      \"crop\": {\n        \"height\": 1000,\n        \"width\": 1000,\n        \"x\": 40,\n        \"y\": 0\n      },\n      \"format\": \"square\",\n      \"id\": \"file_xxxxxxxxxxxxxx\",\n      \"language\": \"language\",\n      \"media_type\": \"image\",\n      \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\"\n    }\n  ],\n  \"custom_conversions\": 63,\n  \"custom_event_counts\": {\n    \"booked_detail\": 63\n  },\n  \"custom_event_values\": {\n    \"booked_detail\": 4820\n  },\n  \"delivery_status\": \"in_appeal\",\n  \"descriptions\": [\n    {\n      \"language\": \"en\",\n      \"text\": \"Austin's mobile detailers\"\n    }\n  ],\n  \"frequency\": 1.1,\n  \"headlines\": [\n    {\n      \"language\": \"en\",\n      \"text\": \"Austin's mobile detailers\"\n    }\n  ],\n  \"id\": \"ad_xxxxxxxxxxxxxx\",\n  \"impressions\": 51204,\n  \"issues\": [\n    {\n      \"category\": \"information\",\n      \"id\": \"adiss_xxxxxxxxxxxxxx\",\n      \"message\": \"Your ad didn't pass our content review. Update it to follow our ad guidelines and resubmit.\",\n      \"resource_id\": \"ad_xxxxxxxxxxxxxx\",\n      \"resource_type\": \"ad_campaign\",\n      \"title\": \"Ad issue\"\n    }\n  ],\n  \"lead_value\": 1180,\n  \"leads\": 121,\n  \"link_clicks\": 1071,\n  \"primary_texts\": [\n    {\n      \"language\": \"en\",\n      \"text\": \"Austin's mobile detailers\"\n    }\n  ],\n  \"purchase_value\": 9462,\n  \"purchases\": 38,\n  \"reach\": 0,\n  \"result_event\": \"purchase\",\n  \"result_event_name\": \"booked_detail\",\n  \"results\": 121,\n  \"return_on_ad_spend\": 19.62419113987058,\n  \"schedule_value\": 640,\n  \"schedules\": 46,\n  \"spend\": 482.16,\n  \"spend_currency\": \"usd\",\n  \"status\": \"active\",\n  \"submitted_application_value\": 300,\n  \"submitted_applications\": 12,\n  \"title\": \"Ceramic coating — saved quote form\",\n  \"unique_click_through_rate\": 1.1,\n  \"unique_clicks\": 1012,\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"url\": \"https://shinetime.example/ceramic-coating\",\n  \"url_parameters\": {\n    \"key\": \"value\"\n  },\n  \"viewed_content_value\": 0,\n  \"viewed_contents\": 2140\n}",
+        "body": "{\n  \"ad_campaign\": {\n    \"id\": \"adcamp_xxxxxxxxxxxxxx\"\n  },\n  \"ad_group\": {\n    \"id\": \"adcamp_xxxxxxxxxxxxxx\"\n  },\n  \"added_to_cart_value\": 1850,\n  \"added_to_carts\": 74,\n  \"call_to_action\": \"learn_more\",\n  \"click_through_rate\": 0.0261,\n  \"clicks\": 1337,\n  \"completed_registration_value\": 95,\n  \"completed_registrations\": 19,\n  \"contact_value\": 175,\n  \"contacts\": 27,\n  \"cost_per_added_to_cart\": 6.515675675675676,\n  \"cost_per_click\": 0.36,\n  \"cost_per_completed_registration\": 25.37684210526316,\n  \"cost_per_contact\": 17.85777777777778,\n  \"cost_per_lead\": 3.984793388429752,\n  \"cost_per_mille\": 9.42,\n  \"cost_per_purchase\": 12.68842105263158,\n  \"cost_per_result\": 7.653333333333333,\n  \"cost_per_schedule\": 10.48173913043478,\n  \"cost_per_submitted_application\": 40.18,\n  \"cost_per_unique_click\": 0.48,\n  \"cost_per_viewed_content\": 0.2253084112149533,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"creatives\": [\n    {\n      \"crop\": {\n        \"height\": 1000,\n        \"width\": 1000,\n        \"x\": 40,\n        \"y\": 0\n      },\n      \"format\": \"square\",\n      \"id\": \"file_xxxxxxxxxxxxxx\",\n      \"language\": \"language\",\n      \"media_type\": \"image\",\n      \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\"\n    }\n  ],\n  \"custom_conversions\": 63,\n  \"custom_event_counts\": {\n    \"booked_detail\": 63\n  },\n  \"custom_event_values\": {\n    \"booked_detail\": 4820\n  },\n  \"delivery_status\": \"in_appeal\",\n  \"descriptions\": [\n    {\n      \"language\": \"en\",\n      \"text\": \"Austin's mobile detailers\"\n    }\n  ],\n  \"frequency\": 1.1,\n  \"headlines\": [\n    {\n      \"language\": \"en\",\n      \"text\": \"Austin's mobile detailers\"\n    }\n  ],\n  \"id\": \"ad_xxxxxxxxxxxxxx\",\n  \"impressions\": 51204,\n  \"issues\": [\n    {\n      \"category\": \"information\",\n      \"id\": \"adiss_xxxxxxxxxxxxxx\",\n      \"message\": \"Your ad didn't pass our content review. Update it to follow our ad guidelines and resubmit.\",\n      \"resource_id\": \"ad_xxxxxxxxxxxxxx\",\n      \"resource_type\": \"ad_campaign\",\n      \"title\": \"Ad issue\"\n    }\n  ],\n  \"lead_value\": 1180,\n  \"leads\": 121,\n  \"link_clicks\": 1071,\n  \"primary_texts\": [\n    {\n      \"language\": \"en\",\n      \"text\": \"Austin's mobile detailers\"\n    }\n  ],\n  \"purchase_value\": 9462,\n  \"purchases\": 38,\n  \"reach\": 0,\n  \"result_event\": \"purchase\",\n  \"result_event_name\": \"booked_detail\",\n  \"results\": 63,\n  \"return_on_ad_spend\": 19.62419113987058,\n  \"schedule_value\": 640,\n  \"schedules\": 46,\n  \"spend\": 482.16,\n  \"spend_currency\": \"usd\",\n  \"status\": \"active\",\n  \"submitted_application_value\": 300,\n  \"submitted_applications\": 12,\n  \"title\": \"Ceramic coating — spring hook v2\",\n  \"unique_click_through_rate\": 1.1,\n  \"unique_clicks\": 1012,\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"url\": \"https://shinetime.example/ceramic-coating\",\n  \"url_parameters\": {\n    \"key\": \"value\"\n  },\n  \"viewed_content_value\": 0,\n  \"viewed_contents\": 2140\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -14044,117 +14044,6 @@
       }
     },
     {
-      "id": "5cd989f6-3795-4b9f-9491-04bebb182063",
-      "name": "List Social Account Partners - default",
-      "request": {
-        "urlPathTemplate": "/social_accounts/{id}/partners",
-        "method": "GET",
-        "headers": {
-          "Authorization": {
-            "matches": "Bearer .+"
-          }
-        },
-        "pathParameters": {
-          "id": {
-            "equalTo": "id"
-          }
-        }
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"error\": \"error\",\n      \"external_id\": \"17841479809129315\",\n      \"id\": \"sacc_xxxxxxxxxxxxxx\",\n      \"name\": \"Shine Time Detail\",\n      \"parent_social_account\": {\n        \"external_id\": \"page_1\",\n        \"id\": \"sacc_xxxxxxxxxxxxxx\",\n        \"name\": \"Shine Time Auto Detailing\",\n        \"platform\": \"x\",\n        \"profile_picture_url\": \"https://shinetime.example/logo.png\",\n        \"username\": \"shinetimedetailing\",\n        \"verified\": true\n      },\n      \"partnership_status\": \"pending\",\n      \"platform\": \"x\",\n      \"profile_picture_url\": \"https://shinetime.example/instagram.png\",\n      \"scopes\": [\n        \"advertise\"\n      ],\n      \"url\": \"https://instagram.com/shinetimedetail\",\n      \"username\": \"shinetimedetail\",\n      \"verified\": true\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      },
-      "uuid": "5cd989f6-3795-4b9f-9491-04bebb182063",
-      "persistent": true,
-      "priority": 3,
-      "metadata": {
-        "mocklab": {
-          "created": {
-            "at": "2020-01-01T00:00:00.000Z",
-            "via": "SYSTEM"
-          }
-        }
-      }
-    },
-    {
-      "id": "f46ff4a9-deec-451b-ad6b-0fd201707dec",
-      "name": "Add Partner - default",
-      "request": {
-        "urlPathTemplate": "/social_accounts/{id}/partners",
-        "method": "POST",
-        "headers": {
-          "Authorization": {
-            "matches": "Bearer .+"
-          }
-        },
-        "pathParameters": {
-          "id": {
-            "equalTo": "id"
-          }
-        }
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n  \"error\": \"error\",\n  \"external_id\": \"17841479809129315\",\n  \"id\": \"sacc_xxxxxxxxxxxxxx\",\n  \"name\": \"Shine Time Detail\",\n  \"parent_social_account\": {\n    \"external_id\": \"page_1\",\n    \"id\": \"sacc_xxxxxxxxxxxxxx\",\n    \"name\": \"Shine Time Auto Detailing\",\n    \"platform\": \"x\",\n    \"profile_picture_url\": \"https://shinetime.example/logo.png\",\n    \"username\": \"shinetimedetailing\",\n    \"verified\": true\n  },\n  \"partnership_status\": \"pending\",\n  \"platform\": \"x\",\n  \"profile_picture_url\": \"https://shinetime.example/instagram.png\",\n  \"scopes\": [\n    \"advertise\"\n  ],\n  \"url\": \"https://instagram.com/shinetimedetail\",\n  \"username\": \"shinetimedetail\",\n  \"verified\": true\n}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      },
-      "uuid": "f46ff4a9-deec-451b-ad6b-0fd201707dec",
-      "persistent": true,
-      "priority": 3,
-      "metadata": {
-        "mocklab": {
-          "created": {
-            "at": "2020-01-01T00:00:00.000Z",
-            "via": "SYSTEM"
-          }
-        }
-      }
-    },
-    {
-      "id": "9b8aa23e-26d5-43f9-9958-2acd150cd707",
-      "name": "Remove Partner - default",
-      "request": {
-        "urlPathTemplate": "/social_accounts/{id}/partners/{partner_id}",
-        "method": "DELETE",
-        "headers": {
-          "Authorization": {
-            "matches": "Bearer .+"
-          }
-        },
-        "pathParameters": {
-          "id": {
-            "equalTo": "id"
-          },
-          "partner_id": {
-            "equalTo": "partner_id"
-          }
-        }
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n  \"deleted\": true,\n  \"id\": \"sacc_xxxxxxxxxxxxxx\"\n}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      },
-      "uuid": "9b8aa23e-26d5-43f9-9958-2acd150cd707",
-      "persistent": true,
-      "priority": 3,
-      "metadata": {
-        "mocklab": {
-          "created": {
-            "at": "2020-01-01T00:00:00.000Z",
-            "via": "SYSTEM"
-          }
-        }
-      }
-    },
-    {
       "id": "df0d677c-ec92-4355-b436-60b4591b655f",
       "name": "Refresh - default",
       "request": {
@@ -15819,7 +15708,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"api_version\": \"v1\",\n      \"api_version_date\": \"2026-10-29-2\",\n      \"child_resource_events\": false,\n      \"consecutive_failures\": 0,\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n      \"disabled_reason\": \"delivery_failures\",\n      \"enabled\": false,\n      \"events\": [\n        \"account.updated\"\n      ],\n      \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n      \"id\": \"hook_xxxxxxxxxxxxxx\",\n      \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n      \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"title\": \"title\",\n      \"url\": \"https://example.com/shine-time/whop\",\n      \"webhook_secret\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"api_version\": \"v1\",\n      \"api_version_date\": \"2026-10-29-3\",\n      \"child_resource_events\": false,\n      \"consecutive_failures\": 0,\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n      \"disabled_reason\": \"delivery_failures\",\n      \"enabled\": false,\n      \"events\": [\n        \"account.updated\"\n      ],\n      \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n      \"id\": \"hook_xxxxxxxxxxxxxx\",\n      \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n      \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"title\": \"title\",\n      \"url\": \"https://example.com/shine-time/whop\",\n      \"webhook_secret\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -15851,7 +15740,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-10-29-2\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"title\": \"Production\",\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
+        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-10-29-3\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"title\": \"Production\",\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -15887,7 +15776,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-10-29-2\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"title\": \"Production\",\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
+        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-10-29-3\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"title\": \"Production\",\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -15959,7 +15848,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-10-29-2\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"title\": \"Production\",\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
+        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-10-29-3\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"title\": \"Production\",\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -16636,117 +16525,6 @@
         }
       },
       "uuid": "3375de01-b0cd-4750-9861-6c4ae5036cf7",
-      "persistent": true,
-      "priority": 3,
-      "metadata": {
-        "mocklab": {
-          "created": {
-            "at": "2020-01-01T00:00:00.000Z",
-            "via": "SYSTEM"
-          }
-        }
-      }
-    },
-    {
-      "id": "2a457c37-c238-4ae7-b6d0-7028edeb1771",
-      "name": "List External Account Partners - partners",
-      "request": {
-        "urlPathTemplate": "/external_accounts/{external_account_id}/partners",
-        "method": "GET",
-        "headers": {
-          "Authorization": {
-            "matches": "Bearer .+"
-          }
-        },
-        "pathParameters": {
-          "external_account_id": {
-            "equalTo": "external_account_id"
-          }
-        }
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"error\": null,\n      \"external_id\": null,\n      \"id\": \"sacc_xxxxxxxxxxxxxx\",\n      \"name\": \"Luvera\",\n      \"parent_external_account\": null,\n      \"partnership_status\": \"pending\",\n      \"platform\": \"instagram\",\n      \"profile_picture_url\": \"https://img.whop.com/sacc_xxxxxxxxxxxxxx.png\",\n      \"scopes\": [\n        \"partner\"\n      ],\n      \"url\": \"https://instagram.com/luverahealth\",\n      \"username\": \"luverahealth\",\n      \"verified\": false\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": null,\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": null\n  }\n}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      },
-      "uuid": "2a457c37-c238-4ae7-b6d0-7028edeb1771",
-      "persistent": true,
-      "priority": 3,
-      "metadata": {
-        "mocklab": {
-          "created": {
-            "at": "2020-01-01T00:00:00.000Z",
-            "via": "SYSTEM"
-          }
-        }
-      }
-    },
-    {
-      "id": "7dc58014-dcf0-4356-a612-6553428ef035",
-      "name": "Add Partner - partner",
-      "request": {
-        "urlPathTemplate": "/external_accounts/{external_account_id}/partners",
-        "method": "POST",
-        "headers": {
-          "Authorization": {
-            "matches": "Bearer .+"
-          }
-        },
-        "pathParameters": {
-          "external_account_id": {
-            "equalTo": "external_account_id"
-          }
-        }
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n  \"error\": null,\n  \"external_id\": null,\n  \"id\": \"sacc_xxxxxxxxxxxxxx\",\n  \"name\": \"Luvera\",\n  \"parent_external_account\": null,\n  \"partnership_status\": \"pending\",\n  \"platform\": \"instagram\",\n  \"profile_picture_url\": \"https://img.whop.com/sacc_xxxxxxxxxxxxxx.png\",\n  \"scopes\": [\n    \"partner\"\n  ],\n  \"url\": \"https://instagram.com/luverahealth\",\n  \"username\": \"luverahealth\",\n  \"verified\": false\n}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      },
-      "uuid": "7dc58014-dcf0-4356-a612-6553428ef035",
-      "persistent": true,
-      "priority": 3,
-      "metadata": {
-        "mocklab": {
-          "created": {
-            "at": "2020-01-01T00:00:00.000Z",
-            "via": "SYSTEM"
-          }
-        }
-      }
-    },
-    {
-      "id": "f6f32d30-534f-4be6-a9f8-7032ef0659a4",
-      "name": "Remove Partner - default",
-      "request": {
-        "urlPathTemplate": "/external_accounts/{external_account_id}/partners/{id}",
-        "method": "DELETE",
-        "headers": {
-          "Authorization": {
-            "matches": "Bearer .+"
-          }
-        },
-        "pathParameters": {
-          "external_account_id": {
-            "equalTo": "external_account_id"
-          },
-          "id": {
-            "equalTo": "id"
-          }
-        }
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n  \"deleted\": true,\n  \"id\": \"sacc_xxxxxxxxxxxxxx\"\n}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      },
-      "uuid": "f6f32d30-534f-4be6-a9f8-7032ef0659a4",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -17999,6 +17777,6 @@
     }
   ],
   "meta": {
-    "total": 503
+    "total": 497
   }
 }
