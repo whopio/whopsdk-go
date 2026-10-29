@@ -6,6 +6,7 @@ import (
 	json "encoding/json"
 	assert "github.com/stretchr/testify/assert"
 	require "github.com/stretchr/testify/require"
+	v2 "github.com/whopio/whopsdk-go/v2"
 	testing "testing"
 	time "time"
 )
@@ -646,6 +647,14 @@ func TestSettersListSupportedMethodsResponseDataItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetFeeStructure", func(t *testing.T) {
+		obj := &ListSupportedMethodsResponseDataItem{}
+		var fernTestValueFeeStructure *ListSupportedMethodsResponseDataItemFeeStructure
+		obj.SetFeeStructure(fernTestValueFeeStructure)
+		assert.Equal(t, fernTestValueFeeStructure, obj.FeeStructure)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetIconURL", func(t *testing.T) {
 		obj := &ListSupportedMethodsResponseDataItem{}
 		var fernTestValueIconURL *string
@@ -742,6 +751,39 @@ func TestGettersListSupportedMethodsResponseDataItem(t *testing.T) {
 			}
 		}()
 		_ = obj.GetDeliveryType() // Should return zero value
+	})
+
+	t.Run("GetFeeStructure", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListSupportedMethodsResponseDataItem{}
+		var expected *ListSupportedMethodsResponseDataItemFeeStructure
+		obj.FeeStructure = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetFeeStructure(), "getter should return the property value")
+	})
+
+	t.Run("GetFeeStructure_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListSupportedMethodsResponseDataItem{}
+		obj.FeeStructure = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetFeeStructure(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetFeeStructure_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListSupportedMethodsResponseDataItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetFeeStructure() // Should return zero value
 	})
 
 	t.Run("GetIconURL", func(t *testing.T) {
@@ -1035,6 +1077,37 @@ func TestSettersMarkExplicitListSupportedMethodsResponseDataItem(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetFeeStructure_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListSupportedMethodsResponseDataItem{}
+		var fernTestValueFeeStructure *ListSupportedMethodsResponseDataItemFeeStructure
+
+		// Act
+		obj.SetFeeStructure(fernTestValueFeeStructure)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetIconURL_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -1291,6 +1364,149 @@ func TestSettersMarkExplicitListSupportedMethodsResponseDataItem(t *testing.T) {
 
 		// Act
 		obj.SetSupportsStandardDelivery(fernTestValueSupportsStandardDelivery)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersListSupportedMethodsResponseDataItemFeeStructure(t *testing.T) {
+	t.Run("SetFixed", func(t *testing.T) {
+		obj := &ListSupportedMethodsResponseDataItemFeeStructure{}
+		var fernTestValueFixed *v2.Money
+		obj.SetFixed(fernTestValueFixed)
+		assert.Equal(t, fernTestValueFixed, obj.Fixed)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetPercentage", func(t *testing.T) {
+		obj := &ListSupportedMethodsResponseDataItemFeeStructure{}
+		var fernTestValuePercentage float64
+		obj.SetPercentage(fernTestValuePercentage)
+		assert.Equal(t, fernTestValuePercentage, obj.Percentage)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersListSupportedMethodsResponseDataItemFeeStructure(t *testing.T) {
+	t.Run("GetFixed", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListSupportedMethodsResponseDataItemFeeStructure{}
+		var expected *v2.Money
+		obj.Fixed = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetFixed(), "getter should return the property value")
+	})
+
+	t.Run("GetFixed_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListSupportedMethodsResponseDataItemFeeStructure{}
+		obj.Fixed = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetFixed(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetFixed_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListSupportedMethodsResponseDataItemFeeStructure
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetFixed() // Should return zero value
+	})
+
+	t.Run("GetPercentage", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListSupportedMethodsResponseDataItemFeeStructure{}
+		var expected float64
+		obj.Percentage = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPercentage(), "getter should return the property value")
+	})
+
+	t.Run("GetPercentage_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListSupportedMethodsResponseDataItemFeeStructure
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPercentage() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitListSupportedMethodsResponseDataItemFeeStructure(t *testing.T) {
+	t.Run("SetFixed_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListSupportedMethodsResponseDataItemFeeStructure{}
+		var fernTestValueFixed *v2.Money
+
+		// Act
+		obj.SetFixed(fernTestValueFixed)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPercentage_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListSupportedMethodsResponseDataItemFeeStructure{}
+		var fernTestValuePercentage float64
+
+		// Act
+		obj.SetPercentage(fernTestValuePercentage)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3243,6 +3459,39 @@ func TestJSONMarshalingListSupportedMethodsResponseDataItem(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingListSupportedMethodsResponseDataItemFeeStructure(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListSupportedMethodsResponseDataItemFeeStructure{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled ListSupportedMethodsResponseDataItemFeeStructure
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj ListSupportedMethodsResponseDataItemFeeStructure
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj ListSupportedMethodsResponseDataItemFeeStructure
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingListSupportedMethodsResponseDataItemQuotesItem(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -3620,6 +3869,22 @@ func TestStringListSupportedMethodsResponseDataItem(t *testing.T) {
 	})
 }
 
+func TestStringListSupportedMethodsResponseDataItemFeeStructure(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &ListSupportedMethodsResponseDataItemFeeStructure{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListSupportedMethodsResponseDataItemFeeStructure
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
 func TestStringListSupportedMethodsResponseDataItemQuotesItem(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -3885,6 +4150,29 @@ func TestExtraPropertiesListSupportedMethodsResponseDataItem(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *ListSupportedMethodsResponseDataItem
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesListSupportedMethodsResponseDataItemFeeStructure(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &ListSupportedMethodsResponseDataItemFeeStructure{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListSupportedMethodsResponseDataItemFeeStructure
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
