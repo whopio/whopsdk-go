@@ -603,30 +603,29 @@ var (
 	adCampaignFieldLeads                        = big.NewInt(1 << 39)
 	adCampaignFieldLinkClicks                   = big.NewInt(1 << 40)
 	adCampaignFieldObjective                    = big.NewInt(1 << 41)
-	adCampaignFieldOptimizationGoal             = big.NewInt(1 << 42)
-	adCampaignFieldPlatform                     = big.NewInt(1 << 43)
-	adCampaignFieldPurchaseValue                = big.NewInt(1 << 44)
-	adCampaignFieldPurchases                    = big.NewInt(1 << 45)
-	adCampaignFieldReach                        = big.NewInt(1 << 46)
-	adCampaignFieldResultEvent                  = big.NewInt(1 << 47)
-	adCampaignFieldResultEventName              = big.NewInt(1 << 48)
-	adCampaignFieldResults                      = big.NewInt(1 << 49)
-	adCampaignFieldReturnOnAdSpend              = big.NewInt(1 << 50)
-	adCampaignFieldScheduleValue                = big.NewInt(1 << 51)
-	adCampaignFieldSchedules                    = big.NewInt(1 << 52)
-	adCampaignFieldSpecialAdCategories          = big.NewInt(1 << 53)
-	adCampaignFieldSpend                        = big.NewInt(1 << 54)
-	adCampaignFieldSpendCurrency                = big.NewInt(1 << 55)
-	adCampaignFieldStartsAt                     = big.NewInt(1 << 56)
-	adCampaignFieldStatus                       = big.NewInt(1 << 57)
-	adCampaignFieldSubmittedApplicationValue    = big.NewInt(1 << 58)
-	adCampaignFieldSubmittedApplications        = big.NewInt(1 << 59)
-	adCampaignFieldTitle                        = big.NewInt(1 << 60)
-	adCampaignFieldUniqueClickThroughRate       = big.NewInt(1 << 61)
-	adCampaignFieldUniqueClicks                 = big.NewInt(1 << 62)
-	adCampaignFieldUpdatedAt                    = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	adCampaignFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	adCampaignFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	adCampaignFieldPlatform                     = big.NewInt(1 << 42)
+	adCampaignFieldPurchaseValue                = big.NewInt(1 << 43)
+	adCampaignFieldPurchases                    = big.NewInt(1 << 44)
+	adCampaignFieldReach                        = big.NewInt(1 << 45)
+	adCampaignFieldResultEvent                  = big.NewInt(1 << 46)
+	adCampaignFieldResultEventName              = big.NewInt(1 << 47)
+	adCampaignFieldResults                      = big.NewInt(1 << 48)
+	adCampaignFieldReturnOnAdSpend              = big.NewInt(1 << 49)
+	adCampaignFieldScheduleValue                = big.NewInt(1 << 50)
+	adCampaignFieldSchedules                    = big.NewInt(1 << 51)
+	adCampaignFieldSpecialAdCategories          = big.NewInt(1 << 52)
+	adCampaignFieldSpend                        = big.NewInt(1 << 53)
+	adCampaignFieldSpendCurrency                = big.NewInt(1 << 54)
+	adCampaignFieldStartsAt                     = big.NewInt(1 << 55)
+	adCampaignFieldStatus                       = big.NewInt(1 << 56)
+	adCampaignFieldSubmittedApplicationValue    = big.NewInt(1 << 57)
+	adCampaignFieldSubmittedApplications        = big.NewInt(1 << 58)
+	adCampaignFieldTitle                        = big.NewInt(1 << 59)
+	adCampaignFieldUniqueClickThroughRate       = big.NewInt(1 << 60)
+	adCampaignFieldUniqueClicks                 = big.NewInt(1 << 61)
+	adCampaignFieldUpdatedAt                    = big.NewInt(1 << 62)
+	adCampaignFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	adCampaignFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 64)
 )
 
 // adCampaignNullableFields maps the wire names of AdCampaign's nullable fields (required or optional) to their field bits.
@@ -650,7 +649,6 @@ var adCampaignNullableFields = map[string]*big.Int{
 	"ends_at":                         adCampaignFieldEndsAt,
 	"frequency":                       adCampaignFieldFrequency,
 	"objective":                       adCampaignFieldObjective,
-	"optimization_goal":               adCampaignFieldOptimizationGoal,
 	"result_event":                    adCampaignFieldResultEvent,
 	"result_event_name":               adCampaignFieldResultEventName,
 	"results":                         adCampaignFieldResults,
@@ -743,8 +741,6 @@ type AdCampaign struct {
 	LinkClicks float64 `json:"link_clicks" url:"link_clicks"`
 	// The goal the campaign optimizes toward.
 	Objective *AdCampaignObjective `json:"objective,omitempty" url:"objective,omitempty"`
-	// The event the campaign optimizes for when a single goal is set campaign-wide. `null` when each ad group sets its own optimization_goal.
-	OptimizationGoal *string `json:"optimization_goal,omitempty" url:"optimization_goal,omitempty"`
 	// The ad network the campaign runs on.
 	Platform AdCampaignPlatform `json:"platform" url:"platform"`
 	// USD value of pixel-attributed purchases.
@@ -1090,13 +1086,6 @@ func (a *AdCampaign) GetObjective() *AdCampaignObjective {
 		return nil
 	}
 	return a.Objective
-}
-
-func (a *AdCampaign) GetOptimizationGoal() *string {
-	if a == nil {
-		return nil
-	}
-	return a.OptimizationGoal
 }
 
 func (a *AdCampaign) GetPlatform() AdCampaignPlatform {
@@ -1568,13 +1557,6 @@ func (a *AdCampaign) SetLinkClicks(linkClicks float64) {
 func (a *AdCampaign) SetObjective(objective *AdCampaignObjective) {
 	a.Objective = objective
 	a.require(adCampaignFieldObjective)
-}
-
-// SetOptimizationGoal sets the OptimizationGoal field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdCampaign) SetOptimizationGoal(optimizationGoal *string) {
-	a.OptimizationGoal = optimizationGoal
-	a.require(adCampaignFieldOptimizationGoal)
 }
 
 // SetPlatform sets the Platform field and marks it as non-optional;
@@ -3161,13 +3143,12 @@ var (
 	postAdCampaignPaymentFailedPayloadDataFieldID                   = big.NewInt(1 << 11)
 	postAdCampaignPaymentFailedPayloadDataFieldIssues               = big.NewInt(1 << 12)
 	postAdCampaignPaymentFailedPayloadDataFieldObjective            = big.NewInt(1 << 13)
-	postAdCampaignPaymentFailedPayloadDataFieldOptimizationGoal     = big.NewInt(1 << 14)
-	postAdCampaignPaymentFailedPayloadDataFieldPlatform             = big.NewInt(1 << 15)
-	postAdCampaignPaymentFailedPayloadDataFieldSpecialAdCategories  = big.NewInt(1 << 16)
-	postAdCampaignPaymentFailedPayloadDataFieldStartsAt             = big.NewInt(1 << 17)
-	postAdCampaignPaymentFailedPayloadDataFieldStatus               = big.NewInt(1 << 18)
-	postAdCampaignPaymentFailedPayloadDataFieldTitle                = big.NewInt(1 << 19)
-	postAdCampaignPaymentFailedPayloadDataFieldUpdatedAt            = big.NewInt(1 << 20)
+	postAdCampaignPaymentFailedPayloadDataFieldPlatform             = big.NewInt(1 << 14)
+	postAdCampaignPaymentFailedPayloadDataFieldSpecialAdCategories  = big.NewInt(1 << 15)
+	postAdCampaignPaymentFailedPayloadDataFieldStartsAt             = big.NewInt(1 << 16)
+	postAdCampaignPaymentFailedPayloadDataFieldStatus               = big.NewInt(1 << 17)
+	postAdCampaignPaymentFailedPayloadDataFieldTitle                = big.NewInt(1 << 18)
+	postAdCampaignPaymentFailedPayloadDataFieldUpdatedAt            = big.NewInt(1 << 19)
 )
 
 // postAdCampaignPaymentFailedPayloadDataNullableFields maps the wire names of PostAdCampaignPaymentFailedPayloadData's nullable fields (required or optional) to their field bits.
@@ -3180,7 +3161,6 @@ var postAdCampaignPaymentFailedPayloadDataNullableFields = map[string]*big.Int{
 	"desired_cost_per_result": postAdCampaignPaymentFailedPayloadDataFieldDesiredCostPerResult,
 	"ends_at":                 postAdCampaignPaymentFailedPayloadDataFieldEndsAt,
 	"objective":               postAdCampaignPaymentFailedPayloadDataFieldObjective,
-	"optimization_goal":       postAdCampaignPaymentFailedPayloadDataFieldOptimizationGoal,
 	"starts_at":               postAdCampaignPaymentFailedPayloadDataFieldStartsAt,
 }
 
@@ -3212,8 +3192,6 @@ type PostAdCampaignPaymentFailedPayloadData struct {
 	Issues []*AdPlatformIssue `json:"issues" url:"issues"`
 	// The goal the campaign optimizes toward.
 	Objective *PostAdCampaignPaymentFailedPayloadDataObjective `json:"objective,omitempty" url:"objective,omitempty"`
-	// The event the campaign optimizes for when a single goal is set campaign-wide. `null` when each ad group sets its own optimization_goal.
-	OptimizationGoal *string `json:"optimization_goal,omitempty" url:"optimization_goal,omitempty"`
 	// The ad network the campaign runs on.
 	Platform            PostAdCampaignPaymentFailedPayloadDataPlatform                  `json:"platform" url:"platform"`
 	SpecialAdCategories []PostAdCampaignPaymentFailedPayloadDataSpecialAdCategoriesItem `json:"special_ad_categories" url:"special_ad_categories"`
@@ -3329,13 +3307,6 @@ func (p *PostAdCampaignPaymentFailedPayloadData) GetObjective() *PostAdCampaignP
 		return nil
 	}
 	return p.Objective
-}
-
-func (p *PostAdCampaignPaymentFailedPayloadData) GetOptimizationGoal() *string {
-	if p == nil {
-		return nil
-	}
-	return p.OptimizationGoal
 }
 
 func (p *PostAdCampaignPaymentFailedPayloadData) GetPlatform() PostAdCampaignPaymentFailedPayloadDataPlatform {
@@ -3492,13 +3463,6 @@ func (p *PostAdCampaignPaymentFailedPayloadData) SetIssues(issues []*AdPlatformI
 func (p *PostAdCampaignPaymentFailedPayloadData) SetObjective(objective *PostAdCampaignPaymentFailedPayloadDataObjective) {
 	p.Objective = objective
 	p.require(postAdCampaignPaymentFailedPayloadDataFieldObjective)
-}
-
-// SetOptimizationGoal sets the OptimizationGoal field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostAdCampaignPaymentFailedPayloadData) SetOptimizationGoal(optimizationGoal *string) {
-	p.OptimizationGoal = optimizationGoal
-	p.require(postAdCampaignPaymentFailedPayloadDataFieldOptimizationGoal)
 }
 
 // SetPlatform sets the Platform field and marks it as non-optional;
@@ -4170,13 +4134,12 @@ var (
 	postAdCampaignUpdatedPayloadDataFieldID                   = big.NewInt(1 << 11)
 	postAdCampaignUpdatedPayloadDataFieldIssues               = big.NewInt(1 << 12)
 	postAdCampaignUpdatedPayloadDataFieldObjective            = big.NewInt(1 << 13)
-	postAdCampaignUpdatedPayloadDataFieldOptimizationGoal     = big.NewInt(1 << 14)
-	postAdCampaignUpdatedPayloadDataFieldPlatform             = big.NewInt(1 << 15)
-	postAdCampaignUpdatedPayloadDataFieldSpecialAdCategories  = big.NewInt(1 << 16)
-	postAdCampaignUpdatedPayloadDataFieldStartsAt             = big.NewInt(1 << 17)
-	postAdCampaignUpdatedPayloadDataFieldStatus               = big.NewInt(1 << 18)
-	postAdCampaignUpdatedPayloadDataFieldTitle                = big.NewInt(1 << 19)
-	postAdCampaignUpdatedPayloadDataFieldUpdatedAt            = big.NewInt(1 << 20)
+	postAdCampaignUpdatedPayloadDataFieldPlatform             = big.NewInt(1 << 14)
+	postAdCampaignUpdatedPayloadDataFieldSpecialAdCategories  = big.NewInt(1 << 15)
+	postAdCampaignUpdatedPayloadDataFieldStartsAt             = big.NewInt(1 << 16)
+	postAdCampaignUpdatedPayloadDataFieldStatus               = big.NewInt(1 << 17)
+	postAdCampaignUpdatedPayloadDataFieldTitle                = big.NewInt(1 << 18)
+	postAdCampaignUpdatedPayloadDataFieldUpdatedAt            = big.NewInt(1 << 19)
 )
 
 // postAdCampaignUpdatedPayloadDataNullableFields maps the wire names of PostAdCampaignUpdatedPayloadData's nullable fields (required or optional) to their field bits.
@@ -4189,7 +4152,6 @@ var postAdCampaignUpdatedPayloadDataNullableFields = map[string]*big.Int{
 	"desired_cost_per_result": postAdCampaignUpdatedPayloadDataFieldDesiredCostPerResult,
 	"ends_at":                 postAdCampaignUpdatedPayloadDataFieldEndsAt,
 	"objective":               postAdCampaignUpdatedPayloadDataFieldObjective,
-	"optimization_goal":       postAdCampaignUpdatedPayloadDataFieldOptimizationGoal,
 	"starts_at":               postAdCampaignUpdatedPayloadDataFieldStartsAt,
 }
 
@@ -4221,8 +4183,6 @@ type PostAdCampaignUpdatedPayloadData struct {
 	Issues []*AdPlatformIssue `json:"issues" url:"issues"`
 	// The goal the campaign optimizes toward.
 	Objective *PostAdCampaignUpdatedPayloadDataObjective `json:"objective,omitempty" url:"objective,omitempty"`
-	// The event the campaign optimizes for when a single goal is set campaign-wide. `null` when each ad group sets its own optimization_goal.
-	OptimizationGoal *string `json:"optimization_goal,omitempty" url:"optimization_goal,omitempty"`
 	// The ad network the campaign runs on.
 	Platform            PostAdCampaignUpdatedPayloadDataPlatform                  `json:"platform" url:"platform"`
 	SpecialAdCategories []PostAdCampaignUpdatedPayloadDataSpecialAdCategoriesItem `json:"special_ad_categories" url:"special_ad_categories"`
@@ -4338,13 +4298,6 @@ func (p *PostAdCampaignUpdatedPayloadData) GetObjective() *PostAdCampaignUpdated
 		return nil
 	}
 	return p.Objective
-}
-
-func (p *PostAdCampaignUpdatedPayloadData) GetOptimizationGoal() *string {
-	if p == nil {
-		return nil
-	}
-	return p.OptimizationGoal
 }
 
 func (p *PostAdCampaignUpdatedPayloadData) GetPlatform() PostAdCampaignUpdatedPayloadDataPlatform {
@@ -4501,13 +4454,6 @@ func (p *PostAdCampaignUpdatedPayloadData) SetIssues(issues []*AdPlatformIssue) 
 func (p *PostAdCampaignUpdatedPayloadData) SetObjective(objective *PostAdCampaignUpdatedPayloadDataObjective) {
 	p.Objective = objective
 	p.require(postAdCampaignUpdatedPayloadDataFieldObjective)
-}
-
-// SetOptimizationGoal sets the OptimizationGoal field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostAdCampaignUpdatedPayloadData) SetOptimizationGoal(optimizationGoal *string) {
-	p.OptimizationGoal = optimizationGoal
-	p.require(postAdCampaignUpdatedPayloadDataFieldOptimizationGoal)
 }
 
 // SetPlatform sets the Platform field and marks it as non-optional;

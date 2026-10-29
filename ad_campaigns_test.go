@@ -1943,14 +1943,6 @@ func TestSettersAdCampaign(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetOptimizationGoal", func(t *testing.T) {
-		obj := &AdCampaign{}
-		var fernTestValueOptimizationGoal *string
-		obj.SetOptimizationGoal(fernTestValueOptimizationGoal)
-		assert.Equal(t, fernTestValueOptimizationGoal, obj.OptimizationGoal)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetPlatform", func(t *testing.T) {
 		obj := &AdCampaign{}
 		var fernTestValuePlatform AdCampaignPlatform
@@ -3322,39 +3314,6 @@ func TestGettersAdCampaign(t *testing.T) {
 			}
 		}()
 		_ = obj.GetObjective() // Should return zero value
-	})
-
-	t.Run("GetOptimizationGoal", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &AdCampaign{}
-		var expected *string
-		obj.OptimizationGoal = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetOptimizationGoal(), "getter should return the property value")
-	})
-
-	t.Run("GetOptimizationGoal_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &AdCampaign{}
-		obj.OptimizationGoal = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetOptimizationGoal(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetOptimizationGoal_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *AdCampaign
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetOptimizationGoal() // Should return zero value
 	})
 
 	t.Run("GetPlatform", func(t *testing.T) {
@@ -5238,37 +5197,6 @@ func TestSettersMarkExplicitAdCampaign(t *testing.T) {
 
 		// Act
 		obj.SetObjective(fernTestValueObjective)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetOptimizationGoal_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &AdCampaign{}
-		var fernTestValueOptimizationGoal *string
-
-		// Act
-		obj.SetOptimizationGoal(fernTestValueOptimizationGoal)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -7309,14 +7237,6 @@ func TestSettersPostAdCampaignPaymentFailedPayloadData(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetOptimizationGoal", func(t *testing.T) {
-		obj := &PostAdCampaignPaymentFailedPayloadData{}
-		var fernTestValueOptimizationGoal *string
-		obj.SetOptimizationGoal(fernTestValueOptimizationGoal)
-		assert.Equal(t, fernTestValueOptimizationGoal, obj.OptimizationGoal)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetPlatform", func(t *testing.T) {
 		obj := &PostAdCampaignPaymentFailedPayloadData{}
 		var fernTestValuePlatform PostAdCampaignPaymentFailedPayloadDataPlatform
@@ -7778,39 +7698,6 @@ func TestGettersPostAdCampaignPaymentFailedPayloadData(t *testing.T) {
 			}
 		}()
 		_ = obj.GetObjective() // Should return zero value
-	})
-
-	t.Run("GetOptimizationGoal", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &PostAdCampaignPaymentFailedPayloadData{}
-		var expected *string
-		obj.OptimizationGoal = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetOptimizationGoal(), "getter should return the property value")
-	})
-
-	t.Run("GetOptimizationGoal_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &PostAdCampaignPaymentFailedPayloadData{}
-		obj.OptimizationGoal = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetOptimizationGoal(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetOptimizationGoal_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *PostAdCampaignPaymentFailedPayloadData
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetOptimizationGoal() // Should return zero value
 	})
 
 	t.Run("GetPlatform", func(t *testing.T) {
@@ -8385,37 +8272,6 @@ func TestSettersMarkExplicitPostAdCampaignPaymentFailedPayloadData(t *testing.T)
 
 		// Act
 		obj.SetObjective(fernTestValueObjective)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetOptimizationGoal_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &PostAdCampaignPaymentFailedPayloadData{}
-		var fernTestValueOptimizationGoal *string
-
-		// Act
-		obj.SetOptimizationGoal(fernTestValueOptimizationGoal)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -9285,14 +9141,6 @@ func TestSettersPostAdCampaignUpdatedPayloadData(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetOptimizationGoal", func(t *testing.T) {
-		obj := &PostAdCampaignUpdatedPayloadData{}
-		var fernTestValueOptimizationGoal *string
-		obj.SetOptimizationGoal(fernTestValueOptimizationGoal)
-		assert.Equal(t, fernTestValueOptimizationGoal, obj.OptimizationGoal)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetPlatform", func(t *testing.T) {
 		obj := &PostAdCampaignUpdatedPayloadData{}
 		var fernTestValuePlatform PostAdCampaignUpdatedPayloadDataPlatform
@@ -9754,39 +9602,6 @@ func TestGettersPostAdCampaignUpdatedPayloadData(t *testing.T) {
 			}
 		}()
 		_ = obj.GetObjective() // Should return zero value
-	})
-
-	t.Run("GetOptimizationGoal", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &PostAdCampaignUpdatedPayloadData{}
-		var expected *string
-		obj.OptimizationGoal = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetOptimizationGoal(), "getter should return the property value")
-	})
-
-	t.Run("GetOptimizationGoal_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &PostAdCampaignUpdatedPayloadData{}
-		obj.OptimizationGoal = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetOptimizationGoal(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetOptimizationGoal_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *PostAdCampaignUpdatedPayloadData
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetOptimizationGoal() // Should return zero value
 	})
 
 	t.Run("GetPlatform", func(t *testing.T) {
@@ -10361,37 +10176,6 @@ func TestSettersMarkExplicitPostAdCampaignUpdatedPayloadData(t *testing.T) {
 
 		// Act
 		obj.SetObjective(fernTestValueObjective)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetOptimizationGoal_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &PostAdCampaignUpdatedPayloadData{}
-		var fernTestValueOptimizationGoal *string
-
-		// Act
-		obj.SetOptimizationGoal(fernTestValueOptimizationGoal)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -11515,7 +11299,6 @@ func TestRequiredNullableRoundTripAdCampaign(t *testing.T) {
 		"cost_per_viewed_content",
 		"frequency",
 		"objective",
-		"optimization_goal",
 		"result_event",
 		"result_event_name",
 		"results",
@@ -11533,7 +11316,7 @@ func TestRequiredNullableRoundTripAdCampaign(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj AdCampaign
-		require.NoError(t, json.Unmarshal([]byte(`{"budget_amount":null,"budget_amount_local":null,"budget_optimization":null,"budget_type":null,"cost_per_added_to_cart":null,"cost_per_completed_registration":null,"cost_per_contact":null,"cost_per_lead":null,"cost_per_purchase":null,"cost_per_result":null,"cost_per_schedule":null,"cost_per_submitted_application":null,"cost_per_unique_click":null,"cost_per_viewed_content":null,"frequency":null,"objective":null,"optimization_goal":null,"result_event":null,"result_event_name":null,"results":null,"spend_currency":null,"unique_click_through_rate":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"budget_amount":null,"budget_amount_local":null,"budget_optimization":null,"budget_type":null,"cost_per_added_to_cart":null,"cost_per_completed_registration":null,"cost_per_contact":null,"cost_per_lead":null,"cost_per_purchase":null,"cost_per_result":null,"cost_per_schedule":null,"cost_per_submitted_application":null,"cost_per_unique_click":null,"cost_per_viewed_content":null,"frequency":null,"objective":null,"result_event":null,"result_event_name":null,"results":null,"spend_currency":null,"unique_click_through_rate":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -11655,7 +11438,6 @@ func TestRequiredNullableRoundTripPostAdCampaignPaymentFailedPayloadData(t *test
 		"budget_optimization",
 		"budget_type",
 		"objective",
-		"optimization_goal",
 	}
 	marshalToMap := func(t *testing.T, obj *PostAdCampaignPaymentFailedPayloadData) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
@@ -11668,7 +11450,7 @@ func TestRequiredNullableRoundTripPostAdCampaignPaymentFailedPayloadData(t *test
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj PostAdCampaignPaymentFailedPayloadData
-		require.NoError(t, json.Unmarshal([]byte(`{"budget_amount":null,"budget_amount_local":null,"budget_optimization":null,"budget_type":null,"objective":null,"optimization_goal":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"budget_amount":null,"budget_amount_local":null,"budget_optimization":null,"budget_type":null,"objective":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -11746,7 +11528,6 @@ func TestRequiredNullableRoundTripPostAdCampaignUpdatedPayloadData(t *testing.T)
 		"budget_optimization",
 		"budget_type",
 		"objective",
-		"optimization_goal",
 	}
 	marshalToMap := func(t *testing.T, obj *PostAdCampaignUpdatedPayloadData) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
@@ -11759,7 +11540,7 @@ func TestRequiredNullableRoundTripPostAdCampaignUpdatedPayloadData(t *testing.T)
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj PostAdCampaignUpdatedPayloadData
-		require.NoError(t, json.Unmarshal([]byte(`{"budget_amount":null,"budget_amount_local":null,"budget_optimization":null,"budget_type":null,"objective":null,"optimization_goal":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"budget_amount":null,"budget_amount_local":null,"budget_optimization":null,"budget_type":null,"objective":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
