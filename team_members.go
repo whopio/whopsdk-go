@@ -93,7 +93,7 @@ var (
 )
 
 type DeleteTeamMembersRequest struct {
-	// Team member ID — `ausr_` for accepted members, `ausri_` for pending invites.
+	// Team member ID. Accepted members have an ID starting with `ausr_` or `mber_`, and pending invites one starting with `ausri_`. Treat it as opaque.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -146,7 +146,7 @@ type ListTeamMembersRequest struct {
 	Role *ListTeamMembersRequestRole `json:"-" url:"role,omitempty"`
 	// Only return members whose name or username contains this text, and invites whose email contains it.
 	Query *string `json:"-" url:"query,omitempty"`
-	// Only return the direct reports of this team member, prefixed `ausr_`. Pass the account ID, prefixed `biz_`, for the members who report to the business directly. Pending invites are excluded, and the list pages in `created_at` order without moving Partner-role members last.
+	// Only return the direct reports of this team member, whose ID may start with `ausr_` or `mber_`. Pass the account ID, prefixed `biz_`, for the members who report to the business directly. Pending invites are excluded, and the list pages in `created_at` order without moving Partner-role members last.
 	ReportsToID *string `json:"-" url:"reports_to_id,omitempty"`
 	// Only return members with at least this many direct reports. Pending invites are excluded, and the list pages in `created_at` order without moving Partner-role members last.
 	DirectReportsMin *int `json:"-" url:"direct_reports_min,omitempty"`
@@ -299,7 +299,7 @@ var (
 )
 
 type RetrieveTeamMembersRequest struct {
-	// Team member ID — `ausr_` for accepted members, `ausri_` for pending invites.
+	// Team member ID. Accepted members have an ID starting with `ausr_` or `mber_`, and pending invites one starting with `ausri_`. Treat it as opaque.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -351,17 +351,17 @@ type TeamMember struct {
 	AccountID string `json:"account_id" url:"account_id"`
 	// Custom role assigned to this member, or `null` when the member has a system role.
 	AuthorizedRole *TeamMemberAuthorizedRole `json:"authorized_role,omitempty" url:"authorized_role,omitempty"`
-	// When the member joined or the invite was sent, as an ISO 8601 timestamp.
+	// When the member joined the team or the invite was sent, as an ISO 8601 timestamp. A member who was a customer first keeps the date they were given their role.
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// How many team members report directly to this member. `null` for invites.
 	DirectReportsCount *int `json:"direct_reports_count,omitempty" url:"direct_reports_count,omitempty"`
 	// The member's email address. For an invite sent to an email with no Whop account yet, the invited address; for accepted members and invites to an existing Whop account, `null` unless the caller holds the `company:authorized_user:email:read` scope.
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
-	// Team member ID — `ausr_` for accepted members, `mber_` for members whose role is held on their member record, `ausri_` for pending invites.
+	// Team member ID. Accepted members have an ID starting with `ausr_` or `mber_`, and pending invites one starting with `ausri_`. Treat it as opaque: both member prefixes are accepted wherever a team member ID is.
 	ID string `json:"id" url:"id"`
 	// Whether this member is an agent (app-controlled account) rather than a human team member. Always `false` for invites.
 	IsAgent bool `json:"is_agent" url:"is_agent"`
-	// The team member this member reports to, prefixed `ausr_`, or `mber_` when that manager's role is held on their member record. `null` when the member reports to the business directly, and for invites.
+	// The ID of the team member this member reports to, starting with `ausr_` or `mber_`; treat it as opaque. `null` when the member reports to the business directly, and for invites.
 	ReportsToID *string `json:"reports_to_id,omitempty" url:"reports_to_id,omitempty"`
 	// The member's role on the account. `custom` means a bespoke dashboard-managed role; the API can read but not grant it.
 	Role TeamMemberRole `json:"role" url:"role"`
@@ -1318,7 +1318,7 @@ var (
 )
 
 type UpdateTeamMembersRequest struct {
-	// Team member ID — `ausr_` for accepted members, `ausri_` for pending invites.
+	// Team member ID. Accepted members have an ID starting with `ausr_` or `mber_`, and pending invites one starting with `ausri_`. Treat it as opaque.
 	ID string `json:"-" url:"-"`
 	// The system role to grant. Custom roles cannot be granted through the API. The Partner role provides view-only access.
 	Role *UpdateTeamMembersRequestRole `json:"role,omitempty" url:"-"`
