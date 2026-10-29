@@ -158,75 +158,6 @@ func (c *ConnectSocialAccountsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	createSocialAccountsRequestFieldAccountID = big.NewInt(1 << 0)
-	createSocialAccountsRequestFieldAPIKey    = big.NewInt(1 << 1)
-	createSocialAccountsRequestFieldPlatform  = big.NewInt(1 << 2)
-)
-
-type CreateSocialAccountsRequest struct {
-	// The Account (biz_ identifier) to create the external account for. An account-scoped API key may omit this to default to its own account. Account API keys cannot update their own account's branding through Update Account; use a user-authenticated path.
-	AccountID *string `json:"account_id,omitempty" url:"-"`
-	// A private API key for the account on the platform. Required for `klaviyo`, which needs read access to Accounts, and for `aimerce`; not accepted for other platforms. Whop checks the key with the platform before connecting and never returns it. Connecting again replaces the saved key.
-	APIKey *string `json:"api_key,omitempty" url:"-"`
-	// The platform to create the external account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes. `klaviyo` connects the account's existing Klaviyo account with the `api_key` you pass. `aimerce` connects the account's Aimerce shop with the `api_key` you pass and turns on the Aimerce tracking pixel; it requires the `company:manage_checkout` scope instead of `social_account:create`.
-	Platform CreateSocialAccountsRequestPlatform `json:"platform" url:"-"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-}
-
-func (c *CreateSocialAccountsRequest) require(field *big.Int) {
-	next := new(big.Int)
-	if c.explicitFields != nil {
-		next.Set(c.explicitFields)
-	}
-	next.Or(next, field)
-	c.explicitFields = next
-}
-
-// SetAccountID sets the AccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateSocialAccountsRequest) SetAccountID(accountID *string) {
-	c.AccountID = accountID
-	c.require(createSocialAccountsRequestFieldAccountID)
-}
-
-// SetAPIKey sets the APIKey field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateSocialAccountsRequest) SetAPIKey(apiKey *string) {
-	c.APIKey = apiKey
-	c.require(createSocialAccountsRequestFieldAPIKey)
-}
-
-// SetPlatform sets the Platform field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateSocialAccountsRequest) SetPlatform(platform CreateSocialAccountsRequestPlatform) {
-	c.Platform = platform
-	c.require(createSocialAccountsRequestFieldPlatform)
-}
-
-func (c *CreateSocialAccountsRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateSocialAccountsRequest
-	var body unmarshaler
-	if err := json.Unmarshal(data, &body); err != nil {
-		return err
-	}
-	*c = CreateSocialAccountsRequest(body)
-	return nil
-}
-
-func (c *CreateSocialAccountsRequest) MarshalJSON() ([]byte, error) {
-	type embed CreateSocialAccountsRequest
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-var (
 	deleteSocialAccountsRequestFieldID        = big.NewInt(1 << 0)
 	deleteSocialAccountsRequestFieldAccountID = big.NewInt(1 << 1)
 	deleteSocialAccountsRequestFieldUserID    = big.NewInt(1 << 2)
@@ -2148,33 +2079,568 @@ func (c *ConnectSocialAccountsResponse) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The platform to create the external account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes. `klaviyo` connects the account's existing Klaviyo account with the `api_key` you pass. `aimerce` connects the account's Aimerce shop with the `api_key` you pass and turns on the Aimerce tracking pixel; it requires the `company:manage_checkout` scope instead of `social_account:create`.
-type CreateSocialAccountsRequestPlatform string
+type CreateSocialAccountsRequestBody struct {
+	Platform string
+	// Provisions a Whop-managed Facebook page for the account. Requires the account's `banner_image`, `logo`, and `description`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before Facebook has created the page — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes.
+	Facebook *CreateSocialAccountsRequestBodyFacebook
+	// Provisions a Whop-managed TikTok account for the account. Requires the account's `logo`; configure it with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before TikTok has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes.
+	Tiktok *CreateSocialAccountsRequestBodyTiktok
+	// Connects the account's existing Klaviyo account with a private API key.
+	Klaviyo *CreateSocialAccountsRequestBodyKlaviyo
+	// Connects the account's Aimerce shop with an API key and turns on the Aimerce tracking pixel. Requires the `company:manage_checkout` scope instead of `social_account:create`.
+	Aimerce *CreateSocialAccountsRequestBodyAimerce
 
-const (
-	CreateSocialAccountsRequestPlatformFacebook CreateSocialAccountsRequestPlatform = "facebook"
-	CreateSocialAccountsRequestPlatformTiktok   CreateSocialAccountsRequestPlatform = "tiktok"
-	CreateSocialAccountsRequestPlatformKlaviyo  CreateSocialAccountsRequestPlatform = "klaviyo"
-	CreateSocialAccountsRequestPlatformAimerce  CreateSocialAccountsRequestPlatform = "aimerce"
-)
-
-func NewCreateSocialAccountsRequestPlatformFromString(s string) (CreateSocialAccountsRequestPlatform, error) {
-	switch s {
-	case "facebook":
-		return CreateSocialAccountsRequestPlatformFacebook, nil
-	case "tiktok":
-		return CreateSocialAccountsRequestPlatformTiktok, nil
-	case "klaviyo":
-		return CreateSocialAccountsRequestPlatformKlaviyo, nil
-	case "aimerce":
-		return CreateSocialAccountsRequestPlatformAimerce, nil
-	}
-	var t CreateSocialAccountsRequestPlatform
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
+	rawJSON json.RawMessage
 }
 
-func (c CreateSocialAccountsRequestPlatform) Ptr() *CreateSocialAccountsRequestPlatform {
-	return &c
+func (c *CreateSocialAccountsRequestBody) GetPlatform() string {
+	if c == nil {
+		return ""
+	}
+	return c.Platform
+}
+
+func (c *CreateSocialAccountsRequestBody) GetFacebook() *CreateSocialAccountsRequestBodyFacebook {
+	if c == nil {
+		return nil
+	}
+	return c.Facebook
+}
+
+func (c *CreateSocialAccountsRequestBody) GetTiktok() *CreateSocialAccountsRequestBodyTiktok {
+	if c == nil {
+		return nil
+	}
+	return c.Tiktok
+}
+
+func (c *CreateSocialAccountsRequestBody) GetKlaviyo() *CreateSocialAccountsRequestBodyKlaviyo {
+	if c == nil {
+		return nil
+	}
+	return c.Klaviyo
+}
+
+func (c *CreateSocialAccountsRequestBody) GetAimerce() *CreateSocialAccountsRequestBodyAimerce {
+	if c == nil {
+		return nil
+	}
+	return c.Aimerce
+}
+
+func (c *CreateSocialAccountsRequestBody) UnmarshalJSON(data []byte) error {
+	var unmarshaler struct {
+		Platform string `json:"platform"`
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	c.Platform = unmarshaler.Platform
+	if unmarshaler.Platform == "" {
+		return fmt.Errorf("%T did not include discriminant platform", c)
+	}
+	switch unmarshaler.Platform {
+	case "facebook":
+		value := new(CreateSocialAccountsRequestBodyFacebook)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		c.Facebook = value
+	case "tiktok":
+		value := new(CreateSocialAccountsRequestBodyTiktok)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		c.Tiktok = value
+	case "klaviyo":
+		value := new(CreateSocialAccountsRequestBodyKlaviyo)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		c.Klaviyo = value
+	case "aimerce":
+		value := new(CreateSocialAccountsRequestBodyAimerce)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		c.Aimerce = value
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c CreateSocialAccountsRequestBody) MarshalJSON() ([]byte, error) {
+	if err := c.validate(); err != nil {
+		return nil, err
+	}
+	if c.Facebook != nil {
+		return internal.MarshalJSONWithExtraProperty(c.Facebook, "platform", "facebook")
+	}
+	if c.Tiktok != nil {
+		return internal.MarshalJSONWithExtraProperty(c.Tiktok, "platform", "tiktok")
+	}
+	if c.Klaviyo != nil {
+		return internal.MarshalJSONWithExtraProperty(c.Klaviyo, "platform", "klaviyo")
+	}
+	if c.Aimerce != nil {
+		return internal.MarshalJSONWithExtraProperty(c.Aimerce, "platform", "aimerce")
+	}
+	if len(c.rawJSON) > 0 {
+		return c.rawJSON, nil
+	}
+	return nil, fmt.Errorf("type %T does not define a non-empty union type", c)
+}
+
+type CreateSocialAccountsRequestBodyVisitor interface {
+	VisitFacebook(*CreateSocialAccountsRequestBodyFacebook) error
+	VisitTiktok(*CreateSocialAccountsRequestBodyTiktok) error
+	VisitKlaviyo(*CreateSocialAccountsRequestBodyKlaviyo) error
+	VisitAimerce(*CreateSocialAccountsRequestBodyAimerce) error
+}
+
+func (c *CreateSocialAccountsRequestBody) Accept(visitor CreateSocialAccountsRequestBodyVisitor) error {
+	if c.Facebook != nil {
+		return visitor.VisitFacebook(c.Facebook)
+	}
+	if c.Tiktok != nil {
+		return visitor.VisitTiktok(c.Tiktok)
+	}
+	if c.Klaviyo != nil {
+		return visitor.VisitKlaviyo(c.Klaviyo)
+	}
+	if c.Aimerce != nil {
+		return visitor.VisitAimerce(c.Aimerce)
+	}
+	return fmt.Errorf("type %T does not define a non-empty union type", c)
+}
+
+func (c *CreateSocialAccountsRequestBody) validate() error {
+	if c == nil {
+		return fmt.Errorf("type %T is nil", c)
+	}
+	var fields []string
+	if c.Facebook != nil {
+		fields = append(fields, "facebook")
+	}
+	if c.Tiktok != nil {
+		fields = append(fields, "tiktok")
+	}
+	if c.Klaviyo != nil {
+		fields = append(fields, "klaviyo")
+	}
+	if c.Aimerce != nil {
+		fields = append(fields, "aimerce")
+	}
+	if len(fields) == 0 {
+		if c.Platform != "" {
+			if len(c.rawJSON) > 0 {
+				return nil
+			}
+			return fmt.Errorf("type %T defines a discriminant set to %q but the field is not set", c, c.Platform)
+		}
+		return fmt.Errorf("type %T is empty", c)
+	}
+	if len(fields) > 1 {
+		return fmt.Errorf("type %T defines values for %s, but only one value is allowed", c, fields)
+	}
+	if c.Platform != "" {
+		field := fields[0]
+		if c.Platform != field {
+			return fmt.Errorf(
+				"type %T defines a discriminant set to %q, but it does not match the %T field; either remove or update the discriminant to match",
+				c,
+				c.Platform,
+				c,
+			)
+		}
+	}
+	return nil
+}
+
+var (
+	createSocialAccountsRequestBodyAimerceFieldAccountID = big.NewInt(1 << 0)
+	createSocialAccountsRequestBodyAimerceFieldAPIKey    = big.NewInt(1 << 1)
+)
+
+// Connects the account's Aimerce shop with an API key and turns on the Aimerce tracking pixel. Requires the `company:manage_checkout` scope instead of `social_account:create`.
+type CreateSocialAccountsRequestBodyAimerce struct {
+	// The Account (biz_ identifier) to create the external account for. An account-scoped API key may omit this to default to its own account. Account API keys cannot update their own account's branding through Update Account; use a user-authenticated path.
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// The account's Aimerce API key. Whop checks the key with Aimerce before connecting and never returns it. Connecting again replaces the saved key.
+	APIKey string `json:"api_key" url:"api_key"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateSocialAccountsRequestBodyAimerce) GetAccountID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.AccountID
+}
+
+func (c *CreateSocialAccountsRequestBodyAimerce) GetAPIKey() string {
+	if c == nil {
+		return ""
+	}
+	return c.APIKey
+}
+
+func (c *CreateSocialAccountsRequestBodyAimerce) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateSocialAccountsRequestBodyAimerce) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateSocialAccountsRequestBodyAimerce) SetAccountID(accountID *string) {
+	c.AccountID = accountID
+	c.require(createSocialAccountsRequestBodyAimerceFieldAccountID)
+}
+
+// SetAPIKey sets the APIKey field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateSocialAccountsRequestBodyAimerce) SetAPIKey(apiKey string) {
+	c.APIKey = apiKey
+	c.require(createSocialAccountsRequestBodyAimerceFieldAPIKey)
+}
+
+func (c *CreateSocialAccountsRequestBodyAimerce) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateSocialAccountsRequestBodyAimerce
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateSocialAccountsRequestBodyAimerce(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateSocialAccountsRequestBodyAimerce) MarshalJSON() ([]byte, error) {
+	type embed CreateSocialAccountsRequestBodyAimerce
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateSocialAccountsRequestBodyAimerce) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createSocialAccountsRequestBodyFacebookFieldAccountID = big.NewInt(1 << 0)
+)
+
+// Provisions a Whop-managed Facebook page for the account. Requires the account's `banner_image`, `logo`, and `description`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before Facebook has created the page — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes.
+type CreateSocialAccountsRequestBodyFacebook struct {
+	// The Account (biz_ identifier) to create the external account for. An account-scoped API key may omit this to default to its own account. Account API keys cannot update their own account's branding through Update Account; use a user-authenticated path.
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateSocialAccountsRequestBodyFacebook) GetAccountID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.AccountID
+}
+
+func (c *CreateSocialAccountsRequestBodyFacebook) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateSocialAccountsRequestBodyFacebook) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateSocialAccountsRequestBodyFacebook) SetAccountID(accountID *string) {
+	c.AccountID = accountID
+	c.require(createSocialAccountsRequestBodyFacebookFieldAccountID)
+}
+
+func (c *CreateSocialAccountsRequestBodyFacebook) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateSocialAccountsRequestBodyFacebook
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateSocialAccountsRequestBodyFacebook(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateSocialAccountsRequestBodyFacebook) MarshalJSON() ([]byte, error) {
+	type embed CreateSocialAccountsRequestBodyFacebook
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateSocialAccountsRequestBodyFacebook) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createSocialAccountsRequestBodyKlaviyoFieldAccountID = big.NewInt(1 << 0)
+	createSocialAccountsRequestBodyKlaviyoFieldAPIKey    = big.NewInt(1 << 1)
+)
+
+// Connects the account's existing Klaviyo account with a private API key.
+type CreateSocialAccountsRequestBodyKlaviyo struct {
+	// The Account (biz_ identifier) to create the external account for. An account-scoped API key may omit this to default to its own account. Account API keys cannot update their own account's branding through Update Account; use a user-authenticated path.
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// A private Klaviyo API key with read access to Accounts. Whop checks the key with Klaviyo before connecting and never returns it. Connecting again replaces the saved key.
+	APIKey string `json:"api_key" url:"api_key"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateSocialAccountsRequestBodyKlaviyo) GetAccountID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.AccountID
+}
+
+func (c *CreateSocialAccountsRequestBodyKlaviyo) GetAPIKey() string {
+	if c == nil {
+		return ""
+	}
+	return c.APIKey
+}
+
+func (c *CreateSocialAccountsRequestBodyKlaviyo) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateSocialAccountsRequestBodyKlaviyo) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateSocialAccountsRequestBodyKlaviyo) SetAccountID(accountID *string) {
+	c.AccountID = accountID
+	c.require(createSocialAccountsRequestBodyKlaviyoFieldAccountID)
+}
+
+// SetAPIKey sets the APIKey field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateSocialAccountsRequestBodyKlaviyo) SetAPIKey(apiKey string) {
+	c.APIKey = apiKey
+	c.require(createSocialAccountsRequestBodyKlaviyoFieldAPIKey)
+}
+
+func (c *CreateSocialAccountsRequestBodyKlaviyo) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateSocialAccountsRequestBodyKlaviyo
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateSocialAccountsRequestBodyKlaviyo(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateSocialAccountsRequestBodyKlaviyo) MarshalJSON() ([]byte, error) {
+	type embed CreateSocialAccountsRequestBodyKlaviyo
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateSocialAccountsRequestBodyKlaviyo) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createSocialAccountsRequestBodyTiktokFieldAccountID = big.NewInt(1 << 0)
+)
+
+// Provisions a Whop-managed TikTok account for the account. Requires the account's `logo`; configure it with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before TikTok has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes.
+type CreateSocialAccountsRequestBodyTiktok struct {
+	// The Account (biz_ identifier) to create the external account for. An account-scoped API key may omit this to default to its own account. Account API keys cannot update their own account's branding through Update Account; use a user-authenticated path.
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateSocialAccountsRequestBodyTiktok) GetAccountID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.AccountID
+}
+
+func (c *CreateSocialAccountsRequestBodyTiktok) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateSocialAccountsRequestBodyTiktok) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateSocialAccountsRequestBodyTiktok) SetAccountID(accountID *string) {
+	c.AccountID = accountID
+	c.require(createSocialAccountsRequestBodyTiktokFieldAccountID)
+}
+
+func (c *CreateSocialAccountsRequestBodyTiktok) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateSocialAccountsRequestBodyTiktok
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateSocialAccountsRequestBodyTiktok(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateSocialAccountsRequestBodyTiktok) MarshalJSON() ([]byte, error) {
+	type embed CreateSocialAccountsRequestBodyTiktok
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateSocialAccountsRequestBodyTiktok) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
 }
 
 var (
