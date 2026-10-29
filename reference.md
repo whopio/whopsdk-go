@@ -3400,14 +3400,6 @@ client.AdGroups.Create(
 <dl>
 <dd>
 
-**conversionLocation:** `*whopsdk.CreateAdGroupsRequestConversionLocation` — Where the outcome being optimized for occurs, such as a website visit, social-profile visit, messaging conversation, ad interaction, or lead-form submission. The lead form itself is set on the ad.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **deliverySchedule:** `*whopsdk.CreateAdGroupsRequestDeliverySchedule` — Hours the ad group delivers in each week, keyed by day. Each window runs from `start` to `end` on the hour, with `24:00` for midnight, and a day's windows can't overlap or touch. A day that's empty or left out doesn't deliver. Replaces the whole schedule; `null` delivers at every hour. Some platforms need a lifetime `budget_type` for a schedule, on the ad group or on its campaign when the campaign holds the budget.
     
 </dd>
@@ -3432,14 +3424,6 @@ client.AdGroups.Create(
 <dl>
 <dd>
 
-**detailedTargeting:** `*whopsdk.AdGroupDetailedTargetingBody` — Interest, behavior, and demographic targeting, using categories from the ad platform's targeting taxonomy. Entries across interests, behaviors, and demographics are OR'd together (anyone matching any entry is reached), matching Ads Manager's detailed-targeting box. At most 100 entries per section. Can't be combined with demographics.automatic, and unavailable to campaigns with special_ad_categories. Send the complete intended state — a section you omit is cleared.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **devices:** `*whopsdk.AdGroupDevicesBody` — Device platforms and operating systems to target.
     
 </dd>
@@ -3448,23 +3432,7 @@ client.AdGroups.Create(
 <dl>
 <dd>
 
-**dynamicCreative:** `*bool` — Whether the ad platform automatically mixes and matches this ad group's creatives and copy to find the best-performing combinations. Meta has deprecated it and rejects `true`; ad groups already using it keep it, and it can't be changed afterward.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **endsAt:** `*string` — When the ad group stops delivering, as an ISO 8601 timestamp. Omit to run until paused.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**frequencyCap:** `*whopsdk.CreateAdGroupsRequestFrequencyCap` — Cap on how often one person sees ads from this ad group. Only available when the ad group optimizes for reach or ThruPlay. Under a campaign budget every ad group must use the same cap, which applies across the whole campaign, and only with the awareness objective (reach or ThruPlay ad groups) or engagement (ThruPlay). Fixed once the campaign launches; `null` clears it before then.
     
 </dd>
 </dl>
@@ -3481,49 +3449,6 @@ client.AdGroups.Create(
 <dd>
 
 **languages:** `[]string` — Languages to target, as ISO 639 codes such as `en` or `es`. Empty or omitted targets all languages.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**messageApps:** `[]whopsdk.CreateAdGroupsRequestMessageAppsItem` — Apps the conversation opens in. Required when setting `conversion_location` to `messaging`, and rejected unless the ad group's conversion location is `messaging`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**minimumDailySpend:** `*float64` — Minimum the ad group tries to spend each day.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**optimizationGoal:** `*whopsdk.CreateAdGroupsRequestOptimizationGoal` — The result the ad group's delivery is optimized to get the most of.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**placements:** `*whopsdk.CreateAdGroupsRequestPlacements` 
-
-`automatic` to let the ad platform choose placements, or the list of platforms and positions to target. Omit a platform's positions to target all of them.
-
-Valid positions per platform:
-
-- `facebook`: `feed`, `right_hand_column`, `marketplace`, `search`, `profile_feed`, `notification`, `story`, `instream_video`, `facebook_reels`, `facebook_reels_overlay`, `biz_disco_feed`
-- `instagram`: `stream`, `story`, `explore`, `explore_home`, `reels`, `profile_feed`, `profile_reels`, `ig_search`
-- `messenger`: `story`
-- `audience_network`: `classic`, `rewarded_video`
-- `threads`: `threads_stream`
-- `whatsapp`: `status`
     
 </dd>
 </dl>
@@ -4063,14 +3988,6 @@ client.AdGroups.Update(
 <dl>
 <dd>
 
-**conversionLocation:** `*whopsdk.UpdateAdGroupsRequestConversionLocation` — Where the outcome being optimized for occurs, such as a website visit, social-profile visit, messaging conversation, ad interaction, or lead-form submission. The lead form itself is set on the ad.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **deliverySchedule:** `*whopsdk.UpdateAdGroupsRequestDeliverySchedule` — Hours the ad group delivers in each week, keyed by day. Each window runs from `start` to `end` on the hour, with `24:00` for midnight, and a day's windows can't overlap or touch. A day that's empty or left out doesn't deliver. Replaces the whole schedule; `null` delivers at every hour. Some platforms need a lifetime `budget_type` for a schedule, on the ad group or on its campaign when the campaign holds the budget.
     
 </dd>
@@ -4095,14 +4012,6 @@ client.AdGroups.Update(
 <dl>
 <dd>
 
-**detailedTargeting:** `*whopsdk.AdGroupDetailedTargetingBody` — Interest, behavior, and demographic targeting, using categories from the ad platform's targeting taxonomy. Entries across interests, behaviors, and demographics are OR'd together (anyone matching any entry is reached), matching Ads Manager's detailed-targeting box. At most 100 entries per section. Can't be combined with demographics.automatic, and unavailable to campaigns with special_ad_categories. Send the complete intended state — a section you omit is cleared.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **devices:** `*whopsdk.AdGroupDevicesBody` — Device platforms and operating systems to target.
     
 </dd>
@@ -4119,14 +4028,6 @@ client.AdGroups.Update(
 <dl>
 <dd>
 
-**frequencyCap:** `*whopsdk.UpdateAdGroupsRequestFrequencyCap` — Cap on how often one person sees ads from this ad group. Only available when the ad group optimizes for reach or ThruPlay. Under a campaign budget every ad group must use the same cap, which applies across the whole campaign, and only with the awareness objective (reach or ThruPlay ad groups) or engagement (ThruPlay). Fixed once the campaign launches; `null` clears it before then.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **keywords:** `[]*whopsdk.UpdateAdGroupsRequestKeywordsItem` — Search terms the ad group's ads can show for, and terms they never show for. Only search campaigns take keywords, and each of their ad groups needs at least one before launch. Replaces the stored list; omit to keep it.
     
 </dd>
@@ -4136,49 +4037,6 @@ client.AdGroups.Update(
 <dd>
 
 **languages:** `[]string` — Languages to target, as ISO 639 codes such as `en` or `es`. Empty or omitted targets all languages.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**messageApps:** `[]whopsdk.UpdateAdGroupsRequestMessageAppsItem` — Apps the conversation opens in. Required when setting `conversion_location` to `messaging`, and rejected unless the ad group's conversion location is `messaging`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**minimumDailySpend:** `*float64` — Minimum the ad group tries to spend each day.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**optimizationGoal:** `*whopsdk.UpdateAdGroupsRequestOptimizationGoal` — The result the ad group's delivery is optimized to get the most of.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**placements:** `*whopsdk.UpdateAdGroupsRequestPlacements` 
-
-`automatic` to let the ad platform choose placements, or the list of platforms and positions to target. Omit a platform's positions to target all of them.
-
-Valid positions per platform:
-
-- `facebook`: `feed`, `right_hand_column`, `marketplace`, `search`, `profile_feed`, `notification`, `story`, `instream_video`, `facebook_reels`, `facebook_reels_overlay`, `biz_disco_feed`
-- `instagram`: `stream`, `story`, `explore`, `explore_home`, `reels`, `profile_feed`, `profile_reels`, `ig_search`
-- `messenger`: `story`
-- `audience_network`: `classic`, `rewarded_video`
-- `threads`: `threads_stream`
-- `whatsapp`: `status`
     
 </dd>
 </dl>
@@ -5225,46 +5083,6 @@ client.Ads.Create(
 <dl>
 <dd>
 
-**leadForm:** `*whopsdk.CreateAdsRequestLeadForm` — Instant lead form for the ad. Only allowed when the ad group's conversion_location is an instant-form destination (instant_forms, instant_forms_and_messenger, website_and_instant_forms). Mutually exclusive with lead_form_id.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**leadFormID:** `*string` — Use an existing instant form instead of creating one — the form's platform ID, from a form already on the ad's Facebook page. Only allowed when the ad group's conversion_location is an instant-form destination. Mutually exclusive with lead_form.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**messagingConfig:** `*whopsdk.CreateAdsRequestMessagingConfig` — Click-to-message welcome copy: the greeting (message) and the ice-breaker prompt (keyword).
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**multiAdvertiserAds:** `*bool` — Whether the ad can appear alongside other advertisers' ads in the same unit. Defaults to true.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**music:** `*whopsdk.CreateAdsRequestMusic` — The looping track a TikTok carousel ad plays — an MP3 you uploaded, no larger than 10MB. Required for TikTok carousels (image creatives); TikTok-only.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **postSource:** `*whopsdk.CreateAdsRequestPostSource` — Identifies the network that owns `existing_post_id`. The source is inferred from the ID shape when omitted.
     
 </dd>
@@ -5574,46 +5392,6 @@ client.Ads.Update(
 <dd>
 
 **headlines:** `[]*whopsdk.UpdateAdsRequestHeadlinesItem` — The headline shown on the ad. Entries without a language are the ad's own copy; add one entry per other language on a Meta ad with `translations`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**leadForm:** `*whopsdk.UpdateAdsRequestLeadForm` — Instant lead form for the ad. Only allowed when the ad group's conversion_location is an instant-form destination (instant_forms, instant_forms_and_messenger, website_and_instant_forms). Mutually exclusive with lead_form_id.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**leadFormID:** `*string` — Use an existing instant form instead of creating one — the form's platform ID, from a form already on the ad's Facebook page. Only allowed when the ad group's conversion_location is an instant-form destination. Mutually exclusive with lead_form. Replaces a stored lead_form.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**messagingConfig:** `*whopsdk.UpdateAdsRequestMessagingConfig` — Click-to-message welcome copy: the greeting (message) and the ice-breaker prompt (keyword).
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**multiAdvertiserAds:** `*bool` — Whether the ad can appear alongside other advertisers' ads in the same unit. Defaults to true.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**music:** `*whopsdk.UpdateAdsRequestMusic` — The looping track a TikTok carousel ad plays — an MP3 you uploaded, no larger than 10MB. Omitted leaves the ad's music untouched. Null removes it before launch; a submitted carousel takes a replacement track instead. TikTok-only.
     
 </dd>
 </dl>
