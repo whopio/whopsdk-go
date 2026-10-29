@@ -80726,6 +80726,14 @@ func TestSettersPayment(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetUserAgent", func(t *testing.T) {
+		obj := &Payment{}
+		var fernTestValueUserAgent *string
+		obj.SetUserAgent(fernTestValueUserAgent)
+		assert.Equal(t, fernTestValueUserAgent, obj.UserAgent)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetVariantID", func(t *testing.T) {
 		obj := &Payment{}
 		var fernTestValueVariantID *string
@@ -80747,6 +80755,14 @@ func TestSettersPayment(t *testing.T) {
 		var fernTestValueVoidable bool
 		obj.SetVoidable(fernTestValueVoidable)
 		assert.Equal(t, fernTestValueVoidable, obj.Voidable)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetWuid", func(t *testing.T) {
+		obj := &Payment{}
+		var fernTestValueWuid *string
+		obj.SetWuid(fernTestValueWuid)
+		assert.Equal(t, fernTestValueWuid, obj.Wuid)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -82689,6 +82705,39 @@ func TestGettersPayment(t *testing.T) {
 		_ = obj.GetUser() // Should return zero value
 	})
 
+	t.Run("GetUserAgent", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Payment{}
+		var expected *string
+		obj.UserAgent = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetUserAgent(), "getter should return the property value")
+	})
+
+	t.Run("GetUserAgent_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Payment{}
+		obj.UserAgent = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetUserAgent(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetUserAgent_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Payment
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetUserAgent() // Should return zero value
+	})
+
 	t.Run("GetVariantID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -82776,6 +82825,39 @@ func TestGettersPayment(t *testing.T) {
 			}
 		}()
 		_ = obj.GetVoidable() // Should return zero value
+	})
+
+	t.Run("GetWuid", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Payment{}
+		var expected *string
+		obj.Wuid = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetWuid(), "getter should return the property value")
+	})
+
+	t.Run("GetWuid_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Payment{}
+		obj.Wuid = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetWuid(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetWuid_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Payment
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetWuid() // Should return zero value
 	})
 
 }
@@ -84703,6 +84785,37 @@ func TestSettersMarkExplicitPayment(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetUserAgent_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Payment{}
+		var fernTestValueUserAgent *string
+
+		// Act
+		obj.SetUserAgent(fernTestValueUserAgent)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetVariantID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -84773,6 +84886,37 @@ func TestSettersMarkExplicitPayment(t *testing.T) {
 
 		// Act
 		obj.SetVoidable(fernTestValueVoidable)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetWuid_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Payment{}
+		var fernTestValueWuid *string
+
+		// Act
+		obj.SetWuid(fernTestValueWuid)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -165403,8 +165547,10 @@ func TestRequiredNullableRoundTripPayment(t *testing.T) {
 		"total",
 		"usd_total",
 		"user",
+		"user_agent",
 		"variant_id",
 		"verification_checks",
+		"wuid",
 	}
 	marshalToMap := func(t *testing.T, obj *Payment) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
@@ -165417,7 +165563,7 @@ func TestRequiredNullableRoundTripPayment(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Payment
-		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"auto_capture_at":null,"billing_address":null,"billing_reason":null,"capture_expires_at":null,"checkout_configuration_id":null,"client_secret":null,"customer_email":null,"customer_phone":null,"decline_code":null,"dispute_alerted_at":null,"dispute_created_at":null,"failure_message":null,"financing_installments_count":null,"ip_address":null,"last_payment_attempt_at":null,"member_id":null,"membership_id":null,"metadata":null,"needs_tracking":null,"next_payment_attempt_at":null,"paid_at":null,"payment_instrument":null,"payment_method_id":null,"payment_method_type":null,"presentment_refunded_amount":null,"presentment_tax_amount":null,"presentment_total":null,"product_id":null,"promo_code_id":null,"quote_id":null,"recovery_url":null,"refunded_amount":null,"refunded_at":null,"response_due_at":null,"risk_score":null,"risk_signals":null,"settlement_time_at":null,"shipment_id":null,"shipping_address":null,"subtotal":null,"tax_amount":null,"tax_behavior":null,"total":null,"usd_total":null,"user":null,"variant_id":null,"verification_checks":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"auto_capture_at":null,"billing_address":null,"billing_reason":null,"capture_expires_at":null,"checkout_configuration_id":null,"client_secret":null,"customer_email":null,"customer_phone":null,"decline_code":null,"dispute_alerted_at":null,"dispute_created_at":null,"failure_message":null,"financing_installments_count":null,"ip_address":null,"last_payment_attempt_at":null,"member_id":null,"membership_id":null,"metadata":null,"needs_tracking":null,"next_payment_attempt_at":null,"paid_at":null,"payment_instrument":null,"payment_method_id":null,"payment_method_type":null,"presentment_refunded_amount":null,"presentment_tax_amount":null,"presentment_total":null,"product_id":null,"promo_code_id":null,"quote_id":null,"recovery_url":null,"refunded_amount":null,"refunded_at":null,"response_due_at":null,"risk_score":null,"risk_signals":null,"settlement_time_at":null,"shipment_id":null,"shipping_address":null,"subtotal":null,"tax_amount":null,"tax_behavior":null,"total":null,"usd_total":null,"user":null,"user_agent":null,"variant_id":null,"verification_checks":null,"wuid":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
