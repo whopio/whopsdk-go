@@ -56574,6 +56574,7 @@ const (
 	PaymentMethodTypesIDBankTransfer         PaymentMethodTypes = "id_bank_transfer"
 	PaymentMethodTypesIdeal                  PaymentMethodTypes = "ideal"
 	PaymentMethodTypesInterac                PaymentMethodTypes = "interac"
+	PaymentMethodTypesInternationalBankWire  PaymentMethodTypes = "international_bank_wire"
 	PaymentMethodTypesKakaoPay               PaymentMethodTypes = "kakao_pay"
 	PaymentMethodTypesKlarna                 PaymentMethodTypes = "klarna"
 	PaymentMethodTypesKlarnaPayNow           PaymentMethodTypes = "klarna_pay_now"
@@ -56763,6 +56764,8 @@ func NewPaymentMethodTypesFromString(s string) (PaymentMethodTypes, error) {
 		return PaymentMethodTypesIdeal, nil
 	case "interac":
 		return PaymentMethodTypesInterac, nil
+	case "international_bank_wire":
+		return PaymentMethodTypesInternationalBankWire, nil
 	case "kakao_pay":
 		return PaymentMethodTypesKakaoPay, nil
 	case "klarna":
