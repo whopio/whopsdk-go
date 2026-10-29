@@ -52,7 +52,7 @@ type CreateTradesRequest struct {
 	ReduceOnly *bool `json:"reduce_only,omitempty" url:"-"`
 	// `buy` or `sell`. Required for an order.
 	Side *CreateTradesRequestSide `json:"side,omitempty" url:"-"`
-	// Only for an order. The size in units of the market, as a decimal string, with at most the market's size decimals. Send exactly one of `size` or `notional`. The order must be worth at least 10 USD, unless reduce-only, and at most 5000 USD.
+	// Only for an order. The size in units of the market, as a decimal string, with at most the market's size decimals. Send exactly one of `size` or `notional`. The order must be worth at least 10 USD, unless reduce-only.
 	Size *string `json:"size,omitempty" url:"-"`
 	// Only for a market order or a close. The worst price as basis points from the mid price, from 1 to 1000; defaults to 100.
 	SlippageBps *int `json:"slippage_bps,omitempty" url:"-"`

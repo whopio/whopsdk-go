@@ -1957,6 +1957,13 @@ func TestEnumCreateExternalAccountsRequestPlatform(t *testing.T) {
 		assert.Equal(t, CreateExternalAccountsRequestPlatform("klaviyo"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_aimerce", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateExternalAccountsRequestPlatformFromString("aimerce")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateExternalAccountsRequestPlatform("aimerce"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewCreateExternalAccountsRequestPlatformFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -2105,6 +2112,13 @@ func TestEnumListExternalAccountsRequestPlatform(t *testing.T) {
 		val, err := NewListExternalAccountsRequestPlatformFromString("quickbooks")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListExternalAccountsRequestPlatform("quickbooks"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_aimerce", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListExternalAccountsRequestPlatformFromString("aimerce")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListExternalAccountsRequestPlatform("aimerce"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {

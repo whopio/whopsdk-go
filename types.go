@@ -19805,6 +19805,7 @@ const (
 	ExternalAccountParentPlatformSnapchat   ExternalAccountParentPlatform = "snapchat"
 	ExternalAccountParentPlatformKlaviyo    ExternalAccountParentPlatform = "klaviyo"
 	ExternalAccountParentPlatformQuickbooks ExternalAccountParentPlatform = "quickbooks"
+	ExternalAccountParentPlatformAimerce    ExternalAccountParentPlatform = "aimerce"
 )
 
 func NewExternalAccountParentPlatformFromString(s string) (ExternalAccountParentPlatform, error) {
@@ -19827,6 +19828,8 @@ func NewExternalAccountParentPlatformFromString(s string) (ExternalAccountParent
 		return ExternalAccountParentPlatformKlaviyo, nil
 	case "quickbooks":
 		return ExternalAccountParentPlatformQuickbooks, nil
+	case "aimerce":
+		return ExternalAccountParentPlatformAimerce, nil
 	}
 	var t ExternalAccountParentPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -19875,6 +19878,7 @@ const (
 	ExternalAccountPlatformSnapchat   ExternalAccountPlatform = "snapchat"
 	ExternalAccountPlatformKlaviyo    ExternalAccountPlatform = "klaviyo"
 	ExternalAccountPlatformQuickbooks ExternalAccountPlatform = "quickbooks"
+	ExternalAccountPlatformAimerce    ExternalAccountPlatform = "aimerce"
 )
 
 func NewExternalAccountPlatformFromString(s string) (ExternalAccountPlatform, error) {
@@ -19897,6 +19901,8 @@ func NewExternalAccountPlatformFromString(s string) (ExternalAccountPlatform, er
 		return ExternalAccountPlatformKlaviyo, nil
 	case "quickbooks":
 		return ExternalAccountPlatformQuickbooks, nil
+	case "aimerce":
+		return ExternalAccountPlatformAimerce, nil
 	}
 	var t ExternalAccountPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
