@@ -333,6 +333,622 @@ func (r *RefreshExternalAccountsRequest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
+var (
+	externalAccountFieldError                 = big.NewInt(1 << 0)
+	externalAccountFieldExternalID            = big.NewInt(1 << 1)
+	externalAccountFieldID                    = big.NewInt(1 << 2)
+	externalAccountFieldName                  = big.NewInt(1 << 3)
+	externalAccountFieldParentExternalAccount = big.NewInt(1 << 4)
+	externalAccountFieldPartnershipStatus     = big.NewInt(1 << 5)
+	externalAccountFieldPlatform              = big.NewInt(1 << 6)
+	externalAccountFieldProfilePictureURL     = big.NewInt(1 << 7)
+	externalAccountFieldScopes                = big.NewInt(1 << 8)
+	externalAccountFieldURL                   = big.NewInt(1 << 9)
+	externalAccountFieldUsername              = big.NewInt(1 << 10)
+	externalAccountFieldVerified              = big.NewInt(1 << 11)
+)
+
+// externalAccountNullableFields maps the wire names of ExternalAccount's nullable fields (required or optional) to their field bits.
+var externalAccountNullableFields = map[string]*big.Int{
+	"error":                   externalAccountFieldError,
+	"external_id":             externalAccountFieldExternalID,
+	"name":                    externalAccountFieldName,
+	"parent_external_account": externalAccountFieldParentExternalAccount,
+	"partnership_status":      externalAccountFieldPartnershipStatus,
+	"profile_picture_url":     externalAccountFieldProfilePictureURL,
+	"url":                     externalAccountFieldURL,
+	"username":                externalAccountFieldUsername,
+}
+
+type ExternalAccount struct {
+	// Why this external account currently can't be used for advertising — a failed share or a Meta-side restriction. Null when the account is healthy.
+	Error *string `json:"error,omitempty" url:"error,omitempty"`
+	// The platform-specific ID for this external account.
+	ExternalID *string `json:"external_id,omitempty" url:"external_id,omitempty"`
+	// Unique identifier for the external account.
+	ID string `json:"id" url:"id"`
+	// The display name of the external account on the platform.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// The external account this one belongs to on the platform, such as the Facebook page that owns an Instagram account. Null when the external account stands on its own, or when it is a partner.
+	ParentExternalAccount *ExternalAccountParent `json:"parent_external_account,omitempty" url:"parent_external_account,omitempty"`
+	// Where a partner creator's permission to run partnership ads stands. `pending` until the creator approves it in the Instagram app, `approved` once they have, and `revoked` once it no longer holds. Null when the external account isn't a partner.
+	PartnershipStatus *ExternalAccountPartnershipStatus `json:"partnership_status,omitempty" url:"partnership_status,omitempty"`
+	// The platform the external account exists on.
+	Platform ExternalAccountPlatform `json:"platform" url:"platform"`
+	// The URL where the profile picture of the external account can be accessed.
+	ProfilePictureURL *string  `json:"profile_picture_url,omitempty" url:"profile_picture_url,omitempty"`
+	Scopes            []string `json:"scopes" url:"scopes"`
+	// The URL where the external account can be accessed on the platform. Null while a Whop-owned account is still being provisioned.
+	URL *string `json:"url,omitempty" url:"url,omitempty"`
+	// The username of the external account on the platform. Null while a Whop-owned account is still being provisioned, and on platforms without usernames, such as Klaviyo.
+	Username *string `json:"username,omitempty" url:"username,omitempty"`
+	// Whether the external account is verified on the platform.
+	Verified bool `json:"verified" url:"verified"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *ExternalAccount) GetError() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Error
+}
+
+func (e *ExternalAccount) GetExternalID() *string {
+	if e == nil {
+		return nil
+	}
+	return e.ExternalID
+}
+
+func (e *ExternalAccount) GetID() string {
+	if e == nil {
+		return ""
+	}
+	return e.ID
+}
+
+func (e *ExternalAccount) GetName() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Name
+}
+
+func (e *ExternalAccount) GetParentExternalAccount() *ExternalAccountParent {
+	if e == nil {
+		return nil
+	}
+	return e.ParentExternalAccount
+}
+
+func (e *ExternalAccount) GetPartnershipStatus() *ExternalAccountPartnershipStatus {
+	if e == nil {
+		return nil
+	}
+	return e.PartnershipStatus
+}
+
+func (e *ExternalAccount) GetPlatform() ExternalAccountPlatform {
+	if e == nil {
+		return ""
+	}
+	return e.Platform
+}
+
+func (e *ExternalAccount) GetProfilePictureURL() *string {
+	if e == nil {
+		return nil
+	}
+	return e.ProfilePictureURL
+}
+
+func (e *ExternalAccount) GetScopes() []string {
+	if e == nil {
+		return nil
+	}
+	return e.Scopes
+}
+
+func (e *ExternalAccount) GetURL() *string {
+	if e == nil {
+		return nil
+	}
+	return e.URL
+}
+
+func (e *ExternalAccount) GetUsername() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Username
+}
+
+func (e *ExternalAccount) GetVerified() bool {
+	if e == nil {
+		return false
+	}
+	return e.Verified
+}
+
+func (e *ExternalAccount) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *ExternalAccount) require(field *big.Int) {
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
+	}
+	next.Or(next, field)
+	e.explicitFields = next
+}
+
+// SetError sets the Error field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExternalAccount) SetError(error_ *string) {
+	e.Error = error_
+	e.require(externalAccountFieldError)
+}
+
+// SetExternalID sets the ExternalID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExternalAccount) SetExternalID(externalID *string) {
+	e.ExternalID = externalID
+	e.require(externalAccountFieldExternalID)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExternalAccount) SetID(id string) {
+	e.ID = id
+	e.require(externalAccountFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExternalAccount) SetName(name *string) {
+	e.Name = name
+	e.require(externalAccountFieldName)
+}
+
+// SetParentExternalAccount sets the ParentExternalAccount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExternalAccount) SetParentExternalAccount(parentExternalAccount *ExternalAccountParent) {
+	e.ParentExternalAccount = parentExternalAccount
+	e.require(externalAccountFieldParentExternalAccount)
+}
+
+// SetPartnershipStatus sets the PartnershipStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExternalAccount) SetPartnershipStatus(partnershipStatus *ExternalAccountPartnershipStatus) {
+	e.PartnershipStatus = partnershipStatus
+	e.require(externalAccountFieldPartnershipStatus)
+}
+
+// SetPlatform sets the Platform field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExternalAccount) SetPlatform(platform ExternalAccountPlatform) {
+	e.Platform = platform
+	e.require(externalAccountFieldPlatform)
+}
+
+// SetProfilePictureURL sets the ProfilePictureURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExternalAccount) SetProfilePictureURL(profilePictureURL *string) {
+	e.ProfilePictureURL = profilePictureURL
+	e.require(externalAccountFieldProfilePictureURL)
+}
+
+// SetScopes sets the Scopes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExternalAccount) SetScopes(scopes []string) {
+	e.Scopes = scopes
+	e.require(externalAccountFieldScopes)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExternalAccount) SetURL(url *string) {
+	e.URL = url
+	e.require(externalAccountFieldURL)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExternalAccount) SetUsername(username *string) {
+	e.Username = username
+	e.require(externalAccountFieldUsername)
+}
+
+// SetVerified sets the Verified field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExternalAccount) SetVerified(verified bool) {
+	e.Verified = verified
+	e.require(externalAccountFieldVerified)
+}
+
+func (e *ExternalAccount) UnmarshalJSON(data []byte) error {
+	type unmarshaler ExternalAccount
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = ExternalAccount(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, externalAccountNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		e.require(presentFields)
+	}
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *ExternalAccount) MarshalJSON() ([]byte, error) {
+	type embed ExternalAccount
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *ExternalAccount) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+var (
+	externalAccountParentFieldExternalID        = big.NewInt(1 << 0)
+	externalAccountParentFieldID                = big.NewInt(1 << 1)
+	externalAccountParentFieldName              = big.NewInt(1 << 2)
+	externalAccountParentFieldPlatform          = big.NewInt(1 << 3)
+	externalAccountParentFieldProfilePictureURL = big.NewInt(1 << 4)
+	externalAccountParentFieldUsername          = big.NewInt(1 << 5)
+	externalAccountParentFieldVerified          = big.NewInt(1 << 6)
+)
+
+// externalAccountParentNullableFields maps the wire names of ExternalAccountParent's nullable fields (required or optional) to their field bits.
+var externalAccountParentNullableFields = map[string]*big.Int{
+	"external_id":         externalAccountParentFieldExternalID,
+	"name":                externalAccountParentFieldName,
+	"profile_picture_url": externalAccountParentFieldProfilePictureURL,
+	"username":            externalAccountParentFieldUsername,
+}
+
+type ExternalAccountParent struct {
+	// The platform-specific ID for the parent external account.
+	ExternalID *string `json:"external_id,omitempty" url:"external_id,omitempty"`
+	// External account ID, prefixed `sacc_`.
+	ID string `json:"id" url:"id"`
+	// The display name of the parent external account on the platform.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// The platform the parent external account exists on.
+	Platform ExternalAccountParentPlatform `json:"platform" url:"platform"`
+	// The URL where the profile picture of the parent external account can be accessed.
+	ProfilePictureURL *string `json:"profile_picture_url,omitempty" url:"profile_picture_url,omitempty"`
+	// The username of the parent external account on the platform.
+	Username *string `json:"username,omitempty" url:"username,omitempty"`
+	// Whether the parent external account is verified on the platform.
+	Verified bool `json:"verified" url:"verified"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *ExternalAccountParent) GetExternalID() *string {
+	if e == nil {
+		return nil
+	}
+	return e.ExternalID
+}
+
+func (e *ExternalAccountParent) GetID() string {
+	if e == nil {
+		return ""
+	}
+	return e.ID
+}
+
+func (e *ExternalAccountParent) GetName() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Name
+}
+
+func (e *ExternalAccountParent) GetPlatform() ExternalAccountParentPlatform {
+	if e == nil {
+		return ""
+	}
+	return e.Platform
+}
+
+func (e *ExternalAccountParent) GetProfilePictureURL() *string {
+	if e == nil {
+		return nil
+	}
+	return e.ProfilePictureURL
+}
+
+func (e *ExternalAccountParent) GetUsername() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Username
+}
+
+func (e *ExternalAccountParent) GetVerified() bool {
+	if e == nil {
+		return false
+	}
+	return e.Verified
+}
+
+func (e *ExternalAccountParent) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *ExternalAccountParent) require(field *big.Int) {
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
+	}
+	next.Or(next, field)
+	e.explicitFields = next
+}
+
+// SetExternalID sets the ExternalID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExternalAccountParent) SetExternalID(externalID *string) {
+	e.ExternalID = externalID
+	e.require(externalAccountParentFieldExternalID)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExternalAccountParent) SetID(id string) {
+	e.ID = id
+	e.require(externalAccountParentFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExternalAccountParent) SetName(name *string) {
+	e.Name = name
+	e.require(externalAccountParentFieldName)
+}
+
+// SetPlatform sets the Platform field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExternalAccountParent) SetPlatform(platform ExternalAccountParentPlatform) {
+	e.Platform = platform
+	e.require(externalAccountParentFieldPlatform)
+}
+
+// SetProfilePictureURL sets the ProfilePictureURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExternalAccountParent) SetProfilePictureURL(profilePictureURL *string) {
+	e.ProfilePictureURL = profilePictureURL
+	e.require(externalAccountParentFieldProfilePictureURL)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExternalAccountParent) SetUsername(username *string) {
+	e.Username = username
+	e.require(externalAccountParentFieldUsername)
+}
+
+// SetVerified sets the Verified field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExternalAccountParent) SetVerified(verified bool) {
+	e.Verified = verified
+	e.require(externalAccountParentFieldVerified)
+}
+
+func (e *ExternalAccountParent) UnmarshalJSON(data []byte) error {
+	type unmarshaler ExternalAccountParent
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = ExternalAccountParent(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, externalAccountParentNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		e.require(presentFields)
+	}
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *ExternalAccountParent) MarshalJSON() ([]byte, error) {
+	type embed ExternalAccountParent
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *ExternalAccountParent) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+// The platform the parent external account exists on.
+type ExternalAccountParentPlatform string
+
+const (
+	ExternalAccountParentPlatformX          ExternalAccountParentPlatform = "x"
+	ExternalAccountParentPlatformInstagram  ExternalAccountParentPlatform = "instagram"
+	ExternalAccountParentPlatformYoutube    ExternalAccountParentPlatform = "youtube"
+	ExternalAccountParentPlatformTiktok     ExternalAccountParentPlatform = "tiktok"
+	ExternalAccountParentPlatformFacebook   ExternalAccountParentPlatform = "facebook"
+	ExternalAccountParentPlatformLinkedin   ExternalAccountParentPlatform = "linkedin"
+	ExternalAccountParentPlatformSnapchat   ExternalAccountParentPlatform = "snapchat"
+	ExternalAccountParentPlatformKlaviyo    ExternalAccountParentPlatform = "klaviyo"
+	ExternalAccountParentPlatformQuickbooks ExternalAccountParentPlatform = "quickbooks"
+	ExternalAccountParentPlatformAimerce    ExternalAccountParentPlatform = "aimerce"
+)
+
+func NewExternalAccountParentPlatformFromString(s string) (ExternalAccountParentPlatform, error) {
+	switch s {
+	case "x":
+		return ExternalAccountParentPlatformX, nil
+	case "instagram":
+		return ExternalAccountParentPlatformInstagram, nil
+	case "youtube":
+		return ExternalAccountParentPlatformYoutube, nil
+	case "tiktok":
+		return ExternalAccountParentPlatformTiktok, nil
+	case "facebook":
+		return ExternalAccountParentPlatformFacebook, nil
+	case "linkedin":
+		return ExternalAccountParentPlatformLinkedin, nil
+	case "snapchat":
+		return ExternalAccountParentPlatformSnapchat, nil
+	case "klaviyo":
+		return ExternalAccountParentPlatformKlaviyo, nil
+	case "quickbooks":
+		return ExternalAccountParentPlatformQuickbooks, nil
+	case "aimerce":
+		return ExternalAccountParentPlatformAimerce, nil
+	}
+	var t ExternalAccountParentPlatform
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e ExternalAccountParentPlatform) Ptr() *ExternalAccountParentPlatform {
+	return &e
+}
+
+// Where a partner creator's permission to run partnership ads stands. `pending` until the creator approves it in the Instagram app, `approved` once they have, and `revoked` once it no longer holds. Null when the external account isn't a partner.
+type ExternalAccountPartnershipStatus string
+
+const (
+	ExternalAccountPartnershipStatusPending  ExternalAccountPartnershipStatus = "pending"
+	ExternalAccountPartnershipStatusApproved ExternalAccountPartnershipStatus = "approved"
+	ExternalAccountPartnershipStatusRevoked  ExternalAccountPartnershipStatus = "revoked"
+)
+
+func NewExternalAccountPartnershipStatusFromString(s string) (ExternalAccountPartnershipStatus, error) {
+	switch s {
+	case "pending":
+		return ExternalAccountPartnershipStatusPending, nil
+	case "approved":
+		return ExternalAccountPartnershipStatusApproved, nil
+	case "revoked":
+		return ExternalAccountPartnershipStatusRevoked, nil
+	}
+	var t ExternalAccountPartnershipStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e ExternalAccountPartnershipStatus) Ptr() *ExternalAccountPartnershipStatus {
+	return &e
+}
+
+// The platform the external account exists on.
+type ExternalAccountPlatform string
+
+const (
+	ExternalAccountPlatformX          ExternalAccountPlatform = "x"
+	ExternalAccountPlatformInstagram  ExternalAccountPlatform = "instagram"
+	ExternalAccountPlatformYoutube    ExternalAccountPlatform = "youtube"
+	ExternalAccountPlatformTiktok     ExternalAccountPlatform = "tiktok"
+	ExternalAccountPlatformFacebook   ExternalAccountPlatform = "facebook"
+	ExternalAccountPlatformLinkedin   ExternalAccountPlatform = "linkedin"
+	ExternalAccountPlatformSnapchat   ExternalAccountPlatform = "snapchat"
+	ExternalAccountPlatformKlaviyo    ExternalAccountPlatform = "klaviyo"
+	ExternalAccountPlatformQuickbooks ExternalAccountPlatform = "quickbooks"
+	ExternalAccountPlatformAimerce    ExternalAccountPlatform = "aimerce"
+)
+
+func NewExternalAccountPlatformFromString(s string) (ExternalAccountPlatform, error) {
+	switch s {
+	case "x":
+		return ExternalAccountPlatformX, nil
+	case "instagram":
+		return ExternalAccountPlatformInstagram, nil
+	case "youtube":
+		return ExternalAccountPlatformYoutube, nil
+	case "tiktok":
+		return ExternalAccountPlatformTiktok, nil
+	case "facebook":
+		return ExternalAccountPlatformFacebook, nil
+	case "linkedin":
+		return ExternalAccountPlatformLinkedin, nil
+	case "snapchat":
+		return ExternalAccountPlatformSnapchat, nil
+	case "klaviyo":
+		return ExternalAccountPlatformKlaviyo, nil
+	case "quickbooks":
+		return ExternalAccountPlatformQuickbooks, nil
+	case "aimerce":
+		return ExternalAccountPlatformAimerce, nil
+	}
+	var t ExternalAccountPlatform
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e ExternalAccountPlatform) Ptr() *ExternalAccountPlatform {
+	return &e
+}
+
 // The platform to connect the external account on. Use `meta_business` to connect Meta Business assets, which is how Facebook Pages and Instagram accounts are connected — there is no separate `instagram` value. Use `tiktok` for TikTok accounts, `snapchat` for Snapchat Public Profiles, `linkedin` to connect the authenticated user’s LinkedIn profile, `youtube` to connect their YouTube channel, or `x` to connect their X profile. Use `quickbooks` to connect the account’s QuickBooks Online company: pass `account_id`, omit `scopes`, and the user picks the company in QuickBooks.
 type ConnectExternalAccountsRequestPlatform string
 
