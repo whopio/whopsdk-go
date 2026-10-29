@@ -97,9 +97,9 @@ var (
 type CreateExternalAccountsRequest struct {
 	// The Account (biz_ identifier) to create the external account for. An account-scoped API key may omit this to default to its own account. Account API keys cannot update their own account's branding through Update Account; use a user-authenticated path.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
-	// A private API key for the account on the platform. Required for `klaviyo`, which needs read access to Accounts; not accepted for other platforms. Whop checks the key with the platform before connecting and never returns it.
+	// A private API key for the account on the platform. Required for `klaviyo`, which needs read access to Accounts, and for `aimerce`; not accepted for other platforms. Whop checks the key with the platform before connecting and never returns it. Connecting again replaces the saved key.
 	APIKey *string `json:"api_key,omitempty" url:"-"`
-	// The platform to create the external account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes. `klaviyo` connects the account's existing Klaviyo account with the `api_key` you pass.
+	// The platform to create the external account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes. `klaviyo` connects the account's existing Klaviyo account with the `api_key` you pass. `aimerce` connects the account's Aimerce shop with the `api_key` you pass and turns on the Aimerce tracking pixel; it requires the `company:manage_checkout` scope instead of `social_account:create`.
 	Platform CreateExternalAccountsRequestPlatform `json:"platform" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -225,7 +225,7 @@ type ListExternalAccountsRequest struct {
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// The User that the external accounts are connected to. Provide either this or account_id.
 	UserID *string `json:"-" url:"user_id,omitempty"`
-	// Only return external accounts for the platform that is specified.
+	// Only return external accounts for the platform that is specified. An `aimerce` account is returned only with this filter, which requires the `company:manage_checkout` scope instead of `social_account:read`.
 	Platform *ListExternalAccountsRequestPlatform `json:"-" url:"platform,omitempty"`
 	// Only return external accounts linked with this trust level, such as `oauth` for accounts connected through OAuth.
 	TrustLevel *ListExternalAccountsRequestTrustLevel `json:"-" url:"trust_level,omitempty"`
@@ -546,13 +546,14 @@ func (c *ConnectExternalAccountsResponse) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The platform to create the external account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes. `klaviyo` connects the account's existing Klaviyo account with the `api_key` you pass.
+// The platform to create the external account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes. `klaviyo` connects the account's existing Klaviyo account with the `api_key` you pass. `aimerce` connects the account's Aimerce shop with the `api_key` you pass and turns on the Aimerce tracking pixel; it requires the `company:manage_checkout` scope instead of `social_account:create`.
 type CreateExternalAccountsRequestPlatform string
 
 const (
 	CreateExternalAccountsRequestPlatformFacebook CreateExternalAccountsRequestPlatform = "facebook"
 	CreateExternalAccountsRequestPlatformTiktok   CreateExternalAccountsRequestPlatform = "tiktok"
 	CreateExternalAccountsRequestPlatformKlaviyo  CreateExternalAccountsRequestPlatform = "klaviyo"
+	CreateExternalAccountsRequestPlatformAimerce  CreateExternalAccountsRequestPlatform = "aimerce"
 )
 
 func NewCreateExternalAccountsRequestPlatformFromString(s string) (CreateExternalAccountsRequestPlatform, error) {
@@ -563,6 +564,8 @@ func NewCreateExternalAccountsRequestPlatformFromString(s string) (CreateExterna
 		return CreateExternalAccountsRequestPlatformTiktok, nil
 	case "klaviyo":
 		return CreateExternalAccountsRequestPlatformKlaviyo, nil
+	case "aimerce":
+		return CreateExternalAccountsRequestPlatformAimerce, nil
 	}
 	var t CreateExternalAccountsRequestPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -734,6 +737,7 @@ const (
 	ListExternalAccountsRequestPlatformSnapchat   ListExternalAccountsRequestPlatform = "snapchat"
 	ListExternalAccountsRequestPlatformKlaviyo    ListExternalAccountsRequestPlatform = "klaviyo"
 	ListExternalAccountsRequestPlatformQuickbooks ListExternalAccountsRequestPlatform = "quickbooks"
+	ListExternalAccountsRequestPlatformAimerce    ListExternalAccountsRequestPlatform = "aimerce"
 )
 
 func NewListExternalAccountsRequestPlatformFromString(s string) (ListExternalAccountsRequestPlatform, error) {
@@ -760,6 +764,8 @@ func NewListExternalAccountsRequestPlatformFromString(s string) (ListExternalAcc
 		return ListExternalAccountsRequestPlatformKlaviyo, nil
 	case "quickbooks":
 		return ListExternalAccountsRequestPlatformQuickbooks, nil
+	case "aimerce":
+		return ListExternalAccountsRequestPlatformAimerce, nil
 	}
 	var t ListExternalAccountsRequestPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
