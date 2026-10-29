@@ -9422,8 +9422,8 @@
       }
     },
     {
-      "id": "a98b7f4d-cb12-42a9-a3da-4f6a22d207e2",
-      "name": "Update Membership - Update Membership",
+      "id": "930bbaf1-0606-430f-88cc-b03e5a60cfb1",
+      "name": "Update Membership - Change the renewal cadence",
       "request": {
         "urlPathTemplate": "/memberships/{id}",
         "method": "PATCH",
@@ -9445,7 +9445,7 @@
           "Content-Type": "application/json"
         }
       },
-      "uuid": "a98b7f4d-cb12-42a9-a3da-4f6a22d207e2",
+      "uuid": "930bbaf1-0606-430f-88cc-b03e5a60cfb1",
       "persistent": true,
       "priority": 3,
       "metadata": {
