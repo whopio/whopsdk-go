@@ -94,17 +94,20 @@ func (d *DeclinePartnerReferralRequestsRequest) SetID(id string) {
 }
 
 var (
-	listPartnerReferralRequestsRequestFieldAccountID    = big.NewInt(1 << 0)
-	listPartnerReferralRequestsRequestFieldTargetUserID = big.NewInt(1 << 1)
-	listPartnerReferralRequestsRequestFieldPartnerID    = big.NewInt(1 << 2)
-	listPartnerReferralRequestsRequestFieldStatus       = big.NewInt(1 << 3)
-	listPartnerReferralRequestsRequestFieldRequestType  = big.NewInt(1 << 4)
-	listPartnerReferralRequestsRequestFieldOrder        = big.NewInt(1 << 5)
-	listPartnerReferralRequestsRequestFieldDirection    = big.NewInt(1 << 6)
-	listPartnerReferralRequestsRequestFieldFirst        = big.NewInt(1 << 7)
-	listPartnerReferralRequestsRequestFieldAfter        = big.NewInt(1 << 8)
-	listPartnerReferralRequestsRequestFieldLast         = big.NewInt(1 << 9)
-	listPartnerReferralRequestsRequestFieldBefore       = big.NewInt(1 << 10)
+	listPartnerReferralRequestsRequestFieldAccountID        = big.NewInt(1 << 0)
+	listPartnerReferralRequestsRequestFieldTargetUserID     = big.NewInt(1 << 1)
+	listPartnerReferralRequestsRequestFieldPartnerID        = big.NewInt(1 << 2)
+	listPartnerReferralRequestsRequestFieldStatus           = big.NewInt(1 << 3)
+	listPartnerReferralRequestsRequestFieldRequestType      = big.NewInt(1 << 4)
+	listPartnerReferralRequestsRequestFieldAuthorizedUserID = big.NewInt(1 << 5)
+	listPartnerReferralRequestsRequestFieldMemberID         = big.NewInt(1 << 6)
+	listPartnerReferralRequestsRequestFieldPersonal         = big.NewInt(1 << 7)
+	listPartnerReferralRequestsRequestFieldOrder            = big.NewInt(1 << 8)
+	listPartnerReferralRequestsRequestFieldDirection        = big.NewInt(1 << 9)
+	listPartnerReferralRequestsRequestFieldFirst            = big.NewInt(1 << 10)
+	listPartnerReferralRequestsRequestFieldAfter            = big.NewInt(1 << 11)
+	listPartnerReferralRequestsRequestFieldLast             = big.NewInt(1 << 12)
+	listPartnerReferralRequestsRequestFieldBefore           = big.NewInt(1 << 13)
 )
 
 type ListPartnerReferralRequestsRequest struct {
@@ -118,6 +121,12 @@ type ListPartnerReferralRequestsRequest struct {
 	Status *ListPartnerReferralRequestsRequestStatus `json:"-" url:"status,omitempty"`
 	// Only requests initiated in this way.
 	RequestType *ListPartnerReferralRequestsRequestRequestType `json:"-" url:"request_type,omitempty"`
+	// Only requests created for this team membership, prefixed `ausr_`.
+	AuthorizedUserID *string `json:"-" url:"authorized_user_id,omitempty"`
+	// Only requests that credit this member record, prefixed `mber_`. A request created for a team membership also credits its holder's member record.
+	MemberID *string `json:"-" url:"member_id,omitempty"`
+	// When true, only personal requests, created for neither a team membership nor a member record. When false, only requests created for one.
+	Personal *bool `json:"-" url:"personal,omitempty"`
 	// Field used to sort requests.
 	Order *ListPartnerReferralRequestsRequestOrder `json:"-" url:"order,omitempty"`
 	// Sort direction.
@@ -177,6 +186,27 @@ func (l *ListPartnerReferralRequestsRequest) SetStatus(status *ListPartnerReferr
 func (l *ListPartnerReferralRequestsRequest) SetRequestType(requestType *ListPartnerReferralRequestsRequestRequestType) {
 	l.RequestType = requestType
 	l.require(listPartnerReferralRequestsRequestFieldRequestType)
+}
+
+// SetAuthorizedUserID sets the AuthorizedUserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPartnerReferralRequestsRequest) SetAuthorizedUserID(authorizedUserID *string) {
+	l.AuthorizedUserID = authorizedUserID
+	l.require(listPartnerReferralRequestsRequestFieldAuthorizedUserID)
+}
+
+// SetMemberID sets the MemberID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPartnerReferralRequestsRequest) SetMemberID(memberID *string) {
+	l.MemberID = memberID
+	l.require(listPartnerReferralRequestsRequestFieldMemberID)
+}
+
+// SetPersonal sets the Personal field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPartnerReferralRequestsRequest) SetPersonal(personal *bool) {
+	l.Personal = personal
+	l.require(listPartnerReferralRequestsRequestFieldPersonal)
 }
 
 // SetOrder sets the Order field and marks it as non-optional;

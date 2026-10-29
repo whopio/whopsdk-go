@@ -1822,8 +1822,7 @@ Creates an ad campaign in `draft` status for an account. Nothing runs until you 
 
 ```go
 request := &whopsdk.CreateAdCampaignsRequest{
-    Objective: whopsdk.CreateAdCampaignsRequestObjectiveAwareness,
-    Platform: whopsdk.CreateAdCampaignsRequestPlatformWhop,
+    Objective: whopsdk.CreateAdCampaignsRequestObjectiveTraffic,
     Title: "Now hiring mobile detailers — Austin",
 }
 client.AdCampaigns.Create(
@@ -1917,14 +1916,6 @@ client.AdCampaigns.Create(
 <dd>
 
 **objective:** `whopsdk.CreateAdCampaignsRequestObjective` — The goal the campaign optimizes toward.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**platform:** `whopsdk.CreateAdCampaignsRequestPlatform` — The ad network the campaign runs on.
     
 </dd>
 </dl>
@@ -5051,7 +5042,7 @@ client.Ads.Create(
 <dl>
 <dd>
 
-**descriptions:** `[]*whopsdk.CreateAdsRequestDescriptionsItem` — The description shown on the ad. Entries without a language are the ad's own copy; add one entry per other language on a Meta ad with `translations`.
+**descriptions:** `[]*whopsdk.CreateAdsRequestDescriptionsItem` — The description shown on the ad.
     
 </dd>
 </dl>
@@ -5059,7 +5050,7 @@ client.Ads.Create(
 <dl>
 <dd>
 
-**existingPostID:** `*string` — Promote a post you already published instead of uploading creatives — a Facebook post or Instagram media id. Mutually exclusive with creatives. Pair with post_source.
+**headlines:** `[]*whopsdk.CreateAdsRequestHeadlinesItem` — The headline shown on the ad.
     
 </dd>
 </dl>
@@ -5067,31 +5058,7 @@ client.Ads.Create(
 <dl>
 <dd>
 
-**externalAccounts:** `[]*whopsdk.CreateAdsRequestExternalAccountsItem` — The external accounts the ad runs under — a connected Facebook page and, optionally, an Instagram profile.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**headlines:** `[]*whopsdk.CreateAdsRequestHeadlinesItem` — The headline shown on the ad. Entries without a language are the ad's own copy; add one entry per other language on a Meta ad with `translations`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**postSource:** `*whopsdk.CreateAdsRequestPostSource` — Identifies the network that owns `existing_post_id`. The source is inferred from the ID shape when omitted.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**primaryTexts:** `[]*whopsdk.CreateAdsRequestPrimaryTextsItem` — The primary text shown in the ad body. Entries without a language are the ad's own copy (several make text variations); add one entry per other language on a Meta ad with `translations`.
+**primaryTexts:** `[]*whopsdk.CreateAdsRequestPrimaryTextsItem` — The primary text shown in the ad body. Several entries make text variations.
     
 </dd>
 </dl>
@@ -5100,14 +5067,6 @@ client.Ads.Create(
 <dd>
 
 **title:** `*string` — The display name of the ad.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**translations:** `*whopsdk.CreateAdsRequestTranslations` — Shows a Meta ad in other languages. Each viewer sees the version for their language; everyone else sees the ad's own copy. Tag every copy and creatives entry with its language: the ad's own with `source_language`, and give every other language a `primary_texts` and `headlines` entry (a `descriptions` entry and a `creatives` entry are optional), or list it in `automatic_languages`. Needs a website destination, one image or video, and exactly one primary text and headline of the ad's own (and at most one description), with no Dynamic Creative or crops. Replaced as a whole when sent, so send `automatic_languages` with `source_language`. null turns translations off and deletes their media. Meta-only.
     
 </dd>
 </dl>
@@ -5367,7 +5326,7 @@ client.Ads.Update(
 <dl>
 <dd>
 
-**descriptions:** `[]*whopsdk.UpdateAdsRequestDescriptionsItem` — The description shown on the ad. Entries without a language are the ad's own copy; add one entry per other language on a Meta ad with `translations`.
+**descriptions:** `[]*whopsdk.UpdateAdsRequestDescriptionsItem` — The description shown on the ad.
     
 </dd>
 </dl>
@@ -5375,7 +5334,7 @@ client.Ads.Update(
 <dl>
 <dd>
 
-**existingPostID:** `*string` — Promote a post you already published instead of uploading creatives — a Facebook post or Instagram media id. Mutually exclusive with creatives. Pair with post_source.
+**headlines:** `[]*whopsdk.UpdateAdsRequestHeadlinesItem` — The headline shown on the ad.
     
 </dd>
 </dl>
@@ -5383,31 +5342,7 @@ client.Ads.Update(
 <dl>
 <dd>
 
-**externalAccounts:** `[]*whopsdk.UpdateAdsRequestExternalAccountsItem` — The external accounts the ad runs under — a connected Facebook page and, optionally, an Instagram profile.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**headlines:** `[]*whopsdk.UpdateAdsRequestHeadlinesItem` — The headline shown on the ad. Entries without a language are the ad's own copy; add one entry per other language on a Meta ad with `translations`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**postSource:** `*whopsdk.UpdateAdsRequestPostSource` — Identifies the network that owns `existing_post_id`. The source is inferred from the ID shape when omitted.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**primaryTexts:** `[]*whopsdk.UpdateAdsRequestPrimaryTextsItem` — The primary text shown in the ad body. Entries without a language are the ad's own copy (several make text variations); add one entry per other language on a Meta ad with `translations`.
+**primaryTexts:** `[]*whopsdk.UpdateAdsRequestPrimaryTextsItem` — The primary text shown in the ad body. Several entries make text variations.
     
 </dd>
 </dl>
@@ -5416,14 +5351,6 @@ client.Ads.Update(
 <dd>
 
 **title:** `*string` — The display name of the ad.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**translations:** `*whopsdk.UpdateAdsRequestTranslations` — Shows a Meta ad in other languages. Each viewer sees the version for their language; everyone else sees the ad's own copy. Tag every copy and creatives entry with its language: the ad's own with `source_language`, and give every other language a `primary_texts` and `headlines` entry (a `descriptions` entry and a `creatives` entry are optional), or list it in `automatic_languages`. Needs a website destination, one image or video, and exactly one primary text and headline of the ad's own (and at most one description), with no Dynamic Creative or crops. Replaced as a whole when sent, so send `automatic_languages` with `source_language`. null turns translations off and deletes their media. Meta-only.
     
 </dd>
 </dl>
@@ -9500,7 +9427,7 @@ client.AuthorizedUsers.Retrieve(
 <dl>
 <dd>
 
-**id:** `string` — The unique identifier of the authorized user to retrieve.
+**id:** `string` — The unique identifier of the authorized user to retrieve. Team member IDs may start with `ausr_` or `mber_`; treat them as opaque.
     
 </dd>
 </dl>
@@ -9566,7 +9493,7 @@ client.AuthorizedUsers.Delete(
 <dl>
 <dd>
 
-**id:** `string` — The ID of the authorized user or user to remove.
+**id:** `string` — The ID of the authorized user or user to remove. Team member IDs may start with `ausr_` or `mber_`; treat them as opaque.
     
 </dd>
 </dl>
@@ -27258,6 +27185,30 @@ client.PartnerReferralRequests.List(
 <dd>
 
 **requestType:** `*whopsdk.ListPartnerReferralRequestsRequestRequestType` — Only requests initiated in this way.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**authorizedUserID:** `*string` — Only requests created for this team membership, prefixed `ausr_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**memberID:** `*string` — Only requests that credit this member record, prefixed `mber_`. A request created for a team membership also credits its holder's member record.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**personal:** `*bool` — When true, only personal requests, created for neither a team membership nor a member record. When false, only requests created for one.
     
 </dd>
 </dl>

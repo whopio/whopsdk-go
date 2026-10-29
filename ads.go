@@ -11,21 +11,17 @@ import (
 )
 
 var (
-	createAdsRequestFieldAdsPlatform      = big.NewInt(1 << 0)
-	createAdsRequestFieldAdGroup          = big.NewInt(1 << 1)
-	createAdsRequestFieldAdGroupID        = big.NewInt(1 << 2)
-	createAdsRequestFieldCallToAction     = big.NewInt(1 << 3)
-	createAdsRequestFieldCreatives        = big.NewInt(1 << 4)
-	createAdsRequestFieldDescriptions     = big.NewInt(1 << 5)
-	createAdsRequestFieldExistingPostID   = big.NewInt(1 << 6)
-	createAdsRequestFieldExternalAccounts = big.NewInt(1 << 7)
-	createAdsRequestFieldHeadlines        = big.NewInt(1 << 8)
-	createAdsRequestFieldPostSource       = big.NewInt(1 << 9)
-	createAdsRequestFieldPrimaryTexts     = big.NewInt(1 << 10)
-	createAdsRequestFieldTitle            = big.NewInt(1 << 11)
-	createAdsRequestFieldTranslations     = big.NewInt(1 << 12)
-	createAdsRequestFieldURL              = big.NewInt(1 << 13)
-	createAdsRequestFieldURLParameters    = big.NewInt(1 << 14)
+	createAdsRequestFieldAdsPlatform   = big.NewInt(1 << 0)
+	createAdsRequestFieldAdGroup       = big.NewInt(1 << 1)
+	createAdsRequestFieldAdGroupID     = big.NewInt(1 << 2)
+	createAdsRequestFieldCallToAction  = big.NewInt(1 << 3)
+	createAdsRequestFieldCreatives     = big.NewInt(1 << 4)
+	createAdsRequestFieldDescriptions  = big.NewInt(1 << 5)
+	createAdsRequestFieldHeadlines     = big.NewInt(1 << 6)
+	createAdsRequestFieldPrimaryTexts  = big.NewInt(1 << 7)
+	createAdsRequestFieldTitle         = big.NewInt(1 << 8)
+	createAdsRequestFieldURL           = big.NewInt(1 << 9)
+	createAdsRequestFieldURLParameters = big.NewInt(1 << 10)
 )
 
 type CreateAdsRequest struct {
@@ -39,22 +35,14 @@ type CreateAdsRequest struct {
 	CallToAction *CreateAdsRequestCallToAction `json:"call_to_action,omitempty" url:"-"`
 	// The ad's creative assets. Each entry is an uploaded file id with an optional format; omit format for the original asset. Entries with no format become a carousel's ordered cards, sharing the ad's copy — 2-10 of them on Meta, while TikTok runs even a single image as a one-card carousel.
 	Creatives []*CreateAdsRequestCreativesItem `json:"creatives,omitempty" url:"-"`
-	// The description shown on the ad. Entries without a language are the ad's own copy; add one entry per other language on a Meta ad with `translations`.
+	// The description shown on the ad.
 	Descriptions []*CreateAdsRequestDescriptionsItem `json:"descriptions,omitempty" url:"-"`
-	// Promote a post you already published instead of uploading creatives — a Facebook post or Instagram media id. Mutually exclusive with creatives. Pair with post_source.
-	ExistingPostID *string `json:"existing_post_id,omitempty" url:"-"`
-	// The external accounts the ad runs under — a connected Facebook page and, optionally, an Instagram profile.
-	ExternalAccounts []*CreateAdsRequestExternalAccountsItem `json:"external_accounts,omitempty" url:"-"`
-	// The headline shown on the ad. Entries without a language are the ad's own copy; add one entry per other language on a Meta ad with `translations`.
+	// The headline shown on the ad.
 	Headlines []*CreateAdsRequestHeadlinesItem `json:"headlines,omitempty" url:"-"`
-	// Identifies the network that owns `existing_post_id`. The source is inferred from the ID shape when omitted.
-	PostSource *CreateAdsRequestPostSource `json:"post_source,omitempty" url:"-"`
-	// The primary text shown in the ad body. Entries without a language are the ad's own copy (several make text variations); add one entry per other language on a Meta ad with `translations`.
+	// The primary text shown in the ad body. Several entries make text variations.
 	PrimaryTexts []*CreateAdsRequestPrimaryTextsItem `json:"primary_texts,omitempty" url:"-"`
 	// The display name of the ad.
 	Title *string `json:"title,omitempty" url:"-"`
-	// Shows a Meta ad in other languages. Each viewer sees the version for their language; everyone else sees the ad's own copy. Tag every copy and creatives entry with its language: the ad's own with `source_language`, and give every other language a `primary_texts` and `headlines` entry (a `descriptions` entry and a `creatives` entry are optional), or list it in `automatic_languages`. Needs a website destination, one image or video, and exactly one primary text and headline of the ad's own (and at most one description), with no Dynamic Creative or crops. Replaced as a whole when sent, so send `automatic_languages` with `source_language`. null turns translations off and deletes their media. Meta-only.
-	Translations *CreateAdsRequestTranslations `json:"translations,omitempty" url:"-"`
 	// The URL the ad links to. Query parameters are merged into url_parameters, so the stored URL is always bare.
 	URL *string `json:"url,omitempty" url:"-"`
 	// Query parameters to append to the destination URL, keyed by parameter name. Merged with any query string on `url`. Whop adds its own click-attribution parameters; those are reserved and rejected if you set them. Which keys are reserved depends on the ad's network — Meta: utm_meta_ad_id, utm_meta_adset_id, utm_meta_campaign_id, utm_source, utm_placement, utm_medium, utm_content, utm_adset, utm_whop, wacid, wasid, waid, tw_source, tw_adid; TikTok: waid, wasid, wacid, ad_id, adset_id, campaign_id, utm_source, utm_medium, utm_placement, utm_whop, tw_source, tw_adid.
@@ -115,32 +103,11 @@ func (c *CreateAdsRequest) SetDescriptions(descriptions []*CreateAdsRequestDescr
 	c.require(createAdsRequestFieldDescriptions)
 }
 
-// SetExistingPostID sets the ExistingPostID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequest) SetExistingPostID(existingPostID *string) {
-	c.ExistingPostID = existingPostID
-	c.require(createAdsRequestFieldExistingPostID)
-}
-
-// SetExternalAccounts sets the ExternalAccounts field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequest) SetExternalAccounts(externalAccounts []*CreateAdsRequestExternalAccountsItem) {
-	c.ExternalAccounts = externalAccounts
-	c.require(createAdsRequestFieldExternalAccounts)
-}
-
 // SetHeadlines sets the Headlines field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateAdsRequest) SetHeadlines(headlines []*CreateAdsRequestHeadlinesItem) {
 	c.Headlines = headlines
 	c.require(createAdsRequestFieldHeadlines)
-}
-
-// SetPostSource sets the PostSource field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequest) SetPostSource(postSource *CreateAdsRequestPostSource) {
-	c.PostSource = postSource
-	c.require(createAdsRequestFieldPostSource)
 }
 
 // SetPrimaryTexts sets the PrimaryTexts field and marks it as non-optional;
@@ -155,13 +122,6 @@ func (c *CreateAdsRequest) SetPrimaryTexts(primaryTexts []*CreateAdsRequestPrima
 func (c *CreateAdsRequest) SetTitle(title *string) {
 	c.Title = title
 	c.require(createAdsRequestFieldTitle)
-}
-
-// SetTranslations sets the Translations field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequest) SetTranslations(translations *CreateAdsRequestTranslations) {
-	c.Translations = translations
-	c.require(createAdsRequestFieldTranslations)
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -738,44 +698,38 @@ var (
 	adFieldCustomEventValues            = big.NewInt(1 << 27)
 	adFieldDeliveryStatus               = big.NewInt(1 << 28)
 	adFieldDescriptions                 = big.NewInt(1 << 29)
-	adFieldExistingPostID               = big.NewInt(1 << 30)
-	adFieldExternalAccounts             = big.NewInt(1 << 31)
-	adFieldFrequency                    = big.NewInt(1 << 32)
-	adFieldHeadlines                    = big.NewInt(1 << 33)
-	adFieldID                           = big.NewInt(1 << 34)
-	adFieldImpressions                  = big.NewInt(1 << 35)
-	adFieldIssues                       = big.NewInt(1 << 36)
-	adFieldLeadValue                    = big.NewInt(1 << 37)
-	adFieldLeads                        = big.NewInt(1 << 38)
-	adFieldLinkClicks                   = big.NewInt(1 << 39)
-	adFieldPlatform                     = big.NewInt(1 << 40)
-	adFieldPostID                       = big.NewInt(1 << 41)
-	adFieldPostSource                   = big.NewInt(1 << 42)
-	adFieldPostThumbnailURL             = big.NewInt(1 << 43)
-	adFieldPrimaryTexts                 = big.NewInt(1 << 44)
-	adFieldPurchaseValue                = big.NewInt(1 << 45)
-	adFieldPurchases                    = big.NewInt(1 << 46)
-	adFieldReach                        = big.NewInt(1 << 47)
-	adFieldResultEvent                  = big.NewInt(1 << 48)
-	adFieldResultEventName              = big.NewInt(1 << 49)
-	adFieldResults                      = big.NewInt(1 << 50)
-	adFieldReturnOnAdSpend              = big.NewInt(1 << 51)
-	adFieldScheduleValue                = big.NewInt(1 << 52)
-	adFieldSchedules                    = big.NewInt(1 << 53)
-	adFieldSpend                        = big.NewInt(1 << 54)
-	adFieldSpendCurrency                = big.NewInt(1 << 55)
-	adFieldStatus                       = big.NewInt(1 << 56)
-	adFieldSubmittedApplicationValue    = big.NewInt(1 << 57)
-	adFieldSubmittedApplications        = big.NewInt(1 << 58)
-	adFieldTitle                        = big.NewInt(1 << 59)
-	adFieldTranslations                 = big.NewInt(1 << 60)
-	adFieldUniqueClickThroughRate       = big.NewInt(1 << 61)
-	adFieldUniqueClicks                 = big.NewInt(1 << 62)
-	adFieldUpdatedAt                    = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	adFieldURL                          = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	adFieldURLParameters                = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	adFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	adFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	adFieldFrequency                    = big.NewInt(1 << 30)
+	adFieldHeadlines                    = big.NewInt(1 << 31)
+	adFieldID                           = big.NewInt(1 << 32)
+	adFieldImpressions                  = big.NewInt(1 << 33)
+	adFieldIssues                       = big.NewInt(1 << 34)
+	adFieldLeadValue                    = big.NewInt(1 << 35)
+	adFieldLeads                        = big.NewInt(1 << 36)
+	adFieldLinkClicks                   = big.NewInt(1 << 37)
+	adFieldPostID                       = big.NewInt(1 << 38)
+	adFieldPrimaryTexts                 = big.NewInt(1 << 39)
+	adFieldPurchaseValue                = big.NewInt(1 << 40)
+	adFieldPurchases                    = big.NewInt(1 << 41)
+	adFieldReach                        = big.NewInt(1 << 42)
+	adFieldResultEvent                  = big.NewInt(1 << 43)
+	adFieldResultEventName              = big.NewInt(1 << 44)
+	adFieldResults                      = big.NewInt(1 << 45)
+	adFieldReturnOnAdSpend              = big.NewInt(1 << 46)
+	adFieldScheduleValue                = big.NewInt(1 << 47)
+	adFieldSchedules                    = big.NewInt(1 << 48)
+	adFieldSpend                        = big.NewInt(1 << 49)
+	adFieldSpendCurrency                = big.NewInt(1 << 50)
+	adFieldStatus                       = big.NewInt(1 << 51)
+	adFieldSubmittedApplicationValue    = big.NewInt(1 << 52)
+	adFieldSubmittedApplications        = big.NewInt(1 << 53)
+	adFieldTitle                        = big.NewInt(1 << 54)
+	adFieldUniqueClickThroughRate       = big.NewInt(1 << 55)
+	adFieldUniqueClicks                 = big.NewInt(1 << 56)
+	adFieldUpdatedAt                    = big.NewInt(1 << 57)
+	adFieldURL                          = big.NewInt(1 << 58)
+	adFieldURLParameters                = big.NewInt(1 << 59)
+	adFieldViewedContentValue           = big.NewInt(1 << 60)
+	adFieldViewedContents               = big.NewInt(1 << 61)
 )
 
 // adNullableFields maps the wire names of Ad's nullable fields (required or optional) to their field bits.
@@ -791,17 +745,13 @@ var adNullableFields = map[string]*big.Int{
 	"cost_per_submitted_application":  adFieldCostPerSubmittedApplication,
 	"cost_per_unique_click":           adFieldCostPerUniqueClick,
 	"cost_per_viewed_content":         adFieldCostPerViewedContent,
-	"existing_post_id":                adFieldExistingPostID,
 	"frequency":                       adFieldFrequency,
 	"post_id":                         adFieldPostID,
-	"post_source":                     adFieldPostSource,
-	"post_thumbnail_url":              adFieldPostThumbnailURL,
 	"result_event":                    adFieldResultEvent,
 	"result_event_name":               adFieldResultEventName,
 	"results":                         adFieldResults,
 	"spend_currency":                  adFieldSpendCurrency,
 	"title":                           adFieldTitle,
-	"translations":                    adFieldTranslations,
 	"unique_click_through_rate":       adFieldUniqueClickThroughRate,
 	"url":                             adFieldURL,
 }
@@ -865,9 +815,6 @@ type Ad struct {
 	// Whether the ad is delivering right now, and if not, why. When several states apply at once, the highest-precedence one is returned.
 	DeliveryStatus AdDeliveryStatus `json:"delivery_status" url:"delivery_status"`
 	Descriptions   []*AdText        `json:"descriptions" url:"descriptions"`
-	// The post you pointed this ad at, when it promotes one you already published — a Facebook post, Instagram media, or TikTok video ID. `null` when the ad uses uploaded creatives.
-	ExistingPostID   *string              `json:"existing_post_id,omitempty" url:"existing_post_id,omitempty"`
-	ExternalAccounts []*AdEntityReference `json:"external_accounts" url:"external_accounts"`
 	// Platform-reported impressions divided by reach.
 	Frequency *float64  `json:"frequency,omitempty" url:"frequency,omitempty"`
 	Headlines []*AdText `json:"headlines" url:"headlines"`
@@ -882,15 +829,9 @@ type Ad struct {
 	Leads float64 `json:"leads" url:"leads"`
 	// Page views on your destination from people who clicked the ad, recorded by the Whop pixel. Counted the same way on every ad platform.
 	LinkClicks float64 `json:"link_clicks" url:"link_clicks"`
-	// The ad platform this ad runs on.
-	Platform AdPlatform `json:"platform" url:"platform"`
-	// The post the ad network serves for this ad, as `pageID_postID` on Meta — the post Meta created for an uploaded creative, or the post being promoted. Use it to open the live post, or to promote the same post from another ad. `null` until the network has created the post.
-	PostID *string `json:"post_id,omitempty" url:"post_id,omitempty"`
-	// Identifies the network that owns `existing_post_id`; `null` when the ad uses uploaded creatives.
-	PostSource *AdPostSource `json:"post_source,omitempty" url:"post_source,omitempty"`
-	// Preview image of the post named by `existing_post_id`. `null` for ads that use uploaded creatives, or until the post's media has been fetched from the network.
-	PostThumbnailURL *string   `json:"post_thumbnail_url,omitempty" url:"post_thumbnail_url,omitempty"`
-	PrimaryTexts     []*AdText `json:"primary_texts" url:"primary_texts"`
+	// The post the ad network serves for this ad, as `pageID_postID` on Meta — the post Meta created for an uploaded creative, or the post being promoted. Use it to open the live post. `null` until the network has created the post.
+	PostID       *string   `json:"post_id,omitempty" url:"post_id,omitempty"`
+	PrimaryTexts []*AdText `json:"primary_texts" url:"primary_texts"`
 	// USD value of pixel-attributed purchases.
 	PurchaseValue float64 `json:"purchase_value" url:"purchase_value"`
 	// Whop pixel-attributed purchases, last-click.
@@ -921,8 +862,6 @@ type Ad struct {
 	SubmittedApplications float64 `json:"submitted_applications" url:"submitted_applications"`
 	// Display title of the ad.
 	Title *string `json:"title,omitempty" url:"title,omitempty"`
-	// The languages a Meta ad runs in besides its own. Each viewer sees the version for their language, or the ad's own copy. `null` when the ad runs in one language.
-	Translations *AdTranslations `json:"translations,omitempty" url:"translations,omitempty"`
 	// Unique clicks divided by impressions, between 0 and 1.
 	UniqueClickThroughRate *float64 `json:"unique_click_through_rate,omitempty" url:"unique_click_through_rate,omitempty"`
 	// People who clicked, reported by the Whop pixel, counted once per person.
@@ -1155,20 +1094,6 @@ func (a *Ad) GetDescriptions() []*AdText {
 	return a.Descriptions
 }
 
-func (a *Ad) GetExistingPostID() *string {
-	if a == nil {
-		return nil
-	}
-	return a.ExistingPostID
-}
-
-func (a *Ad) GetExternalAccounts() []*AdEntityReference {
-	if a == nil {
-		return nil
-	}
-	return a.ExternalAccounts
-}
-
 func (a *Ad) GetFrequency() *float64 {
 	if a == nil {
 		return nil
@@ -1225,32 +1150,11 @@ func (a *Ad) GetLinkClicks() float64 {
 	return a.LinkClicks
 }
 
-func (a *Ad) GetPlatform() AdPlatform {
-	if a == nil {
-		return ""
-	}
-	return a.Platform
-}
-
 func (a *Ad) GetPostID() *string {
 	if a == nil {
 		return nil
 	}
 	return a.PostID
-}
-
-func (a *Ad) GetPostSource() *AdPostSource {
-	if a == nil {
-		return nil
-	}
-	return a.PostSource
-}
-
-func (a *Ad) GetPostThumbnailURL() *string {
-	if a == nil {
-		return nil
-	}
-	return a.PostThumbnailURL
 }
 
 func (a *Ad) GetPrimaryTexts() []*AdText {
@@ -1363,13 +1267,6 @@ func (a *Ad) GetTitle() *string {
 		return nil
 	}
 	return a.Title
-}
-
-func (a *Ad) GetTranslations() *AdTranslations {
-	if a == nil {
-		return nil
-	}
-	return a.Translations
 }
 
 func (a *Ad) GetUniqueClickThroughRate() *float64 {
@@ -1647,20 +1544,6 @@ func (a *Ad) SetDescriptions(descriptions []*AdText) {
 	a.require(adFieldDescriptions)
 }
 
-// SetExistingPostID sets the ExistingPostID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *Ad) SetExistingPostID(existingPostID *string) {
-	a.ExistingPostID = existingPostID
-	a.require(adFieldExistingPostID)
-}
-
-// SetExternalAccounts sets the ExternalAccounts field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *Ad) SetExternalAccounts(externalAccounts []*AdEntityReference) {
-	a.ExternalAccounts = externalAccounts
-	a.require(adFieldExternalAccounts)
-}
-
 // SetFrequency sets the Frequency field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *Ad) SetFrequency(frequency *float64) {
@@ -1717,32 +1600,11 @@ func (a *Ad) SetLinkClicks(linkClicks float64) {
 	a.require(adFieldLinkClicks)
 }
 
-// SetPlatform sets the Platform field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *Ad) SetPlatform(platform AdPlatform) {
-	a.Platform = platform
-	a.require(adFieldPlatform)
-}
-
 // SetPostID sets the PostID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *Ad) SetPostID(postID *string) {
 	a.PostID = postID
 	a.require(adFieldPostID)
-}
-
-// SetPostSource sets the PostSource field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *Ad) SetPostSource(postSource *AdPostSource) {
-	a.PostSource = postSource
-	a.require(adFieldPostSource)
-}
-
-// SetPostThumbnailURL sets the PostThumbnailURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *Ad) SetPostThumbnailURL(postThumbnailURL *string) {
-	a.PostThumbnailURL = postThumbnailURL
-	a.require(adFieldPostThumbnailURL)
 }
 
 // SetPrimaryTexts sets the PrimaryTexts field and marks it as non-optional;
@@ -1855,13 +1717,6 @@ func (a *Ad) SetSubmittedApplications(submittedApplications float64) {
 func (a *Ad) SetTitle(title *string) {
 	a.Title = title
 	a.require(adFieldTitle)
-}
-
-// SetTranslations sets the Translations field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *Ad) SetTranslations(translations *AdTranslations) {
-	a.Translations = translations
-	a.require(adFieldTranslations)
 }
 
 // SetUniqueClickThroughRate sets the UniqueClickThroughRate field and marks it as non-optional;
@@ -2106,7 +1961,7 @@ type AdCreative struct {
 	Format *AdCreativeFormat `json:"format,omitempty" url:"format,omitempty"`
 	// The creative attachment's file id.
 	ID string `json:"id" url:"id"`
-	// ISO 639 code of the language this image or video is shown for, such as `es`. On an ad with translations, the ad's own creative carries `translations.source_language`. It's `null` on an ad without translations.
+	// ISO 639 code of the language this image or video is shown for, such as `es`. On an ad that runs in several languages, the ad's own creative carries the language its copy is written in. It's `null` on an ad that runs in one language.
 	Language *string `json:"language,omitempty" url:"language,omitempty"`
 	// The kind of asset, image or video.
 	MediaType *string `json:"media_type,omitempty" url:"media_type,omitempty"`
@@ -2489,55 +2344,6 @@ func (a AdDeliveryStatus) Ptr() *AdDeliveryStatus {
 	return &a
 }
 
-// The ad platform this ad runs on.
-type AdPlatform string
-
-const (
-	AdPlatformMeta   AdPlatform = "meta"
-	AdPlatformTiktok AdPlatform = "tiktok"
-	AdPlatformGoogle AdPlatform = "google"
-)
-
-func NewAdPlatformFromString(s string) (AdPlatform, error) {
-	switch s {
-	case "meta":
-		return AdPlatformMeta, nil
-	case "tiktok":
-		return AdPlatformTiktok, nil
-	case "google":
-		return AdPlatformGoogle, nil
-	}
-	var t AdPlatform
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (a AdPlatform) Ptr() *AdPlatform {
-	return &a
-}
-
-// Identifies the network that owns `existing_post_id`; `null` when the ad uses uploaded creatives.
-type AdPostSource string
-
-const (
-	AdPostSourceFacebook  AdPostSource = "facebook"
-	AdPostSourceInstagram AdPostSource = "instagram"
-)
-
-func NewAdPostSourceFromString(s string) (AdPostSource, error) {
-	switch s {
-	case "facebook":
-		return AdPostSourceFacebook, nil
-	case "instagram":
-		return AdPostSourceInstagram, nil
-	}
-	var t AdPostSource
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (a AdPostSource) Ptr() *AdPostSource {
-	return &a
-}
-
 // The Whop pixel conversion event whose attributed count represents results — the optimization goal, or the highest-volume attributed event for campaigns that budget per ad group. Null when the goal isn't a Whop-attributed event.
 type AdResultEvent string
 
@@ -2814,7 +2620,7 @@ var adTextNullableFields = map[string]*big.Int{
 }
 
 type AdText struct {
-	// ISO 639 code of the language this text is in, such as `es`. On an ad with translations, the ad's own copy carries `translations.source_language`. It's `null` on an ad without translations.
+	// ISO 639 code of the language this text is in, such as `es`. On an ad that runs in several languages, the ad's own copy carries the language it is written in. It's `null` on an ad that runs in one language.
 	Language *string `json:"language,omitempty" url:"language,omitempty"`
 	// The text shown to viewers.
 	Text string `json:"text" url:"text"`
@@ -2905,109 +2711,6 @@ func (a *AdText) MarshalJSON() ([]byte, error) {
 }
 
 func (a *AdText) String() string {
-	if a == nil {
-		return "<nil>"
-	}
-	if len(a.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(a); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", a)
-}
-
-var (
-	adTranslationsFieldAutomaticLanguages = big.NewInt(1 << 0)
-	adTranslationsFieldSourceLanguage     = big.NewInt(1 << 1)
-)
-
-type AdTranslations struct {
-	AutomaticLanguages []string `json:"automatic_languages" url:"automatic_languages"`
-	// ISO 639 code of the language the ad's own copy is written in, such as `en`. Viewers whose language has no version of its own see the ad's own copy.
-	SourceLanguage string `json:"source_language" url:"source_language"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (a *AdTranslations) GetAutomaticLanguages() []string {
-	if a == nil {
-		return nil
-	}
-	return a.AutomaticLanguages
-}
-
-func (a *AdTranslations) GetSourceLanguage() string {
-	if a == nil {
-		return ""
-	}
-	return a.SourceLanguage
-}
-
-func (a *AdTranslations) GetExtraProperties() map[string]interface{} {
-	if a == nil {
-		return nil
-	}
-	return a.extraProperties
-}
-
-func (a *AdTranslations) require(field *big.Int) {
-	next := new(big.Int)
-	if a.explicitFields != nil {
-		next.Set(a.explicitFields)
-	}
-	next.Or(next, field)
-	a.explicitFields = next
-}
-
-// SetAutomaticLanguages sets the AutomaticLanguages field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdTranslations) SetAutomaticLanguages(automaticLanguages []string) {
-	a.AutomaticLanguages = automaticLanguages
-	a.require(adTranslationsFieldAutomaticLanguages)
-}
-
-// SetSourceLanguage sets the SourceLanguage field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdTranslations) SetSourceLanguage(sourceLanguage string) {
-	a.SourceLanguage = sourceLanguage
-	a.require(adTranslationsFieldSourceLanguage)
-}
-
-func (a *AdTranslations) UnmarshalJSON(data []byte) error {
-	type unmarshaler AdTranslations
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*a = AdTranslations(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *a)
-	if err != nil {
-		return err
-	}
-	a.extraProperties = extraProperties
-	a.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (a *AdTranslations) MarshalJSON() ([]byte, error) {
-	type embed AdTranslations
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*a),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (a *AdTranslations) String() string {
 	if a == nil {
 		return "<nil>"
 	}
@@ -3115,10 +2818,9 @@ func (c CreateAdsRequestCallToAction) Ptr() *CreateAdsRequestCallToAction {
 }
 
 var (
-	createAdsRequestCreativesItemFieldCrop     = big.NewInt(1 << 0)
-	createAdsRequestCreativesItemFieldFormat   = big.NewInt(1 << 1)
-	createAdsRequestCreativesItemFieldID       = big.NewInt(1 << 2)
-	createAdsRequestCreativesItemFieldLanguage = big.NewInt(1 << 3)
+	createAdsRequestCreativesItemFieldCrop   = big.NewInt(1 << 0)
+	createAdsRequestCreativesItemFieldFormat = big.NewInt(1 << 1)
+	createAdsRequestCreativesItemFieldID     = big.NewInt(1 << 2)
 )
 
 type CreateAdsRequestCreativesItem struct {
@@ -3127,8 +2829,6 @@ type CreateAdsRequestCreativesItem struct {
 	Format *CreateAdsRequestCreativesItemFormat `json:"format,omitempty" url:"format,omitempty"`
 	// Uploaded file ID, prefixed `file_`.
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
-	// ISO 639 code of the language this image or video is shown for, such as `es`. Required on every entry of an ad with `translations`, where the ad's own creative uses `translations.source_language`. Another language's creative is the same type as the ad's own, with no format. Leave it out on an ad without translations.
-	Language *string `json:"language,omitempty" url:"language,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3156,13 +2856,6 @@ func (c *CreateAdsRequestCreativesItem) GetID() *string {
 		return nil
 	}
 	return c.ID
-}
-
-func (c *CreateAdsRequestCreativesItem) GetLanguage() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Language
 }
 
 func (c *CreateAdsRequestCreativesItem) GetExtraProperties() map[string]interface{} {
@@ -3200,13 +2893,6 @@ func (c *CreateAdsRequestCreativesItem) SetFormat(format *CreateAdsRequestCreati
 func (c *CreateAdsRequestCreativesItem) SetID(id *string) {
 	c.ID = id
 	c.require(createAdsRequestCreativesItemFieldID)
-}
-
-// SetLanguage sets the Language field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestCreativesItem) SetLanguage(language *string) {
-	c.Language = language
-	c.require(createAdsRequestCreativesItemFieldLanguage)
 }
 
 func (c *CreateAdsRequestCreativesItem) UnmarshalJSON(data []byte) error {
@@ -3412,18 +3098,10 @@ func (c CreateAdsRequestCreativesItemFormat) Ptr() *CreateAdsRequestCreativesIte
 }
 
 var (
-	createAdsRequestDescriptionsItemFieldLanguage = big.NewInt(1 << 0)
-	createAdsRequestDescriptionsItemFieldText     = big.NewInt(1 << 1)
+	createAdsRequestDescriptionsItemFieldText = big.NewInt(1 << 0)
 )
 
-// createAdsRequestDescriptionsItemNullableFields maps the wire names of CreateAdsRequestDescriptionsItem's nullable fields (required or optional) to their field bits.
-var createAdsRequestDescriptionsItemNullableFields = map[string]*big.Int{
-	"language": createAdsRequestDescriptionsItemFieldLanguage,
-}
-
 type CreateAdsRequestDescriptionsItem struct {
-	// ISO 639 code of the language this text is in, such as `es`. Required on every entry of an ad with `translations`, where the ad's own copy uses `translations.source_language`. Leave it out on an ad without translations.
-	Language *string `json:"language,omitempty" url:"language,omitempty"`
 	// The text shown to viewers.
 	Text string `json:"text" url:"text"`
 
@@ -3432,13 +3110,6 @@ type CreateAdsRequestDescriptionsItem struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
-}
-
-func (c *CreateAdsRequestDescriptionsItem) GetLanguage() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Language
 }
 
 func (c *CreateAdsRequestDescriptionsItem) GetText() string {
@@ -3464,13 +3135,6 @@ func (c *CreateAdsRequestDescriptionsItem) require(field *big.Int) {
 	c.explicitFields = next
 }
 
-// SetLanguage sets the Language field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestDescriptionsItem) SetLanguage(language *string) {
-	c.Language = language
-	c.require(createAdsRequestDescriptionsItemFieldLanguage)
-}
-
 // SetText sets the Text field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateAdsRequestDescriptionsItem) SetText(text string) {
@@ -3490,13 +3154,6 @@ func (c *CreateAdsRequestDescriptionsItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, createAdsRequestDescriptionsItemNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		c.require(presentFields)
-	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3528,105 +3185,10 @@ func (c *CreateAdsRequestDescriptionsItem) String() string {
 }
 
 var (
-	createAdsRequestExternalAccountsItemFieldID = big.NewInt(1 << 0)
+	createAdsRequestHeadlinesItemFieldText = big.NewInt(1 << 0)
 )
-
-type CreateAdsRequestExternalAccountsItem struct {
-	// External account ID, prefixed `sacc_`.
-	ID *string `json:"id,omitempty" url:"id,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateAdsRequestExternalAccountsItem) GetID() *string {
-	if c == nil {
-		return nil
-	}
-	return c.ID
-}
-
-func (c *CreateAdsRequestExternalAccountsItem) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateAdsRequestExternalAccountsItem) require(field *big.Int) {
-	next := new(big.Int)
-	if c.explicitFields != nil {
-		next.Set(c.explicitFields)
-	}
-	next.Or(next, field)
-	c.explicitFields = next
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestExternalAccountsItem) SetID(id *string) {
-	c.ID = id
-	c.require(createAdsRequestExternalAccountsItemFieldID)
-}
-
-func (c *CreateAdsRequestExternalAccountsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateAdsRequestExternalAccountsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreateAdsRequestExternalAccountsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateAdsRequestExternalAccountsItem) MarshalJSON() ([]byte, error) {
-	type embed CreateAdsRequestExternalAccountsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateAdsRequestExternalAccountsItem) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-var (
-	createAdsRequestHeadlinesItemFieldLanguage = big.NewInt(1 << 0)
-	createAdsRequestHeadlinesItemFieldText     = big.NewInt(1 << 1)
-)
-
-// createAdsRequestHeadlinesItemNullableFields maps the wire names of CreateAdsRequestHeadlinesItem's nullable fields (required or optional) to their field bits.
-var createAdsRequestHeadlinesItemNullableFields = map[string]*big.Int{
-	"language": createAdsRequestHeadlinesItemFieldLanguage,
-}
 
 type CreateAdsRequestHeadlinesItem struct {
-	// ISO 639 code of the language this text is in, such as `es`. Required on every entry of an ad with `translations`, where the ad's own copy uses `translations.source_language`. Leave it out on an ad without translations.
-	Language *string `json:"language,omitempty" url:"language,omitempty"`
 	// The text shown to viewers.
 	Text string `json:"text" url:"text"`
 
@@ -3635,13 +3197,6 @@ type CreateAdsRequestHeadlinesItem struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
-}
-
-func (c *CreateAdsRequestHeadlinesItem) GetLanguage() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Language
 }
 
 func (c *CreateAdsRequestHeadlinesItem) GetText() string {
@@ -3667,13 +3222,6 @@ func (c *CreateAdsRequestHeadlinesItem) require(field *big.Int) {
 	c.explicitFields = next
 }
 
-// SetLanguage sets the Language field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestHeadlinesItem) SetLanguage(language *string) {
-	c.Language = language
-	c.require(createAdsRequestHeadlinesItemFieldLanguage)
-}
-
 // SetText sets the Text field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateAdsRequestHeadlinesItem) SetText(text string) {
@@ -3693,13 +3241,6 @@ func (c *CreateAdsRequestHeadlinesItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, createAdsRequestHeadlinesItemNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		c.require(presentFields)
-	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3730,42 +3271,11 @@ func (c *CreateAdsRequestHeadlinesItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Identifies the network that owns `existing_post_id`. The source is inferred from the ID shape when omitted.
-type CreateAdsRequestPostSource string
-
-const (
-	CreateAdsRequestPostSourceFacebook  CreateAdsRequestPostSource = "facebook"
-	CreateAdsRequestPostSourceInstagram CreateAdsRequestPostSource = "instagram"
-)
-
-func NewCreateAdsRequestPostSourceFromString(s string) (CreateAdsRequestPostSource, error) {
-	switch s {
-	case "facebook":
-		return CreateAdsRequestPostSourceFacebook, nil
-	case "instagram":
-		return CreateAdsRequestPostSourceInstagram, nil
-	}
-	var t CreateAdsRequestPostSource
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CreateAdsRequestPostSource) Ptr() *CreateAdsRequestPostSource {
-	return &c
-}
-
 var (
-	createAdsRequestPrimaryTextsItemFieldLanguage = big.NewInt(1 << 0)
-	createAdsRequestPrimaryTextsItemFieldText     = big.NewInt(1 << 1)
+	createAdsRequestPrimaryTextsItemFieldText = big.NewInt(1 << 0)
 )
-
-// createAdsRequestPrimaryTextsItemNullableFields maps the wire names of CreateAdsRequestPrimaryTextsItem's nullable fields (required or optional) to their field bits.
-var createAdsRequestPrimaryTextsItemNullableFields = map[string]*big.Int{
-	"language": createAdsRequestPrimaryTextsItemFieldLanguage,
-}
 
 type CreateAdsRequestPrimaryTextsItem struct {
-	// ISO 639 code of the language this text is in, such as `es`. Required on every entry of an ad with `translations`, where the ad's own copy uses `translations.source_language`. Leave it out on an ad without translations.
-	Language *string `json:"language,omitempty" url:"language,omitempty"`
 	// The text shown to viewers.
 	Text string `json:"text" url:"text"`
 
@@ -3774,13 +3284,6 @@ type CreateAdsRequestPrimaryTextsItem struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
-}
-
-func (c *CreateAdsRequestPrimaryTextsItem) GetLanguage() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Language
 }
 
 func (c *CreateAdsRequestPrimaryTextsItem) GetText() string {
@@ -3806,13 +3309,6 @@ func (c *CreateAdsRequestPrimaryTextsItem) require(field *big.Int) {
 	c.explicitFields = next
 }
 
-// SetLanguage sets the Language field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestPrimaryTextsItem) SetLanguage(language *string) {
-	c.Language = language
-	c.require(createAdsRequestPrimaryTextsItemFieldLanguage)
-}
-
 // SetText sets the Text field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateAdsRequestPrimaryTextsItem) SetText(text string) {
@@ -3832,13 +3328,6 @@ func (c *CreateAdsRequestPrimaryTextsItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, createAdsRequestPrimaryTextsItemNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		c.require(presentFields)
-	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3855,111 +3344,6 @@ func (c *CreateAdsRequestPrimaryTextsItem) MarshalJSON() ([]byte, error) {
 }
 
 func (c *CreateAdsRequestPrimaryTextsItem) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-var (
-	createAdsRequestTranslationsFieldAutomaticLanguages = big.NewInt(1 << 0)
-	createAdsRequestTranslationsFieldSourceLanguage     = big.NewInt(1 << 1)
-)
-
-// Shows a Meta ad in other languages. Each viewer sees the version for their language; everyone else sees the ad's own copy. Tag every copy and creatives entry with its language: the ad's own with `source_language`, and give every other language a `primary_texts` and `headlines` entry (a `descriptions` entry and a `creatives` entry are optional), or list it in `automatic_languages`. Needs a website destination, one image or video, and exactly one primary text and headline of the ad's own (and at most one description), with no Dynamic Creative or crops. Replaced as a whole when sent, so send `automatic_languages` with `source_language`. null turns translations off and deletes their media. Meta-only.
-type CreateAdsRequestTranslations struct {
-	// ISO 639 codes Meta translates the ad's own copy into automatically. English copy translates into `es`, `fr`, `de`, `pt`, `it`, `ar`, `nl`, `ms`, `sv`, `id`, `pl`, `hi`, `da`, `tr`, `fil`, and `ro`; `de`, `ar`, `he`, `es`, `ja`, `no`, `fr`, `nl`, and `sv` copy translate into `en`.
-	AutomaticLanguages []string `json:"automatic_languages,omitempty" url:"automatic_languages,omitempty"`
-	// ISO 639 code the ad's own copy is written in, such as `en`.
-	SourceLanguage string `json:"source_language" url:"source_language"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateAdsRequestTranslations) GetAutomaticLanguages() []string {
-	if c == nil {
-		return nil
-	}
-	return c.AutomaticLanguages
-}
-
-func (c *CreateAdsRequestTranslations) GetSourceLanguage() string {
-	if c == nil {
-		return ""
-	}
-	return c.SourceLanguage
-}
-
-func (c *CreateAdsRequestTranslations) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateAdsRequestTranslations) require(field *big.Int) {
-	next := new(big.Int)
-	if c.explicitFields != nil {
-		next.Set(c.explicitFields)
-	}
-	next.Or(next, field)
-	c.explicitFields = next
-}
-
-// SetAutomaticLanguages sets the AutomaticLanguages field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestTranslations) SetAutomaticLanguages(automaticLanguages []string) {
-	c.AutomaticLanguages = automaticLanguages
-	c.require(createAdsRequestTranslationsFieldAutomaticLanguages)
-}
-
-// SetSourceLanguage sets the SourceLanguage field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestTranslations) SetSourceLanguage(sourceLanguage string) {
-	c.SourceLanguage = sourceLanguage
-	c.require(createAdsRequestTranslationsFieldSourceLanguage)
-}
-
-func (c *CreateAdsRequestTranslations) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateAdsRequestTranslations
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreateAdsRequestTranslations(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateAdsRequestTranslations) MarshalJSON() ([]byte, error) {
-	type embed CreateAdsRequestTranslations
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateAdsRequestTranslations) String() string {
 	if c == nil {
 		return "<nil>"
 	}
@@ -4818,41 +4202,31 @@ func (p PostAdUpdatedPayloadAPIVersion) Ptr() *PostAdUpdatedPayloadAPIVersion {
 }
 
 var (
-	postAdUpdatedPayloadDataFieldAdCampaign       = big.NewInt(1 << 0)
-	postAdUpdatedPayloadDataFieldAdGroup          = big.NewInt(1 << 1)
-	postAdUpdatedPayloadDataFieldCallToAction     = big.NewInt(1 << 2)
-	postAdUpdatedPayloadDataFieldCreatedAt        = big.NewInt(1 << 3)
-	postAdUpdatedPayloadDataFieldCreatives        = big.NewInt(1 << 4)
-	postAdUpdatedPayloadDataFieldDeliveryStatus   = big.NewInt(1 << 5)
-	postAdUpdatedPayloadDataFieldDescriptions     = big.NewInt(1 << 6)
-	postAdUpdatedPayloadDataFieldExistingPostID   = big.NewInt(1 << 7)
-	postAdUpdatedPayloadDataFieldExternalAccounts = big.NewInt(1 << 8)
-	postAdUpdatedPayloadDataFieldHeadlines        = big.NewInt(1 << 9)
-	postAdUpdatedPayloadDataFieldID               = big.NewInt(1 << 10)
-	postAdUpdatedPayloadDataFieldIssues           = big.NewInt(1 << 11)
-	postAdUpdatedPayloadDataFieldPlatform         = big.NewInt(1 << 12)
-	postAdUpdatedPayloadDataFieldPostID           = big.NewInt(1 << 13)
-	postAdUpdatedPayloadDataFieldPostSource       = big.NewInt(1 << 14)
-	postAdUpdatedPayloadDataFieldPostThumbnailURL = big.NewInt(1 << 15)
-	postAdUpdatedPayloadDataFieldPrimaryTexts     = big.NewInt(1 << 16)
-	postAdUpdatedPayloadDataFieldStatus           = big.NewInt(1 << 17)
-	postAdUpdatedPayloadDataFieldTitle            = big.NewInt(1 << 18)
-	postAdUpdatedPayloadDataFieldTranslations     = big.NewInt(1 << 19)
-	postAdUpdatedPayloadDataFieldUpdatedAt        = big.NewInt(1 << 20)
-	postAdUpdatedPayloadDataFieldURL              = big.NewInt(1 << 21)
-	postAdUpdatedPayloadDataFieldURLParameters    = big.NewInt(1 << 22)
+	postAdUpdatedPayloadDataFieldAdCampaign     = big.NewInt(1 << 0)
+	postAdUpdatedPayloadDataFieldAdGroup        = big.NewInt(1 << 1)
+	postAdUpdatedPayloadDataFieldCallToAction   = big.NewInt(1 << 2)
+	postAdUpdatedPayloadDataFieldCreatedAt      = big.NewInt(1 << 3)
+	postAdUpdatedPayloadDataFieldCreatives      = big.NewInt(1 << 4)
+	postAdUpdatedPayloadDataFieldDeliveryStatus = big.NewInt(1 << 5)
+	postAdUpdatedPayloadDataFieldDescriptions   = big.NewInt(1 << 6)
+	postAdUpdatedPayloadDataFieldHeadlines      = big.NewInt(1 << 7)
+	postAdUpdatedPayloadDataFieldID             = big.NewInt(1 << 8)
+	postAdUpdatedPayloadDataFieldIssues         = big.NewInt(1 << 9)
+	postAdUpdatedPayloadDataFieldPostID         = big.NewInt(1 << 10)
+	postAdUpdatedPayloadDataFieldPrimaryTexts   = big.NewInt(1 << 11)
+	postAdUpdatedPayloadDataFieldStatus         = big.NewInt(1 << 12)
+	postAdUpdatedPayloadDataFieldTitle          = big.NewInt(1 << 13)
+	postAdUpdatedPayloadDataFieldUpdatedAt      = big.NewInt(1 << 14)
+	postAdUpdatedPayloadDataFieldURL            = big.NewInt(1 << 15)
+	postAdUpdatedPayloadDataFieldURLParameters  = big.NewInt(1 << 16)
 )
 
 // postAdUpdatedPayloadDataNullableFields maps the wire names of PostAdUpdatedPayloadData's nullable fields (required or optional) to their field bits.
 var postAdUpdatedPayloadDataNullableFields = map[string]*big.Int{
-	"call_to_action":     postAdUpdatedPayloadDataFieldCallToAction,
-	"existing_post_id":   postAdUpdatedPayloadDataFieldExistingPostID,
-	"post_id":            postAdUpdatedPayloadDataFieldPostID,
-	"post_source":        postAdUpdatedPayloadDataFieldPostSource,
-	"post_thumbnail_url": postAdUpdatedPayloadDataFieldPostThumbnailURL,
-	"title":              postAdUpdatedPayloadDataFieldTitle,
-	"translations":       postAdUpdatedPayloadDataFieldTranslations,
-	"url":                postAdUpdatedPayloadDataFieldURL,
+	"call_to_action": postAdUpdatedPayloadDataFieldCallToAction,
+	"post_id":        postAdUpdatedPayloadDataFieldPostID,
+	"title":          postAdUpdatedPayloadDataFieldTitle,
+	"url":            postAdUpdatedPayloadDataFieldURL,
 }
 
 type PostAdUpdatedPayloadData struct {
@@ -4868,28 +4242,17 @@ type PostAdUpdatedPayloadData struct {
 	// Whether the ad is delivering right now, and if not, why. When several states apply at once, the highest-precedence one is returned.
 	DeliveryStatus PostAdUpdatedPayloadDataDeliveryStatus `json:"delivery_status" url:"delivery_status"`
 	Descriptions   []*AdText                              `json:"descriptions" url:"descriptions"`
-	// The post you pointed this ad at, when it promotes one you already published — a Facebook post, Instagram media, or TikTok video ID. `null` when the ad uses uploaded creatives.
-	ExistingPostID   *string              `json:"existing_post_id,omitempty" url:"existing_post_id,omitempty"`
-	ExternalAccounts []*AdEntityReference `json:"external_accounts" url:"external_accounts"`
-	Headlines        []*AdText            `json:"headlines" url:"headlines"`
+	Headlines      []*AdText                              `json:"headlines" url:"headlines"`
 	// Unique identifier for the ad, prefixed `ad_`.
 	ID     string             `json:"id" url:"id"`
 	Issues []*AdPlatformIssue `json:"issues" url:"issues"`
-	// The ad platform this ad runs on.
-	Platform PostAdUpdatedPayloadDataPlatform `json:"platform" url:"platform"`
-	// The post the ad network serves for this ad, as `pageID_postID` on Meta — the post Meta created for an uploaded creative, or the post being promoted. Use it to open the live post, or to promote the same post from another ad. `null` until the network has created the post.
-	PostID *string `json:"post_id,omitempty" url:"post_id,omitempty"`
-	// Identifies the network that owns `existing_post_id`; `null` when the ad uses uploaded creatives.
-	PostSource *PostAdUpdatedPayloadDataPostSource `json:"post_source,omitempty" url:"post_source,omitempty"`
-	// Preview image of the post named by `existing_post_id`. `null` for ads that use uploaded creatives, or until the post's media has been fetched from the network.
-	PostThumbnailURL *string   `json:"post_thumbnail_url,omitempty" url:"post_thumbnail_url,omitempty"`
-	PrimaryTexts     []*AdText `json:"primary_texts" url:"primary_texts"`
+	// The post the ad network serves for this ad, as `pageID_postID` on Meta — the post Meta created for an uploaded creative, or the post being promoted. Use it to open the live post. `null` until the network has created the post.
+	PostID       *string   `json:"post_id,omitempty" url:"post_id,omitempty"`
+	PrimaryTexts []*AdText `json:"primary_texts" url:"primary_texts"`
 	// Whether the ad is enabled. `active` and `paused` are set by you; `in_review` and `rejected` come from ad review.
 	Status PostAdUpdatedPayloadDataStatus `json:"status" url:"status"`
 	// Display title of the ad.
 	Title *string `json:"title,omitempty" url:"title,omitempty"`
-	// The languages a Meta ad runs in besides its own. Each viewer sees the version for their language, or the ad's own copy. `null` when the ad runs in one language.
-	Translations *AdTranslations `json:"translations,omitempty" url:"translations,omitempty"`
 	// When the ad was last updated, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
 	// The URL the ad links to, without its query string. Parameters belong in `url_parameters`; any you send on `url` are moved there.
@@ -4953,20 +4316,6 @@ func (p *PostAdUpdatedPayloadData) GetDescriptions() []*AdText {
 	return p.Descriptions
 }
 
-func (p *PostAdUpdatedPayloadData) GetExistingPostID() *string {
-	if p == nil {
-		return nil
-	}
-	return p.ExistingPostID
-}
-
-func (p *PostAdUpdatedPayloadData) GetExternalAccounts() []*AdEntityReference {
-	if p == nil {
-		return nil
-	}
-	return p.ExternalAccounts
-}
-
 func (p *PostAdUpdatedPayloadData) GetHeadlines() []*AdText {
 	if p == nil {
 		return nil
@@ -4988,32 +4337,11 @@ func (p *PostAdUpdatedPayloadData) GetIssues() []*AdPlatformIssue {
 	return p.Issues
 }
 
-func (p *PostAdUpdatedPayloadData) GetPlatform() PostAdUpdatedPayloadDataPlatform {
-	if p == nil {
-		return ""
-	}
-	return p.Platform
-}
-
 func (p *PostAdUpdatedPayloadData) GetPostID() *string {
 	if p == nil {
 		return nil
 	}
 	return p.PostID
-}
-
-func (p *PostAdUpdatedPayloadData) GetPostSource() *PostAdUpdatedPayloadDataPostSource {
-	if p == nil {
-		return nil
-	}
-	return p.PostSource
-}
-
-func (p *PostAdUpdatedPayloadData) GetPostThumbnailURL() *string {
-	if p == nil {
-		return nil
-	}
-	return p.PostThumbnailURL
 }
 
 func (p *PostAdUpdatedPayloadData) GetPrimaryTexts() []*AdText {
@@ -5035,13 +4363,6 @@ func (p *PostAdUpdatedPayloadData) GetTitle() *string {
 		return nil
 	}
 	return p.Title
-}
-
-func (p *PostAdUpdatedPayloadData) GetTranslations() *AdTranslations {
-	if p == nil {
-		return nil
-	}
-	return p.Translations
 }
 
 func (p *PostAdUpdatedPayloadData) GetUpdatedAt() string {
@@ -5130,20 +4451,6 @@ func (p *PostAdUpdatedPayloadData) SetDescriptions(descriptions []*AdText) {
 	p.require(postAdUpdatedPayloadDataFieldDescriptions)
 }
 
-// SetExistingPostID sets the ExistingPostID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostAdUpdatedPayloadData) SetExistingPostID(existingPostID *string) {
-	p.ExistingPostID = existingPostID
-	p.require(postAdUpdatedPayloadDataFieldExistingPostID)
-}
-
-// SetExternalAccounts sets the ExternalAccounts field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostAdUpdatedPayloadData) SetExternalAccounts(externalAccounts []*AdEntityReference) {
-	p.ExternalAccounts = externalAccounts
-	p.require(postAdUpdatedPayloadDataFieldExternalAccounts)
-}
-
 // SetHeadlines sets the Headlines field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *PostAdUpdatedPayloadData) SetHeadlines(headlines []*AdText) {
@@ -5165,32 +4472,11 @@ func (p *PostAdUpdatedPayloadData) SetIssues(issues []*AdPlatformIssue) {
 	p.require(postAdUpdatedPayloadDataFieldIssues)
 }
 
-// SetPlatform sets the Platform field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostAdUpdatedPayloadData) SetPlatform(platform PostAdUpdatedPayloadDataPlatform) {
-	p.Platform = platform
-	p.require(postAdUpdatedPayloadDataFieldPlatform)
-}
-
 // SetPostID sets the PostID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *PostAdUpdatedPayloadData) SetPostID(postID *string) {
 	p.PostID = postID
 	p.require(postAdUpdatedPayloadDataFieldPostID)
-}
-
-// SetPostSource sets the PostSource field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostAdUpdatedPayloadData) SetPostSource(postSource *PostAdUpdatedPayloadDataPostSource) {
-	p.PostSource = postSource
-	p.require(postAdUpdatedPayloadDataFieldPostSource)
-}
-
-// SetPostThumbnailURL sets the PostThumbnailURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostAdUpdatedPayloadData) SetPostThumbnailURL(postThumbnailURL *string) {
-	p.PostThumbnailURL = postThumbnailURL
-	p.require(postAdUpdatedPayloadDataFieldPostThumbnailURL)
 }
 
 // SetPrimaryTexts sets the PrimaryTexts field and marks it as non-optional;
@@ -5212,13 +4498,6 @@ func (p *PostAdUpdatedPayloadData) SetStatus(status PostAdUpdatedPayloadDataStat
 func (p *PostAdUpdatedPayloadData) SetTitle(title *string) {
 	p.Title = title
 	p.require(postAdUpdatedPayloadDataFieldTitle)
-}
-
-// SetTranslations sets the Translations field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostAdUpdatedPayloadData) SetTranslations(translations *AdTranslations) {
-	p.Translations = translations
-	p.require(postAdUpdatedPayloadDataFieldTranslations)
 }
 
 // SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
@@ -5463,55 +4742,6 @@ func NewPostAdUpdatedPayloadDataDeliveryStatusFromString(s string) (PostAdUpdate
 }
 
 func (p PostAdUpdatedPayloadDataDeliveryStatus) Ptr() *PostAdUpdatedPayloadDataDeliveryStatus {
-	return &p
-}
-
-// The ad platform this ad runs on.
-type PostAdUpdatedPayloadDataPlatform string
-
-const (
-	PostAdUpdatedPayloadDataPlatformMeta   PostAdUpdatedPayloadDataPlatform = "meta"
-	PostAdUpdatedPayloadDataPlatformTiktok PostAdUpdatedPayloadDataPlatform = "tiktok"
-	PostAdUpdatedPayloadDataPlatformGoogle PostAdUpdatedPayloadDataPlatform = "google"
-)
-
-func NewPostAdUpdatedPayloadDataPlatformFromString(s string) (PostAdUpdatedPayloadDataPlatform, error) {
-	switch s {
-	case "meta":
-		return PostAdUpdatedPayloadDataPlatformMeta, nil
-	case "tiktok":
-		return PostAdUpdatedPayloadDataPlatformTiktok, nil
-	case "google":
-		return PostAdUpdatedPayloadDataPlatformGoogle, nil
-	}
-	var t PostAdUpdatedPayloadDataPlatform
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PostAdUpdatedPayloadDataPlatform) Ptr() *PostAdUpdatedPayloadDataPlatform {
-	return &p
-}
-
-// Identifies the network that owns `existing_post_id`; `null` when the ad uses uploaded creatives.
-type PostAdUpdatedPayloadDataPostSource string
-
-const (
-	PostAdUpdatedPayloadDataPostSourceFacebook  PostAdUpdatedPayloadDataPostSource = "facebook"
-	PostAdUpdatedPayloadDataPostSourceInstagram PostAdUpdatedPayloadDataPostSource = "instagram"
-)
-
-func NewPostAdUpdatedPayloadDataPostSourceFromString(s string) (PostAdUpdatedPayloadDataPostSource, error) {
-	switch s {
-	case "facebook":
-		return PostAdUpdatedPayloadDataPostSourceFacebook, nil
-	case "instagram":
-		return PostAdUpdatedPayloadDataPostSourceInstagram, nil
-	}
-	var t PostAdUpdatedPayloadDataPostSource
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PostAdUpdatedPayloadDataPostSource) Ptr() *PostAdUpdatedPayloadDataPostSource {
 	return &p
 }
 
@@ -5868,10 +5098,9 @@ func (u UpdateAdsRequestCallToAction) Ptr() *UpdateAdsRequestCallToAction {
 }
 
 var (
-	updateAdsRequestCreativesItemFieldCrop     = big.NewInt(1 << 0)
-	updateAdsRequestCreativesItemFieldFormat   = big.NewInt(1 << 1)
-	updateAdsRequestCreativesItemFieldID       = big.NewInt(1 << 2)
-	updateAdsRequestCreativesItemFieldLanguage = big.NewInt(1 << 3)
+	updateAdsRequestCreativesItemFieldCrop   = big.NewInt(1 << 0)
+	updateAdsRequestCreativesItemFieldFormat = big.NewInt(1 << 1)
+	updateAdsRequestCreativesItemFieldID     = big.NewInt(1 << 2)
 )
 
 type UpdateAdsRequestCreativesItem struct {
@@ -5880,8 +5109,6 @@ type UpdateAdsRequestCreativesItem struct {
 	Format *UpdateAdsRequestCreativesItemFormat `json:"format,omitempty" url:"format,omitempty"`
 	// Uploaded file ID, prefixed `file_`.
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
-	// ISO 639 code of the language this image or video is shown for, such as `es`. Required on every entry of an ad with `translations`, where the ad's own creative uses `translations.source_language`. Another language's creative is the same type as the ad's own, with no format. Leave it out on an ad without translations.
-	Language *string `json:"language,omitempty" url:"language,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -5909,13 +5136,6 @@ func (u *UpdateAdsRequestCreativesItem) GetID() *string {
 		return nil
 	}
 	return u.ID
-}
-
-func (u *UpdateAdsRequestCreativesItem) GetLanguage() *string {
-	if u == nil {
-		return nil
-	}
-	return u.Language
 }
 
 func (u *UpdateAdsRequestCreativesItem) GetExtraProperties() map[string]interface{} {
@@ -5953,13 +5173,6 @@ func (u *UpdateAdsRequestCreativesItem) SetFormat(format *UpdateAdsRequestCreati
 func (u *UpdateAdsRequestCreativesItem) SetID(id *string) {
 	u.ID = id
 	u.require(updateAdsRequestCreativesItemFieldID)
-}
-
-// SetLanguage sets the Language field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestCreativesItem) SetLanguage(language *string) {
-	u.Language = language
-	u.require(updateAdsRequestCreativesItemFieldLanguage)
 }
 
 func (u *UpdateAdsRequestCreativesItem) UnmarshalJSON(data []byte) error {
@@ -6165,18 +5378,10 @@ func (u UpdateAdsRequestCreativesItemFormat) Ptr() *UpdateAdsRequestCreativesIte
 }
 
 var (
-	updateAdsRequestDescriptionsItemFieldLanguage = big.NewInt(1 << 0)
-	updateAdsRequestDescriptionsItemFieldText     = big.NewInt(1 << 1)
+	updateAdsRequestDescriptionsItemFieldText = big.NewInt(1 << 0)
 )
 
-// updateAdsRequestDescriptionsItemNullableFields maps the wire names of UpdateAdsRequestDescriptionsItem's nullable fields (required or optional) to their field bits.
-var updateAdsRequestDescriptionsItemNullableFields = map[string]*big.Int{
-	"language": updateAdsRequestDescriptionsItemFieldLanguage,
-}
-
 type UpdateAdsRequestDescriptionsItem struct {
-	// ISO 639 code of the language this text is in, such as `es`. Required on every entry of an ad with `translations`, where the ad's own copy uses `translations.source_language`. Leave it out on an ad without translations.
-	Language *string `json:"language,omitempty" url:"language,omitempty"`
 	// The text shown to viewers.
 	Text string `json:"text" url:"text"`
 
@@ -6185,13 +5390,6 @@ type UpdateAdsRequestDescriptionsItem struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
-}
-
-func (u *UpdateAdsRequestDescriptionsItem) GetLanguage() *string {
-	if u == nil {
-		return nil
-	}
-	return u.Language
 }
 
 func (u *UpdateAdsRequestDescriptionsItem) GetText() string {
@@ -6217,13 +5415,6 @@ func (u *UpdateAdsRequestDescriptionsItem) require(field *big.Int) {
 	u.explicitFields = next
 }
 
-// SetLanguage sets the Language field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestDescriptionsItem) SetLanguage(language *string) {
-	u.Language = language
-	u.require(updateAdsRequestDescriptionsItemFieldLanguage)
-}
-
 // SetText sets the Text field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateAdsRequestDescriptionsItem) SetText(text string) {
@@ -6243,13 +5434,6 @@ func (u *UpdateAdsRequestDescriptionsItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateAdsRequestDescriptionsItemNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		u.require(presentFields)
-	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6281,105 +5465,10 @@ func (u *UpdateAdsRequestDescriptionsItem) String() string {
 }
 
 var (
-	updateAdsRequestExternalAccountsItemFieldID = big.NewInt(1 << 0)
+	updateAdsRequestHeadlinesItemFieldText = big.NewInt(1 << 0)
 )
-
-type UpdateAdsRequestExternalAccountsItem struct {
-	// External account ID, prefixed `sacc_`.
-	ID *string `json:"id,omitempty" url:"id,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (u *UpdateAdsRequestExternalAccountsItem) GetID() *string {
-	if u == nil {
-		return nil
-	}
-	return u.ID
-}
-
-func (u *UpdateAdsRequestExternalAccountsItem) GetExtraProperties() map[string]interface{} {
-	if u == nil {
-		return nil
-	}
-	return u.extraProperties
-}
-
-func (u *UpdateAdsRequestExternalAccountsItem) require(field *big.Int) {
-	next := new(big.Int)
-	if u.explicitFields != nil {
-		next.Set(u.explicitFields)
-	}
-	next.Or(next, field)
-	u.explicitFields = next
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestExternalAccountsItem) SetID(id *string) {
-	u.ID = id
-	u.require(updateAdsRequestExternalAccountsItemFieldID)
-}
-
-func (u *UpdateAdsRequestExternalAccountsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateAdsRequestExternalAccountsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*u = UpdateAdsRequestExternalAccountsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *u)
-	if err != nil {
-		return err
-	}
-	u.extraProperties = extraProperties
-	u.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (u *UpdateAdsRequestExternalAccountsItem) MarshalJSON() ([]byte, error) {
-	type embed UpdateAdsRequestExternalAccountsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*u),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (u *UpdateAdsRequestExternalAccountsItem) String() string {
-	if u == nil {
-		return "<nil>"
-	}
-	if len(u.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(u); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", u)
-}
-
-var (
-	updateAdsRequestHeadlinesItemFieldLanguage = big.NewInt(1 << 0)
-	updateAdsRequestHeadlinesItemFieldText     = big.NewInt(1 << 1)
-)
-
-// updateAdsRequestHeadlinesItemNullableFields maps the wire names of UpdateAdsRequestHeadlinesItem's nullable fields (required or optional) to their field bits.
-var updateAdsRequestHeadlinesItemNullableFields = map[string]*big.Int{
-	"language": updateAdsRequestHeadlinesItemFieldLanguage,
-}
 
 type UpdateAdsRequestHeadlinesItem struct {
-	// ISO 639 code of the language this text is in, such as `es`. Required on every entry of an ad with `translations`, where the ad's own copy uses `translations.source_language`. Leave it out on an ad without translations.
-	Language *string `json:"language,omitempty" url:"language,omitempty"`
 	// The text shown to viewers.
 	Text string `json:"text" url:"text"`
 
@@ -6388,13 +5477,6 @@ type UpdateAdsRequestHeadlinesItem struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
-}
-
-func (u *UpdateAdsRequestHeadlinesItem) GetLanguage() *string {
-	if u == nil {
-		return nil
-	}
-	return u.Language
 }
 
 func (u *UpdateAdsRequestHeadlinesItem) GetText() string {
@@ -6420,13 +5502,6 @@ func (u *UpdateAdsRequestHeadlinesItem) require(field *big.Int) {
 	u.explicitFields = next
 }
 
-// SetLanguage sets the Language field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestHeadlinesItem) SetLanguage(language *string) {
-	u.Language = language
-	u.require(updateAdsRequestHeadlinesItemFieldLanguage)
-}
-
 // SetText sets the Text field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateAdsRequestHeadlinesItem) SetText(text string) {
@@ -6446,13 +5521,6 @@ func (u *UpdateAdsRequestHeadlinesItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateAdsRequestHeadlinesItemNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		u.require(presentFields)
-	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6483,42 +5551,11 @@ func (u *UpdateAdsRequestHeadlinesItem) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Identifies the network that owns `existing_post_id`. The source is inferred from the ID shape when omitted.
-type UpdateAdsRequestPostSource string
-
-const (
-	UpdateAdsRequestPostSourceFacebook  UpdateAdsRequestPostSource = "facebook"
-	UpdateAdsRequestPostSourceInstagram UpdateAdsRequestPostSource = "instagram"
-)
-
-func NewUpdateAdsRequestPostSourceFromString(s string) (UpdateAdsRequestPostSource, error) {
-	switch s {
-	case "facebook":
-		return UpdateAdsRequestPostSourceFacebook, nil
-	case "instagram":
-		return UpdateAdsRequestPostSourceInstagram, nil
-	}
-	var t UpdateAdsRequestPostSource
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (u UpdateAdsRequestPostSource) Ptr() *UpdateAdsRequestPostSource {
-	return &u
-}
-
 var (
-	updateAdsRequestPrimaryTextsItemFieldLanguage = big.NewInt(1 << 0)
-	updateAdsRequestPrimaryTextsItemFieldText     = big.NewInt(1 << 1)
+	updateAdsRequestPrimaryTextsItemFieldText = big.NewInt(1 << 0)
 )
-
-// updateAdsRequestPrimaryTextsItemNullableFields maps the wire names of UpdateAdsRequestPrimaryTextsItem's nullable fields (required or optional) to their field bits.
-var updateAdsRequestPrimaryTextsItemNullableFields = map[string]*big.Int{
-	"language": updateAdsRequestPrimaryTextsItemFieldLanguage,
-}
 
 type UpdateAdsRequestPrimaryTextsItem struct {
-	// ISO 639 code of the language this text is in, such as `es`. Required on every entry of an ad with `translations`, where the ad's own copy uses `translations.source_language`. Leave it out on an ad without translations.
-	Language *string `json:"language,omitempty" url:"language,omitempty"`
 	// The text shown to viewers.
 	Text string `json:"text" url:"text"`
 
@@ -6527,13 +5564,6 @@ type UpdateAdsRequestPrimaryTextsItem struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
-}
-
-func (u *UpdateAdsRequestPrimaryTextsItem) GetLanguage() *string {
-	if u == nil {
-		return nil
-	}
-	return u.Language
 }
 
 func (u *UpdateAdsRequestPrimaryTextsItem) GetText() string {
@@ -6559,13 +5589,6 @@ func (u *UpdateAdsRequestPrimaryTextsItem) require(field *big.Int) {
 	u.explicitFields = next
 }
 
-// SetLanguage sets the Language field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestPrimaryTextsItem) SetLanguage(language *string) {
-	u.Language = language
-	u.require(updateAdsRequestPrimaryTextsItemFieldLanguage)
-}
-
 // SetText sets the Text field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateAdsRequestPrimaryTextsItem) SetText(text string) {
@@ -6585,13 +5608,6 @@ func (u *UpdateAdsRequestPrimaryTextsItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateAdsRequestPrimaryTextsItemNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		u.require(presentFields)
-	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6608,111 +5624,6 @@ func (u *UpdateAdsRequestPrimaryTextsItem) MarshalJSON() ([]byte, error) {
 }
 
 func (u *UpdateAdsRequestPrimaryTextsItem) String() string {
-	if u == nil {
-		return "<nil>"
-	}
-	if len(u.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(u); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", u)
-}
-
-var (
-	updateAdsRequestTranslationsFieldAutomaticLanguages = big.NewInt(1 << 0)
-	updateAdsRequestTranslationsFieldSourceLanguage     = big.NewInt(1 << 1)
-)
-
-// Shows a Meta ad in other languages. Each viewer sees the version for their language; everyone else sees the ad's own copy. Tag every copy and creatives entry with its language: the ad's own with `source_language`, and give every other language a `primary_texts` and `headlines` entry (a `descriptions` entry and a `creatives` entry are optional), or list it in `automatic_languages`. Needs a website destination, one image or video, and exactly one primary text and headline of the ad's own (and at most one description), with no Dynamic Creative or crops. Replaced as a whole when sent, so send `automatic_languages` with `source_language`. null turns translations off and deletes their media. Meta-only.
-type UpdateAdsRequestTranslations struct {
-	// ISO 639 codes Meta translates the ad's own copy into automatically. English copy translates into `es`, `fr`, `de`, `pt`, `it`, `ar`, `nl`, `ms`, `sv`, `id`, `pl`, `hi`, `da`, `tr`, `fil`, and `ro`; `de`, `ar`, `he`, `es`, `ja`, `no`, `fr`, `nl`, and `sv` copy translate into `en`.
-	AutomaticLanguages []string `json:"automatic_languages,omitempty" url:"automatic_languages,omitempty"`
-	// ISO 639 code the ad's own copy is written in, such as `en`.
-	SourceLanguage string `json:"source_language" url:"source_language"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (u *UpdateAdsRequestTranslations) GetAutomaticLanguages() []string {
-	if u == nil {
-		return nil
-	}
-	return u.AutomaticLanguages
-}
-
-func (u *UpdateAdsRequestTranslations) GetSourceLanguage() string {
-	if u == nil {
-		return ""
-	}
-	return u.SourceLanguage
-}
-
-func (u *UpdateAdsRequestTranslations) GetExtraProperties() map[string]interface{} {
-	if u == nil {
-		return nil
-	}
-	return u.extraProperties
-}
-
-func (u *UpdateAdsRequestTranslations) require(field *big.Int) {
-	next := new(big.Int)
-	if u.explicitFields != nil {
-		next.Set(u.explicitFields)
-	}
-	next.Or(next, field)
-	u.explicitFields = next
-}
-
-// SetAutomaticLanguages sets the AutomaticLanguages field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestTranslations) SetAutomaticLanguages(automaticLanguages []string) {
-	u.AutomaticLanguages = automaticLanguages
-	u.require(updateAdsRequestTranslationsFieldAutomaticLanguages)
-}
-
-// SetSourceLanguage sets the SourceLanguage field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestTranslations) SetSourceLanguage(sourceLanguage string) {
-	u.SourceLanguage = sourceLanguage
-	u.require(updateAdsRequestTranslationsFieldSourceLanguage)
-}
-
-func (u *UpdateAdsRequestTranslations) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateAdsRequestTranslations
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*u = UpdateAdsRequestTranslations(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *u)
-	if err != nil {
-		return err
-	}
-	u.extraProperties = extraProperties
-	u.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (u *UpdateAdsRequestTranslations) MarshalJSON() ([]byte, error) {
-	type embed UpdateAdsRequestTranslations
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*u),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (u *UpdateAdsRequestTranslations) String() string {
 	if u == nil {
 		return "<nil>"
 	}
@@ -6781,20 +5692,16 @@ func (u *UnpauseAdsRequest) SetID(id string) {
 }
 
 var (
-	updateAdsRequestFieldAdsPlatform      = big.NewInt(1 << 0)
-	updateAdsRequestFieldID               = big.NewInt(1 << 1)
-	updateAdsRequestFieldCallToAction     = big.NewInt(1 << 2)
-	updateAdsRequestFieldCreatives        = big.NewInt(1 << 3)
-	updateAdsRequestFieldDescriptions     = big.NewInt(1 << 4)
-	updateAdsRequestFieldExistingPostID   = big.NewInt(1 << 5)
-	updateAdsRequestFieldExternalAccounts = big.NewInt(1 << 6)
-	updateAdsRequestFieldHeadlines        = big.NewInt(1 << 7)
-	updateAdsRequestFieldPostSource       = big.NewInt(1 << 8)
-	updateAdsRequestFieldPrimaryTexts     = big.NewInt(1 << 9)
-	updateAdsRequestFieldTitle            = big.NewInt(1 << 10)
-	updateAdsRequestFieldTranslations     = big.NewInt(1 << 11)
-	updateAdsRequestFieldURL              = big.NewInt(1 << 12)
-	updateAdsRequestFieldURLParameters    = big.NewInt(1 << 13)
+	updateAdsRequestFieldAdsPlatform   = big.NewInt(1 << 0)
+	updateAdsRequestFieldID            = big.NewInt(1 << 1)
+	updateAdsRequestFieldCallToAction  = big.NewInt(1 << 2)
+	updateAdsRequestFieldCreatives     = big.NewInt(1 << 3)
+	updateAdsRequestFieldDescriptions  = big.NewInt(1 << 4)
+	updateAdsRequestFieldHeadlines     = big.NewInt(1 << 5)
+	updateAdsRequestFieldPrimaryTexts  = big.NewInt(1 << 6)
+	updateAdsRequestFieldTitle         = big.NewInt(1 << 7)
+	updateAdsRequestFieldURL           = big.NewInt(1 << 8)
+	updateAdsRequestFieldURLParameters = big.NewInt(1 << 9)
 )
 
 type UpdateAdsRequest struct {
@@ -6806,22 +5713,14 @@ type UpdateAdsRequest struct {
 	CallToAction *UpdateAdsRequestCallToAction `json:"call_to_action,omitempty" url:"-"`
 	// The ad's creative assets. Each entry is an uploaded file id with an optional format; omit format for the original asset. Replaces a live ad's creative on the platform. Entries with no format replace it with a carousel's ordered cards — 2-10 of them on Meta, while TikTok runs even a single image as a one-card carousel.
 	Creatives []*UpdateAdsRequestCreativesItem `json:"creatives,omitempty" url:"-"`
-	// The description shown on the ad. Entries without a language are the ad's own copy; add one entry per other language on a Meta ad with `translations`.
+	// The description shown on the ad.
 	Descriptions []*UpdateAdsRequestDescriptionsItem `json:"descriptions,omitempty" url:"-"`
-	// Promote a post you already published instead of uploading creatives — a Facebook post or Instagram media id. Mutually exclusive with creatives. Pair with post_source.
-	ExistingPostID *string `json:"existing_post_id,omitempty" url:"-"`
-	// The external accounts the ad runs under — a connected Facebook page and, optionally, an Instagram profile.
-	ExternalAccounts []*UpdateAdsRequestExternalAccountsItem `json:"external_accounts,omitempty" url:"-"`
-	// The headline shown on the ad. Entries without a language are the ad's own copy; add one entry per other language on a Meta ad with `translations`.
+	// The headline shown on the ad.
 	Headlines []*UpdateAdsRequestHeadlinesItem `json:"headlines,omitempty" url:"-"`
-	// Identifies the network that owns `existing_post_id`. The source is inferred from the ID shape when omitted.
-	PostSource *UpdateAdsRequestPostSource `json:"post_source,omitempty" url:"-"`
-	// The primary text shown in the ad body. Entries without a language are the ad's own copy (several make text variations); add one entry per other language on a Meta ad with `translations`.
+	// The primary text shown in the ad body. Several entries make text variations.
 	PrimaryTexts []*UpdateAdsRequestPrimaryTextsItem `json:"primary_texts,omitempty" url:"-"`
 	// The display name of the ad.
 	Title *string `json:"title,omitempty" url:"-"`
-	// Shows a Meta ad in other languages. Each viewer sees the version for their language; everyone else sees the ad's own copy. Tag every copy and creatives entry with its language: the ad's own with `source_language`, and give every other language a `primary_texts` and `headlines` entry (a `descriptions` entry and a `creatives` entry are optional), or list it in `automatic_languages`. Needs a website destination, one image or video, and exactly one primary text and headline of the ad's own (and at most one description), with no Dynamic Creative or crops. Replaced as a whole when sent, so send `automatic_languages` with `source_language`. null turns translations off and deletes their media. Meta-only.
-	Translations *UpdateAdsRequestTranslations `json:"translations,omitempty" url:"-"`
 	// The URL the ad links to. Query parameters are merged into url_parameters, so the stored URL is always bare.
 	URL *string `json:"url,omitempty" url:"-"`
 	// Query parameters to append to the destination URL, keyed by parameter name. Merged with any query string on `url`. Whop adds its own click-attribution parameters; those are reserved and rejected if you set them. Which keys are reserved depends on the ad's network — Meta: utm_meta_ad_id, utm_meta_adset_id, utm_meta_campaign_id, utm_source, utm_placement, utm_medium, utm_content, utm_adset, utm_whop, wacid, wasid, waid, tw_source, tw_adid; TikTok: waid, wasid, wacid, ad_id, adset_id, campaign_id, utm_source, utm_medium, utm_placement, utm_whop, tw_source, tw_adid.
@@ -6875,32 +5774,11 @@ func (u *UpdateAdsRequest) SetDescriptions(descriptions []*UpdateAdsRequestDescr
 	u.require(updateAdsRequestFieldDescriptions)
 }
 
-// SetExistingPostID sets the ExistingPostID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequest) SetExistingPostID(existingPostID *string) {
-	u.ExistingPostID = existingPostID
-	u.require(updateAdsRequestFieldExistingPostID)
-}
-
-// SetExternalAccounts sets the ExternalAccounts field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequest) SetExternalAccounts(externalAccounts []*UpdateAdsRequestExternalAccountsItem) {
-	u.ExternalAccounts = externalAccounts
-	u.require(updateAdsRequestFieldExternalAccounts)
-}
-
 // SetHeadlines sets the Headlines field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateAdsRequest) SetHeadlines(headlines []*UpdateAdsRequestHeadlinesItem) {
 	u.Headlines = headlines
 	u.require(updateAdsRequestFieldHeadlines)
-}
-
-// SetPostSource sets the PostSource field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequest) SetPostSource(postSource *UpdateAdsRequestPostSource) {
-	u.PostSource = postSource
-	u.require(updateAdsRequestFieldPostSource)
 }
 
 // SetPrimaryTexts sets the PrimaryTexts field and marks it as non-optional;
@@ -6915,13 +5793,6 @@ func (u *UpdateAdsRequest) SetPrimaryTexts(primaryTexts []*UpdateAdsRequestPrima
 func (u *UpdateAdsRequest) SetTitle(title *string) {
 	u.Title = title
 	u.require(updateAdsRequestFieldTitle)
-}
-
-// SetTranslations sets the Translations field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequest) SetTranslations(translations *UpdateAdsRequestTranslations) {
-	u.Translations = translations
-	u.require(updateAdsRequestFieldTranslations)
 }
 
 // SetURL sets the URL field and marks it as non-optional;

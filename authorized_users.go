@@ -105,7 +105,7 @@ var (
 )
 
 type DeleteAuthorizedUsersRequest struct {
-	// The ID of the authorized user or user to remove.
+	// The ID of the authorized user or user to remove. Team member IDs may start with `ausr_` or `mber_`; treat them as opaque.
 	ID string `json:"-" url:"-"`
 	// The ID of the company the authorized user belongs to. Optional if the authorized user ID is provided.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
@@ -249,7 +249,7 @@ var (
 )
 
 type RetrieveAuthorizedUsersRequest struct {
-	// The unique identifier of the authorized user to retrieve.
+	// The unique identifier of the authorized user to retrieve. Team member IDs may start with `ausr_` or `mber_`; treat them as opaque.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -283,7 +283,7 @@ var (
 type AuthorizedUser struct {
 	// The company this authorized user has access to.
 	Company *AuthorizedUserCompany `json:"company" url:"company"`
-	// The unique identifier for the authorized user.
+	// The team member's ID. It may start with `ausr_` or `mber_`; treat it as opaque.
 	ID string `json:"id" url:"id"`
 	// The permission role assigned to this authorized user within the company.
 	Role AuthorizedUserRoles `json:"role" url:"role"`
@@ -527,7 +527,7 @@ var (
 type AuthorizedUserListItem struct {
 	// The company this authorized user has access to.
 	Company *AuthorizedUserListItemCompany `json:"company" url:"company"`
-	// The unique identifier for the authorized user.
+	// The team member's ID. It may start with `ausr_` or `mber_`; treat it as opaque.
 	ID string `json:"id" url:"id"`
 	// The permission role assigned to this authorized user within the company.
 	Role AuthorizedUserRoles `json:"role" url:"role"`
