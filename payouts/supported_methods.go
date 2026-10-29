@@ -18,10 +18,11 @@ var (
 	listSupportedMethodsRequestFieldCurrency                = big.NewInt(1 << 4)
 	listSupportedMethodsRequestFieldSupportedPayoutMethodID = big.NewInt(1 << 5)
 	listSupportedMethodsRequestFieldDestinationCurrency     = big.NewInt(1 << 6)
-	listSupportedMethodsRequestFieldFirst                   = big.NewInt(1 << 7)
-	listSupportedMethodsRequestFieldAfter                   = big.NewInt(1 << 8)
-	listSupportedMethodsRequestFieldLast                    = big.NewInt(1 << 9)
-	listSupportedMethodsRequestFieldBefore                  = big.NewInt(1 << 10)
+	listSupportedMethodsRequestFieldPartyType               = big.NewInt(1 << 7)
+	listSupportedMethodsRequestFieldFirst                   = big.NewInt(1 << 8)
+	listSupportedMethodsRequestFieldAfter                   = big.NewInt(1 << 9)
+	listSupportedMethodsRequestFieldLast                    = big.NewInt(1 << 10)
+	listSupportedMethodsRequestFieldBefore                  = big.NewInt(1 << 11)
 )
 
 type ListSupportedMethodsRequest struct {
@@ -39,6 +40,8 @@ type ListSupportedMethodsRequest struct {
 	SupportedPayoutMethodID *string `json:"-" url:"supported_payout_method_id,omitempty"`
 	// Currency the supported payout method would deliver payouts in. Only meaningful with supported_payout_method_id; required fields vary by destination currency.
 	DestinationCurrency *string `json:"-" url:"destination_currency,omitempty"`
+	// Who will own the payout method. `first_party` is the account itself. `third_party` is a recipient the account pays, saved with `recipient` on `POST /payouts/methods`, which needs no identity fields. Only meaningful with supported_payout_method_id.
+	PartyType *ListSupportedMethodsRequestPartyType `json:"-" url:"party_type,omitempty"`
 	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
 	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
@@ -110,6 +113,13 @@ func (l *ListSupportedMethodsRequest) SetDestinationCurrency(destinationCurrency
 	l.require(listSupportedMethodsRequestFieldDestinationCurrency)
 }
 
+// SetPartyType sets the PartyType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSupportedMethodsRequest) SetPartyType(partyType *ListSupportedMethodsRequestPartyType) {
+	l.PartyType = partyType
+	l.require(listSupportedMethodsRequestFieldPartyType)
+}
+
 // SetFirst sets the First field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListSupportedMethodsRequest) SetFirst(first *int) {
@@ -136,6 +146,28 @@ func (l *ListSupportedMethodsRequest) SetLast(last *int) {
 func (l *ListSupportedMethodsRequest) SetBefore(before *string) {
 	l.Before = before
 	l.require(listSupportedMethodsRequestFieldBefore)
+}
+
+type ListSupportedMethodsRequestPartyType string
+
+const (
+	ListSupportedMethodsRequestPartyTypeFirstParty ListSupportedMethodsRequestPartyType = "first_party"
+	ListSupportedMethodsRequestPartyTypeThirdParty ListSupportedMethodsRequestPartyType = "third_party"
+)
+
+func NewListSupportedMethodsRequestPartyTypeFromString(s string) (ListSupportedMethodsRequestPartyType, error) {
+	switch s {
+	case "first_party":
+		return ListSupportedMethodsRequestPartyTypeFirstParty, nil
+	case "third_party":
+		return ListSupportedMethodsRequestPartyTypeThirdParty, nil
+	}
+	var t ListSupportedMethodsRequestPartyType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListSupportedMethodsRequestPartyType) Ptr() *ListSupportedMethodsRequestPartyType {
+	return &l
 }
 
 var (
