@@ -20121,6 +20121,13 @@ func TestEnumListPaymentsRequestPaymentMethodsItem(t *testing.T) {
 		assert.Equal(t, ListPaymentsRequestPaymentMethodsItem("interac"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_international_bank_wire", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListPaymentsRequestPaymentMethodsItemFromString("international_bank_wire")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListPaymentsRequestPaymentMethodsItem("international_bank_wire"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_kakao_pay", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewListPaymentsRequestPaymentMethodsItemFromString("kakao_pay")
@@ -23344,6 +23351,13 @@ func TestEnumSummaryPaymentsRequestPaymentMethodsItem(t *testing.T) {
 		val, err := NewSummaryPaymentsRequestPaymentMethodsItemFromString("interac")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, SummaryPaymentsRequestPaymentMethodsItem("interac"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_international_bank_wire", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSummaryPaymentsRequestPaymentMethodsItemFromString("international_bank_wire")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SummaryPaymentsRequestPaymentMethodsItem("international_bank_wire"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_kakao_pay", func(t *testing.T) {

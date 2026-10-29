@@ -4709,6 +4709,7 @@ const (
 	ListPaymentsRequestPaymentMethodsItemIDBankTransfer         ListPaymentsRequestPaymentMethodsItem = "id_bank_transfer"
 	ListPaymentsRequestPaymentMethodsItemIdeal                  ListPaymentsRequestPaymentMethodsItem = "ideal"
 	ListPaymentsRequestPaymentMethodsItemInterac                ListPaymentsRequestPaymentMethodsItem = "interac"
+	ListPaymentsRequestPaymentMethodsItemInternationalBankWire  ListPaymentsRequestPaymentMethodsItem = "international_bank_wire"
 	ListPaymentsRequestPaymentMethodsItemKakaoPay               ListPaymentsRequestPaymentMethodsItem = "kakao_pay"
 	ListPaymentsRequestPaymentMethodsItemKlarna                 ListPaymentsRequestPaymentMethodsItem = "klarna"
 	ListPaymentsRequestPaymentMethodsItemKlarnaPayNow           ListPaymentsRequestPaymentMethodsItem = "klarna_pay_now"
@@ -4996,6 +4997,8 @@ func NewListPaymentsRequestPaymentMethodsItemFromString(s string) (ListPaymentsR
 		return ListPaymentsRequestPaymentMethodsItemIdeal, nil
 	case "interac":
 		return ListPaymentsRequestPaymentMethodsItemInterac, nil
+	case "international_bank_wire":
+		return ListPaymentsRequestPaymentMethodsItemInternationalBankWire, nil
 	case "kakao_pay":
 		return ListPaymentsRequestPaymentMethodsItemKakaoPay, nil
 	case "klarna":
@@ -7722,6 +7725,7 @@ const (
 	SummaryPaymentsRequestPaymentMethodsItemIDBankTransfer         SummaryPaymentsRequestPaymentMethodsItem = "id_bank_transfer"
 	SummaryPaymentsRequestPaymentMethodsItemIdeal                  SummaryPaymentsRequestPaymentMethodsItem = "ideal"
 	SummaryPaymentsRequestPaymentMethodsItemInterac                SummaryPaymentsRequestPaymentMethodsItem = "interac"
+	SummaryPaymentsRequestPaymentMethodsItemInternationalBankWire  SummaryPaymentsRequestPaymentMethodsItem = "international_bank_wire"
 	SummaryPaymentsRequestPaymentMethodsItemKakaoPay               SummaryPaymentsRequestPaymentMethodsItem = "kakao_pay"
 	SummaryPaymentsRequestPaymentMethodsItemKlarna                 SummaryPaymentsRequestPaymentMethodsItem = "klarna"
 	SummaryPaymentsRequestPaymentMethodsItemKlarnaPayNow           SummaryPaymentsRequestPaymentMethodsItem = "klarna_pay_now"
@@ -8009,6 +8013,8 @@ func NewSummaryPaymentsRequestPaymentMethodsItemFromString(s string) (SummaryPay
 		return SummaryPaymentsRequestPaymentMethodsItemIdeal, nil
 	case "interac":
 		return SummaryPaymentsRequestPaymentMethodsItemInterac, nil
+	case "international_bank_wire":
+		return SummaryPaymentsRequestPaymentMethodsItemInternationalBankWire, nil
 	case "kakao_pay":
 		return SummaryPaymentsRequestPaymentMethodsItemKakaoPay, nil
 	case "klarna":
