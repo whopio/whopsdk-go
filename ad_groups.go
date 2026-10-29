@@ -895,29 +895,28 @@ var (
 	adGroupFieldLeads                        = big.NewInt(1 << 45)
 	adGroupFieldLearningProgress             = big.NewInt(1 << 46)
 	adGroupFieldLinkClicks                   = big.NewInt(1 << 47)
-	adGroupFieldPlatform                     = big.NewInt(1 << 48)
-	adGroupFieldPurchaseValue                = big.NewInt(1 << 49)
-	adGroupFieldPurchases                    = big.NewInt(1 << 50)
-	adGroupFieldReach                        = big.NewInt(1 << 51)
-	adGroupFieldRegions                      = big.NewInt(1 << 52)
-	adGroupFieldResultEvent                  = big.NewInt(1 << 53)
-	adGroupFieldResultEventName              = big.NewInt(1 << 54)
-	adGroupFieldResults                      = big.NewInt(1 << 55)
-	adGroupFieldReturnOnAdSpend              = big.NewInt(1 << 56)
-	adGroupFieldScheduleValue                = big.NewInt(1 << 57)
-	adGroupFieldSchedules                    = big.NewInt(1 << 58)
-	adGroupFieldSpend                        = big.NewInt(1 << 59)
-	adGroupFieldSpendCurrency                = big.NewInt(1 << 60)
-	adGroupFieldStartsAt                     = big.NewInt(1 << 61)
-	adGroupFieldStatus                       = big.NewInt(1 << 62)
-	adGroupFieldSubmittedApplicationValue    = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	adGroupFieldSubmittedApplications        = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	adGroupFieldTitle                        = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	adGroupFieldUniqueClickThroughRate       = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	adGroupFieldUniqueClicks                 = big.NewInt(0).Lsh(big.NewInt(1), 67)
-	adGroupFieldUpdatedAt                    = big.NewInt(0).Lsh(big.NewInt(1), 68)
-	adGroupFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 69)
-	adGroupFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 70)
+	adGroupFieldPurchaseValue                = big.NewInt(1 << 48)
+	adGroupFieldPurchases                    = big.NewInt(1 << 49)
+	adGroupFieldReach                        = big.NewInt(1 << 50)
+	adGroupFieldRegions                      = big.NewInt(1 << 51)
+	adGroupFieldResultEvent                  = big.NewInt(1 << 52)
+	adGroupFieldResultEventName              = big.NewInt(1 << 53)
+	adGroupFieldResults                      = big.NewInt(1 << 54)
+	adGroupFieldReturnOnAdSpend              = big.NewInt(1 << 55)
+	adGroupFieldScheduleValue                = big.NewInt(1 << 56)
+	adGroupFieldSchedules                    = big.NewInt(1 << 57)
+	adGroupFieldSpend                        = big.NewInt(1 << 58)
+	adGroupFieldSpendCurrency                = big.NewInt(1 << 59)
+	adGroupFieldStartsAt                     = big.NewInt(1 << 60)
+	adGroupFieldStatus                       = big.NewInt(1 << 61)
+	adGroupFieldSubmittedApplicationValue    = big.NewInt(1 << 62)
+	adGroupFieldSubmittedApplications        = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	adGroupFieldTitle                        = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	adGroupFieldUniqueClickThroughRate       = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	adGroupFieldUniqueClicks                 = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	adGroupFieldUpdatedAt                    = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	adGroupFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	adGroupFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 69)
 )
 
 // adGroupNullableFields maps the wire names of AdGroup's nullable fields (required or optional) to their field bits.
@@ -1044,8 +1043,6 @@ type AdGroup struct {
 	LearningProgress *AdGroupLearningProgress `json:"learning_progress,omitempty" url:"learning_progress,omitempty"`
 	// Page views on your destination from people who clicked the ad, recorded by the Whop pixel. Counted the same way on every ad platform.
 	LinkClicks float64 `json:"link_clicks" url:"link_clicks"`
-	// The ad platform this ad group runs on.
-	Platform AdGroupPlatform `json:"platform" url:"platform"`
 	// USD value of pixel-attributed purchases.
 	PurchaseValue float64 `json:"purchase_value" url:"purchase_value"`
 	// Whop pixel-attributed purchases, last-click.
@@ -1432,13 +1429,6 @@ func (a *AdGroup) GetLinkClicks() float64 {
 		return 0
 	}
 	return a.LinkClicks
-}
-
-func (a *AdGroup) GetPlatform() AdGroupPlatform {
-	if a == nil {
-		return ""
-	}
-	return a.Platform
 }
 
 func (a *AdGroup) GetPurchaseValue() float64 {
@@ -1945,13 +1935,6 @@ func (a *AdGroup) SetLearningProgress(learningProgress *AdGroupLearningProgress)
 func (a *AdGroup) SetLinkClicks(linkClicks float64) {
 	a.LinkClicks = linkClicks
 	a.require(adGroupFieldLinkClicks)
-}
-
-// SetPlatform sets the Platform field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroup) SetPlatform(platform AdGroupPlatform) {
-	a.Platform = platform
-	a.require(adGroupFieldPlatform)
 }
 
 // SetPurchaseValue sets the PurchaseValue field and marks it as non-optional;
@@ -5530,32 +5513,6 @@ func (a AdGroupOperatingSystemOs) Ptr() *AdGroupOperatingSystemOs {
 	return &a
 }
 
-// The ad platform this ad group runs on.
-type AdGroupPlatform string
-
-const (
-	AdGroupPlatformMeta   AdGroupPlatform = "meta"
-	AdGroupPlatformTiktok AdGroupPlatform = "tiktok"
-	AdGroupPlatformGoogle AdGroupPlatform = "google"
-)
-
-func NewAdGroupPlatformFromString(s string) (AdGroupPlatform, error) {
-	switch s {
-	case "meta":
-		return AdGroupPlatformMeta, nil
-	case "tiktok":
-		return AdGroupPlatformTiktok, nil
-	case "google":
-		return AdGroupPlatformGoogle, nil
-	}
-	var t AdGroupPlatform
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (a AdGroupPlatform) Ptr() *AdGroupPlatform {
-	return &a
-}
-
 var (
 	adGroupRegionsFieldExclude = big.NewInt(1 << 0)
 	adGroupRegionsFieldInclude = big.NewInt(1 << 1)
@@ -9038,12 +8995,11 @@ var (
 	postAdGroupUpdatedPayloadDataFieldKeywords             = big.NewInt(1 << 17)
 	postAdGroupUpdatedPayloadDataFieldLanguages            = big.NewInt(1 << 18)
 	postAdGroupUpdatedPayloadDataFieldLearningProgress     = big.NewInt(1 << 19)
-	postAdGroupUpdatedPayloadDataFieldPlatform             = big.NewInt(1 << 20)
-	postAdGroupUpdatedPayloadDataFieldRegions              = big.NewInt(1 << 21)
-	postAdGroupUpdatedPayloadDataFieldStartsAt             = big.NewInt(1 << 22)
-	postAdGroupUpdatedPayloadDataFieldStatus               = big.NewInt(1 << 23)
-	postAdGroupUpdatedPayloadDataFieldTitle                = big.NewInt(1 << 24)
-	postAdGroupUpdatedPayloadDataFieldUpdatedAt            = big.NewInt(1 << 25)
+	postAdGroupUpdatedPayloadDataFieldRegions              = big.NewInt(1 << 20)
+	postAdGroupUpdatedPayloadDataFieldStartsAt             = big.NewInt(1 << 21)
+	postAdGroupUpdatedPayloadDataFieldStatus               = big.NewInt(1 << 22)
+	postAdGroupUpdatedPayloadDataFieldTitle                = big.NewInt(1 << 23)
+	postAdGroupUpdatedPayloadDataFieldUpdatedAt            = big.NewInt(1 << 24)
 )
 
 // postAdGroupUpdatedPayloadDataNullableFields maps the wire names of PostAdGroupUpdatedPayloadData's nullable fields (required or optional) to their field bits.
@@ -9098,8 +9054,6 @@ type PostAdGroupUpdatedPayloadData struct {
 	Languages []string           `json:"languages" url:"languages"`
 	// Progress toward the ad platform's learning conversion threshold for this ad group. Null unless it is learning or learning limited and the platform reports valid counts. Reaching the threshold does not determine delivery status.
 	LearningProgress *AdGroupLearningProgress `json:"learning_progress,omitempty" url:"learning_progress,omitempty"`
-	// The ad platform this ad group runs on.
-	Platform PostAdGroupUpdatedPayloadDataPlatform `json:"platform" url:"platform"`
 	// Locations targeted and excluded.
 	Regions *AdGroupRegions `json:"regions" url:"regions"`
 	// When the ad group starts delivering, as an ISO 8601 timestamp. `null` when it starts as soon as it's active.
@@ -9256,13 +9210,6 @@ func (p *PostAdGroupUpdatedPayloadData) GetLearningProgress() *AdGroupLearningPr
 		return nil
 	}
 	return p.LearningProgress
-}
-
-func (p *PostAdGroupUpdatedPayloadData) GetPlatform() PostAdGroupUpdatedPayloadDataPlatform {
-	if p == nil {
-		return ""
-	}
-	return p.Platform
 }
 
 func (p *PostAdGroupUpdatedPayloadData) GetRegions() *AdGroupRegions {
@@ -9454,13 +9401,6 @@ func (p *PostAdGroupUpdatedPayloadData) SetLanguages(languages []string) {
 func (p *PostAdGroupUpdatedPayloadData) SetLearningProgress(learningProgress *AdGroupLearningProgress) {
 	p.LearningProgress = learningProgress
 	p.require(postAdGroupUpdatedPayloadDataFieldLearningProgress)
-}
-
-// SetPlatform sets the Platform field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostAdGroupUpdatedPayloadData) SetPlatform(platform PostAdGroupUpdatedPayloadDataPlatform) {
-	p.Platform = platform
-	p.require(postAdGroupUpdatedPayloadDataFieldPlatform)
 }
 
 // SetRegions sets the Regions field and marks it as non-optional;
@@ -9655,32 +9595,6 @@ func NewPostAdGroupUpdatedPayloadDataDeliveryStatusFromString(s string) (PostAdG
 }
 
 func (p PostAdGroupUpdatedPayloadDataDeliveryStatus) Ptr() *PostAdGroupUpdatedPayloadDataDeliveryStatus {
-	return &p
-}
-
-// The ad platform this ad group runs on.
-type PostAdGroupUpdatedPayloadDataPlatform string
-
-const (
-	PostAdGroupUpdatedPayloadDataPlatformMeta   PostAdGroupUpdatedPayloadDataPlatform = "meta"
-	PostAdGroupUpdatedPayloadDataPlatformTiktok PostAdGroupUpdatedPayloadDataPlatform = "tiktok"
-	PostAdGroupUpdatedPayloadDataPlatformGoogle PostAdGroupUpdatedPayloadDataPlatform = "google"
-)
-
-func NewPostAdGroupUpdatedPayloadDataPlatformFromString(s string) (PostAdGroupUpdatedPayloadDataPlatform, error) {
-	switch s {
-	case "meta":
-		return PostAdGroupUpdatedPayloadDataPlatformMeta, nil
-	case "tiktok":
-		return PostAdGroupUpdatedPayloadDataPlatformTiktok, nil
-	case "google":
-		return PostAdGroupUpdatedPayloadDataPlatformGoogle, nil
-	}
-	var t PostAdGroupUpdatedPayloadDataPlatform
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PostAdGroupUpdatedPayloadDataPlatform) Ptr() *PostAdGroupUpdatedPayloadDataPlatform {
 	return &p
 }
 

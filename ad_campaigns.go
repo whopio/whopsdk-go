@@ -21,10 +21,9 @@ var (
 	createAdCampaignsRequestFieldDesiredCostPerResult = big.NewInt(1 << 7)
 	createAdCampaignsRequestFieldEndsAt               = big.NewInt(1 << 8)
 	createAdCampaignsRequestFieldObjective            = big.NewInt(1 << 9)
-	createAdCampaignsRequestFieldPlatform             = big.NewInt(1 << 10)
-	createAdCampaignsRequestFieldSpecialAdCategories  = big.NewInt(1 << 11)
-	createAdCampaignsRequestFieldStartsAt             = big.NewInt(1 << 12)
-	createAdCampaignsRequestFieldTitle                = big.NewInt(1 << 13)
+	createAdCampaignsRequestFieldSpecialAdCategories  = big.NewInt(1 << 10)
+	createAdCampaignsRequestFieldStartsAt             = big.NewInt(1 << 11)
+	createAdCampaignsRequestFieldTitle                = big.NewInt(1 << 12)
 )
 
 type CreateAdCampaignsRequest struct {
@@ -48,8 +47,6 @@ type CreateAdCampaignsRequest struct {
 	EndsAt *string `json:"ends_at,omitempty" url:"-"`
 	// The goal the campaign optimizes toward.
 	Objective CreateAdCampaignsRequestObjective `json:"objective" url:"-"`
-	// The ad network the campaign runs on.
-	Platform CreateAdCampaignsRequestPlatform `json:"platform" url:"-"`
 	// Regulated categories the campaign falls under. Ads in these categories are subject to extra targeting restrictions.
 	SpecialAdCategories []CreateAdCampaignsRequestSpecialAdCategoriesItem `json:"special_ad_categories,omitempty" url:"-"`
 	// When the campaign starts delivering, as an ISO 8601 timestamp. Only for campaigns that own the budget.
@@ -138,13 +135,6 @@ func (c *CreateAdCampaignsRequest) SetEndsAt(endsAt *string) {
 func (c *CreateAdCampaignsRequest) SetObjective(objective CreateAdCampaignsRequestObjective) {
 	c.Objective = objective
 	c.require(createAdCampaignsRequestFieldObjective)
-}
-
-// SetPlatform sets the Platform field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdCampaignsRequest) SetPlatform(platform CreateAdCampaignsRequestPlatform) {
-	c.Platform = platform
-	c.require(createAdCampaignsRequestFieldPlatform)
 }
 
 // SetSpecialAdCategories sets the SpecialAdCategories field and marks it as non-optional;
@@ -603,29 +593,28 @@ var (
 	adCampaignFieldLeads                        = big.NewInt(1 << 39)
 	adCampaignFieldLinkClicks                   = big.NewInt(1 << 40)
 	adCampaignFieldObjective                    = big.NewInt(1 << 41)
-	adCampaignFieldPlatform                     = big.NewInt(1 << 42)
-	adCampaignFieldPurchaseValue                = big.NewInt(1 << 43)
-	adCampaignFieldPurchases                    = big.NewInt(1 << 44)
-	adCampaignFieldReach                        = big.NewInt(1 << 45)
-	adCampaignFieldResultEvent                  = big.NewInt(1 << 46)
-	adCampaignFieldResultEventName              = big.NewInt(1 << 47)
-	adCampaignFieldResults                      = big.NewInt(1 << 48)
-	adCampaignFieldReturnOnAdSpend              = big.NewInt(1 << 49)
-	adCampaignFieldScheduleValue                = big.NewInt(1 << 50)
-	adCampaignFieldSchedules                    = big.NewInt(1 << 51)
-	adCampaignFieldSpecialAdCategories          = big.NewInt(1 << 52)
-	adCampaignFieldSpend                        = big.NewInt(1 << 53)
-	adCampaignFieldSpendCurrency                = big.NewInt(1 << 54)
-	adCampaignFieldStartsAt                     = big.NewInt(1 << 55)
-	adCampaignFieldStatus                       = big.NewInt(1 << 56)
-	adCampaignFieldSubmittedApplicationValue    = big.NewInt(1 << 57)
-	adCampaignFieldSubmittedApplications        = big.NewInt(1 << 58)
-	adCampaignFieldTitle                        = big.NewInt(1 << 59)
-	adCampaignFieldUniqueClickThroughRate       = big.NewInt(1 << 60)
-	adCampaignFieldUniqueClicks                 = big.NewInt(1 << 61)
-	adCampaignFieldUpdatedAt                    = big.NewInt(1 << 62)
-	adCampaignFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	adCampaignFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	adCampaignFieldPurchaseValue                = big.NewInt(1 << 42)
+	adCampaignFieldPurchases                    = big.NewInt(1 << 43)
+	adCampaignFieldReach                        = big.NewInt(1 << 44)
+	adCampaignFieldResultEvent                  = big.NewInt(1 << 45)
+	adCampaignFieldResultEventName              = big.NewInt(1 << 46)
+	adCampaignFieldResults                      = big.NewInt(1 << 47)
+	adCampaignFieldReturnOnAdSpend              = big.NewInt(1 << 48)
+	adCampaignFieldScheduleValue                = big.NewInt(1 << 49)
+	adCampaignFieldSchedules                    = big.NewInt(1 << 50)
+	adCampaignFieldSpecialAdCategories          = big.NewInt(1 << 51)
+	adCampaignFieldSpend                        = big.NewInt(1 << 52)
+	adCampaignFieldSpendCurrency                = big.NewInt(1 << 53)
+	adCampaignFieldStartsAt                     = big.NewInt(1 << 54)
+	adCampaignFieldStatus                       = big.NewInt(1 << 55)
+	adCampaignFieldSubmittedApplicationValue    = big.NewInt(1 << 56)
+	adCampaignFieldSubmittedApplications        = big.NewInt(1 << 57)
+	adCampaignFieldTitle                        = big.NewInt(1 << 58)
+	adCampaignFieldUniqueClickThroughRate       = big.NewInt(1 << 59)
+	adCampaignFieldUniqueClicks                 = big.NewInt(1 << 60)
+	adCampaignFieldUpdatedAt                    = big.NewInt(1 << 61)
+	adCampaignFieldViewedContentValue           = big.NewInt(1 << 62)
+	adCampaignFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 63)
 )
 
 // adCampaignNullableFields maps the wire names of AdCampaign's nullable fields (required or optional) to their field bits.
@@ -739,10 +728,8 @@ type AdCampaign struct {
 	Leads float64 `json:"leads" url:"leads"`
 	// Page views on your destination from people who clicked the ad, recorded by the Whop pixel. Counted the same way on every ad platform.
 	LinkClicks float64 `json:"link_clicks" url:"link_clicks"`
-	// The goal the campaign optimizes toward.
+	// The goal the campaign optimizes toward. `awareness` appears only on campaigns created before it was retired; those campaigns can't launch.
 	Objective *AdCampaignObjective `json:"objective,omitempty" url:"objective,omitempty"`
-	// The ad network the campaign runs on.
-	Platform AdCampaignPlatform `json:"platform" url:"platform"`
 	// USD value of pixel-attributed purchases.
 	PurchaseValue float64 `json:"purchase_value" url:"purchase_value"`
 	// Whop pixel-attributed purchases, last-click.
@@ -1086,13 +1073,6 @@ func (a *AdCampaign) GetObjective() *AdCampaignObjective {
 		return nil
 	}
 	return a.Objective
-}
-
-func (a *AdCampaign) GetPlatform() AdCampaignPlatform {
-	if a == nil {
-		return ""
-	}
-	return a.Platform
 }
 
 func (a *AdCampaign) GetPurchaseValue() float64 {
@@ -1559,13 +1539,6 @@ func (a *AdCampaign) SetObjective(objective *AdCampaignObjective) {
 	a.require(adCampaignFieldObjective)
 }
 
-// SetPlatform sets the Platform field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdCampaign) SetPlatform(platform AdCampaignPlatform) {
-	a.Platform = platform
-	a.require(adCampaignFieldPlatform)
-}
-
 // SetPurchaseValue sets the PurchaseValue field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *AdCampaign) SetPurchaseValue(purchaseValue float64) {
@@ -1926,7 +1899,7 @@ func (a AdCampaignDeliveryStatus) Ptr() *AdCampaignDeliveryStatus {
 	return &a
 }
 
-// The goal the campaign optimizes toward.
+// The goal the campaign optimizes toward. `awareness` appears only on campaigns created before it was retired; those campaigns can't launch.
 type AdCampaignObjective string
 
 const (
@@ -1955,32 +1928,6 @@ func NewAdCampaignObjectiveFromString(s string) (AdCampaignObjective, error) {
 }
 
 func (a AdCampaignObjective) Ptr() *AdCampaignObjective {
-	return &a
-}
-
-// The ad network the campaign runs on.
-type AdCampaignPlatform string
-
-const (
-	AdCampaignPlatformMeta   AdCampaignPlatform = "meta"
-	AdCampaignPlatformTiktok AdCampaignPlatform = "tiktok"
-	AdCampaignPlatformGoogle AdCampaignPlatform = "google"
-)
-
-func NewAdCampaignPlatformFromString(s string) (AdCampaignPlatform, error) {
-	switch s {
-	case "meta":
-		return AdCampaignPlatformMeta, nil
-	case "tiktok":
-		return AdCampaignPlatformTiktok, nil
-	case "google":
-		return AdCampaignPlatformGoogle, nil
-	}
-	var t AdCampaignPlatform
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (a AdCampaignPlatform) Ptr() *AdCampaignPlatform {
 	return &a
 }
 
@@ -2212,7 +2159,6 @@ func (c CreateAdCampaignsRequestCampaignType) Ptr() *CreateAdCampaignsRequestCam
 type CreateAdCampaignsRequestObjective string
 
 const (
-	CreateAdCampaignsRequestObjectiveAwareness  CreateAdCampaignsRequestObjective = "awareness"
 	CreateAdCampaignsRequestObjectiveTraffic    CreateAdCampaignsRequestObjective = "traffic"
 	CreateAdCampaignsRequestObjectiveEngagement CreateAdCampaignsRequestObjective = "engagement"
 	CreateAdCampaignsRequestObjectiveLeads      CreateAdCampaignsRequestObjective = "leads"
@@ -2221,8 +2167,6 @@ const (
 
 func NewCreateAdCampaignsRequestObjectiveFromString(s string) (CreateAdCampaignsRequestObjective, error) {
 	switch s {
-	case "awareness":
-		return CreateAdCampaignsRequestObjectiveAwareness, nil
 	case "traffic":
 		return CreateAdCampaignsRequestObjectiveTraffic, nil
 	case "engagement":
@@ -2237,26 +2181,6 @@ func NewCreateAdCampaignsRequestObjectiveFromString(s string) (CreateAdCampaigns
 }
 
 func (c CreateAdCampaignsRequestObjective) Ptr() *CreateAdCampaignsRequestObjective {
-	return &c
-}
-
-// The ad network the campaign runs on.
-type CreateAdCampaignsRequestPlatform string
-
-const (
-	CreateAdCampaignsRequestPlatformWhop CreateAdCampaignsRequestPlatform = "whop"
-)
-
-func NewCreateAdCampaignsRequestPlatformFromString(s string) (CreateAdCampaignsRequestPlatform, error) {
-	switch s {
-	case "whop":
-		return CreateAdCampaignsRequestPlatformWhop, nil
-	}
-	var t CreateAdCampaignsRequestPlatform
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CreateAdCampaignsRequestPlatform) Ptr() *CreateAdCampaignsRequestPlatform {
 	return &c
 }
 
@@ -3143,12 +3067,11 @@ var (
 	postAdCampaignPaymentFailedPayloadDataFieldID                   = big.NewInt(1 << 11)
 	postAdCampaignPaymentFailedPayloadDataFieldIssues               = big.NewInt(1 << 12)
 	postAdCampaignPaymentFailedPayloadDataFieldObjective            = big.NewInt(1 << 13)
-	postAdCampaignPaymentFailedPayloadDataFieldPlatform             = big.NewInt(1 << 14)
-	postAdCampaignPaymentFailedPayloadDataFieldSpecialAdCategories  = big.NewInt(1 << 15)
-	postAdCampaignPaymentFailedPayloadDataFieldStartsAt             = big.NewInt(1 << 16)
-	postAdCampaignPaymentFailedPayloadDataFieldStatus               = big.NewInt(1 << 17)
-	postAdCampaignPaymentFailedPayloadDataFieldTitle                = big.NewInt(1 << 18)
-	postAdCampaignPaymentFailedPayloadDataFieldUpdatedAt            = big.NewInt(1 << 19)
+	postAdCampaignPaymentFailedPayloadDataFieldSpecialAdCategories  = big.NewInt(1 << 14)
+	postAdCampaignPaymentFailedPayloadDataFieldStartsAt             = big.NewInt(1 << 15)
+	postAdCampaignPaymentFailedPayloadDataFieldStatus               = big.NewInt(1 << 16)
+	postAdCampaignPaymentFailedPayloadDataFieldTitle                = big.NewInt(1 << 17)
+	postAdCampaignPaymentFailedPayloadDataFieldUpdatedAt            = big.NewInt(1 << 18)
 )
 
 // postAdCampaignPaymentFailedPayloadDataNullableFields maps the wire names of PostAdCampaignPaymentFailedPayloadData's nullable fields (required or optional) to their field bits.
@@ -3190,10 +3113,8 @@ type PostAdCampaignPaymentFailedPayloadData struct {
 	// Unique identifier for the ad campaign, prefixed `adcamp_`.
 	ID     string             `json:"id" url:"id"`
 	Issues []*AdPlatformIssue `json:"issues" url:"issues"`
-	// The goal the campaign optimizes toward.
-	Objective *PostAdCampaignPaymentFailedPayloadDataObjective `json:"objective,omitempty" url:"objective,omitempty"`
-	// The ad network the campaign runs on.
-	Platform            PostAdCampaignPaymentFailedPayloadDataPlatform                  `json:"platform" url:"platform"`
+	// The goal the campaign optimizes toward. `awareness` appears only on campaigns created before it was retired; those campaigns can't launch.
+	Objective           *PostAdCampaignPaymentFailedPayloadDataObjective                `json:"objective,omitempty" url:"objective,omitempty"`
 	SpecialAdCategories []PostAdCampaignPaymentFailedPayloadDataSpecialAdCategoriesItem `json:"special_ad_categories" url:"special_ad_categories"`
 	// Google only: when the campaign starts delivering, as an ISO 8601 timestamp. `null` starts it as soon as it launches.
 	StartsAt *string `json:"starts_at,omitempty" url:"starts_at,omitempty"`
@@ -3307,13 +3228,6 @@ func (p *PostAdCampaignPaymentFailedPayloadData) GetObjective() *PostAdCampaignP
 		return nil
 	}
 	return p.Objective
-}
-
-func (p *PostAdCampaignPaymentFailedPayloadData) GetPlatform() PostAdCampaignPaymentFailedPayloadDataPlatform {
-	if p == nil {
-		return ""
-	}
-	return p.Platform
 }
 
 func (p *PostAdCampaignPaymentFailedPayloadData) GetSpecialAdCategories() []PostAdCampaignPaymentFailedPayloadDataSpecialAdCategoriesItem {
@@ -3463,13 +3377,6 @@ func (p *PostAdCampaignPaymentFailedPayloadData) SetIssues(issues []*AdPlatformI
 func (p *PostAdCampaignPaymentFailedPayloadData) SetObjective(objective *PostAdCampaignPaymentFailedPayloadDataObjective) {
 	p.Objective = objective
 	p.require(postAdCampaignPaymentFailedPayloadDataFieldObjective)
-}
-
-// SetPlatform sets the Platform field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostAdCampaignPaymentFailedPayloadData) SetPlatform(platform PostAdCampaignPaymentFailedPayloadDataPlatform) {
-	p.Platform = platform
-	p.require(postAdCampaignPaymentFailedPayloadDataFieldPlatform)
 }
 
 // SetSpecialAdCategories sets the SpecialAdCategories field and marks it as non-optional;
@@ -3713,7 +3620,7 @@ func (p PostAdCampaignPaymentFailedPayloadDataDeliveryStatus) Ptr() *PostAdCampa
 	return &p
 }
 
-// The goal the campaign optimizes toward.
+// The goal the campaign optimizes toward. `awareness` appears only on campaigns created before it was retired; those campaigns can't launch.
 type PostAdCampaignPaymentFailedPayloadDataObjective string
 
 const (
@@ -3742,32 +3649,6 @@ func NewPostAdCampaignPaymentFailedPayloadDataObjectiveFromString(s string) (Pos
 }
 
 func (p PostAdCampaignPaymentFailedPayloadDataObjective) Ptr() *PostAdCampaignPaymentFailedPayloadDataObjective {
-	return &p
-}
-
-// The ad network the campaign runs on.
-type PostAdCampaignPaymentFailedPayloadDataPlatform string
-
-const (
-	PostAdCampaignPaymentFailedPayloadDataPlatformMeta   PostAdCampaignPaymentFailedPayloadDataPlatform = "meta"
-	PostAdCampaignPaymentFailedPayloadDataPlatformTiktok PostAdCampaignPaymentFailedPayloadDataPlatform = "tiktok"
-	PostAdCampaignPaymentFailedPayloadDataPlatformGoogle PostAdCampaignPaymentFailedPayloadDataPlatform = "google"
-)
-
-func NewPostAdCampaignPaymentFailedPayloadDataPlatformFromString(s string) (PostAdCampaignPaymentFailedPayloadDataPlatform, error) {
-	switch s {
-	case "meta":
-		return PostAdCampaignPaymentFailedPayloadDataPlatformMeta, nil
-	case "tiktok":
-		return PostAdCampaignPaymentFailedPayloadDataPlatformTiktok, nil
-	case "google":
-		return PostAdCampaignPaymentFailedPayloadDataPlatformGoogle, nil
-	}
-	var t PostAdCampaignPaymentFailedPayloadDataPlatform
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PostAdCampaignPaymentFailedPayloadDataPlatform) Ptr() *PostAdCampaignPaymentFailedPayloadDataPlatform {
 	return &p
 }
 
@@ -4134,12 +4015,11 @@ var (
 	postAdCampaignUpdatedPayloadDataFieldID                   = big.NewInt(1 << 11)
 	postAdCampaignUpdatedPayloadDataFieldIssues               = big.NewInt(1 << 12)
 	postAdCampaignUpdatedPayloadDataFieldObjective            = big.NewInt(1 << 13)
-	postAdCampaignUpdatedPayloadDataFieldPlatform             = big.NewInt(1 << 14)
-	postAdCampaignUpdatedPayloadDataFieldSpecialAdCategories  = big.NewInt(1 << 15)
-	postAdCampaignUpdatedPayloadDataFieldStartsAt             = big.NewInt(1 << 16)
-	postAdCampaignUpdatedPayloadDataFieldStatus               = big.NewInt(1 << 17)
-	postAdCampaignUpdatedPayloadDataFieldTitle                = big.NewInt(1 << 18)
-	postAdCampaignUpdatedPayloadDataFieldUpdatedAt            = big.NewInt(1 << 19)
+	postAdCampaignUpdatedPayloadDataFieldSpecialAdCategories  = big.NewInt(1 << 14)
+	postAdCampaignUpdatedPayloadDataFieldStartsAt             = big.NewInt(1 << 15)
+	postAdCampaignUpdatedPayloadDataFieldStatus               = big.NewInt(1 << 16)
+	postAdCampaignUpdatedPayloadDataFieldTitle                = big.NewInt(1 << 17)
+	postAdCampaignUpdatedPayloadDataFieldUpdatedAt            = big.NewInt(1 << 18)
 )
 
 // postAdCampaignUpdatedPayloadDataNullableFields maps the wire names of PostAdCampaignUpdatedPayloadData's nullable fields (required or optional) to their field bits.
@@ -4181,10 +4061,8 @@ type PostAdCampaignUpdatedPayloadData struct {
 	// Unique identifier for the ad campaign, prefixed `adcamp_`.
 	ID     string             `json:"id" url:"id"`
 	Issues []*AdPlatformIssue `json:"issues" url:"issues"`
-	// The goal the campaign optimizes toward.
-	Objective *PostAdCampaignUpdatedPayloadDataObjective `json:"objective,omitempty" url:"objective,omitempty"`
-	// The ad network the campaign runs on.
-	Platform            PostAdCampaignUpdatedPayloadDataPlatform                  `json:"platform" url:"platform"`
+	// The goal the campaign optimizes toward. `awareness` appears only on campaigns created before it was retired; those campaigns can't launch.
+	Objective           *PostAdCampaignUpdatedPayloadDataObjective                `json:"objective,omitempty" url:"objective,omitempty"`
 	SpecialAdCategories []PostAdCampaignUpdatedPayloadDataSpecialAdCategoriesItem `json:"special_ad_categories" url:"special_ad_categories"`
 	// Google only: when the campaign starts delivering, as an ISO 8601 timestamp. `null` starts it as soon as it launches.
 	StartsAt *string `json:"starts_at,omitempty" url:"starts_at,omitempty"`
@@ -4298,13 +4176,6 @@ func (p *PostAdCampaignUpdatedPayloadData) GetObjective() *PostAdCampaignUpdated
 		return nil
 	}
 	return p.Objective
-}
-
-func (p *PostAdCampaignUpdatedPayloadData) GetPlatform() PostAdCampaignUpdatedPayloadDataPlatform {
-	if p == nil {
-		return ""
-	}
-	return p.Platform
 }
 
 func (p *PostAdCampaignUpdatedPayloadData) GetSpecialAdCategories() []PostAdCampaignUpdatedPayloadDataSpecialAdCategoriesItem {
@@ -4454,13 +4325,6 @@ func (p *PostAdCampaignUpdatedPayloadData) SetIssues(issues []*AdPlatformIssue) 
 func (p *PostAdCampaignUpdatedPayloadData) SetObjective(objective *PostAdCampaignUpdatedPayloadDataObjective) {
 	p.Objective = objective
 	p.require(postAdCampaignUpdatedPayloadDataFieldObjective)
-}
-
-// SetPlatform sets the Platform field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostAdCampaignUpdatedPayloadData) SetPlatform(platform PostAdCampaignUpdatedPayloadDataPlatform) {
-	p.Platform = platform
-	p.require(postAdCampaignUpdatedPayloadDataFieldPlatform)
 }
 
 // SetSpecialAdCategories sets the SpecialAdCategories field and marks it as non-optional;
@@ -4704,7 +4568,7 @@ func (p PostAdCampaignUpdatedPayloadDataDeliveryStatus) Ptr() *PostAdCampaignUpd
 	return &p
 }
 
-// The goal the campaign optimizes toward.
+// The goal the campaign optimizes toward. `awareness` appears only on campaigns created before it was retired; those campaigns can't launch.
 type PostAdCampaignUpdatedPayloadDataObjective string
 
 const (
@@ -4733,32 +4597,6 @@ func NewPostAdCampaignUpdatedPayloadDataObjectiveFromString(s string) (PostAdCam
 }
 
 func (p PostAdCampaignUpdatedPayloadDataObjective) Ptr() *PostAdCampaignUpdatedPayloadDataObjective {
-	return &p
-}
-
-// The ad network the campaign runs on.
-type PostAdCampaignUpdatedPayloadDataPlatform string
-
-const (
-	PostAdCampaignUpdatedPayloadDataPlatformMeta   PostAdCampaignUpdatedPayloadDataPlatform = "meta"
-	PostAdCampaignUpdatedPayloadDataPlatformTiktok PostAdCampaignUpdatedPayloadDataPlatform = "tiktok"
-	PostAdCampaignUpdatedPayloadDataPlatformGoogle PostAdCampaignUpdatedPayloadDataPlatform = "google"
-)
-
-func NewPostAdCampaignUpdatedPayloadDataPlatformFromString(s string) (PostAdCampaignUpdatedPayloadDataPlatform, error) {
-	switch s {
-	case "meta":
-		return PostAdCampaignUpdatedPayloadDataPlatformMeta, nil
-	case "tiktok":
-		return PostAdCampaignUpdatedPayloadDataPlatformTiktok, nil
-	case "google":
-		return PostAdCampaignUpdatedPayloadDataPlatformGoogle, nil
-	}
-	var t PostAdCampaignUpdatedPayloadDataPlatform
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PostAdCampaignUpdatedPayloadDataPlatform) Ptr() *PostAdCampaignUpdatedPayloadDataPlatform {
 	return &p
 }
 
