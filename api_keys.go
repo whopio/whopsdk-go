@@ -31,7 +31,7 @@ type CreateAPIKeysRequest struct {
 	Name string `json:"name" url:"-"`
 	// The permissions policy for the API key: explicit permission statements, or a system role to inherit from. Statements without a `resources` array default to the owning account (Account API keys) or every key-addressable resource (App API keys).
 	Permissions *CreateAPIKeysRequestPermissions `json:"permissions" url:"-"`
-	// The account (`biz_`) or app (`app_`) tag to create the API key for.
+	// The account (`biz_`), app (`app_`), or your own user (`user_`) tag to create the API key for.
 	ResourceID string `json:"resource_id" url:"-"`
 	// The type of resource that will own this API key.
 	ResourceType CreateAPIKeysRequestResourceType `json:"resource_type" url:"-"`
@@ -161,7 +161,7 @@ var (
 )
 
 type ListAPIKeysRequest struct {
-	// The account (`biz_`) or app (`app_`) tag to list API keys for.
+	// The account (`biz_`), app (`app_`), or your own user (`user_`) tag to list API keys for.
 	ResourceID string `json:"-" url:"resource_id"`
 	// The type of resource that owns the API keys.
 	ResourceType ListAPIKeysRequestResourceType `json:"-" url:"resource_type"`
@@ -872,7 +872,7 @@ type APIKeyGrant struct {
 	Actions []*APIKeyGrantAction `json:"actions" url:"actions"`
 	// ID of the resource the actions apply to.
 	ResourceID string `json:"resource_id" url:"resource_id"`
-	// The type of resource the actions apply to, such as `account`, `product`, or `app`.
+	// The type of resource the actions apply to, such as `account`, `product`, `app`, or `user`.
 	ResourceType string `json:"resource_type" url:"resource_type"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -2054,6 +2054,7 @@ type CreateAPIKeysRequestResourceType string
 const (
 	CreateAPIKeysRequestResourceTypeAccount CreateAPIKeysRequestResourceType = "account"
 	CreateAPIKeysRequestResourceTypeApp     CreateAPIKeysRequestResourceType = "app"
+	CreateAPIKeysRequestResourceTypeUser    CreateAPIKeysRequestResourceType = "user"
 )
 
 func NewCreateAPIKeysRequestResourceTypeFromString(s string) (CreateAPIKeysRequestResourceType, error) {
@@ -2062,6 +2063,8 @@ func NewCreateAPIKeysRequestResourceTypeFromString(s string) (CreateAPIKeysReque
 		return CreateAPIKeysRequestResourceTypeAccount, nil
 	case "app":
 		return CreateAPIKeysRequestResourceTypeApp, nil
+	case "user":
+		return CreateAPIKeysRequestResourceTypeUser, nil
 	}
 	var t CreateAPIKeysRequestResourceType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -2221,6 +2224,7 @@ type ListAPIKeysRequestResourceType string
 const (
 	ListAPIKeysRequestResourceTypeAccount ListAPIKeysRequestResourceType = "account"
 	ListAPIKeysRequestResourceTypeApp     ListAPIKeysRequestResourceType = "app"
+	ListAPIKeysRequestResourceTypeUser    ListAPIKeysRequestResourceType = "user"
 )
 
 func NewListAPIKeysRequestResourceTypeFromString(s string) (ListAPIKeysRequestResourceType, error) {
@@ -2229,6 +2233,8 @@ func NewListAPIKeysRequestResourceTypeFromString(s string) (ListAPIKeysRequestRe
 		return ListAPIKeysRequestResourceTypeAccount, nil
 	case "app":
 		return ListAPIKeysRequestResourceTypeApp, nil
+	case "user":
+		return ListAPIKeysRequestResourceTypeUser, nil
 	}
 	var t ListAPIKeysRequestResourceType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

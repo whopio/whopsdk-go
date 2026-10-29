@@ -6713,6 +6713,13 @@ func TestEnumCreateAPIKeysRequestResourceType(t *testing.T) {
 		assert.Equal(t, CreateAPIKeysRequestResourceType("app"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_user", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestResourceTypeFromString("user")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestResourceType("user"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewCreateAPIKeysRequestResourceTypeFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -6791,6 +6798,13 @@ func TestEnumListAPIKeysRequestResourceType(t *testing.T) {
 		val, err := NewListAPIKeysRequestResourceTypeFromString("app")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListAPIKeysRequestResourceType("app"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_user", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListAPIKeysRequestResourceTypeFromString("user")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListAPIKeysRequestResourceType("user"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
