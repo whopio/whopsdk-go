@@ -7,6 +7,7 @@ import (
 	fmt "fmt"
 	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
+	time "time"
 )
 
 var (
@@ -625,20 +626,21 @@ var (
 	userFieldBio                               = big.NewInt(1 << 4)
 	userFieldCards                             = big.NewInt(1 << 5)
 	userFieldCreatedAt                         = big.NewInt(1 << 6)
-	userFieldEarningsUsd                       = big.NewInt(1 << 7)
-	userFieldEmail                             = big.NewInt(1 << 8)
-	userFieldID                                = big.NewInt(1 << 9)
-	userFieldLevel                             = big.NewInt(1 << 10)
-	userFieldName                              = big.NewInt(1 << 11)
-	userFieldProfilePicture                    = big.NewInt(1 << 12)
-	userFieldSocialLinks                       = big.NewInt(1 << 13)
-	userFieldTotalUsd                          = big.NewInt(1 << 14)
-	userFieldTrading                           = big.NewInt(1 << 15)
-	userFieldUsername                          = big.NewInt(1 << 16)
-	userFieldVerification                      = big.NewInt(1 << 17)
-	userFieldWhopPartnerEnabledAt              = big.NewInt(1 << 18)
-	userFieldWhopPartnerOnboardedAccountsCount = big.NewInt(1 << 19)
-	userFieldWhopPartnerVerifiedAt             = big.NewInt(1 << 20)
+	userFieldDateOfBirth                       = big.NewInt(1 << 7)
+	userFieldEarningsUsd                       = big.NewInt(1 << 8)
+	userFieldEmail                             = big.NewInt(1 << 9)
+	userFieldID                                = big.NewInt(1 << 10)
+	userFieldLevel                             = big.NewInt(1 << 11)
+	userFieldName                              = big.NewInt(1 << 12)
+	userFieldProfilePicture                    = big.NewInt(1 << 13)
+	userFieldSocialLinks                       = big.NewInt(1 << 14)
+	userFieldTotalUsd                          = big.NewInt(1 << 15)
+	userFieldTrading                           = big.NewInt(1 << 16)
+	userFieldUsername                          = big.NewInt(1 << 17)
+	userFieldVerification                      = big.NewInt(1 << 18)
+	userFieldWhopPartnerEnabledAt              = big.NewInt(1 << 19)
+	userFieldWhopPartnerOnboardedAccountsCount = big.NewInt(1 << 20)
+	userFieldWhopPartnerVerifiedAt             = big.NewInt(1 << 21)
 )
 
 // userNullableFields maps the wire names of User's nullable fields (required or optional) to their field bits.
@@ -648,6 +650,7 @@ var userNullableFields = map[string]*big.Int{
 	"banner":                                userFieldBanner,
 	"bio":                                   userFieldBio,
 	"cards":                                 userFieldCards,
+	"date_of_birth":                         userFieldDateOfBirth,
 	"earnings_usd":                          userFieldEarningsUsd,
 	"email":                                 userFieldEmail,
 	"level":                                 userFieldLevel,
@@ -673,6 +676,8 @@ type User struct {
 	Cards *AccountCards `json:"cards,omitempty" url:"cards,omitempty"`
 	// When the user was created, as an ISO 8601 timestamp
 	CreatedAt string `json:"created_at" url:"created_at"`
+	// The user's date of birth as an ISO 8601 date, like `1998-04-23`. Populated only on the self view (retrieved with the reserved id `me`) for callers with email-read scope; `null` otherwise, or when the user has not set one.
+	DateOfBirth *string `json:"date_of_birth,omitempty" url:"date_of_birth,omitempty"`
 	// The user's gross USD income over time, including a Partner commission breakdown. Populated only on single-user self reads for callers with balance-read scope; `null` otherwise.
 	EarningsUsd *UserEarnings `json:"earnings_usd,omitempty" url:"earnings_usd,omitempty"`
 	// The user's email address. Populated only on the self view (retrieved with the reserved id `me`) for callers with email-read scope; `null` otherwise, or while the account has no confirmed email yet.
@@ -755,6 +760,13 @@ func (u *User) GetCreatedAt() string {
 		return ""
 	}
 	return u.CreatedAt
+}
+
+func (u *User) GetDateOfBirth() *string {
+	if u == nil {
+		return nil
+	}
+	return u.DateOfBirth
 }
 
 func (u *User) GetEarningsUsd() *UserEarnings {
@@ -918,6 +930,13 @@ func (u *User) SetCards(cards *AccountCards) {
 func (u *User) SetCreatedAt(createdAt string) {
 	u.CreatedAt = createdAt
 	u.require(userFieldCreatedAt)
+}
+
+// SetDateOfBirth sets the DateOfBirth field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *User) SetDateOfBirth(dateOfBirth *string) {
+	u.DateOfBirth = dateOfBirth
+	u.require(userFieldDateOfBirth)
 }
 
 // SetEarningsUsd sets the EarningsUsd field and marks it as non-optional;
@@ -3871,18 +3890,21 @@ var (
 	updateUsersRequestFieldAccountID      = big.NewInt(1 << 1)
 	updateUsersRequestFieldBanner         = big.NewInt(1 << 2)
 	updateUsersRequestFieldBio            = big.NewInt(1 << 3)
-	updateUsersRequestFieldName           = big.NewInt(1 << 4)
-	updateUsersRequestFieldProfilePicture = big.NewInt(1 << 5)
-	updateUsersRequestFieldUsername       = big.NewInt(1 << 6)
+	updateUsersRequestFieldDateOfBirth    = big.NewInt(1 << 4)
+	updateUsersRequestFieldName           = big.NewInt(1 << 5)
+	updateUsersRequestFieldProfilePicture = big.NewInt(1 << 6)
+	updateUsersRequestFieldUsername       = big.NewInt(1 << 7)
 )
 
 type UpdateUsersRequest struct {
 	// User ID (prefixed `user_`), username, or `me` for the authenticated user.
 	ID string `json:"-" url:"-"`
 	// The account whose profile override to update. Required for API key callers.
-	AccountID      *string                           `json:"-" url:"account_id,omitempty"`
-	Banner         *UpdateUsersRequestBanner         `json:"banner,omitempty" url:"-"`
-	Bio            *string                           `json:"bio,omitempty" url:"-"`
+	AccountID *string                   `json:"-" url:"account_id,omitempty"`
+	Banner    *UpdateUsersRequestBanner `json:"banner,omitempty" url:"-"`
+	Bio       *string                   `json:"bio,omitempty" url:"-"`
+	// The user's date of birth as an ISO 8601 date, like `1998-04-23`. The user must be at least 13. Global profile only; refused with `account_id`.
+	DateOfBirth    *time.Time                        `json:"date_of_birth,omitempty" url:"-" format:"date"`
 	Name           *string                           `json:"name,omitempty" url:"-"`
 	ProfilePicture *UpdateUsersRequestProfilePicture `json:"profile_picture,omitempty" url:"-"`
 	Username       *string                           `json:"username,omitempty" url:"-"`
@@ -3928,6 +3950,13 @@ func (u *UpdateUsersRequest) SetBio(bio *string) {
 	u.require(updateUsersRequestFieldBio)
 }
 
+// SetDateOfBirth sets the DateOfBirth field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateUsersRequest) SetDateOfBirth(dateOfBirth *time.Time) {
+	u.DateOfBirth = dateOfBirth
+	u.require(updateUsersRequestFieldDateOfBirth)
+}
+
 // SetName sets the Name field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateUsersRequest) SetName(name *string) {
@@ -3950,12 +3979,18 @@ func (u *UpdateUsersRequest) SetUsername(username *string) {
 }
 
 func (u *UpdateUsersRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateUsersRequest
-	var body unmarshaler
+	type embed UpdateUsersRequest
+	var body = struct {
+		embed
+		DateOfBirth *internal.Date `json:"date_of_birth,omitempty"`
+	}{
+		embed: embed(*u),
+	}
 	if err := json.Unmarshal(data, &body); err != nil {
 		return err
 	}
-	*u = UpdateUsersRequest(body)
+	*u = UpdateUsersRequest(body.embed)
+	u.DateOfBirth = body.DateOfBirth.TimePtr()
 	return nil
 }
 
@@ -3963,8 +3998,10 @@ func (u *UpdateUsersRequest) MarshalJSON() ([]byte, error) {
 	type embed UpdateUsersRequest
 	var marshaler = struct {
 		embed
+		DateOfBirth *internal.Date `json:"date_of_birth,omitempty"`
 	}{
-		embed: embed(*u),
+		embed:       embed(*u),
+		DateOfBirth: internal.NewOptionalDate(u.DateOfBirth),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
 	return json.Marshal(explicitMarshaler)
@@ -3974,16 +4011,19 @@ var (
 	updateMeUsersRequestFieldAccountID      = big.NewInt(1 << 0)
 	updateMeUsersRequestFieldBanner         = big.NewInt(1 << 1)
 	updateMeUsersRequestFieldBio            = big.NewInt(1 << 2)
-	updateMeUsersRequestFieldName           = big.NewInt(1 << 3)
-	updateMeUsersRequestFieldProfilePicture = big.NewInt(1 << 4)
-	updateMeUsersRequestFieldUsername       = big.NewInt(1 << 5)
+	updateMeUsersRequestFieldDateOfBirth    = big.NewInt(1 << 3)
+	updateMeUsersRequestFieldName           = big.NewInt(1 << 4)
+	updateMeUsersRequestFieldProfilePicture = big.NewInt(1 << 5)
+	updateMeUsersRequestFieldUsername       = big.NewInt(1 << 6)
 )
 
 type UpdateMeUsersRequest struct {
 	// When set, updates the authenticated user's profile override for this account instead of their global profile.
-	AccountID      *string                             `json:"-" url:"account_id,omitempty"`
-	Banner         *UpdateMeUsersRequestBanner         `json:"banner,omitempty" url:"-"`
-	Bio            *string                             `json:"bio,omitempty" url:"-"`
+	AccountID *string                     `json:"-" url:"account_id,omitempty"`
+	Banner    *UpdateMeUsersRequestBanner `json:"banner,omitempty" url:"-"`
+	Bio       *string                     `json:"bio,omitempty" url:"-"`
+	// The user's date of birth as an ISO 8601 date, like `1998-04-23`. The user must be at least 13. Global profile only; refused with `account_id`.
+	DateOfBirth    *time.Time                          `json:"date_of_birth,omitempty" url:"-" format:"date"`
 	Name           *string                             `json:"name,omitempty" url:"-"`
 	ProfilePicture *UpdateMeUsersRequestProfilePicture `json:"profile_picture,omitempty" url:"-"`
 	Username       *string                             `json:"username,omitempty" url:"-"`
@@ -4022,6 +4062,13 @@ func (u *UpdateMeUsersRequest) SetBio(bio *string) {
 	u.require(updateMeUsersRequestFieldBio)
 }
 
+// SetDateOfBirth sets the DateOfBirth field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMeUsersRequest) SetDateOfBirth(dateOfBirth *time.Time) {
+	u.DateOfBirth = dateOfBirth
+	u.require(updateMeUsersRequestFieldDateOfBirth)
+}
+
 // SetName sets the Name field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateMeUsersRequest) SetName(name *string) {
@@ -4044,12 +4091,18 @@ func (u *UpdateMeUsersRequest) SetUsername(username *string) {
 }
 
 func (u *UpdateMeUsersRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateMeUsersRequest
-	var body unmarshaler
+	type embed UpdateMeUsersRequest
+	var body = struct {
+		embed
+		DateOfBirth *internal.Date `json:"date_of_birth,omitempty"`
+	}{
+		embed: embed(*u),
+	}
 	if err := json.Unmarshal(data, &body); err != nil {
 		return err
 	}
-	*u = UpdateMeUsersRequest(body)
+	*u = UpdateMeUsersRequest(body.embed)
+	u.DateOfBirth = body.DateOfBirth.TimePtr()
 	return nil
 }
 
@@ -4057,8 +4110,10 @@ func (u *UpdateMeUsersRequest) MarshalJSON() ([]byte, error) {
 	type embed UpdateMeUsersRequest
 	var marshaler = struct {
 		embed
+		DateOfBirth *internal.Date `json:"date_of_birth,omitempty"`
 	}{
-		embed: embed(*u),
+		embed:       embed(*u),
+		DateOfBirth: internal.NewOptionalDate(u.DateOfBirth),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
 	return json.Marshal(explicitMarshaler)
