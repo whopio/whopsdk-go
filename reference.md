@@ -24211,6 +24211,74 @@ client.Members.Retrieve(
 </dl>
 </details>
 
+<details><summary><code>client.Members.Update(ID, request) -> *whopsdk.Member</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Sets the name the account uses for a member. Every invoice for this member shows it as the customer name, paid invoices included, in place of the user's own name. It does not change the user's Whop profile.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.UpdateMembersRequest{
+    ID: "id",
+}
+client.Members.Update(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Member ID (`mber_` tag).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `*string` — The customer name to show on this member's invoices, at most 255 bytes. Leading and trailing spaces are trimmed. `null` or a blank string clears it, so invoices show the user's own name again.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Memberships
 <details><summary><code>client.Memberships.List() -> *whopsdk.ListMembershipsResponse</code></summary>
 <dl>

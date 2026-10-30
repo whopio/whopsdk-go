@@ -172,3 +172,30 @@ func (c *Client) Retrieve(
 	}
 	return response.Body, nil
 }
+
+// Sets the name the account uses for a member. Every invoice for this member shows it as the customer name, paid invoices included, in place of the user's own name. It does not change the user's Whop profile.
+//
+// Example:
+//
+//	request := &whopsdk.UpdateMembersRequest{
+//	    ID: "id",
+//	}
+//	client.Members.Update(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Update(
+	ctx context.Context,
+	request *whopsdk.UpdateMembersRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.Member, error) {
+	response, err := c.WithRawResponse.Update(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
