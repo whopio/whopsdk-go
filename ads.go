@@ -1923,7 +1923,7 @@ type AdCreative struct {
 	Format *AdCreativeFormat `json:"format,omitempty" url:"format,omitempty"`
 	// The creative attachment's file id.
 	ID string `json:"id" url:"id"`
-	// ISO 639 code of the language this image or video is shown for, such as `es`. On an ad that runs in several languages, the ad's own creative carries the language its copy is written in. It's `null` on an ad that runs in one language.
+	// Always `null`. Translations are no longer available.
 	Language *string `json:"language,omitempty" url:"language,omitempty"`
 	// The kind of asset, image or video.
 	MediaType *string `json:"media_type,omitempty" url:"media_type,omitempty"`
@@ -2582,7 +2582,7 @@ var adTextNullableFields = map[string]*big.Int{
 }
 
 type AdText struct {
-	// ISO 639 code of the language this text is in, such as `es`. On an ad that runs in several languages, the ad's own copy carries the language it is written in. It's `null` on an ad that runs in one language.
+	// Always `null`. Translations are no longer available.
 	Language *string `json:"language,omitempty" url:"language,omitempty"`
 	// The text shown to viewers.
 	Text string `json:"text" url:"text"`
