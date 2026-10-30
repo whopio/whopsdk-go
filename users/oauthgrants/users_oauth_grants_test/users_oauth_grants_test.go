@@ -116,7 +116,7 @@ func TestUsersOauthGrantsCreateWithWireMock(
 		ClientID:    "app_xxxxxxxxxxxxxx",
 		RedirectURI: "https://Booking.Shinetime.example:8443/oauth/Callback/",
 		RequestedScopes: []string{
-			"profile",
+			"openid",
 		},
 	}
 	_, invocationErr := client.Users.OauthGrants.Create(
