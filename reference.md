@@ -19420,7 +19420,7 @@ Starts an OAuth connection flow and returns an `authorize_url` to send the user 
 
 ```go
 request := &whopsdk.ConnectExternalAccountsRequest{
-    Platform: whopsdk.ConnectExternalAccountsRequestPlatformMetaBusiness,
+    Platform: whopsdk.ConnectExternalAccountsRequestPlatformTiktok,
     RedirectURL: "https://whop.com/dashboard/biz_xxxxxxxxxxxxxx/ads/settings",
 }
 client.ExternalAccounts.Connect(
@@ -19449,7 +19449,7 @@ client.ExternalAccounts.Connect(
 <dl>
 <dd>
 
-**platform:** `whopsdk.ConnectExternalAccountsRequestPlatform` — The platform to connect the external account on. Use `meta_business` to connect Meta Business assets, which is how Facebook Pages and Instagram accounts are connected — there is no separate `instagram` value. Use `tiktok` for TikTok accounts, `snapchat` for Snapchat Public Profiles, `linkedin` to connect the authenticated user’s LinkedIn profile, `youtube` to connect their YouTube channel, or `x` to connect their X profile. Use `quickbooks` to connect the account’s QuickBooks Online company: pass `account_id`, omit `scopes`, and the user picks the company in QuickBooks.
+**platform:** `whopsdk.ConnectExternalAccountsRequestPlatform` — The platform to connect the external account on. Use `tiktok` to connect the authenticated user’s TikTok profile, `linkedin` for their LinkedIn profile, `youtube` for their YouTube channel, or `x` for their X profile. Use `snapchat` for Snapchat Public Profiles. Use `quickbooks` to connect the account’s QuickBooks Online company: pass `account_id`, omit `scopes`, and the user picks the company in QuickBooks.
     
 </dd>
 </dl>
@@ -19465,7 +19465,7 @@ client.ExternalAccounts.Connect(
 <dl>
 <dd>
 
-**scopes:** `[]whopsdk.ConnectExternalAccountsRequestScopesItem` — The connection purpose. For `meta_business` and `snapchat`, `advertise` is required and connects company advertising assets. For `linkedin`, `youtube`, and `x`, omit scopes to connect the authenticated user’s profile; advertising is not supported. For `tiktok`, omit scopes to connect the authenticated user’s profile, or pass `advertise` to connect company advertising assets. For `quickbooks`, omit scopes; the connection belongs to the account in `account_id`. Profile connections still request the platform permissions needed to read the profile.
+**scopes:** `[]whopsdk.ConnectExternalAccountsRequestScopesItem` — The connection purpose. For `snapchat`, `advertise` is required and connects company advertising assets. For `linkedin`, `tiktok`, `youtube`, and `x`, omit scopes to connect the authenticated user’s profile. For `quickbooks`, omit scopes; the connection belongs to the account in `account_id`. Profile connections still request the platform permissions needed to read the profile.
     
 </dd>
 </dl>
@@ -36829,7 +36829,7 @@ Deprecated compatibility endpoint. Connect external accounts with `POST /externa
 
 ```go
 request := &whopsdk.ConnectSocialAccountsRequest{
-    Platform: whopsdk.ConnectSocialAccountsRequestPlatformMetaBusiness,
+    Platform: whopsdk.ConnectSocialAccountsRequestPlatformTiktok,
     RedirectURL: "https://whop.com/dashboard/biz_xxxxxxxxxxxxxx/ads/settings",
 }
 client.SocialAccounts.Connect(
@@ -36858,7 +36858,7 @@ client.SocialAccounts.Connect(
 <dl>
 <dd>
 
-**platform:** `whopsdk.ConnectSocialAccountsRequestPlatform` — The platform to connect the external account on. Use `meta_business` to connect Meta Business assets, which is how Facebook Pages and Instagram accounts are connected — there is no separate `instagram` value. Use `tiktok` for TikTok accounts, `snapchat` for Snapchat Public Profiles, `linkedin` to connect the authenticated user’s LinkedIn profile, `youtube` to connect their YouTube channel, or `x` to connect their X profile. Use `quickbooks` to connect the account’s QuickBooks Online company: pass `account_id`, omit `scopes`, and the user picks the company in QuickBooks.
+**platform:** `whopsdk.ConnectSocialAccountsRequestPlatform` — The platform to connect the external account on. Use `tiktok` to connect the authenticated user’s TikTok profile, `linkedin` for their LinkedIn profile, `youtube` for their YouTube channel, or `x` for their X profile. Use `snapchat` for Snapchat Public Profiles. Use `quickbooks` to connect the account’s QuickBooks Online company: pass `account_id`, omit `scopes`, and the user picks the company in QuickBooks.
     
 </dd>
 </dl>
@@ -36874,7 +36874,7 @@ client.SocialAccounts.Connect(
 <dl>
 <dd>
 
-**scopes:** `[]whopsdk.ConnectSocialAccountsRequestScopesItem` — The connection purpose. For `meta_business` and `snapchat`, `advertise` is required and connects company advertising assets. For `linkedin`, `youtube`, and `x`, omit scopes to connect the authenticated user’s profile; advertising is not supported. For `tiktok`, omit scopes to connect the authenticated user’s profile, or pass `advertise` to connect company advertising assets. For `quickbooks`, omit scopes; the connection belongs to the account in `account_id`. Profile connections still request the platform permissions needed to read the profile.
+**scopes:** `[]whopsdk.ConnectSocialAccountsRequestScopesItem` — The connection purpose. For `snapchat`, `advertise` is required and connects company advertising assets. For `linkedin`, `tiktok`, `youtube`, and `x`, omit scopes to connect the authenticated user’s profile. For `quickbooks`, omit scopes; the connection belongs to the account in `account_id`. Profile connections still request the platform permissions needed to read the profile.
     
 </dd>
 </dl>

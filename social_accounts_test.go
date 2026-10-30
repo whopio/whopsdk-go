@@ -4049,13 +4049,6 @@ func TestStringSocialAccountParent(t *testing.T) {
 }
 
 func TestEnumConnectSocialAccountsRequestPlatform(t *testing.T) {
-	t.Run("NewFromString_meta_business", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewConnectSocialAccountsRequestPlatformFromString("meta_business")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ConnectSocialAccountsRequestPlatform("meta_business"), val, "enum value should match expected wire value")
-	})
-
 	t.Run("NewFromString_tiktok", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewConnectSocialAccountsRequestPlatformFromString("tiktok")
@@ -4104,7 +4097,7 @@ func TestEnumConnectSocialAccountsRequestPlatform(t *testing.T) {
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewConnectSocialAccountsRequestPlatformFromString("meta_business")
+		val, err := NewConnectSocialAccountsRequestPlatformFromString("tiktok")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

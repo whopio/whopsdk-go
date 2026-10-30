@@ -4049,13 +4049,6 @@ func TestStringListExternalAccountsResponsePageInfo(t *testing.T) {
 }
 
 func TestEnumConnectExternalAccountsRequestPlatform(t *testing.T) {
-	t.Run("NewFromString_meta_business", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewConnectExternalAccountsRequestPlatformFromString("meta_business")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ConnectExternalAccountsRequestPlatform("meta_business"), val, "enum value should match expected wire value")
-	})
-
 	t.Run("NewFromString_tiktok", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewConnectExternalAccountsRequestPlatformFromString("tiktok")
@@ -4104,7 +4097,7 @@ func TestEnumConnectExternalAccountsRequestPlatform(t *testing.T) {
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewConnectExternalAccountsRequestPlatformFromString("meta_business")
+		val, err := NewConnectExternalAccountsRequestPlatformFromString("tiktok")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
