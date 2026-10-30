@@ -371,8 +371,8 @@ type ExternalAccount struct {
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
 	// The external account this one belongs to on the platform, such as the Facebook page that owns an Instagram account. Null when the external account stands on its own, or when it is a partner.
 	ParentExternalAccount *ExternalAccountParent `json:"parent_external_account,omitempty" url:"parent_external_account,omitempty"`
-	// Where a partner creator's permission to run partnership ads stands. `pending` until the creator approves it in the Instagram app, `approved` once they have, and `revoked` once it no longer holds. Null when the external account isn't a partner.
-	PartnershipStatus *ExternalAccountPartnershipStatus `json:"partnership_status,omitempty" url:"partnership_status,omitempty"`
+	// Always `null`. Partnership ads are no longer available.
+	PartnershipStatus *string `json:"partnership_status,omitempty" url:"partnership_status,omitempty"`
 	// The platform the external account exists on.
 	Platform ExternalAccountPlatform `json:"platform" url:"platform"`
 	// The URL where the profile picture of the external account can be accessed.
@@ -427,7 +427,7 @@ func (e *ExternalAccount) GetParentExternalAccount() *ExternalAccountParent {
 	return e.ParentExternalAccount
 }
 
-func (e *ExternalAccount) GetPartnershipStatus() *ExternalAccountPartnershipStatus {
+func (e *ExternalAccount) GetPartnershipStatus() *string {
 	if e == nil {
 		return nil
 	}
@@ -529,7 +529,7 @@ func (e *ExternalAccount) SetParentExternalAccount(parentExternalAccount *Extern
 
 // SetPartnershipStatus sets the PartnershipStatus field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (e *ExternalAccount) SetPartnershipStatus(partnershipStatus *ExternalAccountPartnershipStatus) {
+func (e *ExternalAccount) SetPartnershipStatus(partnershipStatus *string) {
 	e.PartnershipStatus = partnershipStatus
 	e.require(externalAccountFieldPartnershipStatus)
 }
@@ -873,32 +873,6 @@ func NewExternalAccountParentPlatformFromString(s string) (ExternalAccountParent
 }
 
 func (e ExternalAccountParentPlatform) Ptr() *ExternalAccountParentPlatform {
-	return &e
-}
-
-// Where a partner creator's permission to run partnership ads stands. `pending` until the creator approves it in the Instagram app, `approved` once they have, and `revoked` once it no longer holds. Null when the external account isn't a partner.
-type ExternalAccountPartnershipStatus string
-
-const (
-	ExternalAccountPartnershipStatusPending  ExternalAccountPartnershipStatus = "pending"
-	ExternalAccountPartnershipStatusApproved ExternalAccountPartnershipStatus = "approved"
-	ExternalAccountPartnershipStatusRevoked  ExternalAccountPartnershipStatus = "revoked"
-)
-
-func NewExternalAccountPartnershipStatusFromString(s string) (ExternalAccountPartnershipStatus, error) {
-	switch s {
-	case "pending":
-		return ExternalAccountPartnershipStatusPending, nil
-	case "approved":
-		return ExternalAccountPartnershipStatusApproved, nil
-	case "revoked":
-		return ExternalAccountPartnershipStatusRevoked, nil
-	}
-	var t ExternalAccountPartnershipStatus
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (e ExternalAccountPartnershipStatus) Ptr() *ExternalAccountPartnershipStatus {
 	return &e
 }
 

@@ -895,7 +895,7 @@ func TestSettersExternalAccount(t *testing.T) {
 
 	t.Run("SetPartnershipStatus", func(t *testing.T) {
 		obj := &ExternalAccount{}
-		var fernTestValuePartnershipStatus *ExternalAccountPartnershipStatus
+		var fernTestValuePartnershipStatus *string
 		obj.SetPartnershipStatus(fernTestValuePartnershipStatus)
 		assert.Equal(t, fernTestValuePartnershipStatus, obj.PartnershipStatus)
 		assert.NotNil(t, obj.explicitFields)
@@ -1111,7 +1111,7 @@ func TestGettersExternalAccount(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ExternalAccount{}
-		var expected *ExternalAccountPartnershipStatus
+		var expected *string
 		obj.PartnershipStatus = expected
 
 		// Act & Assert
@@ -1480,7 +1480,7 @@ func TestSettersMarkExplicitExternalAccount(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ExternalAccount{}
-		var fernTestValuePartnershipStatus *ExternalAccountPartnershipStatus
+		var fernTestValuePartnershipStatus *string
 
 		// Act
 		obj.SetPartnershipStatus(fernTestValuePartnershipStatus)
@@ -4212,42 +4212,6 @@ func TestEnumExternalAccountParentPlatform(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewExternalAccountParentPlatformFromString("x")
-		assert.NoError(t, err)
-		ptr := val.Ptr()
-		assert.NotNil(t, ptr)
-		assert.Equal(t, val, *ptr)
-	})
-}
-
-func TestEnumExternalAccountPartnershipStatus(t *testing.T) {
-	t.Run("NewFromString_pending", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewExternalAccountPartnershipStatusFromString("pending")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ExternalAccountPartnershipStatus("pending"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_approved", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewExternalAccountPartnershipStatusFromString("approved")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ExternalAccountPartnershipStatus("approved"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_revoked", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewExternalAccountPartnershipStatusFromString("revoked")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ExternalAccountPartnershipStatus("revoked"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewExternalAccountPartnershipStatusFromString("invalid_value_that_does_not_exist")
-		assert.Error(t, err)
-	})
-
-	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewExternalAccountPartnershipStatusFromString("pending")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
