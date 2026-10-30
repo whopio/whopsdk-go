@@ -353,17 +353,18 @@ var (
 	disputeFieldEvidenceLockedReason = big.NewInt(1 << 9)
 	disputeFieldEvidenceSubmittedAt  = big.NewInt(1 << 10)
 	disputeFieldFee                  = big.NewInt(1 << 11)
-	disputeFieldID                   = big.NewInt(1 << 12)
-	disputeFieldInquiry              = big.NewInt(1 << 13)
-	disputeFieldIssuerComments       = big.NewInt(1 << 14)
-	disputeFieldLineItems            = big.NewInt(1 << 15)
-	disputeFieldPayment              = big.NewInt(1 << 16)
-	disputeFieldProductID            = big.NewInt(1 << 17)
-	disputeFieldReason               = big.NewInt(1 << 18)
-	disputeFieldReasonCode           = big.NewInt(1 << 19)
-	disputeFieldStatus               = big.NewInt(1 << 20)
-	disputeFieldUpdatedAt            = big.NewInt(1 << 21)
-	disputeFieldVariantID            = big.NewInt(1 << 22)
+	disputeFieldFeeCharged           = big.NewInt(1 << 12)
+	disputeFieldID                   = big.NewInt(1 << 13)
+	disputeFieldInquiry              = big.NewInt(1 << 14)
+	disputeFieldIssuerComments       = big.NewInt(1 << 15)
+	disputeFieldLineItems            = big.NewInt(1 << 16)
+	disputeFieldPayment              = big.NewInt(1 << 17)
+	disputeFieldProductID            = big.NewInt(1 << 18)
+	disputeFieldReason               = big.NewInt(1 << 19)
+	disputeFieldReasonCode           = big.NewInt(1 << 20)
+	disputeFieldStatus               = big.NewInt(1 << 21)
+	disputeFieldUpdatedAt            = big.NewInt(1 << 22)
+	disputeFieldVariantID            = big.NewInt(1 << 23)
 )
 
 // disputeNullableFields maps the wire names of Dispute's nullable fields (required or optional) to their field bits.
@@ -401,8 +402,10 @@ type Dispute struct {
 	EvidenceLockedReason *DisputeEvidenceLockedReason `json:"evidence_locked_reason,omitempty" url:"evidence_locked_reason,omitempty"`
 	// When the evidence was submitted to the processor, as an ISO 8601 timestamp.
 	EvidenceSubmittedAt *string `json:"evidence_submitted_at,omitempty" url:"evidence_submitted_at,omitempty"`
-	// The dispute fee charged to the seller, in the currency it was collected in. `null` when no fee was charged, such as for an inquiry or a Visa RDR resolution.
+	// The dispute fee charged to the account, in the currency it was collected in. `null` when `fee_charged` is false.
 	Fee *Money `json:"fee,omitempty" url:"fee,omitempty"`
+	// Whether Whop charged the account a dispute fee for this one. `false` when the payment was fully refunded before the dispute was opened, for a Visa RDR resolution, and for an inquiry.
+	FeeCharged bool `json:"fee_charged" url:"fee_charged"`
 	// Dispute ID, prefixed `dspt_`.
 	ID string `json:"id" url:"id"`
 	// Whether this is a pre-dispute inquiry rather than a formal chargeback. Inquiries follow the same lifecycle but move no funds unless one escalates.
@@ -513,6 +516,13 @@ func (d *Dispute) GetFee() *Money {
 		return nil
 	}
 	return d.Fee
+}
+
+func (d *Dispute) GetFeeCharged() bool {
+	if d == nil {
+		return false
+	}
+	return d.FeeCharged
 }
 
 func (d *Dispute) GetID() string {
@@ -690,6 +700,13 @@ func (d *Dispute) SetEvidenceSubmittedAt(evidenceSubmittedAt *string) {
 func (d *Dispute) SetFee(fee *Money) {
 	d.Fee = fee
 	d.require(disputeFieldFee)
+}
+
+// SetFeeCharged sets the FeeCharged field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *Dispute) SetFeeCharged(feeCharged bool) {
+	d.FeeCharged = feeCharged
+	d.require(disputeFieldFeeCharged)
 }
 
 // SetID sets the ID field and marks it as non-optional;
