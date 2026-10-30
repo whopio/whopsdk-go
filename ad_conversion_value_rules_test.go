@@ -1782,14 +1782,6 @@ func TestSettersMarkExplicitAdConversionValueRuleEvent(t *testing.T) {
 }
 
 func TestSettersAdConversionValueRuleTarget(t *testing.T) {
-	t.Run("SetPlatform", func(t *testing.T) {
-		obj := &AdConversionValueRuleTarget{}
-		var fernTestValuePlatform AdConversionValueRuleTargetPlatform
-		obj.SetPlatform(fernTestValuePlatform)
-		assert.Equal(t, fernTestValuePlatform, obj.Platform)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetResourceID", func(t *testing.T) {
 		obj := &AdConversionValueRuleTarget{}
 		var fernTestValueResourceID *string
@@ -1817,29 +1809,6 @@ func TestSettersAdConversionValueRuleTarget(t *testing.T) {
 }
 
 func TestGettersAdConversionValueRuleTarget(t *testing.T) {
-	t.Run("GetPlatform", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &AdConversionValueRuleTarget{}
-		var expected AdConversionValueRuleTargetPlatform
-		obj.Platform = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetPlatform(), "getter should return the property value")
-	})
-
-	t.Run("GetPlatform_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *AdConversionValueRuleTarget
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetPlatform() // Should return zero value
-	})
-
 	t.Run("GetResourceID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -1932,37 +1901,6 @@ func TestGettersAdConversionValueRuleTarget(t *testing.T) {
 }
 
 func TestSettersMarkExplicitAdConversionValueRuleTarget(t *testing.T) {
-	t.Run("SetPlatform_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &AdConversionValueRuleTarget{}
-		var fernTestValuePlatform AdConversionValueRuleTargetPlatform
-
-		// Act
-		obj.SetPlatform(fernTestValuePlatform)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
 	t.Run("SetResourceID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -2335,14 +2273,6 @@ func TestSettersMarkExplicitCreateAdConversionValueRulesRequestFixedValue(t *tes
 }
 
 func TestSettersCreateAdConversionValueRulesRequestTargetsItem(t *testing.T) {
-	t.Run("SetPlatform", func(t *testing.T) {
-		obj := &CreateAdConversionValueRulesRequestTargetsItem{}
-		var fernTestValuePlatform *CreateAdConversionValueRulesRequestTargetsItemPlatform
-		obj.SetPlatform(fernTestValuePlatform)
-		assert.Equal(t, fernTestValuePlatform, obj.Platform)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetResourceID", func(t *testing.T) {
 		obj := &CreateAdConversionValueRulesRequestTargetsItem{}
 		var fernTestValueResourceID *string
@@ -2362,39 +2292,6 @@ func TestSettersCreateAdConversionValueRulesRequestTargetsItem(t *testing.T) {
 }
 
 func TestGettersCreateAdConversionValueRulesRequestTargetsItem(t *testing.T) {
-	t.Run("GetPlatform", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateAdConversionValueRulesRequestTargetsItem{}
-		var expected *CreateAdConversionValueRulesRequestTargetsItemPlatform
-		obj.Platform = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetPlatform(), "getter should return the property value")
-	})
-
-	t.Run("GetPlatform_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateAdConversionValueRulesRequestTargetsItem{}
-		obj.Platform = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetPlatform(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetPlatform_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *CreateAdConversionValueRulesRequestTargetsItem
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetPlatform() // Should return zero value
-	})
-
 	t.Run("GetResourceID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -2454,37 +2351,6 @@ func TestGettersCreateAdConversionValueRulesRequestTargetsItem(t *testing.T) {
 }
 
 func TestSettersMarkExplicitCreateAdConversionValueRulesRequestTargetsItem(t *testing.T) {
-	t.Run("SetPlatform_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateAdConversionValueRulesRequestTargetsItem{}
-		var fernTestValuePlatform *CreateAdConversionValueRulesRequestTargetsItemPlatform
-
-		// Act
-		obj.SetPlatform(fernTestValuePlatform)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
 	t.Run("SetResourceID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -3389,14 +3255,6 @@ func TestSettersMarkExplicitUpdateAdConversionValueRulesRequestFixedValue(t *tes
 }
 
 func TestSettersUpdateAdConversionValueRulesRequestTargetsItem(t *testing.T) {
-	t.Run("SetPlatform", func(t *testing.T) {
-		obj := &UpdateAdConversionValueRulesRequestTargetsItem{}
-		var fernTestValuePlatform *UpdateAdConversionValueRulesRequestTargetsItemPlatform
-		obj.SetPlatform(fernTestValuePlatform)
-		assert.Equal(t, fernTestValuePlatform, obj.Platform)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetResourceID", func(t *testing.T) {
 		obj := &UpdateAdConversionValueRulesRequestTargetsItem{}
 		var fernTestValueResourceID *string
@@ -3416,39 +3274,6 @@ func TestSettersUpdateAdConversionValueRulesRequestTargetsItem(t *testing.T) {
 }
 
 func TestGettersUpdateAdConversionValueRulesRequestTargetsItem(t *testing.T) {
-	t.Run("GetPlatform", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &UpdateAdConversionValueRulesRequestTargetsItem{}
-		var expected *UpdateAdConversionValueRulesRequestTargetsItemPlatform
-		obj.Platform = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetPlatform(), "getter should return the property value")
-	})
-
-	t.Run("GetPlatform_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &UpdateAdConversionValueRulesRequestTargetsItem{}
-		obj.Platform = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetPlatform(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetPlatform_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *UpdateAdConversionValueRulesRequestTargetsItem
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetPlatform() // Should return zero value
-	})
-
 	t.Run("GetResourceID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -3508,37 +3333,6 @@ func TestGettersUpdateAdConversionValueRulesRequestTargetsItem(t *testing.T) {
 }
 
 func TestSettersMarkExplicitUpdateAdConversionValueRulesRequestTargetsItem(t *testing.T) {
-	t.Run("SetPlatform_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &UpdateAdConversionValueRulesRequestTargetsItem{}
-		var fernTestValuePlatform *UpdateAdConversionValueRulesRequestTargetsItemPlatform
-
-		// Act
-		obj.SetPlatform(fernTestValuePlatform)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
 	t.Run("SetResourceID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -5051,42 +4845,6 @@ func TestEnumAdConversionValueRuleStatus(t *testing.T) {
 	})
 }
 
-func TestEnumAdConversionValueRuleTargetPlatform(t *testing.T) {
-	t.Run("NewFromString_tiktok", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewAdConversionValueRuleTargetPlatformFromString("tiktok")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, AdConversionValueRuleTargetPlatform("tiktok"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_meta", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewAdConversionValueRuleTargetPlatformFromString("meta")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, AdConversionValueRuleTargetPlatform("meta"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_google", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewAdConversionValueRuleTargetPlatformFromString("google")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, AdConversionValueRuleTargetPlatform("google"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewAdConversionValueRuleTargetPlatformFromString("invalid_value_that_does_not_exist")
-		assert.Error(t, err)
-	})
-
-	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewAdConversionValueRuleTargetPlatformFromString("tiktok")
-		assert.NoError(t, err)
-		ptr := val.Ptr()
-		assert.NotNil(t, ptr)
-		assert.Equal(t, val, *ptr)
-	})
-}
-
 func TestEnumAdConversionValueRuleTargetScope(t *testing.T) {
 	t.Run("NewFromString_business", func(t *testing.T) {
 		t.Parallel()
@@ -5273,42 +5031,6 @@ func TestEnumCreateAdConversionValueRulesRequestStatus(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewCreateAdConversionValueRulesRequestStatusFromString("active")
-		assert.NoError(t, err)
-		ptr := val.Ptr()
-		assert.NotNil(t, ptr)
-		assert.Equal(t, val, *ptr)
-	})
-}
-
-func TestEnumCreateAdConversionValueRulesRequestTargetsItemPlatform(t *testing.T) {
-	t.Run("NewFromString_tiktok", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateAdConversionValueRulesRequestTargetsItemPlatformFromString("tiktok")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateAdConversionValueRulesRequestTargetsItemPlatform("tiktok"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_meta", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateAdConversionValueRulesRequestTargetsItemPlatformFromString("meta")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateAdConversionValueRulesRequestTargetsItemPlatform("meta"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_google", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateAdConversionValueRulesRequestTargetsItemPlatformFromString("google")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateAdConversionValueRulesRequestTargetsItemPlatform("google"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewCreateAdConversionValueRulesRequestTargetsItemPlatformFromString("invalid_value_that_does_not_exist")
-		assert.Error(t, err)
-	})
-
-	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewCreateAdConversionValueRulesRequestTargetsItemPlatformFromString("tiktok")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -5589,42 +5311,6 @@ func TestEnumUpdateAdConversionValueRulesRequestEventsItemEventName(t *testing.T
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewUpdateAdConversionValueRulesRequestEventsItemEventNameFromString("purchase")
-		assert.NoError(t, err)
-		ptr := val.Ptr()
-		assert.NotNil(t, ptr)
-		assert.Equal(t, val, *ptr)
-	})
-}
-
-func TestEnumUpdateAdConversionValueRulesRequestTargetsItemPlatform(t *testing.T) {
-	t.Run("NewFromString_tiktok", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateAdConversionValueRulesRequestTargetsItemPlatformFromString("tiktok")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateAdConversionValueRulesRequestTargetsItemPlatform("tiktok"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_meta", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateAdConversionValueRulesRequestTargetsItemPlatformFromString("meta")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateAdConversionValueRulesRequestTargetsItemPlatform("meta"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_google", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUpdateAdConversionValueRulesRequestTargetsItemPlatformFromString("google")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateAdConversionValueRulesRequestTargetsItemPlatform("google"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewUpdateAdConversionValueRulesRequestTargetsItemPlatformFromString("invalid_value_that_does_not_exist")
-		assert.Error(t, err)
-	})
-
-	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewUpdateAdConversionValueRulesRequestTargetsItemPlatformFromString("tiktok")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
