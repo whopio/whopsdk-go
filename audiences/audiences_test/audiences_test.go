@@ -116,22 +116,6 @@ func TestAudiencesCreateWithWireMock(
 	)
 	request := &whopsdk.CreateAudiencesRequest{
 		AccountID: "biz_xxxxxxxxxxxxxx",
-		Engagement: &whopsdk.CreateAudiencesRequestEngagement{
-			Include: []*whopsdk.AudienceEngagementRule{
-				&whopsdk.AudienceEngagementRule{
-					FacebookPage: &whopsdk.AudienceEngagementFacebookPageRule{
-						Event:             whopsdk.AudienceEngagementFacebookPageRuleEventEngaged,
-						ExternalAccountID: "sacc_xxxxxxxxxxxxxx",
-						RetentionDays:     30,
-					},
-				},
-			},
-			Platform: whopsdk.CreateAudiencesRequestEngagementPlatformMeta,
-		},
-		Name: whopsdk.String(
-			"Page engagers",
-		),
-		SourceType: whopsdk.CreateAudiencesRequestSourceTypeEngagement.Ptr(),
 	}
 	_, invocationErr := client.Audiences.Create(
 		context.TODO(),

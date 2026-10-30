@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-10-29-3"
+		apiVersionDateDefault := "2026-10-29-4"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -121,28 +121,12 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Creates a custom audience from a customer list, your account's Whop People data, or engagement with videos, lead forms, Instagram profiles, or Facebook pages, or a lookalike audience that reaches people similar to an existing one. Processing runs asynchronously. A custom audience returns one audience; a lookalike returns the requested similarity bands in `data`.
+// Creates a custom audience from a customer list or your account's Whop People data, or a lookalike audience that reaches people similar to an existing one. Processing runs asynchronously. A custom audience returns one audience; a lookalike returns the requested similarity bands in `data`.
 //
 // Example:
 //
 //	request := &whopsdk.CreateAudiencesRequest{
 //	    AccountID: "biz_xxxxxxxxxxxxxx",
-//	    Engagement: &whopsdk.CreateAudiencesRequestEngagement{
-//	        Include: []*whopsdk.AudienceEngagementRule{
-//	            &whopsdk.AudienceEngagementRule{
-//	                FacebookPage: &whopsdk.AudienceEngagementFacebookPageRule{
-//	                    Event: whopsdk.AudienceEngagementFacebookPageRuleEventEngaged,
-//	                    ExternalAccountID: "sacc_xxxxxxxxxxxxxx",
-//	                    RetentionDays: 30,
-//	                },
-//	            },
-//	        },
-//	        Platform: whopsdk.CreateAudiencesRequestEngagementPlatformMeta,
-//	    },
-//	    Name: whopsdk.String(
-//	        "Page engagers",
-//	    ),
-//	    SourceType: whopsdk.CreateAudiencesRequestSourceTypeEngagement.Ptr(),
 //	}
 //	client.Audiences.Create(
 //	    context.TODO(),

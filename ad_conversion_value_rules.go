@@ -25,7 +25,7 @@ type CreateAdConversionValueRulesRequest struct {
 	// Business that owns the rule.
 	AccountID      string                                            `json:"account_id" url:"-"`
 	AdjustmentType CreateAdConversionValueRulesRequestAdjustmentType `json:"adjustment_type" url:"-"`
-	// Events adjusted on every selected target. Every platform must support every selected event.
+	// Events adjusted on every selected target. A network that doesn't support a named custom event leaves it out.
 	Events     []*CreateAdConversionValueRulesRequestEventsItem `json:"events" url:"-"`
 	FixedValue *CreateAdConversionValueRulesRequestFixedValue   `json:"fixed_value,omitempty" url:"-"`
 	Metadata   map[string]string                                `json:"metadata,omitempty" url:"-"`
@@ -35,7 +35,7 @@ type CreateAdConversionValueRulesRequest struct {
 	ReplaceRuleIDs []string `json:"replace_rule_ids,omitempty" url:"-"`
 	// Initial rule status. Defaults to active.
 	Status *CreateAdConversionValueRulesRequestStatus `json:"status,omitempty" url:"-"`
-	// Targets sharing one scope. Every selected event applies to every target. At most 500 target and event combinations.
+	// Targets sharing one scope. Each target covers every network Whop runs it on, and every selected event applies to every target. At most 500 target, network, and event combinations.
 	Targets []*CreateAdConversionValueRulesRequestTargetsItem `json:"targets" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -814,10 +814,9 @@ func (a AdConversionValueRuleStatus) Ptr() *AdConversionValueRuleStatus {
 }
 
 var (
-	adConversionValueRuleTargetFieldPlatform      = big.NewInt(1 << 0)
-	adConversionValueRuleTargetFieldResourceID    = big.NewInt(1 << 1)
-	adConversionValueRuleTargetFieldResourceTitle = big.NewInt(1 << 2)
-	adConversionValueRuleTargetFieldScope         = big.NewInt(1 << 3)
+	adConversionValueRuleTargetFieldResourceID    = big.NewInt(1 << 0)
+	adConversionValueRuleTargetFieldResourceTitle = big.NewInt(1 << 1)
+	adConversionValueRuleTargetFieldScope         = big.NewInt(1 << 2)
 )
 
 // adConversionValueRuleTargetNullableFields maps the wire names of AdConversionValueRuleTarget's nullable fields (required or optional) to their field bits.
@@ -827,8 +826,6 @@ var adConversionValueRuleTargetNullableFields = map[string]*big.Int{
 }
 
 type AdConversionValueRuleTarget struct {
-	// Ad platform that receives the adjusted value.
-	Platform AdConversionValueRuleTargetPlatform `json:"platform" url:"platform"`
 	// Selected campaign, ad group, or ad ID. Null for a business target.
 	ResourceID *string `json:"resource_id,omitempty" url:"resource_id,omitempty"`
 	// Name of the selected item. Null when it is no longer available.
@@ -841,13 +838,6 @@ type AdConversionValueRuleTarget struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
-}
-
-func (a *AdConversionValueRuleTarget) GetPlatform() AdConversionValueRuleTargetPlatform {
-	if a == nil {
-		return ""
-	}
-	return a.Platform
 }
 
 func (a *AdConversionValueRuleTarget) GetResourceID() *string {
@@ -885,13 +875,6 @@ func (a *AdConversionValueRuleTarget) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	a.explicitFields = next
-}
-
-// SetPlatform sets the Platform field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdConversionValueRuleTarget) SetPlatform(platform AdConversionValueRuleTargetPlatform) {
-	a.Platform = platform
-	a.require(adConversionValueRuleTargetFieldPlatform)
 }
 
 // SetResourceID sets the ResourceID field and marks it as non-optional;
@@ -964,32 +947,6 @@ func (a *AdConversionValueRuleTarget) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// Ad platform that receives the adjusted value.
-type AdConversionValueRuleTargetPlatform string
-
-const (
-	AdConversionValueRuleTargetPlatformTiktok AdConversionValueRuleTargetPlatform = "tiktok"
-	AdConversionValueRuleTargetPlatformMeta   AdConversionValueRuleTargetPlatform = "meta"
-	AdConversionValueRuleTargetPlatformGoogle AdConversionValueRuleTargetPlatform = "google"
-)
-
-func NewAdConversionValueRuleTargetPlatformFromString(s string) (AdConversionValueRuleTargetPlatform, error) {
-	switch s {
-	case "tiktok":
-		return AdConversionValueRuleTargetPlatformTiktok, nil
-	case "meta":
-		return AdConversionValueRuleTargetPlatformMeta, nil
-	case "google":
-		return AdConversionValueRuleTargetPlatformGoogle, nil
-	}
-	var t AdConversionValueRuleTargetPlatform
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (a AdConversionValueRuleTargetPlatform) Ptr() *AdConversionValueRuleTargetPlatform {
-	return &a
-}
-
 // Business, campaign, ad group, or ad covered by this target.
 type AdConversionValueRuleTargetScope string
 
@@ -1052,7 +1009,7 @@ var createAdConversionValueRulesRequestEventsItemNullableFields = map[string]*bi
 }
 
 type CreateAdConversionValueRulesRequestEventsItem struct {
-	// Exact custom event name. Required for custom events; `null` for standard events. Google does not support named custom events.
+	// Exact custom event name. Required for custom events; `null` for standard events.
 	CustomName *string                                                `json:"custom_name,omitempty" url:"custom_name,omitempty"`
 	EventName  CreateAdConversionValueRulesRequestEventsItemEventName `json:"event_name" url:"event_name"`
 
@@ -1332,9 +1289,8 @@ func (c CreateAdConversionValueRulesRequestStatus) Ptr() *CreateAdConversionValu
 }
 
 var (
-	createAdConversionValueRulesRequestTargetsItemFieldPlatform   = big.NewInt(1 << 0)
-	createAdConversionValueRulesRequestTargetsItemFieldResourceID = big.NewInt(1 << 1)
-	createAdConversionValueRulesRequestTargetsItemFieldScope      = big.NewInt(1 << 2)
+	createAdConversionValueRulesRequestTargetsItemFieldResourceID = big.NewInt(1 << 0)
+	createAdConversionValueRulesRequestTargetsItemFieldScope      = big.NewInt(1 << 1)
 )
 
 // createAdConversionValueRulesRequestTargetsItemNullableFields maps the wire names of CreateAdConversionValueRulesRequestTargetsItem's nullable fields (required or optional) to their field bits.
@@ -1343,8 +1299,6 @@ var createAdConversionValueRulesRequestTargetsItemNullableFields = map[string]*b
 }
 
 type CreateAdConversionValueRulesRequestTargetsItem struct {
-	// Limits the target to one network. Omit it to cover every network Whop runs the target on.
-	Platform *CreateAdConversionValueRulesRequestTargetsItemPlatform `json:"platform,omitempty" url:"platform,omitempty"`
 	// Campaign, ad group, or ad ID. Null for a business target.
 	ResourceID *string                                             `json:"resource_id,omitempty" url:"resource_id,omitempty"`
 	Scope      CreateAdConversionValueRulesRequestTargetsItemScope `json:"scope" url:"scope"`
@@ -1354,13 +1308,6 @@ type CreateAdConversionValueRulesRequestTargetsItem struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
-}
-
-func (c *CreateAdConversionValueRulesRequestTargetsItem) GetPlatform() *CreateAdConversionValueRulesRequestTargetsItemPlatform {
-	if c == nil {
-		return nil
-	}
-	return c.Platform
 }
 
 func (c *CreateAdConversionValueRulesRequestTargetsItem) GetResourceID() *string {
@@ -1391,13 +1338,6 @@ func (c *CreateAdConversionValueRulesRequestTargetsItem) require(field *big.Int)
 	}
 	next.Or(next, field)
 	c.explicitFields = next
-}
-
-// SetPlatform sets the Platform field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdConversionValueRulesRequestTargetsItem) SetPlatform(platform *CreateAdConversionValueRulesRequestTargetsItemPlatform) {
-	c.Platform = platform
-	c.require(createAdConversionValueRulesRequestTargetsItemFieldPlatform)
 }
 
 // SetResourceID sets the ResourceID field and marks it as non-optional;
@@ -1461,32 +1401,6 @@ func (c *CreateAdConversionValueRulesRequestTargetsItem) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", c)
-}
-
-// Limits the target to one network. Omit it to cover every network Whop runs the target on.
-type CreateAdConversionValueRulesRequestTargetsItemPlatform string
-
-const (
-	CreateAdConversionValueRulesRequestTargetsItemPlatformTiktok CreateAdConversionValueRulesRequestTargetsItemPlatform = "tiktok"
-	CreateAdConversionValueRulesRequestTargetsItemPlatformMeta   CreateAdConversionValueRulesRequestTargetsItemPlatform = "meta"
-	CreateAdConversionValueRulesRequestTargetsItemPlatformGoogle CreateAdConversionValueRulesRequestTargetsItemPlatform = "google"
-)
-
-func NewCreateAdConversionValueRulesRequestTargetsItemPlatformFromString(s string) (CreateAdConversionValueRulesRequestTargetsItemPlatform, error) {
-	switch s {
-	case "tiktok":
-		return CreateAdConversionValueRulesRequestTargetsItemPlatformTiktok, nil
-	case "meta":
-		return CreateAdConversionValueRulesRequestTargetsItemPlatformMeta, nil
-	case "google":
-		return CreateAdConversionValueRulesRequestTargetsItemPlatformGoogle, nil
-	}
-	var t CreateAdConversionValueRulesRequestTargetsItemPlatform
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CreateAdConversionValueRulesRequestTargetsItemPlatform) Ptr() *CreateAdConversionValueRulesRequestTargetsItemPlatform {
-	return &c
 }
 
 type CreateAdConversionValueRulesRequestTargetsItemScope string
@@ -1989,7 +1903,7 @@ var updateAdConversionValueRulesRequestEventsItemNullableFields = map[string]*bi
 }
 
 type UpdateAdConversionValueRulesRequestEventsItem struct {
-	// Exact custom event name. Required for custom events; `null` for standard events. Google does not support named custom events.
+	// Exact custom event name. Required for custom events; `null` for standard events.
 	CustomName *string                                                `json:"custom_name,omitempty" url:"custom_name,omitempty"`
 	EventName  UpdateAdConversionValueRulesRequestEventsItemEventName `json:"event_name" url:"event_name"`
 
@@ -2246,9 +2160,8 @@ func (u *UpdateAdConversionValueRulesRequestFixedValue) String() string {
 }
 
 var (
-	updateAdConversionValueRulesRequestTargetsItemFieldPlatform   = big.NewInt(1 << 0)
-	updateAdConversionValueRulesRequestTargetsItemFieldResourceID = big.NewInt(1 << 1)
-	updateAdConversionValueRulesRequestTargetsItemFieldScope      = big.NewInt(1 << 2)
+	updateAdConversionValueRulesRequestTargetsItemFieldResourceID = big.NewInt(1 << 0)
+	updateAdConversionValueRulesRequestTargetsItemFieldScope      = big.NewInt(1 << 1)
 )
 
 // updateAdConversionValueRulesRequestTargetsItemNullableFields maps the wire names of UpdateAdConversionValueRulesRequestTargetsItem's nullable fields (required or optional) to their field bits.
@@ -2257,8 +2170,6 @@ var updateAdConversionValueRulesRequestTargetsItemNullableFields = map[string]*b
 }
 
 type UpdateAdConversionValueRulesRequestTargetsItem struct {
-	// Limits the target to one network. Omit it to cover every network Whop runs the target on.
-	Platform *UpdateAdConversionValueRulesRequestTargetsItemPlatform `json:"platform,omitempty" url:"platform,omitempty"`
 	// Campaign, ad group, or ad ID. Null for a business target.
 	ResourceID *string                                             `json:"resource_id,omitempty" url:"resource_id,omitempty"`
 	Scope      UpdateAdConversionValueRulesRequestTargetsItemScope `json:"scope" url:"scope"`
@@ -2268,13 +2179,6 @@ type UpdateAdConversionValueRulesRequestTargetsItem struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
-}
-
-func (u *UpdateAdConversionValueRulesRequestTargetsItem) GetPlatform() *UpdateAdConversionValueRulesRequestTargetsItemPlatform {
-	if u == nil {
-		return nil
-	}
-	return u.Platform
 }
 
 func (u *UpdateAdConversionValueRulesRequestTargetsItem) GetResourceID() *string {
@@ -2305,13 +2209,6 @@ func (u *UpdateAdConversionValueRulesRequestTargetsItem) require(field *big.Int)
 	}
 	next.Or(next, field)
 	u.explicitFields = next
-}
-
-// SetPlatform sets the Platform field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdConversionValueRulesRequestTargetsItem) SetPlatform(platform *UpdateAdConversionValueRulesRequestTargetsItemPlatform) {
-	u.Platform = platform
-	u.require(updateAdConversionValueRulesRequestTargetsItemFieldPlatform)
 }
 
 // SetResourceID sets the ResourceID field and marks it as non-optional;
@@ -2375,32 +2272,6 @@ func (u *UpdateAdConversionValueRulesRequestTargetsItem) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", u)
-}
-
-// Limits the target to one network. Omit it to cover every network Whop runs the target on.
-type UpdateAdConversionValueRulesRequestTargetsItemPlatform string
-
-const (
-	UpdateAdConversionValueRulesRequestTargetsItemPlatformTiktok UpdateAdConversionValueRulesRequestTargetsItemPlatform = "tiktok"
-	UpdateAdConversionValueRulesRequestTargetsItemPlatformMeta   UpdateAdConversionValueRulesRequestTargetsItemPlatform = "meta"
-	UpdateAdConversionValueRulesRequestTargetsItemPlatformGoogle UpdateAdConversionValueRulesRequestTargetsItemPlatform = "google"
-)
-
-func NewUpdateAdConversionValueRulesRequestTargetsItemPlatformFromString(s string) (UpdateAdConversionValueRulesRequestTargetsItemPlatform, error) {
-	switch s {
-	case "tiktok":
-		return UpdateAdConversionValueRulesRequestTargetsItemPlatformTiktok, nil
-	case "meta":
-		return UpdateAdConversionValueRulesRequestTargetsItemPlatformMeta, nil
-	case "google":
-		return UpdateAdConversionValueRulesRequestTargetsItemPlatformGoogle, nil
-	}
-	var t UpdateAdConversionValueRulesRequestTargetsItemPlatform
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (u UpdateAdConversionValueRulesRequestTargetsItemPlatform) Ptr() *UpdateAdConversionValueRulesRequestTargetsItemPlatform {
-	return &u
 }
 
 type UpdateAdConversionValueRulesRequestTargetsItemScope string
@@ -2474,7 +2345,7 @@ type UpdateAdConversionValueRulesRequest struct {
 	// Conversion value rule ID, prefixed `adcvr_`.
 	ID             string                                             `json:"-" url:"-"`
 	AdjustmentType *UpdateAdConversionValueRulesRequestAdjustmentType `json:"adjustment_type,omitempty" url:"-"`
-	// Events adjusted on every selected target. Every platform must support every selected event.
+	// Events adjusted on every selected target. A network that doesn't support a named custom event leaves it out.
 	Events     []*UpdateAdConversionValueRulesRequestEventsItem `json:"events,omitempty" url:"-"`
 	FixedValue *UpdateAdConversionValueRulesRequestFixedValue   `json:"fixed_value,omitempty" url:"-"`
 	Metadata   map[string]string                                `json:"metadata,omitempty" url:"-"`
@@ -2482,7 +2353,7 @@ type UpdateAdConversionValueRulesRequest struct {
 	PercentageChange *float64 `json:"percentage_change,omitempty" url:"-"`
 	// Exact IDs of active rules whose overlapping selections will be replaced. Other selections keep their values; remaining selections may split into separate rules. Broader rules remain as fallbacks for other items. Rules left with no selections are paused. Stale or incomplete conflict selections fail.
 	ReplaceRuleIDs []string `json:"replace_rule_ids,omitempty" url:"-"`
-	// Targets sharing one scope. Every selected event applies to every target. At most 500 target and event combinations.
+	// Targets sharing one scope. Each target covers every network Whop runs it on, and every selected event applies to every target. At most 500 target, network, and event combinations.
 	Targets []*UpdateAdConversionValueRulesRequestTargetsItem `json:"targets,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

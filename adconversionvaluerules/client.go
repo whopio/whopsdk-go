@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-10-29-3"
+		apiVersionDateDefault := "2026-10-29-4"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -118,7 +118,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Creates one rule covering every selected target and event combination. Active rules cannot overlap for the same platform and event. Customer prices and Whop revenue stay unchanged.
+// Creates one rule covering every selected target and event combination. Active rules cannot overlap for the same target and event. Customer prices and Whop revenue stay unchanged.
 //
 // Example:
 //
