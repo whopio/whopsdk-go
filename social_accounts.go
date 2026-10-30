@@ -369,8 +369,8 @@ type SocialAccount struct {
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
 	// The social account this one belongs to on the platform, such as the Facebook page that owns an Instagram account. Null when the social account stands on its own, or when it is a partner.
 	ParentSocialAccount *SocialAccountParent `json:"parent_social_account,omitempty" url:"parent_social_account,omitempty"`
-	// Where a partner creator's permission to run partnership ads stands. `pending` until the creator approves it in the Instagram app, `approved` once they have, and `revoked` once it no longer holds. Null when the social account isn't a partner.
-	PartnershipStatus *SocialAccountPartnershipStatus `json:"partnership_status,omitempty" url:"partnership_status,omitempty"`
+	// Always `null`. Partnership ads are no longer available.
+	PartnershipStatus *string `json:"partnership_status,omitempty" url:"partnership_status,omitempty"`
 	// The platform the social account exists on.
 	Platform SocialAccountPlatform `json:"platform" url:"platform"`
 	// The URL where the profile picture of the social account can be accessed.
@@ -425,7 +425,7 @@ func (s *SocialAccount) GetParentSocialAccount() *SocialAccountParent {
 	return s.ParentSocialAccount
 }
 
-func (s *SocialAccount) GetPartnershipStatus() *SocialAccountPartnershipStatus {
+func (s *SocialAccount) GetPartnershipStatus() *string {
 	if s == nil {
 		return nil
 	}
@@ -527,7 +527,7 @@ func (s *SocialAccount) SetParentSocialAccount(parentSocialAccount *SocialAccoun
 
 // SetPartnershipStatus sets the PartnershipStatus field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SocialAccount) SetPartnershipStatus(partnershipStatus *SocialAccountPartnershipStatus) {
+func (s *SocialAccount) SetPartnershipStatus(partnershipStatus *string) {
 	s.PartnershipStatus = partnershipStatus
 	s.require(socialAccountFieldPartnershipStatus)
 }
@@ -877,32 +877,6 @@ func NewSocialAccountParentPlatformFromString(s string) (SocialAccountParentPlat
 }
 
 func (s SocialAccountParentPlatform) Ptr() *SocialAccountParentPlatform {
-	return &s
-}
-
-// Where a partner creator's permission to run partnership ads stands. `pending` until the creator approves it in the Instagram app, `approved` once they have, and `revoked` once it no longer holds. Null when the social account isn't a partner.
-type SocialAccountPartnershipStatus string
-
-const (
-	SocialAccountPartnershipStatusPending  SocialAccountPartnershipStatus = "pending"
-	SocialAccountPartnershipStatusApproved SocialAccountPartnershipStatus = "approved"
-	SocialAccountPartnershipStatusRevoked  SocialAccountPartnershipStatus = "revoked"
-)
-
-func NewSocialAccountPartnershipStatusFromString(s string) (SocialAccountPartnershipStatus, error) {
-	switch s {
-	case "pending":
-		return SocialAccountPartnershipStatusPending, nil
-	case "approved":
-		return SocialAccountPartnershipStatusApproved, nil
-	case "revoked":
-		return SocialAccountPartnershipStatusRevoked, nil
-	}
-	var t SocialAccountPartnershipStatus
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (s SocialAccountPartnershipStatus) Ptr() *SocialAccountPartnershipStatus {
 	return &s
 }
 

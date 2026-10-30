@@ -895,7 +895,7 @@ func TestSettersSocialAccount(t *testing.T) {
 
 	t.Run("SetPartnershipStatus", func(t *testing.T) {
 		obj := &SocialAccount{}
-		var fernTestValuePartnershipStatus *SocialAccountPartnershipStatus
+		var fernTestValuePartnershipStatus *string
 		obj.SetPartnershipStatus(fernTestValuePartnershipStatus)
 		assert.Equal(t, fernTestValuePartnershipStatus, obj.PartnershipStatus)
 		assert.NotNil(t, obj.explicitFields)
@@ -1111,7 +1111,7 @@ func TestGettersSocialAccount(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &SocialAccount{}
-		var expected *SocialAccountPartnershipStatus
+		var expected *string
 		obj.PartnershipStatus = expected
 
 		// Act & Assert
@@ -1480,7 +1480,7 @@ func TestSettersMarkExplicitSocialAccount(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &SocialAccount{}
-		var fernTestValuePartnershipStatus *SocialAccountPartnershipStatus
+		var fernTestValuePartnershipStatus *string
 
 		// Act
 		obj.SetPartnershipStatus(fernTestValuePartnershipStatus)
@@ -4462,42 +4462,6 @@ func TestEnumSocialAccountParentPlatform(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewSocialAccountParentPlatformFromString("x")
-		assert.NoError(t, err)
-		ptr := val.Ptr()
-		assert.NotNil(t, ptr)
-		assert.Equal(t, val, *ptr)
-	})
-}
-
-func TestEnumSocialAccountPartnershipStatus(t *testing.T) {
-	t.Run("NewFromString_pending", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewSocialAccountPartnershipStatusFromString("pending")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, SocialAccountPartnershipStatus("pending"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_approved", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewSocialAccountPartnershipStatusFromString("approved")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, SocialAccountPartnershipStatus("approved"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_revoked", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewSocialAccountPartnershipStatusFromString("revoked")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, SocialAccountPartnershipStatus("revoked"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewSocialAccountPartnershipStatusFromString("invalid_value_that_does_not_exist")
-		assert.Error(t, err)
-	})
-
-	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewSocialAccountPartnershipStatusFromString("pending")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
