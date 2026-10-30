@@ -139,7 +139,7 @@ func TestSocialAccountsConnectWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.ConnectSocialAccountsRequest{
-		Platform:    whopsdk.ConnectSocialAccountsRequestPlatformMetaBusiness,
+		Platform:    whopsdk.ConnectSocialAccountsRequestPlatformTiktok,
 		RedirectURL: "https://whop.com/dashboard/biz_xxxxxxxxxxxxxx/ads/settings",
 	}
 	_, invocationErr := client.SocialAccounts.Connect(

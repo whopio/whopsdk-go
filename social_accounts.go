@@ -19,11 +19,11 @@ var (
 type ConnectSocialAccountsRequest struct {
 	// The Account (biz_ identifier) to connect the external account for. An account-scoped API key may omit this to default to its own account. Omit for user profile connections.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
-	// The platform to connect the external account on. Use `meta_business` to connect Meta Business assets, which is how Facebook Pages and Instagram accounts are connected — there is no separate `instagram` value. Use `tiktok` for TikTok accounts, `snapchat` for Snapchat Public Profiles, `linkedin` to connect the authenticated user’s LinkedIn profile, `youtube` to connect their YouTube channel, or `x` to connect their X profile. Use `quickbooks` to connect the account’s QuickBooks Online company: pass `account_id`, omit `scopes`, and the user picks the company in QuickBooks.
+	// The platform to connect the external account on. Use `tiktok` to connect the authenticated user’s TikTok profile, `linkedin` for their LinkedIn profile, `youtube` for their YouTube channel, or `x` for their X profile. Use `snapchat` for Snapchat Public Profiles. Use `quickbooks` to connect the account’s QuickBooks Online company: pass `account_id`, omit `scopes`, and the user picks the company in QuickBooks.
 	Platform ConnectSocialAccountsRequestPlatform `json:"platform" url:"-"`
 	// Where to send the user once they finish connecting their accounts. Must be an `https` URL on whop.com; any other host is rejected. On success, the user is redirected with an `external_account_connected` query param naming the platform; if the connection fails, with an `external_account_error` query param instead. The same values also arrive as `social_account_connected` / `social_account_error`.
 	RedirectURL string `json:"redirect_url" url:"-"`
-	// The connection purpose. For `meta_business` and `snapchat`, `advertise` is required and connects company advertising assets. For `linkedin`, `youtube`, and `x`, omit scopes to connect the authenticated user’s profile; advertising is not supported. For `tiktok`, omit scopes to connect the authenticated user’s profile, or pass `advertise` to connect company advertising assets. For `quickbooks`, omit scopes; the connection belongs to the account in `account_id`. Profile connections still request the platform permissions needed to read the profile.
+	// The connection purpose. For `snapchat`, `advertise` is required and connects company advertising assets. For `linkedin`, `tiktok`, `youtube`, and `x`, omit scopes to connect the authenticated user’s profile. For `quickbooks`, omit scopes; the connection belongs to the account in `account_id`. Profile connections still request the platform permissions needed to read the profile.
 	Scopes []ConnectSocialAccountsRequestScopesItem `json:"scopes,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -933,23 +933,20 @@ func (s SocialAccountPlatform) Ptr() *SocialAccountPlatform {
 	return &s
 }
 
-// The platform to connect the external account on. Use `meta_business` to connect Meta Business assets, which is how Facebook Pages and Instagram accounts are connected — there is no separate `instagram` value. Use `tiktok` for TikTok accounts, `snapchat` for Snapchat Public Profiles, `linkedin` to connect the authenticated user’s LinkedIn profile, `youtube` to connect their YouTube channel, or `x` to connect their X profile. Use `quickbooks` to connect the account’s QuickBooks Online company: pass `account_id`, omit `scopes`, and the user picks the company in QuickBooks.
+// The platform to connect the external account on. Use `tiktok` to connect the authenticated user’s TikTok profile, `linkedin` for their LinkedIn profile, `youtube` for their YouTube channel, or `x` for their X profile. Use `snapchat` for Snapchat Public Profiles. Use `quickbooks` to connect the account’s QuickBooks Online company: pass `account_id`, omit `scopes`, and the user picks the company in QuickBooks.
 type ConnectSocialAccountsRequestPlatform string
 
 const (
-	ConnectSocialAccountsRequestPlatformMetaBusiness ConnectSocialAccountsRequestPlatform = "meta_business"
-	ConnectSocialAccountsRequestPlatformTiktok       ConnectSocialAccountsRequestPlatform = "tiktok"
-	ConnectSocialAccountsRequestPlatformLinkedin     ConnectSocialAccountsRequestPlatform = "linkedin"
-	ConnectSocialAccountsRequestPlatformYoutube      ConnectSocialAccountsRequestPlatform = "youtube"
-	ConnectSocialAccountsRequestPlatformX            ConnectSocialAccountsRequestPlatform = "x"
-	ConnectSocialAccountsRequestPlatformSnapchat     ConnectSocialAccountsRequestPlatform = "snapchat"
-	ConnectSocialAccountsRequestPlatformQuickbooks   ConnectSocialAccountsRequestPlatform = "quickbooks"
+	ConnectSocialAccountsRequestPlatformTiktok     ConnectSocialAccountsRequestPlatform = "tiktok"
+	ConnectSocialAccountsRequestPlatformLinkedin   ConnectSocialAccountsRequestPlatform = "linkedin"
+	ConnectSocialAccountsRequestPlatformYoutube    ConnectSocialAccountsRequestPlatform = "youtube"
+	ConnectSocialAccountsRequestPlatformX          ConnectSocialAccountsRequestPlatform = "x"
+	ConnectSocialAccountsRequestPlatformSnapchat   ConnectSocialAccountsRequestPlatform = "snapchat"
+	ConnectSocialAccountsRequestPlatformQuickbooks ConnectSocialAccountsRequestPlatform = "quickbooks"
 )
 
 func NewConnectSocialAccountsRequestPlatformFromString(s string) (ConnectSocialAccountsRequestPlatform, error) {
 	switch s {
-	case "meta_business":
-		return ConnectSocialAccountsRequestPlatformMetaBusiness, nil
 	case "tiktok":
 		return ConnectSocialAccountsRequestPlatformTiktok, nil
 	case "linkedin":

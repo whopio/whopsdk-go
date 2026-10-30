@@ -7159,7 +7159,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"authorize_url\": \"https://www.facebook.com/v25.0/dialog/oauth\"\n}",
+        "body": "{\n  \"authorize_url\": \"https://accounts.snapchat.com/login/oauth2/authorize\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -13747,7 +13747,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"authorize_url\": \"https://www.facebook.com/v25.0/dialog/oauth\"\n}",
+        "body": "{\n  \"authorize_url\": \"https://accounts.snapchat.com/login/oauth2/authorize\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -15465,7 +15465,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"api_version\": \"v1\",\n      \"api_version_date\": \"2026-10-29-5\",\n      \"child_resource_events\": false,\n      \"consecutive_failures\": 0,\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n      \"disabled_reason\": \"delivery_failures\",\n      \"enabled\": false,\n      \"events\": [\n        \"account.updated\"\n      ],\n      \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n      \"id\": \"hook_xxxxxxxxxxxxxx\",\n      \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n      \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"title\": \"title\",\n      \"url\": \"https://example.com/shine-time/whop\",\n      \"webhook_secret\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"api_version\": \"v1\",\n      \"api_version_date\": \"2026-10-29-8\",\n      \"child_resource_events\": false,\n      \"consecutive_failures\": 0,\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n      \"disabled_reason\": \"delivery_failures\",\n      \"enabled\": false,\n      \"events\": [\n        \"account.updated\"\n      ],\n      \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n      \"id\": \"hook_xxxxxxxxxxxxxx\",\n      \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n      \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"title\": \"title\",\n      \"url\": \"https://example.com/shine-time/whop\",\n      \"webhook_secret\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -15497,7 +15497,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-10-29-5\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"title\": \"Production\",\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
+        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-10-29-8\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"title\": \"Production\",\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -15533,7 +15533,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-10-29-5\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"title\": \"Production\",\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
+        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-10-29-8\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"title\": \"Production\",\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -15605,7 +15605,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-10-29-5\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"title\": \"Production\",\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
+        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-10-29-8\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"title\": \"Production\",\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
