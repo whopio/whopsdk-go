@@ -10372,6 +10372,416 @@ func TestSettersMarkExplicitAccountPreferences(t *testing.T) {
 
 }
 
+func TestSettersAccountProcessingOfferLevel(t *testing.T) {
+	t.Run("SetLevel", func(t *testing.T) {
+		obj := &AccountProcessingOfferLevel{}
+		var fernTestValueLevel int
+		obj.SetLevel(fernTestValueLevel)
+		assert.Equal(t, fernTestValueLevel, obj.Level)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetMinimumSpend", func(t *testing.T) {
+		obj := &AccountProcessingOfferLevel{}
+		var fernTestValueMinimumSpend *Money
+		obj.SetMinimumSpend(fernTestValueMinimumSpend)
+		assert.Equal(t, fernTestValueMinimumSpend, obj.MinimumSpend)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetProcessingRatePercentage", func(t *testing.T) {
+		obj := &AccountProcessingOfferLevel{}
+		var fernTestValueProcessingRatePercentage float64
+		obj.SetProcessingRatePercentage(fernTestValueProcessingRatePercentage)
+		assert.Equal(t, fernTestValueProcessingRatePercentage, obj.ProcessingRatePercentage)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetRegionalRates", func(t *testing.T) {
+		obj := &AccountProcessingOfferLevel{}
+		var fernTestValueRegionalRates []*AccountProcessingOfferRegionalRate
+		obj.SetRegionalRates(fernTestValueRegionalRates)
+		assert.Equal(t, fernTestValueRegionalRates, obj.RegionalRates)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersAccountProcessingOfferLevel(t *testing.T) {
+	t.Run("GetLevel", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountProcessingOfferLevel{}
+		var expected int
+		obj.Level = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetLevel(), "getter should return the property value")
+	})
+
+	t.Run("GetLevel_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountProcessingOfferLevel
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetLevel() // Should return zero value
+	})
+
+	t.Run("GetMinimumSpend", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountProcessingOfferLevel{}
+		var expected *Money
+		obj.MinimumSpend = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetMinimumSpend(), "getter should return the property value")
+	})
+
+	t.Run("GetMinimumSpend_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountProcessingOfferLevel{}
+		obj.MinimumSpend = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetMinimumSpend(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetMinimumSpend_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountProcessingOfferLevel
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetMinimumSpend() // Should return zero value
+	})
+
+	t.Run("GetProcessingRatePercentage", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountProcessingOfferLevel{}
+		var expected float64
+		obj.ProcessingRatePercentage = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetProcessingRatePercentage(), "getter should return the property value")
+	})
+
+	t.Run("GetProcessingRatePercentage_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountProcessingOfferLevel
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetProcessingRatePercentage() // Should return zero value
+	})
+
+	t.Run("GetRegionalRates", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountProcessingOfferLevel{}
+		var expected []*AccountProcessingOfferRegionalRate
+		obj.RegionalRates = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetRegionalRates(), "getter should return the property value")
+	})
+
+	t.Run("GetRegionalRates_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountProcessingOfferLevel{}
+		obj.RegionalRates = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetRegionalRates(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetRegionalRates_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountProcessingOfferLevel
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetRegionalRates() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitAccountProcessingOfferLevel(t *testing.T) {
+	t.Run("SetLevel_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountProcessingOfferLevel{}
+		var fernTestValueLevel int
+
+		// Act
+		obj.SetLevel(fernTestValueLevel)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetMinimumSpend_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountProcessingOfferLevel{}
+		var fernTestValueMinimumSpend *Money
+
+		// Act
+		obj.SetMinimumSpend(fernTestValueMinimumSpend)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetProcessingRatePercentage_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountProcessingOfferLevel{}
+		var fernTestValueProcessingRatePercentage float64
+
+		// Act
+		obj.SetProcessingRatePercentage(fernTestValueProcessingRatePercentage)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetRegionalRates_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountProcessingOfferLevel{}
+		var fernTestValueRegionalRates []*AccountProcessingOfferRegionalRate
+
+		// Act
+		obj.SetRegionalRates(fernTestValueRegionalRates)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersAccountProcessingOfferRegionalRate(t *testing.T) {
+	t.Run("SetProcessingRatePercentage", func(t *testing.T) {
+		obj := &AccountProcessingOfferRegionalRate{}
+		var fernTestValueProcessingRatePercentage float64
+		obj.SetProcessingRatePercentage(fernTestValueProcessingRatePercentage)
+		assert.Equal(t, fernTestValueProcessingRatePercentage, obj.ProcessingRatePercentage)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetRegion", func(t *testing.T) {
+		obj := &AccountProcessingOfferRegionalRate{}
+		var fernTestValueRegion AccountProcessingOfferRegionalRateRegion
+		obj.SetRegion(fernTestValueRegion)
+		assert.Equal(t, fernTestValueRegion, obj.Region)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersAccountProcessingOfferRegionalRate(t *testing.T) {
+	t.Run("GetProcessingRatePercentage", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountProcessingOfferRegionalRate{}
+		var expected float64
+		obj.ProcessingRatePercentage = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetProcessingRatePercentage(), "getter should return the property value")
+	})
+
+	t.Run("GetProcessingRatePercentage_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountProcessingOfferRegionalRate
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetProcessingRatePercentage() // Should return zero value
+	})
+
+	t.Run("GetRegion", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountProcessingOfferRegionalRate{}
+		var expected AccountProcessingOfferRegionalRateRegion
+		obj.Region = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetRegion(), "getter should return the property value")
+	})
+
+	t.Run("GetRegion_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountProcessingOfferRegionalRate
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetRegion() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitAccountProcessingOfferRegionalRate(t *testing.T) {
+	t.Run("SetProcessingRatePercentage_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountProcessingOfferRegionalRate{}
+		var fernTestValueProcessingRatePercentage float64
+
+		// Act
+		obj.SetProcessingRatePercentage(fernTestValueProcessingRatePercentage)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetRegion_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountProcessingOfferRegionalRate{}
+		var fernTestValueRegion AccountProcessingOfferRegionalRateRegion
+
+		// Act
+		obj.SetRegion(fernTestValueRegion)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersAccountRecommendedAction(t *testing.T) {
 	t.Run("SetAction", func(t *testing.T) {
 		obj := &AccountRecommendedAction{}
@@ -144330,6 +144740,72 @@ func TestJSONMarshalingAccountPreferences(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingAccountProcessingOfferLevel(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountProcessingOfferLevel{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled AccountProcessingOfferLevel
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj AccountProcessingOfferLevel
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj AccountProcessingOfferLevel
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingAccountProcessingOfferRegionalRate(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountProcessingOfferRegionalRate{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled AccountProcessingOfferRegionalRate
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj AccountProcessingOfferRegionalRate
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj AccountProcessingOfferRegionalRate
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingAccountRecommendedAction(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -165034,6 +165510,38 @@ func TestStringAccountPreferences(t *testing.T) {
 	})
 }
 
+func TestStringAccountProcessingOfferLevel(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &AccountProcessingOfferLevel{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountProcessingOfferLevel
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringAccountProcessingOfferRegionalRate(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &AccountProcessingOfferRegionalRate{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountProcessingOfferRegionalRate
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
 func TestStringAccountRecommendedAction(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -171552,6 +172060,56 @@ func TestEnumAccountPreferencesSubscriptionFailureBehavior(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewAccountPreferencesSubscriptionFailureBehaviorFromString("cancel")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumAccountProcessingOfferRegionalRateRegion(t *testing.T) {
+	t.Run("NewFromString_us_and_canada", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountProcessingOfferRegionalRateRegionFromString("us_and_canada")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountProcessingOfferRegionalRateRegion("us_and_canada"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_europe_uk_and_australia", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountProcessingOfferRegionalRateRegionFromString("europe_uk_and_australia")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountProcessingOfferRegionalRateRegion("europe_uk_and_australia"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_latin_america", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountProcessingOfferRegionalRateRegionFromString("latin_america")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountProcessingOfferRegionalRateRegion("latin_america"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_peru", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountProcessingOfferRegionalRateRegionFromString("peru")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountProcessingOfferRegionalRateRegion("peru"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_brazil", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountProcessingOfferRegionalRateRegionFromString("brazil")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountProcessingOfferRegionalRateRegion("brazil"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewAccountProcessingOfferRegionalRateRegionFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewAccountProcessingOfferRegionalRateRegionFromString("us_and_canada")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -187694,6 +188252,52 @@ func TestExtraPropertiesAccountPreferences(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *AccountPreferences
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesAccountProcessingOfferLevel(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &AccountProcessingOfferLevel{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountProcessingOfferLevel
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesAccountProcessingOfferRegionalRate(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &AccountProcessingOfferRegionalRate{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountProcessingOfferRegionalRate
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
