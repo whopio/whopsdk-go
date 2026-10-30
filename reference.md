@@ -47708,7 +47708,7 @@ request := &users.CreateOauthGrantsRequest{
     ClientID: "app_xxxxxxxxxxxxxx",
     RedirectURI: "https://Booking.Shinetime.example:8443/oauth/Callback/",
     RequestedScopes: []string{
-        "profile",
+        "openid",
     },
 }
 client.Users.OauthGrants.Create(
