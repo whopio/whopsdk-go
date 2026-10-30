@@ -29023,7 +29023,7 @@ client.Payments.Create(
 <dl>
 <dd>
 
-**email:** `*string` — The buyer's email, resolving or creating the user the payment belongs to. With `confirmation_token` it overrides the email the token carries, and is ignored when the token was created by a signed-in buyer; with a `card_present` `payment_method` it names a buyer the point of sale already knows, otherwise the sale belongs to a guest until a buyer is attached; with a `paypal` `payment_method` it names the buyer and is required unless `member_id` is provided. Ignored with `member_id`.
+**email:** `*string` — The buyer's email, resolving or creating the user the payment belongs to. With `confirmation_token` it overrides the email the token carries, and is ignored when the token was created by a signed-in buyer; with a `card_present` `payment_method` it names a buyer the point of sale already knows, otherwise the sale belongs to a guest until a buyer is attached; with a `paypal` `payment_method` it names the buyer, and when it and `member_id` are both omitted the buyer is the PayPal account that approves the payment. Ignored with `member_id`.
     
 </dd>
 </dl>
@@ -29047,7 +29047,7 @@ client.Payments.Create(
 <dl>
 <dd>
 
-**memberID:** `*string` — The member to charge, prefixed `mber_`. Required with `payment_method_id` unless `confirmation_token` is provided. With a `paypal` `payment_method` it names the buyer instead of `email`, and must belong to a user.
+**memberID:** `*string` — The member to charge, prefixed `mber_`. Required with `payment_method_id` unless `confirmation_token` is provided. With a `paypal` `payment_method` it names the buyer instead of `email`, and must belong to a user; omit both to take the buyer from the PayPal account that approves.
     
 </dd>
 </dl>
