@@ -7,7 +7,6 @@ import (
 	accountlinks "github.com/whopio/whopsdk-go/v2/accountlinks"
 	client "github.com/whopio/whopsdk-go/v2/accounts/client"
 	adcampaigns "github.com/whopio/whopsdk-go/v2/adcampaigns"
-	adconversionvaluerules "github.com/whopio/whopsdk-go/v2/adconversionvaluerules"
 	adgroups "github.com/whopio/whopsdk-go/v2/adgroups"
 	adpixels "github.com/whopio/whopsdk-go/v2/adpixels"
 	ads "github.com/whopio/whopsdk-go/v2/ads"
@@ -110,7 +109,6 @@ type Whop struct {
 	AccountLinks             *accountlinks.Client
 	Accounts                 *client.Client
 	AdCampaigns              *adcampaigns.Client
-	AdConversionValueRules   *adconversionvaluerules.Client
 	AdGroups                 *adgroups.Client
 	AdPixels                 *adpixels.Client
 	Ads                      *ads.Client
@@ -212,7 +210,7 @@ type Whop struct {
 func NewWhop(opts ...option.RequestOption) *Whop {
 	options := core.NewRequestOptions(opts...)
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-10-29-4"
+		apiVersionDateDefault := "2026-10-29-5"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Whop{
@@ -220,7 +218,6 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		AccountLinks:             accountlinks.NewClient(options),
 		Accounts:                 client.NewClient(options),
 		AdCampaigns:              adcampaigns.NewClient(options),
-		AdConversionValueRules:   adconversionvaluerules.NewClient(options),
 		AdGroups:                 adgroups.NewClient(options),
 		AdPixels:                 adpixels.NewClient(options),
 		Ads:                      ads.NewClient(options),
