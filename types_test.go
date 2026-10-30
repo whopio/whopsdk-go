@@ -8908,14 +8908,6 @@ func TestSettersAccountPreferences(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetBuyerFeePercentage", func(t *testing.T) {
-		obj := &AccountPreferences{}
-		var fernTestValueBuyerFeePercentage *float64
-		obj.SetBuyerFeePercentage(fernTestValueBuyerFeePercentage)
-		assert.Equal(t, fernTestValueBuyerFeePercentage, obj.BuyerFeePercentage)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetCardsAutoTopUp", func(t *testing.T) {
 		obj := &AccountPreferences{}
 		var fernTestValueCardsAutoTopUp bool
@@ -9223,39 +9215,6 @@ func TestGettersAccountPreferences(t *testing.T) {
 			}
 		}()
 		_ = obj.GetAdsTripleWhaleIntegration() // Should return zero value
-	})
-
-	t.Run("GetBuyerFeePercentage", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &AccountPreferences{}
-		var expected *float64
-		obj.BuyerFeePercentage = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetBuyerFeePercentage(), "getter should return the property value")
-	})
-
-	t.Run("GetBuyerFeePercentage_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &AccountPreferences{}
-		obj.BuyerFeePercentage = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetBuyerFeePercentage(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetBuyerFeePercentage_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *AccountPreferences
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetBuyerFeePercentage() // Should return zero value
 	})
 
 	t.Run("GetCardsAutoTopUp", func(t *testing.T) {
@@ -9892,37 +9851,6 @@ func TestSettersMarkExplicitAccountPreferences(t *testing.T) {
 
 		// Act
 		obj.SetAdsTripleWhaleIntegration(fernTestValueAdsTripleWhaleIntegration)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetBuyerFeePercentage_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &AccountPreferences{}
-		var fernTestValueBuyerFeePercentage *float64
-
-		// Act
-		obj.SetBuyerFeePercentage(fernTestValueBuyerFeePercentage)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -155767,7 +155695,6 @@ func TestRequiredNullableRoundTripAccountParent(t *testing.T) {
 func TestRequiredNullableRoundTripAccountPreferences(t *testing.T) {
 	requiredNullableKeys := []string{
 		"ads_payment_methods",
-		"buyer_fee_percentage",
 		"covers_connected_account_negative_balances",
 		"customer_tracking",
 		"economic_intelligence_ends_at",
@@ -155788,7 +155715,7 @@ func TestRequiredNullableRoundTripAccountPreferences(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj AccountPreferences
-		require.NoError(t, json.Unmarshal([]byte(`{"ads_payment_methods":null,"buyer_fee_percentage":null,"covers_connected_account_negative_balances":null,"customer_tracking":null,"economic_intelligence_ends_at":null,"economic_intelligence_fee_percentage":null,"economic_intelligence_first_renewal_at":null,"economic_intelligence_previous_period":null,"preferred_settlement_currency":null,"preferred_settlement_currency_changeable_at":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"ads_payment_methods":null,"covers_connected_account_negative_balances":null,"customer_tracking":null,"economic_intelligence_ends_at":null,"economic_intelligence_fee_percentage":null,"economic_intelligence_first_renewal_at":null,"economic_intelligence_previous_period":null,"preferred_settlement_currency":null,"preferred_settlement_currency_changeable_at":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]

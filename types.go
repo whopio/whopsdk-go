@@ -4265,29 +4265,27 @@ var (
 	accountPreferencesFieldAdsReportingCurrency                    = big.NewInt(1 << 3)
 	accountPreferencesFieldAdsSchedulingTimezone                   = big.NewInt(1 << 4)
 	accountPreferencesFieldAdsTripleWhaleIntegration               = big.NewInt(1 << 5)
-	accountPreferencesFieldBuyerFeePercentage                      = big.NewInt(1 << 6)
-	accountPreferencesFieldCardsAutoTopUp                          = big.NewInt(1 << 7)
-	accountPreferencesFieldCardsNotifications                      = big.NewInt(1 << 8)
-	accountPreferencesFieldCoversConnectedAccountNegativeBalances  = big.NewInt(1 << 9)
-	accountPreferencesFieldCustomerTracking                        = big.NewInt(1 << 10)
-	accountPreferencesFieldDisputeFighterEnabled                   = big.NewInt(1 << 11)
-	accountPreferencesFieldEconomicIntelligence                    = big.NewInt(1 << 12)
-	accountPreferencesFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 13)
-	accountPreferencesFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 14)
-	accountPreferencesFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 15)
-	accountPreferencesFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 16)
-	accountPreferencesFieldEconomicIntelligenceOffers              = big.NewInt(1 << 17)
-	accountPreferencesFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 18)
-	accountPreferencesFieldFeedbackOptions                         = big.NewInt(1 << 19)
-	accountPreferencesFieldPreferredSettlementCurrency             = big.NewInt(1 << 20)
-	accountPreferencesFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 21)
-	accountPreferencesFieldSubscriptionFailureBehavior             = big.NewInt(1 << 22)
+	accountPreferencesFieldCardsAutoTopUp                          = big.NewInt(1 << 6)
+	accountPreferencesFieldCardsNotifications                      = big.NewInt(1 << 7)
+	accountPreferencesFieldCoversConnectedAccountNegativeBalances  = big.NewInt(1 << 8)
+	accountPreferencesFieldCustomerTracking                        = big.NewInt(1 << 9)
+	accountPreferencesFieldDisputeFighterEnabled                   = big.NewInt(1 << 10)
+	accountPreferencesFieldEconomicIntelligence                    = big.NewInt(1 << 11)
+	accountPreferencesFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 12)
+	accountPreferencesFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 13)
+	accountPreferencesFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 14)
+	accountPreferencesFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 15)
+	accountPreferencesFieldEconomicIntelligenceOffers              = big.NewInt(1 << 16)
+	accountPreferencesFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 17)
+	accountPreferencesFieldFeedbackOptions                         = big.NewInt(1 << 18)
+	accountPreferencesFieldPreferredSettlementCurrency             = big.NewInt(1 << 19)
+	accountPreferencesFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 20)
+	accountPreferencesFieldSubscriptionFailureBehavior             = big.NewInt(1 << 21)
 )
 
 // accountPreferencesNullableFields maps the wire names of AccountPreferences's nullable fields (required or optional) to their field bits.
 var accountPreferencesNullableFields = map[string]*big.Int{
 	"ads_payment_methods":                         accountPreferencesFieldAdsPaymentMethods,
-	"buyer_fee_percentage":                        accountPreferencesFieldBuyerFeePercentage,
 	"covers_connected_account_negative_balances":  accountPreferencesFieldCoversConnectedAccountNegativeBalances,
 	"customer_tracking":                           accountPreferencesFieldCustomerTracking,
 	"economic_intelligence_ends_at":               accountPreferencesFieldEconomicIntelligenceEndsAt,
@@ -4310,8 +4308,6 @@ type AccountPreferences struct {
 	AdsSchedulingTimezone string `json:"ads_scheduling_timezone" url:"ads_scheduling_timezone"`
 	// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel, and tags ad click-through URLs with `tw_source`/`tw_adid` so Triple Whale's pixel attributes conversions back to the right ad. `status` is `connected`, `not_connected`, or `requires_shop_domain` (Triple Whale keys records by shop, so spend only flows once `shop_domain` is set). `masked_api_key` shows the leading characters of the stored key; the full key is never returned. `shop_domain` is the shop spend is reported for.
 	AdsTripleWhaleIntegration map[string]any `json:"ads_triple_whale_integration" url:"ads_triple_whale_integration"`
-	// The fee added to every checkout as a percentage of the price, such as `7.5` for 7.5%, which the account keeps. Whop waives its take rate on sales that carry it. At least 5, with at most two decimal places. Some payment methods, such as buy now, pay later and crypto, don't carry it, and a subscription keeps the rate it started with. `null` when the account charges none.
-	BuyerFeePercentage *float64 `json:"buyer_fee_percentage,omitempty" url:"buyer_fee_percentage,omitempty"`
 	// Whether incoming funds are automatically moved to the account's cards balance. `false` when the account has no cards balance.
 	CardsAutoTopUp bool `json:"cards_auto_top_up" url:"cards_auto_top_up"`
 	// Whether Whop Card notifications reach this account's team. `true` by default, including when the account has no cards balance. Set it to `false` to stop every card email and push notification for the account — application status, verification and action-required alerts, card-ready alerts, declines, large charges, and cashback summaries. Cardholder onboarding invitations still send, because they carry the only link an invited cardholder can onboard with. Requesting a card is rejected while notifications are off, since the request reaches nobody. Cards on personal accounts are unaffected.
@@ -4390,13 +4386,6 @@ func (a *AccountPreferences) GetAdsTripleWhaleIntegration() map[string]any {
 		return nil
 	}
 	return a.AdsTripleWhaleIntegration
-}
-
-func (a *AccountPreferences) GetBuyerFeePercentage() *float64 {
-	if a == nil {
-		return nil
-	}
-	return a.BuyerFeePercentage
 }
 
 func (a *AccountPreferences) GetCardsAutoTopUp() bool {
@@ -4567,13 +4556,6 @@ func (a *AccountPreferences) SetAdsSchedulingTimezone(adsSchedulingTimezone stri
 func (a *AccountPreferences) SetAdsTripleWhaleIntegration(adsTripleWhaleIntegration map[string]any) {
 	a.AdsTripleWhaleIntegration = adsTripleWhaleIntegration
 	a.require(accountPreferencesFieldAdsTripleWhaleIntegration)
-}
-
-// SetBuyerFeePercentage sets the BuyerFeePercentage field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AccountPreferences) SetBuyerFeePercentage(buyerFeePercentage *float64) {
-	a.BuyerFeePercentage = buyerFeePercentage
-	a.require(accountPreferencesFieldBuyerFeePercentage)
 }
 
 // SetCardsAutoTopUp sets the CardsAutoTopUp field and marks it as non-optional;
