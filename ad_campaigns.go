@@ -1832,6 +1832,7 @@ type AdCampaignDeliveryStatus string
 
 const (
 	AdCampaignDeliveryStatusPaymentFailed  AdCampaignDeliveryStatus = "payment_failed"
+	AdCampaignDeliveryStatusWaitingForEin  AdCampaignDeliveryStatus = "waiting_for_ein"
 	AdCampaignDeliveryStatusInAppeal       AdCampaignDeliveryStatus = "in_appeal"
 	AdCampaignDeliveryStatusAllAdsRejected AdCampaignDeliveryStatus = "all_ads_rejected"
 	AdCampaignDeliveryStatusDraft          AdCampaignDeliveryStatus = "draft"
@@ -1852,6 +1853,8 @@ func NewAdCampaignDeliveryStatusFromString(s string) (AdCampaignDeliveryStatus, 
 	switch s {
 	case "payment_failed":
 		return AdCampaignDeliveryStatusPaymentFailed, nil
+	case "waiting_for_ein":
+		return AdCampaignDeliveryStatusWaitingForEin, nil
 	case "in_appeal":
 		return AdCampaignDeliveryStatusInAppeal, nil
 	case "all_ads_rejected":
@@ -3553,6 +3556,7 @@ type PostAdCampaignPaymentFailedPayloadDataDeliveryStatus string
 
 const (
 	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusPaymentFailed  PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "payment_failed"
+	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusWaitingForEin  PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "waiting_for_ein"
 	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusInAppeal       PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "in_appeal"
 	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusAllAdsRejected PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "all_ads_rejected"
 	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusDraft          PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "draft"
@@ -3573,6 +3577,8 @@ func NewPostAdCampaignPaymentFailedPayloadDataDeliveryStatusFromString(s string)
 	switch s {
 	case "payment_failed":
 		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusPaymentFailed, nil
+	case "waiting_for_ein":
+		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusWaitingForEin, nil
 	case "in_appeal":
 		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusInAppeal, nil
 	case "all_ads_rejected":
@@ -4501,6 +4507,7 @@ type PostAdCampaignUpdatedPayloadDataDeliveryStatus string
 
 const (
 	PostAdCampaignUpdatedPayloadDataDeliveryStatusPaymentFailed  PostAdCampaignUpdatedPayloadDataDeliveryStatus = "payment_failed"
+	PostAdCampaignUpdatedPayloadDataDeliveryStatusWaitingForEin  PostAdCampaignUpdatedPayloadDataDeliveryStatus = "waiting_for_ein"
 	PostAdCampaignUpdatedPayloadDataDeliveryStatusInAppeal       PostAdCampaignUpdatedPayloadDataDeliveryStatus = "in_appeal"
 	PostAdCampaignUpdatedPayloadDataDeliveryStatusAllAdsRejected PostAdCampaignUpdatedPayloadDataDeliveryStatus = "all_ads_rejected"
 	PostAdCampaignUpdatedPayloadDataDeliveryStatusDraft          PostAdCampaignUpdatedPayloadDataDeliveryStatus = "draft"
@@ -4521,6 +4528,8 @@ func NewPostAdCampaignUpdatedPayloadDataDeliveryStatusFromString(s string) (Post
 	switch s {
 	case "payment_failed":
 		return PostAdCampaignUpdatedPayloadDataDeliveryStatusPaymentFailed, nil
+	case "waiting_for_ein":
+		return PostAdCampaignUpdatedPayloadDataDeliveryStatusWaitingForEin, nil
 	case "in_appeal":
 		return PostAdCampaignUpdatedPayloadDataDeliveryStatusInAppeal, nil
 	case "all_ads_rejected":
