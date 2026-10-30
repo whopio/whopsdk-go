@@ -499,7 +499,7 @@ type ReportStatsAdsRequest struct {
 	HourStartedAt time.Time `json:"hour_started_at" url:"-"`
 	// The ad's impressions in the hour so far. Zero when left out.
 	Impressions *ReportStatsAdsRequestImpressions `json:"impressions,omitempty" url:"-"`
-	// USD spent on the ad in the hour so far, to the cent.
+	// The USD to be paid for the ad's hour so far, to the cent: what the ad spent plus any markup, such as 105.00 for 100.00 spent with a 5% markup.
 	Spend *ReportStatsAdsRequestSpend `json:"spend" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -4839,7 +4839,7 @@ func (r *ReportStatsAdsRequestImpressions) Accept(visitor ReportStatsAdsRequestI
 	return fmt.Errorf("type %T does not include a non-empty union type", r)
 }
 
-// USD spent on the ad in the hour so far, to the cent.
+// The USD to be paid for the ad's hour so far, to the cent: what the ad spent plus any markup, such as 105.00 for 100.00 spent with a 5% markup.
 type ReportStatsAdsRequestSpend struct {
 	Double float64
 	String string
