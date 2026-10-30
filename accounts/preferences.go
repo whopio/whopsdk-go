@@ -45,29 +45,27 @@ var (
 	retrievePreferencesResponseFieldAdsReportingCurrency                    = big.NewInt(1 << 3)
 	retrievePreferencesResponseFieldAdsSchedulingTimezone                   = big.NewInt(1 << 4)
 	retrievePreferencesResponseFieldAdsTripleWhaleIntegration               = big.NewInt(1 << 5)
-	retrievePreferencesResponseFieldBuyerFeePercentage                      = big.NewInt(1 << 6)
-	retrievePreferencesResponseFieldCardsAutoTopUp                          = big.NewInt(1 << 7)
-	retrievePreferencesResponseFieldCardsNotifications                      = big.NewInt(1 << 8)
-	retrievePreferencesResponseFieldCoversConnectedAccountNegativeBalances  = big.NewInt(1 << 9)
-	retrievePreferencesResponseFieldCustomerTracking                        = big.NewInt(1 << 10)
-	retrievePreferencesResponseFieldDisputeFighterEnabled                   = big.NewInt(1 << 11)
-	retrievePreferencesResponseFieldEconomicIntelligence                    = big.NewInt(1 << 12)
-	retrievePreferencesResponseFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 13)
-	retrievePreferencesResponseFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 14)
-	retrievePreferencesResponseFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 15)
-	retrievePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 16)
-	retrievePreferencesResponseFieldEconomicIntelligenceOffers              = big.NewInt(1 << 17)
-	retrievePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 18)
-	retrievePreferencesResponseFieldFeedbackOptions                         = big.NewInt(1 << 19)
-	retrievePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 20)
-	retrievePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 21)
-	retrievePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 22)
+	retrievePreferencesResponseFieldCardsAutoTopUp                          = big.NewInt(1 << 6)
+	retrievePreferencesResponseFieldCardsNotifications                      = big.NewInt(1 << 7)
+	retrievePreferencesResponseFieldCoversConnectedAccountNegativeBalances  = big.NewInt(1 << 8)
+	retrievePreferencesResponseFieldCustomerTracking                        = big.NewInt(1 << 9)
+	retrievePreferencesResponseFieldDisputeFighterEnabled                   = big.NewInt(1 << 10)
+	retrievePreferencesResponseFieldEconomicIntelligence                    = big.NewInt(1 << 11)
+	retrievePreferencesResponseFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 12)
+	retrievePreferencesResponseFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 13)
+	retrievePreferencesResponseFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 14)
+	retrievePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 15)
+	retrievePreferencesResponseFieldEconomicIntelligenceOffers              = big.NewInt(1 << 16)
+	retrievePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 17)
+	retrievePreferencesResponseFieldFeedbackOptions                         = big.NewInt(1 << 18)
+	retrievePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 19)
+	retrievePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 20)
+	retrievePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 21)
 )
 
 // retrievePreferencesResponseNullableFields maps the wire names of RetrievePreferencesResponse's nullable fields (required or optional) to their field bits.
 var retrievePreferencesResponseNullableFields = map[string]*big.Int{
 	"ads_payment_methods":                         retrievePreferencesResponseFieldAdsPaymentMethods,
-	"buyer_fee_percentage":                        retrievePreferencesResponseFieldBuyerFeePercentage,
 	"covers_connected_account_negative_balances":  retrievePreferencesResponseFieldCoversConnectedAccountNegativeBalances,
 	"customer_tracking":                           retrievePreferencesResponseFieldCustomerTracking,
 	"economic_intelligence_ends_at":               retrievePreferencesResponseFieldEconomicIntelligenceEndsAt,
@@ -91,8 +89,6 @@ type RetrievePreferencesResponse struct {
 	AdsSchedulingTimezone string `json:"ads_scheduling_timezone" url:"ads_scheduling_timezone"`
 	// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel. Available to any Triple Whale customer — Shopify, WooCommerce, or a custom checkout — by setting `shop_domain`. Requires the `ad_campaign:create` scope. Once connected, ad click-through URLs Whop serves carry `tw_source=whop` and `tw_adid=<ad id>` query parameters so Triple Whale's pixel attributes conversions back to the originating ad — no destination URL changes are needed.
 	AdsTripleWhaleIntegration *RetrievePreferencesResponseAdsTripleWhaleIntegration `json:"ads_triple_whale_integration" url:"ads_triple_whale_integration"`
-	// The fee added to every checkout as a percentage of the price, such as `7.5` for 7.5%, which the account keeps. Whop waives its take rate on sales that carry it. At least 5, with at most two decimal places. Some payment methods, such as buy now, pay later and crypto, don't carry it, and a subscription keeps the rate it started with. `null` when the account charges none.
-	BuyerFeePercentage *float64 `json:"buyer_fee_percentage,omitempty" url:"buyer_fee_percentage,omitempty"`
 	// Whether incoming funds are automatically moved to the account's cards balance. `false` when the account has no cards balance.
 	CardsAutoTopUp bool `json:"cards_auto_top_up" url:"cards_auto_top_up"`
 	// Whether Whop Card notifications reach this account's team. `true` by default, including when the account has no cards balance. Set it to `false` to stop every card email and push notification for the account — application status, verification and action-required alerts, card-ready alerts, declines, large charges, and cashback summaries. Cardholder onboarding invitations still send, because they carry the only link an invited cardholder can onboard with. Requesting a card is rejected while notifications are off, since the request reaches nobody. Cards on personal accounts are unaffected.
@@ -173,13 +169,6 @@ func (r *RetrievePreferencesResponse) GetAdsTripleWhaleIntegration() *RetrievePr
 		return nil
 	}
 	return r.AdsTripleWhaleIntegration
-}
-
-func (r *RetrievePreferencesResponse) GetBuyerFeePercentage() *float64 {
-	if r == nil {
-		return nil
-	}
-	return r.BuyerFeePercentage
 }
 
 func (r *RetrievePreferencesResponse) GetCardsAutoTopUp() bool {
@@ -350,13 +339,6 @@ func (r *RetrievePreferencesResponse) SetAdsSchedulingTimezone(adsSchedulingTime
 func (r *RetrievePreferencesResponse) SetAdsTripleWhaleIntegration(adsTripleWhaleIntegration *RetrievePreferencesResponseAdsTripleWhaleIntegration) {
 	r.AdsTripleWhaleIntegration = adsTripleWhaleIntegration
 	r.require(retrievePreferencesResponseFieldAdsTripleWhaleIntegration)
-}
-
-// SetBuyerFeePercentage sets the BuyerFeePercentage field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePreferencesResponse) SetBuyerFeePercentage(buyerFeePercentage *float64) {
-	r.BuyerFeePercentage = buyerFeePercentage
-	r.require(retrievePreferencesResponseFieldBuyerFeePercentage)
 }
 
 // SetCardsAutoTopUp sets the CardsAutoTopUp field and marks it as non-optional;
@@ -3351,29 +3333,27 @@ var (
 	updatePreferencesResponseFieldAdsReportingCurrency                    = big.NewInt(1 << 3)
 	updatePreferencesResponseFieldAdsSchedulingTimezone                   = big.NewInt(1 << 4)
 	updatePreferencesResponseFieldAdsTripleWhaleIntegration               = big.NewInt(1 << 5)
-	updatePreferencesResponseFieldBuyerFeePercentage                      = big.NewInt(1 << 6)
-	updatePreferencesResponseFieldCardsAutoTopUp                          = big.NewInt(1 << 7)
-	updatePreferencesResponseFieldCardsNotifications                      = big.NewInt(1 << 8)
-	updatePreferencesResponseFieldCoversConnectedAccountNegativeBalances  = big.NewInt(1 << 9)
-	updatePreferencesResponseFieldCustomerTracking                        = big.NewInt(1 << 10)
-	updatePreferencesResponseFieldDisputeFighterEnabled                   = big.NewInt(1 << 11)
-	updatePreferencesResponseFieldEconomicIntelligence                    = big.NewInt(1 << 12)
-	updatePreferencesResponseFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 13)
-	updatePreferencesResponseFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 14)
-	updatePreferencesResponseFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 15)
-	updatePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 16)
-	updatePreferencesResponseFieldEconomicIntelligenceOffers              = big.NewInt(1 << 17)
-	updatePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 18)
-	updatePreferencesResponseFieldFeedbackOptions                         = big.NewInt(1 << 19)
-	updatePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 20)
-	updatePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 21)
-	updatePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 22)
+	updatePreferencesResponseFieldCardsAutoTopUp                          = big.NewInt(1 << 6)
+	updatePreferencesResponseFieldCardsNotifications                      = big.NewInt(1 << 7)
+	updatePreferencesResponseFieldCoversConnectedAccountNegativeBalances  = big.NewInt(1 << 8)
+	updatePreferencesResponseFieldCustomerTracking                        = big.NewInt(1 << 9)
+	updatePreferencesResponseFieldDisputeFighterEnabled                   = big.NewInt(1 << 10)
+	updatePreferencesResponseFieldEconomicIntelligence                    = big.NewInt(1 << 11)
+	updatePreferencesResponseFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 12)
+	updatePreferencesResponseFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 13)
+	updatePreferencesResponseFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 14)
+	updatePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 15)
+	updatePreferencesResponseFieldEconomicIntelligenceOffers              = big.NewInt(1 << 16)
+	updatePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 17)
+	updatePreferencesResponseFieldFeedbackOptions                         = big.NewInt(1 << 18)
+	updatePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 19)
+	updatePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 20)
+	updatePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 21)
 )
 
 // updatePreferencesResponseNullableFields maps the wire names of UpdatePreferencesResponse's nullable fields (required or optional) to their field bits.
 var updatePreferencesResponseNullableFields = map[string]*big.Int{
 	"ads_payment_methods":                         updatePreferencesResponseFieldAdsPaymentMethods,
-	"buyer_fee_percentage":                        updatePreferencesResponseFieldBuyerFeePercentage,
 	"covers_connected_account_negative_balances":  updatePreferencesResponseFieldCoversConnectedAccountNegativeBalances,
 	"customer_tracking":                           updatePreferencesResponseFieldCustomerTracking,
 	"economic_intelligence_ends_at":               updatePreferencesResponseFieldEconomicIntelligenceEndsAt,
@@ -3397,8 +3377,6 @@ type UpdatePreferencesResponse struct {
 	AdsSchedulingTimezone string `json:"ads_scheduling_timezone" url:"ads_scheduling_timezone"`
 	// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel. Available to any Triple Whale customer — Shopify, WooCommerce, or a custom checkout — by setting `shop_domain`. Requires the `ad_campaign:create` scope. Once connected, ad click-through URLs Whop serves carry `tw_source=whop` and `tw_adid=<ad id>` query parameters so Triple Whale's pixel attributes conversions back to the originating ad — no destination URL changes are needed.
 	AdsTripleWhaleIntegration *UpdatePreferencesResponseAdsTripleWhaleIntegration `json:"ads_triple_whale_integration" url:"ads_triple_whale_integration"`
-	// The fee added to every checkout as a percentage of the price, such as `7.5` for 7.5%, which the account keeps. Whop waives its take rate on sales that carry it. At least 5, with at most two decimal places. Some payment methods, such as buy now, pay later and crypto, don't carry it, and a subscription keeps the rate it started with. `null` when the account charges none.
-	BuyerFeePercentage *float64 `json:"buyer_fee_percentage,omitempty" url:"buyer_fee_percentage,omitempty"`
 	// Whether incoming funds are automatically moved to the account's cards balance. `false` when the account has no cards balance.
 	CardsAutoTopUp bool `json:"cards_auto_top_up" url:"cards_auto_top_up"`
 	// Whether Whop Card notifications reach this account's team. `true` by default, including when the account has no cards balance. Set it to `false` to stop every card email and push notification for the account — application status, verification and action-required alerts, card-ready alerts, declines, large charges, and cashback summaries. Cardholder onboarding invitations still send, because they carry the only link an invited cardholder can onboard with. Requesting a card is rejected while notifications are off, since the request reaches nobody. Cards on personal accounts are unaffected.
@@ -3479,13 +3457,6 @@ func (u *UpdatePreferencesResponse) GetAdsTripleWhaleIntegration() *UpdatePrefer
 		return nil
 	}
 	return u.AdsTripleWhaleIntegration
-}
-
-func (u *UpdatePreferencesResponse) GetBuyerFeePercentage() *float64 {
-	if u == nil {
-		return nil
-	}
-	return u.BuyerFeePercentage
 }
 
 func (u *UpdatePreferencesResponse) GetCardsAutoTopUp() bool {
@@ -3656,13 +3627,6 @@ func (u *UpdatePreferencesResponse) SetAdsSchedulingTimezone(adsSchedulingTimezo
 func (u *UpdatePreferencesResponse) SetAdsTripleWhaleIntegration(adsTripleWhaleIntegration *UpdatePreferencesResponseAdsTripleWhaleIntegration) {
 	u.AdsTripleWhaleIntegration = adsTripleWhaleIntegration
 	u.require(updatePreferencesResponseFieldAdsTripleWhaleIntegration)
-}
-
-// SetBuyerFeePercentage sets the BuyerFeePercentage field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdatePreferencesResponse) SetBuyerFeePercentage(buyerFeePercentage *float64) {
-	u.BuyerFeePercentage = buyerFeePercentage
-	u.require(updatePreferencesResponseFieldBuyerFeePercentage)
 }
 
 // SetCardsAutoTopUp sets the CardsAutoTopUp field and marks it as non-optional;
@@ -5641,17 +5605,16 @@ var (
 	updatePreferencesRequestFieldAdsReportingCurrency                   = big.NewInt(1 << 3)
 	updatePreferencesRequestFieldAdsSchedulingTimezone                  = big.NewInt(1 << 4)
 	updatePreferencesRequestFieldAdsTripleWhaleIntegration              = big.NewInt(1 << 5)
-	updatePreferencesRequestFieldBuyerFeePercentage                     = big.NewInt(1 << 6)
-	updatePreferencesRequestFieldCardsAutoTopUp                         = big.NewInt(1 << 7)
-	updatePreferencesRequestFieldCardsNotifications                     = big.NewInt(1 << 8)
-	updatePreferencesRequestFieldCoversConnectedAccountNegativeBalances = big.NewInt(1 << 9)
-	updatePreferencesRequestFieldCustomerTracking                       = big.NewInt(1 << 10)
-	updatePreferencesRequestFieldDisputeFighterEnabled                  = big.NewInt(1 << 11)
-	updatePreferencesRequestFieldEconomicIntelligenceAutoRenew          = big.NewInt(1 << 12)
-	updatePreferencesRequestFieldEconomicIntelligenceDurationKey        = big.NewInt(1 << 13)
-	updatePreferencesRequestFieldFeedbackOptions                        = big.NewInt(1 << 14)
-	updatePreferencesRequestFieldPreferredSettlementCurrency            = big.NewInt(1 << 15)
-	updatePreferencesRequestFieldSubscriptionFailureBehavior            = big.NewInt(1 << 16)
+	updatePreferencesRequestFieldCardsAutoTopUp                         = big.NewInt(1 << 6)
+	updatePreferencesRequestFieldCardsNotifications                     = big.NewInt(1 << 7)
+	updatePreferencesRequestFieldCoversConnectedAccountNegativeBalances = big.NewInt(1 << 8)
+	updatePreferencesRequestFieldCustomerTracking                       = big.NewInt(1 << 9)
+	updatePreferencesRequestFieldDisputeFighterEnabled                  = big.NewInt(1 << 10)
+	updatePreferencesRequestFieldEconomicIntelligenceAutoRenew          = big.NewInt(1 << 11)
+	updatePreferencesRequestFieldEconomicIntelligenceDurationKey        = big.NewInt(1 << 12)
+	updatePreferencesRequestFieldFeedbackOptions                        = big.NewInt(1 << 13)
+	updatePreferencesRequestFieldPreferredSettlementCurrency            = big.NewInt(1 << 14)
+	updatePreferencesRequestFieldSubscriptionFailureBehavior            = big.NewInt(1 << 15)
 )
 
 type UpdatePreferencesRequest struct {
@@ -5667,8 +5630,6 @@ type UpdatePreferencesRequest struct {
 	AdsSchedulingTimezone *string `json:"ads_scheduling_timezone,omitempty" url:"-"`
 	// Connects or disconnects the Triple Whale integration, or changes the shop it reports to. Requires the `ad_campaign:create` scope on your API key. Connecting requires a `shop_domain` to report spend against.
 	AdsTripleWhaleIntegration *UpdatePreferencesRequestAdsTripleWhaleIntegration `json:"ads_triple_whale_integration,omitempty" url:"-"`
-	// Adds a fee to every checkout as a percentage of the price, such as `7.5` for 7.5%, which the account keeps; Whop waives its take rate on sales that carry it. At least 5, up to the most Whop allows for buyer fees, with at most two decimal places. Pass `null` to stop charging it on new purchases; subscriptions keep the rate they started with. Requires the `company:manage_checkout` scope on your API key.
-	BuyerFeePercentage *float64 `json:"buyer_fee_percentage,omitempty" url:"-"`
 	// Whether incoming funds are automatically moved to the account's cards balance. Requires a cards balance on the account and the `payout:account:update` scope on your API key.
 	CardsAutoTopUp *bool `json:"cards_auto_top_up,omitempty" url:"-"`
 	// Whether Whop Card notifications reach this account's team. Set it to `false` to stop every card email and push notification for the account — application status, verification and action-required alerts, card-ready alerts, declines, large charges, and cashback summaries. Cardholder onboarding invitations still send, because they carry the only link an invited cardholder can onboard with. Requesting a card is rejected while notifications are off, since the request reaches nobody. Cards on personal accounts are unaffected. Requires a cards balance on the account and the `payout:account:update` scope on your API key.
@@ -5743,13 +5704,6 @@ func (u *UpdatePreferencesRequest) SetAdsSchedulingTimezone(adsSchedulingTimezon
 func (u *UpdatePreferencesRequest) SetAdsTripleWhaleIntegration(adsTripleWhaleIntegration *UpdatePreferencesRequestAdsTripleWhaleIntegration) {
 	u.AdsTripleWhaleIntegration = adsTripleWhaleIntegration
 	u.require(updatePreferencesRequestFieldAdsTripleWhaleIntegration)
-}
-
-// SetBuyerFeePercentage sets the BuyerFeePercentage field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdatePreferencesRequest) SetBuyerFeePercentage(buyerFeePercentage *float64) {
-	u.BuyerFeePercentage = buyerFeePercentage
-	u.require(updatePreferencesRequestFieldBuyerFeePercentage)
 }
 
 // SetCardsAutoTopUp sets the CardsAutoTopUp field and marks it as non-optional;
