@@ -726,249 +726,6 @@
       }
     },
     {
-      "id": "afa46771-a78f-4cec-8850-fd0d1d08c14b",
-      "name": "List conversion value rules - default",
-      "request": {
-        "urlPathTemplate": "/ad_conversion_value_rules",
-        "method": "GET",
-        "headers": {
-          "Authorization": {
-            "matches": "Bearer .+"
-          }
-        }
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"adjustment_type\": \"fixed\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"events\": [\n        {\n          \"custom_name\": null,\n          \"event_name\": \"purchase\"\n        }\n      ],\n      \"fixed_value\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"id\": \"adcvr_xxxxxxxxxxxxxx\",\n      \"metadata\": {\n        \"key\": \"value\"\n      },\n      \"percentage_change\": 1.1,\n      \"status\": \"active\",\n      \"targets\": [\n        {\n          \"resource_id\": null,\n          \"resource_title\": \"Shine Time Auto Detailing\",\n          \"scope\": \"business\"\n        }\n      ],\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"start_cursor\"\n  }\n}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      },
-      "uuid": "afa46771-a78f-4cec-8850-fd0d1d08c14b",
-      "persistent": true,
-      "priority": 3,
-      "metadata": {
-        "mocklab": {
-          "created": {
-            "at": "2020-01-01T00:00:00.000Z",
-            "via": "SYSTEM"
-          }
-        }
-      },
-      "postServeActions": []
-    },
-    {
-      "id": "6ac5c4a1-73ca-4e39-a628-9be37e04e1e1",
-      "name": "Create a conversion value rule - default",
-      "request": {
-        "urlPathTemplate": "/ad_conversion_value_rules",
-        "method": "POST",
-        "headers": {
-          "Authorization": {
-            "matches": "Bearer .+"
-          }
-        }
-      },
-      "response": {
-        "status": 201,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"adjustment_type\": \"fixed\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"events\": [\n    {\n      \"custom_name\": \"custom_name\",\n      \"event_name\": \"purchase\"\n    }\n  ],\n  \"fixed_value\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"id\": \"adcvr_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"percentage_change\": 1.1,\n  \"status\": \"active\",\n  \"targets\": [\n    {\n      \"resource_id\": \"resource_id\",\n      \"resource_title\": \"Shine Time Auto Detailing\",\n      \"scope\": \"business\"\n    }\n  ],\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      },
-      "uuid": "6ac5c4a1-73ca-4e39-a628-9be37e04e1e1",
-      "persistent": true,
-      "priority": 3,
-      "metadata": {
-        "mocklab": {
-          "created": {
-            "at": "2020-01-01T00:00:00.000Z",
-            "via": "SYSTEM"
-          }
-        }
-      }
-    },
-    {
-      "id": "e901100e-5319-4a2f-89e9-0d4c85668d1b",
-      "name": "Retrieve a conversion value rule - default",
-      "request": {
-        "urlPathTemplate": "/ad_conversion_value_rules/{id}",
-        "method": "GET",
-        "headers": {
-          "Authorization": {
-            "matches": "Bearer .+"
-          }
-        },
-        "pathParameters": {
-          "id": {
-            "equalTo": "id"
-          }
-        }
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"adjustment_type\": \"fixed\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"events\": [\n    {\n      \"custom_name\": \"custom_name\",\n      \"event_name\": \"purchase\"\n    }\n  ],\n  \"fixed_value\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"id\": \"adcvr_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"percentage_change\": 1.1,\n  \"status\": \"active\",\n  \"targets\": [\n    {\n      \"resource_id\": \"resource_id\",\n      \"resource_title\": \"Shine Time Auto Detailing\",\n      \"scope\": \"business\"\n    }\n  ],\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      },
-      "uuid": "e901100e-5319-4a2f-89e9-0d4c85668d1b",
-      "persistent": true,
-      "priority": 3,
-      "metadata": {
-        "mocklab": {
-          "created": {
-            "at": "2020-01-01T00:00:00.000Z",
-            "via": "SYSTEM"
-          }
-        }
-      }
-    },
-    {
-      "id": "26d1ee83-f86f-4afe-9b7c-080006516f73",
-      "name": "Delete a conversion value rule - default",
-      "request": {
-        "urlPathTemplate": "/ad_conversion_value_rules/{id}",
-        "method": "DELETE",
-        "headers": {
-          "Authorization": {
-            "matches": "Bearer .+"
-          }
-        },
-        "pathParameters": {
-          "id": {
-            "equalTo": "id"
-          }
-        }
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n  \"deleted\": true,\n  \"id\": \"adcvr_xxxxxxxxxxxxxx\"\n}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      },
-      "uuid": "26d1ee83-f86f-4afe-9b7c-080006516f73",
-      "persistent": true,
-      "priority": 3,
-      "metadata": {
-        "mocklab": {
-          "created": {
-            "at": "2020-01-01T00:00:00.000Z",
-            "via": "SYSTEM"
-          }
-        }
-      }
-    },
-    {
-      "id": "c3d6bf3b-5615-4c10-9061-d04ed58a3c9b",
-      "name": "Update a conversion value rule - default",
-      "request": {
-        "urlPathTemplate": "/ad_conversion_value_rules/{id}",
-        "method": "PATCH",
-        "headers": {
-          "Authorization": {
-            "matches": "Bearer .+"
-          }
-        },
-        "pathParameters": {
-          "id": {
-            "equalTo": "id"
-          }
-        }
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"adjustment_type\": \"fixed\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"events\": [\n    {\n      \"custom_name\": \"custom_name\",\n      \"event_name\": \"purchase\"\n    }\n  ],\n  \"fixed_value\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"id\": \"adcvr_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"percentage_change\": 1.1,\n  \"status\": \"active\",\n  \"targets\": [\n    {\n      \"resource_id\": \"resource_id\",\n      \"resource_title\": \"Shine Time Auto Detailing\",\n      \"scope\": \"business\"\n    }\n  ],\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      },
-      "uuid": "c3d6bf3b-5615-4c10-9061-d04ed58a3c9b",
-      "persistent": true,
-      "priority": 3,
-      "metadata": {
-        "mocklab": {
-          "created": {
-            "at": "2020-01-01T00:00:00.000Z",
-            "via": "SYSTEM"
-          }
-        }
-      }
-    },
-    {
-      "id": "581c185f-65d8-4c29-a148-bf7c2fffe290",
-      "name": "Pause a conversion value rule - default",
-      "request": {
-        "urlPathTemplate": "/ad_conversion_value_rules/{id}/pause",
-        "method": "POST",
-        "headers": {
-          "Authorization": {
-            "matches": "Bearer .+"
-          }
-        },
-        "pathParameters": {
-          "id": {
-            "equalTo": "id"
-          }
-        }
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"adjustment_type\": \"fixed\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"events\": [\n    {\n      \"custom_name\": \"custom_name\",\n      \"event_name\": \"purchase\"\n    }\n  ],\n  \"fixed_value\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"id\": \"adcvr_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"percentage_change\": 1.1,\n  \"status\": \"active\",\n  \"targets\": [\n    {\n      \"resource_id\": \"resource_id\",\n      \"resource_title\": \"Shine Time Auto Detailing\",\n      \"scope\": \"business\"\n    }\n  ],\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      },
-      "uuid": "581c185f-65d8-4c29-a148-bf7c2fffe290",
-      "persistent": true,
-      "priority": 3,
-      "metadata": {
-        "mocklab": {
-          "created": {
-            "at": "2020-01-01T00:00:00.000Z",
-            "via": "SYSTEM"
-          }
-        }
-      }
-    },
-    {
-      "id": "b8ef4d0a-f4b0-4799-bf45-d69917802274",
-      "name": "Unpause a conversion value rule - default",
-      "request": {
-        "urlPathTemplate": "/ad_conversion_value_rules/{id}/unpause",
-        "method": "POST",
-        "headers": {
-          "Authorization": {
-            "matches": "Bearer .+"
-          }
-        },
-        "pathParameters": {
-          "id": {
-            "equalTo": "id"
-          }
-        }
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"adjustment_type\": \"fixed\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"events\": [\n    {\n      \"custom_name\": \"custom_name\",\n      \"event_name\": \"purchase\"\n    }\n  ],\n  \"fixed_value\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"id\": \"adcvr_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"percentage_change\": 1.1,\n  \"status\": \"active\",\n  \"targets\": [\n    {\n      \"resource_id\": \"resource_id\",\n      \"resource_title\": \"Shine Time Auto Detailing\",\n      \"scope\": \"business\"\n    }\n  ],\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      },
-      "uuid": "b8ef4d0a-f4b0-4799-bf45-d69917802274",
-      "persistent": true,
-      "priority": 3,
-      "metadata": {
-        "mocklab": {
-          "created": {
-            "at": "2020-01-01T00:00:00.000Z",
-            "via": "SYSTEM"
-          }
-        }
-      }
-    },
-    {
       "id": "f29c139b-46f7-4de0-accc-470aa9ed2b80",
       "name": "List Ad Groups - default",
       "request": {
@@ -15708,7 +15465,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"api_version\": \"v1\",\n      \"api_version_date\": \"2026-10-29-4\",\n      \"child_resource_events\": false,\n      \"consecutive_failures\": 0,\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n      \"disabled_reason\": \"delivery_failures\",\n      \"enabled\": false,\n      \"events\": [\n        \"account.updated\"\n      ],\n      \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n      \"id\": \"hook_xxxxxxxxxxxxxx\",\n      \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n      \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"title\": \"title\",\n      \"url\": \"https://example.com/shine-time/whop\",\n      \"webhook_secret\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"api_version\": \"v1\",\n      \"api_version_date\": \"2026-10-29-5\",\n      \"child_resource_events\": false,\n      \"consecutive_failures\": 0,\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n      \"disabled_reason\": \"delivery_failures\",\n      \"enabled\": false,\n      \"events\": [\n        \"account.updated\"\n      ],\n      \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n      \"id\": \"hook_xxxxxxxxxxxxxx\",\n      \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n      \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"title\": \"title\",\n      \"url\": \"https://example.com/shine-time/whop\",\n      \"webhook_secret\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -15740,7 +15497,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-10-29-4\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"title\": \"Production\",\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
+        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-10-29-5\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"title\": \"Production\",\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -15776,7 +15533,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-10-29-4\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"title\": \"Production\",\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
+        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-10-29-5\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"title\": \"Production\",\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -15848,7 +15605,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-10-29-4\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"title\": \"Production\",\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
+        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-10-29-5\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"title\": \"Production\",\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -17777,6 +17534,6 @@
     }
   ],
   "meta": {
-    "total": 497
+    "total": 490
   }
 }
