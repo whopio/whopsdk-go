@@ -248,11 +248,12 @@ var (
 	memberFieldLastAccessedAt     = big.NewInt(1 << 8)
 	memberFieldMostRecentAction   = big.NewInt(1 << 9)
 	memberFieldMostRecentActionAt = big.NewInt(1 << 10)
-	memberFieldPhoneNumber        = big.NewInt(1 << 11)
-	memberFieldStatus             = big.NewInt(1 << 12)
-	memberFieldTokenBalance       = big.NewInt(1 << 13)
-	memberFieldUsdTotalSpent      = big.NewInt(1 << 14)
-	memberFieldUser               = big.NewInt(1 << 15)
+	memberFieldName               = big.NewInt(1 << 11)
+	memberFieldPhoneNumber        = big.NewInt(1 << 12)
+	memberFieldStatus             = big.NewInt(1 << 13)
+	memberFieldTokenBalance       = big.NewInt(1 << 14)
+	memberFieldUsdTotalSpent      = big.NewInt(1 << 15)
+	memberFieldUser               = big.NewInt(1 << 16)
 )
 
 // memberNullableFields maps the wire names of Member's nullable fields (required or optional) to their field bits.
@@ -262,6 +263,7 @@ var memberNullableFields = map[string]*big.Int{
 	"last_accessed_at":      memberFieldLastAccessedAt,
 	"most_recent_action":    memberFieldMostRecentAction,
 	"most_recent_action_at": memberFieldMostRecentActionAt,
+	"name":                  memberFieldName,
 	"phone_number":          memberFieldPhoneNumber,
 	"user":                  memberFieldUser,
 }
@@ -289,6 +291,8 @@ type Member struct {
 	MostRecentAction *MemberMostRecentAction `json:"most_recent_action,omitempty" url:"most_recent_action,omitempty"`
 	// When `most_recent_action` took effect, as an ISO 8601 timestamp. `null` when `most_recent_action` is `null`.
 	MostRecentActionAt *string `json:"most_recent_action_at,omitempty" url:"most_recent_action_at,omitempty"`
+	// The name the account gave this customer with `PATCH /members/:id`. Invoices show it as the customer name on every invoice for this member, in place of the user's own name. `null` when the account has not set one.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
 	// The member's phone number: the most recent number collected (or verified) at checkout, otherwise their account number when they have shared one with this seller. `null` without `member:phone:read` on the account, or when there is neither.
 	PhoneNumber *string `json:"phone_number,omitempty" url:"phone_number,omitempty"`
 	// `joined` while the member is part of the account, `left` after they leave.
@@ -382,6 +386,13 @@ func (m *Member) GetMostRecentActionAt() *string {
 		return nil
 	}
 	return m.MostRecentActionAt
+}
+
+func (m *Member) GetName() *string {
+	if m == nil {
+		return nil
+	}
+	return m.Name
 }
 
 func (m *Member) GetPhoneNumber() *string {
@@ -510,6 +521,13 @@ func (m *Member) SetMostRecentAction(mostRecentAction *MemberMostRecentAction) {
 func (m *Member) SetMostRecentActionAt(mostRecentActionAt *string) {
 	m.MostRecentActionAt = mostRecentActionAt
 	m.require(memberFieldMostRecentActionAt)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Member) SetName(name *string) {
+	m.Name = name
+	m.require(memberFieldName)
 }
 
 // SetPhoneNumber sets the PhoneNumber field and marks it as non-optional;
@@ -1657,4 +1675,63 @@ func NewPostMemberUpdatedPayloadTypeFromString(s string) (PostMemberUpdatedPaylo
 
 func (p PostMemberUpdatedPayloadType) Ptr() *PostMemberUpdatedPayloadType {
 	return &p
+}
+
+var (
+	updateMembersRequestFieldID   = big.NewInt(1 << 0)
+	updateMembersRequestFieldName = big.NewInt(1 << 1)
+)
+
+type UpdateMembersRequest struct {
+	// Member ID (`mber_` tag).
+	ID string `json:"-" url:"-"`
+	// The customer name to show on this member's invoices, at most 255 bytes. Leading and trailing spaces are trimmed. `null` or a blank string clears it, so invoices show the user's own name again.
+	Name *string `json:"name,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (u *UpdateMembersRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMembersRequest) SetID(id string) {
+	u.ID = id
+	u.require(updateMembersRequestFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMembersRequest) SetName(name *string) {
+	u.Name = name
+	u.require(updateMembersRequestFieldName)
+}
+
+func (u *UpdateMembersRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateMembersRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*u = UpdateMembersRequest(body)
+	return nil
+}
+
+func (u *UpdateMembersRequest) MarshalJSON() ([]byte, error) {
+	type embed UpdateMembersRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
 }
