@@ -3756,13 +3756,16 @@ func (c CreatePaymentsRequestLineItemsItemVariantVisibility) Ptr() *CreatePaymen
 
 var (
 	createPaymentsRequestPaymentMethodFieldCardPresent = big.NewInt(1 << 0)
-	createPaymentsRequestPaymentMethodFieldType        = big.NewInt(1 << 1)
+	createPaymentsRequestPaymentMethodFieldPaypal      = big.NewInt(1 << 1)
+	createPaymentsRequestPaymentMethodFieldType        = big.NewInt(1 << 2)
 )
 
 // A payment method named on this call rather than described by a confirmation token. `type` names it and the member named after it carries its details. Nothing is collected on this call: the payment is created first and the buyer or device then acts on the `next_action` the status endpoint serves. `card_present` (Tap to Pay): the reader collects against the payment with the client secret in `next_action`. `paypal`: the buyer approves on PayPal's page, reached through a `redirect` `next_action`, then returns to `return_url`; `member_id` or `email` names the buyer. Mutually exclusive with `confirmation_token` and `payment_method_id`, and with `member_id` except for `paypal`.
 type CreatePaymentsRequestPaymentMethod struct {
 	// Required when `type` is `card_present`.
 	CardPresent *CreatePaymentsRequestPaymentMethodCardPresent `json:"card_present,omitempty" url:"card_present,omitempty"`
+	// Options for a `paypal` payment method.
+	Paypal *CreatePaymentsRequestPaymentMethodPaypal `json:"paypal,omitempty" url:"paypal,omitempty"`
 	// The kind of payment method; the member named after it carries its details.
 	Type CreatePaymentsRequestPaymentMethodType `json:"type" url:"type"`
 
@@ -3778,6 +3781,13 @@ func (c *CreatePaymentsRequestPaymentMethod) GetCardPresent() *CreatePaymentsReq
 		return nil
 	}
 	return c.CardPresent
+}
+
+func (c *CreatePaymentsRequestPaymentMethod) GetPaypal() *CreatePaymentsRequestPaymentMethodPaypal {
+	if c == nil {
+		return nil
+	}
+	return c.Paypal
 }
 
 func (c *CreatePaymentsRequestPaymentMethod) GetType() CreatePaymentsRequestPaymentMethodType {
@@ -3808,6 +3818,13 @@ func (c *CreatePaymentsRequestPaymentMethod) require(field *big.Int) {
 func (c *CreatePaymentsRequestPaymentMethod) SetCardPresent(cardPresent *CreatePaymentsRequestPaymentMethodCardPresent) {
 	c.CardPresent = cardPresent
 	c.require(createPaymentsRequestPaymentMethodFieldCardPresent)
+}
+
+// SetPaypal sets the Paypal field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestPaymentMethod) SetPaypal(paypal *CreatePaymentsRequestPaymentMethodPaypal) {
+	c.Paypal = paypal
+	c.require(createPaymentsRequestPaymentMethodFieldPaypal)
 }
 
 // SetType sets the Type field and marks it as non-optional;
@@ -3968,6 +3985,94 @@ func NewCreatePaymentsRequestPaymentMethodCardPresentPlatformFromString(s string
 
 func (c CreatePaymentsRequestPaymentMethodCardPresentPlatform) Ptr() *CreatePaymentsRequestPaymentMethodCardPresentPlatform {
 	return &c
+}
+
+var (
+	createPaymentsRequestPaymentMethodPaypalFieldRequestShipping = big.NewInt(1 << 0)
+)
+
+// Options for a `paypal` payment method.
+type CreatePaymentsRequestPaymentMethodPaypal struct {
+	// Has PayPal ask the buyer for a shipping address. Tax is recalculated for each address the buyer picks before they approve, so the total they approve is the total charged, and the address they confirm is returned on the payment as `shipping_address`. Cannot be combined with `shipping_address`. Defaults to false.
+	RequestShipping *bool `json:"request_shipping,omitempty" url:"request_shipping,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreatePaymentsRequestPaymentMethodPaypal) GetRequestShipping() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.RequestShipping
+}
+
+func (c *CreatePaymentsRequestPaymentMethodPaypal) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreatePaymentsRequestPaymentMethodPaypal) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetRequestShipping sets the RequestShipping field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestPaymentMethodPaypal) SetRequestShipping(requestShipping *bool) {
+	c.RequestShipping = requestShipping
+	c.require(createPaymentsRequestPaymentMethodPaypalFieldRequestShipping)
+}
+
+func (c *CreatePaymentsRequestPaymentMethodPaypal) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreatePaymentsRequestPaymentMethodPaypal
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreatePaymentsRequestPaymentMethodPaypal(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreatePaymentsRequestPaymentMethodPaypal) MarshalJSON() ([]byte, error) {
+	type embed CreatePaymentsRequestPaymentMethodPaypal
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreatePaymentsRequestPaymentMethodPaypal) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
 }
 
 // The kind of payment method; the member named after it carries its details.
