@@ -2820,7 +2820,7 @@ var adGroupDemographicsNullableFields = map[string]*big.Int{
 }
 
 type AdGroupDemographics struct {
-	// Whether automatic audience targeting is on. When `true`, delivery can reach beyond the ages, genders, and detailed targeting you set, treating them as suggestions.
+	// Whether automatic audience targeting is on. When `true`, delivery can reach beyond the ages and genders you set, treating them as suggestions.
 	Automatic bool `json:"automatic" url:"automatic"`
 	// Gender targeted.
 	Gender AdGroupDemographicsGender `json:"gender" url:"gender"`
@@ -2966,7 +2966,7 @@ var (
 
 // Age, gender, and automatic-audience targeting.
 type AdGroupDemographicsBody struct {
-	// Turn on automatic audience targeting: delivery can reach beyond the ages, genders, and detailed targeting you set, treating them as suggestions.
+	// Turn on automatic audience targeting: delivery can reach beyond the ages and genders you set, treating them as suggestions.
 	Automatic *bool `json:"automatic,omitempty" url:"automatic,omitempty"`
 	// Gender to target.
 	Gender *AdGroupDemographicsBodyGender `json:"gender,omitempty" url:"gender,omitempty"`
