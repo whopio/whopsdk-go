@@ -3083,12 +3083,18 @@ func (a AccountHomePreferencesItem) Ptr() *AccountHomePreferencesItem {
 }
 
 var (
-	accountLevelFieldBoosted        = big.NewInt(1 << 0)
-	accountLevelFieldCurrent        = big.NewInt(1 << 1)
-	accountLevelFieldPoints         = big.NewInt(1 << 2)
-	accountLevelFieldPointsBySource = big.NewInt(1 << 3)
-	accountLevelFieldPointsToNext   = big.NewInt(1 << 4)
-	accountLevelFieldResetsAt       = big.NewInt(1 << 5)
+	accountLevelFieldBoosted                  = big.NewInt(1 << 0)
+	accountLevelFieldCurrent                  = big.NewInt(1 << 1)
+	accountLevelFieldLevels                   = big.NewInt(1 << 2)
+	accountLevelFieldMonthlyAdsSpend          = big.NewInt(1 << 3)
+	accountLevelFieldMonthlyCardSpend         = big.NewInt(1 << 4)
+	accountLevelFieldMonthlyQualifyingSpend   = big.NewInt(1 << 5)
+	accountLevelFieldMonthlyTradingVolume     = big.NewInt(1 << 6)
+	accountLevelFieldPoints                   = big.NewInt(1 << 7)
+	accountLevelFieldPointsBySource           = big.NewInt(1 << 8)
+	accountLevelFieldPointsToNext             = big.NewInt(1 << 9)
+	accountLevelFieldProcessingRatePercentage = big.NewInt(1 << 10)
+	accountLevelFieldResetsAt                 = big.NewInt(1 << 11)
 )
 
 // accountLevelNullableFields maps the wire names of AccountLevel's nullable fields (required or optional) to their field bits.
@@ -3100,13 +3106,24 @@ type AccountLevel struct {
 	// `true` when this account's own points this month fall short of `current`, so the owner's other accounts lift it to this level.
 	Boosted bool `json:"boosted" url:"boosted"`
 	// Current level, from `0` before the first threshold up to `10`.
-	Current int `json:"current" url:"current"`
+	Current int                            `json:"current" url:"current"`
+	Levels  []*AccountProcessingOfferLevel `json:"levels" url:"levels"`
+	// Charged Whop Ads spend this calendar month across every account the owner owns, in USD.
+	MonthlyAdsSpend *Money `json:"monthly_ads_spend" url:"monthly_ads_spend"`
+	// Effective Whop Card spend this calendar month across every account the owner owns, in USD.
+	MonthlyCardSpend *Money `json:"monthly_card_spend" url:"monthly_card_spend"`
+	// Qualifying spend this calendar month across every account the owner owns, in USD: Whop Ads spend, Whop Card spend, and a tenth of perpetual trading volume.
+	MonthlyQualifyingSpend *Money `json:"monthly_qualifying_spend" url:"monthly_qualifying_spend"`
+	// Perpetual trading notional volume this calendar month across every account the owner owns, in USD.
+	MonthlyTradingVolume *Money `json:"monthly_trading_volume" url:"monthly_trading_volume"`
 	// Points earned this month across every account the owner owns.
 	Points int `json:"points" url:"points"`
 	// This month's points, split by where they were earned.
 	PointsBySource *OwnerLevelPoints `json:"points_by_source" url:"points_by_source"`
 	// Points still needed this month to reach the next level, or `null` at level `10`.
 	PointsToNext *int `json:"points_to_next,omitempty" url:"points_to_next,omitempty"`
+	// The standard US and Canada card processing percentage at `current`, before any account's custom rate.
+	ProcessingRatePercentage float64 `json:"processing_rate_percentage" url:"processing_rate_percentage"`
 	// When this month's points reset to zero, as an ISO 8601 timestamp.
 	ResetsAt string `json:"resets_at" url:"resets_at"`
 
@@ -3131,6 +3148,41 @@ func (a *AccountLevel) GetCurrent() int {
 	return a.Current
 }
 
+func (a *AccountLevel) GetLevels() []*AccountProcessingOfferLevel {
+	if a == nil {
+		return nil
+	}
+	return a.Levels
+}
+
+func (a *AccountLevel) GetMonthlyAdsSpend() *Money {
+	if a == nil {
+		return nil
+	}
+	return a.MonthlyAdsSpend
+}
+
+func (a *AccountLevel) GetMonthlyCardSpend() *Money {
+	if a == nil {
+		return nil
+	}
+	return a.MonthlyCardSpend
+}
+
+func (a *AccountLevel) GetMonthlyQualifyingSpend() *Money {
+	if a == nil {
+		return nil
+	}
+	return a.MonthlyQualifyingSpend
+}
+
+func (a *AccountLevel) GetMonthlyTradingVolume() *Money {
+	if a == nil {
+		return nil
+	}
+	return a.MonthlyTradingVolume
+}
+
 func (a *AccountLevel) GetPoints() int {
 	if a == nil {
 		return 0
@@ -3150,6 +3202,13 @@ func (a *AccountLevel) GetPointsToNext() *int {
 		return nil
 	}
 	return a.PointsToNext
+}
+
+func (a *AccountLevel) GetProcessingRatePercentage() float64 {
+	if a == nil {
+		return 0
+	}
+	return a.ProcessingRatePercentage
 }
 
 func (a *AccountLevel) GetResetsAt() string {
@@ -3189,6 +3248,41 @@ func (a *AccountLevel) SetCurrent(current int) {
 	a.require(accountLevelFieldCurrent)
 }
 
+// SetLevels sets the Levels field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountLevel) SetLevels(levels []*AccountProcessingOfferLevel) {
+	a.Levels = levels
+	a.require(accountLevelFieldLevels)
+}
+
+// SetMonthlyAdsSpend sets the MonthlyAdsSpend field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountLevel) SetMonthlyAdsSpend(monthlyAdsSpend *Money) {
+	a.MonthlyAdsSpend = monthlyAdsSpend
+	a.require(accountLevelFieldMonthlyAdsSpend)
+}
+
+// SetMonthlyCardSpend sets the MonthlyCardSpend field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountLevel) SetMonthlyCardSpend(monthlyCardSpend *Money) {
+	a.MonthlyCardSpend = monthlyCardSpend
+	a.require(accountLevelFieldMonthlyCardSpend)
+}
+
+// SetMonthlyQualifyingSpend sets the MonthlyQualifyingSpend field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountLevel) SetMonthlyQualifyingSpend(monthlyQualifyingSpend *Money) {
+	a.MonthlyQualifyingSpend = monthlyQualifyingSpend
+	a.require(accountLevelFieldMonthlyQualifyingSpend)
+}
+
+// SetMonthlyTradingVolume sets the MonthlyTradingVolume field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountLevel) SetMonthlyTradingVolume(monthlyTradingVolume *Money) {
+	a.MonthlyTradingVolume = monthlyTradingVolume
+	a.require(accountLevelFieldMonthlyTradingVolume)
+}
+
 // SetPoints sets the Points field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *AccountLevel) SetPoints(points int) {
@@ -3208,6 +3302,13 @@ func (a *AccountLevel) SetPointsBySource(pointsBySource *OwnerLevelPoints) {
 func (a *AccountLevel) SetPointsToNext(pointsToNext *int) {
 	a.PointsToNext = pointsToNext
 	a.require(accountLevelFieldPointsToNext)
+}
+
+// SetProcessingRatePercentage sets the ProcessingRatePercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountLevel) SetProcessingRatePercentage(processingRatePercentage float64) {
+	a.ProcessingRatePercentage = processingRatePercentage
+	a.require(accountLevelFieldProcessingRatePercentage)
 }
 
 // SetResetsAt sets the ResetsAt field and marks it as non-optional;

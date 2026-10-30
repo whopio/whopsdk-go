@@ -4775,6 +4775,279 @@ func (a AccountPreferencesSubscriptionFailureBehavior) Ptr() *AccountPreferences
 }
 
 var (
+	accountProcessingOfferLevelFieldLevel                    = big.NewInt(1 << 0)
+	accountProcessingOfferLevelFieldMinimumSpend             = big.NewInt(1 << 1)
+	accountProcessingOfferLevelFieldProcessingRatePercentage = big.NewInt(1 << 2)
+	accountProcessingOfferLevelFieldRegionalRates            = big.NewInt(1 << 3)
+)
+
+type AccountProcessingOfferLevel struct {
+	// The processing level.
+	Level int `json:"level" url:"level"`
+	// The monthly qualifying spend required to reach this level.
+	MinimumSpend *Money `json:"minimum_spend" url:"minimum_spend"`
+	// The standard US and Canada card processing percentage at this level, regardless of the account's custom rate.
+	ProcessingRatePercentage float64                               `json:"processing_rate_percentage" url:"processing_rate_percentage"`
+	RegionalRates            []*AccountProcessingOfferRegionalRate `json:"regional_rates" url:"regional_rates"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AccountProcessingOfferLevel) GetLevel() int {
+	if a == nil {
+		return 0
+	}
+	return a.Level
+}
+
+func (a *AccountProcessingOfferLevel) GetMinimumSpend() *Money {
+	if a == nil {
+		return nil
+	}
+	return a.MinimumSpend
+}
+
+func (a *AccountProcessingOfferLevel) GetProcessingRatePercentage() float64 {
+	if a == nil {
+		return 0
+	}
+	return a.ProcessingRatePercentage
+}
+
+func (a *AccountProcessingOfferLevel) GetRegionalRates() []*AccountProcessingOfferRegionalRate {
+	if a == nil {
+		return nil
+	}
+	return a.RegionalRates
+}
+
+func (a *AccountProcessingOfferLevel) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AccountProcessingOfferLevel) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetLevel sets the Level field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountProcessingOfferLevel) SetLevel(level int) {
+	a.Level = level
+	a.require(accountProcessingOfferLevelFieldLevel)
+}
+
+// SetMinimumSpend sets the MinimumSpend field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountProcessingOfferLevel) SetMinimumSpend(minimumSpend *Money) {
+	a.MinimumSpend = minimumSpend
+	a.require(accountProcessingOfferLevelFieldMinimumSpend)
+}
+
+// SetProcessingRatePercentage sets the ProcessingRatePercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountProcessingOfferLevel) SetProcessingRatePercentage(processingRatePercentage float64) {
+	a.ProcessingRatePercentage = processingRatePercentage
+	a.require(accountProcessingOfferLevelFieldProcessingRatePercentage)
+}
+
+// SetRegionalRates sets the RegionalRates field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountProcessingOfferLevel) SetRegionalRates(regionalRates []*AccountProcessingOfferRegionalRate) {
+	a.RegionalRates = regionalRates
+	a.require(accountProcessingOfferLevelFieldRegionalRates)
+}
+
+func (a *AccountProcessingOfferLevel) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccountProcessingOfferLevel
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccountProcessingOfferLevel(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccountProcessingOfferLevel) MarshalJSON() ([]byte, error) {
+	type embed AccountProcessingOfferLevel
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AccountProcessingOfferLevel) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+var (
+	accountProcessingOfferRegionalRateFieldProcessingRatePercentage = big.NewInt(1 << 0)
+	accountProcessingOfferRegionalRateFieldRegion                   = big.NewInt(1 << 1)
+)
+
+type AccountProcessingOfferRegionalRate struct {
+	// The standard card processing percentage at this level for cards from this region, regardless of the account's custom rate.
+	ProcessingRatePercentage float64 `json:"processing_rate_percentage" url:"processing_rate_percentage"`
+	// The card region this fee applies to.
+	Region AccountProcessingOfferRegionalRateRegion `json:"region" url:"region"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AccountProcessingOfferRegionalRate) GetProcessingRatePercentage() float64 {
+	if a == nil {
+		return 0
+	}
+	return a.ProcessingRatePercentage
+}
+
+func (a *AccountProcessingOfferRegionalRate) GetRegion() AccountProcessingOfferRegionalRateRegion {
+	if a == nil {
+		return ""
+	}
+	return a.Region
+}
+
+func (a *AccountProcessingOfferRegionalRate) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AccountProcessingOfferRegionalRate) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetProcessingRatePercentage sets the ProcessingRatePercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountProcessingOfferRegionalRate) SetProcessingRatePercentage(processingRatePercentage float64) {
+	a.ProcessingRatePercentage = processingRatePercentage
+	a.require(accountProcessingOfferRegionalRateFieldProcessingRatePercentage)
+}
+
+// SetRegion sets the Region field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountProcessingOfferRegionalRate) SetRegion(region AccountProcessingOfferRegionalRateRegion) {
+	a.Region = region
+	a.require(accountProcessingOfferRegionalRateFieldRegion)
+}
+
+func (a *AccountProcessingOfferRegionalRate) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccountProcessingOfferRegionalRate
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccountProcessingOfferRegionalRate(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccountProcessingOfferRegionalRate) MarshalJSON() ([]byte, error) {
+	type embed AccountProcessingOfferRegionalRate
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AccountProcessingOfferRegionalRate) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+// The card region this fee applies to.
+type AccountProcessingOfferRegionalRateRegion string
+
+const (
+	AccountProcessingOfferRegionalRateRegionUsAndCanada          AccountProcessingOfferRegionalRateRegion = "us_and_canada"
+	AccountProcessingOfferRegionalRateRegionEuropeUkAndAustralia AccountProcessingOfferRegionalRateRegion = "europe_uk_and_australia"
+	AccountProcessingOfferRegionalRateRegionLatinAmerica         AccountProcessingOfferRegionalRateRegion = "latin_america"
+	AccountProcessingOfferRegionalRateRegionPeru                 AccountProcessingOfferRegionalRateRegion = "peru"
+	AccountProcessingOfferRegionalRateRegionBrazil               AccountProcessingOfferRegionalRateRegion = "brazil"
+)
+
+func NewAccountProcessingOfferRegionalRateRegionFromString(s string) (AccountProcessingOfferRegionalRateRegion, error) {
+	switch s {
+	case "us_and_canada":
+		return AccountProcessingOfferRegionalRateRegionUsAndCanada, nil
+	case "europe_uk_and_australia":
+		return AccountProcessingOfferRegionalRateRegionEuropeUkAndAustralia, nil
+	case "latin_america":
+		return AccountProcessingOfferRegionalRateRegionLatinAmerica, nil
+	case "peru":
+		return AccountProcessingOfferRegionalRateRegionPeru, nil
+	case "brazil":
+		return AccountProcessingOfferRegionalRateRegionBrazil, nil
+	}
+	var t AccountProcessingOfferRegionalRateRegion
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountProcessingOfferRegionalRateRegion) Ptr() *AccountProcessingOfferRegionalRateRegion {
+	return &a
+}
+
+var (
 	accountRecommendedActionFieldAction              = big.NewInt(1 << 0)
 	accountRecommendedActionFieldBlockedCapabilities = big.NewInt(1 << 1)
 	accountRecommendedActionFieldCta                 = big.NewInt(1 << 2)
