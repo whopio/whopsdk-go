@@ -11,6 +11,65 @@ import (
 )
 
 var (
+	chargeInvoicesRequestFieldID              = big.NewInt(1 << 0)
+	chargeInvoicesRequestFieldPaymentMethodID = big.NewInt(1 << 1)
+)
+
+type ChargeInvoicesRequest struct {
+	// The invoice's pay_ ID.
+	ID string `json:"-" url:"-"`
+	// The saved payment method to charge, prefixed `payt_`. It must belong to the invoice's customer and be chargeable without the customer present. Omit it to charge the invoice's own `payment_method_id`.
+	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (c *ChargeInvoicesRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ChargeInvoicesRequest) SetID(id string) {
+	c.ID = id
+	c.require(chargeInvoicesRequestFieldID)
+}
+
+// SetPaymentMethodID sets the PaymentMethodID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ChargeInvoicesRequest) SetPaymentMethodID(paymentMethodID *string) {
+	c.PaymentMethodID = paymentMethodID
+	c.require(chargeInvoicesRequestFieldPaymentMethodID)
+}
+
+func (c *ChargeInvoicesRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler ChargeInvoicesRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*c = ChargeInvoicesRequest(body)
+	return nil
+}
+
+func (c *ChargeInvoicesRequest) MarshalJSON() ([]byte, error) {
+	type embed ChargeInvoicesRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	createInvoicesRequestFieldAccountID          = big.NewInt(1 << 0)
 	createInvoicesRequestFieldBillingAddress     = big.NewInt(1 << 1)
 	createInvoicesRequestFieldBuyerFeePercentage = big.NewInt(1 << 2)

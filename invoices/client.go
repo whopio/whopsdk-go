@@ -201,6 +201,33 @@ func (c *Client) Update(
 	return response.Body, nil
 }
 
+// Charges an open invoice now to one of its customer's saved payment methods, canceling any charge scheduled for later. The charge completes asynchronously: the invoice becomes `paid`, or, if declined, stays `open` and its recipients are emailed the `checkout_link`. Refused for drafts and while another payment is in progress.
+//
+// Example:
+//
+//	request := &whopsdk.ChargeInvoicesRequest{
+//	    ID: "id",
+//	}
+//	client.Invoices.Charge(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Charge(
+	ctx context.Context,
+	request *whopsdk.ChargeInvoicesRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.Invoice, error) {
+	response, err := c.WithRawResponse.Charge(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Generates the invoice as a PDF and returns a short-lived link to download it. A draft shows its estimated totals. The buyer's name and email need `member:basic:read` and `member:email:read`, and the Pay now link on an open invoice needs `payment:charge`, or `invoice:create` or `invoice:update` when it has no `payment_method_id`. Each call generates a new file and link, so this endpoint does not replay `Idempotency-Key` responses.
 //
 // Example:
