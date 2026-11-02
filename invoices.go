@@ -79,9 +79,10 @@ var (
 	createInvoicesRequestFieldItems              = big.NewInt(1 << 6)
 	createInvoicesRequestFieldMailingAddressID   = big.NewInt(1 << 7)
 	createInvoicesRequestFieldMemberID           = big.NewInt(1 << 8)
-	createInvoicesRequestFieldMetadata           = big.NewInt(1 << 9)
-	createInvoicesRequestFieldPaymentMethodID    = big.NewInt(1 << 10)
-	createInvoicesRequestFieldRecipientEmails    = big.NewInt(1 << 11)
+	createInvoicesRequestFieldMemo               = big.NewInt(1 << 9)
+	createInvoicesRequestFieldMetadata           = big.NewInt(1 << 10)
+	createInvoicesRequestFieldPaymentMethodID    = big.NewInt(1 << 11)
+	createInvoicesRequestFieldRecipientEmails    = big.NewInt(1 << 12)
 )
 
 type CreateInvoicesRequest struct {
@@ -103,7 +104,9 @@ type CreateInvoicesRequest struct {
 	MailingAddressID *string `json:"mailing_address_id,omitempty" url:"-"`
 	// The billed customer, a member of the account. Changing email recipients does not change this buyer.
 	MemberID *string `json:"member_id,omitempty" url:"-"`
-	// Up to 50 caller-owned string key/value pairs.
+	// A note to the customer, shown on the invoice email, PDF, and checkout page with its line breaks kept. Trimmed; `null` or blank clears it. Can be updated on draft, open, or uncollectible invoices.
+	Memo *string `json:"memo,omitempty" url:"-"`
+	// Up to 50 caller-owned string key/value pairs. The `invoice_memo` key is reserved and ignored; set `memo` instead.
 	Metadata map[string]string `json:"metadata,omitempty" url:"-"`
 	// A saved payment method belonging to the member, prefixed `payt_`. Sending or issuing the invoice charges this method at the `charge_at` passed to that call, otherwise on `due_at`, or right away when there is no `due_at` or it has passed. Sending also emails the invoice now when the charge is later; issuing does not. Setting it needs `payment:charge`.
 	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
@@ -184,6 +187,13 @@ func (c *CreateInvoicesRequest) SetMailingAddressID(mailingAddressID *string) {
 func (c *CreateInvoicesRequest) SetMemberID(memberID *string) {
 	c.MemberID = memberID
 	c.require(createInvoicesRequestFieldMemberID)
+}
+
+// SetMemo sets the Memo field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequest) SetMemo(memo *string) {
+	c.Memo = memo
+	c.require(createInvoicesRequestFieldMemo)
 }
 
 // SetMetadata sets the Metadata field and marks it as non-optional;
@@ -623,21 +633,22 @@ var (
 	invoiceFieldLineItems          = big.NewInt(1 << 12)
 	invoiceFieldMailingAddressID   = big.NewInt(1 << 13)
 	invoiceFieldMemberID           = big.NewInt(1 << 14)
-	invoiceFieldMetadata           = big.NewInt(1 << 15)
-	invoiceFieldNumber             = big.NewInt(1 << 16)
-	invoiceFieldObject             = big.NewInt(1 << 17)
-	invoiceFieldOverdue            = big.NewInt(1 << 18)
-	invoiceFieldPaidAt             = big.NewInt(1 << 19)
-	invoiceFieldPaymentMethodID    = big.NewInt(1 << 20)
-	invoiceFieldRecipientEmails    = big.NewInt(1 << 21)
-	invoiceFieldScheduledChargeAt  = big.NewInt(1 << 22)
-	invoiceFieldScheduledSendAt    = big.NewInt(1 << 23)
-	invoiceFieldStatus             = big.NewInt(1 << 24)
-	invoiceFieldSubtotal           = big.NewInt(1 << 25)
-	invoiceFieldTaxAmount          = big.NewInt(1 << 26)
-	invoiceFieldTotal              = big.NewInt(1 << 27)
-	invoiceFieldTotalsStatus       = big.NewInt(1 << 28)
-	invoiceFieldUpdatedAt          = big.NewInt(1 << 29)
+	invoiceFieldMemo               = big.NewInt(1 << 15)
+	invoiceFieldMetadata           = big.NewInt(1 << 16)
+	invoiceFieldNumber             = big.NewInt(1 << 17)
+	invoiceFieldObject             = big.NewInt(1 << 18)
+	invoiceFieldOverdue            = big.NewInt(1 << 19)
+	invoiceFieldPaidAt             = big.NewInt(1 << 20)
+	invoiceFieldPaymentMethodID    = big.NewInt(1 << 21)
+	invoiceFieldRecipientEmails    = big.NewInt(1 << 22)
+	invoiceFieldScheduledChargeAt  = big.NewInt(1 << 23)
+	invoiceFieldScheduledSendAt    = big.NewInt(1 << 24)
+	invoiceFieldStatus             = big.NewInt(1 << 25)
+	invoiceFieldSubtotal           = big.NewInt(1 << 26)
+	invoiceFieldTaxAmount          = big.NewInt(1 << 27)
+	invoiceFieldTotal              = big.NewInt(1 << 28)
+	invoiceFieldTotalsStatus       = big.NewInt(1 << 29)
+	invoiceFieldUpdatedAt          = big.NewInt(1 << 30)
 )
 
 // invoiceNullableFields maps the wire names of Invoice's nullable fields (required or optional) to their field bits.
@@ -650,6 +661,7 @@ var invoiceNullableFields = map[string]*big.Int{
 	"invoice_prefix":      invoiceFieldInvoicePrefix,
 	"mailing_address_id":  invoiceFieldMailingAddressID,
 	"member_id":           invoiceFieldMemberID,
+	"memo":                invoiceFieldMemo,
 	"paid_at":             invoiceFieldPaidAt,
 	"payment_method_id":   invoiceFieldPaymentMethodID,
 	"scheduled_charge_at": invoiceFieldScheduledChargeAt,
@@ -674,13 +686,15 @@ type Invoice struct {
 	LineItems        []*InvoiceLineItem `json:"line_items" url:"line_items"`
 	MailingAddressID *string            `json:"mailing_address_id,omitempty" url:"mailing_address_id,omitempty"`
 	MemberID         *string            `json:"member_id,omitempty" url:"member_id,omitempty"`
-	Metadata         map[string]string  `json:"metadata" url:"metadata"`
-	Number           string             `json:"number" url:"number"`
-	Object           InvoiceObject      `json:"object" url:"object"`
-	Overdue          bool               `json:"overdue" url:"overdue"`
-	PaidAt           *string            `json:"paid_at,omitempty" url:"paid_at,omitempty"`
-	PaymentMethodID  *string            `json:"payment_method_id,omitempty" url:"payment_method_id,omitempty"`
-	RecipientEmails  []string           `json:"recipient_emails" url:"recipient_emails"`
+	// A note to the customer, shown on the invoice email, PDF, and checkout page with its line breaks kept. `null` when none is set.
+	Memo            *string           `json:"memo,omitempty" url:"memo,omitempty"`
+	Metadata        map[string]string `json:"metadata" url:"metadata"`
+	Number          string            `json:"number" url:"number"`
+	Object          InvoiceObject     `json:"object" url:"object"`
+	Overdue         bool              `json:"overdue" url:"overdue"`
+	PaidAt          *string           `json:"paid_at,omitempty" url:"paid_at,omitempty"`
+	PaymentMethodID *string           `json:"payment_method_id,omitempty" url:"payment_method_id,omitempty"`
+	RecipientEmails []string          `json:"recipient_emails" url:"recipient_emails"`
 	// When the invoice's saved payment method will be charged, as an ISO 8601 timestamp: the `charge_at` it was sent or issued with, or `due_at` when an invoice with a `payment_method_id` is sent or issued before it is due without one. On a draft, the `charge_at` of its scheduled send. `null` otherwise, once the charge starts, and once the invoice is paid, void, or uncollectible.
 	ScheduledChargeAt *string             `json:"scheduled_charge_at,omitempty" url:"scheduled_charge_at,omitempty"`
 	ScheduledSendAt   *string             `json:"scheduled_send_at,omitempty" url:"scheduled_send_at,omitempty"`
@@ -801,6 +815,13 @@ func (i *Invoice) GetMemberID() *string {
 		return nil
 	}
 	return i.MemberID
+}
+
+func (i *Invoice) GetMemo() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Memo
 }
 
 func (i *Invoice) GetMetadata() map[string]string {
@@ -1027,6 +1048,13 @@ func (i *Invoice) SetMailingAddressID(mailingAddressID *string) {
 func (i *Invoice) SetMemberID(memberID *string) {
 	i.MemberID = memberID
 	i.require(invoiceFieldMemberID)
+}
+
+// SetMemo sets the Memo field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *Invoice) SetMemo(memo *string) {
+	i.Memo = memo
+	i.require(invoiceFieldMemo)
 }
 
 // SetMetadata sets the Metadata field and marks it as non-optional;
@@ -6019,9 +6047,10 @@ var (
 	updateInvoicesRequestFieldItems              = big.NewInt(1 << 4)
 	updateInvoicesRequestFieldMailingAddressID   = big.NewInt(1 << 5)
 	updateInvoicesRequestFieldMemberID           = big.NewInt(1 << 6)
-	updateInvoicesRequestFieldMetadata           = big.NewInt(1 << 7)
-	updateInvoicesRequestFieldPaymentMethodID    = big.NewInt(1 << 8)
-	updateInvoicesRequestFieldRecipientEmails    = big.NewInt(1 << 9)
+	updateInvoicesRequestFieldMemo               = big.NewInt(1 << 7)
+	updateInvoicesRequestFieldMetadata           = big.NewInt(1 << 8)
+	updateInvoicesRequestFieldPaymentMethodID    = big.NewInt(1 << 9)
+	updateInvoicesRequestFieldRecipientEmails    = big.NewInt(1 << 10)
 )
 
 type UpdateInvoicesRequest struct {
@@ -6039,7 +6068,9 @@ type UpdateInvoicesRequest struct {
 	MailingAddressID *string `json:"mailing_address_id,omitempty" url:"-"`
 	// The billed customer, a member of the account. Changing email recipients does not change this buyer.
 	MemberID *string `json:"member_id,omitempty" url:"-"`
-	// Up to 50 caller-owned string key/value pairs.
+	// A note to the customer, shown on the invoice email, PDF, and checkout page with its line breaks kept. Trimmed; `null` or blank clears it. Can be updated on draft, open, or uncollectible invoices.
+	Memo *string `json:"memo,omitempty" url:"-"`
+	// Up to 50 caller-owned string key/value pairs. The `invoice_memo` key is reserved and ignored; set `memo` instead.
 	Metadata map[string]string `json:"metadata,omitempty" url:"-"`
 	// A saved payment method belonging to the member, prefixed `payt_`. Sending or issuing the invoice charges this method at the `charge_at` passed to that call, otherwise on `due_at`, or right away when there is no `due_at` or it has passed. Sending also emails the invoice now when the charge is later; issuing does not. Setting it needs `payment:charge`.
 	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
@@ -6106,6 +6137,13 @@ func (u *UpdateInvoicesRequest) SetMailingAddressID(mailingAddressID *string) {
 func (u *UpdateInvoicesRequest) SetMemberID(memberID *string) {
 	u.MemberID = memberID
 	u.require(updateInvoicesRequestFieldMemberID)
+}
+
+// SetMemo sets the Memo field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInvoicesRequest) SetMemo(memo *string) {
+	u.Memo = memo
+	u.require(updateInvoicesRequestFieldMemo)
 }
 
 // SetMetadata sets the Metadata field and marks it as non-optional;
