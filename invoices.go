@@ -89,7 +89,7 @@ type CreateInvoicesRequest struct {
 	AccountID string `json:"account_id" url:"-"`
 	// Create a billing address linked to this member.
 	BillingAddress *CreateInvoicesRequestBillingAddress `json:"billing_address,omitempty" url:"-"`
-	// The buyer's adjustable fee in percentage points, with at most two decimal places.
+	// The buyer's adjustable fee in percentage points, with at most two decimal places: `0` for none, or between 5 and 100. The account keeps it, and Whop waives its take rate on the invoice.
 	BuyerFeePercentage *float64 `json:"buyer_fee_percentage,omitempty" url:"-"`
 	// The contact name when creating an email-only member.
 	CustomerName *string `json:"customer_name,omitempty" url:"-"`
@@ -6029,7 +6029,7 @@ type UpdateInvoicesRequest struct {
 	ID string `json:"-" url:"-"`
 	// Create a billing address linked to this member.
 	BillingAddress *UpdateInvoicesRequestBillingAddress `json:"billing_address,omitempty" url:"-"`
-	// The buyer's adjustable fee in percentage points, with at most two decimal places.
+	// The buyer's adjustable fee in percentage points, with at most two decimal places: `0` for none, or between 5 and 100. The account keeps it, and Whop waives its take rate on the invoice.
 	BuyerFeePercentage *float64 `json:"buyer_fee_percentage,omitempty" url:"-"`
 	// When payment is due, as an ISO 8601 timestamp.
 	DueAt *time.Time `json:"due_at,omitempty" url:"-"`
